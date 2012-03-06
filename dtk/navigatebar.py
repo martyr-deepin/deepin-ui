@@ -92,7 +92,7 @@ class NavItem(object):
         self.font_size = font_size
         self.set_index = set_index
         self.get_index = get_index
-        (self.icon_path, self.content, self.clicked_callback) = element
+        (self.icon_dpixbuf, self.content, self.clicked_callback) = element
         pixbuf = ui_theme.get_dynamic_pixbuf("navigatebar/nav_item_hover.png").get_pixbuf()
         
         # Init item button.
@@ -143,7 +143,7 @@ class NavItem(object):
             draw_pixbuf(cr, select_pixbuf, rect.x, rect.y)
         
         # Draw navigate item.
-        nav_item_pixbuf = ui_theme.get_dynamic_pixbuf(self.icon_path).get_pixbuf()
+        nav_item_pixbuf = self.icon_dpixbuf.get_pixbuf()
         draw_pixbuf(
             cr, nav_item_pixbuf, 
             rect.x + (rect.width - nav_item_pixbuf.get_width()) / 2,

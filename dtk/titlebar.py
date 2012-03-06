@@ -33,7 +33,7 @@ class Titlebar(object):
     
     def __init__(self, 
                  button_mask=["theme", "menu", "max", "min", "close"],
-                 icon_path=None,
+                 icon_dpixbuf=None,
                  title=None,
                  ):
         '''Init titlebar.'''
@@ -51,8 +51,8 @@ class Titlebar(object):
         self.drag_box.add(self.left_box)
         
         # Add icon.
-        if icon_path != None:
-            self.icon_box = ImageBox(icon_path)
+        if icon_dpixbuf != None:
+            self.icon_box = ImageBox(icon_dpixbuf)
             self.icon_align = gtk.Alignment()
             self.icon_align.set(0.5, 0.5, 0.0, 0.0)
             self.icon_align.set_padding(0, 0, 10, 10)
@@ -61,7 +61,7 @@ class Titlebar(object):
                     
         # Add title.
         if title != None:
-            self.title_box = TextBox(title, "title")
+            self.title_box = TextBox(title, ui_theme.get_dynamic_color("title"))
             self.title_align = gtk.Alignment()
             self.title_align.set(0.5, 0.5, 0.0, 0.0)
             self.title_align.set_padding(0, 0, 0, 0)

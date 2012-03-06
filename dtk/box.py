@@ -36,15 +36,15 @@ class EventBox(gtk.EventBox):
 class ImageBox(gtk.EventBox):
     '''Box just contain image.'''
 	
-    def __init__(self, image_path):
+    def __init__(self, image_dpixbuf):
         '''Init image box.'''
         # Init.
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
-        self.image_path = image_path
+        self.image_dpixbuf = image_dpixbuf
         
         # Set size.
-        pixbuf = ui_theme.get_dynamic_pixbuf(self.image_path).get_pixbuf()
+        pixbuf = self.image_dpixbuf.get_pixbuf()
         self.set_size_request(pixbuf.get_width(), pixbuf.get_height())
         
         # Connect expose signal.
@@ -55,7 +55,7 @@ class ImageBox(gtk.EventBox):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        pixbuf = ui_theme.get_dynamic_pixbuf(self.image_path).get_pixbuf()
+        pixbuf = self.image_dpixbuf.get_pixbuf()
         
         # Draw.
         draw_pixbuf(cr, pixbuf, rect.x, rect.y)
@@ -70,13 +70,13 @@ gobject.type_register(ImageBox)
 class TextBox(gtk.EventBox):
     '''Box just contain text.'''
 	
-    def __init__(self, text, color_name):
+    def __init__(self, text, label_dcolor):
         '''Init text box.'''
         # Init.
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
         self.text = text
-        self.color_name = color_name
+        self.label_dcolor = label_dcolor
         
         # Request size.
         (font_width, font_height) = get_content_size(text, DEFAULT_FONT_SIZE)
@@ -93,7 +93,7 @@ class TextBox(gtk.EventBox):
         
         # Draw text.
         draw_font(cr, self.text, DEFAULT_FONT_SIZE, 
-                  ui_theme.get_dynamic_color(self.color_name).get_color(),
+                  self.label_dcolor.get_color(),
                   rect.x, rect.y, rect.width, rect.height)
         
         # Propagate expose.

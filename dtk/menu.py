@@ -70,11 +70,11 @@ class Menu(object):
         
         for item in items:
             if item:
-                (item_icon, item_content, item_callback) = item
-                if item_icon:
+                (item_dpixbuf, item_content, item_callback) = item
+                if item_dpixbuf:
                     have_icon = True
-                    icon_width = ui_theme.get_dynamic_pixbuf(item_icon).get_pixbuf().get_width()
-                    icon_height = ui_theme.get_dynamic_pixbuf(item_icon).get_pixbuf().get_height()
+                    icon_width = item_dpixbuf.get_pixbuf().get_width()
+                    icon_height = item_dpixbuf.get_pixbuf().get_height()
                     break
                 
         return (have_icon, icon_width, icon_height)
@@ -128,11 +128,11 @@ class MenuItem(object):
     def create_menu_item(self):
         '''Create menu item.'''
         # Get item information.
-        (item_icon, item_content, item_callback) = self.item
+        (item_dpixbuf, item_content, item_callback) = self.item
         
         # Calcuate content offset.
         self.content_offset = 0
-        if item_icon == None and self.is_have_icon:
+        if item_dpixbuf == None and self.is_have_icon:
             self.content_offset = self.icon_width
             
         # Create button.
@@ -149,7 +149,7 @@ class MenuItem(object):
         self.item_box.connect(
             "expose-event", 
             lambda w, e: self.expose_menu_item(
-                w, e, item_icon, item_content))
+                w, e, item_dpixbuf, item_content))
         
         # Wrap menu aciton.
         self.item_box.connect("clicked", lambda w: self.wrap_menu_clicked_action(w, item_callback))        
@@ -163,7 +163,7 @@ class MenuItem(object):
             if result:
                 self.hide_callback()
             
-    def expose_menu_item(self, widget, event, item_icon, item_content):
+    def expose_menu_item(self, widget, event, item_dpixbuf, item_content):
         '''Expose menu item.'''
         # Init.
         cr = widget.window.cairo_create()
@@ -183,8 +183,8 @@ class MenuItem(object):
         # Draw item icon.
         pixbuf = None
         pixbuf_width = 0
-        if item_icon:
-            pixbuf = ui_theme.get_dynamic_pixbuf(item_icon).get_pixbuf()
+        if item_dpixbuf:
+            pixbuf = item_dpixbuf.get_pixbuf()
             pixbuf_width += pixbuf.get_width()
             draw_pixbuf(cr, pixbuf, rect.x + self.item_padding_x, rect.y + (rect.height - pixbuf.get_height()) / 2)
             

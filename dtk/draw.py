@@ -146,63 +146,6 @@ def draw_window_rectangle(cr, sx, sy, ex, ey, r):
     # Restore antialias.
     cr.set_antialias(antialias)
         
-def draw_window_frame(cr, rect, radius=WINDOW_RADIUS, draw_frame=True, draw_frame_light=True):
-    '''Draw window frame.'''
-    # Draw frame light.
-    if draw_frame_light:
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_dynamic_alpha_color("frameLight").get_color_info()))
-        cr.set_operator(cairo.OPERATOR_OVER)
-        draw_round_rectangle(cr, 1, 1, rect.width - 2, rect.height - 2, radius)
-        cr.stroke()
-    
-    # Draw frame.
-    if draw_frame:
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_dynamic_alpha_color("frame").get_color_info()))
-        cr.set_operator(cairo.OPERATOR_OVER)
-        draw_round_rectangle(cr, 0, 0, rect.width, rect.height, radius)
-        cr.stroke()
-        
-def draw_window_background(widget, background_path, alpha=0.0, mask_dcolor="windowMask"):
-    '''Draw expose background.'''
-    widget.connect_after("expose-event", lambda w, e: expose_window_background(w, e, background_path, alpha, mask_dcolor))
-    
-def expose_window_background(widget, event, background_path, alpha, mask_dcolor):
-    '''Expose background.'''
-    # Init.
-    cr = widget.window.cairo_create()
-    pixbuf = ui_theme.get_dynamic_pixbuf(background_path).get_pixbuf()
-    rect = widget.allocation
-    
-    # Clear color to transparent window.
-    cr.set_source_rgba(0.0, 0.0, 0.0, 0.0)
-    cr.set_operator(cairo.OPERATOR_SOURCE)
-    cr.paint()
-    
-    # Draw background.
-    draw_pixbuf(cr, pixbuf, rect.x, rect.y, 0.8)
-    
-    # Draw mask.
-    cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_dynamic_color(mask_dcolor).get_color()))
-    cr.rectangle(0, 0, rect.width, rect.height)    
-    cr.paint_with_alpha(alpha)
-    
-    # Draw frame light.
-    cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_dynamic_alpha_color("frameLight").get_color_info()))
-    cr.set_operator(cairo.OPERATOR_OVER)
-    draw_round_rectangle(cr, 1, 1, rect.width - 2, rect.height - 2, WINDOW_RADIUS)
-    cr.stroke()
-    
-    # Draw frame.
-    cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_dynamic_alpha_color("frame").get_color_info()))
-    cr.set_operator(cairo.OPERATOR_OVER)
-    draw_round_rectangle(cr, 0, 0, rect.width, rect.height, WINDOW_RADIUS)
-    cr.stroke()
-    
-    # Propagate expose.
-    propagate_expose(widget, event)
-    
-    return True
-
 def draw_font(cr, content, font_size, font_color, x, y, width, height, x_align=ALIGN_MIDDLE, y_align=ALIGN_MIDDLE):
     '''Draw font.'''
     # Set font face.

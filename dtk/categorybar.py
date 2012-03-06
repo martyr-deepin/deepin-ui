@@ -65,9 +65,9 @@ class Categorybar(object):
     def get_icon_width(self, items):
         '''Get icon width.'''
         icon_width = 0
-        for (icon_path, content, _) in items:
-            if icon_path:
-                icon_width = ui_theme.get_dynamic_pixbuf(icon_path).get_pixbuf().get_width()
+        for (icon_dpixbuf, content, _) in items:
+            if icon_dpixbuf:
+                icon_width = icon_dpixbuf.get_pixbuf().get_width()
                 break
             
         return icon_width    
@@ -86,7 +86,7 @@ class CategoryItem(gtk.Button):
         self.get_index = get_index
         self.padding_left = padding_left
         self.padding_right = padding_right
-        (self.icon_path, self.content, clicked_callback) = item
+        (self.icon_dpixbuf, self.content, clicked_callback) = item
         (content_width, font_height) = get_content_size(self.content, self.font_size)
         
         # Init item button.
@@ -144,7 +144,7 @@ class CategoryItem(gtk.Button):
             font_color = ui_theme.get_dynamic_color("categorySelectItem").get_color()
             
         # Draw navigate item.
-        category_item_pixbuf = ui_theme.get_dynamic_pixbuf(self.icon_path).get_pixbuf()
+        category_item_pixbuf = self.icon_dpixbuf.get_pixbuf()
         draw_pixbuf(
             cr, category_item_pixbuf, 
             rect.x + self.padding_left,

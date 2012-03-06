@@ -139,14 +139,10 @@ class Application(object):
             -1, -1, -1, -1, -1, -1, -1, -1
             )
 
-    def set_icon(self, icon_path):
+    def set_icon(self, icon_dpixbuf):
         '''Set icon.'''
-        gtk.window_set_default_icon(ui_theme.get_dynamic_pixbuf(icon_path).get_pixbuf())
+        gtk.window_set_default_icon(icon_dpixbuf.get_pixbuf())
         
-    def set_background(self, background_path):
-        '''Set background path.'''
-        draw_window_background(self.window, background_path)    
-    
     def destroy(self, widget, data=None):
         '''Destroy main window.'''
         gtk.main_quit()

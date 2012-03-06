@@ -117,50 +117,66 @@ gobject.type_register(Button)
 class ImageButton(gtk.Button):
     '''Image button.'''
 	
-    def __init__(self, content, sub_dir="button", icon_path_prefix="button", scale_x=False):
+    def __init__(self, content, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x=False):
         '''Init font button.'''
         gtk.Button.__init__(self)
-        draw_button(self, sub_dir, icon_path_prefix, scale_x, content)
+        draw_button(self, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x, content)
         
 gobject.type_register(ImageButton)
 
 class ThemeButton(gtk.Button):
     '''Theme button.'''
 	
-    def __init__(self, sub_dir="button", icon_path_prefix="window_theme"):
+    def __init__(self):
         '''Init theme button.'''
         gtk.Button.__init__(self)
-        draw_button(self, sub_dir, icon_path_prefix)
+        draw_button(
+            self, 
+            ui_theme.get_dynamic_pixbuf("button/window_theme_normal.png"),
+            ui_theme.get_dynamic_pixbuf("button/window_theme_hover.png"),
+            ui_theme.get_dynamic_pixbuf("button/window_theme_press.png"))
         
 gobject.type_register(ThemeButton)
 
 class MenuButton(gtk.Button):
     '''Menu button.'''
 	
-    def __init__(self, sub_dir="button", icon_path_prefix="window_menu"):
+    def __init__(self):
         '''Init menu button.'''
         gtk.Button.__init__(self)
-        draw_button(self, sub_dir, icon_path_prefix)
+        draw_button(
+            self, 
+            ui_theme.get_dynamic_pixbuf("button/window_menu_normal.png"),
+            ui_theme.get_dynamic_pixbuf("button/window_menu_hover.png"),
+            ui_theme.get_dynamic_pixbuf("button/window_menu_press.png"))
         
 gobject.type_register(MenuButton)
 
 class MinButton(gtk.Button):
     '''Min button.'''
 	
-    def __init__(self, sub_dir="button", icon_path_prefix="window_min"):
+    def __init__(self):
         '''Init min button.'''
         gtk.Button.__init__(self)
-        draw_button(self, sub_dir, icon_path_prefix)
+        draw_button(
+            self, 
+            ui_theme.get_dynamic_pixbuf("button/window_min_normal.png"),
+            ui_theme.get_dynamic_pixbuf("button/window_min_hover.png"),
+            ui_theme.get_dynamic_pixbuf("button/window_min_press.png"))
         
 gobject.type_register(MinButton)
 
 class CloseButton(gtk.Button):
     '''Close button.'''
 	
-    def __init__(self, sub_dir="button", icon_path_prefix="window_close"):
+    def __init__(self):
         '''Init close button.'''
         gtk.Button.__init__(self)
-        draw_button(self, sub_dir, icon_path_prefix)
+        draw_button(
+            self, 
+            ui_theme.get_dynamic_pixbuf("button/window_close_normal.png"),
+            ui_theme.get_dynamic_pixbuf("button/window_close_hover.png"),
+            ui_theme.get_dynamic_pixbuf("button/window_close_press.png"))
         
 gobject.type_register(CloseButton)
 
@@ -174,14 +190,10 @@ class MaxButton(gtk.Button):
         
 gobject.type_register(MaxButton)
 
-def draw_button(widget, sub_dir, icon_path_prefix, scale_x=False,
-                button_label=None, font_size=DEFAULT_FONT_SIZE, label_dcolor="buttonDefaultFont"):
+def draw_button(widget, normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
+                scale_x=False, button_label=None, font_size=DEFAULT_FONT_SIZE, 
+                label_dcolor=ui_theme.get_dynamic_color("buttonDefaultFont")):
     '''Create button.'''
-    # Get dynamic pixbuf.
-    normal_dpixbuf = ui_theme.get_dynamic_pixbuf("%s/%s_normal.png" % (sub_dir, icon_path_prefix))
-    hover_dpixbuf = ui_theme.get_dynamic_pixbuf("%s/%s_hover.png" % (sub_dir, icon_path_prefix))
-    press_dpixbuf = ui_theme.get_dynamic_pixbuf("%s/%s_press.png" % (sub_dir, icon_path_prefix))
-    
     # Init request size.
     if scale_x:
         request_width = get_content_size(button_label, font_size)[0]
@@ -232,7 +244,7 @@ def expose_button(widget, event,
     # Draw font.
     if button_label:
         draw_font(cr, button_label, font_size, 
-                  ui_theme.get_dynamic_color(label_dcolor).get_color(),
+                  label_dcolor.get_color(),
                   rect.x, rect.y, rect.width, rect.height)
 
     # Propagate expose to children.
