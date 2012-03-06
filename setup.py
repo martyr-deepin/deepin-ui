@@ -26,5 +26,5 @@ setup(name='dtk',
       download_url="git://github.com/manateelazycat/deepin-ui-toolkit.git",
       platforms = ['Linux'],
       packages = ['dtk'],
-      data_files = list_files("theme", "theme"),)
+      )
 
