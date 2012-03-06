@@ -34,6 +34,7 @@ class Titlebar(object):
     def __init__(self, 
                  button_mask=["theme", "menu", "max", "min", "close"],
                  icon_dpixbuf=None,
+                 app_name=None,
                  title=None,
                  ):
         '''Init titlebar.'''
@@ -59,15 +60,24 @@ class Titlebar(object):
             self.icon_align.add(self.icon_box)
             self.left_box.pack_start(self.icon_align, False, False)
                     
+        # Add app name.
+        if app_name != None:
+            self.app_name_box = TextBox(app_name, ui_theme.get_dynamic_color("titlebar"))
+            self.app_name_align = gtk.Alignment()
+            self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
+            self.app_name_align.set_padding(0, 0, 0, 0)
+            self.app_name_align.add(self.app_name_box)
+            self.left_box.pack_start(self.app_name_align, False, False)
+        
         # Add title.
         if title != None:
-            self.title_box = TextBox(title, ui_theme.get_dynamic_color("title"))
+            self.title_box = TextBox(title, ui_theme.get_dynamic_color("titlebar"))
             self.title_align = gtk.Alignment()
             self.title_align.set(0.5, 0.5, 0.0, 0.0)
             self.title_align.set_padding(0, 0, 0, 0)
             self.title_align.add(self.title_box)
-            self.left_box.pack_start(self.title_align, False, False)
-        
+            self.left_box.pack_start(self.title_align, True, True)
+            
         # Add button box.
         self.button_box = gtk.HBox()
         self.button_align = gtk.Alignment()
@@ -102,6 +112,10 @@ class Titlebar(object):
         
         # Show.
         self.box.show_all()
+        
+    def change_title(self, title):
+        '''Change title.'''
+        self.title_box.change_text(title)
         
 if __name__ == "__main__":
     

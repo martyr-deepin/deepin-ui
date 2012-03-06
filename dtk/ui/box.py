@@ -85,6 +85,11 @@ class TextBox(gtk.EventBox):
         # Connect expose signal.
         self.connect("expose-event", self.expose_text_box)
         
+    def change_text(self, text):
+        '''Change text.'''
+        self.text = text
+        self.queue_draw()
+        
     def expose_text_box(self, widget, event):
         '''Expose text box.'''
         # Init.

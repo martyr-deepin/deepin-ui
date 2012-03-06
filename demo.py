@@ -35,7 +35,7 @@ from dtk.ui.popup_window import *
 from dtk.ui.frame import *
 from dtk.ui.dragbar import *
 
-app_theme = Theme(os.path.join(os.path.dirname(os.path.realpath(__file__)), "app_theme"))
+app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
 
 if __name__ == "__main__":
     # Init application.
@@ -51,7 +51,8 @@ if __name__ == "__main__":
     application.add_titlebar(
         ["theme", "menu", "max", "min", "close"], 
         ui_theme.get_dynamic_pixbuf("title.png"), 
-        "深度图形库")
+        "深度图形库",
+        "/home/andy/deepin-ui/demo.py")
     
     # Draw application background.
     # application.set_background(BACKGROUND_IMAGE)
