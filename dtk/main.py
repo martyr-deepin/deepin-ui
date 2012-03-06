@@ -44,7 +44,7 @@ def test(viewport):
 
 if __name__ == "__main__":
     # Init application.
-    application = Application()
+    application = Application("demo")
     
     # Set application default size.
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)

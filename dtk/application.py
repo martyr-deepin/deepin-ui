@@ -33,21 +33,30 @@ import sys
 from window import *
 
 class UniqueService(dbus.service.Object):
-    def __init__(self, start_callback):
-        bus_name = dbus.service.BusName(APPLICATION_DBUS_NAME, bus=dbus.SessionBus())
-        dbus.service.Object.__init__(self, bus_name, APPLICATION_OBJECT_NAME)
+    def __init__(self, app_dbus_name, app_service_name, app_object_name, start_callback):
+        # Init.
+        bus_name = dbus.service.BusName(app_dbus_name, bus=dbus.SessionBus())
+        dbus.service.Object.__init__(self, bus_name, app_object_name)
         self.start_callback = start_callback
- 
-    @dbus.service.method(dbus_interface=APPLICATION_SERVICE_NAME)
-    def show_window(self):
-        self.start_callback()
+        
+        # Define DBus method.
+        def show_window(self):
+            self.start_callback()
+            
+        # Below code export dbus method dyanmically.
+        # Don't use @dbus.service.method !
+        setattr(UniqueService, 'show_window', dbus.service.method(app_service_name)(show_window))
 
 class Application(object):
     '''Application.'''
 	
-    def __init__(self, check_unique=True):
+    def __init__(self, app_name, check_unique=True):
         '''Init application.'''
         # Init.
+        self.app_name = app_name
+        self.app_dbus_name = "com.deepin." + self.app_name
+        self.app_service_name = "com.deepin." + self.app_name
+        self.app_object_name = "/com/deepin/" + self.app_name
         self.check_unique = check_unique
         
         # Check unique when option `check_unique` is enable.
@@ -55,9 +64,9 @@ class Application(object):
             # Init dbus. 
             DBusGMainLoop(set_as_default=True)
             bus = dbus.SessionBus()
-            if bus.request_name(APPLICATION_DBUS_NAME) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
+            if bus.request_name(self.app_dbus_name) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
                 # Call 'show_window` method when have exist instance.
-                method = bus.get_object(APPLICATION_SERVICE_NAME, APPLICATION_OBJECT_NAME).get_dbus_method("show_window")
+                method = bus.get_object(self.app_service_name, self.app_object_name).get_dbus_method("show_window")
                 method()
                 
                 # Exit program.
@@ -147,7 +156,11 @@ class Application(object):
         # Init DBus when option `check_unique` is enable.
         if self.check_unique:
             DBusGMainLoop(set_as_default=True)
-            UniqueService(self.raise_to_top)
+            UniqueService(
+                self.app_dbus_name,
+                self.app_service_name,
+                self.app_object_name,
+                self.raise_to_top)
         
         # Show window.
         self.window.show_all()

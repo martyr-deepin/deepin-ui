@@ -22,11 +22,6 @@
 
 import gtk
 
-APPLICATION_NAME = "UIToolkit" # application name
-APPLICATION_DBUS_NAME = "com.deepin." + APPLICATION_NAME
-APPLICATION_SERVICE_NAME = APPLICATION_DBUS_NAME
-APPLICATION_OBJECT_NAME = "/com/deepin/" + APPLICATION_NAME
-
 WINDOW_RADIUS = 6                      # window radius
 FRAME_RADIUS = 6                       # frame radius
 MENU_ITEM_RADIUS = 2                   # menu item radius
