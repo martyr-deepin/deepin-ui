@@ -40,6 +40,9 @@ case "$1" in
     "pushtag" )
         git push git@github.com:$2/deepin-software-center.git --tag
         ;;
+    "build"  )
+        dh clean && debuild
+        ;;
     * ) 
         echo "Help"
         echo "./repos.sh record         => record patch"
@@ -55,5 +58,6 @@ case "$1" in
         echo "./repos.sh show_remote    => show remote"
         echo "./repos.sh tag            => tag version"
         echo "./repos.sh pushtag        => push tag"
+        echo "./repos.sh build          => build deb package"
         ;;
     esac
