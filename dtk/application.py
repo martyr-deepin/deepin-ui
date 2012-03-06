@@ -20,17 +20,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from menu import *
 from constant import *
-from titlebar import Titlebar
+from dbus.mainloop.glib import DBusGMainLoop
 from draw import *
+from menu import *
 from threads import *
-import gtk
+from titlebar import Titlebar
+from window import *
 import dbus
 import dbus.service
-from dbus.mainloop.glib import DBusGMainLoop
+import gtk
 import sys
-from window import *
 
 class UniqueService(dbus.service.Object):
     def __init__(self, app_dbus_name, app_service_name, app_object_name, start_callback):

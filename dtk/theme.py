@@ -27,8 +27,9 @@ import os
 class DynamicTreeView(object):
     '''Dynamic tree view.'''
 	
-    def __init__(self, parent, liststore, background_dcolor, select_dcolor):
+    def __init__(self, get_theme_ticker, parent, liststore, background_dcolor, select_dcolor):
         '''Init dynamic tree view.'''
+        self.get_theme_ticker = get_theme_ticker
         self.tree_view = gtk.TreeView(liststore)
         self.background_dcolor = background_dcolor
         self.select_dcolor = select_dcolor
@@ -46,8 +47,8 @@ class DynamicTreeView(object):
         
     def expose_callback(self, widget, event):
         '''Expose callback.'''
-        if self.ticker != ui_theme.ticker:
-            self.ticker = ui_theme.ticker
+        if self.ticker != self.get_theme_ticker():
+            self.ticker = self.get_theme_ticker()
             self.update_color()
             
         return False
@@ -55,8 +56,9 @@ class DynamicTreeView(object):
 class DynamicTextView(object):
     '''Dynamic text view.'''
 	
-    def __init__(self, parent, background_dcolor, foreground_dcolor, background_dpixbuf=None):
+    def __init__(self, get_theme_ticker, parent, background_dcolor, foreground_dcolor, background_dpixbuf=None):
         '''Init dynamic text view.'''
+        self.get_theme_ticker = get_theme_ticker
         self.text_view = gtk.TextView()
         self.background_dcolor = background_dcolor
         self.foreground_dcolor = foreground_dcolor
@@ -83,8 +85,8 @@ class DynamicTextView(object):
         
     def expose_callback(self, widget, event):
         '''Expose callback.'''
-        if self.ticker != ui_theme.ticker:
-            self.ticker = ui_theme.ticker
+        if self.ticker != self.get_theme_ticker():
+            self.ticker = self.get_theme_ticker()
             self.update_color()
             
         return False
@@ -175,8 +177,9 @@ class DynamicPixbufAnimation(object):
 class DynamicImage(object):
     '''Dynamic image.'''
 	
-    def __init__(self, parent, dpixbuf_animation):
+    def __init__(self, get_theme_ticker, parent, dpixbuf_animation):
         '''Init dynamic image.'''
+        self.get_theme_ticker = get_theme_ticker
         self.dpixbuf_animation = dpixbuf_animation
         self.image = gtk.Image()
         self.ticker = 0
@@ -192,8 +195,8 @@ class DynamicImage(object):
         
     def expose_callback(self, widget, event):
         '''Expose callback.'''
-        if self.ticker != ui_theme.ticker:
-            self.ticker = ui_theme.ticker
+        if self.ticker != self.get_theme_ticker():
+            self.ticker = self.get_theme_ticker()
             self.update_animation()
             
         return False
@@ -294,6 +297,10 @@ class Theme(object):
     def get_dynamic_shadow_color(self, color_name):
         '''Get dynamic shadow color.'''
         return self.shadow_color_dict[color_name]    
+    
+    def get_ticker(self):
+        '''Get ticker.'''
+        return self.ticker    
     
     def change_theme(self, new_theme_name):
         '''Change ui_theme.'''
