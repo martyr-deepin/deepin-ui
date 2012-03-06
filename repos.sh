@@ -41,7 +41,7 @@ case "$1" in
         git push git@github.com:$2/deepin-software-center.git --tag
         ;;
     "build"  )
-        dh clean && debuild
+        debuild && dh clean
         ;;
     * ) 
         echo "Help"
