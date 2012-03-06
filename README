@@ -1,0 +1,4 @@
+Deepin UI Toolkit for linux deepin.
+
+* Install:
+  sudo python setup.py install
