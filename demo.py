@@ -35,6 +35,8 @@ from dtk.ui.popup_window import *
 from dtk.ui.frame import *
 from dtk.ui.dragbar import *
 
+app_theme = Theme(os.path.join(os.path.dirname(os.path.realpath(__file__)), "app_theme"))
+
 if __name__ == "__main__":
     # Init application.
     application = Application("demo")
@@ -99,15 +101,15 @@ if __name__ == "__main__":
     category_box = gtk.HBox()
     body_box.add(category_box)
     categorybar = Categorybar([
-            (ui_theme.get_dynamic_pixbuf("categorybar/word.png"), "测试分类", lambda : Tooltip("测试分类", 600, 400)),
-            (ui_theme.get_dynamic_pixbuf("categorybar/win.png"), "测试分类", None),
-            (ui_theme.get_dynamic_pixbuf("categorybar/web.png"), "测试分类", None),
-            (ui_theme.get_dynamic_pixbuf("categorybar/professional.png"), "测试分类", None),
-            (ui_theme.get_dynamic_pixbuf("categorybar/other.png"), "测试分类", None),
-            (ui_theme.get_dynamic_pixbuf("categorybar/multimedia.png"), "测试分类", None),
-            (ui_theme.get_dynamic_pixbuf("categorybar/graphics.png"), "测试分类", None),
-            (ui_theme.get_dynamic_pixbuf("categorybar/game.png"), "测试分类", None),
-            (ui_theme.get_dynamic_pixbuf("categorybar/driver.png"), "测试分类", None),
+            (app_theme.get_dynamic_pixbuf("categorybar/word.png"), "测试分类", lambda : Tooltip("测试分类", 600, 400)),
+            (app_theme.get_dynamic_pixbuf("categorybar/win.png"), "测试分类", None),
+            (app_theme.get_dynamic_pixbuf("categorybar/web.png"), "测试分类", None),
+            (app_theme.get_dynamic_pixbuf("categorybar/professional.png"), "测试分类", None),
+            (app_theme.get_dynamic_pixbuf("categorybar/other.png"), "测试分类", None),
+            (app_theme.get_dynamic_pixbuf("categorybar/multimedia.png"), "测试分类", None),
+            (app_theme.get_dynamic_pixbuf("categorybar/graphics.png"), "测试分类", None),
+            (app_theme.get_dynamic_pixbuf("categorybar/game.png"), "测试分类", None),
+            (app_theme.get_dynamic_pixbuf("categorybar/driver.png"), "测试分类", None),
             ])
     category_box.pack_start(categorybar.category_event_box, False)
     
