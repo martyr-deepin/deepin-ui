@@ -20,27 +20,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from application import Application
-from constant import *
-from menu import *
-from navigatebar import *
-from statusbar import *
-from categorybar import *
-from scrolled_window import *
-from box import *
-from button import *
-from listview import *
-from tooltip import *
-from popup_window import *
-from frame import *
-from dragbar import *
-
-def test(viewport):
-    '''docs'''
-    print viewport.get_view_window()
-    print viewport.get_bin_window()
-    view_window = viewport.get_view_window()
-    view_window.set_back_pixmap(None, True)
+from dtk.ui.application import Application
+from dtk.ui.constant import *
+from dtk.ui.menu import *
+from dtk.ui.navigatebar import *
+from dtk.ui.statusbar import *
+from dtk.ui.categorybar import *
+from dtk.ui.scrolled_window import *
+from dtk.ui.box import *
+from dtk.ui.button import *
+from dtk.ui.listview import *
+from dtk.ui.tooltip import *
+from dtk.ui.popup_window import *
+from dtk.ui.frame import *
+from dtk.ui.dragbar import *
 
 if __name__ == "__main__":
     # Init application.
