@@ -69,7 +69,7 @@ class Window(gtk.Window):
         '''Expose window background.'''
         # Init.
         cr = widget.window.cairo_create()
-        pixbuf = ui_theme.get_dynamic_pixbuf(BACKGROUND_IMAGE).get_pixbuf()
+        pixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE).get_pixbuf()
         rect = widget.allocation
         
         # Clear color to transparent window.
@@ -98,7 +98,7 @@ class Window(gtk.Window):
             
             # Draw mask.
             if self.window_mask:
-                cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_dynamic_alpha_color(self.window_mask).get_color_info()))
+                cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color(self.window_mask).get_color_info()))
                 cr.rectangle(0, 0, rect.width, rect.height)    
                 cr.fill()
         
@@ -116,7 +116,7 @@ class Window(gtk.Window):
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             
             # Get border width.
-            color_infos = ui_theme.get_dynamic_shadow_color("windowShadow").get_color_info()
+            color_infos = ui_theme.get_shadow_color("windowShadow").get_color_info()
             
             with cairo_state(cr):
                 # Clip four corner.
@@ -167,7 +167,7 @@ class Window(gtk.Window):
         '''Expose window frame.'''
         # Init.
         cr = widget.window.cairo_create()
-        pixbuf = ui_theme.get_dynamic_pixbuf(BACKGROUND_IMAGE).get_pixbuf()
+        pixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE).get_pixbuf()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
@@ -184,7 +184,7 @@ class Window(gtk.Window):
         cr.set_antialias(cairo.ANTIALIAS_NONE)
         
         # Draw frame.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_dynamic_alpha_color("frame").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frame").get_color_info()))
         
         cr.rectangle(x + 2, y, w - 4, 1)         # top side
         cr.rectangle(x + w - 1, y + 2, 1, h - 4) # right side
@@ -194,7 +194,7 @@ class Window(gtk.Window):
         cr.fill()
         
         # Draw frame inner dot.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_dynamic_alpha_color("frame").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frame").get_color_info()))
         
         cr.rectangle(x + 1, y + 1, 1, 1)         # top-left inner dot
         cr.rectangle(x + w - 2, y + 1, 1, 1)     # top-right inner dot
@@ -204,7 +204,7 @@ class Window(gtk.Window):
         cr.fill()
 
         # Draw frame outter dot.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_dynamic_alpha_color("frameDot").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameDot").get_color_info()))
         
         cr.rectangle(x + 1, y, 1, 1) # top-left outter dot
         cr.rectangle(x, y + 1, 1, 1)
@@ -221,7 +221,7 @@ class Window(gtk.Window):
         cr.fill()
         
         # Draw frame light.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_dynamic_alpha_color("frameLight").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameLight").get_color_info()))
         
         cr.rectangle(x + 2, y + 1, w - 4, 1)     # top side
         cr.rectangle(x + w - 2, y + 2, 1, h - 4) # right side
@@ -231,7 +231,7 @@ class Window(gtk.Window):
         cr.fill()
         
         # Draw frame light dot.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_dynamic_alpha_color("frameLightDot").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameLightDot").get_color_info()))
         
         cr.rectangle(x + 2, y + 2, 1, 1)         # top-left light dot
         cr.rectangle(x + w - 3, y + 2, 1, 1)     # top-right light dot

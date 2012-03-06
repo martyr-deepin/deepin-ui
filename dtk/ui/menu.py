@@ -121,7 +121,7 @@ class MenuItem(object):
     def create_separator_item(self):
         '''Create separator item.'''
         self.item_box = HSeparator(
-            ui_theme.get_dynamic_shadow_color("hSeparator").get_color_info(),
+            ui_theme.get_shadow_color("hSeparator").get_color_info(),
             self.item_padding_x, 
             self.item_padding_y)
         
@@ -168,17 +168,17 @@ class MenuItem(object):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        font_color = ui_theme.get_dynamic_color("menuFont").get_color()
+        font_color = ui_theme.get_color("menuFont").get_color()
         
         # Draw select effect.
         if widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
             # Draw background.
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                         ui_theme.get_dynamic_shadow_color("menuItemSelect").get_color_info(),
+                         ui_theme.get_shadow_color("menuItemSelect").get_color_info(),
                          MENU_ITEM_RADIUS)
             
             # Set font color.
-            font_color = ui_theme.get_dynamic_color("menuSelectFont").get_color()
+            font_color = ui_theme.get_color("menuSelectFont").get_color()
             
         # Draw item icon.
         pixbuf = None

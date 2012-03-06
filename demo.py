@@ -45,12 +45,12 @@ if __name__ == "__main__":
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
     
     # Set application icon.
-    application.set_icon(ui_theme.get_dynamic_pixbuf("icon.ico"))
+    application.set_icon(ui_theme.get_pixbuf("icon.ico"))
     
     # Add titlebar.
     application.add_titlebar(
         ["theme", "menu", "max", "min", "close"], 
-        ui_theme.get_dynamic_pixbuf("title.png"), 
+        ui_theme.get_pixbuf("title.png"), 
         "深度图形库",
         "/home/andy/deepin-ui/demo.py")
     
@@ -61,29 +61,29 @@ if __name__ == "__main__":
     
     # Init menu callback.
     menu = Menu(
-        [(ui_theme.get_dynamic_pixbuf("menu/menuItem1.png"), "测试测试测试1", lambda : PopupWindow(application.window)),
-         (ui_theme.get_dynamic_pixbuf("menu/menuItem2.png"), "测试测试测试2", None),
-         (ui_theme.get_dynamic_pixbuf("menu/menuItem3.png"), "测试测试测试3", None),
+        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "测试测试测试1", lambda : PopupWindow(application.window)),
+         (ui_theme.get_pixbuf("menu/menuItem2.png"), "测试测试测试2", None),
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "测试测试测试3", None),
          None,
          (None, "测试测试测试", None),
          (None, "测试测试测试", None),
          None,
-         (ui_theme.get_dynamic_pixbuf("menu/menuItem6.png"), "测试测试测试4", None),
-         (ui_theme.get_dynamic_pixbuf("menu/menuItem7.png"), "测试测试测试5", None),
-         (ui_theme.get_dynamic_pixbuf("menu/menuItem8.png"), "测试测试测试6", None),
+         (ui_theme.get_pixbuf("menu/menuItem6.png"), "测试测试测试4", None),
+         (ui_theme.get_pixbuf("menu/menuItem7.png"), "测试测试测试5", None),
+         (ui_theme.get_pixbuf("menu/menuItem8.png"), "测试测试测试6", None),
          ])
     application.set_menu_callback(lambda button: menu.show(get_widget_root_coordinate(button)))
     
     # Add navigatebar.
     navigatebar = Navigatebar(
-        [(ui_theme.get_dynamic_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
-         (ui_theme.get_dynamic_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
-         (ui_theme.get_dynamic_pixbuf("navigatebar/nav_update.png"), "导航3", None),
-         (ui_theme.get_dynamic_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
-         (ui_theme.get_dynamic_pixbuf("navigatebar/nav_download.png"), "导航5", None),
-         (ui_theme.get_dynamic_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
-         (ui_theme.get_dynamic_pixbuf("navigatebar/nav_update.png"), "导航7", None),
-         (ui_theme.get_dynamic_pixbuf("navigatebar/nav_uninstall.png"), "导航8", None),
+        [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航8", None),
          ]
         )
     application.main_box.pack_start(navigatebar.nav_event_box, False)
@@ -102,15 +102,15 @@ if __name__ == "__main__":
     category_box = gtk.HBox()
     body_box.add(category_box)
     categorybar = Categorybar([
-            (app_theme.get_dynamic_pixbuf("categorybar/word.png"), "测试分类", lambda : Tooltip("测试分类", 600, 400)),
-            (app_theme.get_dynamic_pixbuf("categorybar/win.png"), "测试分类", None),
-            (app_theme.get_dynamic_pixbuf("categorybar/web.png"), "测试分类", None),
-            (app_theme.get_dynamic_pixbuf("categorybar/professional.png"), "测试分类", None),
-            (app_theme.get_dynamic_pixbuf("categorybar/other.png"), "测试分类", None),
-            (app_theme.get_dynamic_pixbuf("categorybar/multimedia.png"), "测试分类", None),
-            (app_theme.get_dynamic_pixbuf("categorybar/graphics.png"), "测试分类", None),
-            (app_theme.get_dynamic_pixbuf("categorybar/game.png"), "测试分类", None),
-            (app_theme.get_dynamic_pixbuf("categorybar/driver.png"), "测试分类", None),
+            (app_theme.get_pixbuf("categorybar/word.png"), "测试分类", lambda : Tooltip("测试分类", 600, 400)),
+            (app_theme.get_pixbuf("categorybar/win.png"), "测试分类", None),
+            (app_theme.get_pixbuf("categorybar/web.png"), "测试分类", None),
+            (app_theme.get_pixbuf("categorybar/professional.png"), "测试分类", None),
+            (app_theme.get_pixbuf("categorybar/other.png"), "测试分类", None),
+            (app_theme.get_pixbuf("categorybar/multimedia.png"), "测试分类", None),
+            (app_theme.get_pixbuf("categorybar/graphics.png"), "测试分类", None),
+            (app_theme.get_pixbuf("categorybar/game.png"), "测试分类", None),
+            (app_theme.get_pixbuf("categorybar/driver.png"), "测试分类", None),
             ])
     category_box.pack_start(categorybar.category_event_box, False)
     

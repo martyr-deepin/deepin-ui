@@ -47,7 +47,7 @@ class Button(gtk.Button):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        top_left = ui_theme.get_dynamic_pixbuf("button.png").get_pixbuf()
+        top_left = ui_theme.get_pixbuf("button.png").get_pixbuf()
         top_right = top_left.rotate_simple(90)
         bottom_right = top_left.rotate_simple(180)
         bottom_left = top_left.rotate_simple(270)
@@ -61,14 +61,14 @@ class Button(gtk.Button):
             
             # Draw background.
             if widget.state == gtk.STATE_NORMAL:
-                background_color = ui_theme.get_dynamic_shadow_color("buttonBackgroundNormal").get_color_info()
-                border_color = ui_theme.get_dynamic_color("buttonBorderNormal").get_color()
+                background_color = ui_theme.get_shadow_color("buttonBackgroundNormal").get_color_info()
+                border_color = ui_theme.get_color("buttonBorderNormal").get_color()
             elif widget.state == gtk.STATE_PRELIGHT:
-                background_color = ui_theme.get_dynamic_shadow_color("buttonBackgroundPrelight").get_color_info()
-                border_color = ui_theme.get_dynamic_color("buttonBorderPrelight").get_color()
+                background_color = ui_theme.get_shadow_color("buttonBackgroundPrelight").get_color_info()
+                border_color = ui_theme.get_color("buttonBorderPrelight").get_color()
             elif widget.state == gtk.STATE_ACTIVE:
-                background_color = ui_theme.get_dynamic_shadow_color("buttonBackgroundActive").get_color_info()
-                border_color = ui_theme.get_dynamic_color("buttonBorderActive").get_color()
+                background_color = ui_theme.get_shadow_color("buttonBackgroundActive").get_color_info()
+                border_color = ui_theme.get_color("buttonBorderActive").get_color()
             draw_vlinear(cr, x, y, w, h, background_color)    
 
         # Draw button corner.
@@ -107,7 +107,7 @@ class Button(gtk.Button):
         # Draw font.
         if self.label != "":
             draw_font(cr, self.label, DEFAULT_FONT_SIZE, 
-                      ui_theme.get_dynamic_color("buttonFont").get_color(),
+                      ui_theme.get_color("buttonFont").get_color(),
                       x, y, w, h)
         
         return True        
@@ -132,9 +132,9 @@ class ThemeButton(gtk.Button):
         gtk.Button.__init__(self)
         draw_button(
             self, 
-            ui_theme.get_dynamic_pixbuf("button/window_theme_normal.png"),
-            ui_theme.get_dynamic_pixbuf("button/window_theme_hover.png"),
-            ui_theme.get_dynamic_pixbuf("button/window_theme_press.png"))
+            ui_theme.get_pixbuf("button/window_theme_normal.png"),
+            ui_theme.get_pixbuf("button/window_theme_hover.png"),
+            ui_theme.get_pixbuf("button/window_theme_press.png"))
         
 gobject.type_register(ThemeButton)
 
@@ -146,9 +146,9 @@ class MenuButton(gtk.Button):
         gtk.Button.__init__(self)
         draw_button(
             self, 
-            ui_theme.get_dynamic_pixbuf("button/window_menu_normal.png"),
-            ui_theme.get_dynamic_pixbuf("button/window_menu_hover.png"),
-            ui_theme.get_dynamic_pixbuf("button/window_menu_press.png"))
+            ui_theme.get_pixbuf("button/window_menu_normal.png"),
+            ui_theme.get_pixbuf("button/window_menu_hover.png"),
+            ui_theme.get_pixbuf("button/window_menu_press.png"))
         
 gobject.type_register(MenuButton)
 
@@ -160,9 +160,9 @@ class MinButton(gtk.Button):
         gtk.Button.__init__(self)
         draw_button(
             self, 
-            ui_theme.get_dynamic_pixbuf("button/window_min_normal.png"),
-            ui_theme.get_dynamic_pixbuf("button/window_min_hover.png"),
-            ui_theme.get_dynamic_pixbuf("button/window_min_press.png"))
+            ui_theme.get_pixbuf("button/window_min_normal.png"),
+            ui_theme.get_pixbuf("button/window_min_hover.png"),
+            ui_theme.get_pixbuf("button/window_min_press.png"))
         
 gobject.type_register(MinButton)
 
@@ -174,9 +174,9 @@ class CloseButton(gtk.Button):
         gtk.Button.__init__(self)
         draw_button(
             self, 
-            ui_theme.get_dynamic_pixbuf("button/window_close_normal.png"),
-            ui_theme.get_dynamic_pixbuf("button/window_close_hover.png"),
-            ui_theme.get_dynamic_pixbuf("button/window_close_press.png"))
+            ui_theme.get_pixbuf("button/window_close_normal.png"),
+            ui_theme.get_pixbuf("button/window_close_hover.png"),
+            ui_theme.get_pixbuf("button/window_close_press.png"))
         
 gobject.type_register(CloseButton)
 
@@ -192,7 +192,7 @@ gobject.type_register(MaxButton)
 
 def draw_button(widget, normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
                 scale_x=False, button_label=None, font_size=DEFAULT_FONT_SIZE, 
-                label_dcolor=ui_theme.get_dynamic_color("buttonDefaultFont")):
+                label_dcolor=ui_theme.get_color("buttonDefaultFont")):
     '''Create button.'''
     # Init request size.
     if scale_x:
@@ -255,7 +255,7 @@ def expose_button(widget, event,
 def draw_max_button(widget, sub_dir, max_path_prefix, unmax_path_prefix):
     '''Create max button.'''
     # Init request size.
-    pixbuf = ui_theme.get_dynamic_pixbuf("%s/%s_normal.png" % (sub_dir, unmax_path_prefix)).get_pixbuf()
+    pixbuf = ui_theme.get_pixbuf("%s/%s_normal.png" % (sub_dir, unmax_path_prefix)).get_pixbuf()
     widget.set_size_request(pixbuf.get_width(), pixbuf.get_height())
     
     # Redraw.
@@ -266,13 +266,13 @@ def expose_max_button(widget, event, sub_dir, max_path_prefix, unmax_path_prefix
     '''Expose function to replace event box's image.'''
     # Get dynamic pixbuf.
     if window_is_max(widget):
-        normal_dpixbuf = ui_theme.get_dynamic_pixbuf("%s/%s_normal.png" % (sub_dir, unmax_path_prefix))
-        hover_dpixbuf = ui_theme.get_dynamic_pixbuf("%s/%s_hover.png" % (sub_dir, unmax_path_prefix))
-        press_dpixbuf = ui_theme.get_dynamic_pixbuf("%s/%s_press.png" % (sub_dir, unmax_path_prefix))
+        normal_dpixbuf = ui_theme.get_pixbuf("%s/%s_normal.png" % (sub_dir, unmax_path_prefix))
+        hover_dpixbuf = ui_theme.get_pixbuf("%s/%s_hover.png" % (sub_dir, unmax_path_prefix))
+        press_dpixbuf = ui_theme.get_pixbuf("%s/%s_press.png" % (sub_dir, unmax_path_prefix))
     else:
-        normal_dpixbuf = ui_theme.get_dynamic_pixbuf("%s/%s_normal.png" % (sub_dir, max_path_prefix))
-        hover_dpixbuf = ui_theme.get_dynamic_pixbuf("%s/%s_hover.png" % (sub_dir, max_path_prefix))
-        press_dpixbuf = ui_theme.get_dynamic_pixbuf("%s/%s_press.png" % (sub_dir, max_path_prefix))
+        normal_dpixbuf = ui_theme.get_pixbuf("%s/%s_normal.png" % (sub_dir, max_path_prefix))
+        hover_dpixbuf = ui_theme.get_pixbuf("%s/%s_hover.png" % (sub_dir, max_path_prefix))
+        press_dpixbuf = ui_theme.get_pixbuf("%s/%s_press.png" % (sub_dir, max_path_prefix))
 
     # Get pixbuf along with button's sate.
     if widget.state == gtk.STATE_NORMAL:

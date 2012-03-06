@@ -55,7 +55,7 @@ class CheckBox(gtk.Button):
         '''Draw checkbox.'''     
         # CheckBox linear.
         if self.motion:
-            draw_vlinear(cr, x, y, w, h, ui_theme.get_dynamic_shadow_color("progressbarBackground").get_color_info())
+            draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("progressbarBackground").get_color_info())
         
         # Checkbox border.
         cr.set_line_width(0.2)

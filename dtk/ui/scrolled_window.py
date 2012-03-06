@@ -40,7 +40,7 @@ class ScrolledWindow(gtk.ScrolledWindow):
         # Draw vertical scrollbar.
         vscrollbar = self.get_vscrollbar()
         vscrollbar.set_size_request(
-            ui_theme.get_dynamic_pixbuf("scrollbar/vscrollbar_bg.png").get_pixbuf().get_width(), 
+            ui_theme.get_pixbuf("scrollbar/vscrollbar_bg.png").get_pixbuf().get_width(), 
             -1)
         vscrollbar.connect("expose-event", self.expose_vscrollbar)
         vscrollbar.connect("value-changed", lambda rang: self.queue_draw())
@@ -49,7 +49,7 @@ class ScrolledWindow(gtk.ScrolledWindow):
         hscrollbar = self.get_hscrollbar()
         hscrollbar.set_size_request(
             -1,
-            ui_theme.get_dynamic_pixbuf("scrollbar/hscrollbar_bg.png").get_pixbuf().get_height(), 
+            ui_theme.get_pixbuf("scrollbar/hscrollbar_bg.png").get_pixbuf().get_height(), 
             )
         hscrollbar.connect("expose-event", self.expose_hscrollbar)
         hscrollbar.connect("value-changed", lambda rang: self.queue_draw())
@@ -69,10 +69,10 @@ class ScrolledWindow(gtk.ScrolledWindow):
             # Init.
             cr = widget.window.cairo_create()
             rect = widget.allocation
-            bg_pixbuf = ui_theme.get_dynamic_pixbuf("scrollbar/hscrollbar_bg.png").get_pixbuf()
-            fg_left_pixbuf = ui_theme.get_dynamic_pixbuf("scrollbar/hscrollbar_fg_left.png").get_pixbuf()
-            fg_middle_pixbuf = ui_theme.get_dynamic_pixbuf("scrollbar/hscrollbar_fg_middle.png").get_pixbuf()
-            fg_right_pixbuf = ui_theme.get_dynamic_pixbuf("scrollbar/hscrollbar_fg_right.png").get_pixbuf()
+            bg_pixbuf = ui_theme.get_pixbuf("scrollbar/hscrollbar_bg.png").get_pixbuf()
+            fg_left_pixbuf = ui_theme.get_pixbuf("scrollbar/hscrollbar_fg_left.png").get_pixbuf()
+            fg_middle_pixbuf = ui_theme.get_pixbuf("scrollbar/hscrollbar_fg_middle.png").get_pixbuf()
+            fg_right_pixbuf = ui_theme.get_pixbuf("scrollbar/hscrollbar_fg_right.png").get_pixbuf()
             value = adjust.get_value()
             page_size = adjust.get_page_size()
             min_width = fg_left_pixbuf.get_width() + fg_middle_pixbuf.get_width() + fg_right_pixbuf.get_width()
@@ -106,10 +106,10 @@ class ScrolledWindow(gtk.ScrolledWindow):
             # Init.
             cr = widget.window.cairo_create()
             rect = widget.allocation
-            bg_pixbuf = ui_theme.get_dynamic_pixbuf("scrollbar/vscrollbar_bg.png").get_pixbuf()
-            fg_top_pixbuf = ui_theme.get_dynamic_pixbuf("scrollbar/vscrollbar_fg_top.png").get_pixbuf()
-            fg_middle_pixbuf = ui_theme.get_dynamic_pixbuf("scrollbar/vscrollbar_fg_middle.png").get_pixbuf()
-            fg_bottom_pixbuf = ui_theme.get_dynamic_pixbuf("scrollbar/vscrollbar_fg_bottom.png").get_pixbuf()
+            bg_pixbuf = ui_theme.get_pixbuf("scrollbar/vscrollbar_bg.png").get_pixbuf()
+            fg_top_pixbuf = ui_theme.get_pixbuf("scrollbar/vscrollbar_fg_top.png").get_pixbuf()
+            fg_middle_pixbuf = ui_theme.get_pixbuf("scrollbar/vscrollbar_fg_middle.png").get_pixbuf()
+            fg_bottom_pixbuf = ui_theme.get_pixbuf("scrollbar/vscrollbar_fg_bottom.png").get_pixbuf()
             value = adjust.get_value()
             page_size = adjust.get_page_size()
             min_height = fg_top_pixbuf.get_height() + fg_middle_pixbuf.get_height() + fg_bottom_pixbuf.get_height()
@@ -117,9 +117,9 @@ class ScrolledWindow(gtk.ScrolledWindow):
         
             # Draw background.
             if self.draw_mask:
-                vbg_pixbuf = ui_theme.get_dynamic_pixbuf("scrollbar/vscrollbar_bg.png").get_pixbuf()
+                vbg_pixbuf = ui_theme.get_pixbuf("scrollbar/vscrollbar_bg.png").get_pixbuf()
                 draw_vlinear(cr, rect.x, rect.y, vbg_pixbuf.get_width(), rect.height,
-                             ui_theme.get_dynamic_shadow_color("linearBackground").get_color_info())
+                             ui_theme.get_shadow_color("linearBackground").get_color_info())
             
             # Draw foreground.
             ft_height = fg_top_pixbuf.get_height()

@@ -93,7 +93,7 @@ class NavItem(object):
         self.set_index = set_index
         self.get_index = get_index
         (self.icon_dpixbuf, self.content, self.clicked_callback) = element
-        pixbuf = ui_theme.get_dynamic_pixbuf("navigatebar/nav_item_hover.png").get_pixbuf()
+        pixbuf = ui_theme.get_pixbuf("navigatebar/nav_item_hover.png").get_pixbuf()
         
         # Init item button.
         self.item_button = gtk.Button()
@@ -122,8 +122,8 @@ class NavItem(object):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         select_index = self.get_index()
-        hover_pixbuf = ui_theme.get_dynamic_pixbuf("navigatebar/nav_item_hover.png").get_pixbuf()
-        press_pixbuf = ui_theme.get_dynamic_pixbuf("navigatebar/nav_item_press.png").get_pixbuf()
+        hover_pixbuf = ui_theme.get_pixbuf("navigatebar/nav_item_hover.png").get_pixbuf()
+        press_pixbuf = ui_theme.get_pixbuf("navigatebar/nav_item_press.png").get_pixbuf()
         
         # Draw background.
         if widget.state == gtk.STATE_NORMAL:
@@ -151,7 +151,7 @@ class NavItem(object):
         
         # Draw font.
         draw_font(cr, self.content, self.font_size, 
-                 ui_theme.get_dynamic_color("navigateItem").get_color(),
+                 ui_theme.get_color("navigateItem").get_color(),
                  rect.x, rect.y + nav_item_pixbuf.get_height(),
                  rect.width, rect.height - nav_item_pixbuf.get_height(),
                  )

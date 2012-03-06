@@ -47,7 +47,7 @@ class Dragbar(gtk.Window):
         resize_window.connect("size-allocate", lambda w, a: self.adjust_position())
         
         # Set size.
-        drag_pixbuf = ui_theme.get_dynamic_pixbuf("drag.png").get_pixbuf()
+        drag_pixbuf = ui_theme.get_pixbuf("drag.png").get_pixbuf()
         self.set_size_request(drag_pixbuf.get_width(), drag_pixbuf.get_height())
         
         # Init drag bar.
@@ -68,7 +68,7 @@ class Dragbar(gtk.Window):
             monitor_wiget_rect = self.monitor_wiget.get_allocation()
             
             # Get monitor widget's coordinate.
-            drag_pixbuf = ui_theme.get_dynamic_pixbuf("drag.png").get_pixbuf()
+            drag_pixbuf = ui_theme.get_pixbuf("drag.png").get_pixbuf()
             x = window_x + monitor_wiget_rect.x + monitor_wiget_rect.width - drag_pixbuf.get_width() - self.offset_x
             y = window_y + monitor_wiget_rect.y + monitor_wiget_rect.height - drag_pixbuf.get_height() - self.offset_y
             
@@ -80,7 +80,7 @@ class Dragbar(gtk.Window):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        pixbuf = ui_theme.get_dynamic_pixbuf("drag.png").get_pixbuf()
+        pixbuf = ui_theme.get_pixbuf("drag.png").get_pixbuf()
         
         # Clear color to transparent.
         cr.set_source_rgba(0.0, 0.0, 0.0, 0.0)

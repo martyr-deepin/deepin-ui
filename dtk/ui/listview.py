@@ -82,7 +82,7 @@ class ListView(gtk.DrawingArea):
 
         # Re-calcuate.
         title_sizes = map_value(self.titles, lambda title: get_content_size(title, DEFAULT_FONT_SIZE))
-        sort_pixbuf = ui_theme.get_dynamic_pixbuf("listview/sort_descending.png").get_pixbuf()
+        sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
         sort_icon_width = sort_pixbuf.get_width() + self.SORT_PADDING_X * 2
         sort_icon_height = sort_pixbuf.get_height()
         
@@ -177,7 +177,7 @@ class ListView(gtk.DrawingArea):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
             
         # Draw background.
-        pixbuf = ui_theme.get_dynamic_pixbuf(BACKGROUND_IMAGE).get_pixbuf().subpixbuf(
+        pixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE).get_pixbuf().subpixbuf(
             viewport.allocation.x,
             viewport.allocation.y,
             viewport.allocation.width,
@@ -186,7 +186,7 @@ class ListView(gtk.DrawingArea):
         
         # Draw mask.
         draw_vlinear(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height,
-                     ui_theme.get_dynamic_shadow_color("linearBackground").get_color_info())
+                     ui_theme.get_shadow_color("linearBackground").get_color_info())
             
         if len(self.items) > 0:
             with cairo_state(cr):
@@ -199,13 +199,13 @@ class ListView(gtk.DrawingArea):
                 if self.hover_row != None:
                     draw_vlinear(cr, offset_x, self.title_offset_y + self.hover_row * self.item_height,
                                  viewport.allocation.width, self.item_height,
-                                 ui_theme.get_dynamic_shadow_color("listviewHover").get_color_info())
+                                 ui_theme.get_shadow_color("listviewHover").get_color_info())
                 
                 # Draw click row.
                 if self.click_row != None:
                     draw_vlinear(cr, offset_x, self.title_offset_y + self.click_row * self.item_height,
                                  viewport.allocation.width, self.item_height,
-                                 ui_theme.get_dynamic_shadow_color("listviewClick").get_color_info())
+                                 ui_theme.get_shadow_color("listviewClick").get_color_info())
                     
                 # Get viewport index.
                 start_y = offset_y - self.title_offset_y
@@ -253,14 +253,14 @@ class ListView(gtk.DrawingArea):
                 else:
                     shadow_color = "listviewHeader"
                 draw_vlinear(cr, cell_offset_x, offset_y, cell_width, self.title_height,
-                                 ui_theme.get_dynamic_shadow_color(shadow_color).get_color_info())
+                                 ui_theme.get_shadow_color(shadow_color).get_color_info())
                 
                 # Draw sort icon.
                 sort_type = self.get_column_sort_type(column)    
                 if sort_type == self.SORT_DESCENDING:
-                    sort_pixbuf = ui_theme.get_dynamic_pixbuf("listview/sort_descending.png").get_pixbuf()
+                    sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
                 elif sort_type == self.SORT_ASCENDING:
-                    sort_pixbuf = ui_theme.get_dynamic_pixbuf("listview/sort_ascending.png").get_pixbuf()
+                    sort_pixbuf = ui_theme.get_pixbuf("listview/sort_ascending.png").get_pixbuf()
                     
                 draw_pixbuf(cr, sort_pixbuf,
                             cell_offset_x + cell_width - sort_pixbuf.get_width() - self.SORT_PADDING_X,
@@ -272,11 +272,11 @@ class ListView(gtk.DrawingArea):
                     
                 if cell_x != 0:
                     draw_vlinear(cr, cell_x, offset_y, 1, self.title_height,
-                                 ui_theme.get_dynamic_shadow_color("listviewHeaderSplit").get_color_info())
+                                 ui_theme.get_shadow_color("listviewHeaderSplit").get_color_info())
                     
                 # Draw title.
                 draw_font(cr, title, DEFAULT_FONT_SIZE, 
-                          ui_theme.get_dynamic_color("listItemText").get_color(),
+                          ui_theme.get_color("listItemText").get_color(),
                           cell_x, offset_y, cell_widths[column], self.title_height)    
                 
         return False
@@ -470,9 +470,9 @@ class ListItem(object):
 def render_text(cr, rect, content, align=ALIGN_START, font_size=DEFAULT_FONT_SIZE):
     '''Render text.'''
     draw_font(cr, content, font_size, 
-              ui_theme.get_dynamic_color("listItemText").get_color(), 
+              ui_theme.get_color("listItemText").get_color(), 
               rect.x, rect.y, rect.width, rect.height, align)
     
 def render_image(cr, rect, image_path, x, y):
     '''Render image.'''
-    draw_pixbuf(cr, ui_theme.get_dynamic_pixbuf(image_path).get_pixbuf(), x, y)
+    draw_pixbuf(cr, ui_theme.get_pixbuf(image_path).get_pixbuf(), x, y)

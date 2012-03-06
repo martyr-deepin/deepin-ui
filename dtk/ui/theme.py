@@ -278,23 +278,23 @@ class Theme(object):
         '''Get pixbuf path.'''
         return os.path.join(self.get_theme_dir(), path)
             
-    def get_dynamic_pixbuf(self, path):
+    def get_pixbuf(self, path):
         '''Get dynamic pixbuf.'''
         return self.pixbuf_dict[path]
 
-    def get_dynamic_pixbuf_animation(self, path):
+    def get_pixbuf_animation(self, path):
         '''Get dynamic pixbuf animation.'''
         return self.animation_dict[path]
     
-    def get_dynamic_color(self, color_name):
+    def get_color(self, color_name):
         '''Get dynamic color.'''
         return self.color_dict[color_name]
     
-    def get_dynamic_alpha_color(self, color_name):
+    def get_alpha_color(self, color_name):
         '''Get dynamic alpha color.'''
         return self.alpha_color_dict[color_name]
     
-    def get_dynamic_shadow_color(self, color_name):
+    def get_shadow_color(self, color_name):
         '''Get dynamic shadow color.'''
         return self.shadow_color_dict[color_name]    
     

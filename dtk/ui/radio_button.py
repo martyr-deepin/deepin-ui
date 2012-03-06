@@ -53,7 +53,7 @@ class RadioButton(gtk.Button):
         
         # Draw Background.
         if self.motion: 
-            draw_radial_round(cr, x+w/2, y+h/2, w/2+1, ui_theme.get_dynamic_shadow_color("hSeparator").get_color_info())
+            draw_radial_round(cr, x+w/2, y+h/2, w/2+1, ui_theme.get_shadow_color("hSeparator").get_color_info())
         
         # Draw round.
         cr.set_line_width(0.5)
@@ -62,7 +62,7 @@ class RadioButton(gtk.Button):
         cr.stroke()
         
         if self.motion:
-            draw_radial_round(cr, x+w/2, y+h/2, w/2, ui_theme.get_dynamic_shadow_color("hSeparator").get_color_info())
+            draw_radial_round(cr, x+w/2, y+h/2, w/2, ui_theme.get_shadow_color("hSeparator").get_color_info())
 
         # Radio round Background 
         cr.set_source_rgb(1,1,1)
@@ -71,7 +71,7 @@ class RadioButton(gtk.Button):
         
         # Draw radio checked.
         if self.checked:
-            draw_radial_round(cr, x+w/2, y+h/2, w/6, ui_theme.get_dynamic_shadow_color("progressbarForeground").get_color_info())
+            draw_radial_round(cr, x+w/2, y+h/2, w/6, ui_theme.get_shadow_color("progressbarForeground").get_color_info())
             
         # Propagate expose.
         propagate_expose(widget, event)
