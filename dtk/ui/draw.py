@@ -28,31 +28,6 @@ from utils import *
 from constant import *
 import math
 
-def update_widget_shape(widget, rect, radius=WINDOW_RADIUS):
-    '''Update shape.'''
-    if widget.window != None and rect.width > 0 and rect.height > 0:
-        # Init.
-        w, h = rect.width, rect.height
-        bitmap = gtk.gdk.Pixmap(None, w, h, 1)
-        cr = bitmap.cairo_create()
-        
-        # Clear the bitmap
-        cr.set_source_rgb(0.0, 0.0, 0.0)
-        cr.set_operator(cairo.OPERATOR_CLEAR)
-        cr.paint()
-        
-        # Draw our shape into the bitmap using cairo
-        cr.set_source_rgb(1.0, 1.0, 1.0)
-        cr.set_operator(cairo.OPERATOR_OVER)
-        draw_round_rectangle(cr, 0, 0, w, h, radius)
-        cr.fill()
-
-        # Shape with given mask.
-        widget.shape_combine_mask(bitmap, 0, 0)
-        
-        # Redraw.
-        widget.queue_draw()     # import to redraw interface
-
 def draw_radial_ring(cr, x, y, outer_radius, inner_radius, color_infos):
     '''Draw radial ring.'''
     with cairo_state(cr):

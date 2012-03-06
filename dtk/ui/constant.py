@@ -22,14 +22,9 @@
 
 import gtk
 
-WINDOW_RADIUS = 6                      # window radius
-FRAME_RADIUS = 6                       # frame radius
-MENU_ITEM_RADIUS = 2                   # menu item radius
-TOOLTIP_RADIUS = 4                     # tooltip radius
+MENU_ITEM_RADIUS = 2            # menu item radius
 DEFAULT_WINDOW_WIDTH = 890      # default window width
 DEFAULT_WINDOW_HEIGHT = 631     # default window height
-
-DRAG_OFFSET = 1
 
 EDGE_DICT = {
     gtk.gdk.TOP_LEFT_CORNER : gtk.gdk.WINDOW_EDGE_NORTH_WEST,

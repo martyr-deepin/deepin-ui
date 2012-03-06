@@ -69,7 +69,7 @@ class Window(gtk.Window):
         '''Expose window background.'''
         # Init.
         cr = widget.window.cairo_create()
-        pixbuf = ui_theme.get_dynamic_pixbuf("background9.jpg").get_pixbuf()
+        pixbuf = ui_theme.get_dynamic_pixbuf(BACKGROUND_IMAGE).get_pixbuf()
         rect = widget.allocation
         
         # Clear color to transparent window.
@@ -167,7 +167,7 @@ class Window(gtk.Window):
         '''Expose window frame.'''
         # Init.
         cr = widget.window.cairo_create()
-        pixbuf = ui_theme.get_dynamic_pixbuf("background9.jpg").get_pixbuf()
+        pixbuf = ui_theme.get_dynamic_pixbuf(BACKGROUND_IMAGE).get_pixbuf()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
