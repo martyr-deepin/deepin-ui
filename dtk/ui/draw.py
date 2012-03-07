@@ -216,4 +216,3 @@ def draw_radial_round(cr, x, y, r, color_infos):
     cr.arc(x, y, r, 0, 2 * math.pi)
     cr.set_source(radial)
     cr.fill()
-    

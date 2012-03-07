@@ -41,7 +41,10 @@ case "$1" in
         git push git@github.com:$2/deepin-software-center.git --tag
         ;;
     "build"  )
-        debuild && dh clean
+        debuild || dh clean
+        ;;
+    "install"  )
+        debuild || dh clean || sudo dpkg -i ../python-deepin-ui_0.0.0+20120306-1_all.deb
         ;;
     * ) 
         echo "Help"
@@ -59,5 +62,6 @@ case "$1" in
         echo "./repos.sh tag            => tag version"
         echo "./repos.sh pushtag        => push tag"
         echo "./repos.sh build          => build deb package"
+        echo "./repos.sh install        => install deb package"
         ;;
     esac
