@@ -56,7 +56,6 @@ if __name__ == "__main__":
         "/home/andy/deepin-ui/demo.py")
     
     # Draw application background.
-    # application.set_background(BACKGROUND_IMAGE)
     button = gtk.Button()
     button.set_size_request(200,300)
     

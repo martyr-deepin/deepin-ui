@@ -96,10 +96,12 @@ class Application(object):
         self.titlebar_box = gtk.HBox()
         self.main_box.pack_start(self.titlebar_box, False)
         
-    def add_titlebar(self, button_mask, icon_path, app_name, title):
+    def add_titlebar(self, 
+                     button_mask=["theme", "menu", "max", "min", "close"], 
+                     icon_dpixbuf=None, app_name=None, title=None):
         '''Add titlebar.'''
         # Init titlebar.
-        self.titlebar = Titlebar(button_mask, icon_path, app_name, title)
+        self.titlebar = Titlebar(button_mask, icon_dpixbuf, app_name, title)
         if "theme" in button_mask:
             self.titlebar.theme_button.connect("clicked", self.theme_callback)
         if "menu" in button_mask:
