@@ -46,6 +46,7 @@ class Window(gtk.Window):
         self.cursor_type = None
         self.enable_resize = enable_resize
         self.window_mask = window_mask
+        self.background_dpixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE)
         
         # Init window frame.
         self.window_shadow.set(0.0, 0.0, 1.0, 1.0)
@@ -65,11 +66,15 @@ class Window(gtk.Window):
         self.connect("button-press-event", self.resize_window)
         self.connect("window-state-event", self.monitor_window_state)
         
+    def change_background(self, background_dpixbuf):
+        '''Change background.'''
+        self.background_dpixbuf = background_dpixbuf                
+        
     def expose_window_background(self, widget, event):
         '''Expose window background.'''
         # Init.
         cr = widget.window.cairo_create()
-        pixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE).get_pixbuf()
+        pixbuf = self.background_dpixbuf.get_pixbuf()
         rect = widget.allocation
         
         # Clear color to transparent window.
@@ -167,7 +172,7 @@ class Window(gtk.Window):
         '''Expose window frame.'''
         # Init.
         cr = widget.window.cairo_create()
-        pixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE).get_pixbuf()
+        pixbuf = self.background_dpixbuf.get_pixbuf()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         

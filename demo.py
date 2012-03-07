@@ -40,6 +40,7 @@ app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "a
 if __name__ == "__main__":
     # Init application.
     application = Application("demo")
+    application.window.change_background(app_theme.get_pixbuf("my_background.jpg"))
     
     # Set application default size.
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)

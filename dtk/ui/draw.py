@@ -217,6 +217,97 @@ def draw_radial_round(cr, x, y, r, color_infos):
     cr.set_source(radial)
     cr.fill()
 
-# def surface_gaussion_blur(surface, radius):
-#     '''Gaussion blur surface.'''
+# def draw_text(text, foreground, background, font_size, gaussian_radious):
+#     '''Draw text.'''
+#     (text_width, text_height) = get_content_size(text, font_size)
+#     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, text_width, text_height);
+#     cr = cairo.Context(surface)
+#     cr.set_source_rgb(1, 1, 1)
+#     cr.rectangle(0, 0, text_width, text_height)
+#     cr.fill()
     
+#     cr.set_source_rgb(0, 0, 0)
+#     cr.set_font_size(font_size)
+#     cr.move_to(0, font_size)
+#     cr.show_text(text)
+#     cr.fill()
+    
+#     surface_gaussion_blur(surface, gaussian_radious)
+    
+#     # cr.set_source_rgb(0, 0, 1)
+#     # cr.set_font_size(font_size)
+#     # cr.move_to(0, font_size)
+#     # cr.show_text(text)
+#     # cr.fill()
+        
+#     surface.write_to_png("test.png")
+    
+# import copy    
+# import math
+    
+# def surface_gaussion_blur(surface, radious):
+#     '''Gaussian blur surface.'''
+#     surface.flush()
+#     width = surface.get_width()
+#     height = surface.get_height()
+    
+#     tmp = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height);
+    
+#     src = surface.get_data()    
+#     src_stride = surface.get_stride()
+    
+#     dst = tmp.get_data()
+#     dst_stride = tmp.get_stride()
+    
+#     size = 17
+#     half = 17 / 2
+
+#     kernel = []
+#     a = 0
+#     for i in range(0, size):
+#         f = i - half
+#         kernel[i] = math.exp(-f * f / 30.0) * 80
+#         a += kernel[i]
+        
+#     for i in range(0, height):
+#         s = src + i * src_stride
+#         d = dst + i * dst_stride
+#         for j in range(0, width):
+#             if (radious < j && j < width - radious):
+#                 continue
+
+#             x = y = z = w = 0
+#             for k in range(0, size):
+#                 if (j - half + k < 0 || j - half + k >= width):
+#                     continue
+                
+#                 p = s[j - half + k]
+#                 x += ((p >> 24) & 0xff) * kernel[k]
+#                 y += ((p >> 16) & 0xff) * kernel[k]
+#                 z += ((p >> 8) & 0xff) * kernel[k]
+#                 w += ((p >> 0) & 0xff) * kernel[k]
+                
+#             d[j] = (x / a << 24) | (y / a << 16) | (z / a << 8) | w / a
+
+#     for i in range(0, height):
+#         s = dst + i * dst_stride
+#         d = src + i * src_stride
+#         for j in range(0, width):
+#             if (radious <= i && i < height - radious):
+#                 d[j] = s[j]
+#                 continue
+
+#             x = y = z = w = 0
+#             for k in range(0, size):
+#                 if (i - half + k < 0 || i - half + k >= height):
+#                     continue
+                
+#                 s = dst + (i - half + k) * dst_stride
+#                 p = s[j]
+                
+#                 x += ((p >> 24) & 0xff) * kernel[k]
+#                 y += ((p >> 16) & 0xff) * kernel[k]
+#                 z += ((p >> 8) & 0xff) * kernel[k]
+#                 w += 
+
+# draw_text("Linux Deepin", None, None, 11, 2)
