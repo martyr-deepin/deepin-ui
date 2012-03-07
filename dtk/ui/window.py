@@ -103,7 +103,7 @@ class Window(gtk.Window):
             cr.clip()
             
             # Draw background.
-            draw_pixbuf(cr, pixbuf, rect.x, rect.y, 0.9)
+            draw_pixbuf(cr, pixbuf, rect.x, rect.y, 0.95)
             
             # Draw mask.
             if self.window_mask:
