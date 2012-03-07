@@ -23,6 +23,7 @@
 import gtk
 import cairo
 import pangocairo
+import pango
 import os
 import threading as td
 from constant import *
@@ -226,29 +227,20 @@ def scroll_to_top(scrolled_window):
     '''Scroll scrolled window to top.'''
     scrolled_window.get_vadjustment().set_value(0)
 
-def get_font_y_coordinate(y, height, font_size):
-    '''Get font y coordinate.'''
-    return y + (height + font_size) / 2 - int(font_size / 8)
-
-def get_content_size(content, font_size):
-    '''Get content size.'''
-    if content:
+def get_content_size(text, size):
+    '''Get size of text, in pixel.'''
+    if text:
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1000, 1000) # 1000 should be enough 
         cr = cairo.Context(surface)
-        try:
-            cr.select_font_face(DEFAULT_FONT,
-                                cairo.FONT_SLANT_NORMAL, 
-                                cairo.FONT_WEIGHT_NORMAL)
-        except Exception, e:
-            print e
-            
-        cr.set_font_size(font_size)
-        width = cr.text_extents(content)[2]
+        context = pangocairo.CairoContext(cr)
+        layout = context.create_layout()
+        layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, size)))
+        layout.set_text(text)
         
-        return (int(width), font_size)
+        return layout.get_pixel_size()
     else:
-        return (0, font_size)
-
+        return (0, 0)
+    
 def remove_file(path):
     '''Remove file.'''
     if os.path.exists(path):

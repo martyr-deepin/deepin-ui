@@ -121,44 +121,39 @@ def draw_window_rectangle(cr, sx, sy, ex, ey, r):
     # Restore antialias.
     cr.set_antialias(antialias)
         
-def draw_font(cr, content, font_size, font_color, x, y, width, height, x_align=ALIGN_MIDDLE, y_align=ALIGN_MIDDLE):
+def draw_font(cr, text, font_size, font_color, x, y, width, height, x_align=ALIGN_MIDDLE, y_align=ALIGN_MIDDLE):
     '''Draw font.'''
-    # Set font face.
-    try:
-        cr.select_font_face(DEFAULT_FONT,
-                            cairo.FONT_SLANT_NORMAL, 
-                            cairo.FONT_WEIGHT_NORMAL)
-    except Exception, e:
-        print e
-        
-    # Set font size.
-    cr.set_font_size(font_size)
+    # Create pangocairo context.
+    context = pangocairo.CairoContext(cr)
     
-    # Get font size.
-    font_height = font_size
-    font_width = cr.text_extents(content)[2]
+    # Set layout.
+    layout = context.create_layout()
+    layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, font_size)))
+    layout.set_text(text)
     
-    # Set font color.
-    cr.set_source_rgb(*color_hex_to_cairo(font_color))
+    # Get text size.
+    (text_width, text_height) = layout.get_pixel_size()
     
-    # Set font coordinate.
+    # Set text coordinate.
     if x_align == ALIGN_START:
-        font_x = x
+        text_x = x
     elif x_align == ALIGN_END:
-        font_x = x + width - font_width
+        text_x = x + width - text_width
     else:
-        font_x = x + (width - font_width) / 2
+        text_x = x + (width - text_width) / 2
         
     if y_align == ALIGN_START:
-        fontY = y
+        text_y = y
     elif y_align == ALIGN_END:
-        fontY = y + height
+        text_y = y + height
     else:
-        fontY = y + (height + font_height) / 2
-    cr.move_to(font_x, fontY - int(font_size) / 8)
-
-    # Show font.
-    cr.show_text(content)
+        text_y = y + (height + text_height) / 2
+    cr.move_to(text_x, text_y - text_height)
+    
+    # Draw text.
+    cr.set_source_rgb(*color_hex_to_cairo(font_color))
+    context.update_layout(layout)
+    context.show_layout(layout)
 
 def draw_line(cr, sx, sy, ex, ey, line_width=1, antialias_status=cairo.ANTIALIAS_NONE):
     '''Draw line.'''

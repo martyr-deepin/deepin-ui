@@ -119,9 +119,9 @@ if __name__ == "__main__":
     category_box.pack_start(scrolled_window, True, True)
     
     items = map(lambda index: ListItem(
-            "豆浆油条 %04d" % (100 - index),
+            "豆浆油条 %04d" % index,
             "林俊杰 %04d" % index,
-            "%04d" % (300 - index),
+            "10:%02d" % (index % 60),
             ), range(0, 100))
     list_view = ListView()
     list_view.add_titles(["歌名", "歌手", "时间"])
