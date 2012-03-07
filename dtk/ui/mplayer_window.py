@@ -27,59 +27,64 @@ from math import pi
 from box import *
 import cairo
 
-class Window(gtk.Window):
-    '''Window.'''
+class MplayerWindow(gtk.Window):
+    '''Window for mplayer or any software that can't running when window redirect colormap from screen.'''
 	
     def __init__(self, enable_resize=False, window_mask=None, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL):
-        '''Init window.'''
+        '''Init mplayer window.'''
         # Init.
         gtk.Window.__init__(self, window_type)
         self.set_decorated(False)
-        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
-        self.window_shadow = gtk.Alignment()
-        self.window_frame = gtk.VBox()
         self.shadow_radius = shadow_radius
         self.frame_radius = 2
         self.shadow_padding = self.shadow_radius - self.frame_radius
         self.shadow_is_visible = True
-        self.cursor_type = None
         self.enable_resize = enable_resize
         self.window_mask = window_mask
         self.background_dpixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE)
+        self.window_frame = gtk.VBox()
+        self.add(self.window_frame)
         
-        # Init window frame.
-        self.window_shadow.set(0.0, 0.0, 1.0, 1.0)
-        self.window_shadow.set_padding(self.shadow_padding, self.shadow_padding, self.shadow_padding, self.shadow_padding)
-        
-        # Connect widgets.
-        self.add(self.window_shadow)
-        self.window_shadow.add(self.window_frame)
-        
+        # Init shadow window.
+        self.window_shadow = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window_shadow.add_events(gtk.gdk.ALL_EVENTS_MASK)
+        self.window_shadow.set_decorated(False)
+        self.window_shadow.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
+        self.window_shadow.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_MENU) # make shadow window don't switch in window manager
+        self.window_shadow.set_transient_for(self)
+
         # Handle signal.
-        self.connect_after("expose-event", self.expose_window_background)
+        self.connect_after("expose-event", self.expose_window)
+        self.connect("size-allocate", self.shape_window)
         self.window_shadow.connect("expose-event", self.expose_window_shadow)
-        self.window_frame.connect("expose-event", self.expose_window_frame)
-        self.window_frame.connect("size-allocate", self.shape_window_frame)
-        self.connect("size-allocate", lambda w, r: self.queue_draw()) # redraw after size allocation changed
-        self.connect("motion-notify-event", self.motion_notify)
-        self.connect("button-press-event", self.resize_window)
+        self.window_shadow.connect("size-allocate", self.shape_window_shadow)
+        self.connect("configure-event", self.adjust_window_shadow)
         self.connect("window-state-event", self.monitor_window_state)
+        self.window_shadow.connect("button-press-event", self.resize_window)
+        self.window_shadow.connect("motion-notify-event", self.motion_notify)
+        
+    def adjust_window_shadow(self, widget, event):
+        '''Adjust window shadow position and size. '''
+        self.window_shadow.move(event.x - self.shadow_padding, event.y - self.shadow_padding)
+        self.window_shadow.resize(event.width + self.shadow_padding * 2, event.height + self.shadow_padding * 2)
         
     def show_window(self):
         '''Show.'''
         self.show_all()
+        self.window_shadow.show_all()
         
     def change_background(self, background_dpixbuf):
         '''Change background.'''
         self.background_dpixbuf = background_dpixbuf                
         
-    def expose_window_background(self, widget, event):
-        '''Expose window background.'''
+    def expose_window(self, widget, event):
+        '''Expose window.'''
         # Init.
         cr = widget.window.cairo_create()
         pixbuf = self.background_dpixbuf.get_pixbuf()
         rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         # Clear color to transparent window.
         cr.set_source_rgba(0.0, 0.0, 0.0, 0.0)
@@ -88,13 +93,7 @@ class Window(gtk.Window):
         
         # Save cairo context.
         with cairo_state(cr):
-            if self.shadow_is_visible:
-                x = rect.x + self.shadow_padding
-                y = rect.y + self.shadow_padding
-                w = rect.width - self.shadow_padding * 2
-                h = rect.height - self.shadow_padding * 2
-            else:
-                x, y, w, h = rect.x, rect.y, rect.width, rect.height
+            x, y, w, h = rect.x, rect.y, rect.width, rect.height
             cr.rectangle(x + 2, y, w - 4, 1)
             cr.rectangle(x + 1, y + 1, w - 2, 1)
             cr.rectangle(x, y + 2, w, h - 4)
@@ -110,75 +109,6 @@ class Window(gtk.Window):
                 cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color(self.window_mask).get_color_info()))
                 cr.rectangle(0, 0, rect.width, rect.height)    
                 cr.fill()
-        
-        # Propagate expose.
-        propagate_expose(widget, event)
-        
-        return True
-        
-    def expose_window_shadow(self, widget, event):
-        '''Callback for 'expose-event' event of window shadow.'''
-        if self.shadow_is_visible:
-            # Init.
-            cr = widget.window.cairo_create()
-            rect = widget.allocation
-            x, y, w, h = rect.x, rect.y, rect.width, rect.height
-            
-            # Get border width.
-            color_infos = ui_theme.get_shadow_color("windowShadow").get_color_info()
-            
-            with cairo_state(cr):
-                # Clip four corner.
-                cr.rectangle(x, y, x + self.shadow_radius, y + self.shadow_radius)
-                cr.rectangle(x + w - self.shadow_radius, y, x + w, y + self.shadow_radius)
-                cr.rectangle(x, y + h - self.shadow_radius, x + self.shadow_radius, y + h)
-                cr.rectangle(x + w - self.shadow_radius, y + h - self.shadow_radius, x + w, y + h)
-                cr.clip()
-                
-                # Draw four round.
-                draw_radial_round(cr, x + self.shadow_radius, y + self.shadow_radius, self.shadow_radius, color_infos)
-                draw_radial_round(cr, x + self.shadow_radius, y + h - self.shadow_radius, self.shadow_radius, color_infos)
-                draw_radial_round(cr, x + w - self.shadow_radius, y + self.shadow_radius, self.shadow_radius, color_infos)
-                draw_radial_round(cr, x + w - self.shadow_radius, y + h - self.shadow_radius, self.shadow_radius, color_infos)
-            
-            with cairo_state(cr):
-                # Clip four side.
-                cr.rectangle(x, y + self.shadow_radius, x + self.shadow_padding, y + h - self.shadow_radius)
-                cr.rectangle(x + w - self.shadow_padding, y + self.shadow_radius, x + w, y + h - self.shadow_radius)
-                cr.rectangle(x + self.shadow_radius, y, x + w - self.shadow_radius, y + self.shadow_padding)
-                cr.rectangle(x + self.shadow_radius, y + h - self.shadow_padding, x + w - self.shadow_radius, y + h)
-                cr.clip()
-                
-                # Draw four side.
-                draw_vlinear(
-                    cr, 
-                    x + self.shadow_radius, y, 
-                    w - self.shadow_radius * 2, self.shadow_radius, color_infos)
-                draw_vlinear(
-                    cr, 
-                    x + self.shadow_radius, y + h - self.shadow_radius, 
-                    w - self.shadow_radius * 2, self.shadow_radius, color_infos, 0, False)
-                draw_hlinear(
-                    cr, 
-                    x, y + self.shadow_radius, 
-                    self.shadow_radius, h - self.shadow_radius * 2, color_infos)
-                draw_hlinear(
-                    cr, 
-                    x + w - self.shadow_radius, y + self.shadow_radius, 
-                    self.shadow_radius, h - self.shadow_radius * 2, color_infos, 0, False)
-    
-        # Propagate expose.
-        propagate_expose(widget, event)
-    
-        return True
-    
-    def expose_window_frame(self, widget, event):
-        '''Expose window frame.'''
-        # Init.
-        cr = widget.window.cairo_create()
-        pixbuf = self.background_dpixbuf.get_pixbuf()
-        rect = widget.allocation
-        x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         # Save antialias.
         antialias = cr.get_antialias()
@@ -255,11 +185,11 @@ class Window(gtk.Window):
         # Propagate expose.
         propagate_expose(widget, event)
         
-        return False
-
-    def shape_window_frame(self, widget, rect):
-        '''Shap window frame.'''
-        if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
+        return True
+        
+    def shape_window(self, widget, rect):
+        '''Shap window.'''
+        if rect.width > 0 and rect.height > 0:
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             bitmap = gtk.gdk.Pixmap(None, w, h, 1)
@@ -273,9 +203,11 @@ class Window(gtk.Window):
             # Draw our shape into the bitmap using cairo.
             cr.set_source_rgb(1.0, 1.0, 1.0)
             cr.set_operator(cairo.OPERATOR_OVER)
-            cr.rectangle(x + 1, y, w - 2, 1)
-            cr.rectangle(x, y + 1, w, h - 2)
-            cr.rectangle(x + 1, y + h - 1, w - 2, 1)
+            cr.rectangle(x + 2, y, w - 4, 1)
+            cr.rectangle(x + 1, y + 1, w - 2, 1)
+            cr.rectangle(x, y + 2, w, h - 4)
+            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+            cr.rectangle(x + 2, y + h - 1, w - 4, 1)
             cr.fill()
             
             # Shape with given mask.
@@ -284,17 +216,128 @@ class Window(gtk.Window):
             # Redraw whole window.
             self.queue_draw()   # redraw window, not redraw window frame
             
+    def shape_window_shadow(self, widget, rect):
+        '''Shap window shadow.'''
+        if rect.width > 0 and rect.height > 0:
+            # Init.
+            x, y, w, h = rect.x, rect.y, rect.width, rect.height
+            bitmap = gtk.gdk.Pixmap(None, w, h, 1)
+            cr = bitmap.cairo_create()
+            
+            # Clear the bitmap
+            cr.set_source_rgb(0.0, 0.0, 0.0)
+            cr.set_operator(cairo.OPERATOR_CLEAR)
+            cr.paint()
+            
+            # Draw our shape into the bitmap using cairo.
+            cr.set_source_rgb(1.0, 1.0, 1.0)
+            cr.set_operator(cairo.OPERATOR_OVER)
+            
+            # Four side.
+            cr.rectangle(x, y, w, self.shadow_padding)
+            cr.rectangle(x, y + self.shadow_padding, self.shadow_padding, h - self.shadow_padding * 2)
+            cr.rectangle(x + w - self.shadow_padding, y + self.shadow_padding, self.shadow_padding, h - self.shadow_padding * 2)
+            cr.rectangle(x, y + h - self.shadow_padding, w, self.shadow_padding)
+            
+            # Four 2-pixel rectange.
+            cr.rectangle(x + self.shadow_padding, y + self.shadow_padding, 2, 1)
+            cr.rectangle(x + w - self.shadow_padding - 2, y + self.shadow_padding, 2, 1)
+            cr.rectangle(x + self.shadow_padding, y + h - self.shadow_padding - 1, 2, 1)
+            cr.rectangle(x + w - self.shadow_padding - 2, y + h - self.shadow_padding - 1, 2, 1)
+
+            # Four 1-pixel rectange.
+            cr.rectangle(x + self.shadow_padding, y + self.shadow_padding + 1, 1, 1)
+            cr.rectangle(x + w - self.shadow_padding - 1, y + self.shadow_padding + 1, 1, 1)
+            cr.rectangle(x + self.shadow_padding, y + h - self.shadow_padding - 2, 1, 1)
+            cr.rectangle(x + w - self.shadow_padding - 1, y + h - self.shadow_padding - 2, 1, 1)
+            
+            cr.fill()
+            
+            # Shape with given mask.
+            widget.shape_combine_mask(bitmap, 0, 0)
+            
+            # Redraw whole window.
+            self.queue_draw()   # redraw window, not redraw window frame
+            
+    def expose_window_shadow(self, widget, event):
+        '''Callback for 'expose-event' event of window shadow.'''
+        if self.shadow_is_visible:
+            # Init.
+            cr = widget.window.cairo_create()
+            rect = widget.allocation
+            x, y, w, h = rect.x, rect.y, rect.width, rect.height
+            
+            # Clear color to transparent window.
+            cr.set_source_rgba(0.0, 0.0, 0.0, 0.0)
+            cr.set_operator(cairo.OPERATOR_SOURCE)
+            cr.paint()
+        
+            # Get border width.
+            color_infos = ui_theme.get_shadow_color("windowShadow").get_color_info()
+            
+            with cairo_state(cr):
+                # Clip four corner.
+                cr.rectangle(x, y, x + self.shadow_radius, y + self.shadow_radius)
+                cr.rectangle(x + w - self.shadow_radius, y, x + w, y + self.shadow_radius)
+                cr.rectangle(x, y + h - self.shadow_radius, x + self.shadow_radius, y + h)
+                cr.rectangle(x + w - self.shadow_radius, y + h - self.shadow_radius, x + w, y + h)
+                cr.clip()
+                
+                # Draw four round.
+                draw_radial_round(cr, x + self.shadow_radius, y + self.shadow_radius, self.shadow_radius, color_infos)
+                draw_radial_round(cr, x + self.shadow_radius, y + h - self.shadow_radius, self.shadow_radius, color_infos)
+                draw_radial_round(cr, x + w - self.shadow_radius, y + self.shadow_radius, self.shadow_radius, color_infos)
+                draw_radial_round(cr, x + w - self.shadow_radius, y + h - self.shadow_radius, self.shadow_radius, color_infos)
+            
+            with cairo_state(cr):
+                # Clip four side.
+                cr.rectangle(x, y + self.shadow_radius, x + self.shadow_padding, y + h - self.shadow_radius)
+                cr.rectangle(x + w - self.shadow_padding, y + self.shadow_radius, x + w, y + h - self.shadow_radius)
+                cr.rectangle(x + self.shadow_radius, y, x + w - self.shadow_radius, y + self.shadow_padding)
+                cr.rectangle(x + self.shadow_radius, y + h - self.shadow_padding, x + w - self.shadow_radius, y + h)
+                cr.clip()
+                
+                # Draw four side.
+                draw_vlinear(
+                    cr, 
+                    x + self.shadow_radius, y, 
+                    w - self.shadow_radius * 2, self.shadow_radius, color_infos)
+                draw_vlinear(
+                    cr, 
+                    x + self.shadow_radius, y + h - self.shadow_radius, 
+                    w - self.shadow_radius * 2, self.shadow_radius, color_infos, 0, False)
+                draw_hlinear(
+                    cr, 
+                    x, y + self.shadow_radius, 
+                    self.shadow_radius, h - self.shadow_radius * 2, color_infos)
+                draw_hlinear(
+                    cr, 
+                    x + w - self.shadow_radius, y + self.shadow_radius, 
+                    self.shadow_radius, h - self.shadow_radius * 2, color_infos, 0, False)
+    
+        # Propagate expose.
+        propagate_expose(widget, event)
+    
+        return True
+            
     def hide_shadow(self):
         '''Hide shadow.'''
         self.shadow_is_visible = False
-        self.window_shadow.set_padding(0, 0, 0, 0)
-        self.queue_draw()
+        self.window_shadow.hide_all()
         
     def show_shadow(self):
         '''Show shadow.'''
         self.shadow_is_visible = True
-        self.window_shadow.set_padding(self.shadow_padding, self.shadow_padding, self.shadow_padding, self.shadow_padding)
-        self.queue_draw()
+        self.window_shadow.show_all()
+        
+    def monitor_window_state(self, widget, event):
+        '''Monitor window state, add shadow when window at maximized or fullscreen status.
+Otherwise hide shadow.'''
+        window_state = self.window.get_state()
+        if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:
+            self.hide_shadow()
+        else:
+            self.show_shadow()
         
     def min_window(self):
         '''Min window.'''
@@ -326,28 +369,19 @@ class Window(gtk.Window):
     
         return False
         
-    def motion_notify(self, widget, event):
-        '''Callback for motion-notify event.'''
-        if self.enable_resize and self.shadow_is_visible:
-            self.cursor_type = self.get_cursor_type(event)
-            set_cursor(self, self.cursor_type)
-            
     def resize_window(self, widget, event):
         '''Resize window.'''
         if self.enable_resize:
             edge = self.get_edge()            
             if edge != None:
-                resize_window(widget, event, self, edge)
+                resize_window(self, event, self, edge)
                 
-    def monitor_window_state(self, widget, event):
-        '''Monitor window state, add shadow when window at maximized or fullscreen status.
-Otherwise hide shadow.'''
-        window_state = self.window.get_state()
-        if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:
-            self.hide_shadow()
-        else:
-            self.show_shadow()
-        
+    def motion_notify(self, widget, event):
+        '''Callback for motion-notify event.'''
+        if self.enable_resize and self.shadow_is_visible:
+            self.cursor_type = self.get_cursor_type(event)
+            set_cursor(self.window_shadow, self.cursor_type)
+            
     def get_edge(self):
         '''Get edge.'''
         if EDGE_DICT.has_key(self.cursor_type):
@@ -361,8 +395,8 @@ Otherwise hide shadow.'''
         (ex, ey) = get_event_root_coords(event)
         
         # Get window allocation.
-        rect = self.get_allocation()
-        (wx, wy) = self.get_position()
+        rect = self.window_shadow.get_allocation()
+        (wx, wy) = self.window_shadow.get_position()
         ww = rect.width
         wh = rect.height
         
@@ -394,14 +428,15 @@ Otherwise hide shadow.'''
                 return None
         else:
             return None
-
-gobject.type_register(Window)
+        
+gobject.type_register(MplayerWindow)
     
 if __name__ == "__main__":
-    window = Window()
+    window = MplayerWindow()
     window.connect("destroy", lambda w: gtk.main_quit())
     window.set_size_request(500, 500)
+    window.move(100, 100)
     # window.window_frame.add(gtk.Button("Linux Deepin"))
-    window.show_all()
+    window.show_window()
     
     gtk.main()

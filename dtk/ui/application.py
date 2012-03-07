@@ -26,7 +26,8 @@ from draw import *
 from menu import *
 from threads import *
 from titlebar import Titlebar
-from window import *
+from window import Window
+from mplayer_window import MplayerWindow
 import dbus
 import dbus.service
 import gtk
@@ -50,10 +51,11 @@ class UniqueService(dbus.service.Object):
 class Application(object):
     '''Application.'''
 	
-    def __init__(self, app_name, check_unique=True):
+    def __init__(self, app_name, app_support_colormap=True, check_unique=True):
         '''Init application.'''
         # Init.
         self.app_name = app_name
+        self.app_support_colormap = app_support_colormap
         self.app_dbus_name = "com.deepin." + self.app_name
         self.app_service_name = "com.deepin." + self.app_name
         self.app_object_name = "/com/deepin/" + self.app_name
@@ -84,7 +86,10 @@ class Application(object):
         self.menu_button_callback = None
         
         # Init window.
-        self.window = Window(True)
+        if self.app_support_colormap:
+            self.window = Window(True)
+        else:
+            self.window = MplayerWindow(True)
         self.window.set_position(gtk.WIN_POS_CENTER)
         self.window.connect("destroy", self.destroy)
         
@@ -166,7 +171,7 @@ class Application(object):
                 self.raise_to_top)
         
         # Show window.
-        self.window.show_all()
+        self.window.show_window()
         
         # Run main loop.
         gtk.main()
