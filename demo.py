@@ -34,6 +34,7 @@ from dtk.ui.tooltip import *
 from dtk.ui.popup_window import *
 from dtk.ui.frame import *
 from dtk.ui.dragbar import *
+from dtk.ui.scalebar import *
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
 
@@ -128,6 +129,13 @@ if __name__ == "__main__":
     list_view.add_items(items)
     
     scrolled_window.add_child(list_view)
+    
+    # Add scalebar.
+    scalebar = HScalebar()
+    scalebar.set_range(0, 100)
+    scalebar_frame = HorizontalFrame()
+    scalebar_frame.add(scalebar)
+    application.main_box.pack_start(scalebar_frame, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)

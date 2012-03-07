@@ -28,7 +28,6 @@ from draw import *
 import time
 import math
 
-
 class ProgressBar(gtk.Button):
     '''Progress bar.'''
 	
