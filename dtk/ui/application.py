@@ -100,11 +100,16 @@ class Application(object):
         '''Add titlebar.'''
         # Init titlebar.
         self.titlebar = Titlebar(button_mask, icon_path, app_name, title)
-        self.titlebar.theme_button.connect("clicked", self.theme_callback)
-        self.titlebar.menu_button.connect("clicked", self.menu_callback)
-        self.titlebar.min_button.connect("clicked", lambda w: self.window.min_window())
-        self.titlebar.max_button.connect("clicked", lambda w: self.window.toggle_max_window())
-        self.titlebar.close_button.connect("clicked", lambda w: self.window.close_window())
+        if "theme" in button_mask:
+            self.titlebar.theme_button.connect("clicked", self.theme_callback)
+        if "menu" in button_mask:
+            self.titlebar.menu_button.connect("clicked", self.menu_callback)
+        if "min" in button_mask:
+            self.titlebar.min_button.connect("clicked", lambda w: self.window.min_window())
+        if "max" in button_mask:
+            self.titlebar.max_button.connect("clicked", lambda w: self.window.toggle_max_window())
+        if "close" in button_mask:
+            self.titlebar.close_button.connect("clicked", lambda w: self.window.close_window())
         self.add_toggle_window_event(self.titlebar.drag_box)
         self.add_move_window_event(self.titlebar.drag_box)
         
