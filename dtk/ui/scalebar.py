@@ -72,13 +72,14 @@ class HScalebar(gtk.HScale):
         point_pixbuf = self.point_dpixbuf.get_pixbuf()
         
         # Init value.
+        total_length = self.get_adjustment().get_upper()
         side_width = left_bg_pixbuf.get_width()
         point_width = point_pixbuf.get_width()
         point_height = point_pixbuf.get_height()
         x, y, w, h = rect.x + point_width / 2, rect.y, rect.width - point_width, rect.height
         line_height = left_bg_pixbuf.get_height()
         line_y = y + (point_height - line_height) / 2
-        value = int(self.get_value() / 100 * w)
+        value = int(self.get_value() / total_length * w)
 
         # Draw background.
         draw_pixbuf(cr, left_bg_pixbuf, x, line_y)
