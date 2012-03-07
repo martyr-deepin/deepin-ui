@@ -230,7 +230,7 @@ def scroll_to_top(scrolled_window):
 def get_content_size(text, size):
     '''Get size of text, in pixel.'''
     if text:
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1000, 1000) # 1000 should be enough 
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0) # don't need give size
         cr = cairo.Context(surface)
         context = pangocairo.CairoContext(cr)
         layout = context.create_layout()
