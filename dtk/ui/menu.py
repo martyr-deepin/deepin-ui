@@ -44,6 +44,7 @@ class Menu(object):
         self.menu_window = Window(False, "menuMask")
         self.menu_window.set_opacity(opacity)
         self.menu_window.set_modal(True) # this is very important,  otherwise menu can't focus default 
+        self.menu_window.set_skip_taskbar_hint(True)
         self.menu_window.connect("focus-out-event", lambda w, e: self.hide())
         
         # Add menu item.
