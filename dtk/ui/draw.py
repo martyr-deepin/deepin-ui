@@ -78,48 +78,40 @@ def draw_pixbuf(cr, pixbuf, x=0, y=0, alpha=1.0):
         
 def draw_window_rectangle(cr, sx, sy, ex, ey, r):
     '''Draw window rectangle.'''
-    # Save antialias.
-    antialias = cr.get_antialias()
-    
-    # Set line width.
-    cr.set_line_width(1)
-    
-    # Set OPERATOR_OVER operator.
-    cr.set_operator(cairo.OPERATOR_OVER)
-    
-    # Turn off antialias.
-    cr.set_antialias(cairo.ANTIALIAS_NONE)
-    
-    cr.move_to(sx + r, sy)        # top line
-    cr.line_to(ex - r, sy)
-    cr.stroke()
-    
-    cr.move_to(ex, sy + r)    # right side
-    cr.line_to(ex, ey - r)
-    cr.stroke()
-    
-    cr.move_to(ex - r, ey) # bottom side
-    cr.line_to(sx + r, ey)     
-    cr.stroke()
-    
-    cr.move_to(sx, ey - r)    # left side
-    cr.line_to(sx, sy + r)        
-    cr.stroke()
-
-    cr.arc(sx + r, sy + r, r, pi, pi * 3 / 2) # top-left
-    cr.stroke()
-
-    cr.arc(ex - r, sy + r, r, pi * 3 / 2, pi * 2) # top-right
-    cr.stroke()
-    
-    cr.arc(ex - r, ey - r, r, 0, pi / 2) # bottom-right
-    cr.stroke()
-    
-    cr.arc(sx + r, ey - r, r, pi / 2, pi) # bottom-left
-    cr.stroke()
-    
-    # Restore antialias.
-    cr.set_antialias(antialias)
+    with cairo_disable_antialias(cr):    
+        # Set line width.
+        cr.set_line_width(1)
+        
+        # Set OPERATOR_OVER operator.
+        cr.set_operator(cairo.OPERATOR_OVER)
+        
+        cr.move_to(sx + r, sy)        # top line
+        cr.line_to(ex - r, sy)
+        cr.stroke()
+        
+        cr.move_to(ex, sy + r)    # right side
+        cr.line_to(ex, ey - r)
+        cr.stroke()
+        
+        cr.move_to(ex - r, ey) # bottom side
+        cr.line_to(sx + r, ey)     
+        cr.stroke()
+        
+        cr.move_to(sx, ey - r)    # left side
+        cr.line_to(sx, sy + r)        
+        cr.stroke()
+        
+        cr.arc(sx + r, sy + r, r, pi, pi * 3 / 2) # top-left
+        cr.stroke()
+        
+        cr.arc(ex - r, sy + r, r, pi * 3 / 2, pi * 2) # top-right
+        cr.stroke()
+        
+        cr.arc(ex - r, ey - r, r, 0, pi / 2) # bottom-right
+        cr.stroke()
+        
+        cr.arc(sx + r, ey - r, r, pi / 2, pi) # bottom-left
+        cr.stroke()
         
 def draw_font(cr, text, font_size, font_color, x, y, width, height, x_align=ALIGN_MIDDLE, y_align=ALIGN_MIDDLE):
     '''Draw font.'''

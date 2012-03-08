@@ -526,3 +526,21 @@ def cairo_state(cr):
         print 'with an cairo error %s' % e  
     else:  
         cr.restore()
+
+@contextmanager
+def cairo_disable_antialias(cr):
+    '''Disable cairo antialias temporary.'''
+    # Save antialias.
+    antialias = cr.get_antialias()
+    
+    cr.set_antialias(cairo.ANTIALIAS_NONE)
+    try:  
+        yield  
+    except Exception, e:  
+        print 'with an cairo error %s' % e  
+    else:  
+        # Restore antialias.
+        cr.set_antialias(antialias)
+
+    
+
