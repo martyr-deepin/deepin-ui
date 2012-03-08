@@ -117,7 +117,7 @@ gobject.type_register(Button)
 class ImageButton(gtk.Button):
     '''Image button.'''
 	
-    def __init__(self, content, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x=False):
+    def __init__(self, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x=False, content=None):
         '''Init font button.'''
         gtk.Button.__init__(self)
         draw_button(self, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x, content)
