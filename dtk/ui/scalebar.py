@@ -55,6 +55,7 @@ class HScalebar(gtk.HScale):
         
         # Redraw.
         self.connect("expose-event", self.expose_h_scalebar)
+        self.connect("button-press-event", self.press_volume_progressbar)
         
     def expose_h_scalebar(self, widget, event):
         '''Callback for `expose-event` event.'''
@@ -100,4 +101,18 @@ class HScalebar(gtk.HScale):
         
         return True        
 
+    def press_volume_progressbar(self, widget, event):
+        '''Press volume progressbar.'''
+        # Init.
+        rect = widget.allocation
+        lower = self.get_adjustment().get_lower()
+        upper = self.get_adjustment().get_upper()
+        point_width = self.point_dpixbuf.get_pixbuf().get_width()
+        
+        # Set value.
+        self.set_value(lower + ((event.x - point_width / 2)  / (rect.width - point_width)) * (upper - lower))
+        self.queue_draw()
+        
+        return False
+    
 gobject.type_register(HScalebar)

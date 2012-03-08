@@ -28,23 +28,23 @@ from draw import *
 class HorizontalFrame(gtk.Alignment):
     '''Horizontal frame to padding 1 pixel round child.'''
 	
-    def __init__(self, xalign=0.0, yalign=0.0, xscale=1.0, yscale=1.0):
+    def __init__(self, padding=1, xalign=0.0, yalign=0.0, xscale=1.0, yscale=1.0):
         '''Init horizontal frame.'''
         # Init.
         gtk.Alignment.__init__(self)
         self.set(xalign, yalign, xscale, yscale)
-        self.set_padding(0, 0, 1, 1)
+        self.set_padding(0, 0, padding, padding)
 
 gobject.type_register(HorizontalFrame)
 
 class VerticalFrame(gtk.Alignment):
     '''Vertical frame to padding 1 pixel round child.'''
 	
-    def __init__(self, xalign=0.0, yalign=0.0, xscale=1.0, yscale=1.0):
+    def __init__(self, padding=1, xalign=0.0, yalign=0.0, xscale=1.0, yscale=1.0):
         '''Init horizontal frame.'''
         # Init.
         gtk.Alignment.__init__(self)
         self.set(xalign, yalign, xscale, yscale)
-        self.set_padding(0, 0, 1, 1)
+        self.set_padding(0, 0, padding, padding)
 
 gobject.type_register(VerticalFrame)

@@ -35,6 +35,7 @@ from dtk.ui.popup_window import *
 from dtk.ui.frame import *
 from dtk.ui.dragbar import *
 from dtk.ui.scalebar import *
+from dtk.ui.volume_button import *
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
 
@@ -135,6 +136,12 @@ if __name__ == "__main__":
     scalebar_frame = HorizontalFrame()
     scalebar_frame.add(scalebar)
     application.main_box.pack_start(scalebar_frame, False, False)
+    
+    # Add volume button.
+    volume_button = VolumeButton(100, 50, 200)
+    volume_frame = HorizontalFrame(10, 0, 0, 0, 0)
+    volume_frame.add(volume_button)
+    application.main_box.pack_start(volume_frame, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)
