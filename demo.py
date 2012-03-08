@@ -138,7 +138,7 @@ if __name__ == "__main__":
     application.main_box.pack_start(scalebar_frame, False, False)
     
     # Add volume button.
-    volume_button = VolumeButton(100, 50, 200)
+    volume_button = VolumeButton(100, 0, 100)
     volume_frame = HorizontalFrame(10, 0, 0, 0, 0)
     volume_frame.add(volume_button)
     application.main_box.pack_start(volume_frame, False, False)
