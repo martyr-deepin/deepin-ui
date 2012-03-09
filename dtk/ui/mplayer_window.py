@@ -47,22 +47,22 @@ class MplayerWindow(gtk.Window):
         self.add(self.window_frame)
         
         # Init shadow window.
-        # self.window_shadow = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        # self.window_shadow.add_events(gtk.gdk.ALL_EVENTS_MASK)
-        # self.window_shadow.set_decorated(False)
-        # self.window_shadow.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
-        # self.window_shadow.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_MENU) # make shadow window don't switch in window manager
-        # self.window_shadow.set_transient_for(self)
+        self.window_shadow = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window_shadow.add_events(gtk.gdk.ALL_EVENTS_MASK)
+        self.window_shadow.set_decorated(False)
+        self.window_shadow.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
+        self.window_shadow.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_MENU) # make shadow window don't switch in window manager
+        self.window_shadow.set_transient_for(self)
 
         # Handle signal.
         self.connect_after("expose-event", self.expose_window)
         self.connect("size-allocate", self.shape_window)
-        # self.window_shadow.connect("expose-event", self.expose_window_shadow)
-        # self.window_shadow.connect("size-allocate", self.shape_window_shadow)
-        # self.connect("configure-event", self.adjust_window_shadow)
+        self.window_shadow.connect("expose-event", self.expose_window_shadow)
+        self.window_shadow.connect("size-allocate", self.shape_window_shadow)
+        self.connect("configure-event", self.adjust_window_shadow)
         self.connect("window-state-event", self.monitor_window_state)
-        # self.window_shadow.connect("button-press-event", self.resize_window)
-        # self.window_shadow.connect("motion-notify-event", self.motion_notify)
+        self.window_shadow.connect("button-press-event", self.resize_window)
+        self.window_shadow.connect("motion-notify-event", self.motion_notify)
         
     def adjust_window_shadow(self, widget, event):
         '''Adjust window shadow position and size. '''
@@ -74,7 +74,7 @@ class MplayerWindow(gtk.Window):
     def show_window(self):
         '''Show.'''
         self.show_all()
-        # self.window_shadow.show_all()
+        self.window_shadow.show_all()
         
     def change_background(self, background_dpixbuf):
         '''Change background.'''
@@ -209,7 +209,7 @@ class MplayerWindow(gtk.Window):
             
             # Redraw whole window.
             # self.queue_draw()
-            # self.window_shadow.queue_draw()
+            self.window_shadow.queue_draw()
             
     def shape_window_shadow(self, widget, rect):
         '''Shap window shadow.'''
@@ -253,7 +253,7 @@ class MplayerWindow(gtk.Window):
             
             # Redraw whole window.
             # self.queue_draw()
-            # self.window_shadow.queue_draw()
+            self.window_shadow.queue_draw()
             
     def expose_window_shadow(self, widget, event):
         '''Callback for 'expose-event' event of window shadow.'''
@@ -319,12 +319,12 @@ class MplayerWindow(gtk.Window):
     def hide_shadow(self):
         '''Hide shadow.'''
         self.shadow_is_visible = False
-        # self.window_shadow.hide_all()
+        self.window_shadow.hide_all()
         
     def show_shadow(self):
         '''Show shadow.'''
         self.shadow_is_visible = True
-        # self.window_shadow.show_all()
+        self.window_shadow.show_all()
         
     def monitor_window_state(self, widget, event):
         '''Monitor window state, add shadow when window at maximized or fullscreen status.
