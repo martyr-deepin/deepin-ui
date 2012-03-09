@@ -42,20 +42,23 @@ class Categorybar(object):
         # Init category box.
         self.category_item_box = gtk.VBox()
         self.category_event_box.add(self.category_item_box)
+        self.item_dict = {}
         
         # Init item.
         if items:
             icon_width = self.get_icon_width(items)
             for (index, item) in enumerate(items):
-                self.category_item_box.pack_start(
-                    CategoryItem(item, index, font_size, icon_width, padding_left, padding_middle, padding_right,
-                                 self.set_index, self.get_index))
+                category_item = CategoryItem(item, index, font_size, icon_width, padding_left, padding_middle, padding_right,
+                                 self.set_index, self.get_index)
+                self.item_dict[index] = category_item
+                self.category_item_box.pack_start(category_item)
                 
         # Show.
         self.category_event_box.show_all()        
         
     def set_index(self, index):
         '''Set index.'''
+        self.item_dict[index].queue_draw()
         self.category_index = index
         
     def get_index(self):

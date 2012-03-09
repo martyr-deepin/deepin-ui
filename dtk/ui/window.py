@@ -274,19 +274,19 @@ class Window(gtk.Window):
             widget.shape_combine_mask(bitmap, 0, 0)
             
             # Redraw whole window.
-            self.queue_draw()   # redraw window, not redraw window frame
+            # self.queue_draw()   # redraw window, not redraw window frame
             
     def hide_shadow(self):
         '''Hide shadow.'''
         self.shadow_is_visible = False
         self.window_shadow.set_padding(0, 0, 0, 0)
-        self.queue_draw()
+        # self.queue_draw()
         
     def show_shadow(self):
         '''Show shadow.'''
         self.shadow_is_visible = True
         self.window_shadow.set_padding(self.shadow_padding, self.shadow_padding, self.shadow_padding, self.shadow_padding)
-        self.queue_draw()
+        # self.queue_draw()
         
     def min_window(self):
         '''Min window.'''

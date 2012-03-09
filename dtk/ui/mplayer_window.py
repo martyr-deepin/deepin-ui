@@ -208,7 +208,7 @@ class MplayerWindow(gtk.Window):
             widget.shape_combine_mask(bitmap, 0, 0)
             
             # Redraw whole window.
-            self.queue_draw()
+            # self.queue_draw()
             # self.window_shadow.queue_draw()
             
     def shape_window_shadow(self, widget, rect):
@@ -252,7 +252,7 @@ class MplayerWindow(gtk.Window):
             widget.shape_combine_mask(bitmap, 0, 0)
             
             # Redraw whole window.
-            self.queue_draw()
+            # self.queue_draw()
             # self.window_shadow.queue_draw()
             
     def expose_window_shadow(self, widget, event):

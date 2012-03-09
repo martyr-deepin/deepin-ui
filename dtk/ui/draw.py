@@ -248,13 +248,16 @@ def draw_radial_round(cr, x, y, r, color_infos):
 #     src = surface.get_data()    
 #     src_stride = surface.get_stride()
     
+#     print type(src)
+#     print type(src_stride)
+    
 #     dst = tmp.get_data()
 #     dst_stride = tmp.get_stride()
     
 #     size = 17
 #     half = 17 / 2
 
-#     kernel = []
+#     kernel = range(0, size)
 #     a = 0
 #     for i in range(0, size):
 #         f = i - half
@@ -265,12 +268,12 @@ def draw_radial_round(cr, x, y, r, color_infos):
 #         s = src + i * src_stride
 #         d = dst + i * dst_stride
 #         for j in range(0, width):
-#             if (radious < j && j < width - radious):
+#             if radious < j and j < width - radious:
 #                 continue
 
 #             x = y = z = w = 0
 #             for k in range(0, size):
-#                 if (j - half + k < 0 || j - half + k >= width):
+#                 if j - half + k < 0 or j - half + k >= width:
 #                     continue
                 
 #                 p = s[j - half + k]
@@ -285,13 +288,13 @@ def draw_radial_round(cr, x, y, r, color_infos):
 #         s = dst + i * dst_stride
 #         d = src + i * src_stride
 #         for j in range(0, width):
-#             if (radious <= i && i < height - radious):
+#             if radious <= i and i < height - radious:
 #                 d[j] = s[j]
 #                 continue
 
 #             x = y = z = w = 0
 #             for k in range(0, size):
-#                 if (i - half + k < 0 || i - half + k >= height):
+#                 if i - half + k < 0 or i - half + k >= height:
 #                     continue
                 
 #                 s = dst + (i - half + k) * dst_stride
@@ -300,6 +303,10 @@ def draw_radial_round(cr, x, y, r, color_infos):
 #                 x += ((p >> 24) & 0xff) * kernel[k]
 #                 y += ((p >> 16) & 0xff) * kernel[k]
 #                 z += ((p >> 8) & 0xff) * kernel[k]
-#                 w += 
+#                 w += ((p >> 0) & 0xff * kernel[k])
+                
+#             d[j] = (x / a << 24) | (y / a << 16) | (z / a << 8) | w / a    
+            
+#     surface.mark_dirty()
 
 # draw_text("Linux Deepin", None, None, 11, 2)
