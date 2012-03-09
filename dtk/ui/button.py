@@ -296,3 +296,80 @@ def expose_max_button(widget, event, sub_dir, max_path_prefix, unmax_path_prefix
     
     return True
 
+class ToggleButton(gtk.ToggleButton):
+    '''Image button.'''
+	
+    def __init__(self, inactive_dpixbuf, active_dpixbuf, hover_dpixbuf=None, scale_x=False, content=None):
+        '''Init font button.'''
+        gtk.ToggleButton.__init__(self)
+        draw_toggle_button(self, inactive_dpixbuf, active_dpixbuf, hover_dpixbuf, scale_x, content)
+        
+gobject.type_register(ToggleButton)
+
+def draw_toggle_button(widget, inactive_dpixbuf, active_dpixbuf, hover_dpixbuf, 
+                       scale_x=False, button_label=None, font_size=DEFAULT_FONT_SIZE, 
+                       label_dcolor=ui_theme.get_color("buttonDefaultFont")):
+    '''Create button.'''
+    # Init request size.
+    if scale_x:
+        request_width = get_content_size(button_label, font_size)[0]
+    else:
+        request_width = inactive_dpixbuf.get_pixbuf().get_width()
+    request_height = inactive_dpixbuf.get_pixbuf().get_height()
+    widget.set_size_request(request_width, request_height)
+    
+    # Expose button.
+    widget.connect("expose-event", lambda w, e: expose_toggle_button(
+            w, e,
+            scale_x, False,
+            inactive_dpixbuf, active_dpixbuf, hover_dpixbuf, 
+            button_label, font_size, label_dcolor))
+        
+def expose_toggle_button(widget, event, 
+                         scale_x, scaleY,
+                         inactive_dpixbuf, active_dpixbuf, hover_dpixbuf, 
+                         button_label, font_size, label_dcolor):
+    '''Expose function to replace event box's image.'''
+    # Init.
+    rect = widget.allocation
+    
+    # Get pixbuf along with button's sate.
+    if widget.state == gtk.STATE_INACTIVE:
+        image = inactive_dpixbuf.get_pixbuf()
+    elif widget.state == gtk.STATE_PRELIGHT:
+        if not hover_dpixbuf:
+            if widget.get_active():
+                image = active_dpixbuf.get_pixbuf()
+            else:    
+                image = inactive_dpixbuf.get_pixbuf()
+        else:    
+            image = hover_dpixbuf.get_pixbuf()
+    elif widget.state == gtk.STATE_ACTIVE:
+        image = active_dpixbuf.get_pixbuf()
+    
+    # Init size.
+    if scale_x:
+        image_width = widget.allocation.width
+    else:
+        image_width = image.get_width()
+        
+    if scaleY:
+        image_height = widget.allocation.height
+    else:
+        image_height = image.get_height()
+    
+    # Draw button.
+    pixbuf = image.scale_simple(image_width, image_height, gtk.gdk.INTERP_BILINEAR)
+    cr = widget.window.cairo_create()
+    draw_pixbuf(cr, pixbuf, widget.allocation.x, widget.allocation.y)
+    
+    # Draw font.
+    if button_label:
+        draw_font(cr, button_label, font_size, 
+                  label_dcolor.get_color(),
+                  rect.x, rect.y, rect.width, rect.height)
+
+    # Propagate expose to children.
+    propagate_expose(widget, event)
+    
+    return True
