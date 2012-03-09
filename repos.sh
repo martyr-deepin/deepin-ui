@@ -41,10 +41,10 @@ case "$1" in
         git push git@github.com:$2/deepin-software-center.git --tag
         ;;
     "build"  )
-        debuild || dh clean
+        sudo python setup.py build
         ;;
     "install"  )
-        debuild || dh clean || sudo dpkg -i ../python-deepin-ui_0.0.0+20120306-1_all.deb
+        sudo python setup.py install
         ;;
     * ) 
         echo "Help"
