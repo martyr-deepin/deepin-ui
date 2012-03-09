@@ -41,13 +41,11 @@ class Navigatebar(object):
         # Init item box.
         self.nav_item_box = gtk.HBox()
         self.nav_box.pack_start(self.nav_item_box, False, False)
-        self.item_dict = {}
         
         # Add navigate item.
         if items:
             for (index, item) in enumerate(items):
                 nav_item = NavItem(item, index, font_size, padding_x, padding_y, self.set_index, self.get_index)
-                self.item_dict[index] = nav_item
                 self.nav_item_box.pack_start(nav_item.item_box, False, False)
                 
         # Add separator.
@@ -62,7 +60,7 @@ class Navigatebar(object):
         
     def set_index(self, index):
         '''Set index.'''
-        self.item_dict[self.nav_index].item_box.queue_draw()
+        self.nav_item_box.queue_draw()
         self.nav_index = index
         
     def get_index(self):

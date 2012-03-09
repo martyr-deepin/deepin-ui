@@ -42,7 +42,6 @@ class Categorybar(object):
         # Init category box.
         self.category_item_box = gtk.VBox()
         self.category_event_box.add(self.category_item_box)
-        self.item_dict = {}
         
         # Init item.
         if items:
@@ -50,7 +49,6 @@ class Categorybar(object):
             for (index, item) in enumerate(items):
                 category_item = CategoryItem(item, index, font_size, icon_width, padding_left, padding_middle, padding_right,
                                  self.set_index, self.get_index)
-                self.item_dict[index] = category_item
                 self.category_item_box.pack_start(category_item)
                 
         # Show.
@@ -58,7 +56,7 @@ class Categorybar(object):
         
     def set_index(self, index):
         '''Set index.'''
-        self.item_dict[index].queue_draw()
+        self.category_item_box.queue_draw()
         self.category_index = index
         
     def get_index(self):
@@ -86,10 +84,11 @@ class CategoryItem(gtk.Button):
         gtk.Button.__init__(self)
         self.font_size = font_size
         self.index = index
+        self.set_index = set_index
         self.get_index = get_index
         self.padding_left = padding_left
         self.padding_right = padding_right
-        (self.icon_dpixbuf, self.content, clicked_callback) = item
+        (self.icon_dpixbuf, self.content, self.clicked_callback) = item
         (content_width, font_height) = get_content_size(self.content, self.font_size)
         
         # Init item button.
@@ -105,13 +104,13 @@ class CategoryItem(gtk.Button):
 
         widget_fix_cycle_destroy_bug(self)
         self.connect("expose-event", self.expose_category_item)    
-        self.connect("clicked", lambda w: self.wrap_category_item_clicked_action(clicked_callback, set_index, index))
+        self.connect("clicked", lambda w: self.wrap_category_item_clicked_action())
 
-    def wrap_category_item_clicked_action(self, clicked_callback, set_index, index):
+    def wrap_category_item_clicked_action(self):
         '''Wrap clicked action.'''
-        if clicked_callback:
-            clicked_callback()
-        set_index(index)
+        if self.clicked_callback:
+            self.clicked_callback()
+        self.set_index(self.index)
 
     def expose_category_item(self, widget, event):
         '''Expose navigate item.'''
