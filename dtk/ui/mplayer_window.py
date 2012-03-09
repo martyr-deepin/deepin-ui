@@ -66,9 +66,10 @@ class MplayerWindow(gtk.Window):
         
     def adjust_window_shadow(self, widget, event):
         '''Adjust window shadow position and size. '''
-        print "############"
-        self.window_shadow.move(event.x - self.shadow_padding, event.y - self.shadow_padding)
-        self.window_shadow.resize(event.width + self.shadow_padding * 2, event.height + self.shadow_padding * 2)
+        (x, y) = self.get_position()
+        (width, height) = self.get_size()
+        self.window_shadow.resize(width + self.shadow_padding * 2, height + self.shadow_padding * 2)
+        self.window_shadow.move(x - self.shadow_padding, y - self.shadow_padding)
         
     def show_window(self):
         '''Show.'''
@@ -182,7 +183,6 @@ class MplayerWindow(gtk.Window):
         
     def shape_window(self, widget, rect):
         '''Shap window.'''
-        print "!!!!!!!!!!!!!!!!!!"
         if rect.width > 0 and rect.height > 0:
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
@@ -257,7 +257,6 @@ class MplayerWindow(gtk.Window):
             
     def expose_window_shadow(self, widget, event):
         '''Callback for 'expose-event' event of window shadow.'''
-        # print "**************"
         if self.shadow_is_visible:
             # Init.
             cr = widget.window.cairo_create()

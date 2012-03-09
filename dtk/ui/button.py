@@ -334,7 +334,7 @@ def expose_toggle_button(widget, event,
     rect = widget.allocation
     
     # Get pixbuf along with button's sate.
-    if widget.state == gtk.STATE_INACTIVE:
+    if widget.state == gtk.STATE_NORMAL:
         image = inactive_dpixbuf.get_pixbuf()
     elif widget.state == gtk.STATE_PRELIGHT:
         if not hover_dpixbuf:
