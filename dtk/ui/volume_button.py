@@ -57,8 +57,8 @@ class VolumeButton(gtk.HBox):
         self.volume_progressbar.set_range(min_value, max_value)
         self.volume_progressbar.set_value(init_value)
         self.volume_progressbar.set_draw_value(False)
-        self.play_status = play_status
         self.focus_status = False
+        self.set_play_status(play_status)
         set_clickable_cursor(self.volume_progressbar)
         
         # Init size and child widgets.
@@ -80,6 +80,11 @@ class VolumeButton(gtk.HBox):
         self.volume_button.connect("expose-event", self.expose_volume_button)
         self.volume_progressbar.connect("expose-event", self.expose_volume_progressbar)
         self.volume_progressbar.connect("button-press-event", self.press_volume_progressbar)
+        
+    def set_play_status(self, play_status):
+        '''Set play status.'''
+        self.play_status = play_status
+        self.volume_button.set_active(play_status)
         
     def toggle_volume_button(self, widget):
         '''Toggle volume button.'''
@@ -160,6 +165,9 @@ class VolumeButton(gtk.HBox):
         rect = widget.allocation
         lower = self.volume_progressbar.get_adjustment().get_lower()
         upper = self.volume_progressbar.get_adjustment().get_upper()
+        
+        # Change to play status.
+        self.set_play_status(True)
         
         # Set value.
         self.volume_progressbar.set_value(lower + (event.x / rect.width) * (upper - lower))
