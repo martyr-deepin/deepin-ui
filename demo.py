@@ -41,8 +41,8 @@ app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "a
 
 if __name__ == "__main__":
     # Init application.
-    # application = Application("demo")
-    application = Application("demo", False)
+    application = Application("demo")
+    # application = Application("demo", False)
     
     # Set application default size.
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
