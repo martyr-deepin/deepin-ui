@@ -80,6 +80,7 @@ class VolumeButton(gtk.HBox):
         self.volume_button.connect("expose-event", self.expose_volume_button)
         self.volume_progressbar.connect("expose-event", self.expose_volume_progressbar)
         self.volume_progressbar.connect("button-press-event", self.press_volume_progressbar)
+        self.volume_progressbar.get_adjustment().connect("value-changed", self.monitor_volume_change)
         
     def set_play_status(self, play_status):
         '''Set play status.'''
@@ -165,14 +166,23 @@ class VolumeButton(gtk.HBox):
         rect = widget.allocation
         lower = self.volume_progressbar.get_adjustment().get_lower()
         upper = self.volume_progressbar.get_adjustment().get_upper()
+        value = self.volume_progressbar.get_adjustment().get_value()
         
         # Change to play status.
-        self.set_play_status(True)
+        if value != lower:
+            self.set_play_status(True)
         
         # Set value.
         self.volume_progressbar.set_value(lower + (event.x / rect.width) * (upper - lower))
         self.queue_draw()
         
         return False
+    
+    def monitor_volume_change(self, adjustment):
+        '''Monitor volume change.'''
+        # Disable play status when drag to lower position.
+        if adjustment.get_value() == adjustment.get_lower():
+            self.set_play_status(False)
+            self.queue_draw()
 
 gobject.type_register(VolumeButton)
