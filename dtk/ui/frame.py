@@ -45,6 +45,6 @@ class VerticalFrame(gtk.Alignment):
         # Init.
         gtk.Alignment.__init__(self)
         self.set(xalign, yalign, xscale, yscale)
-        self.set_padding(0, 0, padding, padding)
+        self.set_padding(padding, padding, 0, 0)
 
 gobject.type_register(VerticalFrame)

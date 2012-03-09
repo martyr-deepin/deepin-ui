@@ -33,6 +33,7 @@ class VolumeButton(gtk.HBox):
                  init_value=100,
                  min_value=0,
                  max_value=100,
+                 volume_padding=0,
                  play_status=True,
                  play_normal_dpixbuf=ui_theme.get_pixbuf("volumebutton/play_normal.png"),
                  play_hover_dpixbuf=ui_theme.get_pixbuf("volumebutton/play_hover.png"),
@@ -52,6 +53,7 @@ class VolumeButton(gtk.HBox):
         self.volume_bg_dpixbuf = volume_bg_dpixbuf
         self.bg_num = 10
         self.middle_padding = 4
+        self.volume_padding = volume_padding
         self.volume_button = gtk.ToggleButton()
         self.volume_progressbar = gtk.HScale()
         self.volume_progressbar.set_range(min_value, max_value)
@@ -63,7 +65,7 @@ class VolumeButton(gtk.HBox):
         
         # Init size and child widgets.
         self.set_size_request(
-            self.play_normal_dpixbuf.get_pixbuf().get_width() + self.volume_bg_dpixbuf.get_pixbuf().get_width() * self.bg_num + self.middle_padding,
+            self.play_normal_dpixbuf.get_pixbuf().get_width() + self.volume_bg_dpixbuf.get_pixbuf().get_width() * self.bg_num + self.volume_padding * (self.bg_num - 1) + self.middle_padding,
             self.play_normal_dpixbuf.get_pixbuf().get_height()
             )
         self.volume_button_align = gtk.Alignment()
@@ -140,19 +142,23 @@ class VolumeButton(gtk.HBox):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         # Draw background.
-        for i in range(0, 10):
+        for i in range(0, self.bg_num):
             draw_pixbuf(cr, self.volume_bg_dpixbuf.get_pixbuf(), 
-                        x + i * self.volume_bg_dpixbuf.get_pixbuf().get_width(),
+                        x + i * (self.volume_bg_dpixbuf.get_pixbuf().get_width() + self.volume_padding),
                         y + (h - self.volume_bg_dpixbuf.get_pixbuf().get_height()) / 2)
             
         # Draw foreground.
         if self.play_status:
-            total_length = self.volume_progressbar.get_adjustment().get_upper()
-            value = int(self.volume_progressbar.get_value() / total_length * 100) / 10
+            upper = self.volume_progressbar.get_adjustment().get_upper() 
+            lower = self.volume_progressbar.get_adjustment().get_lower() 
+            value = self.volume_progressbar.get_adjustment().get_value()
+            total_length = upper - lower
+            pos = value - lower
+            value = int((pos / total_length * w / (self.volume_bg_dpixbuf.get_pixbuf().get_width() + self.volume_padding)) + 1)
             
             for i in range(0, value):
                 draw_pixbuf(cr, self.volume_fg_dpixbuf.get_pixbuf(), 
-                            x + i * self.volume_fg_dpixbuf.get_pixbuf().get_width(),
+                            x + i * (self.volume_fg_dpixbuf.get_pixbuf().get_width() + self.volume_padding),
                             y + (h - self.volume_fg_dpixbuf.get_pixbuf().get_height()) / 2)
 
         # Propagate expose to children.
