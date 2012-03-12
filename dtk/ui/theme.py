@@ -256,11 +256,11 @@ class Theme(object):
             self.color_dict[color_name] = DynamicColor(color)
 
         # Init dynamic alpha colors.
-        for (color_name, color_info) in theme_info["alphaColors"].items():
+        for (color_name, color_info) in theme_info["alpha_colors"].items():
             self.alpha_color_dict[color_name] = DynamicAlphaColor(color_info)
         
         # Init dynamic shadow colors.
-        for (color_name, color_info) in theme_info["shadowColors"].items():
+        for (color_name, color_info) in theme_info["shadow_colors"].items():
             self.shadow_color_dict[color_name] = DynamicShadowColor(color_info)
             
         # Scan animation.
@@ -271,7 +271,7 @@ class Theme(object):
                 self.animation_dict[path] = DynamicPixbufAnimation(self.get_animation_path(path))
                 
         # Scan text styles.
-        for (text_style_name, text_style) in theme_info["textStyles"].items():
+        for (text_style_name, text_style) in theme_info["text_styles"].items():
             self.text_style_dict[text_style_name] = DynamicTextStyle(text_style)
                 
     def get_image_dir(self):
@@ -345,11 +345,11 @@ class Theme(object):
             self.color_dict[color_name].update(color)
             
         # Update dynamic alpha colors.
-        for (color_name, color_info) in theme_info["alphaColors"].items():
+        for (color_name, color_info) in theme_info["alpha_colors"].items():
             self.alpha_color_dict[color_name].update(color_info)
             
         # Update shadow colors.
-        for (color_name, color_info) in theme_info["shadowColors"].items():
+        for (color_name, color_info) in theme_info["shadow_colors"].items():
             self.shadow_color_dict[color_name].update(color_info)
             
         # Update animation.
