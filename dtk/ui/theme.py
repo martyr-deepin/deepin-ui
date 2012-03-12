@@ -201,6 +201,21 @@ class DynamicImage(object):
             
         return False
     
+class DynamicTextStyle(object):
+    '''Dynamic text style.'''
+	
+    def __init__(self, text_style):
+        '''Init dynamic text style.'''
+        self.update(text_style)
+
+    def update(self, text_style):
+        '''Update text style.'''
+        self.text_style = text_style
+                
+    def get_style(self):
+        '''Get text style.'''
+        return self.text_style
+    
 class Theme(object):
     '''Ui_Theme.'''
     
@@ -217,13 +232,14 @@ class Theme(object):
                 self.theme_name = themes[0]
         else:
             self.theme_name = theme_name
-        self.color_path = "colors.txt"
+        self.theme_path = "theme.txt"
         self.ticker = 0
         self.pixbuf_dict = {}
         self.color_dict = {}
         self.alpha_color_dict = {}
         self.shadow_color_dict = {}
         self.animation_dict = {}
+        self.text_style_dict = {}
         
         # Scan theme files.
         image_dir = self.get_image_dir()
@@ -232,19 +248,19 @@ class Theme(object):
                 path = (os.path.join(root, filepath)).split(image_dir)[1]
                 self.pixbuf_dict[path] = DynamicPixbuf(self.get_image_path(path))
                 
-        # Scan dynamic colors file.
-        colors = eval_file(self.get_color_path(self.color_path))
+        # Scan dynamic theme_info file.
+        theme_info = eval_file(self.get_theme_path(self.theme_path))
         
         # Init dynamic colors.
-        for (color_name, color) in colors["colors"].items():
+        for (color_name, color) in theme_info["colors"].items():
             self.color_dict[color_name] = DynamicColor(color)
 
         # Init dynamic alpha colors.
-        for (color_name, color_info) in colors["alphaColors"].items():
+        for (color_name, color_info) in theme_info["alphaColors"].items():
             self.alpha_color_dict[color_name] = DynamicAlphaColor(color_info)
         
         # Init dynamic shadow colors.
-        for (color_name, color_info) in colors["shadowColors"].items():
+        for (color_name, color_info) in theme_info["shadowColors"].items():
             self.shadow_color_dict[color_name] = DynamicShadowColor(color_info)
             
         # Scan animation.
@@ -253,6 +269,10 @@ class Theme(object):
             for filepath in files:
                 path = (os.path.join(root, filepath)).split(animation_dir)[1]
                 self.animation_dict[path] = DynamicPixbufAnimation(self.get_animation_path(path))
+                
+        # Scan text styles.
+        for (text_style_name, text_style) in theme_info["textStyles"].items():
+            self.text_style_dict[text_style_name] = DynamicTextStyle(text_style)
                 
     def get_image_dir(self):
         '''Get theme directory.'''
@@ -274,7 +294,7 @@ class Theme(object):
         '''Get theme directory.'''
         return os.path.join(self.theme_dir, "%s/" % (self.theme_name))                
     
-    def get_color_path(self, path):
+    def get_theme_path(self, path):
         '''Get pixbuf path.'''
         return os.path.join(self.get_theme_dir(), path)
             
@@ -285,6 +305,10 @@ class Theme(object):
     def get_pixbuf_animation(self, path):
         '''Get dynamic pixbuf animation.'''
         return self.animation_dict[path]
+    
+    def get_text_style(self, style_name):
+        '''Get text style.'''
+        return self.text_style_dict[style_name]
     
     def get_color(self, color_name):
         '''Get dynamic color.'''
@@ -315,22 +339,26 @@ class Theme(object):
             pixbuf.update(self.get_image_path(path))
             
         # Update dynamic colors.
-        colors = eval_file(self.get_color_path(self.color_path))
+        theme_info = eval_file(self.get_theme_path(self.theme_path))
             
-        for (color_name, color) in colors["colors"].items():
+        for (color_name, color) in theme_info["colors"].items():
             self.color_dict[color_name].update(color)
             
         # Update dynamic alpha colors.
-        for (color_name, color_info) in colors["alphaColors"].items():
+        for (color_name, color_info) in theme_info["alphaColors"].items():
             self.alpha_color_dict[color_name].update(color_info)
             
         # Update shadow colors.
-        for (color_name, color_info) in colors["shadowColors"].items():
+        for (color_name, color_info) in theme_info["shadowColors"].items():
             self.shadow_color_dict[color_name].update(color_info)
             
         # Update animation.
         for (path, animation) in self.animation_dict.items():
             animation.update(self.get_animation_path(path))
+            
+        # Update text style.
+        for (text_style_name, text_style) in self.text_style_dict.items():
+            self.text_style_dict[text_style_name].update(text_style)
             
         # Remeber ui_theme.
         write_file("./defaultTheme", new_theme_name)

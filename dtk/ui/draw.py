@@ -220,8 +220,7 @@ def draw_radial_round(cr, x, y, r, color_infos):
 
 
 def draw_text(cr, rx, ry, rw, rh, text, 
-              text_color, gaussian_color, border_color, 
-              font_size, gaussian_radious, border_radious):
+              (text_color, gaussian_color, border_color, font_size, gaussian_radious, border_radious)):
     '''Draw text.'''
     # Get text size.
     (text_width, text_height) = get_content_size(text, font_size)

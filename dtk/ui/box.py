@@ -70,13 +70,13 @@ gobject.type_register(ImageBox)
 class TextBox(gtk.EventBox):
     '''Box just contain text.'''
 	
-    def __init__(self, text, label_dcolor):
+    def __init__(self, text, text_style=ui_theme.get_text_style("titlebar")):
         '''Init text box.'''
         # Init.
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
         self.text = text
-        self.label_dcolor = label_dcolor
+        self.text_style = text_style
         
         # Request size.
         (font_width, font_height) = get_content_size(text, DEFAULT_FONT_SIZE)
@@ -97,9 +97,10 @@ class TextBox(gtk.EventBox):
         rect = widget.allocation
         
         # Draw text.
-        draw_font(cr, self.text, DEFAULT_FONT_SIZE, 
-                  self.label_dcolor.get_color(),
-                  rect.x, rect.y, rect.width, rect.height)
+        draw_text(cr, 
+                  rect.x, rect.y, rect.width, rect.height,
+                  self.text, 
+                  self.text_style.get_style())
         
         # Propagate expose.
         propagate_expose(widget, event)

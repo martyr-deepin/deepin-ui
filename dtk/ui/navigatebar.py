@@ -150,15 +150,11 @@ class NavItem(object):
             rect.y)
         
         # Draw font.
-        # draw_font(cr, self.content, self.font_size, 
-        #          ui_theme.get_color("navigateItem").get_color(),
-        #          rect.x, rect.y + nav_item_pixbuf.get_height(),
-        #          rect.width, rect.height - nav_item_pixbuf.get_height(),
-        #          )
-        
-        draw_text(cr, rect.x, rect.y + nav_item_pixbuf.get_height() - 4, 
+        draw_text(cr, 
+                  rect.x, rect.y + nav_item_pixbuf.get_height() - 4, 
                   rect.width, rect.height - nav_item_pixbuf.get_height(),
-                  self.content, "#FFFFFF", "#000000", "#000000", 11, 4, 1)
+                  self.content, 
+                  ui_theme.get_text_style("default").get_style())
         
         # Propagate expose to children.
         propagate_expose(widget, event)

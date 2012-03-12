@@ -62,7 +62,7 @@ class Titlebar(object):
                     
         # Add app name.
         if app_name != None:
-            self.app_name_box = TextBox(app_name, ui_theme.get_color("titlebar"))
+            self.app_name_box = TextBox(app_name)
             self.app_name_align = gtk.Alignment()
             self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
             self.app_name_align.set_padding(0, 0, 0, 0)
@@ -71,7 +71,7 @@ class Titlebar(object):
         
         # Add title.
         if title != None:
-            self.title_box = TextBox(title, ui_theme.get_color("titlebar"))
+            self.title_box = TextBox(title)
             self.title_align = gtk.Alignment()
             self.title_align.set(0.5, 0.5, 0.0, 0.0)
             self.title_align.set_padding(0, 0, 0, 0)

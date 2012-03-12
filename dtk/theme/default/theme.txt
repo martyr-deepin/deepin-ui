@@ -109,23 +109,27 @@
 		(0.95,	("#EF0000", 0.5)),
 		(1,		("#EF0000", 0.0)),
 	 ],
-	 "buttonAngle":[
+	 "buttonAngle" : [
 	    (1,("#b18ecf",0.4)),
 	 ],
-	 "buttonBorder":[
+	 "buttonBorder" : [
 	    (1, ("#b18ecf", 1)),
 	 ],
-	 "buttonBackgroundNormal":[ 
+	 "buttonBackgroundNormal" : [ 
 		(0, ("#e0c1f0",1)),
         (1, ("#d7b7ed",1)),
      ],
-     "buttonBackgroundPrelight":[
+     "buttonBackgroundPrelight" : [
         (0, ("#e9dbf5",1)),
         (1, ("#decdf0",1)),
      ],
-     "buttonBackgroundActive":[
+     "buttonBackgroundActive" : [
         (0, ("#cfa2e4",1)),
         (1, ("#c797e0",1)),
      ],
- }
+ },
+ "textStyles" : {
+     "default" : ("#FFFFFF", "#000000", "#000000", 11, 4, 1),
+     "titlebar" : ("#FFFFFF", "#000000", "#000000", 11, 2, 1),
+ },
 }
