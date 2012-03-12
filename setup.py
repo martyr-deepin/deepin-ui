@@ -3,6 +3,7 @@
 from distutils.core import setup, Extension
 from setuptools import find_packages
 import os
+import commands
 
 def list_files(target_dir, install_dir):
     '''List files for option `data_files`.'''
@@ -15,13 +16,12 @@ def list_files(target_dir, install_dir):
             print results
     return results                
 
+def pkg_config_cflags(pkgs):
+    '''List all include paths that output by `pkg-config --cflags pkgs`'''
+    return map(lambda path: path[2::], commands.getoutput('pkg-config --cflags-only-I %s' % (' '.join(pkgs))).split())
+
 mod = Extension('dtk.ui.cairo_blur',
-                include_dirs = ['/usr/include/cairo',
-                                '/usr/include/pixman-1',
-                                '/usr/include/freetype2',
-                                '/usr/include/libpng12',
-                                '/usr/include/glib-2.0',
-                                '/usr/lib/x86_64-linux-gnu/glib-2.0/include'],
+                include_dirs = pkg_config_cflags(['cairo']),
                 libraries = ['cairo', 'pthread', 'glib-2.0'],
                 sources = ['dtk/ui/cairo_blur.c'])
 
