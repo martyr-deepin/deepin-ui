@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import dtk_cairo_blur    
 import gtk
 import cairo
 from theme import *
@@ -217,7 +218,6 @@ def draw_radial_round(cr, x, y, r, color_infos):
     cr.set_source(radial)
     cr.fill()
 
-import cairo_blur    
 
 def draw_text(cr, rx, ry, rw, rh, text, 
               text_color, gaussian_color, border_color, 
@@ -235,12 +235,12 @@ def draw_text(cr, rx, ry, rw, rh, text,
     # Draw gaussian light.
     text_cr.save()
     draw_font(text_cr, text, font_size, gaussian_color, 0, 0, width, height)
-    cairo_blur.gaussian_blur(surface, gaussian_radious)
+    dtk_cairo_blur.gaussian_blur(surface, gaussian_radious)
     text_cr.restore()
 
     # Draw gaussian border.
     draw_font(text_cr, text, font_size, border_color, 0, 0, width, height)
-    cairo_blur.gaussian_blur(surface, border_radious)
+    dtk_cairo_blur.gaussian_blur(surface, border_radious)
     
     # Draw font.
     draw_font(text_cr, text, font_size, text_color, 0, 0, width, height)

@@ -12,10 +12,10 @@
 
 /* static void blur_image_surface (cairo_surface_t *surface, int radius); */
 static void blur_image_surface (cairo_surface_t *surface, double radius);
-static PyObject* cairo_blur_gaussian_blur(PyObject* self, PyObject* args);
+static PyObject* dtk_cairo_blur_gaussian_blur(PyObject* self, PyObject* args);
 
 static PyMethodDef cairo_blur_methods[] = {
-     {"gaussian_blur", cairo_blur_gaussian_blur, METH_VARARGS,
+     {"gaussian_blur", dtk_cairo_blur_gaussian_blur, METH_VARARGS,
       "Perform a gaussian blur of the specified radius on a cairo surface"},
      {NULL, NULL, 0, NULL}
 };
@@ -36,10 +36,10 @@ static inline struct _pixel _num_to_pixel_with_factor (guint32 value, int factor
 static inline guint32 _pixel_to_num_with_divisor (struct _pixel *pixel, int divisor);
 static inline void _pixel_plus (struct _pixel *adder_sum, const struct _pixel *adder2);
 
-PyMODINIT_FUNC initcairo_blur(void) {
+PyMODINIT_FUNC initdtk_cairo_blur(void) {
      PyObject *m;
 
-     m = Py_InitModule("cairo_blur", cairo_blur_methods);
+     m = Py_InitModule("dtk_cairo_blur", cairo_blur_methods);
 
      if (!m) {
           return;
@@ -47,7 +47,7 @@ PyMODINIT_FUNC initcairo_blur(void) {
 }
 
 
-static PyObject* cairo_blur_gaussian_blur(PyObject* self, PyObject* args) {
+static PyObject* dtk_cairo_blur_gaussian_blur(PyObject* self, PyObject* args) {
      PycairoSurface* surface = NULL;
      double radius = 0;
 
