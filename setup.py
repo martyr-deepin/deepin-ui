@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-from distutils.core import setup
+from distutils.core import setup, Extension
 from setuptools import find_packages
 import os
 
@@ -15,6 +15,16 @@ def list_files(target_dir, install_dir):
             print results
     return results                
 
+mod = Extension('dtk.ui.cairo_blur',
+                include_dirs = ['/usr/include/cairo',
+                                '/usr/include/pixman-1',
+                                '/usr/include/freetype2',
+                                '/usr/include/libpng12',
+                                '/usr/include/glib-2.0',
+                                '/usr/lib/x86_64-linux-gnu/glib-2.0/include'],
+                libraries = ['cairo', 'pthread', 'glib-2.0'],
+                sources = ['dtk/ui/cairo_blur.c'])
+
 setup(name='dtk',
       version='0.1',
       description='UI toolkit for Linux Deepin.',
@@ -26,6 +36,7 @@ setup(name='dtk',
       download_url="git://github.com/manateelazycat/deepin-ui-toolkit.git",
       platforms = ['Linux'],
       packages = ['dtk', 'dtk.ui'],
-      data_files = list_files("dtk/theme","dtk/theme")
+      data_files = list_files("dtk/theme","dtk/theme"),
+      ext_modules = [mod]
       )
 

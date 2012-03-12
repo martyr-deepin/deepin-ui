@@ -40,6 +40,13 @@ def draw_radial_ring(cr, x, y, outer_radius, inner_radius, color_infos):
         # Draw radial round.
         draw_radial_round(cr, x, y, outer_radius, color_infos)
         
+def get_desktop_pixbuf():
+    '''Get desktop snapshot.'''
+    rootWindow = gtk.gdk.get_default_root_window() 
+    [width, height] = rootWindow.get_size() 
+    pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, width, height)
+    return pixbuf.get_from_drawable(rootWindow, rootWindow.get_colormap(), 0, 0, 0, 0, width, height) 
+    
 def draw_round_rectangle(cr, x, y, width, height, r):
     '''Draw round rectangle.'''
     # Top side.
@@ -137,10 +144,11 @@ def draw_font(cr, text, font_size, font_color, x, y, width, height, x_align=ALIG
     if y_align == ALIGN_START:
         text_y = y
     elif y_align == ALIGN_END:
-        text_y = y + height
+        text_y = y + height - text_height
     else:
-        text_y = y + (height + text_height) / 2
-    cr.move_to(text_x, text_y - text_height)
+        text_y = y + (height - text_height) / 2
+        
+    cr.move_to(text_x, text_y)
     
     # Draw text.
     cr.set_source_rgb(*color_hex_to_cairo(font_color))
@@ -209,104 +217,51 @@ def draw_radial_round(cr, x, y, r, color_infos):
     cr.set_source(radial)
     cr.fill()
 
-# def draw_text(text, foreground, background, font_size, gaussian_radious):
-#     '''Draw text.'''
-#     (text_width, text_height) = get_content_size(text, font_size)
-#     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, text_width, text_height);
-#     cr = cairo.Context(surface)
-#     cr.set_source_rgb(1, 1, 1)
-#     cr.rectangle(0, 0, text_width, text_height)
-#     cr.fill()
-    
-#     cr.set_source_rgb(0, 0, 0)
-#     cr.set_font_size(font_size)
-#     cr.move_to(0, font_size)
-#     cr.show_text(text)
-#     cr.fill()
-    
-#     surface_gaussion_blur(surface, gaussian_radious)
-    
-#     # cr.set_source_rgb(0, 0, 1)
-#     # cr.set_font_size(font_size)
-#     # cr.move_to(0, font_size)
-#     # cr.show_text(text)
-#     # cr.fill()
-        
-#     surface.write_to_png("test.png")
-    
-# import copy    
-# import math
-    
-# def surface_gaussion_blur(surface, radious):
-#     '''Gaussian blur surface.'''
-#     surface.flush()
-#     width = surface.get_width()
-#     height = surface.get_height()
-    
-#     tmp = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height);
-    
-#     src = surface.get_data()    
-#     src_stride = surface.get_stride()
-    
-#     print type(src)
-#     print type(src_stride)
-    
-#     dst = tmp.get_data()
-#     dst_stride = tmp.get_stride()
-    
-#     size = 17
-#     half = 17 / 2
+import cairo_blur    
 
-#     kernel = range(0, size)
-#     a = 0
-#     for i in range(0, size):
-#         f = i - half
-#         kernel[i] = math.exp(-f * f / 30.0) * 80
-#         a += kernel[i]
-        
-#     for i in range(0, height):
-#         s = src + i * src_stride
-#         d = dst + i * dst_stride
-#         for j in range(0, width):
-#             if radious < j and j < width - radious:
-#                 continue
+def draw_text(cr, rx, ry, rw, rh, text, 
+              text_color, gaussian_color, border_color, 
+              font_size, gaussian_radious, border_radious):
+    '''Draw text.'''
+    # Get text size.
+    (text_width, text_height) = get_content_size(text, font_size)
+    width = max(text_width + gaussian_radious * 2, rw)
+    height = max(text_height + gaussian_radious * 2, rh)
+    
+    # Create text cairo context.
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height);
+    text_cr = cairo.Context(surface)
+    
+    # Draw gaussian light.
+    text_cr.save()
+    draw_font(text_cr, text, font_size, gaussian_color, 0, 0, width, height)
+    cairo_blur.gaussian_blur(surface, gaussian_radious)
+    text_cr.restore()
 
-#             x = y = z = w = 0
-#             for k in range(0, size):
-#                 if j - half + k < 0 or j - half + k >= width:
-#                     continue
-                
-#                 p = s[j - half + k]
-#                 x += ((p >> 24) & 0xff) * kernel[k]
-#                 y += ((p >> 16) & 0xff) * kernel[k]
-#                 z += ((p >> 8) & 0xff) * kernel[k]
-#                 w += ((p >> 0) & 0xff) * kernel[k]
-                
-#             d[j] = (x / a << 24) | (y / a << 16) | (z / a << 8) | w / a
+    # Draw gaussian border.
+    draw_font(text_cr, text, font_size, border_color, 0, 0, width, height)
+    cairo_blur.gaussian_blur(surface, border_radious)
+    
+    # Draw font.
+    draw_font(text_cr, text, font_size, text_color, 0, 0, width, height)
+    
+    # Render gaussian text to target cairo context.
+    cr.set_source_surface(surface, rx, ry)
+    cr.paint()
 
-#     for i in range(0, height):
-#         s = dst + i * dst_stride
-#         d = src + i * src_stride
-#         for j in range(0, width):
-#             if radious <= i and i < height - radious:
-#                 d[j] = s[j]
-#                 continue
+def draw_test():
+    '''docs'''
+    width = 1366
+    height = 768
 
-#             x = y = z = w = 0
-#             for k in range(0, size):
-#                 if i - half + k < 0 or i - half + k >= height:
-#                     continue
-                
-#                 s = dst + (i - half + k) * dst_stride
-#                 p = s[j]
-                
-#                 x += ((p >> 24) & 0xff) * kernel[k]
-#                 y += ((p >> 16) & 0xff) * kernel[k]
-#                 z += ((p >> 8) & 0xff) * kernel[k]
-#                 w += ((p >> 0) & 0xff * kernel[k])
-                
-#             d[j] = (x / a << 24) | (y / a << 16) | (z / a << 8) | w / a    
-            
-#     surface.mark_dirty()
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height);
+    cr = cairo.Context(surface)
+    
+    gdkcr = gtk.gdk.CairoContext(cr)
+    draw_pixbuf(gdkcr, get_desktop_pixbuf())
 
-# draw_text("Linux Deepin", None, None, 11, 2)
+    cairo_blur.gaussian_blur(surface, 5)
+    
+    surface.write_to_png("test.png")
+    
+# draw_test()
