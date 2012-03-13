@@ -209,6 +209,10 @@ def is_double_click(event):
     '''Whether an event is double click?'''
     return event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS
 
+def is_left_button(event):
+    '''Whether event is left button.'''
+    return event.button == 1
+
 def container_remove_all(container):
     '''Remove all child widgets from container.'''
     container.foreach(lambda widget: container.remove(widget))

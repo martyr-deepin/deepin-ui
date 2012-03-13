@@ -106,14 +106,15 @@ class HScalebar(gtk.HScale):
     def press_volume_progressbar(self, widget, event):
         '''Press volume progressbar.'''
         # Init.
-        rect = widget.allocation
-        lower = self.get_adjustment().get_lower()
-        upper = self.get_adjustment().get_upper()
-        point_width = self.point_dpixbuf.get_pixbuf().get_width()
-        
-        # Set value.
-        self.set_value(lower + ((event.x - point_width / 2)  / (rect.width - point_width)) * (upper - lower))
-        self.queue_draw()
+        if is_left_button(event):
+            rect = widget.allocation
+            lower = self.get_adjustment().get_lower()
+            upper = self.get_adjustment().get_upper()
+            point_width = self.point_dpixbuf.get_pixbuf().get_width()
+            
+            # Set value.
+            self.set_value(lower + ((event.x - point_width / 2)  / (rect.width - point_width)) * (upper - lower))
+            self.queue_draw()
         
         return False
     

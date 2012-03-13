@@ -168,19 +168,20 @@ class VolumeButton(gtk.HBox):
     
     def press_volume_progressbar(self, widget, event):
         '''Press volume progressbar.'''
-        # Init.
-        rect = widget.allocation
-        lower = self.volume_progressbar.get_adjustment().get_lower()
-        upper = self.volume_progressbar.get_adjustment().get_upper()
-        value = self.volume_progressbar.get_adjustment().get_value()
-        
-        # Change to play status.
-        if value != lower:
-            self.set_play_status(True)
-        
-        # Set value.
-        self.volume_progressbar.set_value(lower + (event.x / rect.width) * (upper - lower))
-        self.queue_draw()
+        if is_left_button(event):
+            # Init.
+            rect = widget.allocation
+            lower = self.volume_progressbar.get_adjustment().get_lower()
+            upper = self.volume_progressbar.get_adjustment().get_upper()
+            value = self.volume_progressbar.get_adjustment().get_value()
+            
+            # Change to play status.
+            if value != lower:
+                self.set_play_status(True)
+            
+            # Set value.
+            self.volume_progressbar.set_value(lower + (event.x / rect.width) * (upper - lower))
+            self.queue_draw()
         
         return False
     
