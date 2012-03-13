@@ -218,7 +218,6 @@ def draw_radial_round(cr, x, y, r, color_infos):
     cr.set_source(radial)
     cr.fill()
 
-
 def draw_text(cr, rx, ry, rw, rh, text, 
               (text_color, gaussian_color, border_color, font_size, gaussian_radious, border_radious)):
     '''Draw text.'''
