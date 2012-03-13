@@ -36,16 +36,26 @@ class Titlebar(object):
                  icon_dpixbuf=None,
                  app_name=None,
                  title=None,
+                 add_separator=False
                  ):
         '''Init titlebar.'''
         # Init.
         self.box = EventBox()
-        self.layout_box = gtk.HBox()
-        self.box.add(self.layout_box)
+        self.v_layout_box = gtk.VBox()
+        self.h_layout_box = gtk.HBox()
+        self.box.add(self.v_layout_box)
+        self.v_layout_box.pack_start(self.h_layout_box, False, False)
+        
+        # Init separator.
+        if add_separator:
+            self.separator = gtk.HBox()
+            self.separator.set_size_request(-1, 1)
+            self.separator.connect("expose-event", self.expose_titlebar_separator)
+            self.v_layout_box.pack_start(self.separator, False, False)
         
         # Add drag event box.
         self.drag_box = EventBox()
-        self.layout_box.pack_start(self.drag_box, True, True)
+        self.h_layout_box.pack_start(self.drag_box, True, True)
         
         # Init left box to contain icon and title.
         self.left_box = gtk.HBox()
@@ -83,7 +93,7 @@ class Titlebar(object):
         self.button_align = gtk.Alignment()
         self.button_align.set(1.0, 0.0, 0.0, 0.0)
         self.button_align.add(self.button_box)
-        self.layout_box.pack_start(self.button_align, False, False)
+        self.h_layout_box.pack_start(self.button_align, False, False)
         
         # Add theme button.
         if "theme" in button_mask:
@@ -113,6 +123,18 @@ class Titlebar(object):
         # Show.
         self.box.show_all()
         
+    def expose_titlebar_separator(self, widget, event):
+        '''Expose nav separator.'''
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+    
+        # Draw separator.
+        cr.set_source_rgba(1, 1, 1, 0.5)
+        draw_line(cr, rect.x + 1, rect.y + 2, rect.x + rect.width - 1, rect.y + 1)
+    
+        return True
+    
     def change_title(self, title):
         '''Change title.'''
         self.title_box.change_text(title)
