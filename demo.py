@@ -119,14 +119,20 @@ if __name__ == "__main__":
     scrolled_window = ScrolledWindow()
     category_box.pack_start(scrolled_window, True, True)
     
+    items_length = 100
     items = map(lambda index: ListItem(
             "豆浆油条 %04d" % index,
-            "林俊杰 %04d" % index,
+            "林俊杰 %04d" % (index % 10),
             "10:%02d" % (index % 60),
-            ), range(0, 100))
+            ), range(0, items_length))
     list_view = ListView()
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
+    list_view.add_sorts(
+        [(lambda item: item.title, cmp),
+         (lambda item: item.artist, cmp),
+         (lambda item: item.length, cmp)]
+        )
     
     scrolled_window.add_child(list_view)
     

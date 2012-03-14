@@ -29,8 +29,8 @@ import copy
 class ListView(gtk.DrawingArea):
     '''List view.'''
     
-    SORT_DESCENDING = True
-    SORT_ASCENDING = False
+    SORT_DESCENDING = False
+    SORT_ASCENDING = True
     SORT_PADDING_X = 5
 	
     def __init__(self):
@@ -72,9 +72,13 @@ class ListView(gtk.DrawingArea):
         self.title_sorts = map_value(self.titles, lambda _: self.SORT_DESCENDING)
         self.set_title_height(title_height)
         
-    def add_sorts(self, sorts):
+    def add_sorts(self, sorts, default_sort_column=0):
         '''Add sort functions.'''
         self.sorts = sorts        
+        self.items = sorted(self.items, 
+                            key=self.sorts[default_sort_column][0],
+                            cmp=self.sorts[default_sort_column][1],
+                            reverse=self.title_sorts[0])
         
     def add_items(self, items):
         '''Add items in list.'''
@@ -397,6 +401,12 @@ class ListView(gtk.DrawingArea):
                             self.title_sort_column = column
                             self.title_sorts[column] = not self.title_sorts[column]
                             self.title_clicks[column] = False
+                            
+                            if len(self.sorts) >= column + 1:
+                                self.items = sorted(self.items, 
+                                                    key=self.sorts[column][0],
+                                                    cmp=self.sorts[column][1],
+                                                    reverse=self.title_sorts[column])
                             break
         
         self.title_adjust_column = None
