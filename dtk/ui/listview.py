@@ -40,10 +40,11 @@ class ListView(gtk.DrawingArea):
         "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
     }
 
-    def __init__(self):
+    def __init__(self, sorts=[]):
         '''Init list view.'''
         # Init.
         gtk.DrawingArea.__init__(self)
+        self.sorts = sorts
         self.add_events(gtk.gdk.POINTER_MOTION_MASK)
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.add_events(gtk.gdk.BUTTON_RELEASE_MASK)
@@ -53,7 +54,6 @@ class ListView(gtk.DrawingArea):
         self.cell_widths = []
         self.cell_min_widths = []
         self.cell_min_heights = []
-        self.sorts = []
         self.button_press = False
         self.hover_row = None
         self.click_row = None
@@ -78,23 +78,11 @@ class ListView(gtk.DrawingArea):
         self.title_adjust_column = None
         self.title_separator_width = 2
         self.title_clicks = map_value(self.titles, lambda _: False)
-        self.title_sort_column = 0
+        self.title_sort_column = None
         self.title_sorts = map_value(self.titles, lambda _: self.SORT_DESCENDING)
         self.set_title_height(title_height)
         
-    def add_sorts(self, sorts, default_sort_column=0):
-        '''Add sort functions.'''
-        self.sorts = sorts        
-        if self.title_sorts == None:
-            reverse_order = False
-        else:
-            reverse_order = self.title_sorts[0]
-        self.items = sorted(self.items, 
-                            key=self.sorts[default_sort_column][0],
-                            cmp=self.sorts[default_sort_column][1],
-                            reverse=reverse_order)
-        
-    def add_items(self, items):
+    def add_items(self, items, sort_list=False):
         '''Add items in list.'''
         # Add new items.
         self.items += items
@@ -132,6 +120,17 @@ class ListView(gtk.DrawingArea):
         # Set size request.
         if len(self.items) > 0:
             self.set_size_request(sum(self.cell_min_widths), self.item_height * len(self.items) + self.title_offset_y)
+            
+        # Sort list if sort_list enable.
+        if sort_list and self.sorts != [] and self.title_sort_column != None:
+            if self.title_sorts == None:
+                reverse_order = False
+            else:
+                reverse_order = self.title_sorts[0]
+            self.items = sorted(self.items, 
+                                key=self.sorts[self.title_sort_column][0],
+                                cmp=self.sorts[self.title_sort_column][1],
+                                reverse=reverse_order)
             
     def set_title_height(self, title_height):
         '''Set title height.'''
