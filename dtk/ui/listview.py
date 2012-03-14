@@ -33,6 +33,11 @@ class ListView(gtk.DrawingArea):
     SORT_ASCENDING = True
     SORT_PADDING_X = 5
 	
+    __gsignals__ = {
+        "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+        "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))
+    }
+
     def __init__(self):
         '''Init list view.'''
         # Init.
@@ -370,11 +375,21 @@ class ListView(gtk.DrawingArea):
                 # Set click row.
                 (event_x, event_y) = get_event_coords(event)
                 self.click_row = (event_y - self.title_offset_y) / self.item_height
+                
+                if is_double_click(event):
+                    self.emit("double-click-item", self.items[self.click_row])
+                elif is_single_click(event):
+                    self.emit("single-click-item", self.items[self.click_row])
         elif len(self.items) > 0:        
             # Set click row.
             (event_x, event_y) = get_event_coords(event)
             self.click_row = (event_y - self.title_offset_y) / self.item_height
         
+            if is_double_click(event):
+                self.emit("double-click-item", self.items[self.click_row])
+            elif is_single_click(event):
+                self.emit("single-click-item", self.items[self.click_row])
+                
         self.queue_draw()
 
     def button_release_list_view(self, widget, event):

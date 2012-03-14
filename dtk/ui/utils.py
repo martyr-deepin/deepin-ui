@@ -205,6 +205,10 @@ def add_in_scrolled_window(scrolled_window, widget, shadow_type=gtk.SHADOW_NONE)
     else:
         print "add_in_scrolled_window: Impossible, no viewport widget in ScrolledWindow!"
 
+def is_single_click(event):
+    '''Whether an event is single click.'''
+    return event.button == 1 and event.type == gtk.gdk.BUTTON_PRESS
+        
 def is_double_click(event):
     '''Whether an event is double click?'''
     return event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS
