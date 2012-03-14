@@ -34,8 +34,9 @@ class ListView(gtk.DrawingArea):
     SORT_PADDING_X = 5
 	
     __gsignals__ = {
+        "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-        "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))
+        "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
     }
 
     def __init__(self):
@@ -56,6 +57,8 @@ class ListView(gtk.DrawingArea):
         self.hover_row = None
         self.click_row = None
         self.titles = None
+        self.single_click_row = None
+        self.double_click_row = None
         self.title_offset_y = 0
         self.item_height = 0
         
@@ -376,19 +379,23 @@ class ListView(gtk.DrawingArea):
                 (event_x, event_y) = get_event_coords(event)
                 self.click_row = (event_y - self.title_offset_y) / self.item_height
                 
+                self.emit("button-press-item", self.items[self.click_row])
+                
                 if is_double_click(event):
-                    self.emit("double-click-item", self.items[self.click_row])
+                    self.double_click_row = copy.deepcopy(self.click_row)
                 elif is_single_click(event):
-                    self.emit("single-click-item", self.items[self.click_row])
+                    self.single_click_row = copy.deepcopy(self.click_row)
         elif len(self.items) > 0:        
             # Set click row.
             (event_x, event_y) = get_event_coords(event)
             self.click_row = (event_y - self.title_offset_y) / self.item_height
         
+            self.emit("button-press-item", self.items[self.click_row])
+            
             if is_double_click(event):
-                self.emit("double-click-item", self.items[self.click_row])
+                self.double_click_row = copy.deepcopy(self.click_row)
             elif is_single_click(event):
-                self.emit("single-click-item", self.items[self.click_row])
+                self.single_click_row = copy.deepcopy(self.click_row)                
                 
         self.queue_draw()
 
@@ -423,7 +430,29 @@ class ListView(gtk.DrawingArea):
                                                     cmp=self.sorts[column][1],
                                                     reverse=self.title_sorts[column])
                             break
-        
+            elif len(self.items) > 0:
+                (event_x, event_y) = get_event_coords(event)
+                release_row = (event_y - self.title_offset_y) / self.item_height
+
+                if self.double_click_row == release_row:
+                    self.emit("double-click-item", self.items[self.click_row])
+                elif self.single_click_row == release_row:
+                    self.emit("single-click-item", self.items[self.click_row])
+                        
+                self.double_click_row = None
+                self.single_click_row = None
+        elif len(self.items) > 0:
+            (event_x, event_y) = get_event_coords(event)
+            release_row = (event_y - self.title_offset_y) / self.item_height
+
+            if self.double_click_row == release_row:
+                self.emit("double-click-item", self.items[self.click_row])
+            elif self.single_click_row == release_row:
+                self.emit("single-click-item", self.items[self.click_row])
+                    
+            self.double_click_row = None
+            self.single_click_row = None
+                
         self.title_adjust_column = None
         self.queue_draw()
         

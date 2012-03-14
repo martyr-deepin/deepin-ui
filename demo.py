@@ -39,6 +39,10 @@ from dtk.ui.volume_button import *
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
 
+def print_button_press(list_view, list_item):
+    '''Print button press.'''
+    print "* Button press: %s" % (str((list_item.title, list_item.artist, list_item.length)))
+
 def print_double_click(list_view, list_item):
     '''Print double click.'''
     print "* Double click: %s" % (str((list_item.title, list_item.artist, list_item.length)))
@@ -141,6 +145,7 @@ if __name__ == "__main__":
          (lambda item: item.artist, cmp),
          (lambda item: item.length, cmp)]
         )
+    list_view.connect("button-press-item", print_button_press)
     list_view.connect("double-click-item", print_double_click)
     list_view.connect("single-click-item", print_single_click)
         
