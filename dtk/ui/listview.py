@@ -57,6 +57,7 @@ class ListView(gtk.DrawingArea):
         self.hover_row = None
         self.click_row = None
         self.titles = None
+        self.title_sorts = None
         self.single_click_row = None
         self.double_click_row = None
         self.title_offset_y = 0
@@ -83,10 +84,14 @@ class ListView(gtk.DrawingArea):
     def add_sorts(self, sorts, default_sort_column=0):
         '''Add sort functions.'''
         self.sorts = sorts        
+        if self.title_sorts == None:
+            reverse_order = False
+        else:
+            reverse_order = self.title_sorts[0]
         self.items = sorted(self.items, 
                             key=self.sorts[default_sort_column][0],
                             cmp=self.sorts[default_sort_column][1],
-                            reverse=self.title_sorts[0])
+                            reverse=reverse_order)
         
     def add_items(self, items):
         '''Add items in list.'''
