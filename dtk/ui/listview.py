@@ -132,6 +132,14 @@ class ListView(gtk.DrawingArea):
                                 cmp=self.sorts[self.title_sort_column][1],
                                 reverse=reverse_order)
             
+        # Update item index.
+        self.update_item_index()    
+            
+    def update_item_index(self):
+        '''Update index of items.'''
+        for (index, item) in enumerate(self.items):
+            item.update_index(index)
+            
     def set_title_height(self, title_height):
         '''Set title height.'''
         self.title_height = title_height
@@ -436,10 +444,14 @@ class ListView(gtk.DrawingArea):
                             self.title_clicks[column] = False
                             
                             if len(self.sorts) >= column + 1:
+                                # Re-sort.
                                 self.items = sorted(self.items, 
                                                     key=self.sorts[column][0],
                                                     cmp=self.sorts[column][1],
                                                     reverse=self.title_sorts[column])
+                                
+                                # Update item index.
+                                self.update_item_index()    
                             break
             elif len(self.items) > 0:
                 (event_x, event_y) = get_event_coords(event)
@@ -492,6 +504,11 @@ class ListItem(object):
     def __init__(self, title, artist, length):
         '''Init list item.'''
         self.update(title, artist, length)
+        self.index = None
+        
+    def update_index(self, index):
+        '''Update index.'''
+        self.index = index
         
     def update(self, title, artist, length):
         '''Update.'''
