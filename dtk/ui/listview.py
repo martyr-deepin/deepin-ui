@@ -68,6 +68,7 @@ class ListView(gtk.DrawingArea):
         self.title_adjust_column = None
         self.title_separator_width = 2
         self.title_clicks = map_value(self.titles, lambda _: False)
+        self.title_sort_column = 0
         self.title_sorts = map_value(self.titles, lambda _: self.SORT_DESCENDING)
         self.set_title_height(title_height)
         
@@ -256,15 +257,16 @@ class ListView(gtk.DrawingArea):
                                  ui_theme.get_shadow_color(shadow_color).get_color_info())
                 
                 # Draw sort icon.
-                sort_type = self.get_column_sort_type(column)    
-                if sort_type == self.SORT_DESCENDING:
-                    sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
-                elif sort_type == self.SORT_ASCENDING:
-                    sort_pixbuf = ui_theme.get_pixbuf("listview/sort_ascending.png").get_pixbuf()
-                    
-                draw_pixbuf(cr, sort_pixbuf,
-                            cell_offset_x + cell_width - sort_pixbuf.get_width() - self.SORT_PADDING_X,
-                            offset_y + (self.title_height - sort_pixbuf.get_height()) / 2)    
+                if self.title_sort_column == column:
+                    sort_type = self.get_column_sort_type(column)    
+                    if sort_type == self.SORT_DESCENDING:
+                        sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
+                    elif sort_type == self.SORT_ASCENDING:
+                        sort_pixbuf = ui_theme.get_pixbuf("listview/sort_ascending.png").get_pixbuf()
+                        
+                    draw_pixbuf(cr, sort_pixbuf,
+                                cell_offset_x + cell_width - sort_pixbuf.get_width() - self.SORT_PADDING_X,
+                                offset_y + (self.title_height - sort_pixbuf.get_height()) / 2)    
             
             for (column, title) in enumerate(self.titles):
                 # Draw title split line.
@@ -392,6 +394,7 @@ class ListView(gtk.DrawingArea):
                         
                     if cell_start_x < event.x < cell_end_x:
                         if self.title_clicks[column]:
+                            self.title_sort_column = column
                             self.title_sorts[column] = not self.title_sorts[column]
                             self.title_clicks[column] = False
                             break
