@@ -39,17 +39,21 @@ from dtk.ui.volume_button import *
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
 
-def print_button_press(list_view, list_item):
+def print_button_press(list_view, list_item, column, offset_x, offset_y):
     '''Print button press.'''
     print "* Button press: %s" % (str((list_item.title, list_item.artist, list_item.length)))
 
-def print_double_click(list_view, list_item):
+def print_double_click(list_view, list_item, column, offset_x, offset_y):
     '''Print double click.'''
     print "* Double click: %s" % (str((list_item.title, list_item.artist, list_item.length)))
 
-def print_single_click(list_view, list_item):
+def print_single_click(list_view, list_item, column, offset_x, offset_y):
     '''Print single click.'''
     print "* Single click: %s" % (str((list_item.title, list_item.artist, list_item.length)))
+
+def print_motion_notify(list_view, list_item, column, offset_x, offset_y):
+    '''Print motion notify.'''
+    print "* Motion notify: %s" % (str((list_item.title, list_item.artist, list_item.length, column, offset_x, offset_y)))
 
 if __name__ == "__main__":
     # Init application.
@@ -148,6 +152,7 @@ if __name__ == "__main__":
     list_view.connect("button-press-item", print_button_press)
     list_view.connect("double-click-item", print_double_click)
     list_view.connect("single-click-item", print_single_click)
+    list_view.connect("motion-notify-item", print_motion_notify)
         
     scrolled_window.add_child(list_view)
     

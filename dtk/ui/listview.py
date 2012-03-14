@@ -34,9 +34,10 @@ class ListView(gtk.DrawingArea):
     SORT_PADDING_X = 5
 	
     __gsignals__ = {
-        "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-        "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-        "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+        "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
+        "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
+        "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
+        "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
     }
 
     def __init__(self):
@@ -339,6 +340,9 @@ class ListView(gtk.DrawingArea):
                     # Set hover row.
                     (event_x, event_y) = get_event_coords(event)
                     self.hover_row = (event_y - self.title_offset_y) / self.item_height
+                    
+                    # Emit motion notify event to item.
+                    self.emit_item_event("motion-notify-item", event)
                 
             # Redraw after motion.
             self.queue_draw()
@@ -351,6 +355,9 @@ class ListView(gtk.DrawingArea):
             (event_x, event_y) = get_event_coords(event)
             self.hover_row = (event_y - self.title_offset_y) / self.item_height
                 
+            # Emit motion notify event to item.
+            self.emit_item_event("motion-notify-item", event)
+                    
             # Redraw after motion.
             self.queue_draw()
             
@@ -384,7 +391,7 @@ class ListView(gtk.DrawingArea):
                 (event_x, event_y) = get_event_coords(event)
                 self.click_row = (event_y - self.title_offset_y) / self.item_height
                 
-                self.emit("button-press-item", self.items[self.click_row])
+                self.emit_item_event("button-press-item", event)
                 
                 if is_double_click(event):
                     self.double_click_row = copy.deepcopy(self.click_row)
@@ -395,7 +402,7 @@ class ListView(gtk.DrawingArea):
             (event_x, event_y) = get_event_coords(event)
             self.click_row = (event_y - self.title_offset_y) / self.item_height
         
-            self.emit("button-press-item", self.items[self.click_row])
+            self.emit_item_event("button-press-item", event)
             
             if is_double_click(event):
                 self.double_click_row = copy.deepcopy(self.click_row)
@@ -440,9 +447,9 @@ class ListView(gtk.DrawingArea):
                 release_row = (event_y - self.title_offset_y) / self.item_height
 
                 if self.double_click_row == release_row:
-                    self.emit("double-click-item", self.items[self.click_row])
+                    self.emit_item_event("double-click-item", event)
                 elif self.single_click_row == release_row:
-                    self.emit("single-click-item", self.items[self.click_row])
+                    self.emit_item_event("single-click-item", event)
                         
                 self.double_click_row = None
                 self.single_click_row = None
@@ -451,9 +458,9 @@ class ListView(gtk.DrawingArea):
             release_row = (event_y - self.title_offset_y) / self.item_height
 
             if self.double_click_row == release_row:
-                self.emit("double-click-item", self.items[self.click_row])
+                self.emit_item_event("double-click-item", event)
             elif self.single_click_row == release_row:
-                self.emit("single-click-item", self.items[self.click_row])
+                self.emit_item_event("single-click-item", event)
                     
             self.double_click_row = None
             self.single_click_row = None
@@ -468,6 +475,15 @@ class ListView(gtk.DrawingArea):
         self.reset_cursor()
 
         self.queue_draw()
+        
+    def emit_item_event(self, event_name, event):
+        '''Wrap method for emit event.'''
+        (event_x, event_y) = get_event_coords(event)
+        event_row = (event_y - self.title_offset_y) / self.item_height
+        offset_y = event_y - event_row * self.item_height - self.title_offset_y
+        (event_column, offset_x) = get_disperse_index(self.cell_widths, event_x)
+        
+        self.emit(event_name, self.items[event_row], event_column, offset_x, offset_y)
         
 gobject.type_register(ListView)
 

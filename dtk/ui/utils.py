@@ -516,6 +516,17 @@ def unzip(unzip_list):
     first_list, second_list = zip(*unzip_list)
     return (list(first_list), list(second_list))
 
+def get_disperse_index(disperse_list, value):
+    '''Get index in disperse list.'''
+    for (index, _) in enumerate(disperse_list):
+        start_value = sum(disperse_list[0:index])
+        end_value = sum(disperse_list[0:index + 1])
+        if start_value <= value < end_value:
+            return (index, value - start_value)
+        
+    # Return last one.
+    return (len(disperse_list) - 1, disperse_list[-1])
+
 def window_is_max(widget):
     '''Whether window is maximized status.'''
     toplevel_window = widget.get_toplevel()
