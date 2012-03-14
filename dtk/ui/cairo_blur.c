@@ -80,13 +80,13 @@ _num_to_pixel_with_factor (guint32 value, int factor) {
 
 static inline guint32
 _pixel_to_num_with_divisor (struct _pixel *pixel, int divisor) {
-     guint32 alpha = (guint32) pixel->alpha / divisor;
+     guint32 alpha = (guint32) (pixel->alpha / divisor);
      if (alpha > 0xff) alpha = 0xff;
-     guint32 red = (guint32) pixel->red / divisor;
+     guint32 red = (guint32) (pixel->red / divisor);
      if (red > 0xff) red = 0xff;
-     guint32 green = (guint32) pixel->green / divisor;
+     guint32 green = (guint32) (pixel->green / divisor);
      if (green > 0xff) green = 0xff;
-     guint32 blue = (guint32) pixel->blue / divisor;
+     guint32 blue = (guint32) (pixel->blue / divisor);
      if (blue > 0xff) blue = 0xff;
      return (alpha << 24) | (red << 16) | (green << 8) | blue;
 }
