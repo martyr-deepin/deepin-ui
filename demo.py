@@ -144,7 +144,8 @@ if __name__ == "__main__":
     scrolled_window = ScrolledWindow()
     category_box.pack_start(scrolled_window, True, True)
     
-    items_length = 100
+    # items_length = 100
+    items_length = 10
     items = map(lambda index: ListItem(
             "豆浆油条 %04d" % (index % 5),
             "林俊杰 %04d" % (index % 10),

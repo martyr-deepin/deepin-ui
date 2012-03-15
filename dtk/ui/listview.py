@@ -24,6 +24,7 @@ import gtk
 import gobject
 from draw import *
 from utils import *
+from keymap import *
 import copy
 
 class ListView(gtk.DrawingArea):
@@ -45,11 +46,8 @@ class ListView(gtk.DrawingArea):
         # Init.
         gtk.DrawingArea.__init__(self)
         self.sorts = sorts
-        self.add_events(gtk.gdk.POINTER_MOTION_MASK)
-        self.add_events(gtk.gdk.BUTTON_PRESS_MASK)
-        self.add_events(gtk.gdk.BUTTON_RELEASE_MASK)
-        self.add_events(gtk.gdk.ENTER_NOTIFY_MASK)
-        self.add_events(gtk.gdk.LEAVE_NOTIFY_MASK)
+        self.add_events(gtk.gdk.ALL_EVENTS_MASK)
+        self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
         self.cell_widths = []
         self.cell_min_widths = []
@@ -63,6 +61,8 @@ class ListView(gtk.DrawingArea):
         self.double_click_row = None
         self.title_offset_y = 0
         self.item_height = 0
+        self.press_ctrl = False
+        self.press_shift = False
         
         # Signal.
         self.connect("expose-event", self.expose_list_view)    
@@ -70,6 +70,8 @@ class ListView(gtk.DrawingArea):
         self.connect("button-press-event", self.button_press_list_view)
         self.connect("button-release-event", self.button_release_list_view)
         self.connect("leave-notify-event", self.leave_list_view)
+        self.connect("key-press-event", self.key_press_list_view)
+        self.connect("key-release-event", self.key_release_list_view)
         
         # Redraw.
         self.redraw_request_list = []
@@ -385,8 +387,7 @@ class ListView(gtk.DrawingArea):
                     self.reset_cursor()
                     
                     # Set hover row.
-                    (event_x, event_y) = get_event_coords(event)
-                    self.hover_row = (event_y - self.title_offset_y) / self.item_height
+                    self.hover_row = self.get_event_row(event)
                     
                     # Emit motion notify event to item.
                     self.emit_item_event("motion-notify-item", event)
@@ -399,8 +400,7 @@ class ListView(gtk.DrawingArea):
             self.reset_cursor()
             
             # Set hover row.
-            (event_x, event_y) = get_event_coords(event)
-            self.hover_row = (event_y - self.title_offset_y) / self.item_height
+            self.hover_row = self.get_event_row(event)
                 
             # Emit motion notify event to item.
             self.emit_item_event("motion-notify-item", event)
@@ -410,6 +410,9 @@ class ListView(gtk.DrawingArea):
             
     def button_press_list_view(self, widget, event):
         '''Button press event handler.'''
+        # Grab focus when button press, otherwise key-press signal can't response.
+        self.grab_focus()
+        
         self.button_press = True                
         if self.titles:
             # Get offset.
@@ -435,8 +438,7 @@ class ListView(gtk.DrawingArea):
                         break
             elif len(self.items) > 0:
                 # Set click row.
-                (event_x, event_y) = get_event_coords(event)
-                self.click_row = (event_y - self.title_offset_y) / self.item_height
+                self.click_row = self.get_event_row(event)
                 
                 self.emit_item_event("button-press-item", event)
                 
@@ -446,8 +448,7 @@ class ListView(gtk.DrawingArea):
                     self.single_click_row = copy.deepcopy(self.click_row)
         elif len(self.items) > 0:        
             # Set click row.
-            (event_x, event_y) = get_event_coords(event)
-            self.click_row = (event_y - self.title_offset_y) / self.item_height
+            self.click_row = self.get_event_row(event)
         
             self.emit_item_event("button-press-item", event)
             
@@ -494,8 +495,7 @@ class ListView(gtk.DrawingArea):
                                 self.update_item_index()    
                             break
             elif len(self.items) > 0:
-                (event_x, event_y) = get_event_coords(event)
-                release_row = (event_y - self.title_offset_y) / self.item_height
+                release_row = self.get_event_row(event)
 
                 if self.double_click_row == release_row:
                     self.emit_item_event("double-click-item", event)
@@ -505,8 +505,7 @@ class ListView(gtk.DrawingArea):
                 self.double_click_row = None
                 self.single_click_row = None
         elif len(self.items) > 0:
-            (event_x, event_y) = get_event_coords(event)
-            release_row = (event_y - self.title_offset_y) / self.item_height
+            release_row = self.get_event_row(event)
 
             if self.double_click_row == release_row:
                 self.emit_item_event("double-click-item", event)
@@ -527,14 +526,40 @@ class ListView(gtk.DrawingArea):
 
         self.queue_draw()
         
+    def key_press_list_view(self, widget, event):
+        '''Callback to handle key-press signal.'''
+        if hasCtrlMask(event):
+            self.press_ctrl = True
+        
+        if hasShiftMask(event):
+            self.press_shift = True
+        
+    def key_release_list_view(self, widget, event):
+        '''Callback to handle key-release signal.'''
+        if hasCtrlMask(event):
+            self.press_ctrl = False
+
+        if hasShiftMask(event):
+            self.press_shift = False
+        
     def emit_item_event(self, event_name, event):
         '''Wrap method for emit event.'''
         (event_x, event_y) = get_event_coords(event)
         event_row = (event_y - self.title_offset_y) / self.item_height
-        offset_y = event_y - event_row * self.item_height - self.title_offset_y
-        (event_column, offset_x) = get_disperse_index(self.cell_widths, event_x)
+        if 0 <= event_row <= len(self.items) - 1:
+            offset_y = event_y - event_row * self.item_height - self.title_offset_y
+            (event_column, offset_x) = get_disperse_index(self.cell_widths, event_x)
+            
+            self.emit(event_name, self.items[event_row], event_column, offset_x, offset_y)
         
-        self.emit(event_name, self.items[event_row], event_column, offset_x, offset_y)
+    def get_event_row(self, event):
+        '''Get event row.'''
+        (event_x, event_y) = get_event_coords(event)
+        row = (event_y - self.title_offset_y) / self.item_height
+        if 0 <= row <= len(self.items) - 1:
+            return row
+        else:
+            return None
         
 gobject.type_register(ListView)
 
