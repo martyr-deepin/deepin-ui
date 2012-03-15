@@ -71,6 +71,39 @@ class ListView(gtk.DrawingArea):
         self.connect("button-release-event", self.button_release_list_view)
         self.connect("leave-notify-event", self.leave_list_view)
         
+        # Redraw.
+        self.redraw_request_list = []
+        self.redraw_delay = 100 # 100 milliseconds should be enough for redraw
+        gtk.timeout_add(self.redraw_delay, self.update_redraw_request_list)
+        
+    def update_redraw_request_list(self):
+        '''Update redraw request list.'''
+        # Redraw when request list is not empty.
+        if len(self.redraw_request_list) > 0:
+            # Get offset.
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+            
+            # Get viewport index.
+            start_y = offset_y - self.title_offset_y
+            end_y = offset_y + viewport.allocation.height - self.title_offset_y
+            start_index = max(start_y / self.item_height, 0)
+            if (end_y - end_y / self.item_height * self.item_height) == 0:
+                end_index = min(end_y / self.item_height + 1, len(self.items))
+            else:
+                end_index = min(end_y / self.item_height + 2, len(self.items))        
+            
+            # Redraw whole viewport area once found any request item in viewport.
+            viewport_range = range(start_index, end_index)    
+            for item in self.redraw_request_list:
+                if item.get_index() in viewport_range:
+                    self.queue_draw()
+                    break
+        
+        # Clear redraw request list.
+        self.redraw_request_list = []
+
+        return True
+        
     def add_titles(self, titles, title_height=24):
         '''Add titles.'''
         self.titles = titles
@@ -95,6 +128,9 @@ class ListView(gtk.DrawingArea):
         
         cell_min_sizes = []
         for item in items:
+            # Binding redraw request signal.
+            item.connect("redraw_request", self.redraw_item)
+            
             sizes = item.get_column_sizes()
             if cell_min_sizes == []:
                 cell_min_sizes = sizes
@@ -134,11 +170,15 @@ class ListView(gtk.DrawingArea):
             
         # Update item index.
         self.update_item_index()    
-            
+        
+    def redraw_item(self, list_item):
+        '''Redraw item.'''
+        self.redraw_request_list.append(list_item)
+        
     def update_item_index(self):
         '''Update index of items.'''
         for (index, item) in enumerate(self.items):
-            item.update_index(index)
+            item.set_index(index)
             
     def set_title_height(self, title_height):
         '''Set title height.'''
@@ -218,7 +258,7 @@ class ListView(gtk.DrawingArea):
             with cairo_state(cr):
                 # Don't draw any item under title area.
                 cr.rectangle(offset_x, offset_y + self.title_offset_y,
-                              viewport.allocation.width, viewport.allocation.height - self.title_offset_y)        
+                             viewport.allocation.width, viewport.allocation.height - self.title_offset_y)        
                 cr.clip()
                 
                 # Draw hover row.
@@ -498,17 +538,30 @@ class ListView(gtk.DrawingArea):
         
 gobject.type_register(ListView)
 
-class ListItem(object):
+class ListItem(gobject.GObject):
     '''List item.'''
+    
+    __gsignals__ = {
+        "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+    }
     
     def __init__(self, title, artist, length):
         '''Init list item.'''
+        gobject.GObject.__init__(self)
         self.update(title, artist, length)
         self.index = None
         
-    def update_index(self, index):
+    def set_index(self, index):
         '''Update index.'''
         self.index = index
+        
+    def get_index(self):
+        '''Get index.'''
+        return self.index
+        
+    def emit_redraw_request(self):
+        '''Emit redraw-request signal.'''
+        self.emit("redraw-request")
         
     def update(self, title, artist, length):
         '''Update.'''

@@ -36,6 +36,7 @@ from dtk.ui.frame import *
 from dtk.ui.dragbar import *
 from dtk.ui.scalebar import *
 from dtk.ui.volume_button import *
+import time
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
 
@@ -54,6 +55,14 @@ def print_single_click(list_view, list_item, column, offset_x, offset_y):
 def print_motion_notify(list_view, list_item, column, offset_x, offset_y):
     '''Print motion notify.'''
     print "* Motion notify: %s" % (str((list_item.title, list_item.artist, list_item.length, column, offset_x, offset_y)))
+    
+def simulate_redraw_request(items, items_length):
+    '''Simulate item's redraw request.'''
+    item_index = int(time.time() * 100) % items_length
+    print items[item_index].length
+    items[item_index].emit_redraw_request()
+    
+    return True
     
 if __name__ == "__main__":
     # Init application.
@@ -139,7 +148,8 @@ if __name__ == "__main__":
     items = map(lambda index: ListItem(
             "豆浆油条 %04d" % (index % 5),
             "林俊杰 %04d" % (index % 10),
-            "10:%02d" % (index % 60),
+            # "10:%02d" % (index % 60),
+            "10:%02d" % index,
             ), range(0, items_length))
     list_view = ListView(
         [(lambda item: item.title, cmp),
@@ -152,6 +162,8 @@ if __name__ == "__main__":
     list_view.connect("double-click-item", print_double_click)
     list_view.connect("single-click-item", print_single_click)
     list_view.connect("motion-notify-item", print_motion_notify)
+    
+    # gtk.timeout_add(10, lambda : simulate_redraw_request(items, items_length))
         
     scrolled_window.add_child(list_view)
     
