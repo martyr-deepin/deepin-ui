@@ -33,7 +33,7 @@ class ListView(gtk.DrawingArea):
     SORT_DESCENDING = False
     SORT_ASCENDING = True
     SORT_PADDING_X = 5
-	
+    
     __gsignals__ = {
         "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
@@ -78,6 +78,15 @@ class ListView(gtk.DrawingArea):
         self.redraw_request_list = []
         self.redraw_delay = 100 # 100 milliseconds should be enough for redraw
         gtk.timeout_add(self.redraw_delay, self.update_redraw_request_list)
+        
+        # Add key map.
+        self.keymap = {
+            "Home" : self.select_first_item,
+            "End" : self.select_last_item,
+            "Page_Up" : self.scroll_page_up,
+            "Page_Down" : self.scroll_page_down,
+            "Return" : self.double_click_item,
+            }
         
     def update_redraw_request_list(self):
         '''Update redraw request list.'''
@@ -542,18 +551,25 @@ class ListView(gtk.DrawingArea):
         
     def key_press_list_view(self, widget, event):
         '''Callback to handle key-press signal.'''
-        if hasCtrlMask(event):
+        if has_ctrl_mask(event):
             self.press_ctrl = True
         
-        if hasShiftMask(event):
+        if has_shift_mask(event):
             self.press_shift = True
+            
+        key_name = get_keyevent_name(event)
+        print key_name
+        if self.keymap.has_key(key_name):
+            self.keymap[key_name]()
         
+        return True
+            
     def key_release_list_view(self, widget, event):
         '''Callback to handle key-release signal.'''
-        if hasCtrlMask(event):
+        if has_ctrl_mask(event):
             self.press_ctrl = False
 
-        if hasShiftMask(event):
+        if has_shift_mask(event):
             self.press_shift = False
         
     def emit_item_event(self, event_name, event):
@@ -574,6 +590,47 @@ class ListView(gtk.DrawingArea):
             return row
         else:
             return None
+        
+    def select_first_item(self):
+        '''Select first item.'''
+        if len(self.items) > 0:
+            # Update select rows.
+            self.start_select_row = [0]
+            self.select_rows = [0]
+            
+            # Scroll to top.
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust.set_value(vadjust.get_lower())
+            
+            # Redraw.
+            self.queue_draw()
+        
+    def select_last_item(self):
+        '''Select last item.'''
+        if len(self.items) > 0:
+            # Update select rows.
+            last_row = len(self.items) - 1
+            self.start_select_row = last_row
+            self.select_rows = [last_row]
+            
+            # Scroll to top.
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+            
+            # Redraw.
+            self.queue_draw()
+            
+    def scroll_page_up(self):
+        '''Scroll page up.'''
+        pass
+            
+    def scroll_page_down(self):
+        '''Scroll page down.'''
+        pass
+            
+    def double_click_item(self):
+        '''Double click item.'''
+        pass            
         
 gobject.type_register(ListView)
 

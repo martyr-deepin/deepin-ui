@@ -27,49 +27,49 @@ import pygtk
 import gobject
 pygtk.require('2.0')
 
-def getKeyName(keyval):
+def get_key_name(keyval):
     '''Get key name.'''
-    keyUnicode = gdk.keyval_to_unicode(keyval)
-    if keyUnicode == 0:
+    key_unicode = gdk.keyval_to_unicode(keyval)
+    if key_unicode == 0:
         return gdk.keyval_name(keyval)
     else:
-        return str(unichr(keyUnicode))
+        return str(unichr(key_unicode))
     
-def getKeyEventModifiers(keyEvent):
+def get_key_event_modifiers(key_event):
     '''Get key event modifiers.'''
     modifiers = []
     
     # Add Ctrl modifier.
-    if keyEvent.state & gdk.CONTROL_MASK:
+    if key_event.state & gdk.CONTROL_MASK:
         modifiers.append("C")
         
     # Add Alt modifier.
-    if keyEvent.state & gdk.MOD1_MASK:
+    if key_event.state & gdk.MOD1_MASK:
         modifiers.append("M")
         
     # Don't need add Shift modifier if keyval is upper character.
-    if keyEvent.state & gdk.SHIFT_MASK and not gdk.keyval_is_upper(keyEvent.keyval):
+    if key_event.state & gdk.SHIFT_MASK and not gdk.keyval_is_upper(key_event.keyval):
         modifiers.append("S")
         
     return modifiers
 
-def getKeyEventName(keyEvent):
+def get_keyevent_name(key_event):
     '''Get key event name.'''
-    if keyEvent.is_modifier:
+    if key_event.is_modifier:
         return ""
     else:
-        keyModifiers = getKeyEventModifiers(keyEvent)
-        keyName = getKeyName(keyEvent.keyval)
+        key_modifiers = get_key_event_modifiers(key_event)
+        key_name = get_key_name(key_event.keyval)
         
-        if keyModifiers == []:
-            return keyName
+        if key_modifiers == []:
+            return key_name
         else:
-            return "-".join(keyModifiers) + "-" + keyName
+            return "-".join(key_modifiers) + "-" + key_name
 
-def hasCtrlMask(keyEvent):
+def has_ctrl_mask(key_event):
     '''Whether has ctrl mask in key event.'''
-    return getKeyName(keyEvent.keyval) in ["Control_L", "Control_R"]
+    return get_key_name(key_event.keyval) in ["Control_L", "Control_R"]
 
-def hasShiftMask(keyEvent):
+def has_shift_mask(key_event):
     '''Whether has shift mask in key event.'''
-    return getKeyName(keyEvent.keyval) in ["Shift_L", "Shift_R"]
+    return get_key_name(key_event.keyval) in ["Shift_L", "Shift_R"]
