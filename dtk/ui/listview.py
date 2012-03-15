@@ -382,31 +382,24 @@ class ListView(gtk.DrawingArea):
                             self.set_adjust_cursor()
                             break
                 elif len(self.items) > 0:
-                    # Rest cursor and title select column.
-                    self.title_select_column = None
-                    self.reset_cursor()
-                    
-                    # Set hover row.
-                    self.hover_row = self.get_event_row(event)
-                    
-                    # Emit motion notify event to item.
-                    self.emit_item_event("motion-notify-item", event)
-                
-            # Redraw after motion.
-            self.queue_draw()
+                    self.hover_item(event)
         elif len(self.items) > 0:
-            # Rest cursor and title select column.
-            self.title_select_column = None
-            self.reset_cursor()
-            
-            # Set hover row.
-            self.hover_row = self.get_event_row(event)
-                
-            # Emit motion notify event to item.
-            self.emit_item_event("motion-notify-item", event)
+            self.hover_item(event)
                     
-            # Redraw after motion.
-            self.queue_draw()
+        # Redraw after motion.
+        self.queue_draw()
+            
+    def hover_item(self, event):
+        '''Hover item.'''
+        # Rest cursor and title select column.
+        self.title_select_column = None
+        self.reset_cursor()
+        
+        # Set hover row.
+        self.hover_row = self.get_event_row(event)
+            
+        # Emit motion notify event to item.
+        self.emit_item_event("motion-notify-item", event)
             
     def button_press_list_view(self, widget, event):
         '''Button press event handler.'''
@@ -437,27 +430,22 @@ class ListView(gtk.DrawingArea):
                         self.title_adjust_column = column
                         break
             elif len(self.items) > 0:
-                # Set click row.
-                self.click_row = self.get_event_row(event)
-                
-                self.emit_item_event("button-press-item", event)
-                
-                if is_double_click(event):
-                    self.double_click_row = copy.deepcopy(self.click_row)
-                elif is_single_click(event):
-                    self.single_click_row = copy.deepcopy(self.click_row)
+                self.click_item(event)
         elif len(self.items) > 0:        
-            # Set click row.
-            self.click_row = self.get_event_row(event)
-        
-            self.emit_item_event("button-press-item", event)
-            
-            if is_double_click(event):
-                self.double_click_row = copy.deepcopy(self.click_row)
-            elif is_single_click(event):
-                self.single_click_row = copy.deepcopy(self.click_row)                
+            self.click_item(event)
                 
         self.queue_draw()
+        
+    def click_item(self, event):
+        '''Click item.'''
+        self.click_row = self.get_event_row(event)
+        
+        self.emit_item_event("button-press-item", event)
+        
+        if is_double_click(event):
+            self.double_click_row = copy.deepcopy(self.click_row)
+        elif is_single_click(event):
+            self.single_click_row = copy.deepcopy(self.click_row)                
 
     def button_release_list_view(self, widget, event):
         '''Button release event handler.'''
@@ -495,28 +483,24 @@ class ListView(gtk.DrawingArea):
                                 self.update_item_index()    
                             break
             elif len(self.items) > 0:
-                release_row = self.get_event_row(event)
-
-                if self.double_click_row == release_row:
-                    self.emit_item_event("double-click-item", event)
-                elif self.single_click_row == release_row:
-                    self.emit_item_event("single-click-item", event)
-                        
-                self.double_click_row = None
-                self.single_click_row = None
+                self.release_item(event)
         elif len(self.items) > 0:
-            release_row = self.get_event_row(event)
-
-            if self.double_click_row == release_row:
-                self.emit_item_event("double-click-item", event)
-            elif self.single_click_row == release_row:
-                self.emit_item_event("single-click-item", event)
-                    
-            self.double_click_row = None
-            self.single_click_row = None
+            self.release_item(event)
                 
         self.title_adjust_column = None
         self.queue_draw()
+        
+    def release_item(self, event):
+        '''Release row.'''
+        release_row = self.get_event_row(event)
+
+        if self.double_click_row == release_row:
+            self.emit_item_event("double-click-item", event)
+        elif self.single_click_row == release_row:
+            self.emit_item_event("single-click-item", event)
+                
+        self.double_click_row = None
+        self.single_click_row = None
         
     def leave_list_view(self, widget, event):
         '''leave-notify-event signal handler.'''
