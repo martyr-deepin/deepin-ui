@@ -516,6 +516,14 @@ def unzip(unzip_list):
     first_list, second_list = zip(*unzip_list)
     return (list(first_list), list(second_list))
 
+def is_seriate_list(test_list):
+    '''Whether is seriate list.'''
+    for (index, item) in enumerate(test_list):
+        if item != test_list[0] + index:
+            return False
+    
+    return True
+
 def get_disperse_index(disperse_list, value):
     '''Get index in disperse list.'''
     for (index, _) in enumerate(disperse_list):

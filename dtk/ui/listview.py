@@ -54,7 +54,6 @@ class ListView(gtk.DrawingArea):
         self.cell_min_heights = []
         self.button_press = False
         self.hover_row = None
-        self.click_row = None
         self.titles = None
         self.title_sorts = None
         self.single_click_row = None
@@ -63,6 +62,8 @@ class ListView(gtk.DrawingArea):
         self.item_height = 0
         self.press_ctrl = False
         self.press_shift = False
+        self.select_rows = []
+        self.start_select_row = None
         
         # Signal.
         self.connect("expose-event", self.expose_list_view)    
@@ -264,16 +265,16 @@ class ListView(gtk.DrawingArea):
                 cr.clip()
                 
                 # Draw hover row.
-                if self.hover_row != None:
+                if self.hover_row != None and not self.hover_row in self.select_rows:
                     draw_vlinear(cr, offset_x, self.title_offset_y + self.hover_row * self.item_height,
                                  viewport.allocation.width, self.item_height,
                                  ui_theme.get_shadow_color("listviewHover").get_color_info())
                 
-                # Draw click row.
-                if self.click_row != None:
-                    draw_vlinear(cr, offset_x, self.title_offset_y + self.click_row * self.item_height,
+                # Draw select rows.
+                for select_row in self.select_rows:
+                    draw_vlinear(cr, offset_x, self.title_offset_y + select_row * self.item_height,
                                  viewport.allocation.width, self.item_height,
-                                 ui_theme.get_shadow_color("listviewClick").get_color_info())
+                                 ui_theme.get_shadow_color("listviewSelect").get_color_info())
                     
                 # Get viewport index.
                 start_y = offset_y - self.title_offset_y
@@ -438,14 +439,43 @@ class ListView(gtk.DrawingArea):
         
     def click_item(self, event):
         '''Click item.'''
-        self.click_row = self.get_event_row(event)
-        
-        self.emit_item_event("button-press-item", event)
+        click_row = self.get_event_row(event)
+        if click_row == None:
+            self.start_select_row = None
+            self.select_rows = []
+        else:
+            if self.press_shift:
+                if self.select_rows == [] or self.start_select_row == None:
+                    self.start_select_row = click_row
+                    self.select_rows = [click_row]
+                else:
+                    if len(self.select_rows) == 1:
+                        self.start_select_row = self.select_rows[0]
+                
+                    if click_row < self.start_select_row:
+                        self.select_rows = range(click_row, self.start_select_row + 1)
+                    elif click_row > self.start_select_row:
+                        self.select_rows = range(self.start_select_row, click_row + 1)
+                    else:
+                        self.select_rows = [click_row]
+            elif self.press_ctrl:
+                self.start_select_row = None
+                
+                if click_row in self.select_rows:
+                    self.select_rows.remove(click_row)
+                else:
+                    self.select_rows.append(click_row)
+                self.select_rows = sorted(self.select_rows)
+            else:
+                self.start_select_row = None
+                
+                self.select_rows = [click_row]
+                self.emit_item_event("button-press-item", event)
         
         if is_double_click(event):
-            self.double_click_row = copy.deepcopy(self.click_row)
+            self.double_click_row = copy.deepcopy(click_row)
         elif is_single_click(event):
-            self.single_click_row = copy.deepcopy(self.click_row)                
+            self.single_click_row = copy.deepcopy(click_row)                
 
     def button_release_list_view(self, widget, event):
         '''Button release event handler.'''
