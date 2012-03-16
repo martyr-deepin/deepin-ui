@@ -48,7 +48,7 @@ def get_key_event_modifiers(key_event):
         modifiers.append("M")
         
     # Don't need add Shift modifier if keyval is upper character.
-    if key_event.state & gdk.SHIFT_MASK and not gdk.keyval_is_upper(key_event.keyval):
+    if key_event.state & gdk.SHIFT_MASK and (len(get_key_name(key_event.keyval)) != 1 or not gdk.keyval_is_upper(key_event.keyval)):
         modifiers.append("S")
         
     return modifiers

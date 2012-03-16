@@ -66,6 +66,7 @@ class ListView(gtk.DrawingArea):
         self.start_select_row = None
         
         # Signal.
+        self.connect("realize", lambda w: self.grab_focus()) # focus key after realize
         self.connect("expose-event", self.expose_list_view)    
         self.connect("motion-notify-event", self.motion_list_view)
         self.connect("button-press-event", self.button_press_list_view)
@@ -86,6 +87,11 @@ class ListView(gtk.DrawingArea):
             "Page_Up" : self.scroll_page_up,
             "Page_Down" : self.scroll_page_down,
             "Return" : self.double_click_item,
+            "Up" : self.select_prev_item,
+            "Down" : self.select_next_item,
+            "Delete" : self.delete_select_items,
+            "S-Up" : self.select_to_prev_item,
+            "S-Up" : self.select_to_next_item,
             }
         
     def update_redraw_request_list(self):
@@ -448,6 +454,8 @@ class ListView(gtk.DrawingArea):
         
     def click_item(self, event):
         '''Click item.'''
+        print (self.press_shift, self.start_select_row)
+
         click_row = self.get_event_row(event)
         if click_row == None:
             self.start_select_row = None
@@ -468,16 +476,14 @@ class ListView(gtk.DrawingArea):
                     else:
                         self.select_rows = [click_row]
             elif self.press_ctrl:
-                self.start_select_row = None
-                
                 if click_row in self.select_rows:
                     self.select_rows.remove(click_row)
                 else:
+                    self.start_select_row = click_row
                     self.select_rows.append(click_row)
                 self.select_rows = sorted(self.select_rows)
             else:
-                self.start_select_row = None
-                
+                self.start_select_row = click_row
                 self.select_rows = [click_row]
                 self.emit_item_event("button-press-item", event)
         
@@ -613,7 +619,7 @@ class ListView(gtk.DrawingArea):
             self.start_select_row = last_row
             self.select_rows = [last_row]
             
-            # Scroll to top.
+            # Scroll to bottom.
             vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
             vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
             
@@ -622,17 +628,97 @@ class ListView(gtk.DrawingArea):
             
     def scroll_page_up(self):
         '''Scroll page up.'''
-        pass
+        # Scroll page up.
+        vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+        vadjust.set_value(max(0, vadjust.get_value() - vadjust.get_page_size()))
             
     def scroll_page_down(self):
         '''Scroll page down.'''
+        # Scroll page down.
+        vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+        vadjust.set_value(min(vadjust.get_upper() - vadjust.get_page_size(), vadjust.get_value() + vadjust.get_page_size()))
+        
+    def select_prev_item(self):
+        '''Select preview item.'''
+        if self.select_rows == []:
+            # Select first row.
+            self.start_select_row = 0
+            self.select_rows = [0]
+            
+            # Scroll to top.
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust.set_value(vadjust.get_lower())
+
+            # Redraw.
+            self.queue_draw()
+        else:
+            # Get preview row.
+            prev_row = max(0, self.start_select_row - 1)
+            
+            # Redraw when preview row is not current row.
+            if prev_row != self.start_select_row:
+                # Select preview row.
+                self.start_select_row = prev_row
+                self.select_rows = [prev_row]
+                
+                # Scroll viewport make sure preview row in visible area.
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                if offset_y > prev_row * self.item_height:
+                    vadjust.set_value(max(0, (prev_row - 1) * self.item_height + self.title_offset_y))
+                    
+                # Redraw.
+                self.queue_draw()    
+        
+    def select_next_item(self):
+        '''Select next item.'''
+        if self.select_rows == []:
+            # Select first row.
+            self.start_select_row = 0
+            self.select_rows = [0]
+            
+            # Scroll to top.
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust.set_value(vadjust.get_lower())
+
+            # Redraw.
+            self.queue_draw()
+        else:
+            # Get next row.
+            next_row = min(len(self.items) - 1, self.start_select_row + 1)
+            
+            # Redraw when next row is not current row.
+            if next_row != self.start_select_row:
+                # Select next row.
+                self.start_select_row = next_row
+                self.select_rows = [next_row]
+                
+                # Scroll viewport make sure next row in visible area.
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height:
+                    vadjust.set_value(max(0, (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
+                
+                # Redraw.
+                self.queue_draw()
+    
+    def select_to_prev_item(self):
+        '''Select to preview item.'''
+        pass
+    
+    def select_to_next_item(self):
+        '''Select to next item.'''
+        pass
+    
+    def delete_select_items(self):
+        '''Delete select items.'''
         pass
             
     def double_click_item(self):
         '''Double click item.'''
         if len(self.select_rows) == 1:
             self.emit("double-click-item", self.items[self.select_rows[0]], -1, 0, 0)
-        
+            
 gobject.type_register(ListView)
 
 class ListItem(gobject.GObject):
