@@ -630,7 +630,8 @@ class ListView(gtk.DrawingArea):
             
     def double_click_item(self):
         '''Double click item.'''
-        pass            
+        if len(self.select_rows) == 1:
+            self.emit("double-click-item", self.items[self.select_rows[0]], -1, 0, 0)
         
 gobject.type_register(ListView)
 
