@@ -725,16 +725,7 @@ class ListView(gtk.DrawingArea):
     def select_prev_item(self):
         '''Select preview item.'''
         if self.select_rows == []:
-            # Select first row.
-            self.start_select_row = 0
-            self.select_rows = [0]
-            
-            # Scroll to top.
-            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-            vadjust.set_value(vadjust.get_lower())
-
-            # Redraw.
-            self.queue_draw()
+            self.select_first_item()
         else:
             # Get preview row.
             prev_row = max(0, self.start_select_row - 1)
@@ -757,16 +748,7 @@ class ListView(gtk.DrawingArea):
     def select_next_item(self):
         '''Select next item.'''
         if self.select_rows == []:
-            # Select first row.
-            self.start_select_row = 0
-            self.select_rows = [0]
-            
-            # Scroll to top.
-            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-            vadjust.set_value(vadjust.get_lower())
-
-            # Redraw.
-            self.queue_draw()
+            self.select_first_item()
         else:
             # Get next row.
             next_row = min(last_index(self.items), self.start_select_row + 1)
