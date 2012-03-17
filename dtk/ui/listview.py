@@ -92,6 +92,7 @@ class ListView(gtk.DrawingArea):
             "Delete" : self.delete_select_items,
             "S-Up" : self.select_to_prev_item,
             "S-Down" : self.select_to_next_item,
+            "C-a" : self.select_all_items,
             }
         
     def update_redraw_request_list(self):
@@ -849,6 +850,18 @@ class ListView(gtk.DrawingArea):
         else:
             print "select_to_next_item : impossible!"
     
+    def select_all_items(self):
+        '''Select all items.'''
+        if self.select_rows == []:
+            self.start_select_row = 0
+            self.select_rows = range(0, len(self.items))            
+        
+            self.queue_draw()
+        else:
+            self.select_rows = range(0, len(self.items))            
+        
+            self.queue_draw()
+            
     def delete_select_items(self):
         '''Delete select items.'''
         pass
