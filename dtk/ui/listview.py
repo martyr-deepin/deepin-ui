@@ -91,7 +91,7 @@ class ListView(gtk.DrawingArea):
             "Down" : self.select_next_item,
             "Delete" : self.delete_select_items,
             "S-Up" : self.select_to_prev_item,
-            "S-Up" : self.select_to_next_item,
+            "S-Down" : self.select_to_next_item,
             }
         
     def update_redraw_request_list(self):
@@ -641,9 +641,9 @@ class ListView(gtk.DrawingArea):
             # Scroll viewport make sure preview row in visible area.
             (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
             if select_row == 0:
-                vadjust.set_value(0)
+                vadjust.set_value(vadjust.get_lower())
             elif offset_y > select_row * self.item_height + self.title_offset_y:
-                vadjust.set_value(max((select_row - 1) * self.item_height + self.title_offset_y, 0))
+                vadjust.set_value(max((select_row - 1) * self.item_height + self.title_offset_y, vadjust.get_lower()))
             
             # Redraw.
             self.queue_draw()
@@ -664,9 +664,10 @@ class ListView(gtk.DrawingArea):
                 # Scroll viewport make sure preview row in visible area.
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
                 if select_row == 0:
-                    vadjust.set_value(0)
+                    vadjust.set_value(vadjust.get_lower())
                 elif offset_y > select_row * self.item_height + self.title_offset_y:
-                    vadjust.set_value(max(select_row * self.item_height + self.title_offset_y - scroll_offset_y, 0))
+                    vadjust.set_value(max(select_row * self.item_height + self.title_offset_y - scroll_offset_y, 
+                                          vadjust.get_lower()))
                 
                 # Redraw.
                 self.queue_draw()
@@ -747,7 +748,7 @@ class ListView(gtk.DrawingArea):
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
                 vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
                 if offset_y > prev_row * self.item_height:
-                    vadjust.set_value(max(0, (prev_row - 1) * self.item_height + self.title_offset_y))
+                    vadjust.set_value(max(vadjust.get_lower(), (prev_row - 1) * self.item_height + self.title_offset_y))
                     
                 # Redraw.
                 self.queue_draw()    
@@ -779,18 +780,74 @@ class ListView(gtk.DrawingArea):
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
                 vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
                 if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height:
-                    vadjust.set_value(max(0, (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
+                    vadjust.set_value(max(vadjust.get_lower(),
+                                          (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
                 
                 # Redraw.
                 self.queue_draw()
     
     def select_to_prev_item(self):
         '''Select to preview item.'''
-        pass
+        if self.select_rows == []:
+            self.select_first_item()
+        elif self.start_select_row != None:
+            if self.start_select_row == self.select_rows[-1]:
+                first_row = self.select_rows[0]
+                if first_row > 0:
+                    prev_row = first_row - 1
+                    self.select_rows = [prev_row] + self.select_rows
+                    
+                    (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                    vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                    if offset_y > prev_row * self.item_height:
+                        vadjust.set_value(max(vadjust.get_lower(), (prev_row - 1) * self.item_height + self.title_offset_y))
+                    
+                    self.queue_draw()
+            elif self.start_select_row == self.select_rows[0]:
+                last_row = self.select_rows[-1]
+                self.select_rows.remove(last_row)
+                
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                if offset_y > self.select_rows[-1] * self.item_height:
+                    vadjust.set_value(max(vadjust.get_lower(), 
+                                          (self.select_rows[-1] - 1) * self.item_height + self.title_offset_y))
+                
+                self.queue_draw()
+        else:
+            print "select_to_prev_item : impossible!"
     
     def select_to_next_item(self):
         '''Select to next item.'''
-        pass
+        if self.select_rows == []:
+            self.select_first_item()
+        elif self.start_select_row != None:
+            if self.start_select_row == self.select_rows[0]:
+                last_row = self.select_rows[-1]
+                if last_row < len(self.items) - 1:
+                    next_row = last_row + 1
+                    self.select_rows.append(next_row)
+                    
+                    (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                    vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                    if offset_y + vadjust.get_page_size() < next_row * self.item_height + self.title_offset_y:
+                        vadjust.set_value(max(vadjust.get_lower(), 
+                                              (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
+                    
+                    self.queue_draw()
+            elif self.start_select_row == self.select_rows[-1]:
+                first_row = self.select_rows[0]
+                self.select_rows.remove(first_row)
+                
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                if offset_y + vadjust.get_page_size() < (self.select_rows[0] + 1) * self.item_height + self.title_offset_y:
+                    vadjust.set_value(max(vadjust.get_lower(), 
+                                          (self.select_rows[0] + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
+                
+                self.queue_draw()
+        else:
+            print "select_to_next_item : impossible!"
     
     def delete_select_items(self):
         '''Delete select items.'''
