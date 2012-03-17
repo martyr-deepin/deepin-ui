@@ -533,7 +533,7 @@ def get_disperse_index(disperse_list, value):
             return (index, value - start_value)
         
     # Return last one.
-    return (len(disperse_list) - 1, disperse_list[-1])
+    return (last_index(disperse_list), disperse_list[-1])
 
 def window_is_max(widget):
     '''Whether window is maximized status.'''
@@ -542,6 +542,10 @@ def window_is_max(widget):
         return True
     else:
         return False
+    
+def last_index(test_list):
+    '''Return last index of list.'''
+    return len(test_list) - 1
 
 @contextmanager
 def cairo_state(cr):

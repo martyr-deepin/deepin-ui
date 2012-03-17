@@ -209,14 +209,14 @@ class ListView(gtk.DrawingArea):
 
     def get_column_sort_type(self, column):
         '''Get sort type.'''
-        if 0 <= column <= len(self.title_sorts) - 1:
+        if 0 <= column <= last_index(self.title_sorts):
             return self.title_sorts[column]
         else:
             return None
         
     def set_column_sort_type(self, column, sort_type):
         '''Set sort type.'''
-        if 0 <= column <= len(self.title_sorts) - 1:
+        if 0 <= column <= last_index(self.title_sorts):
             self.title_sorts[column] = sort_type
             
     def get_cell_widths(self):
@@ -225,7 +225,7 @@ class ListView(gtk.DrawingArea):
     
     def set_cell_width(self, column, width):
         '''Set cell width.'''
-        if column <= len(self.cell_min_widths) - 1 and width >= self.cell_min_widths[column]:
+        if column <= last_index(self.cell_min_widths) and width >= self.cell_min_widths[column]:
             self.cell_widths[column] = width
             
     def set_adjust_cursor(self):
@@ -321,7 +321,7 @@ class ListView(gtk.DrawingArea):
                 cell_offset_x = sum(cell_widths[0:column])
                 
                 # Calcuate current cell width.
-                if column == len(cell_widths) - 1:
+                if column == last_index(cell_widths):
                     if sum(cell_widths) < rect.width:
                         cell_width = rect.width - cell_offset_x
                     else:
@@ -383,7 +383,7 @@ class ListView(gtk.DrawingArea):
                 if offset_y <= event.y <= offset_y + self.title_height:
                     cell_widths = self.get_cell_widths()
                     for (column, _) in enumerate(cell_widths):
-                        if column == len(cell_widths) - 1:
+                        if column == last_index(cell_widths):
                             cell_start_x = widget.allocation.width
                             cell_end_x = widget.allocation.width
                         else:
@@ -430,7 +430,7 @@ class ListView(gtk.DrawingArea):
             if offset_y <= event.y <= offset_y + self.title_height:
                 cell_widths = self.get_cell_widths()
                 for (column, _) in enumerate(cell_widths):
-                    if column == len(cell_widths) - 1:
+                    if column == last_index(cell_widths):
                         cell_end_x = widget.allocation.width
                     else:
                         cell_end_x = sum(cell_widths[0:column + 1]) - self.title_separator_width
@@ -502,7 +502,7 @@ class ListView(gtk.DrawingArea):
             if offset_y <= event.y <= offset_y + self.title_height:
                 cell_widths = self.get_cell_widths()
                 for (column, _) in enumerate(cell_widths):
-                    if column == len(cell_widths) - 1:
+                    if column == last_index(cell_widths):
                         cell_end_x = widget.allocation.width
                     else:
                         cell_end_x = sum(cell_widths[0:column + 1]) - self.title_separator_width
@@ -583,7 +583,7 @@ class ListView(gtk.DrawingArea):
         '''Wrap method for emit event.'''
         (event_x, event_y) = get_event_coords(event)
         event_row = (event_y - self.title_offset_y) / self.item_height
-        if 0 <= event_row <= len(self.items) - 1:
+        if 0 <= event_row <= last_index(self.items):
             offset_y = event_y - event_row * self.item_height - self.title_offset_y
             (event_column, offset_x) = get_disperse_index(self.cell_widths, event_x)
             
@@ -593,7 +593,7 @@ class ListView(gtk.DrawingArea):
         '''Get event row.'''
         (event_x, event_y) = get_event_coords(event)
         row = int((event_y - self.title_offset_y) / self.item_height)
-        if 0 <= row <= len(self.items) - 1:
+        if 0 <= row <= last_index(self.items):
             return row
         else:
             return None
@@ -616,7 +616,7 @@ class ListView(gtk.DrawingArea):
         '''Select last item.'''
         if len(self.items) > 0:
             # Update select rows.
-            last_row = len(self.items) - 1
+            last_row = last_index(self.items)
             self.start_select_row = last_row
             self.select_rows = [last_row]
             
@@ -769,7 +769,7 @@ class ListView(gtk.DrawingArea):
             self.queue_draw()
         else:
             # Get next row.
-            next_row = min(len(self.items) - 1, self.start_select_row + 1)
+            next_row = min(last_index(self.items), self.start_select_row + 1)
             
             # Redraw when next row is not current row.
             if next_row != self.start_select_row:
@@ -825,7 +825,7 @@ class ListView(gtk.DrawingArea):
         elif self.start_select_row != None:
             if self.start_select_row == self.select_rows[0]:
                 last_row = self.select_rows[-1]
-                if last_row < len(self.items) - 1:
+                if last_row < last_index(self.items):
                     next_row = last_row + 1
                     self.select_rows.append(next_row)
                     
