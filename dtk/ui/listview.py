@@ -591,7 +591,7 @@ class ListView(gtk.DrawingArea):
     def get_event_row(self, event):
         '''Get event row.'''
         (event_x, event_y) = get_event_coords(event)
-        row = (event_y - self.title_offset_y) / self.item_height
+        row = int((event_y - self.title_offset_y) / self.item_height)
         if 0 <= row <= len(self.items) - 1:
             return row
         else:
@@ -601,7 +601,7 @@ class ListView(gtk.DrawingArea):
         '''Select first item.'''
         if len(self.items) > 0:
             # Update select rows.
-            self.start_select_row = [0]
+            self.start_select_row = 0
             self.select_rows = [0]
             
             # Scroll to top.
@@ -628,15 +628,97 @@ class ListView(gtk.DrawingArea):
             
     def scroll_page_up(self):
         '''Scroll page up.'''
-        # Scroll page up.
-        vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-        vadjust.set_value(max(0, vadjust.get_value() - vadjust.get_page_size()))
+        if self.select_rows == []:
+            # Select row.
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            select_y = max(vadjust.get_value() - vadjust.get_page_size(), self.title_offset_y)
+            select_row = int((select_y - self.title_offset_y) / self.item_height)
+            
+            # Update select row.
+            self.start_select_row = select_row
+            self.select_rows = [select_row]
+            
+            # Scroll viewport make sure preview row in visible area.
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+            if select_row == 0:
+                vadjust.set_value(0)
+            elif offset_y > select_row * self.item_height + self.title_offset_y:
+                vadjust.set_value(max((select_row - 1) * self.item_height + self.title_offset_y, 0))
+            
+            # Redraw.
+            self.queue_draw()
+        else:
+            if self.start_select_row != None:
+                # Record offset before scroll.
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                scroll_offset_y = self.start_select_row * self.item_height + self.title_offset_y - vadjust.get_value()
+                
+                # Get select row.
+                select_y = max(self.start_select_row * self.item_height - vadjust.get_page_size(), self.title_offset_y)
+                select_row = int((select_y - self.title_offset_y) / self.item_height)
+                
+                # Update select row.
+                self.start_select_row = select_row
+                self.select_rows = [select_row]
+                
+                # Scroll viewport make sure preview row in visible area.
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                if select_row == 0:
+                    vadjust.set_value(0)
+                elif offset_y > select_row * self.item_height + self.title_offset_y:
+                    vadjust.set_value(max(select_row * self.item_height + self.title_offset_y - scroll_offset_y, 0))
+                
+                # Redraw.
+                self.queue_draw()
+            else:
+                print "scroll_page_up : impossible!"
             
     def scroll_page_down(self):
         '''Scroll page down.'''
-        # Scroll page down.
-        vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-        vadjust.set_value(min(vadjust.get_upper() - vadjust.get_page_size(), vadjust.get_value() + vadjust.get_page_size()))
+        if self.select_rows == []:
+            # Select row.
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            select_y = min(vadjust.get_value() + vadjust.get_page_size(),
+                           vadjust.get_upper() - self.item_height)
+            select_row = int((select_y - self.title_offset_y) / self.item_height)
+            
+            # Update select row.
+            self.start_select_row = select_row
+            self.select_rows = [select_row]
+            
+            # Scroll viewport make sure preview row in visible area.
+            max_y = vadjust.get_upper() - vadjust.get_page_size()
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+            if offset_y + vadjust.get_page_size() < (select_row + 1) * self.item_height + self.title_offset_y:
+                vadjust.set_value(min(max_y, (select_row - 1) * self.item_height + self.title_offset_y))
+
+            # Redraw.
+            self.queue_draw()
+        else:
+            if self.start_select_row != None:
+                # Record offset before scroll.
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                scroll_offset_y = self.start_select_row * self.item_height + self.title_offset_y - vadjust.get_value()
+                
+                # Get select row.
+                select_y = min(self.start_select_row * self.item_height + vadjust.get_page_size(), 
+                               vadjust.get_upper() - self.item_height)
+                select_row = int((select_y - self.title_offset_y) / self.item_height)
+                
+                # Update select row.
+                self.start_select_row = select_row
+                self.select_rows = [select_row]
+                
+                # Scroll viewport make sure preview row in visible area.
+                max_y = vadjust.get_upper() - vadjust.get_page_size()
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                if offset_y + vadjust.get_page_size() < (select_row + 1) * self.item_height + self.title_offset_y:
+                    vadjust.set_value(min(max_y, select_row * self.item_height + self.title_offset_y - scroll_offset_y))
+                
+                # Redraw.
+                self.queue_draw()
+            else:
+                print "scroll_page_down : impossible!"
         
     def select_prev_item(self):
         '''Select preview item.'''
