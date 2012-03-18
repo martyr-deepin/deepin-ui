@@ -746,6 +746,19 @@ class ListView(gtk.DrawingArea):
                     
                 # Redraw.
                 self.queue_draw()    
+            elif len(self.select_rows) > 1:
+                # Select preview row.
+                self.start_select_row = prev_row
+                self.select_rows = [prev_row]
+                
+                # Scroll viewport make sure preview row in visible area.
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                if offset_y > prev_row * self.item_height:
+                    vadjust.set_value(max(vadjust.get_lower(), (prev_row - 1) * self.item_height + self.title_offset_y))
+                    
+                    # Redraw.
+                    self.queue_draw()    
         
     def select_next_item(self):
         '''Select next item.'''
@@ -770,6 +783,20 @@ class ListView(gtk.DrawingArea):
                 
                 # Redraw.
                 self.queue_draw()
+            elif len(self.select_rows) > 1:
+                # Select next row.
+                self.start_select_row = next_row
+                self.select_rows = [next_row]
+                
+                # Scroll viewport make sure next row in visible area.
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height:
+                    vadjust.set_value(max(vadjust.get_lower(),
+                                          (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
+                
+                    # Redraw.
+                    self.queue_draw()
     
     def select_to_prev_item(self):
         '''Select to preview item.'''
