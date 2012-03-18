@@ -381,6 +381,7 @@ class ListView(gtk.DrawingArea):
             if self.title_adjust_column != None:
                 # Set column width.
                 cell_min_end_x = sum(self.cell_widths[0:self.title_adjust_column]) + self.cell_min_widths[self.title_adjust_column]
+                # Adjust column width.
                 (ex, ey) = get_event_coords(event)
                 if ex >= cell_min_end_x:
                     self.set_cell_width(self.title_adjust_column, ex - sum(self.cell_widths[0:self.title_adjust_column]))
