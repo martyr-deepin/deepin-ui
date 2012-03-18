@@ -790,6 +790,9 @@ class ListView(gtk.DrawingArea):
                 vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
                 if offset_y > prev_row * self.item_height:
                     vadjust.set_value(max(vadjust.get_lower(), (prev_row - 1) * self.item_height + self.title_offset_y))
+                elif offset_y + vadjust.get_page_size() < prev_row * self.item_height + self.title_offset_y:
+                    vadjust.set_value(min(vadjust.get_upper() - vadjust.get_page_size(),
+                                          (prev_row - 1) * self.item_height + self.title_offset_y))
                     
                 # Redraw.
                 self.queue_draw()    
@@ -801,7 +804,7 @@ class ListView(gtk.DrawingArea):
                 # Scroll viewport make sure preview row in visible area.
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
                 vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-                if offset_y > prev_row * self.item_height:
+                if offset_y > prev_row * self.item_height + self.title_offset_y:
                     vadjust.set_value(max(vadjust.get_lower(), (prev_row - 1) * self.item_height + self.title_offset_y))
                     
                     # Redraw.
@@ -824,10 +827,10 @@ class ListView(gtk.DrawingArea):
                 # Scroll viewport make sure next row in visible area.
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
                 vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-                if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height:
+                if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height or offset_y > next_row * self.item_height + self.title_offset_y:
                     vadjust.set_value(max(vadjust.get_lower(),
                                           (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
-                
+                    
                 # Redraw.
                 self.queue_draw()
             elif len(self.select_rows) > 1:
