@@ -911,7 +911,36 @@ class ListView(gtk.DrawingArea):
             
     def delete_select_items(self):
         '''Delete select items.'''
-        pass
+        # Get select items.
+        remove_items = []
+        for row in self.select_rows:
+            remove_items.append(self.items[row])
+            
+        if remove_items != []:
+            # Init select row.
+            self.start_select_row = None
+            self.select_rows = []
+            
+            # Remove select items.
+            for remove_item in remove_items:
+                self.items.remove(remove_item)
+                
+            # Update item index.
+            self.update_item_index()    
+            
+            # Re-cacluate new allocation.
+            rect = self.get_allocation()
+            new_height = self.title_offset_y + len(self.items) * self.item_height
+            self.set_allocation(gtk.gdk.Rectangle(
+                    rect.x, 
+                    rect.y, 
+                    rect.width,
+                    new_height))
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust.set_upper(new_height)
+            
+            # Redraw.
+            self.queue_draw()
             
     def double_click_item(self):
         '''Double click item.'''
