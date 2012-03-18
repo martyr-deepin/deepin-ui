@@ -827,7 +827,7 @@ class ListView(gtk.DrawingArea):
                 # Scroll viewport make sure next row in visible area.
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
                 vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-                if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height or offset_y > next_row * self.item_height + self.title_offset_y:
+                if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height + self.title_offset_y or offset_y > next_row * self.item_height + self.title_offset_y:
                     vadjust.set_value(max(vadjust.get_lower(),
                                           (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
                     
@@ -841,7 +841,7 @@ class ListView(gtk.DrawingArea):
                 # Scroll viewport make sure next row in visible area.
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
                 vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-                if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height:
+                if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height + self.title_offset_y:
                     vadjust.set_value(max(vadjust.get_lower(),
                                           (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
                 
