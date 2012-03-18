@@ -92,6 +92,8 @@ class ListView(gtk.DrawingArea):
             "Delete" : self.delete_select_items,
             "S-Up" : self.select_to_prev_item,
             "S-Down" : self.select_to_next_item,
+            "S-Home" : self.select_to_first_item,
+            "S-End" : self.select_to_last_item,
             "C-a" : self.select_all_items,
             }
         
@@ -831,6 +833,42 @@ class ListView(gtk.DrawingArea):
                 self.queue_draw()
         else:
             print "select_to_next_item : impossible!"
+    
+    def select_to_first_item(self):
+        '''Select to first item.'''
+        if self.select_rows == []:
+            self.select_first_item()
+        elif self.start_select_row != None:
+            if self.start_select_row == self.select_rows[-1]:
+                self.select_rows = range(0, self.select_rows[-1] + 1)
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust.set_value(vadjust.get_lower())
+                self.queue_draw()
+            elif self.start_select_row == self.select_rows[0]:
+                self.select_rows = range(0, self.select_rows[0] + 1)
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust.set_value(vadjust.get_lower())
+                self.queue_draw()
+        else:
+            print "select_to_first_item : impossible!"
+    
+    def select_to_last_item(self):
+        '''Select to last item.'''
+        if self.select_rows == []:
+            self.select_first_item()
+        elif self.start_select_row != None:
+            if self.start_select_row == self.select_rows[0]:
+                self.select_rows = range(self.select_rows[0], len(self.items))
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+                self.queue_draw()
+            elif self.start_select_row == self.select_rows[-1]:
+                self.select_rows = range(self.select_rows[-1], len(self.items))
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+                self.queue_draw()
+        else:
+            print "select_to_end_item : impossible!"
     
     def select_all_items(self):
         '''Select all items.'''
