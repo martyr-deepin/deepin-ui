@@ -26,6 +26,7 @@ from draw import *
 from utils import *
 from keymap import *
 import copy
+from contextlib import contextmanager 
 
 class ListView(gtk.DrawingArea):
     '''List view.'''
@@ -184,10 +185,12 @@ class ListView(gtk.DrawingArea):
                 reverse_order = False
             else:
                 reverse_order = self.title_sorts[0]
-            self.items = sorted(self.items, 
-                                key=self.sorts[self.title_sort_column][0],
-                                cmp=self.sorts[self.title_sort_column][1],
-                                reverse=reverse_order)
+                
+            with self.keep_select_status():    
+                self.items = sorted(self.items, 
+                                    key=self.sorts[self.title_sort_column][0],
+                                    cmp=self.sorts[self.title_sort_column][1],
+                                    reverse=reverse_order)
             
         # Update item index.
         self.update_item_index()    
@@ -521,11 +524,12 @@ class ListView(gtk.DrawingArea):
                             self.title_clicks[column] = False
                             
                             if len(self.sorts) >= column + 1:
-                                # Re-sort.
-                                self.items = sorted(self.items, 
-                                                    key=self.sorts[column][0],
-                                                    cmp=self.sorts[column][1],
-                                                    reverse=self.title_sorts[column])
+                                with self.keep_select_status():
+                                    # Re-sort.
+                                    self.items = sorted(self.items, 
+                                                        key=self.sorts[column][0],
+                                                        cmp=self.sorts[column][1],
+                                                        reverse=self.title_sorts[column])
                                 
                                 # Update item index.
                                 self.update_item_index()    
@@ -537,6 +541,48 @@ class ListView(gtk.DrawingArea):
                 
         self.title_adjust_column = None
         self.queue_draw()
+        
+    @contextmanager
+    def keep_select_status(self):
+        '''Keep select status.'''
+        # Save select items.
+        start_select_item = None
+        if self.start_select_row != None:
+            start_select_item = self.items[self.start_select_row]
+        
+        select_items = []
+        for row in self.select_rows:
+            select_items.append(self.items[row])
+            
+        try:  
+            yield  
+        except Exception, e:  
+            print 'with an cairo error %s' % e  
+        else:  
+            # Restore select status.
+            if start_select_item != None or select_items != []:
+                # Init start select row.
+                if start_select_item != None:
+                    self.start_select_row = None
+                
+                # Init select rows.
+                if select_items != []:
+                    self.select_rows = []
+                
+                for (index, item) in enumerate(self.items):
+                    # Try restore select row.
+                    if item in select_items:
+                        self.select_rows.append(index)
+                        select_items.remove(item)
+                    
+                    # Try restore start select row.
+                    if item == start_select_item:
+                        self.start_select_row = index
+                        start_select_item = None
+                    
+                    # Stop loop when finish restore row status.
+                    if select_items == [] and start_select_item == None:
+                        break
         
     def release_item(self, event):
         '''Release row.'''
