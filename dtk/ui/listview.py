@@ -668,10 +668,18 @@ class ListView(gtk.DrawingArea):
         
     def leave_list_view(self, widget, event):
         '''leave-notify-event signal handler.'''
+        # Reset.
         self.title_select_column = None
         self.title_adjust_column = None
         self.reset_cursor()
 
+        # Hide hover row when cursor out of viewport area.
+        vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+        hadjust = get_match_parent(self, "ScrolledWindow").get_hadjustment()
+        if not is_in_rect((event.x, event.y), (0, 0, hadjust.get_page_size(), vadjust.get_page_size())):
+            self.hover_row = None
+        
+        # Redraw.
         self.queue_draw()
         
     def key_press_list_view(self, widget, event):
