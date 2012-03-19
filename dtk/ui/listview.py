@@ -1062,6 +1062,14 @@ class ListView(gtk.DrawingArea):
         if len(self.select_rows) == 1:
             self.emit("double-click-item", self.items[self.select_rows[0]], -1, 0, 0)
             
+    def clear(self):
+        '''Clear all list.'''
+        self.start_select_row = None
+        self.select_rows = []
+        self.items = []
+        
+        self.queue_draw()
+
 gobject.type_register(ListView)
 
 class ListItem(gobject.GObject):
@@ -1139,7 +1147,7 @@ class ListItem(gobject.GObject):
         return [self.render_title,
                 self.render_artist,
                 self.render_length]
-
+    
 def render_text(cr, rect, content, align=ALIGN_START, font_size=DEFAULT_FONT_SIZE):
     '''Render text.'''
     draw_font(cr, content, font_size, 
