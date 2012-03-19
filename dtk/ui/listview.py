@@ -415,15 +415,40 @@ class ListView(gtk.DrawingArea):
             
     def hover_item(self, event):
         '''Hover item.'''
-        # Rest cursor and title select column.
-        self.title_select_column = None
-        self.reset_cursor()
-        
-        # Set hover row.
-        self.hover_row = self.get_event_row(event)
+        if self.left_button_press:
+            # Get hover row.
+            hover_row = self.get_event_row(event)
             
-        # Emit motion notify event to item.
-        self.emit_item_event("motion-notify-item", event)
+            # Highlight drag area.
+            if hover_row != None and self.start_select_row != None:
+                # Update select area.
+                if hover_row > self.start_select_row:
+                    self.select_rows = range(self.start_select_row, hover_row + 1)
+                elif hover_row < self.start_select_row:
+                    self.select_rows = range(hover_row, self.start_select_row + 1)
+                else:
+                    self.select_rows = [hover_row]
+                    
+                # Scroll viewport when cursor almost reach bound of viewport.
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
+                    vadjust.set_value(min(vadjust.get_value() + self.item_height, 
+                                          vadjust.get_upper() - vadjust.get_page_size()))
+                elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
+                    vadjust.set_value(max(vadjust.get_value() - self.item_height, 
+                                          vadjust.get_lower()))
+                    
+                self.queue_draw()
+        else:
+            # Rest cursor and title select column.
+            self.title_select_column = None
+            self.reset_cursor()
+            
+            # Set hover row.
+            self.hover_row = self.get_event_row(event)
+                
+            # Emit motion notify event to item.
+            self.emit_item_event("motion-notify-item", event)
             
     def button_press_list_view(self, widget, event):
         '''Button press event handler.'''
