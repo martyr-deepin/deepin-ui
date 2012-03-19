@@ -40,6 +40,7 @@ class ListView(gtk.DrawingArea):
         "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
+        "right-press-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int, int, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)),
     }
 
     def __init__(self, sorts=[]):
@@ -53,7 +54,7 @@ class ListView(gtk.DrawingArea):
         self.cell_widths = []
         self.cell_min_widths = []
         self.cell_min_heights = []
-        self.button_press = False
+        self.left_button_press = False
         self.hover_row = None
         self.titles = None
         self.title_sorts = None
@@ -336,7 +337,7 @@ class ListView(gtk.DrawingArea):
                     
                 # Draw title column background.
                 if self.title_select_column == column:
-                    if self.button_press:
+                    if self.left_button_press:
                         shadow_color = "listviewHeaderPress"
                     else:
                         shadow_color = "listviewHeaderSelect"
@@ -429,119 +430,154 @@ class ListView(gtk.DrawingArea):
         # Grab focus when button press, otherwise key-press signal can't response.
         self.grab_focus()
         
-        self.button_press = True                
-        if self.titles:
-            # Get offset.
-            (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
-            if offset_y <= event.y <= offset_y + self.title_height:
-                cell_widths = self.get_cell_widths()
-                for (column, _) in enumerate(cell_widths):
-                    if column == last_index(cell_widths):
-                        cell_end_x = widget.allocation.width
-                    else:
-                        cell_end_x = sum(cell_widths[0:column + 1]) - self.title_separator_width
-                        
-                    if column == 0:
-                        cell_start_x = 0
-                    else:
-                        cell_start_x = sum(cell_widths[0:column]) + self.title_separator_width
-                        
-                    if cell_start_x < event.x < cell_end_x:
-                        self.title_clicks[column] = True
-                        break
-                    elif cell_end_x <= event.x <= cell_end_x + self.title_separator_width * 2:
-                        self.title_adjust_column = column
-                        break
-            elif len(self.items) > 0:
+        if is_left_button(event):
+            self.left_button_press = True                
+            
+            if self.titles:
+                # Get offset.
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
+                if offset_y <= event.y <= offset_y + self.title_height:
+                    cell_widths = self.get_cell_widths()
+                    for (column, _) in enumerate(cell_widths):
+                        if column == last_index(cell_widths):
+                            cell_end_x = widget.allocation.width
+                        else:
+                            cell_end_x = sum(cell_widths[0:column + 1]) - self.title_separator_width
+                            
+                        if column == 0:
+                            cell_start_x = 0
+                        else:
+                            cell_start_x = sum(cell_widths[0:column]) + self.title_separator_width
+                            
+                        if cell_start_x < event.x < cell_end_x:
+                            self.title_clicks[column] = True
+                            break
+                        elif cell_end_x <= event.x <= cell_end_x + self.title_separator_width * 2:
+                            self.title_adjust_column = column
+                            break
+                elif len(self.items) > 0:
+                    self.click_item(event)
+            elif len(self.items) > 0:        
                 self.click_item(event)
-        elif len(self.items) > 0:        
-            self.click_item(event)
+        else:
+            if len(self.items) > 0:
+                self.click_item(event)
                 
-        self.queue_draw()
-        
+        self.queue_draw()    
+            
     def click_item(self, event):
         '''Click item.'''
-        print (self.press_shift, self.start_select_row)
-
         click_row = self.get_event_row(event)
-        if click_row == None:
-            self.start_select_row = None
-            self.select_rows = []
-        else:
-            if self.press_shift:
-                if self.select_rows == [] or self.start_select_row == None:
+        
+        if self.left_button_press:
+            if click_row == None:
+                self.start_select_row = None
+                self.select_rows = []
+            else:
+                if self.press_shift:
+                    if self.select_rows == [] or self.start_select_row == None:
+                        self.start_select_row = click_row
+                        self.select_rows = [click_row]
+                    else:
+                        if len(self.select_rows) == 1:
+                            self.start_select_row = self.select_rows[0]
+                    
+                        if click_row < self.start_select_row:
+                            self.select_rows = range(click_row, self.start_select_row + 1)
+                        elif click_row > self.start_select_row:
+                            self.select_rows = range(self.start_select_row, click_row + 1)
+                        else:
+                            self.select_rows = [click_row]
+                elif self.press_ctrl:
+                    if click_row in self.select_rows:
+                        self.select_rows.remove(click_row)
+                    else:
+                        self.start_select_row = click_row
+                        self.select_rows.append(click_row)
+                    self.select_rows = sorted(self.select_rows)
+                else:
                     self.start_select_row = click_row
                     self.select_rows = [click_row]
-                else:
-                    if len(self.select_rows) == 1:
-                        self.start_select_row = self.select_rows[0]
+                    self.emit_item_event("button-press-item", event)
+            
+            if is_double_click(event):
+                self.double_click_row = copy.deepcopy(click_row)
+            elif is_single_click(event):
+                self.single_click_row = copy.deepcopy(click_row)                
+        else:
+            right_press_row = self.get_event_row(event)
+            if right_press_row == None:
+                self.start_select_row = None
+                self.select_rows = []
                 
-                    if click_row < self.start_select_row:
-                        self.select_rows = range(click_row, self.start_select_row + 1)
-                    elif click_row > self.start_select_row:
-                        self.select_rows = range(self.start_select_row, click_row + 1)
-                    else:
-                        self.select_rows = [click_row]
-            elif self.press_ctrl:
-                if click_row in self.select_rows:
-                    self.select_rows.remove(click_row)
-                else:
-                    self.start_select_row = click_row
-                    self.select_rows.append(click_row)
-                self.select_rows = sorted(self.select_rows)
+                self.queue_draw()
+            elif not right_press_row in self.select_rows:
+                self.start_select_row = right_press_row
+                self.select_rows = [right_press_row]
+                
+                self.queue_draw()
+                
+            # Emit right-press-items signal.
+            if self.start_select_row == None:
+                current_item = None
             else:
-                self.start_select_row = click_row
-                self.select_rows = [click_row]
-                self.emit_item_event("button-press-item", event)
-        
-        if is_double_click(event):
-            self.double_click_row = copy.deepcopy(click_row)
-        elif is_single_click(event):
-            self.single_click_row = copy.deepcopy(click_row)                
-
+                current_item = self.items[self.start_select_row]
+                
+            select_items = []    
+            for row in self.select_rows:
+                select_items.append(self.items[row])
+                
+            (wx, wy) = self.window.get_root_origin()    
+            self.emit("right-press-items", 
+                      wx + event.x, 
+                      wy + event.y, 
+                      current_item,
+                      select_items)
+            
     def button_release_list_view(self, widget, event):
         '''Button release event handler.'''
-        self.button_press = False
-        if self.titles:
-            # Get offset.
-            (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
-            if offset_y <= event.y <= offset_y + self.title_height:
-                cell_widths = self.get_cell_widths()
-                for (column, _) in enumerate(cell_widths):
-                    if column == last_index(cell_widths):
-                        cell_end_x = widget.allocation.width
-                    else:
-                        cell_end_x = sum(cell_widths[0:column + 1]) - self.title_separator_width
-                        
-                    if column == 0:
-                        cell_start_x = 0
-                    else:
-                        cell_start_x = sum(cell_widths[0:column]) + self.title_separator_width
-                        
-                    if cell_start_x < event.x < cell_end_x:
-                        if self.title_clicks[column]:
-                            self.title_sort_column = column
-                            self.title_sorts[column] = not self.title_sorts[column]
-                            self.title_clicks[column] = False
+        if is_left_button(event):
+            self.left_button_press = False
+            if self.titles:
+                # Get offset.
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
+                if offset_y <= event.y <= offset_y + self.title_height:
+                    cell_widths = self.get_cell_widths()
+                    for (column, _) in enumerate(cell_widths):
+                        if column == last_index(cell_widths):
+                            cell_end_x = widget.allocation.width
+                        else:
+                            cell_end_x = sum(cell_widths[0:column + 1]) - self.title_separator_width
                             
-                            if len(self.sorts) >= column + 1:
-                                with self.keep_select_status():
-                                    # Re-sort.
-                                    self.items = sorted(self.items, 
-                                                        key=self.sorts[column][0],
-                                                        cmp=self.sorts[column][1],
-                                                        reverse=self.title_sorts[column])
+                        if column == 0:
+                            cell_start_x = 0
+                        else:
+                            cell_start_x = sum(cell_widths[0:column]) + self.title_separator_width
+                            
+                        if cell_start_x < event.x < cell_end_x:
+                            if self.title_clicks[column]:
+                                self.title_sort_column = column
+                                self.title_sorts[column] = not self.title_sorts[column]
+                                self.title_clicks[column] = False
                                 
-                                # Update item index.
-                                self.update_item_index()    
-                            break
+                                if len(self.sorts) >= column + 1:
+                                    with self.keep_select_status():
+                                        # Re-sort.
+                                        self.items = sorted(self.items, 
+                                                            key=self.sorts[column][0],
+                                                            cmp=self.sorts[column][1],
+                                                            reverse=self.title_sorts[column])
+                                    
+                                    # Update item index.
+                                    self.update_item_index()    
+                                break
+                elif len(self.items) > 0:
+                    self.release_item(event)
             elif len(self.items) > 0:
                 self.release_item(event)
-        elif len(self.items) > 0:
-            self.release_item(event)
-                
-        self.title_adjust_column = None
-        self.queue_draw()
+                    
+            self.title_adjust_column = None
+            self.queue_draw()
         
     @contextmanager
     def keep_select_status(self):
@@ -587,15 +623,16 @@ class ListView(gtk.DrawingArea):
         
     def release_item(self, event):
         '''Release row.'''
-        release_row = self.get_event_row(event)
-
-        if self.double_click_row == release_row:
-            self.emit_item_event("double-click-item", event)
-        elif self.single_click_row == release_row:
-            self.emit_item_event("single-click-item", event)
-                
-        self.double_click_row = None
-        self.single_click_row = None
+        if is_left_button(event):
+            release_row = self.get_event_row(event)
+            
+            if self.double_click_row == release_row:
+                self.emit_item_event("double-click-item", event)
+            elif self.single_click_row == release_row:
+                self.emit_item_event("single-click-item", event)
+                    
+            self.double_click_row = None
+            self.single_click_row = None
         
     def leave_list_view(self, widget, event):
         '''leave-notify-event signal handler.'''
@@ -614,7 +651,6 @@ class ListView(gtk.DrawingArea):
             self.press_shift = True
             
         key_name = get_keyevent_name(event)
-        print key_name
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
         
