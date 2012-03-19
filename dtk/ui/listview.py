@@ -426,42 +426,43 @@ class ListView(gtk.DrawingArea):
         if self.left_button_press:
             if self.start_drag:
                 # Get hover row.
-                hover_row = self.get_event_row(event)
+                (event_x, event_y) = get_event_coords(event)
+                hover_row = min(max(int((event_y - self.title_offset_y) / self.item_height), 0),
+                                len(self.items))
+
+                # Set drag cursor.
+                set_cursor(self, gtk.gdk.DOUBLE_ARROW)
                 
-                if hover_row:
-                    # Set drag cursor.
-                    set_cursor(self, gtk.gdk.DOUBLE_ARROW)
+                # Filt items around drag item.
+                filter_items = self.before_drag_items + [self.drag_item] + self.after_drag_items
                 
-                    # Filt items around drag item.
-                    filter_items = self.before_drag_items + [self.drag_item] + self.after_drag_items
+                before_items = []
+                for item in self.items[0:hover_row]:
+                    if not item in filter_items:
+                        before_items.append(item)
                     
-                    before_items = []
-                    for item in self.items[0:hover_row]:
-                        if not item in filter_items:
-                            before_items.append(item)
-                        
-                    after_items = []
-                    for item in self.items[hover_row::]:
-                        if not item in filter_items:
-                            after_items.append(item)
-                                
-                    # Update items order.
-                    self.items = before_items + self.before_drag_items + [self.drag_item] + self.after_drag_items + after_items
-                    
-                    # Update select rows.
-                    self.select_rows = range(len(before_items), len(self.items) - len(after_items))
-                    
-                    # Update select start row.
-                    for row in self.select_rows:
-                        if self.items[row] == self.start_select_item:
-                            self.start_select_row = row
-                            break
-                    
-                    # Update item index.
-                    self.update_item_index()    
-                    
-                    # Redraw.
-                    self.queue_draw()
+                after_items = []
+                for item in self.items[hover_row::]:
+                    if not item in filter_items:
+                        after_items.append(item)
+                            
+                # Update items order.
+                self.items = before_items + self.before_drag_items + [self.drag_item] + self.after_drag_items + after_items
+                
+                # Update select rows.
+                self.select_rows = range(len(before_items), len(self.items) - len(after_items))
+                
+                # Update select start row.
+                for row in self.select_rows:
+                    if self.items[row] == self.start_select_item:
+                        self.start_select_row = row
+                        break
+                
+                # Update item index.
+                self.update_item_index()    
+                
+                # Redraw.
+                self.queue_draw()
             else:
                 # Get hover row.
                 hover_row = self.get_event_row(event)
@@ -584,8 +585,6 @@ class ListView(gtk.DrawingArea):
                                 self.before_drag_items.append(self.items[row])
                             elif row > click_row:
                                 self.after_drag_items.append(self.items[row])
-                                
-                        print "***** %s" % (str((self.before_drag_items, self.drag_item, self.after_drag_items)))        
                     else:
                         self.start_drag = False
                     
