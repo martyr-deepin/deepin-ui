@@ -34,6 +34,7 @@ class ListView(gtk.DrawingArea):
     SORT_DESCENDING = False
     SORT_ASCENDING = True
     SORT_PADDING_X = 5
+    TITLE_PADDING = 5
     
     __gsignals__ = {
         "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
@@ -143,6 +144,22 @@ class ListView(gtk.DrawingArea):
         self.title_sorts = map_value(self.titles, lambda _: self.SORT_DESCENDING)
         self.set_title_height(title_height)
         
+        (title_widths, title_heights) = self.get_title_sizes()
+        self.cell_widths = mix_list_max(self.cell_widths, title_widths)
+        self.cell_min_widths = mix_list_max(self.cell_min_widths, title_widths)
+        self.cell_min_heights = mix_list_max(self.cell_min_heights, title_heights)
+        
+    def get_title_sizes(self):
+        '''Get title sizes.'''
+        widths = []
+        heights = []
+        for title in self.titles:
+            (title_width, title_height) = get_content_size(title, DEFAULT_FONT_SIZE)
+            widths.append(title_width + self.TITLE_PADDING * 2)
+            heights.append(title_height)
+            
+        return (widths, heights)    
+        
     def add_items(self, items, insert_pos=None, sort_list=False):
         '''Add items in list.'''
         # Add new items.
@@ -153,7 +170,7 @@ class ListView(gtk.DrawingArea):
                 self.items = self.items[0:insert_pos] + items + self.items[insert_pos::]
 
         # Re-calcuate.
-        title_sizes = map_value(self.titles, lambda title: get_content_size(title, DEFAULT_FONT_SIZE))
+        (title_widths, title_heights) = self.get_title_sizes()
         sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
         sort_icon_width = sort_pixbuf.get_width() + self.SORT_PADDING_X * 2
         sort_icon_height = sort_pixbuf.get_height()
@@ -172,8 +189,8 @@ class ListView(gtk.DrawingArea):
                         max_width = max([cell_min_sizes[index][0], width])
                         max_height = max([cell_min_sizes[index][1], sort_icon_height, height])
                     else:
-                        max_width = max([cell_min_sizes[index][0], title_sizes[index][0] + sort_icon_width * 2, width])
-                        max_height = max([cell_min_sizes[index][1], title_sizes[index][1], sort_icon_height, height])
+                        max_width = max([cell_min_sizes[index][0], title_widths[index] + sort_icon_width * 2, width])
+                        max_height = max([cell_min_sizes[index][1], title_heights[index], sort_icon_height, height])
                     
                     cell_min_sizes[index] = (max_width, max_height)
         
