@@ -1046,17 +1046,6 @@ class ListView(gtk.DrawingArea):
             # Update item index.
             self.update_item_index()    
             
-            # Re-cacluate new allocation.
-            rect = self.get_allocation()
-            new_height = self.title_offset_y + len(self.items) * self.item_height
-            self.set_allocation(gtk.gdk.Rectangle(
-                    rect.x, 
-                    rect.y, 
-                    rect.width,
-                    new_height))
-            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-            vadjust.set_upper(new_height)
-            
             # Update vertical adjustment.
             self.update_vadjustment()        
         
