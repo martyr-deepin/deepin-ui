@@ -180,9 +180,9 @@ class ListView(gtk.DrawingArea):
             
         self.item_height = max(self.item_height, max(copy.deepcopy(cell_min_heights)))    
                     
-        # Set size request.
-        if len(self.items) > 0:
-            self.set_size_request(sum(self.cell_min_widths), self.item_height * len(self.items) + self.title_offset_y)
+        # # Set size request.
+        # if len(self.items) > 0:
+        #     self.set_size_request(sum(self.cell_min_widths), self.item_height * len(self.items) + self.title_offset_y)
             
         # Sort list if sort_list enable.
         if sort_list and self.sorts != [] and self.title_sort_column != None:
@@ -196,6 +196,9 @@ class ListView(gtk.DrawingArea):
                                     key=self.sorts[self.title_sort_column][0],
                                     cmp=self.sorts[self.title_sort_column][1],
                                     reverse=reverse_order)
+                
+        # Update vertical adjustment.
+        self.update_vadjustment()        
             
         # Update item index.
         self.update_item_index()    
@@ -1054,8 +1057,20 @@ class ListView(gtk.DrawingArea):
             vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
             vadjust.set_upper(new_height)
             
+            # Update vertical adjustment.
+            self.update_vadjustment()        
+        
             # Redraw.
             self.queue_draw()
+            
+    def update_vadjustment(self):
+        '''Update vertical adjustment.'''
+        list_height = self.title_offset_y + len(self.items) * self.item_height
+        self.set_size_request(sum(self.cell_min_widths), list_height)            
+        scrolled_window = get_match_parent(self, "ScrolledWindow")
+        if scrolled_window != None:
+            vadjust = scrolled_window.get_vadjustment()
+            vadjust.set_upper(list_height)
             
     def double_click_item(self):
         '''Double click item.'''
@@ -1064,10 +1079,15 @@ class ListView(gtk.DrawingArea):
             
     def clear(self):
         '''Clear all list.'''
+        # Clear list.
         self.start_select_row = None
         self.select_rows = []
         self.items = []
         
+        # Update vertical adjustment.
+        self.update_vadjustment()
+        
+        # Redraw.
         self.queue_draw()
 
 gobject.type_register(ListView)
