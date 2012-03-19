@@ -457,6 +457,15 @@ class ListView(gtk.DrawingArea):
                     if self.items[row] == self.start_select_item:
                         self.start_select_row = row
                         break
+                    
+                # Scroll viewport when cursor almost reach bound of viewport.
+                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
+                    vadjust.set_value(min(vadjust.get_value() + self.item_height, 
+                                          vadjust.get_upper() - vadjust.get_page_size()))
+                elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
+                    vadjust.set_value(max(vadjust.get_value() - self.item_height, 
+                                          vadjust.get_lower()))
                 
                 # Update item index.
                 self.update_item_index()    

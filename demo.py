@@ -144,8 +144,8 @@ if __name__ == "__main__":
     scrolled_window = ScrolledWindow()
     category_box.pack_start(scrolled_window, True, True)
     
-    # items_length = 100
-    items_length = 10
+    items_length = 100
+    # items_length = 10
     
     # items = map(lambda index: ListItem(
     #         "豆浆油条 %04d" % (index % 5),
@@ -183,7 +183,7 @@ if __name__ == "__main__":
     #         ), range(0, insert_items_length2))
     # list_view.add_items(insert_items2, 10)
     
-    list_view.connect("button-press-item", print_button_press)
+    # list_view.connect("button-press-item", print_button_press)
     # list_view.connect("double-click-item", print_double_click)
     # list_view.connect("single-click-item", print_single_click)
     # list_view.connect("motion-notify-item", print_motion_notify)
