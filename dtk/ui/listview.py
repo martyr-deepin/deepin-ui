@@ -60,6 +60,11 @@ class ListView(gtk.DrawingArea):
         self.title_sorts = None
         self.single_click_row = None
         self.double_click_row = None
+        self.start_select_item = None
+        self.start_drag = False
+        self.drag_item = None
+        self.before_drag_items = []
+        self.after_drag_items = []
         self.title_offset_y = 0
         self.item_height = 0
         self.press_ctrl = False
@@ -180,10 +185,6 @@ class ListView(gtk.DrawingArea):
             
         self.item_height = max(self.item_height, max(copy.deepcopy(cell_min_heights)))    
                     
-        # # Set size request.
-        # if len(self.items) > 0:
-        #     self.set_size_request(sum(self.cell_min_widths), self.item_height * len(self.items) + self.title_offset_y)
-            
         # Sort list if sort_list enable.
         if sort_list and self.sorts != [] and self.title_sort_column != None:
             if self.title_sorts == None:
@@ -423,29 +424,68 @@ class ListView(gtk.DrawingArea):
     def hover_item(self, event):
         '''Hover item.'''
         if self.left_button_press:
-            # Get hover row.
-            hover_row = self.get_event_row(event)
-            
-            # Highlight drag area.
-            if hover_row != None and self.start_select_row != None:
-                # Update select area.
-                if hover_row > self.start_select_row:
-                    self.select_rows = range(self.start_select_row, hover_row + 1)
-                elif hover_row < self.start_select_row:
-                    self.select_rows = range(hover_row, self.start_select_row + 1)
-                else:
-                    self.select_rows = [hover_row]
+            if self.start_drag:
+                # Get hover row.
+                hover_row = self.get_event_row(event)
+                
+                if hover_row:
+                    # Set drag cursor.
+                    set_cursor(self, gtk.gdk.DOUBLE_ARROW)
+                
+                    # Filt items around drag item.
+                    filter_items = self.before_drag_items + [self.drag_item] + self.after_drag_items
                     
-                # Scroll viewport when cursor almost reach bound of viewport.
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-                if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
-                    vadjust.set_value(min(vadjust.get_value() + self.item_height, 
-                                          vadjust.get_upper() - vadjust.get_page_size()))
-                elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
-                    vadjust.set_value(max(vadjust.get_value() - self.item_height, 
-                                          vadjust.get_lower()))
+                    before_items = []
+                    for item in self.items[0:hover_row]:
+                        if not item in filter_items:
+                            before_items.append(item)
+                        
+                    after_items = []
+                    for item in self.items[hover_row::]:
+                        if not item in filter_items:
+                            after_items.append(item)
+                                
+                    # Update items order.
+                    self.items = before_items + self.before_drag_items + [self.drag_item] + self.after_drag_items + after_items
                     
-                self.queue_draw()
+                    # Update select rows.
+                    self.select_rows = range(len(before_items), len(self.items) - len(after_items))
+                    
+                    # Update select start row.
+                    for row in self.select_rows:
+                        if self.items[row] == self.start_select_item:
+                            self.start_select_row = row
+                            break
+                    
+                    # Update item index.
+                    self.update_item_index()    
+                    
+                    # Redraw.
+                    self.queue_draw()
+            else:
+                # Get hover row.
+                hover_row = self.get_event_row(event)
+                
+                # Highlight drag area.
+                if hover_row != None and self.start_select_row != None:
+                    # Update select area.
+                    if hover_row > self.start_select_row:
+                        self.select_rows = range(self.start_select_row, hover_row + 1)
+                    elif hover_row < self.start_select_row:
+                        self.select_rows = range(hover_row, self.start_select_row + 1)
+                    else:
+                        self.select_rows = [hover_row]
+                        
+                    # Scroll viewport when cursor almost reach bound of viewport.
+                    vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                    if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
+                        vadjust.set_value(min(vadjust.get_value() + self.item_height, 
+                                              vadjust.get_upper() - vadjust.get_page_size()))
+                    elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
+                        vadjust.set_value(max(vadjust.get_value() - self.item_height, 
+                                              vadjust.get_lower()))
+                        
+                    self.queue_draw()
         else:
             # Rest cursor and title select column.
             self.title_select_column = None
@@ -528,9 +568,30 @@ class ListView(gtk.DrawingArea):
                         self.select_rows.append(click_row)
                     self.select_rows = sorted(self.select_rows)
                 else:
-                    self.start_select_row = click_row
-                    self.select_rows = [click_row]
-                    self.emit_item_event("button-press-item", event)
+                    if click_row in self.select_rows and len(self.select_rows) != len(self.items):
+                        self.start_drag = True
+                        
+                        if self.start_select_row:
+                            self.start_select_item = self.items[self.start_select_row]
+                            
+                        self.before_drag_items = []
+                        self.after_drag_items = []
+                        
+                        for row in self.select_rows:
+                            if row == click_row:
+                                self.drag_item = self.items[click_row]
+                            elif row < click_row:
+                                self.before_drag_items.append(self.items[row])
+                            elif row > click_row:
+                                self.after_drag_items.append(self.items[row])
+                                
+                        print "***** %s" % (str((self.before_drag_items, self.drag_item, self.after_drag_items)))        
+                    else:
+                        self.start_drag = False
+                    
+                        self.start_select_row = click_row
+                        self.select_rows = [click_row]
+                        self.emit_item_event("button-press-item", event)
             
             if is_double_click(event):
                 self.double_click_row = copy.deepcopy(click_row)

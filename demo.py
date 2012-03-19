@@ -144,14 +144,22 @@ if __name__ == "__main__":
     scrolled_window = ScrolledWindow()
     category_box.pack_start(scrolled_window, True, True)
     
-    items_length = 100
-    # items_length = 10
+    # items_length = 100
+    items_length = 10
+    
+    # items = map(lambda index: ListItem(
+    #         "豆浆油条 %04d" % (index % 5),
+    #         "林俊杰 %04d" % (index % 10),
+    #         # "10:%02d" % (index % 60),
+    #         "10:%02d" % index,
+    #         ), range(0, items_length))
+
     items = map(lambda index: ListItem(
-            "豆浆油条 %04d" % (index % 5),
-            "林俊杰 %04d" % (index % 10),
-            # "10:%02d" % (index % 60),
+            "豆浆油条 %04d" % index,
+            "林俊杰 %04d" % index,
             "10:%02d" % index,
             ), range(0, items_length))
+    
     list_view = ListView(
         [(lambda item: item.title, cmp),
          (lambda item: item.artist, cmp),
@@ -159,21 +167,21 @@ if __name__ == "__main__":
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
     
-    insert_items_length1 = 5
-    insert_items1 = map(lambda index: ListItem(
-            "插入选项1 %04d" % (index % 5),
-            "歌手1 %04d" % (index % 10),
-            "10:%02d" % index,
-            ), range(0, insert_items_length1))
-    list_view.add_items(insert_items1, 3)
+    # insert_items_length1 = 5
+    # insert_items1 = map(lambda index: ListItem(
+    #         "插入选项1 %04d" % (index % 5),
+    #         "歌手1 %04d" % (index % 10),
+    #         "10:%02d" % index,
+    #         ), range(0, insert_items_length1))
+    # list_view.add_items(insert_items1, 3)
 
-    insert_items_length2 = 3
-    insert_items2 = map(lambda index: ListItem(
-            "插入选项2 %04d" % (index % 5),
-            "歌手2 %04d" % (index % 10),
-            "10:%02d" % index,
-            ), range(0, insert_items_length2))
-    list_view.add_items(insert_items2, 10)
+    # insert_items_length2 = 3
+    # insert_items2 = map(lambda index: ListItem(
+    #         "插入选项2 %04d" % (index % 5),
+    #         "歌手2 %04d" % (index % 10),
+    #         "10:%02d" % index,
+    #         ), range(0, insert_items_length2))
+    # list_view.add_items(insert_items2, 10)
     
     list_view.connect("button-press-item", print_button_press)
     # list_view.connect("double-click-item", print_double_click)
