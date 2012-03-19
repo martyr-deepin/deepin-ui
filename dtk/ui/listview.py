@@ -138,10 +138,14 @@ class ListView(gtk.DrawingArea):
         self.title_sorts = map_value(self.titles, lambda _: self.SORT_DESCENDING)
         self.set_title_height(title_height)
         
-    def add_items(self, items, sort_list=False):
+    def add_items(self, items, insert_pos=None, sort_list=False):
         '''Add items in list.'''
         # Add new items.
-        self.items += items
+        with self.keep_select_status():    
+            if insert_pos == None:
+                self.items += items
+            else:
+                self.items = self.items[0:insert_pos] + items + self.items[insert_pos::]
 
         # Re-calcuate.
         title_sizes = map_value(self.titles, lambda title: get_content_size(title, DEFAULT_FONT_SIZE))

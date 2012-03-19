@@ -500,7 +500,7 @@ def mix_list_max(list_a, list_b):
         return list_a
     elif len(list_a) == len(list_b):
         result = []
-        for (index, item_a) in list_a:
+        for (index, item_a) in enumerate(list_a):
             if item_a > list_b[index]:
                 result.append(item_a)
             else:
