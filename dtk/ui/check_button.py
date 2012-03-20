@@ -23,8 +23,8 @@
 from draw import *
 import gobject
 
-class CheckBox(gtk.Button):
-    '''CheckBox.'''
+class CheckButton(gtk.Button):
+    '''CheckButton.'''
     __gsignals__ = {
         "changed":(gobject.SIGNAL_RUN_LAST,
                    gobject.TYPE_NONE,(gobject.TYPE_INT,))
@@ -53,7 +53,7 @@ class CheckBox(gtk.Button):
         (x, y, w, h) = rect.x, rect.y, rect.width, rect.height
         
         '''Draw checkbox.'''     
-        # CheckBox linear.
+        # CheckButton linear.
         if self.motion:
             draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("progressbarBackground").get_color_info())
         
@@ -107,9 +107,9 @@ if __name__ == "__main__":
     window = gtk.Window()    
     fixed  = gtk.Fixed()
     
-    checkbox = CheckBox()
-    checkbox1 = CheckBox()
-    checkbox2 = CheckBox()
+    checkbox = CheckButton()
+    checkbox1 = CheckButton()
+    checkbox2 = CheckButton()
 
     checkbox.set_size_request(80, 80)
     fixed.put(checkbox,  30, 40)
