@@ -171,22 +171,18 @@ def draw_line(cr, sx, sy, ex, ey, line_width=1, antialias_status=cairo.ANTIALIAS
     # Restore antialias.
     cr.set_antialias(antialias)
 
-def draw_vlinear(cr, x, y, w, h, color_infos, radius=0, top_to_bottom=True, test=False):
+def draw_vlinear(cr, x, y, w, h, color_infos, radius=0, top_to_bottom=True):
     '''Draw linear rectangle.'''
     if top_to_bottom:
-        pat = cairo.LinearGradient(0, y, 0, y + h)
+        pat = cairo.LinearGradient(x, y, x, y + h)
     else:
-        pat = cairo.LinearGradient(0, y + h, 0, y)
+        pat = cairo.LinearGradient(x, y + h, x, y)
         
     for (pos, color_info) in color_infos:
-        add_color_stop_rgba(pat, pos, color_info, test) # ********
+        # FIXME, this code will nullity after y is bigger than 24000.
+        add_color_stop_rgba(pat, pos, color_info) 
     cr.set_source(pat)
     draw_round_rectangle(cr, x, y, w, h, radius)
-    
-    # (color, alpha) = color_infos[0][1]
-    # (r, g, b) = color_hex_to_cairo(color)
-    # cr.set_source_rgb(r, g, b)
-    # draw_round_rectangle(cr, x, y, w, h, radius)
     
     cr.fill()
 

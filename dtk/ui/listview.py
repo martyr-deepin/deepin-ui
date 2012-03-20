@@ -386,8 +386,7 @@ class ListView(gtk.DrawingArea):
                 # Draw title split line.
                 if cell_offset_x != 0:
                     draw_vlinear(cr, cell_offset_x, offset_y, 1, self.title_height,
-                                 ui_theme.get_shadow_color("listviewHeaderSplit").get_color_info(), 0,
-                                 True, True)
+                                 ui_theme.get_shadow_color("listviewHeaderSplit").get_color_info())
                 
                 # Draw title.
                 draw_font(cr, self.titles[column], DEFAULT_FONT_SIZE, 
