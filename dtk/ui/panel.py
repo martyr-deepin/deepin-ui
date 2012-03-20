@@ -35,7 +35,8 @@ class Panel(gtk.Window):
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)        
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_MENU) # make panel window don't switch in window manager
+        self.set_skip_taskbar_hint(True)
+        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # make panel window don't switch in window manager
         self.start_show_id = None
         self.start_hide_id = None
         self.delay = 50         # milliseconds
