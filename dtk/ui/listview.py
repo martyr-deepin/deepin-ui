@@ -760,8 +760,6 @@ class ListView(gtk.DrawingArea):
         # Hide hover row when cursor out of viewport area.
         vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
         hadjust = get_match_parent(self, "ScrolledWindow").get_hadjustment()
-        print ((event.x, event.y), 
-               (hadjust.get_value(), vadjust.get_value(), hadjust.get_page_size(), vadjust.get_page_size()))
         if not is_in_rect((event.x, event.y), 
                           (hadjust.get_value(), vadjust.get_value(), hadjust.get_page_size(), vadjust.get_page_size())):
             self.hover_row = None
@@ -780,6 +778,11 @@ class ListView(gtk.DrawingArea):
         key_name = get_keyevent_name(event)
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
+            
+        # Hide hover row.
+        if self.hover_row and not has_ctrl_mask(event) and not has_shift_mask(event):
+            self.hover_row = None
+            self.queue_draw()
         
         return True
             
