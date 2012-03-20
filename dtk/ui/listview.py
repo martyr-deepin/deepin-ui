@@ -64,6 +64,7 @@ class ListView(gtk.DrawingArea):
         self.start_select_item = None
         self.start_drag = False
         self.drag_item = None
+        self.highlight_item = None
         self.before_drag_items = []
         self.after_drag_items = []
         self.title_offset_y = 0
@@ -312,16 +313,27 @@ class ListView(gtk.DrawingArea):
                 cr.clip()
                 
                 # Draw hover row.
-                if self.hover_row != None and not self.hover_row in self.select_rows:
+                highlight_row = None
+                if self.highlight_item:
+                    highlight_row = self.highlight_item.get_index()
+                
+                if self.hover_row != None and not self.hover_row in self.select_rows and self.hover_row != highlight_row:
                     draw_vlinear(cr, offset_x, self.title_offset_y + self.hover_row * self.item_height,
                                  viewport.allocation.width, self.item_height,
                                  ui_theme.get_shadow_color("listviewHover").get_color_info())
                 
                 # Draw select rows.
                 for select_row in self.select_rows:
-                    draw_vlinear(cr, offset_x, self.title_offset_y + select_row * self.item_height,
+                    if select_row != highlight_row:
+                        draw_vlinear(cr, offset_x, self.title_offset_y + select_row * self.item_height,
+                                     viewport.allocation.width, self.item_height,
+                                     ui_theme.get_shadow_color("listviewSelect").get_color_info())
+                    
+                # Draw highlight row.
+                if self.highlight_item:
+                    draw_vlinear(cr, offset_x, self.title_offset_y + self.highlight_item.get_index() * self.item_height,
                                  viewport.allocation.width, self.item_height,
-                                 ui_theme.get_shadow_color("listviewSelect").get_color_info())
+                                 ui_theme.get_shadow_color("listviewHighlight").get_color_info())
                     
                 # Get viewport index.
                 start_y = offset_y - self.title_offset_y
@@ -1183,6 +1195,16 @@ class ListView(gtk.DrawingArea):
             return None
         else:
             return self.items[self.select_rows[0]]
+        
+    def set_highlight(self, item):
+        '''Set highlight item.'''
+        self.highlight_item = item
+        self.queue_draw()
+        
+    def clear_highlight(self):
+        '''Clear highlight item.'''
+        self.highlight_item = None
+        self.queue_draw()
         
 gobject.type_register(ListView)
 

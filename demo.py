@@ -47,10 +47,12 @@ def print_button_press(list_view, list_item, column, offset_x, offset_y):
 def print_double_click(list_view, list_item, column, offset_x, offset_y):
     '''Print double click.'''
     print "* Double click: %s" % (str((list_item.title, list_item.artist, list_item.length)))
+    list_view.set_highlight(list_item)
 
 def print_single_click(list_view, list_item, column, offset_x, offset_y):
     '''Print single click.'''
     print "* Single click: %s" % (str((list_item.title, list_item.artist, list_item.length)))
+    list_view.clear_highlight()
 
 def print_motion_notify(list_view, list_item, column, offset_x, offset_y):
     '''Print motion notify.'''
@@ -185,8 +187,8 @@ if __name__ == "__main__":
     # list_view.add_items(insert_items2, 10)
     
     # list_view.connect("button-press-item", print_button_press)
-    # list_view.connect("double-click-item", print_double_click)
-    # list_view.connect("single-click-item", print_single_click)
+    list_view.connect("double-click-item", print_double_click)
+    list_view.connect("single-click-item", print_single_click)
     # list_view.connect("motion-notify-item", print_motion_notify)
     
     # gtk.timeout_add(10, lambda : simulate_redraw_request(items, items_length))
