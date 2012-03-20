@@ -417,11 +417,14 @@ def format_file_size(bytes, precision=2):
                            ['B', 'KB', 'MB', 'GB', 'TB','PB', 'EB', 'ZB', 'YB']
                            [int(log)])
 
-def add_color_stop_rgba(pat, pos, color_info):
+def add_color_stop_rgba(pat, pos, color_info, test=False):
     '''ADd color stop RGBA.'''
     (color, alpha) = color_info
     (r, g, b) = color_hex_to_cairo(color)
-    pat.add_color_stop_rgba(pos, r, g, b, alpha)
+    pat.add_color_stop_rgba(pos, r, g, b, alpha) # ******
+    
+    if test:
+        print (pos, r, g, b, alpha)
     
 def alpha_color_hex_to_cairo((color, alpha)):
     '''Alpha color hext to cairo color.'''

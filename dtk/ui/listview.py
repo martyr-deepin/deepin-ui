@@ -371,6 +371,17 @@ class ListView(gtk.DrawingArea):
                 draw_vlinear(cr, cell_offset_x, offset_y, cell_width, self.title_height,
                                  ui_theme.get_shadow_color(shadow_color).get_color_info())
                 
+                # Draw title split line.
+                if cell_offset_x != 0:
+                    draw_vlinear(cr, cell_offset_x, offset_y, 1, self.title_height,
+                                 ui_theme.get_shadow_color("listviewHeaderSplit").get_color_info(), 0,
+                                 True, True)
+                
+                # Draw title.
+                draw_font(cr, self.titles[column], DEFAULT_FONT_SIZE, 
+                          ui_theme.get_color("listItemText").get_color(),
+                          cell_offset_x, offset_y, cell_widths[column], self.title_height)    
+                
                 # Draw sort icon.
                 if self.title_sort_column == column:
                     sort_type = self.get_column_sort_type(column)    
@@ -383,19 +394,6 @@ class ListView(gtk.DrawingArea):
                                 cell_offset_x + cell_width - sort_pixbuf.get_width() - self.SORT_PADDING_X,
                                 offset_y + (self.title_height - sort_pixbuf.get_height()) / 2)    
             
-            for (column, title) in enumerate(self.titles):
-                # Draw title split line.
-                cell_x = sum(cell_widths[0:column])
-                    
-                if cell_x != 0:
-                    draw_vlinear(cr, cell_x, offset_y, 1, self.title_height,
-                                 ui_theme.get_shadow_color("listviewHeaderSplit").get_color_info())
-                    
-                # Draw title.
-                draw_font(cr, title, DEFAULT_FONT_SIZE, 
-                          ui_theme.get_color("listItemText").get_color(),
-                          cell_x, offset_y, cell_widths[column], self.title_height)    
-                
         return False
     
     def motion_list_view(self, widget, event):
@@ -1172,7 +1170,14 @@ class ListView(gtk.DrawingArea):
         
         # Redraw.
         self.queue_draw()
-
+        
+    def get_current_item(self):
+        '''Get current item, if select_rows not single row, return None.'''
+        if len(self.select_rows) != 1:
+            return None
+        else:
+            return self.items[self.select_rows[0]]
+        
 gobject.type_register(ListView)
 
 class ListItem(gobject.GObject):
