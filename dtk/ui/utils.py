@@ -423,8 +423,8 @@ def add_color_stop_rgba(pat, pos, color_info, test=False):
     (r, g, b) = color_hex_to_cairo(color)
     pat.add_color_stop_rgba(pos, r, g, b, alpha) # ******
     
-    if test:
-        print (pos, r, g, b, alpha)
+    # if test:
+    #     print (pos, r, g, b, alpha)
     
 def alpha_color_hex_to_cairo((color, alpha)):
     '''Alpha color hext to cairo color.'''
