@@ -36,11 +36,13 @@ class Titlebar(object):
                  icon_dpixbuf=None,
                  app_name=None,
                  title=None,
-                 add_separator=False
+                 add_separator=False,
+                 height=25
                  ):
         '''Init titlebar.'''
         # Init.
         self.box = EventBox()
+        self.box.set_size_request(-1, height)
         self.v_layout_box = gtk.VBox()
         self.h_layout_box = gtk.HBox()
         self.box.add(self.v_layout_box)
