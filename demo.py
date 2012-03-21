@@ -208,23 +208,20 @@ if __name__ == "__main__":
     
     # Add scalebar.
     scalebar = HScalebar()
-    scalebar.set_range(0, 100)
     scalebar_frame = HorizontalFrame()
     scalebar_frame.add(scalebar)
     application.main_box.pack_start(scalebar_frame, False, False)
+    
+    vscalebar = VScalebar()
+    vscale_box = gtk.HBox()
+    vscale_box.pack_start(vscalebar, False, False)
+    body_box.pack_start(vscale_box, False, False)
     
     # Add volume button.
     volume_button = VolumeButton(100, 0, 100, 2)
     volume_frame = HorizontalFrame(10, 0, 0, 0, 0)
     volume_frame.add(volume_button)
     application.main_box.pack_start(volume_frame, False, False)
-    
-    vscalebar = VScalebar()
-    # vscalebar.set_range(0, 100)
-    
-    vscale_box = gtk.HBox(False)
-    vscale_box.pack_start(vscalebar, False, False)
-    application.main_box.pack_start(vscale_box, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)

@@ -30,6 +30,8 @@ class HScalebar(gtk.HScale):
     '''Scalebar.'''
 	
     def __init__(self,
+                 scale_min=0,
+                 scale_max=100,
                  left_fg_dpixbuf=ui_theme.get_pixbuf("hscalebar/left_fg.png"),
                  left_bg_dpixbuf=ui_theme.get_pixbuf("hscalebar/left_bg.png"),
                  middle_fg_dpixbuf=ui_theme.get_pixbuf("hscalebar/middle_fg.png"),
@@ -42,6 +44,7 @@ class HScalebar(gtk.HScale):
         # Init.
         gtk.HScale.__init__(self)
         self.set_draw_value(False)
+        self.set_range(scale_min, scale_max)
         self.left_fg_dpixbuf = left_fg_dpixbuf
         self.left_bg_dpixbuf = left_bg_dpixbuf
         self.middle_fg_dpixbuf = middle_fg_dpixbuf
@@ -86,12 +89,13 @@ class HScalebar(gtk.HScale):
 
         # Draw background.
         draw_pixbuf(cr, left_bg_pixbuf, x, line_y)
-        draw_pixbuf(cr, middle_bg_pixbuf.scale_simple(w - side_width * 2, line_height, gtk.gdk.INTERP_BILINEAR), x + side_width, line_y)
+        draw_pixbuf(cr, middle_bg_pixbuf.scale_simple(w - side_width * 2, line_height, gtk.gdk.INTERP_BILINEAR),
+                    x + side_width, line_y)
         draw_pixbuf(cr, right_bg_pixbuf, x + w - side_width, line_y)
         
         # Draw foreground.
         if value > 0:
-            draw_pixbuf(cr, left_fg_pixbuf, x + 3, line_y)
+            draw_pixbuf(cr, left_fg_pixbuf, x, line_y)
             draw_pixbuf(cr, middle_fg_pixbuf.scale_simple(value, line_height, gtk.gdk.INTERP_BILINEAR), x + side_width, line_y)
             draw_pixbuf(cr, right_fg_pixbuf, x + value, line_y)
             
@@ -124,6 +128,8 @@ class VScalebar(gtk.VScale):
     '''Vscalebar.'''
     
     def __init__(self, 
+                 scale_min=0,
+                 scale_max=100,
                  upper_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_fg.png"),
                  upper_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_bg.png"),
                  moddle_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/moddle_fg.png"),
@@ -135,8 +141,8 @@ class VScalebar(gtk.VScale):
         
         gtk.VScale.__init__(self)
 
-        self.set_range(0, 100)
         self.set_draw_value(False)
+        self.set_range(scale_min, scale_max)
         self.upper_fg_dpixbuf = upper_fg_dpixbuf
         self.upper_bg_dpixbuf = upper_bg_dpixbuf
         self.moddle_fg_dpixbuf = moddle_fg_dpixbuf
