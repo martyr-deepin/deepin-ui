@@ -75,7 +75,7 @@ class HScalebar(gtk.HScale):
         # Init value.
         upper = self.get_adjustment().get_upper() 
         lower = self.get_adjustment().get_lower() 
-        total_length = upper - lower
+        total_length = max(upper - lower, 1)
         side_width = left_bg_pixbuf.get_width()
         point_width = point_pixbuf.get_width()
         point_height = point_pixbuf.get_height()
@@ -135,6 +135,7 @@ class VScalebar(gtk.VScale):
         
         gtk.VScale.__init__(self)
 
+        self.set_range(0, 100)
         self.set_draw_value(False)
         self.upper_fg_dpixbuf = upper_fg_dpixbuf
         self.upper_bg_dpixbuf = upper_bg_dpixbuf
@@ -144,7 +145,7 @@ class VScalebar(gtk.VScale):
         self.bottom_bg_dpixbuf = bottom_bg_dpixbuf
         self.point_dpixbuf = point_dpixbuf
         
-        self.set_size_request(self.point_dpixbuf.get_pixbuf().get_height(), 400)
+        self.set_size_request(self.point_dpixbuf.get_pixbuf().get_height(), 200)
         
         self.connect("expose-event", self.expose_v_scalebar)
         self.connect("button-press-event", self.press_progressbar)
@@ -160,29 +161,20 @@ class VScalebar(gtk.VScale):
         moddle_bg_pixbuf = self.moddle_bg_dpixbuf.get_pixbuf()
         bottom_fg_pixbuf = self.bottom_fg_dpixbuf.get_pixbuf()
         bottom_bg_pixbuf = self.bottom_bg_dpixbuf.get_pixbuf()
-        
-        # upper_fg_pixbuf = self.upper_bg_dpixbuf.get_pixbuf()
-        # upper_bg_pixbuf = self.upper_fg_dpixbuf.get_pixbuf()
-        # moddle_fg_pixbuf = self.moddle_bg_dpixbuf.get_pixbuf()
-        # moddle_bg_pixbuf = self.moddle_fg_dpixbuf.get_pixbuf()
-        # bottom_fg_pixbuf = self.bottom_bg_dpixbuf.get_pixbuf()
-        # bottom_bg_pixbuf = self.bottom_fg_dpixbuf.get_pixbuf()
-        
         point_pixbuf = self.point_dpixbuf.get_pixbuf()
         
         upper_value = self.get_adjustment().get_upper()
         lower_value = self.get_adjustment().get_lower()
-        total_length = upper_value - lower_value
+        total_length = max(upper_value - lower_value, 1)
         point_width = point_pixbuf.get_width()
         point_height = point_pixbuf.get_height()
         
         line_width = upper_bg_pixbuf.get_width()
         side_height = upper_bg_pixbuf.get_height()
 
-        x, y, w, h  = rect.x, rect.y + point_width / 2, rect.width, rect.height - point_height
+        x, y, w, h  = rect.x, rect.y + point_height / 2, rect.width, rect.height - point_height
         line_x = x + (point_width - line_width / 2) / 2
         value = int((self.get_value() - lower_value ) / total_length * h)
-
         
         draw_pixbuf(cr, moddle_bg_pixbuf.scale_simple(line_width, max(h - side_height * 2 -value, side_height / 2), gtk.gdk.INTERP_BILINEAR), line_x, y + side_height + value)
         draw_pixbuf(cr, bottom_bg_pixbuf, line_x, y + h - side_height)
@@ -210,5 +202,3 @@ class VScalebar(gtk.VScale):
         return False    
     
 gobject.type_register(VScalebar)        
-        
-    
