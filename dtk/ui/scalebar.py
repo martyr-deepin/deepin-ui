@@ -91,7 +91,7 @@ class HScalebar(gtk.HScale):
         
         # Draw foreground.
         if value > 0:
-            draw_pixbuf(cr, left_fg_pixbuf, x, line_y)
+            draw_pixbuf(cr, left_fg_pixbuf, x + 3, line_y)
             draw_pixbuf(cr, middle_fg_pixbuf.scale_simple(value, line_height, gtk.gdk.INTERP_BILINEAR), x + side_width, line_y)
             draw_pixbuf(cr, right_fg_pixbuf, x + value, line_y)
             
@@ -119,3 +119,96 @@ class HScalebar(gtk.HScale):
         return False
     
 gobject.type_register(HScalebar)
+
+class VScalebar(gtk.VScale):
+    '''Vscalebar.'''
+    
+    def __init__(self, 
+                 upper_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_fg.png"),
+                 upper_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_bg.png"),
+                 moddle_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/moddle_fg.png"),
+                 moddle_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/moddle_bg.png"),
+                 bottom_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/bottom_fg.png"),
+                 bottom_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/bottom_bg.png"),
+                 point_dpixbuf=ui_theme.get_pixbuf("vscalebar/point.png"),
+                 ):
+        
+        gtk.VScale.__init__(self)
+
+        self.set_draw_value(False)
+        self.upper_fg_dpixbuf = upper_fg_dpixbuf
+        self.upper_bg_dpixbuf = upper_bg_dpixbuf
+        self.moddle_fg_dpixbuf = moddle_fg_dpixbuf
+        self.moddle_bg_dpixbuf = moddle_bg_dpixbuf
+        self.bottom_fg_dpixbuf = bottom_fg_dpixbuf
+        self.bottom_bg_dpixbuf = bottom_bg_dpixbuf
+        self.point_dpixbuf = point_dpixbuf
+        
+        self.set_size_request(self.point_dpixbuf.get_pixbuf().get_height(), 400)
+        
+        self.connect("expose-event", self.expose_v_scalebar)
+        self.connect("button-press-event", self.press_progressbar)
+        
+    def expose_v_scalebar(self, widget, event):    
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        
+        # Init pixbuf.
+        upper_fg_pixbuf = self.upper_fg_dpixbuf.get_pixbuf()
+        upper_bg_pixbuf = self.upper_bg_dpixbuf.get_pixbuf()
+        moddle_fg_pixbuf = self.moddle_fg_dpixbuf.get_pixbuf()
+        moddle_bg_pixbuf = self.moddle_bg_dpixbuf.get_pixbuf()
+        bottom_fg_pixbuf = self.bottom_fg_dpixbuf.get_pixbuf()
+        bottom_bg_pixbuf = self.bottom_bg_dpixbuf.get_pixbuf()
+        
+        # upper_fg_pixbuf = self.upper_bg_dpixbuf.get_pixbuf()
+        # upper_bg_pixbuf = self.upper_fg_dpixbuf.get_pixbuf()
+        # moddle_fg_pixbuf = self.moddle_bg_dpixbuf.get_pixbuf()
+        # moddle_bg_pixbuf = self.moddle_fg_dpixbuf.get_pixbuf()
+        # bottom_fg_pixbuf = self.bottom_bg_dpixbuf.get_pixbuf()
+        # bottom_bg_pixbuf = self.bottom_fg_dpixbuf.get_pixbuf()
+        
+        point_pixbuf = self.point_dpixbuf.get_pixbuf()
+        
+        upper_value = self.get_adjustment().get_upper()
+        lower_value = self.get_adjustment().get_lower()
+        total_length = upper_value - lower_value
+        point_width = point_pixbuf.get_width()
+        point_height = point_pixbuf.get_height()
+        
+        line_width = upper_bg_pixbuf.get_width()
+        side_height = upper_bg_pixbuf.get_height()
+
+        x, y, w, h  = rect.x, rect.y + point_width / 2, rect.width, rect.height - point_height
+        line_x = x + (point_width - line_width / 2) / 2
+        value = int((self.get_value() - lower_value ) / total_length * h)
+
+        
+        draw_pixbuf(cr, moddle_bg_pixbuf.scale_simple(line_width, max(h - side_height * 2 -value, side_height / 2), gtk.gdk.INTERP_BILINEAR), line_x, y + side_height + value)
+        draw_pixbuf(cr, bottom_bg_pixbuf, line_x, y + h - side_height)
+        
+        if value > 0:
+            draw_pixbuf(cr, upper_fg_pixbuf, line_x, y)
+            draw_pixbuf(cr, moddle_fg_pixbuf.scale_simple(line_width, value, gtk.gdk.INTERP_BILINEAR), line_x, y + side_height)
+            draw_pixbuf(cr, bottom_fg_pixbuf, line_x, y + value)
+            
+        draw_pixbuf(cr, point_pixbuf, x , y + value - point_pixbuf.get_height() / 2)    
+        
+        propagate_expose(widget, event)
+        return True
+        
+    def press_progressbar(self, widget, event):
+        
+        if is_left_button(event):
+            rect = widget.allocation
+            lower_value = self.get_adjustment().get_lower()
+            upper_value = self.get_adjustment().get_upper()
+            point_height = self.point_dpixbuf.get_pixbuf().get_height()
+            
+            self.set_value(lower_value + ((event.y - point_height / 2) / (rect.height - point_height)) * (upper_value - lower_value) )
+            self.queue_draw()
+        return False    
+    
+gobject.type_register(VScalebar)        
+        
+    
