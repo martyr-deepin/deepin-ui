@@ -395,7 +395,7 @@ class ListView(gtk.DrawingArea):
                 else:
                     shadow_color = "listviewHeader"
                 draw_vlinear(cr, cell_offset_x, offset_y, cell_width, self.title_height,
-                                 ui_theme.get_shadow_color(shadow_color).get_color_info())
+                             ui_theme.get_shadow_color(shadow_color).get_color_info())
                 
                 # Draw title split line.
                 if cell_offset_x != 0:

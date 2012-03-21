@@ -88,10 +88,21 @@ if __name__ == "__main__":
     button.set_size_request(200,300)
     
     # Init menu callback.
+    sub_menu_a = Menu(
+        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单A1", None),
+         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单A2", None),
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单A3", None),
+         ])
+    sub_menu_b = Menu(
+        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单B1", None),
+         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单B2", None),
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单B3", None),
+         ])
+    
     menu = Menu(
         [(ui_theme.get_pixbuf("menu/menuItem1.png"), "测试测试测试1", lambda : PopupWindow(application.window)),
-         (ui_theme.get_pixbuf("menu/menuItem2.png"), "测试测试测试2", None),
-         (ui_theme.get_pixbuf("menu/menuItem3.png"), "测试测试测试3", None),
+         (ui_theme.get_pixbuf("menu/menuItem2.png"), "测试测试测试2", sub_menu_a),
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "测试测试测试3", sub_menu_b),
          None,
          (None, "测试测试测试", None),
          (None, "测试测试测试", None),
