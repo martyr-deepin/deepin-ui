@@ -176,7 +176,7 @@ class VScalebar(gtk.VScale):
         line_x = x + (point_width - line_width / 2) / 2
         value = int((self.get_value() - lower_value ) / total_length * h)
         
-        draw_pixbuf(cr, moddle_bg_pixbuf.scale_simple(line_width, max(h - side_height * 2 -value, side_height / 2), gtk.gdk.INTERP_BILINEAR), line_x, y + side_height + value)
+        draw_pixbuf(cr, moddle_bg_pixbuf.scale_simple(line_width, max(h - side_height - value, side_height / 2), gtk.gdk.INTERP_BILINEAR), line_x, y + side_height / 2 + value)
         draw_pixbuf(cr, bottom_bg_pixbuf, line_x, y + h - side_height)
         
         if value > 0:
