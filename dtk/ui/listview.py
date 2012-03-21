@@ -220,7 +220,21 @@ class ListView(gtk.DrawingArea):
         self.update_vadjustment()        
             
         # Update item index.
+        self.update_item_index()
+        
+    def sort_items(self, compare_method, sort_reverse=False):
+        '''Sort items.'''
+        # Sort items.
+        with self.keep_select_status():
+            self.items = sorted(self.items,
+                                cmp=compare_method,
+                                reverse=sort_reverse)
+            
+        # Update item index.
         self.update_item_index()    
+        
+        # Redraw.
+        self.queue_draw()
         
     def redraw_item(self, list_item):
         '''Redraw item.'''
