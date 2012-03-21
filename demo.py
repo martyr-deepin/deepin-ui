@@ -219,6 +219,13 @@ if __name__ == "__main__":
     volume_frame.add(volume_button)
     application.main_box.pack_start(volume_frame, False, False)
     
+    vscalebar = VScalebar()
+    # vscalebar.set_range(0, 100)
+    
+    vscale_box = gtk.HBox(False)
+    vscale_box.pack_start(vscalebar, False, False)
+    application.main_box.pack_start(vscale_box, False, False)
+    
     # Add statusbar.
     statusbar = Statusbar(36)
     application.main_box.pack_start(statusbar.status_event_box, False)
