@@ -28,7 +28,7 @@ from theme import *
 class Panel(gtk.Window):
     '''Panel.'''
 	
-    def __init__(self):
+    def __init__(self, width, height):
         '''Init panel.'''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
@@ -42,6 +42,12 @@ class Panel(gtk.Window):
         self.delay = 50         # milliseconds
         self.show_inc_opacity = 0.1
         self.hide_dec_opacity = 0.05
+        self.width = width
+        self.height = height
+        self.set_size_request(self.width, self.height)
+        
+        # Change shape.
+        self.connect("size-allocate", self.shape_panel)
         
     def stop_render(self):
         '''Stop render callback.'''
@@ -97,6 +103,35 @@ class Panel(gtk.Window):
         else:
             return True
         
+    def resize_panel(self, w, h):
+        '''Resize panel.'''
+        self.width = w
+        self.height = h
+        self.set_size_request(self.width, self.height)
+        self.shape_panel(self, self.get_allocation())
+        
+    def shape_panel(self, widget, rect):
+        '''Shap panel window.'''
+        if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
+            # Init.
+            x, y, w, h = rect.x, rect.y, rect.width, rect.height
+            bitmap = gtk.gdk.Pixmap(None, w, h, 1)
+            cr = bitmap.cairo_create()
+            
+            # Clear the bitmap
+            cr.set_source_rgb(0.0, 0.0, 0.0)
+            cr.set_operator(cairo.OPERATOR_CLEAR)
+            cr.paint()
+            
+            # Draw our shape into the bitmap using cairo.
+            cr.set_source_rgb(1.0, 1.0, 1.0)
+            cr.set_operator(cairo.OPERATOR_OVER)
+            cr.rectangle(0, 0, w, self.height)
+            cr.fill()
+            
+            # Shape with given mask.
+            widget.shape_combine_mask(bitmap, 0, 0)
+            
 gobject.type_register(Panel)
     
 class TestWidget(object):

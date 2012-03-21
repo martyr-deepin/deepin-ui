@@ -28,12 +28,11 @@ from dtk.ui.draw import *
 class TestPanel(Panel):
     '''Panel to test fullscreen.'''
 	
-    def __init__(self):
+    def __init__(self, width, height):
         '''Init test panel.'''
-        Panel.__init__(self)
+        Panel.__init__(self, width, height)
         
         self.connect_after("expose-event", self.expose_test_panel)
-        self.connect("size-allocate", self.shape_test_panel)
         
     def expose_test_panel(self, widget, event):
         '''Expose test panel.'''
@@ -55,28 +54,6 @@ class TestPanel(Panel):
         propagate_expose(widget, event)
         
         return True
-
-    def shape_test_panel(self, widget, rect):
-        '''Shap window frame.'''
-        if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
-            # Init.
-            x, y, w, h = rect.x, rect.y, rect.width, rect.height
-            bitmap = gtk.gdk.Pixmap(None, w, h, 1)
-            cr = bitmap.cairo_create()
-            
-            # Clear the bitmap
-            cr.set_source_rgb(0.0, 0.0, 0.0)
-            cr.set_operator(cairo.OPERATOR_CLEAR)
-            cr.paint()
-            
-            # Draw our shape into the bitmap using cairo.
-            cr.set_source_rgb(1.0, 1.0, 1.0)
-            cr.set_operator(cairo.OPERATOR_OVER)
-            cr.rectangle(0, 0, w, 25)
-            cr.fill()
-            
-            # Shape with given mask.
-            widget.shape_combine_mask(bitmap, 0, 0)
             
 def test_window_event(widget, event):
     '''docs'''
@@ -94,13 +71,14 @@ if __name__ == "__main__":
     window.add(gtk.image_new_from_pixbuf(ui_theme.get_pixbuf("background5.jpg").get_pixbuf()))
     
     # Init panel window.
-    panel = TestPanel()
+    panel = TestPanel(-1, 25)
     
     # Full mplayer window first.
     window.fullscreen()
     
     # Full panel window.
     panel.move(0, 0)
+    panel.resize_panel(-1, 50)
     panel.fullscreen()
     
     # Destroy window if destroy panel window. 
