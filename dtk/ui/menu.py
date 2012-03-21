@@ -240,14 +240,15 @@ class MenuItem(object):
     def enter_notify_menu_item(self, widget, event):
         '''Callback for `enter-notify-event` signal.'''
         print "enter"
-        # (item_dpixbuf, item_content, item_callback) = self.item
-        # if isinstance(item_callback, Menu):
-        #     item_callback.show(get_widget_root_coordinate(self.item_box))
+        (item_dpixbuf, item_content, item_callback) = self.item
+        if isinstance(item_callback, Menu):
+            print dir(item_callback)
+            item_callback.show(get_widget_root_coordinate(self.item_box))
     
     def leave_notify_menu_item(self, widget, event):
         '''Callback for `leave-notify-event` signal.'''
         print "leave"
-        # (item_dpixbuf, item_content, item_callback) = self.item
-        # if isinstance(item_callback, Menu):
-        #     item_callback.hide()
+        (item_dpixbuf, item_content, item_callback) = self.item
+        if isinstance(item_callback, Menu):
+            item_callback.hide()
     
