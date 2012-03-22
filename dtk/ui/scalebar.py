@@ -177,13 +177,13 @@ class VScalebar(gtk.VScale):
         line_width = upper_bg_pixbuf.get_width()
         side_height = upper_bg_pixbuf.get_height()
 
-        x, y, w, h  = rect.x, rect.y + point_height / 2, rect.width, rect.height - point_height
+        x, y, w, h  = rect.x, rect.y + point_height, rect.width, rect.height - point_height - point_height / 2
         line_x = x + (point_width - line_width / 1.5) / 2
         point_y = h - int((self.get_value() - lower_value ) / total_length * h)
         value = int((self.get_value() - lower_value ) / total_length * h)
 
-        draw_pixbuf(cr, upper_bg_pixbuf, line_x, y)
-        draw_pixbuf(cr, middle_bg_pixbuf.scale_simple(line_width, h - side_height * 2, gtk.gdk.INTERP_BILINEAR), line_x, y + side_height)
+        draw_pixbuf(cr, upper_bg_pixbuf, line_x, y - point_height / 2)
+        draw_pixbuf(cr, middle_bg_pixbuf.scale_simple(line_width, h - side_height * 2 + point_height / 2, gtk.gdk.INTERP_BILINEAR), line_x, y + side_height - point_height / 2)
         draw_pixbuf(cr, bottom_bg_pixbuf, line_x, y + h - side_height)
                 
         if value > 0:
@@ -192,6 +192,8 @@ class VScalebar(gtk.VScale):
         draw_pixbuf(cr, point_pixbuf, x, y + point_y - side_height / 2 - point_height / 2)
         
         propagate_expose(widget, event)
+        
+        print value, self.get_value()
         return True
         
     def press_progressbar(self, widget, event):
