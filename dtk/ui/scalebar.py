@@ -30,8 +30,6 @@ class HScalebar(gtk.HScale):
     '''Scalebar.'''
 	
     def __init__(self,
-                 scale_min=0,
-                 scale_max=100,
                  left_fg_dpixbuf=ui_theme.get_pixbuf("hscalebar/left_fg.png"),
                  left_bg_dpixbuf=ui_theme.get_pixbuf("hscalebar/left_bg.png"),
                  middle_fg_dpixbuf=ui_theme.get_pixbuf("hscalebar/middle_fg.png"),
@@ -44,7 +42,7 @@ class HScalebar(gtk.HScale):
         # Init.
         gtk.HScale.__init__(self)
         self.set_draw_value(False)
-        self.set_range(scale_min, scale_max)
+        self.set_range(0, 100)
         self.left_fg_dpixbuf = left_fg_dpixbuf
         self.left_bg_dpixbuf = left_bg_dpixbuf
         self.middle_fg_dpixbuf = middle_fg_dpixbuf
@@ -128,8 +126,6 @@ class VScalebar(gtk.VScale):
     '''Vscalebar.'''
     
     def __init__(self, 
-                 scale_min=0,
-                 scale_max=100,
                  upper_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_fg.png"),
                  upper_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_bg.png"),
                  moddle_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/moddle_fg.png"),
@@ -142,7 +138,7 @@ class VScalebar(gtk.VScale):
         gtk.VScale.__init__(self)
 
         self.set_draw_value(False)
-        self.set_range(scale_min, scale_max)
+        self.set_range(0, 100)
         self.upper_fg_dpixbuf = upper_fg_dpixbuf
         self.upper_bg_dpixbuf = upper_bg_dpixbuf
         self.moddle_fg_dpixbuf = moddle_fg_dpixbuf
