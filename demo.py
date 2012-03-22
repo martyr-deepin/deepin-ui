@@ -36,6 +36,7 @@ from dtk.ui.frame import *
 from dtk.ui.dragbar import *
 from dtk.ui.scalebar import *
 from dtk.ui.volume_button import *
+from dtk.ui.entry import *
 import time
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
@@ -207,6 +208,12 @@ if __name__ == "__main__":
     volume_frame = HorizontalFrame(10, 0, 0, 0, 0)
     volume_frame.add(volume_button)
     application.main_box.pack_start(volume_frame, False, False)
+    
+    # Add entry widget.
+    entry = Entry("Enter to search")
+    entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
+    entry_frame.add(entry)
+    application.main_box.pack_start(entry_frame, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)

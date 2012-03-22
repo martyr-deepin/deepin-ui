@@ -131,9 +131,23 @@
         (0, ("#cfa2e4",1)),
         (1, ("#c797e0",1)),
      ],
+	 "entryBackground" : [
+		(0,		("#DDDDDD", 1)),
+		(0.5,	("#DDDDDD", 0.8)),
+		(1,		("#DDDDDD", 1)),
+     ],
+	 "entryLeft" : [
+		(0,		("#FFFFFF", 1)),
+		(1,  	("#FFFFFF", 0.0)),
+     ],
+	 "entryRight" : [
+		(0,		("#FFFFFF", 0.0)),
+		(1,  	("#FFFFFF", 1)),
+     ],
  },
  "text_styles" : {
      "default" : ("#FFFFFF", "#000000", "#000000", 11, 4, 1),
      "titlebar" : ("#FFFFFF", "#000000", "#000000", 11, 2, 1),
+     "entry" : ("#FFFFFF", "#000000", "#000000", 11, 2, 1),
  },
 }
