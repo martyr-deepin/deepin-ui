@@ -125,7 +125,7 @@ gobject.type_register(HScalebar)
 class VScalebar(gtk.VScale):
     '''Vscalebar.'''
     
-    def __init__(self, 
+    def __init__(self,
                  upper_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_fg.png"),
                  upper_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_bg.png"),
                  middle_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/middle_fg.png"),
@@ -139,6 +139,7 @@ class VScalebar(gtk.VScale):
 
         self.set_draw_value(False)
         self.set_range(0, 100)
+        self.__has_point = True
         self.set_inverted(True)
         self.upper_fg_dpixbuf = upper_fg_dpixbuf
         self.upper_bg_dpixbuf = upper_bg_dpixbuf
@@ -164,9 +165,7 @@ class VScalebar(gtk.VScale):
         middle_bg_pixbuf = self.middle_bg_dpixbuf.get_pixbuf()
         bottom_fg_pixbuf = self.bottom_fg_dpixbuf.get_pixbuf()
         bottom_bg_pixbuf = self.bottom_bg_dpixbuf.get_pixbuf()
-          
         point_pixbuf = self.point_dpixbuf.get_pixbuf()
-        
         
         upper_value = self.get_adjustment().get_upper()
         lower_value = self.get_adjustment().get_lower()
@@ -177,21 +176,25 @@ class VScalebar(gtk.VScale):
         line_width = upper_bg_pixbuf.get_width()
         side_height = upper_bg_pixbuf.get_height()
 
-        x, y, w, h  = rect.x, rect.y + point_height / 4, rect.width, rect.height - point_height / 2
-        line_x = x + (point_width - line_width / 2) / 2
+        x, y, w, h  = rect.x, rect.y + point_height, rect.width, rect.height - point_height - point_height / 2
+        line_x = x + (point_width - line_width / 1.5) / 2
         point_y = h - int((self.get_value() - lower_value ) / total_length * h)
         value = int((self.get_value() - lower_value ) / total_length * h)
 
-        draw_pixbuf(cr, upper_bg_pixbuf, line_x, y)
-        draw_pixbuf(cr, middle_bg_pixbuf.scale_simple(line_width, h - side_height * 2, gtk.gdk.INTERP_BILINEAR), line_x, y + side_height)
+        draw_pixbuf(cr, upper_bg_pixbuf, line_x, y - point_height / 2)
+        draw_pixbuf(cr, middle_bg_pixbuf.scale_simple(line_width, h - side_height * 2 + point_height / 2, gtk.gdk.INTERP_BILINEAR), line_x, y + side_height - point_height / 2)
         draw_pixbuf(cr, bottom_bg_pixbuf, line_x, y + h - side_height)
                 
         if value > 0:
             draw_pixbuf(cr, middle_fg_pixbuf.scale_simple(line_width, value, gtk.gdk.INTERP_BILINEAR), line_x, y + point_y - side_height)
         draw_pixbuf(cr, bottom_fg_pixbuf, line_x, y + h - side_height)
         
-        draw_pixbuf(cr, point_pixbuf, x, y + point_y - point_height / 2)
-        
+        if self.get_value() == upper_value:
+            draw_pixbuf(cr, upper_fg_pixbuf, line_x, y - point_height / 2)
+            
+        if self.__has_point:    
+            draw_pixbuf(cr, point_pixbuf, x, y + point_y - side_height / 2 - point_height / 2)
+            
         propagate_expose(widget, event)
         return True
         
@@ -203,6 +206,13 @@ class VScalebar(gtk.VScale):
             point_height = self.point_dpixbuf.get_pixbuf().get_height()
             self.set_value(upper_value - ((event.y - point_height / 2) / (rect.height - point_height)) * (upper_value - lower_value) )
             self.queue_draw()
+            
         return False    
+    
+    def set_has_point(self, value):
+        self.__has_point = value
+        
+    def get_has_point(self):    
+        return self.__has_point
     
 gobject.type_register(VScalebar)        
