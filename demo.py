@@ -88,10 +88,21 @@ if __name__ == "__main__":
     button.set_size_request(200,300)
     
     # Init menu callback.
+    sub_menu_a = Menu(
+        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单A1", None),
+         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单A2", None),
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单A3", None),
+         ])
+    sub_menu_b = Menu(
+        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单B1", None),
+         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单B2", None),
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单B3", None),
+         ])
+    
     menu = Menu(
         [(ui_theme.get_pixbuf("menu/menuItem1.png"), "测试测试测试1", lambda : PopupWindow(application.window)),
-         (ui_theme.get_pixbuf("menu/menuItem2.png"), "测试测试测试2", None),
-         (ui_theme.get_pixbuf("menu/menuItem3.png"), "测试测试测试3", None),
+         (ui_theme.get_pixbuf("menu/menuItem2.png"), "测试测试测试2", sub_menu_a),
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "测试测试测试3", sub_menu_b),
          None,
          (None, "测试测试测试", None),
          (None, "测试测试测试", None),
@@ -197,23 +208,20 @@ if __name__ == "__main__":
     
     # Add scalebar.
     scalebar = HScalebar()
-    scalebar.set_range(0, 100)
     scalebar_frame = HorizontalFrame()
     scalebar_frame.add(scalebar)
     application.main_box.pack_start(scalebar_frame, False, False)
+    
+    vscalebar = VScalebar()
+    vscale_box = gtk.HBox()
+    vscale_box.pack_start(vscalebar, False, False)
+    body_box.pack_start(vscale_box, False, False)
     
     # Add volume button.
     volume_button = VolumeButton(100, 0, 100, 2)
     volume_frame = HorizontalFrame(10, 0, 0, 0, 0)
     volume_frame.add(volume_button)
     application.main_box.pack_start(volume_frame, False, False)
-    
-    vscalebar = VScalebar()
-    # vscalebar.set_range(0, 100)
-    
-    vscale_box = gtk.HBox(False)
-    vscale_box.pack_start(vscalebar, False, False)
-    application.main_box.pack_start(vscale_box, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)

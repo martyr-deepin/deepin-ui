@@ -39,6 +39,7 @@ class Menu(object):
         '''Init menu, item format: (item_icon, itemName, item_callback).'''
         # Init.
         self.menu_pos = menu_pos
+        self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
         
         # Init menu window.
         self.menu_window = Window(False, "menuMask")
@@ -55,12 +56,13 @@ class Menu(object):
         self.menu_window.window_frame.add(self.item_align)
         
         if items:
-            (is_have_icon, icon_width, icon_height) = self.get_menu_icon_info(items)
+            (have_icon, icon_width, icon_height, have_submenu, submenu_width, submenu_height) = self.get_menu_icon_info(items)
             
             for item in items:
                 self.item_box.pack_start(
                     MenuItem(item, font_size, self.hide, 
-                             is_have_icon, icon_width, icon_height,
+                             have_icon, icon_width, icon_height,
+                             have_submenu, submenu_width, submenu_height,
                              item_padding_x, item_padding_y).item_box, False, False)
                 
     def get_menu_icon_info(self, items):
@@ -68,6 +70,9 @@ class Menu(object):
         have_icon = False
         icon_width = 0
         icon_height = 0
+        have_submenu = False
+        submenu_width = 0
+        submenu_height = 0
         
         for item in items:
             if item:
@@ -76,9 +81,16 @@ class Menu(object):
                     have_icon = True
                     icon_width = item_dpixbuf.get_pixbuf().get_width()
                     icon_height = item_dpixbuf.get_pixbuf().get_height()
+                
+                if isinstance(item_callback, Menu):
+                    have_submenu = True
+                    submenu_width = self.submenu_dpixbuf.get_pixbuf().get_width()
+                    submenu_height = self.submenu_dpixbuf.get_pixbuf().get_height()
+                    
+                if have_icon and have_submenu:
                     break
                 
-        return (have_icon, icon_width, icon_height)
+        return (have_icon, icon_width, icon_height, have_submenu, submenu_width, submenu_height)
         
     def show(self, (x, y)):
         '''Show menu.'''
@@ -101,7 +113,10 @@ class Menu(object):
 class MenuItem(object):
     '''Menu item.'''
     
-    def __init__(self, item, font_size, hide_callback, is_have_icon, icon_width, icon_height, item_padding_x, item_padding_y):
+    def __init__(self, item, font_size, hide_callback, 
+                 have_icon, icon_width, icon_height, 
+                 have_submenu, submenu_width, submenu_height,
+                 item_padding_x, item_padding_y):
         '''Init menu item.'''
         # Init.
         self.item = item
@@ -109,10 +124,14 @@ class MenuItem(object):
         self.item_padding_x = item_padding_x
         self.item_padding_y = item_padding_y
         self.hide_callback = hide_callback
-        self.is_have_icon = is_have_icon
+        self.have_icon = have_icon
         self.icon_width = icon_width
         self.icon_height = icon_height
-        
+        self.have_submenu = have_submenu
+        self.submenu_width = submenu_width
+        self.submenu_height = submenu_height
+        self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")        
+
         # Create.
         if self.item:
             self.create_menu_item()
@@ -133,7 +152,7 @@ class MenuItem(object):
         
         # Calcuate content offset.
         self.content_offset = 0
-        if item_dpixbuf == None and self.is_have_icon:
+        if item_dpixbuf == None and self.have_icon:
             self.content_offset = self.icon_width
             
         # Create button.
@@ -141,9 +160,14 @@ class MenuItem(object):
         
         # Set button size.
         (width, height) = get_content_size(item_content, self.font_size)
-        self.item_box.set_size_request(
-            self.item_padding_x * 3 + self.icon_width + int(width), 
-            self.item_padding_y * 2 + max(int(height), self.icon_height))
+        if self.have_submenu:
+            self.item_box.set_size_request(
+                self.item_padding_x * 4 + self.icon_width + self.submenu_width + int(width), 
+                self.item_padding_y * 2 + max(int(height), self.icon_height))
+        else:
+            self.item_box.set_size_request(
+                self.item_padding_x * 3 + self.icon_width + int(width), 
+                self.item_padding_y * 2 + max(int(height), self.icon_height))
         
         # Expose button.
         widget_fix_cycle_destroy_bug(self.item_box)
@@ -151,6 +175,8 @@ class MenuItem(object):
             "expose-event", 
             lambda w, e: self.expose_menu_item(
                 w, e, item_dpixbuf, item_content))
+        self.item_box.connect("enter-notify-event", self.enter_notify_menu_item)
+        self.item_box.connect("leave-notify-event", self.leave_notify_menu_item)
         
         # Wrap menu aciton.
         self.item_box.connect("clicked", lambda w: self.wrap_menu_clicked_action(w, item_callback))        
@@ -198,7 +224,31 @@ class MenuItem(object):
                  ALIGN_START, ALIGN_MIDDLE
                  )
         
+        # Draw submenu arrow.
+        (item_dpixbuf, item_content, item_callback) = self.item
+        if isinstance(item_callback, Menu):
+            submenu_pixbuf = self.submenu_dpixbuf.get_pixbuf()
+            draw_pixbuf(cr, submenu_pixbuf,
+                        rect.x + rect.width - self.item_padding_x - submenu_pixbuf.get_width(),
+                        rect.y + (rect.height - submenu_pixbuf.get_height()) / 2)
+        
         # Propagate expose to children.
         propagate_expose(widget, event)
     
         return True
+
+    def enter_notify_menu_item(self, widget, event):
+        '''Callback for `enter-notify-event` signal.'''
+        print "enter"
+        (item_dpixbuf, item_content, item_callback) = self.item
+        if isinstance(item_callback, Menu) and not item_callback.menu_window.get_visible():
+            item_callback.show(get_widget_root_coordinate(self.item_box))
+            # print item_callback
+    
+    def leave_notify_menu_item(self, widget, event):
+        '''Callback for `leave-notify-event` signal.'''
+        print "leave"
+        (item_dpixbuf, item_content, item_callback) = self.item
+        if isinstance(item_callback, Menu) and item_callback.menu_window.get_visible():
+            item_callback.hide()
+    
