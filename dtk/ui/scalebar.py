@@ -145,7 +145,7 @@ class VScalebar(gtk.VScale):
         self.bottom_bg_dpixbuf = bottom_bg_dpixbuf
         self.point_dpixbuf = point_dpixbuf
         
-        self.set_size_request(self.point_dpixbuf.get_pixbuf().get_height(), 200)
+        self.set_size_request(self.point_dpixbuf.get_pixbuf().get_height(), -1)
         
         self.connect("expose-event", self.expose_v_scalebar)
         self.connect("button-press-event", self.press_progressbar)
