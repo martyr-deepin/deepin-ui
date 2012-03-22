@@ -128,8 +128,8 @@ class VScalebar(gtk.VScale):
     def __init__(self, 
                  upper_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_fg.png"),
                  upper_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_bg.png"),
-                 moddle_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/moddle_fg.png"),
-                 moddle_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/moddle_bg.png"),
+                 middle_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/middle_fg.png"),
+                 middle_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/middle_bg.png"),
                  bottom_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/bottom_fg.png"),
                  bottom_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/bottom_bg.png"),
                  point_dpixbuf=ui_theme.get_pixbuf("vscalebar/point.png"),
@@ -142,8 +142,8 @@ class VScalebar(gtk.VScale):
         self.set_inverted(True)
         self.upper_fg_dpixbuf = upper_fg_dpixbuf
         self.upper_bg_dpixbuf = upper_bg_dpixbuf
-        self.moddle_fg_dpixbuf = moddle_fg_dpixbuf
-        self.moddle_bg_dpixbuf = moddle_bg_dpixbuf
+        self.middle_fg_dpixbuf = middle_fg_dpixbuf
+        self.middle_bg_dpixbuf = middle_bg_dpixbuf
         self.bottom_fg_dpixbuf = bottom_fg_dpixbuf
         self.bottom_bg_dpixbuf = bottom_bg_dpixbuf
         self.point_dpixbuf = point_dpixbuf
@@ -160,8 +160,8 @@ class VScalebar(gtk.VScale):
         # Init pixbuf.
         upper_fg_pixbuf = self.upper_fg_dpixbuf.get_pixbuf()
         upper_bg_pixbuf = self.upper_bg_dpixbuf.get_pixbuf()
-        moddle_fg_pixbuf = self.moddle_fg_dpixbuf.get_pixbuf()
-        moddle_bg_pixbuf = self.moddle_bg_dpixbuf.get_pixbuf()
+        middle_fg_pixbuf = self.middle_fg_dpixbuf.get_pixbuf()
+        middle_bg_pixbuf = self.middle_bg_dpixbuf.get_pixbuf()
         bottom_fg_pixbuf = self.bottom_fg_dpixbuf.get_pixbuf()
         bottom_bg_pixbuf = self.bottom_bg_dpixbuf.get_pixbuf()
           
@@ -183,11 +183,11 @@ class VScalebar(gtk.VScale):
         value = int((self.get_value() - lower_value ) / total_length * h)
 
         draw_pixbuf(cr, upper_bg_pixbuf, line_x, y)
-        draw_pixbuf(cr, moddle_bg_pixbuf.scale_simple(line_width, h - side_height * 2, gtk.gdk.INTERP_BILINEAR), line_x, y + side_height)
+        draw_pixbuf(cr, middle_bg_pixbuf.scale_simple(line_width, h - side_height * 2, gtk.gdk.INTERP_BILINEAR), line_x, y + side_height)
         draw_pixbuf(cr, bottom_bg_pixbuf, line_x, y + h - side_height)
                 
         if value > 0:
-            draw_pixbuf(cr, moddle_fg_pixbuf.scale_simple(line_width, value, gtk.gdk.INTERP_BILINEAR), line_x, y + point_y - side_height)
+            draw_pixbuf(cr, middle_fg_pixbuf.scale_simple(line_width, value, gtk.gdk.INTERP_BILINEAR), line_x, y + point_y - side_height)
         draw_pixbuf(cr, bottom_fg_pixbuf, line_x, y + h - side_height)
         
         draw_pixbuf(cr, point_pixbuf, x, y + point_y - point_height / 2)
