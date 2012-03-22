@@ -36,6 +36,7 @@ from dtk.ui.frame import *
 from dtk.ui.dragbar import *
 from dtk.ui.scalebar import *
 from dtk.ui.volume_button import *
+from dtk.ui.entry import *
 import time
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
@@ -169,16 +170,7 @@ if __name__ == "__main__":
     scrolled_window = ScrolledWindow()
     category_box.pack_start(scrolled_window, True, True)
     
-    # items_length = 100
     items_length = 3000
-    # items_length = 10
-    
-    # items = map(lambda index: ListItem(
-    #         "豆浆油条 %04d" % (index % 5),
-    #         "林俊杰 %04d" % (index % 10),
-    #         # "10:%02d" % (index % 60),
-    #         "10:%02d" % index,
-    #         ), range(0, items_length))
 
     items = map(lambda index: ListItem(
             "豆浆油条 %04d" % index,
@@ -193,28 +185,10 @@ if __name__ == "__main__":
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
     
-    # insert_items_length1 = 5
-    # insert_items1 = map(lambda index: ListItem(
-    #         "插入选项1 %04d" % (index % 5),
-    #         "歌手1 %04d" % (index % 10),
-    #         "10:%02d" % index,
-    #         ), range(0, insert_items_length1))
-    # list_view.add_items(insert_items1, 3)
-
-    # insert_items_length2 = 3
-    # insert_items2 = map(lambda index: ListItem(
-    #         "插入选项2 %04d" % (index % 5),
-    #         "歌手2 %04d" % (index % 10),
-    #         "10:%02d" % index,
-    #         ), range(0, insert_items_length2))
-    # list_view.add_items(insert_items2, 10)
-    
     # list_view.connect("button-press-item", print_button_press)
-    list_view.connect("double-click-item", print_double_click)
-    list_view.connect("single-click-item", print_single_click)
+    # list_view.connect("double-click-item", print_double_click)
+    # list_view.connect("single-click-item", print_single_click)
     # list_view.connect("motion-notify-item", print_motion_notify)
-    
-    # gtk.timeout_add(10, lambda : simulate_redraw_request(items, items_length))
         
     scrolled_window.add_child(list_view)
     
@@ -234,6 +208,12 @@ if __name__ == "__main__":
     volume_frame = HorizontalFrame(10, 0, 0, 0, 0)
     volume_frame.add(volume_button)
     application.main_box.pack_start(volume_frame, False, False)
+    
+    # Add entry widget.
+    entry = Entry("Enter to search")
+    entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
+    entry_frame.add(entry)
+    application.main_box.pack_start(entry_frame, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)
