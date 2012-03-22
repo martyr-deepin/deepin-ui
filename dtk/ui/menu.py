@@ -35,8 +35,8 @@ class Menu(object):
     '''Menu.'''
 	
     def __init__(self, items, menu_pos=MENU_POS_TOP_CENTER, font_size=DEFAULT_FONT_SIZE, opacity=0.9, 
-                 padding_x=5, padding_y=10, item_padding_x=10, item_padding_y=4):
-        '''Init menu, item format: (item_icon, itemName, item_callback).'''
+                 padding_x=4, padding_y=10, item_padding_x=10, item_padding_y=4):
+        '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
         self.menu_pos = menu_pos
         self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
@@ -46,8 +46,8 @@ class Menu(object):
         self.menu_window = Window(False, "menuMask")
         self.menu_window.set_opacity(opacity)
         self.menu_window.set_skip_taskbar_hint(True)
-        # self.menu_window.set_modal(True) # this is very important,  otherwise menu can't focus default 
         # self.menu_window.connect("focus-out-event", lambda w, e: self.hide())
+        # self.menu_window.set_modal(True) # this is very important,  otherwise menu can't focus default 
         
         # Add menu item.
         self.item_box = gtk.VBox()
@@ -77,13 +77,13 @@ class Menu(object):
         
         for item in items:
             if item:
-                (item_dpixbuf, item_content, item_callback) = item
+                (item_dpixbuf, item_content, item_node) = item
                 if item_dpixbuf:
                     have_icon = True
                     icon_width = item_dpixbuf.get_pixbuf().get_width()
                     icon_height = item_dpixbuf.get_pixbuf().get_height()
                 
-                if isinstance(item_callback, Menu):
+                if isinstance(item_node, Menu):
                     have_submenu = True
                     submenu_width = self.submenu_dpixbuf.get_pixbuf().get_width()
                     submenu_height = self.submenu_dpixbuf.get_pixbuf().get_height()
@@ -119,7 +119,7 @@ class Menu(object):
             self.hide_submenu()
             self.submenu = submenu    
             self.submenu.show(coordinate)
-        
+            
     def hide_submenu(self):
         '''Hide submenu.'''
         if self.submenu:
@@ -166,7 +166,7 @@ class MenuItem(object):
     def create_menu_item(self):
         '''Create menu item.'''
         # Get item information.
-        (item_dpixbuf, item_content, item_callback) = self.item
+        (item_dpixbuf, item_content, item_node) = self.item
         
         # Calcuate content offset.
         self.content_offset = 0
@@ -196,16 +196,18 @@ class MenuItem(object):
         self.item_box.connect("enter-notify-event", self.enter_notify_menu_item)
         
         # Wrap menu aciton.
-        self.item_box.connect("clicked", lambda w: self.wrap_menu_clicked_action(w, item_callback))        
+        self.item_box.connect("clicked", self.wrap_menu_clicked_action)        
         
-    def wrap_menu_clicked_action(self, button, clicked_callback):
+    def wrap_menu_clicked_action(self, button):
         '''Wrap menu action.'''
-        if clicked_callback == None:
+        (item_dpixbuf, item_content, item_node) = self.item
+        if not isinstance(item_node, Menu):
+            # Execute callback.
+            if item_node:
+                item_node()
+            
+            # Hide menu.
             self.hide_callback()
-        else:
-            result = clicked_callback()
-            if result:
-                self.hide_callback()
             
     def expose_menu_item(self, widget, event, item_dpixbuf, item_content):
         '''Expose menu item.'''
@@ -242,8 +244,8 @@ class MenuItem(object):
                  )
         
         # Draw submenu arrow.
-        (item_dpixbuf, item_content, item_callback) = self.item
-        if isinstance(item_callback, Menu):
+        (item_dpixbuf, item_content, item_node) = self.item
+        if isinstance(item_node, Menu):
             submenu_pixbuf = self.submenu_dpixbuf.get_pixbuf()
             draw_pixbuf(cr, submenu_pixbuf,
                         rect.x + rect.width - self.item_padding_x - submenu_pixbuf.get_width(),
@@ -256,11 +258,11 @@ class MenuItem(object):
 
     def enter_notify_menu_item(self, widget, event):
         '''Callback for `enter-notify-event` signal.'''
-        (item_dpixbuf, item_content, item_callback) = self.item
-        if isinstance(item_callback, Menu):
+        (item_dpixbuf, item_content, item_node) = self.item
+        if isinstance(item_node, Menu):
             (item_x, item_y) = get_widget_root_coordinate(self.item_box)
             self.show_submenu_callback(
-                item_callback, 
+                item_node, 
                 (item_x + widget.get_allocation().width / 2, item_y - widget.get_allocation().height))
         else:
             self.hide_submenu_callback()
