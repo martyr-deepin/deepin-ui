@@ -119,7 +119,7 @@ if __name__ == "__main__":
          (None, "测试测试测试", None),
          (None, "测试测试测试", None),
          None,
-         (ui_theme.get_pixbuf("menu/menuItem6.png"), "测试测试测试4", None),
+         (ui_theme.get_pixbuf("menu/menuItem6.png"), "测试测试测试4", None, (1, 2, 3)),
          (ui_theme.get_pixbuf("menu/menuItem7.png"), "测试测试测试5", None),
          (ui_theme.get_pixbuf("menu/menuItem8.png"), "测试测试测试6", None),
          ],

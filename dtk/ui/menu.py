@@ -112,7 +112,7 @@ class Menu(object):
         
         for item in items:
             if item:
-                (item_dpixbuf, item_content, item_node) = item
+                (item_dpixbuf, item_content, item_node) = item[0:3]
                 if item_dpixbuf:
                     have_icon = True
                     icon_width = item_dpixbuf.get_pixbuf().get_width()
@@ -222,7 +222,7 @@ class MenuItem(object):
     def create_menu_item(self):
         '''Create menu item.'''
         # Get item information.
-        (item_dpixbuf, item_content, item_node) = self.item
+        (item_dpixbuf, item_content, item_node) = self.item[0:3]
         
         # Calcuate content offset.
         self.content_offset = 0
@@ -256,11 +256,16 @@ class MenuItem(object):
         
     def wrap_menu_clicked_action(self, button):
         '''Wrap menu action.'''
-        (item_dpixbuf, item_content, item_node) = self.item
+        # (item_dpixbuf, item_content, item_node, item_data) = self.item
+        item_node = self.item[2]
         if not isinstance(item_node, Menu):
             # Execute callback.
             if item_node:
-                item_node(item_content)
+                if len(self.item) > 3:
+                    # print self.item[3:]
+                    item_node(*self.item[3:])
+                else:
+                    item_node()
             
             # Hide menu.
             self.get_root_menu_callback().hide()    
@@ -300,7 +305,7 @@ class MenuItem(object):
                  )
         
         # Draw submenu arrow.
-        (item_dpixbuf, item_content, item_node) = self.item
+        (item_dpixbuf, item_content, item_node) = self.item[0:3]
         if isinstance(item_node, Menu):
             submenu_pixbuf = self.submenu_dpixbuf.get_pixbuf()
             draw_pixbuf(cr, submenu_pixbuf,
@@ -314,7 +319,7 @@ class MenuItem(object):
 
     def enter_notify_menu_item(self, widget, event):
         '''Callback for `enter-notify-event` signal.'''
-        (item_dpixbuf, item_content, item_node) = self.item
+        (item_dpixbuf, item_content, item_node) = self.item[0:3]
         if isinstance(item_node, Menu):
             (item_x, item_y) = get_widget_root_coordinate(self.item_box)
             self.show_submenu_callback(
