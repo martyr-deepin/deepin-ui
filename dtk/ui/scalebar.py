@@ -177,8 +177,8 @@ class VScalebar(gtk.VScale):
         line_width = upper_bg_pixbuf.get_width()
         side_height = upper_bg_pixbuf.get_height()
 
-        x, y, w, h  = rect.x, rect.y + point_height / 4, rect.width, rect.height - point_height / 2
-        line_x = x + (point_width - line_width / 2) / 2
+        x, y, w, h  = rect.x, rect.y + point_height / 2, rect.width, rect.height - point_height
+        line_x = x + (point_width - line_width / 1.5) / 2
         point_y = h - int((self.get_value() - lower_value ) / total_length * h)
         value = int((self.get_value() - lower_value ) / total_length * h)
 
@@ -189,8 +189,7 @@ class VScalebar(gtk.VScale):
         if value > 0:
             draw_pixbuf(cr, middle_fg_pixbuf.scale_simple(line_width, value, gtk.gdk.INTERP_BILINEAR), line_x, y + point_y - side_height)
         draw_pixbuf(cr, bottom_fg_pixbuf, line_x, y + h - side_height)
-        
-        draw_pixbuf(cr, point_pixbuf, x, y + point_y - point_height / 2)
+        draw_pixbuf(cr, point_pixbuf, x, y + point_y - side_height / 2 - point_height / 2)
         
         propagate_expose(widget, event)
         return True
