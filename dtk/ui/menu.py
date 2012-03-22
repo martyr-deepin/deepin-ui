@@ -260,7 +260,7 @@ class MenuItem(object):
         if not isinstance(item_node, Menu):
             # Execute callback.
             if item_node:
-                item_node()
+                item_node(item_content)
             
             # Hide menu.
             self.get_root_menu_callback().hide()    
