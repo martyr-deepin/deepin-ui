@@ -122,7 +122,8 @@ if __name__ == "__main__":
          (ui_theme.get_pixbuf("menu/menuItem6.png"), "测试测试测试4", None),
          (ui_theme.get_pixbuf("menu/menuItem7.png"), "测试测试测试5", None),
          (ui_theme.get_pixbuf("menu/menuItem8.png"), "测试测试测试6", None),
-         ])
+         ],
+        )
     application.set_menu_callback(lambda button: menu.show(get_widget_root_coordinate(button)))
     
     # Add navigatebar.
@@ -135,8 +136,7 @@ if __name__ == "__main__":
          (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),
          (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航8", None),
-         ]
-        )
+         ])
     application.main_box.pack_start(navigatebar.nav_event_box, False)
     application.add_move_window_event(navigatebar.nav_event_box)
     application.add_toggle_window_event(navigatebar.nav_event_box)

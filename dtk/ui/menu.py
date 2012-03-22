@@ -41,13 +41,16 @@ class Menu(object):
         self.menu_pos = menu_pos
         self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
         self.submenu = None
+        self.root_menu = None
+        self.in_menu_area = False
         
         # Init menu window.
         self.menu_window = Window(False, "menuMask")
         self.menu_window.set_opacity(opacity)
         self.menu_window.set_skip_taskbar_hint(True)
-        # self.menu_window.connect("focus-out-event", lambda w, e: self.hide())
-        # self.menu_window.set_modal(True) # this is very important,  otherwise menu can't focus default 
+        self.menu_window.connect("enter-notify-event", self.enter_notify_menu)
+        self.menu_window.connect("leave-notify-event", self.leave_notify_menu)
+        self.menu_window.connect("focus-out-event", self.focus_out_menu)
         
         # Add menu item.
         self.item_box = gtk.VBox()
@@ -61,10 +64,42 @@ class Menu(object):
             
             for item in items:
                 self.item_box.pack_start(
-                    MenuItem(item, font_size, self.hide, self.show_submenu, self.hide_submenu,
+                    MenuItem(item, font_size, self.show_submenu, self.hide_submenu, self.get_root_menu,
                              have_icon, icon_width, icon_height,
                              have_submenu, submenu_width, submenu_height,
                              item_padding_x, item_padding_y).item_box, False, False)
+                
+    def enter_notify_menu(self, widget, event):
+        '''Enter notify menu.'''
+        self.get_root_menu().in_menu_area = True
+        
+    def leave_notify_menu(self, widget, event):
+        '''Leave notify menu.'''
+        in_area = False
+        all_menus = self.get_root_menu().get_submenus() + [self.get_root_menu()]
+        for menu in all_menus:
+            (ex, ey) = event.get_root_coords()
+            (wx, wy) = widget.window.get_root_origin()
+            ww, wh = widget.get_allocation().width, widget.get_allocation().height
+            if is_in_rect((ex, ey), (wx, wy, ww, wh)):
+                in_area = True
+                break
+            
+        self.get_root_menu().in_menu_area = in_area    
+        
+    def focus_out_menu(self, widget, event):
+        '''Focus out menu.'''
+        menu = self.get_root_menu()
+        if not menu.in_menu_area:
+            menu.in_menu_area = False
+            menu.hide()
+
+    def get_submenus(self):
+        '''Get submenus.'''
+        if self.submenu:
+            return [self.submenu] + self.submenu.get_submenus()
+        else:
+            return []
                 
     def get_menu_icon_info(self, items):
         '''Get menu icon information.'''
@@ -109,27 +144,48 @@ class Menu(object):
             
     def hide(self):
         '''Hide menu.'''
+        # Hide submenu.
         self.hide_submenu()
         
+        # Hide current menu window.
         self.menu_window.hide_all()
+        
+        # Reset.
+        self.submenu = None
+        self.root_menu = None
+        self.in_menu_area = False
         
     def show_submenu(self, submenu, coordinate):
         '''Show submenu.'''
         if self.submenu != submenu:
+            # Hide old submenu first.
             self.hide_submenu()
-            self.submenu = submenu    
-            self.submenu.show(coordinate)
             
+            # Update attributes of new submenu.
+            self.submenu = submenu
+            self.submenu.root_menu = self.get_root_menu()
+            
+            # Show new submenu.
+            self.submenu.show(coordinate)
+                
     def hide_submenu(self):
         '''Hide submenu.'''
         if self.submenu:
             self.submenu.hide()
             self.submenu = None
-        
+            
+    def get_root_menu(self):
+        '''Get root menu.'''
+        if self.root_menu:
+            return self.root_menu
+        else:
+            return self
+            
 class MenuItem(object):
     '''Menu item.'''
     
-    def __init__(self, item, font_size, hide_callback, show_submenu_callback, hide_submenu_callback,
+    def __init__(self, item, font_size, show_submenu_callback, hide_submenu_callback,
+                 get_root_menu_callback,
                  have_icon, icon_width, icon_height, 
                  have_submenu, submenu_width, submenu_height,
                  item_padding_x, item_padding_y):
@@ -139,9 +195,9 @@ class MenuItem(object):
         self.font_size = font_size
         self.item_padding_x = item_padding_x
         self.item_padding_y = item_padding_y
-        self.hide_callback = hide_callback
         self.show_submenu_callback = show_submenu_callback
         self.hide_submenu_callback = hide_submenu_callback
+        self.get_root_menu_callback = get_root_menu_callback
         self.have_icon = have_icon
         self.icon_width = icon_width
         self.icon_height = icon_height
@@ -204,10 +260,10 @@ class MenuItem(object):
         if not isinstance(item_node, Menu):
             # Execute callback.
             if item_node:
-                item_node()
+                item_node(item_content)
             
             # Hide menu.
-            self.hide_callback()
+            self.get_root_menu_callback().hide()    
             
     def expose_menu_item(self, widget, event, item_dpixbuf, item_content):
         '''Expose menu item.'''
