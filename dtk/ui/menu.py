@@ -262,7 +262,6 @@ class MenuItem(object):
             # Execute callback.
             if item_node:
                 if len(self.item) > 3:
-                    # print self.item[3:]
                     item_node(*self.item[3:])
                 else:
                     item_node()
