@@ -14,6 +14,8 @@
  "buttonBorderPrelight" : "#b18ecf",
  "buttonBorderActive" : "#9372c9",
  "buttonFont" : "#000000",
+ "entryText" : "#F8F8F8",
+ "entrySelectText" : "#535353",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),
@@ -132,22 +134,16 @@
         (1, ("#c797e0",1)),
      ],
 	 "entryBackground" : [
-		(0,		("#DDDDDD", 1)),
-		(0.5,	("#DDDDDD", 0.8)),
-		(1,		("#DDDDDD", 1)),
+		(0,		("#B8B8B8", 1)),
+		(1,		("#B8B8B8", 1)),
      ],
-	 "entryLeft" : [
-		(0,		("#FFFFFF", 1)),
-		(1,  	("#FFFFFF", 0.0)),
-     ],
-	 "entryRight" : [
-		(0,		("#FFFFFF", 0.0)),
-		(1,  	("#FFFFFF", 1)),
+	 "entrySelectBackground" : [
+		(0,		("#DFDFDF", 1)),
+		(1,		("#DFDFDF", 1)),
      ],
  },
  "text_styles" : {
      "default" : ("#FFFFFF", "#000000", "#000000", 11, 4, 1),
      "titlebar" : ("#FFFFFF", "#000000", "#000000", 11, 2, 1),
-     "entry" : ("#FFFFFF", "#000000", "#000000", 11, 2, 1),
  },
 }

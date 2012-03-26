@@ -217,6 +217,17 @@ def is_left_button(event):
     '''Whether event is left button.'''
     return event.button == 1
 
+def foreach_container(w, callback):
+    '''docs'''
+    callback(w)
+    
+    if isinstance(w, gtk.Container): 
+        foreach_recursive(w, callback)
+
+def foreach_recursive(container, callback):
+    '''Callback for all childs.'''
+    container.foreach(lambda w: foreach_container(w, callback))
+
 def container_remove_all(container):
     '''Remove all child widgets from container.'''
     container.foreach(lambda widget: container.remove(widget))

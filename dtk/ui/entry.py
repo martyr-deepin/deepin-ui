@@ -28,7 +28,13 @@ from draw import *
 class Entry(gtk.EventBox):
     '''Entry.'''
 	
-    def __init__(self, content="", font_size=DEFAULT_FONT_SIZE, padding_x=10, padding_y=5):
+    def __init__(self, content="", 
+                 text_color=ui_theme.get_color("entryText"),
+                 text_select_color=ui_theme.get_color("entrySelectText"),
+                 background_color=ui_theme.get_shadow_color("entryBackground"),
+                 background_select_color=ui_theme.get_shadow_color("entrySelectBackground"),
+                 font_size=DEFAULT_FONT_SIZE, 
+                 padding_x=10, padding_y=5):
         '''Init entry.'''
         # Init.
         gtk.EventBox.__init__(self)
@@ -38,12 +44,12 @@ class Entry(gtk.EventBox):
         self.font_size = font_size
         self.content = content
         self.cursor_index = 0
+        self.text_color = text_color
+        self.text_select_color = text_select_color
+        self.background_color = background_color
+        self.background_select_color = background_select_color
         self.padding_x = padding_x
         self.padding_y = padding_y
-        
-        # Set entry height.
-        (self.text_width, self.text_height) = get_content_size("E", font_size)        
-        self.set_size_request(self.text_width + padding_x * 2 + 300, self.text_height + padding_y * 2)
         
         # Connect signal.
         self.connect("realize", self.realize_entry)
@@ -52,6 +58,16 @@ class Entry(gtk.EventBox):
         self.connect("button-press-event", self.button_press_entry)
         
         self.im.connect("commit", self.commit_entry)
+        
+    def set_text(self, text):
+        '''Set text.'''
+        self.content = text
+
+        self.queue_draw()
+        
+    def get_text(self):
+        '''Get text.'''
+        return self.content
         
     def realize_entry(self, widget):
         '''Realize entry.'''
@@ -71,26 +87,60 @@ class Entry(gtk.EventBox):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
 
         # Draw background.
-        draw_hlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                     ui_theme.get_shadow_color("entryBackground").get_color_info())
+        draw_hlinear(cr, x, y, w, h,
+                     self.background_color.get_color_info())
         
-        # Draw font.
-        draw_text(cr, rect.x, rect.y, rect.width, rect.height,
-                  self.content,
-                  ui_theme.get_text_style("entry").get_style())
+        # Draw text.
+        self.draw_entry_text(cr, rect)
         
-        # Draw foreground.
-        draw_hlinear(cr, rect.x, rect.y, self.text_width * 2, rect.height,
-                     ui_theme.get_shadow_color("entryLeft").get_color_info())
-        draw_hlinear(cr, rect.x + rect.width - self.text_width * 2, rect.y, self.text_width * 2, rect.height,
-                     ui_theme.get_shadow_color("entryRight").get_color_info())
+        # Draw cursor.
+        self.draw_entry_cursor(cr, rect)
         
         # Propagate expose.
         propagate_expose(widget, event)
         
         return True
+    
+    def draw_entry_text(self, cr, rect):
+        '''Draw entry text.'''
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        with cairo_state(cr):
+            # Clip text area first.
+            draw_x = x + self.padding_x
+            draw_y = y + self.padding_y
+            draw_width = w - self.padding_x * 2
+            draw_height = h - self.padding_y * 2
+            cr.rectangle(draw_x, draw_y, draw_width, draw_height)
+            cr.clip()
+            
+            # Create pangocairo context.
+            context = pangocairo.CairoContext(cr)
+            
+            # Set layout.
+            layout = context.create_layout()
+            layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
+            layout.set_text(self.content)
+            
+            # Get text size.
+            (text_width, text_height) = layout.get_pixel_size()
+            
+            # Move text.
+            if text_width < draw_width:
+                cr.move_to(draw_x, draw_y + (draw_height - text_height) / 2)
+            else:
+                cr.move_to(draw_x + draw_width - text_width, draw_y + (draw_height - text_height) / 2)
+    
+            # Draw text.
+            cr.set_source_rgb(*color_hex_to_cairo(self.text_color.get_color()))
+            context.update_layout(layout)
+            context.show_layout(layout)
+            
+    def draw_entry_cursor(self, cr, rect):
+        '''Draw entry cursor.'''
+        pass
     
     def button_press_entry(self, widget, event):
         '''Button press entry.'''
@@ -99,6 +149,7 @@ class Entry(gtk.EventBox):
     def commit_entry(self, im, im_str):
         '''Entry commit.'''
         self.content += im_str
+        self.cursor_index += len(im_str)
         
         self.queue_draw()
         
