@@ -581,7 +581,7 @@ class ListView(gtk.DrawingArea):
                     self.click_item(event)
             elif len(self.items) > 0:        
                 self.click_item(event)
-        else:
+        elif is_right_button(event):
             if len(self.items) > 0:
                 self.click_item(event)
                 

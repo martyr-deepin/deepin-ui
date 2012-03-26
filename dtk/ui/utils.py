@@ -217,6 +217,14 @@ def is_left_button(event):
     '''Whether event is left button.'''
     return event.button == 1
 
+def is_right_button(event):
+    '''Whehter event is right button.'''
+    return event.button == 3
+
+def is_middle_button(event):
+    '''Whehter event is middle button.'''
+    return event.button == 2
+
 def foreach_container(w, callback):
     '''docs'''
     callback(w)
