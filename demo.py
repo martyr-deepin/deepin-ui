@@ -182,7 +182,7 @@ if __name__ == "__main__":
         [(lambda item: item.title, cmp),
          (lambda item: item.artist, cmp),
          (lambda item: item.length, cmp)])
-    list_view.add_titles(["歌名", "歌手", "时间"])
+    # list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
     
     # list_view.connect("button-press-item", print_button_press)

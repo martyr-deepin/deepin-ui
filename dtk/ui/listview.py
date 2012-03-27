@@ -154,10 +154,11 @@ class ListView(gtk.DrawingArea):
         '''Get title sizes.'''
         widths = []
         heights = []
-        for title in self.titles:
-            (title_width, title_height) = get_content_size(title, DEFAULT_FONT_SIZE)
-            widths.append(title_width + self.TITLE_PADDING * 2)
-            heights.append(title_height)
+        if self.titles != None:
+            for title in self.titles:
+                (title_width, title_height) = get_content_size(title, DEFAULT_FONT_SIZE)
+                widths.append(title_width + self.TITLE_PADDING * 2)
+                heights.append(title_height)
             
         return (widths, heights)    
         
