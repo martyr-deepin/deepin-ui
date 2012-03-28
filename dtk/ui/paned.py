@@ -27,135 +27,125 @@ from theme import *
 from box import *
 from window import *
 
-class HPaned(gtk.HBox):
+HPANED_DIRECTION_LEFT = 0
+HPANED_DIRECTION_RIGHT = 1
+VPANED_DIRECTION_TOP = 2
+VPANED_DIRECTION_BOTTOM = 3
+
+class HPaned(gtk.HPaned):
     '''HPaned.'''
 	
-    def __init__(self, left_child, right_child):
+    def __init__(self,
+                 init_pos,
+                 slide_direction=HPANED_DIRECTION_LEFT,
+                 arrow_left_hover_dpixbuf=ui_theme.get_pixbuf("paned/arrow_left_hover.png"),
+                 arrow_right_hover_dpixbuf=ui_theme.get_pixbuf("paned/arrow_right_hover.png"),
+                 ):
         '''Init hpaned.'''
         # Init.
-        gtk.HBox.__init__(self)
-        self.drag_flag = False
-        
-        self.left_box = gtk.EventBox()
-        self.right_box = gtk.EventBox()
-        # self.drag_box = gtk.EventBox()
-        
-        # self.left_box = EventBox()
-        # self.right_box = EventBox()
-        self.drag_box = EventBox()
-        
-        self.drag_x = 0
-        self.drag_offset = 0
-        self.left_child = left_child
-        self.right_child = right_child
-        
-        # Connect widgets.
-        self.left_box.add(left_child)
-        self.right_box.add(right_child)
-        self.drag_box.set_size_request(5, -1)
-        self.pack_start(self.left_box, True, True)
-        self.pack_start(self.drag_box, False, False)
-        self.pack_start(self.right_box, True, True)
+        gtk.HPaned.__init__(self)
+        self.init_pos = init_pos
+        self.slide_direction = slide_direction
+        self.arrow_left_hover_dpixbuf = arrow_left_hover_dpixbuf
+        self.arrow_right_hover_dpixbuf = arrow_right_hover_dpixbuf
+        self.hover_drag_button = False
+        self.set_position(self.init_pos)
+        self.button_press_x = None
         
         # Signal.
-        self.left_box.connect("expose-event", self.expose_child_box)
-        self.right_box.connect("expose-event", self.expose_child_box)
-        self.drag_box.connect("expose-event", self.expose_drag_box)
-        self.drag_box.connect("button-press-event", self.button_press_hpaned)
-        self.drag_box.connect("button-release-event", self.button_release_hpaned)
-        self.drag_box.connect("motion-notify-event", self.motion_notify_hpaned)
-
-    def expose_child_box(self, widget, event):
-        '''Callback for `expose-event` signal.'''
-        cr = widget.window.cairo_create()
-        # cr.set_source_rgba(0.0, 0.0, 0.0, 0.0)
-        # cr.set_operator(cairo.OPERATOR_SOURCE)
-        # cr.paint()
-
-        # Propagate expose.
-        propagate_expose(widget, event)
-        
-        return True
-    
-    def expose_drag_box(self, widget, event):
-        '''Callback for `expose-event` signal.'''
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        
-        cr.set_source_rgba(1.0, 0.0, 0.0, 0.5)
-        cr.rectangle(rect.x, rect.y, rect.width, rect.height)
-        cr.fill()
-
-        # Propagate expose.
-        propagate_expose(widget, event)
-        
-        return True
+        self.connect_after("expose-event", self.expose_hpaned)
+        self.connect("motion-notify-event", self.motion_notify_hpaned)
+        self.connect("enter-notify-event", self.enter_notify_hpaned)
+        self.connect("leave-notify-event", self.leave_notify_hpaned)
+        self.connect("button-press-event", self.button_press_hpaned)
+        self.connect("button-release-event", self.button_release_hpaned)
         
     def button_press_hpaned(self, widget, event):
         '''Callback for `button-press-event` signal.'''
-        self.drag_flag = True
-        (drag_box_x, drag_box_y) = self.drag_box.window.get_origin()
-        (x, y) = self.drag_box.translate_coordinates(self, drag_box_x, drag_box_y)
-        self.drag_x = x
-    
+        self.button_press_x = self.get_position()
+        
     def button_release_hpaned(self, widget, event):
         '''Callback for `button-release-event` signal.'''
-        self.drag_flag = False
+        if self.button_press_x == self.get_position():
+            grip_width = self.get_allocation().width - self.get_child1().get_allocation().width - self.get_child2().get_allocation().width
+            
+            self.button_press_x = None
+            if self.slide_direction == HPANED_DIRECTION_LEFT:
+                if self.is_slide_left():
+                    self.init_pos = self.get_position()
+                    self.set_position(0)
+                else:
+                    if self.init_pos > 0:
+                        self.set_position(self.init_pos)
+                    else:
+                        self.set_position(self.get_allocation().width / 2)
+            elif self.slide_direction == HPANED_DIRECTION_RIGHT:
+                if self.is_slide_left():
+                    if self.init_pos < self.get_allocation().width - grip_width:
+                        self.set_position(self.init_pos)
+                    else:
+                        self.set_position(self.get_allocation().width / 2)
+                else:
+                    self.init_pos = self.get_position()
+                    self.set_position(self.get_allocation().width - grip_width)
+            
+    def is_slide_left(self):
+        '''Whether slide left.'''
+        grip_x = self.get_position()
+        grip_width = self.get_allocation().width - self.get_child1().get_allocation().width - self.get_child2().get_allocation().width
+
+        if self.slide_direction == HPANED_DIRECTION_LEFT:
+            if grip_x == 0:
+                return False
+            else:
+                return True
+        elif self.slide_direction == HPANED_DIRECTION_RIGHT:
+            if grip_x == self.get_allocation().width - grip_width or grip_x == self.get_allocation().width - grip_width - 1:
+                return True
+            else:
+                return False
         
+    def expose_hpaned(self, widget, event):
+        '''Expose hapend.'''
+        # Init.
+        grip_x = self.get_position()
+        grip_width = self.get_allocation().width - self.get_child1().get_allocation().width - self.get_child2().get_allocation().width
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+
+        # Draw drag bar background.
+        draw_vlinear(cr, rect.x + grip_x, rect.y, grip_width, rect.height, 
+                     ui_theme.get_shadow_color("panedSeparator").get_color_info())
+        
+        # Draw drag button.
+        if self.hover_drag_button:
+            if self.is_slide_left():
+                grip_button_pixbuf = self.arrow_left_hover_dpixbuf.get_pixbuf()
+            else:
+                grip_button_pixbuf = self.arrow_right_hover_dpixbuf.get_pixbuf()
+            
+            draw_pixbuf(cr, grip_button_pixbuf, 
+                        rect.x + grip_x + (grip_width - grip_button_pixbuf.get_width()) / 2,
+                        rect.y + (rect.height - grip_button_pixbuf.get_height()) / 2,
+                        )
+
+        return False
+    
     def motion_notify_hpaned(self, widget, event):
         '''Callback for `motion-notify-event` signal.'''
-        if self.drag_flag:
-            self.drag_offset = int(event.x)
-            self.update_shape()
-            
-    def update_shape(self):
-        '''Update shape.'''
-        # Init.
-        hpaned_width = self.get_allocation().width
-        drag_box_width = self.drag_box.get_allocation().width
-        left_box_rect = self.left_box.get_allocation()
-        right_box_rect = self.right_box.get_allocation()
-        drag_offset = min(max(-self.drag_x, self.drag_offset), hpaned_width - self.drag_x - drag_box_width)
+        pass
         
-        # Update shape of left box.
-        left_box_bitmap = gtk.gdk.Pixmap(None, left_box_rect.width, left_box_rect.height, 1)
-        left_box_cr = left_box_bitmap.cairo_create()
+    def enter_notify_hpaned(self, widget, event):
+        '''Callback for `enter-notify-event` signal.'''
+        self.hover_drag_button = True
         
-        left_box_cr.set_source_rgb(0.0, 0.0, 0.0)
-        left_box_cr.set_operator(cairo.OPERATOR_CLEAR)
-        left_box_cr.paint()
+        self.queue_draw()
         
-        left_box_cr.set_source_rgb(1.0, 1.0, 1.0)
-        left_box_cr.set_operator(cairo.OPERATOR_OVER)
-        left_box_cr.rectangle(0, 0, self.drag_x + drag_offset, left_box_rect.height)
-        left_box_cr.fill()
+    def leave_notify_hpaned(self, widget, event):
+        '''Callback for `leave-notify-event` signal.'''
+        self.hover_drag_button = False
         
-        self.left_box.shape_combine_mask(left_box_bitmap, 0, 0)
-        # self.left_box.set_allocation(
-        #     gtk.gdk.Rectangle(left_box_rect.x, left_box_rect.y, self.drag_x + drag_offset, left_box_rect.height))
-        # print left_box_rect
-        
-        # Update shape of right box.
-        right_box_bitmap = gtk.gdk.Pixmap(None, right_box_rect.width, right_box_rect.height, 1)
-        right_box_cr = right_box_bitmap.cairo_create()
-        
-        right_box_cr.set_source_rgb(0.0, 0.0, 0.0)
-        right_box_cr.set_operator(cairo.OPERATOR_CLEAR)
-        right_box_cr.paint()
-        
-        right_box_cr.set_source_rgb(1.0, 1.0, 1.0)
-        right_box_cr.set_operator(cairo.OPERATOR_OVER)
-        right_box_cr.rectangle(
-            drag_offset, 0, 
-            hpaned_width - self.drag_x - drag_box_width - drag_offset, right_box_rect.height)
-        right_box_cr.fill()
-        
-        self.right_box.shape_combine_mask(right_box_bitmap, 0, 0)
-        # self.right_box.set_allocation(
-        #     gtk.gdk.Rectangle(right_box_rect.x, right_box_rect.y, 
-        #                       hpaned_width - self.drag_x - drag_box_width - drag_offset, right_box_rect.height))
-        
-        print (self.drag_x, drag_offset)
+        self.queue_draw()
     
 gobject.type_register(HPaned)
 
@@ -168,8 +158,11 @@ if __name__ == "__main__":
 
     button1 = gtk.Button('Resize')
     button2 = gtk.Button('Me!')
-
-    hpaned = HPaned(button1, button2)
+    
+    hpaned = HPaned(100)
+    hpaned.add1(button1)
+    hpaned.add2(button2)
+    
     hpaned_align = gtk.Alignment()    
     hpaned_align.set(0, 0, 1, 1)
     hpaned_align.set_padding(1, 1, 1, 1)
@@ -179,63 +172,3 @@ if __name__ == "__main__":
     window.show_all()
 
     gtk.main()
-
-# class HPaned(gtk.HBox):
-#     '''HPand.'''
-	
-#     def __init__(self):
-#         '''Init.'''
-#         super(HPaned, self).__init__()
-        
-#         # Init.
-#         self.drag_flag = False
-#         self.left_child = None
-#         self.right_child = None
-        
-#         self.control_button = ImageBox (ui_theme.get_pixbuf("paned/v_control.png"))
-#         self.control_button.connect("button-press-event", self.button_press_cb)
-#         self.control_button.connect("motion-notify-event", self.button_motion_cb)
-#         self.control_button.connect("button-release-event", self.button_release_cb)
-        
-#         self.__left_box = gtk.VBox()
-#         self.__right_box = gtk.VBox()
-#         self.pack_start(self.__left_box)
-#         self.pack_start(self.control_button, False, False)
-#         self.pack_end(self.__right_box)
-        
-#     def add1(self, child):    
-#         self.left_child = child
-#         self.__left_box.pack_start(child)
-        
-#     def add2(self, child):    
-#         self.right_child = child
-#         self.__right_box.pack_start(child)
-        
-#     def pack1(self, child, resize=False, shrink=True):
-#         child.set_property("resizable", resize)
-#         child.set_property("allow-shrink", shrink)
-#         self.left_child = child
-#         self.__left_box.pack_start(child)
-        
-#     def pack2(self, child, resize=True, shrink=True):    
-#         child.set_property("resizable", resize)
-#         child.set_property("allow-shrink", shrink)
-#         self.right_child = child
-#         self.__right_box.pack_start(child)
-        
-#     def button_press_cb(self, widget, event):    
-#         self.drag_flag = True
-        
-#     def button_motion_cb(self, widget, event):    
-        
-#         '''Motion notify.'''
-#         if self.drag_flag:
-#             if event.x > 0:
-#                 rect = self.left_child.get_allocation()
-#                 new_rect = gtk.gdk.Rectangle(int(rect.x) , int(rect.y), int(rect.width + event.x), int(rect.height))
-#                 self.left_child.set_allocation(new_rect)
-#         self.queue_draw()        
-        
-#     def button_release_cb(self, widget, event):    
-#         pass
-        
