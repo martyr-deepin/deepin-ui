@@ -54,7 +54,6 @@ class HPaned(gtk.HPaned):
         
         # Signal.
         self.connect_after("expose-event", self.expose_hpaned)
-        self.connect("motion-notify-event", self.motion_notify_hpaned)
         self.connect("enter-notify-event", self.enter_notify_hpaned)
         self.connect("leave-notify-event", self.leave_notify_hpaned)
         self.connect("button-press-event", self.button_press_hpaned)
@@ -118,8 +117,12 @@ class HPaned(gtk.HPaned):
         rect = widget.allocation
 
         # Draw drag bar background.
-        draw_vlinear(cr, rect.x + grip_x, rect.y, grip_width, rect.height, 
-                     ui_theme.get_shadow_color("panedSeparator").get_color_info())
+        if self.hover_drag_button:
+            draw_vlinear(cr, rect.x + grip_x, rect.y, grip_width, rect.height, 
+                         ui_theme.get_shadow_color("panedSeparatorHover").get_color_info())
+        else:
+            draw_vlinear(cr, rect.x + grip_x, rect.y, grip_width, rect.height, 
+                         ui_theme.get_shadow_color("panedSeparator").get_color_info())
         
         # Draw drag button.
         if self.hover_drag_button:
@@ -135,10 +138,6 @@ class HPaned(gtk.HPaned):
 
         return False
     
-    def motion_notify_hpaned(self, widget, event):
-        '''Callback for `motion-notify-event` signal.'''
-        pass
-        
     def enter_notify_hpaned(self, widget, event):
         '''Callback for `enter-notify-event` signal.'''
         self.hover_drag_button = True
