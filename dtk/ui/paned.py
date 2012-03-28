@@ -44,12 +44,12 @@ class HPaned(gtk.HPaned):
         '''Init hpaned.'''
         # Init.
         gtk.HPaned.__init__(self)
-        self.init_pos = init_pos
+        self.slide_pos = init_pos
         self.slide_direction = slide_direction
         self.arrow_left_hover_dpixbuf = arrow_left_hover_dpixbuf
         self.arrow_right_hover_dpixbuf = arrow_right_hover_dpixbuf
         self.hover_drag_button = False
-        self.set_position(self.init_pos)
+        self.set_position(self.slide_pos)
         self.button_press_x = None
         
         # Signal.
@@ -66,33 +66,36 @@ class HPaned(gtk.HPaned):
         
     def button_release_hpaned(self, widget, event):
         '''Callback for `button-release-event` signal.'''
-        if self.button_press_x == self.get_position():
-            grip_width = self.get_allocation().width - self.get_child1().get_allocation().width - self.get_child2().get_allocation().width
+        rect = widget.allocation
+        grip_width = rect.width - self.get_child1().get_allocation().width - self.get_child2().get_allocation().width
+
+        if int(event.x) <= grip_width and self.button_press_x == self.get_position():
             
             self.button_press_x = None
             if self.slide_direction == HPANED_DIRECTION_LEFT:
                 if self.is_slide_left():
-                    self.init_pos = self.get_position()
+                    self.slide_pos = self.get_position()
                     self.set_position(0)
                 else:
-                    if self.init_pos > 0:
-                        self.set_position(self.init_pos)
+                    if self.slide_pos > 0:
+                        self.set_position(self.slide_pos)
                     else:
-                        self.set_position(self.get_allocation().width / 2)
+                        self.set_position(rect.width / 2)
             elif self.slide_direction == HPANED_DIRECTION_RIGHT:
                 if self.is_slide_left():
-                    if self.init_pos < self.get_allocation().width - grip_width:
-                        self.set_position(self.init_pos)
+                    if self.slide_pos < rect.width - grip_width:
+                        self.set_position(self.slide_pos)
                     else:
-                        self.set_position(self.get_allocation().width / 2)
+                        self.set_position(rect.width / 2)
                 else:
-                    self.init_pos = self.get_position()
-                    self.set_position(self.get_allocation().width - grip_width)
+                    self.slide_pos = self.get_position()
+                    self.set_position(rect.width - grip_width)
             
     def is_slide_left(self):
         '''Whether slide left.'''
+        rect = self.get_allocation()
         grip_x = self.get_position()
-        grip_width = self.get_allocation().width - self.get_child1().get_allocation().width - self.get_child2().get_allocation().width
+        grip_width = rect.width - self.get_child1().get_allocation().width - self.get_child2().get_allocation().width
 
         if self.slide_direction == HPANED_DIRECTION_LEFT:
             if grip_x == 0:
@@ -100,7 +103,7 @@ class HPaned(gtk.HPaned):
             else:
                 return True
         elif self.slide_direction == HPANED_DIRECTION_RIGHT:
-            if grip_x == self.get_allocation().width - grip_width or grip_x == self.get_allocation().width - grip_width - 1:
+            if grip_x == rect.width - grip_width or grip_x == rect.width - grip_width - 1:
                 return True
             else:
                 return False
@@ -108,8 +111,9 @@ class HPaned(gtk.HPaned):
     def expose_hpaned(self, widget, event):
         '''Expose hapend.'''
         # Init.
+        rect = widget.allocation
         grip_x = self.get_position()
-        grip_width = self.get_allocation().width - self.get_child1().get_allocation().width - self.get_child2().get_allocation().width
+        grip_width = rect.width - self.get_child1().get_allocation().width - self.get_child2().get_allocation().width
         cr = widget.window.cairo_create()
         rect = widget.allocation
 
