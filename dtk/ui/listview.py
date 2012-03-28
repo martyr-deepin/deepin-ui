@@ -830,6 +830,14 @@ class ListView(gtk.DrawingArea):
             
             self.emit(event_name, self.items[event_row], event_column, offset_x, offset_y)
         
+    def get_coordinate_row(self, y):
+        '''Get row with given coordinate.'''
+        row = int((y - self.title_offset_y) / self.item_height)
+        if 0 <= row <= last_index(self.items):
+            return row
+        else:
+            return None
+            
     def get_event_row(self, event):
         '''Get event row.'''
         (event_x, event_y) = get_event_coords(event)
