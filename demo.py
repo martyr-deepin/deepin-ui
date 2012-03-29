@@ -37,6 +37,7 @@ from dtk.ui.dragbar import *
 from dtk.ui.scalebar import *
 from dtk.ui.volume_button import *
 from dtk.ui.entry import *
+from dtk.ui.paned import *
 import time
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
@@ -151,7 +152,7 @@ if __name__ == "__main__":
     # Add categorybar.
     # Note if you add list in categorybar make sure height is multiples of list length.
     # Otherwise last one item will heighter than Otherwise items.
-    category_box = gtk.HBox()
+    category_box = HPaned(150)
     body_box.add(category_box)
     categorybar = Categorybar([
             (app_theme.get_pixbuf("categorybar/word.png"), "测试分类", lambda : Tooltip("测试分类", 600, 400)),
@@ -164,11 +165,11 @@ if __name__ == "__main__":
             (app_theme.get_pixbuf("categorybar/game.png"), "测试分类", None),
             (app_theme.get_pixbuf("categorybar/driver.png"), "测试分类", None),
             ])
-    category_box.pack_start(categorybar.category_event_box, False)
+    category_box.add1(categorybar.category_event_box)
     
     # Add scrolled window.
     scrolled_window = ScrolledWindow()
-    category_box.pack_start(scrolled_window, True, True)
+    category_box.add2(scrolled_window)
     
     items_length = 3000
 
