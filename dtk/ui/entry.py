@@ -24,6 +24,7 @@ import gtk
 import cairo
 from utils import *
 from draw import *
+from keymap import *
 
 class Entry(gtk.EventBox):
     '''Entry.'''
@@ -44,12 +45,27 @@ class Entry(gtk.EventBox):
         self.font_size = font_size
         self.content = content
         self.cursor_index = 0
+        self.offset_x = 0
         self.text_color = text_color
         self.text_select_color = text_select_color
         self.background_color = background_color
         self.background_select_color = background_select_color
         self.padding_x = padding_x
         self.padding_y = padding_y
+        
+        # Add keymap.
+        self.keymap = {
+            "Left" : None,
+            "Right" : None,
+            "Home" : self.move_to_start,
+            "End" : self.move_to_end,
+            "Backspace" : None,
+            "S-Left" : None,
+            "S-Right" : None,
+            "S-Home" : None,
+            "S-End" : None,
+            "Delete" : None,
+            "C-a" : None}
         
         # Connect signal.
         self.connect("realize", self.realize_entry)
@@ -78,9 +94,34 @@ class Entry(gtk.EventBox):
     def key_press_entry(self, widget, event):
         '''Callback for `key-press-event` signal.'''
         # Pass key to IMContext.
-        self.im.filter_keypress(event)
+        input_method_filt = self.im.filter_keypress(event)
+        if not input_method_filt:
+            self.handle_key_event(event)
         
         return False
+    
+    def handle_key_event(self, event):
+        '''Handle key event.'''
+        key_name = get_keyevent_name(event)
+        if self.keymap.has_key(key_name):
+            self.keymap[key_name]()
+            
+    def move_to_start(self):
+        '''Move to start.'''
+        self.offset_x = 0
+        self.cursor_index = 0
+        
+        self.queue_draw()
+        
+    def move_to_end(self):
+        '''Move to end.'''
+        (text_width, text_height) = get_content_size(self.content, self.font_size)
+        rect = self.get_allocation()
+        if text_width > rect.width - self.padding_x * 2:
+            self.offset_x = text_width - (rect.width - self.padding_x * 2)
+        self.cursor_index = len(self.content)
+        
+        self.queue_draw()
     
     def expose_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
@@ -128,10 +169,8 @@ class Entry(gtk.EventBox):
             (text_width, text_height) = layout.get_pixel_size()
             
             # Move text.
-            if text_width < draw_width:
-                cr.move_to(draw_x, draw_y + (draw_height - text_height) / 2)
-            else:
-                cr.move_to(draw_x + draw_width - text_width, draw_y + (draw_height - text_height) / 2)
+            cr.move_to(draw_x - self.offset_x, 
+                       draw_y + (draw_height - text_height) / 2)
     
             # Draw text.
             cr.set_source_rgb(*color_hex_to_cairo(self.text_color.get_color()))
@@ -140,16 +179,41 @@ class Entry(gtk.EventBox):
             
     def draw_entry_cursor(self, cr, rect):
         '''Draw entry cursor.'''
-        pass
+        # Init.
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        left_str = self.content[0:self.cursor_index]
+        right_str = self.content[self.cursor_index::]
+        (left_str_width, left_str_height) = get_content_size(left_str, self.font_size)
+        
+        # Draw cursor.
+        cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
+        cr.rectangle(x + self.padding_x + left_str_width - self.offset_x,
+                     y + self.padding_y,
+                     1, 
+                     h - self.padding_y * 2)
+        cr.fill()
     
     def button_press_entry(self, widget, event):
         '''Button press entry.'''
         self.grab_focus()
         
-    def commit_entry(self, im, im_str):
+    def commit_entry(self, im, input_text):
         '''Entry commit.'''
-        self.content += im_str
-        self.cursor_index += len(im_str)
+        self.content = self.content[0:self.cursor_index] + input_text + self.content[self.cursor_index::]
+        self.cursor_index += len(input_text)
+        
+        (text_width, text_height) = get_content_size(self.content, self.font_size)
+        rect = self.get_allocation()
+        if text_width <= rect.width - self.padding_x * 2:
+            self.offset_x = 0
+        elif self.cursor_index == len(self.content):
+            self.offset_x = text_width - (rect.width - self.padding_x * 2)
+        else:
+            (old_text_width, old_text_height) = get_content_size(self.content[0:self.cursor_index - len(input_text)], self.font_size)
+            (input_text_width, input_text_height) = get_content_size(input_text, self.font_size)
+            if old_text_width - self.offset_x + input_text_width > rect.width - self.padding_x * 2:
+                (new_text_width, new_text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+                self.offset_x = new_text_width - (rect.width - self.padding_x * 2)
         
         self.queue_draw()
         
