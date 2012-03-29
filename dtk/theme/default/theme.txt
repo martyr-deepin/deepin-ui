@@ -16,6 +16,7 @@
  "buttonFont" : "#000000",
  "entryText" : "#F8F8F8",
  "entrySelectText" : "#535353",
+ "entryCursor" : "#000000",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),
