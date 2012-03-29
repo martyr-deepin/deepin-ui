@@ -59,7 +59,7 @@ class Entry(gtk.EventBox):
             "Right" : self.move_to_right,
             "Home" : self.move_to_start,
             "End" : self.move_to_end,
-            "BackSpace" : None,
+            "BackSpace" : self.backspace,
             "S-Left" : None,
             "S-Right" : None,
             "S-Home" : None,
@@ -145,6 +145,19 @@ class Entry(gtk.EventBox):
                 self.offset_x = text_width - (rect.width - self.padding_x * 2)
             
             self.queue_draw()
+            
+    def backspace(self):
+        '''Backspace.'''
+        if self.cursor_index > 0:
+            delete_char = list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8')
+            self.cursor_index -= len(delete_char)
+            
+            self.content = self.content[0:self.cursor_index] + self.content[self.cursor_index + len(delete_char)::]
+            (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+            if text_width - self.offset_x < 0:
+                self.offset_x = text_width
+                
+            self.queue_draw()    
     
     def expose_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
