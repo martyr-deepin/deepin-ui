@@ -56,7 +56,7 @@ class Entry(gtk.EventBox):
         # Add keymap.
         self.keymap = {
             "Left" : self.move_to_left,
-            "Right" : None,
+            "Right" : self.move_to_right,
             "Home" : self.move_to_start,
             "End" : self.move_to_end,
             "BackSpace" : None,
@@ -133,6 +133,18 @@ class Entry(gtk.EventBox):
                 self.offset_x = text_width
                 
             self.queue_draw()    
+            
+    def move_to_right(self):
+        '''Move to right char.'''
+        if self.cursor_index < len(self.content):
+            self.cursor_index += len(self.content[self.cursor_index::].decode('utf-8')[0].encode('utf-8'))            
+            
+            (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+            rect = self.get_allocation()
+            if text_width - self.offset_x > rect.width - self.padding_x * 2:
+                self.offset_x = text_width - (rect.width - self.padding_x * 2)
+            
+            self.queue_draw()
     
     def expose_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
