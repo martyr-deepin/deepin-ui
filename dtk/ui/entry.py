@@ -24,6 +24,7 @@ import gtk
 import cairo
 from utils import *
 from draw import *
+from keymap import *
 
 class Entry(gtk.EventBox):
     '''Entry.'''
@@ -52,6 +53,20 @@ class Entry(gtk.EventBox):
         self.padding_x = padding_x
         self.padding_y = padding_y
         
+        # Add keymap.
+        self.keymap = {
+            "Left" : None,
+            "Right" : None,
+            "Home" : self.move_to_start,
+            "End" : self.move_to_end,
+            "Backspace" : None,
+            "S-Left" : None,
+            "S-Right" : None,
+            "S-Home" : None,
+            "S-End" : None,
+            "Delete" : None,
+            "C-a" : None}
+        
         # Connect signal.
         self.connect("realize", self.realize_entry)
         self.connect("key-press-event", self.key_press_entry)
@@ -79,9 +94,34 @@ class Entry(gtk.EventBox):
     def key_press_entry(self, widget, event):
         '''Callback for `key-press-event` signal.'''
         # Pass key to IMContext.
-        self.im.filter_keypress(event)
+        input_method_filt = self.im.filter_keypress(event)
+        if not input_method_filt:
+            self.handle_key_event(event)
         
         return False
+    
+    def handle_key_event(self, event):
+        '''Handle key event.'''
+        key_name = get_keyevent_name(event)
+        if self.keymap.has_key(key_name):
+            self.keymap[key_name]()
+            
+    def move_to_start(self):
+        '''Move to start.'''
+        self.offset_x = 0
+        self.cursor_index = 0
+        
+        self.queue_draw()
+        
+    def move_to_end(self):
+        '''Move to end.'''
+        (text_width, text_height) = get_content_size(self.content, self.font_size)
+        rect = self.get_allocation()
+        if text_width > rect.width - self.padding_x * 2:
+            self.offset_x = text_width - (rect.width - self.padding_x * 2)
+        self.cursor_index = len(self.content)
+        
+        self.queue_draw()
     
     def expose_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
@@ -169,10 +209,10 @@ class Entry(gtk.EventBox):
         elif self.cursor_index == len(self.content):
             self.offset_x = text_width - (rect.width - self.padding_x * 2)
         else:
-            (old_text_width, old_text_height) = get_content_size(self.content[0:self.cursor_index - len(input_text)])
-            (input_text_width, input_text_height) = get_content_size(input_text)
+            (old_text_width, old_text_height) = get_content_size(self.content[0:self.cursor_index - len(input_text)], self.font_size)
+            (input_text_width, input_text_height) = get_content_size(input_text, self.font_size)
             if old_text_width - self.offset_x + input_text_width > rect.width - self.padding_x * 2:
-                (new_text_width, new_text_height) = get_content_size(self.content[0:self.cursor_index])
+                (new_text_width, new_text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
                 self.offset_x = new_text_width - (rect.width - self.padding_x * 2)
         
         self.queue_draw()
