@@ -60,11 +60,11 @@ class Entry(gtk.EventBox):
             "Home" : self.move_to_start,
             "End" : self.move_to_end,
             "BackSpace" : self.backspace,
+            "Delete" : None,
             "S-Left" : None,
             "S-Right" : None,
             "S-Home" : None,
             "S-End" : None,
-            "Delete" : None,
             "C-a" : None}
         
         # Connect signal.
@@ -149,13 +149,20 @@ class Entry(gtk.EventBox):
     def backspace(self):
         '''Backspace.'''
         if self.cursor_index > 0:
+            (old_insert_width, old_insert_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
             delete_char = list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8')
             self.cursor_index -= len(delete_char)
             
             self.content = self.content[0:self.cursor_index] + self.content[self.cursor_index + len(delete_char)::]
-            (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
-            if text_width - self.offset_x < 0:
-                self.offset_x = text_width
+            (text_width, text_height) = get_content_size(self.content, self.font_size)
+            (insert_width, insert_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+            rect = self.get_allocation()
+            if text_width < rect.width - self.padding_x * 2:
+                self.offset_x = 0
+            else:
+                adjust_x = self.offset_x + (rect.width - self.padding_x * 2) - old_insert_width
+                                
+                self.offset_x = insert_width - (rect.width - self.padding_x * 2) + adjust_x
                 
             self.queue_draw()    
     
