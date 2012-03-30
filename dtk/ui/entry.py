@@ -45,6 +45,8 @@ class Entry(gtk.EventBox):
         self.font_size = font_size
         self.content = content
         self.cursor_index = 0
+        self.select_start_index = 0
+        self.select_end_index = 0
         self.offset_x = 0
         self.text_color = text_color
         self.text_select_color = text_select_color
@@ -55,17 +57,17 @@ class Entry(gtk.EventBox):
         
         # Add keymap.
         self.keymap = {
-            "Left" : None,
-            "Right" : None,
+            "Left" : self.move_to_left,
+            "Right" : self.move_to_right,
             "Home" : self.move_to_start,
             "End" : self.move_to_end,
-            "Backspace" : None,
+            "BackSpace" : self.backspace,
+            "Delete" : None,
             "S-Left" : None,
             "S-Right" : None,
             "S-Home" : None,
             "S-End" : None,
-            "Delete" : None,
-            "C-a" : None}
+            "C-a" : self.select_all}
         
         # Connect signal.
         self.connect("realize", self.realize_entry)
@@ -120,6 +122,56 @@ class Entry(gtk.EventBox):
         if text_width > rect.width - self.padding_x * 2:
             self.offset_x = text_width - (rect.width - self.padding_x * 2)
         self.cursor_index = len(self.content)
+        
+        self.queue_draw()
+        
+    def move_to_left(self):
+        '''Move to left char.'''
+        if self.cursor_index > 0:
+            self.cursor_index -= len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
+            
+            (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+            if text_width - self.offset_x < 0:
+                self.offset_x = text_width
+                
+            self.queue_draw()    
+            
+    def move_to_right(self):
+        '''Move to right char.'''
+        if self.cursor_index < len(self.content):
+            self.cursor_index += len(self.content[self.cursor_index::].decode('utf-8')[0].encode('utf-8'))            
+            
+            (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+            rect = self.get_allocation()
+            if text_width - self.offset_x > rect.width - self.padding_x * 2:
+                self.offset_x = text_width - (rect.width - self.padding_x * 2)
+            
+            self.queue_draw()
+            
+    def backspace(self):
+        '''Backspace.'''
+        if self.cursor_index > 0:
+            (old_insert_width, old_insert_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+            delete_char = list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8')
+            self.cursor_index -= len(delete_char)
+            
+            self.content = self.content[0:self.cursor_index] + self.content[self.cursor_index + len(delete_char)::]
+            (text_width, text_height) = get_content_size(self.content, self.font_size)
+            (insert_width, insert_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+            rect = self.get_allocation()
+            if text_width < rect.width - self.padding_x * 2:
+                self.offset_x = 0
+            else:
+                adjust_x = self.offset_x + (rect.width - self.padding_x * 2) - old_insert_width
+                                
+                self.offset_x = insert_width - (rect.width - self.padding_x * 2) + adjust_x
+                
+            self.queue_draw()    
+            
+    def select_all(self):
+        '''Select all.'''
+        self.select_start_index = 0
+        self.select_end_index = len(self.content)
         
         self.queue_draw()
     

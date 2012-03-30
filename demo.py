@@ -174,7 +174,7 @@ if __name__ == "__main__":
     items_length = 3000
 
     items = map(lambda index: ListItem(
-            "豆浆油条 %04d" % index,
+            "豆浆油条 测试标题 %04d" % index,
             "林俊杰 %04d" % index,
             "10:%02d" % index,
             ), range(0, items_length))

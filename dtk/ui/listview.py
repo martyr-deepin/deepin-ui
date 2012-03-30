@@ -365,12 +365,18 @@ class ListView(gtk.DrawingArea):
                     for (column, render) in enumerate(renders):
                         cell_width = cell_widths[column]
                         cell_x = sum(cell_widths[0:column])
-                        render(cr, gtk.gdk.Rectangle(
-                                rect.x + cell_x,
-                                rect.y + (row + start_index) * self.item_height + self.title_offset_y,
-                                cell_width, 
-                                self.item_height
-                                ))
+                        render_x = rect.x + cell_x
+                        render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
+                        render_width = cell_width
+                        render_height = self.item_height
+                        
+                        with cairo_state(cr):
+                            # Don't allowed list item draw out of cell rectangle.
+                            cr.rectangle(render_x, render_y, render_width, render_height)
+                            cr.clip()
+                            
+                            # Render cell.
+                            render(cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
             
         # Draw titles.
         if self.titles:
@@ -1292,7 +1298,8 @@ class ListItem(gobject.GObject):
         
     def get_column_sizes(self):
         '''Get sizes.'''
-        return [(self.title_width + self.title_padding_x * 2, 
+        return [(self.title_width + self.title_padding_x * 2,
+        # return [(self.title_width + self.title_padding_x * 2 - 200,
                  self.title_height + self.title_padding_y * 2),
                 (self.artist_width + self.artist_padding_x * 2, 
                  self.artist_height + self.artist_padding_y * 2),
