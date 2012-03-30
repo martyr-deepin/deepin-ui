@@ -1298,7 +1298,8 @@ class ListItem(gobject.GObject):
         
     def get_column_sizes(self):
         '''Get sizes.'''
-        return [(self.title_width + self.title_padding_x * 2,
+        # return [(self.title_width + self.title_padding_x * 2,
+        return [(self.title_width + self.title_padding_x * 2 - 200,
                  self.title_height + self.title_padding_y * 2),
                 (self.artist_width + self.artist_padding_x * 2, 
                  self.artist_height + self.artist_padding_y * 2),

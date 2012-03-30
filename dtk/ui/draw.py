@@ -121,7 +121,8 @@ def draw_window_rectangle(cr, sx, sy, ex, ey, r):
         cr.arc(sx + r, ey - r, r, pi / 2, pi) # bottom-left
         cr.stroke()
         
-def draw_font(cr, text, font_size, font_color, x, y, width, height, x_align=ALIGN_MIDDLE, y_align=ALIGN_MIDDLE):
+def draw_font(cr, text, font_size, font_color, x, y, width, height, 
+              x_align=ALIGN_MIDDLE, y_align=ALIGN_MIDDLE):
     '''Draw font.'''
     # Create pangocairo context.
     context = pangocairo.CairoContext(cr)
