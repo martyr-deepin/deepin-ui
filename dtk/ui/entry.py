@@ -45,6 +45,8 @@ class Entry(gtk.EventBox):
         self.font_size = font_size
         self.content = content
         self.cursor_index = 0
+        self.select_start_index = 0
+        self.select_end_index = 0
         self.offset_x = 0
         self.text_color = text_color
         self.text_select_color = text_select_color
@@ -65,7 +67,7 @@ class Entry(gtk.EventBox):
             "S-Right" : None,
             "S-Home" : None,
             "S-End" : None,
-            "C-a" : None}
+            "C-a" : self.select_all}
         
         # Connect signal.
         self.connect("realize", self.realize_entry)
@@ -165,6 +167,13 @@ class Entry(gtk.EventBox):
                 self.offset_x = insert_width - (rect.width - self.padding_x * 2) + adjust_x
                 
             self.queue_draw()    
+            
+    def select_all(self):
+        '''Select all.'''
+        self.select_start_index = 0
+        self.select_end_index = len(self.content)
+        
+        self.queue_draw()
     
     def expose_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
