@@ -1284,22 +1284,23 @@ class ListItem(gobject.GObject):
     def render_title(self, cr, rect):
         '''Render title.'''
         rect.x += self.title_padding_x
+        rect.width -= self.title_padding_x * 2
         render_text(cr, rect, self.title)
     
     def render_artist(self, cr, rect):
         '''Render artist.'''
         rect.x += self.artist_padding_x
+        rect.width -= self.title_padding_x * 2
         render_text(cr, rect, self.artist)
     
     def render_length(self, cr, rect):
         '''Render length.'''
-        rect.width -= self.length_padding_x
+        rect.width -= self.length_padding_x * 2
         render_text(cr, rect, self.length, ALIGN_END)
         
     def get_column_sizes(self):
         '''Get sizes.'''
         return [(self.title_width + self.title_padding_x * 2,
-        # return [(self.title_width + self.title_padding_x * 2 - 200,
                  self.title_height + self.title_padding_y * 2),
                 (self.artist_width + self.artist_padding_x * 2, 
                  self.artist_height + self.artist_padding_y * 2),
