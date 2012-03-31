@@ -71,7 +71,7 @@ class Entry(gtk.EventBox):
             "S-Left" : self.select_to_prev,
             "S-Right" : self.select_to_next,
             "S-Home" : self.select_to_start,
-            "S-End" : None,
+            "S-End" : self.select_to_end,
             "C-a" : self.select_all}
         
         # Connect signal.
@@ -232,6 +232,24 @@ class Entry(gtk.EventBox):
             self.select_end_index = self.cursor_index
 
         self.offset_x = 0    
+        
+        self.queue_draw()
+        
+    def select_to_end(self):
+        '''Select to end.'''
+        if self.select_start_index != self.select_end_index:
+            if self.move_direction == self.MOVE_RIGHT:
+                self.select_end_index = len(self.content)
+            else:
+                self.select_start_index = self.select_end_index
+                self.select_end_index = len(self.content)
+        else:
+            self.select_start_index = self.cursor_index
+            self.select_end_index = len(self.content)
+        
+        rect = self.get_allocation()
+        (select_end_width, select_end_height) = get_content_size(self.content, self.font_size)
+        self.offset_x = select_end_width - rect.width + self.padding_x * 2
         
         self.queue_draw()
         
