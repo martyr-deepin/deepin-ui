@@ -130,25 +130,35 @@ def draw_font(cr, text, font_size, font_color, x, y, width, height,
     # Set layout.
     layout = context.create_layout()
     layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, font_size)))
+
     layout.set_text(text)
+    (text_width, text_height) = layout.get_pixel_size()
+    if text_width > width:
+        layout.set_text("...")
+        (suspension_point_width, suspension_point_height) = layout.get_pixel_size()
+        
+        layout.set_text(text)
+        (render_text_offset_x, render_text_offset_y) = layout.xy_to_index((width - suspension_point_width) * pango.SCALE, 0)
+        
+        layout.set_text(text[0:render_text_offset_x] + "...")    
     
     # Get text size.
-    (text_width, text_height) = layout.get_pixel_size()
+    (render_text_width, render_text_height) = layout.get_pixel_size()
     
     # Set text coordinate.
     if x_align == ALIGN_START:
         text_x = x
     elif x_align == ALIGN_END:
-        text_x = x + width - text_width
+        text_x = x + width - render_text_width
     else:
-        text_x = x + (width - text_width) / 2
+        text_x = x + (width - render_text_width) / 2
         
     if y_align == ALIGN_START:
         text_y = y
     elif y_align == ALIGN_END:
-        text_y = y + height - text_height
+        text_y = y + height - render_text_height
     else:
-        text_y = y + (height - text_height) / 2
+        text_y = y + (height - render_text_height) / 2
         
     cr.move_to(text_x, text_y)
     
