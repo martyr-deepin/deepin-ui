@@ -132,7 +132,18 @@ class Entry(gtk.EventBox):
         
     def move_to_left(self):
         '''Move to left char.'''
-        if self.cursor_index > 0:
+        if self.select_start_index != self.select_end_index:
+            self.cursor_index = self.select_start_index
+            (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
+
+            self.select_start_index = self.select_end_index = 0
+            self.move_direction = self.MOVE_NONE
+
+            if select_start_width < self.offset_x:
+                self.offset_x = select_start_width
+            
+            self.queue_draw()
+        elif self.cursor_index > 0:
             self.cursor_index -= len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
             
             (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
@@ -143,7 +154,19 @@ class Entry(gtk.EventBox):
             
     def move_to_right(self):
         '''Move to right char.'''
-        if self.cursor_index < len(self.content):
+        if self.select_start_index != self.select_end_index:
+            self.cursor_index = self.select_end_index
+            (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
+
+            self.select_start_index = self.select_end_index = 0
+            self.move_direction = self.MOVE_NONE
+            
+            rect = self.get_allocation()
+            if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
+                self.offset_x = select_end_width - rect.width + self.padding_x * 2
+            
+            self.queue_draw()
+        elif self.cursor_index < len(self.content):
             self.cursor_index += len(self.content[self.cursor_index::].decode('utf-8')[0].encode('utf-8'))            
             
             (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
