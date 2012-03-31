@@ -180,11 +180,9 @@ class Entry(gtk.EventBox):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        x, y, w, h = rect.x, rect.y, rect.width, rect.height
 
         # Draw background.
-        draw_hlinear(cr, x, y, w, h,
-                     self.background_color.get_color_info())
+        self.draw_entry_background(cr, rect)
         
         # Draw text.
         self.draw_entry_text(cr, rect)
@@ -196,6 +194,25 @@ class Entry(gtk.EventBox):
         propagate_expose(widget, event)
         
         return True
+    
+    def draw_entry_background(self, cr, rect):
+        '''Draw entry background.'''
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
+        draw_hlinear(cr, x, y, w, h,
+                     self.background_color.get_color_info())
+        
+        if self.select_start_index != self.select_end_index:
+            (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
+            (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
+            
+            draw_hlinear(cr, 
+                         x + self.padding_x + max(select_start_width - self.offset_x, 0),
+                         y + self.padding_y,
+                         min(select_end_width - select_start_width, 
+                             w - self.padding_x * 2 - max(select_start_width - self.offset_x, 0)),
+                         h - self.padding_y * 2,
+                         self.background_select_color.get_color_info())
     
     def draw_entry_text(self, cr, rect):
         '''Draw entry text.'''
@@ -231,19 +248,20 @@ class Entry(gtk.EventBox):
             
     def draw_entry_cursor(self, cr, rect):
         '''Draw entry cursor.'''
-        # Init.
-        x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        left_str = self.content[0:self.cursor_index]
-        right_str = self.content[self.cursor_index::]
-        (left_str_width, left_str_height) = get_content_size(left_str, self.font_size)
-        
-        # Draw cursor.
-        cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
-        cr.rectangle(x + self.padding_x + left_str_width - self.offset_x,
-                     y + self.padding_y,
-                     1, 
-                     h - self.padding_y * 2)
-        cr.fill()
+        if self.select_start_index == self.select_end_index:
+            # Init.
+            x, y, w, h = rect.x, rect.y, rect.width, rect.height
+            left_str = self.content[0:self.cursor_index]
+            right_str = self.content[self.cursor_index::]
+            (left_str_width, left_str_height) = get_content_size(left_str, self.font_size)
+            
+            # Draw cursor.
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
+            cr.rectangle(x + self.padding_x + left_str_width - self.offset_x,
+                         y + self.padding_y,
+                         1, 
+                         h - self.padding_y * 2)
+            cr.fill()
     
     def button_press_entry(self, widget, event):
         '''Button press entry.'''
