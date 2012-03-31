@@ -69,7 +69,7 @@ class Entry(gtk.EventBox):
             "BackSpace" : self.backspace,
             "Delete" : self.delete,
             "S-Left" : self.select_to_prev,
-            "S-Right" : None,
+            "S-Right" : self.select_to_next,
             "S-Home" : self.select_to_start,
             "S-End" : None,
             "C-a" : self.select_all}
@@ -198,6 +198,26 @@ class Entry(gtk.EventBox):
             self.offset_x = select_start_width
             
         self.queue_draw()
+        
+    def select_to_next(self):
+        '''Select to next.'''
+        if self.select_start_index != self.select_end_index:
+            if self.select_end_index < len(self.content):
+                if self.move_direction == self.MOVE_RIGHT:
+                    self.select_end_index += len(list(self.content[self.select_end_index::].decode('utf-8')[0].encode('utf-8')))
+                else:
+                    self.select_start_index += len(list(self.content[self.select_start_index::].decode('utf-8')[0].encode('utf-8')))
+        else:
+            self.select_start_index = self.cursor_index
+            self.select_end_index = self.cursor_index + len(list(self.content[self.select_end_index::].decode('utf-8')[0].encode('utf-8')))
+            self.move_direction = self.MOVE_RIGHT
+            
+        rect = self.get_allocation()    
+        (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)    
+        if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
+            self.offset_x = select_end_width - rect.width + self.padding_x * 2
+        
+        self.queue_draw()        
         
     def select_to_start(self):
         '''Select to start.'''
