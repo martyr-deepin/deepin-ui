@@ -62,7 +62,7 @@ class Entry(gtk.EventBox):
             "Home" : self.move_to_start,
             "End" : self.move_to_end,
             "BackSpace" : self.backspace,
-            "Delete" : None,
+            "Delete" : self.delete,
             "S-Left" : None,
             "S-Right" : None,
             "S-Home" : None,
@@ -174,7 +174,30 @@ class Entry(gtk.EventBox):
         self.select_end_index = len(self.content)
         
         self.queue_draw()
-    
+        
+    def delete(self):
+        '''Delete select text.'''
+        if self.select_start_index != self.select_end_index:
+            rect = self.get_allocation()
+            
+            self.cursor_index = self.select_start_index
+            
+            (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
+            (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
+            
+            self.cursor_index = self.select_start_index
+            if select_start_width < self.offset_x:
+                if select_end_width < self.offset_x + rect.width - self.padding_x * 2:
+                    self.offset_x = max(select_start_width + self.offset_x - select_end_width, 0)
+                else:
+                    self.offset_x = 0
+                    
+            self.content = self.content[0:self.select_start_index] + self.content[self.select_end_index::]
+                        
+            self.select_start_index = self.select_end_index = 0
+            
+            self.queue_draw()
+                            
     def expose_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
         # Init.
