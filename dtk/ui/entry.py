@@ -28,6 +28,10 @@ from keymap import *
 
 class Entry(gtk.EventBox):
     '''Entry.'''
+    
+    MOVE_LEFT = 1
+    MOVE_RIGHT = 2
+    MOVE_NONE = 3
 	
     def __init__(self, content="", 
                  text_color=ui_theme.get_color("entryText"),
@@ -54,6 +58,7 @@ class Entry(gtk.EventBox):
         self.background_select_color = background_select_color
         self.padding_x = padding_x
         self.padding_y = padding_y
+        self.move_direction = self.MOVE_NONE
         
         # Add keymap.
         self.keymap = {
@@ -63,9 +68,9 @@ class Entry(gtk.EventBox):
             "End" : self.move_to_end,
             "BackSpace" : self.backspace,
             "Delete" : self.delete,
-            "S-Left" : None,
+            "S-Left" : self.select_to_prev,
             "S-Right" : None,
-            "S-Home" : None,
+            "S-Home" : self.select_to_start,
             "S-End" : None,
             "C-a" : self.select_all}
         
@@ -174,6 +179,39 @@ class Entry(gtk.EventBox):
         self.select_end_index = len(self.content)
         
         self.queue_draw()
+        
+    def select_to_prev(self):
+        '''Select to preview.'''
+        if self.select_start_index != self.select_end_index:
+            if self.select_start_index > 0:
+                if self.move_direction == self.MOVE_LEFT:
+                    self.select_start_index -= len(list(self.content[0:self.select_start_index].decode('utf-8'))[-1].encode('utf-8'))
+                else:
+                    self.select_end_index -= len(list(self.content[0:self.select_end_index].decode('utf-8'))[-1].encode('utf-8'))
+        else:
+            self.select_end_index = self.cursor_index
+            self.select_start_index = self.cursor_index - len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
+            self.move_direction = self.MOVE_LEFT
+            
+        (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)    
+        if select_start_width < self.offset_x:
+            self.offset_x = select_start_width
+            
+        self.queue_draw()
+        
+    def select_to_start(self):
+        '''Select to start.'''
+        pass
+        # if self.select_start_index != self.select_end_index:
+        #     self.select_start_index = 0
+        #     self.select_end_index = self.select_start_index
+
+        #     self.queue_draw()
+        # else:
+        #     self.select_start_index = 0
+        #     self.select_end_index = self.cursor_index
+
+        #     self.queue_draw()
         
     def delete(self):
         '''Delete select text.'''
