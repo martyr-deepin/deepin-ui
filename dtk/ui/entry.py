@@ -113,10 +113,17 @@ class Entry(gtk.EventBox):
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
             
+    def clear_select_status(self):
+        '''Clear select status.'''
+        self.select_start_index = self.select_end_index = 0
+        self.move_direction = self.MOVE_NONE            
+            
     def move_to_start(self):
         '''Move to start.'''
         self.offset_x = 0
         self.cursor_index = 0
+        
+        self.clear_select_status()
         
         self.queue_draw()
         
@@ -128,6 +135,8 @@ class Entry(gtk.EventBox):
             self.offset_x = text_width - (rect.width - self.padding_x * 2)
         self.cursor_index = len(self.content)
         
+        self.clear_select_status()
+        
         self.queue_draw()
         
     def move_to_left(self):
@@ -136,8 +145,7 @@ class Entry(gtk.EventBox):
             self.cursor_index = self.select_start_index
             (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
 
-            self.select_start_index = self.select_end_index = 0
-            self.move_direction = self.MOVE_NONE
+            self.clear_select_status()
 
             if select_start_width < self.offset_x:
                 self.offset_x = select_start_width
@@ -158,8 +166,7 @@ class Entry(gtk.EventBox):
             self.cursor_index = self.select_end_index
             (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
 
-            self.select_start_index = self.select_end_index = 0
-            self.move_direction = self.MOVE_NONE
+            self.clear_select_status()
             
             rect = self.get_allocation()
             if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
