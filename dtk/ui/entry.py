@@ -221,17 +221,19 @@ class Entry(gtk.EventBox):
         
     def select_to_start(self):
         '''Select to start.'''
-        pass
-        # if self.select_start_index != self.select_end_index:
-        #     self.select_start_index = 0
-        #     self.select_end_index = self.select_start_index
+        if self.select_start_index != self.select_end_index:
+            if self.move_direction == self.MOVE_LEFT:
+                self.select_start_index = 0
+            else:
+                self.select_start_index = 0
+                self.select_end_index = self.select_start_index
+        else:
+            self.select_start_index = 0
+            self.select_end_index = self.cursor_index
 
-        #     self.queue_draw()
-        # else:
-        #     self.select_start_index = 0
-        #     self.select_end_index = self.cursor_index
-
-        #     self.queue_draw()
+        self.offset_x = 0    
+        
+        self.queue_draw()
         
     def delete(self):
         '''Delete select text.'''
