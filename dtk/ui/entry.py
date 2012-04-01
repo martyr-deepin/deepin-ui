@@ -262,6 +262,8 @@ class Entry(gtk.EventBox):
         else:
             self.select_start_index = 0
             self.select_end_index = self.cursor_index
+            
+            self.move_direction = self.MOVE_LEFT
 
         self.offset_x = 0    
         
@@ -278,10 +280,15 @@ class Entry(gtk.EventBox):
         else:
             self.select_start_index = self.cursor_index
             self.select_end_index = len(self.content)
+            
+            self.move_direction = self.MOVE_RIGHT
         
         rect = self.get_allocation()
         (select_end_width, select_end_height) = get_content_size(self.content, self.font_size)
-        self.offset_x = select_end_width - rect.width + self.padding_x * 2
+        if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
+            self.offset_x = select_end_width - rect.width + self.padding_x * 2
+        else:
+            self.offset_x = 0
         
         self.queue_draw()
         
