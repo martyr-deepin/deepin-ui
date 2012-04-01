@@ -185,7 +185,9 @@ class Entry(gtk.EventBox):
             
     def backspace(self):
         '''Backspace.'''
-        if self.cursor_index > 0:
+        if self.select_start_index != self.select_end_index:
+            self.delete()
+        elif self.cursor_index > 0:
             (old_insert_width, old_insert_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
             delete_char = list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8')
             self.cursor_index -= len(delete_char)
