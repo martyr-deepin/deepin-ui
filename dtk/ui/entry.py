@@ -72,7 +72,10 @@ class Entry(gtk.EventBox):
             "S-Right" : self.select_to_next,
             "S-Home" : self.select_to_start,
             "S-End" : self.select_to_end,
-            "C-a" : self.select_all}
+            "C-a" : self.select_all,
+            "C-x" : self.cut_select,
+            "C-c" : self.copy_select,
+            "C-v" : self.paste_from_clipboard}
         
         # Connect signal.
         self.connect("realize", self.realize_entry)
@@ -80,7 +83,7 @@ class Entry(gtk.EventBox):
         self.connect("expose-event", self.expose_entry)
         self.connect("button-press-event", self.button_press_entry)
         
-        self.im.connect("commit", self.commit_entry)
+        self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
         
     def set_text(self, text):
         '''Set text.'''
@@ -211,6 +214,31 @@ class Entry(gtk.EventBox):
         self.select_end_index = len(self.content)
         
         self.queue_draw()
+        
+    def cut_select(self):
+        '''Cut select text to clipboard.'''
+        if self.select_start_index != self.select_end_index:
+            cut_text = self.content[self.select_start_index:self.select_end_index]
+            self.delete()
+            
+            clipboard = gtk.Clipboard()
+            clipboard.set_text(cut_text)
+
+    def copy_select(self):
+        '''Copy select text to clipboard.'''
+        if self.select_start_index != self.select_end_index:
+            cut_text = self.content[self.select_start_index:self.select_end_index]
+            
+            clipboard = gtk.Clipboard()
+            clipboard.set_text(cut_text)
+    
+    def paste_from_clipboard(self):
+        '''Paste text from clipboard.'''
+        if self.select_start_index != self.select_end_index:
+            self.delete()
+            
+        clipboard = gtk.Clipboard()    
+        clipboard.request_text(lambda clipboard, text, data: self.commit_entry(text))
         
     def select_to_prev(self):
         '''Select to preview.'''
@@ -407,7 +435,7 @@ class Entry(gtk.EventBox):
         '''Button press entry.'''
         self.grab_focus()
         
-    def commit_entry(self, im, input_text):
+    def commit_entry(self, input_text):
         '''Entry commit.'''
         self.content = self.content[0:self.cursor_index] + input_text + self.content[self.cursor_index::]
         self.cursor_index += len(input_text)
