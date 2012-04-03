@@ -25,6 +25,7 @@ import cairo
 from utils import *
 from draw import *
 from keymap import *
+from menu import *
 
 class Entry(gtk.EventBox):
     '''Entry.'''
@@ -73,9 +74,17 @@ class Entry(gtk.EventBox):
             "S-Home" : self.select_to_start,
             "S-End" : self.select_to_end,
             "C-a" : self.select_all,
-            "C-x" : self.cut_select,
-            "C-c" : self.copy_select,
+            "C-x" : self.cut_to_clipboard,
+            "C-c" : self.copy_to_clipboard,
             "C-v" : self.paste_from_clipboard}
+        
+        # Add menu.
+        self.right_menu = Menu(
+            [(None, "剪切", self.cut_to_clipboard),
+             (None, "复制", self.copy_to_clipboard),
+             (None, "粘贴", self.paste_from_clipboard),
+             (None, "全选", self.select_all)],
+            MENU_POS_TOP_LEFT)
         
         # Connect signal.
         self.connect("realize", self.realize_entry)
@@ -215,7 +224,7 @@ class Entry(gtk.EventBox):
         
         self.queue_draw()
         
-    def cut_select(self):
+    def cut_to_clipboard(self):
         '''Cut select text to clipboard.'''
         if self.select_start_index != self.select_end_index:
             cut_text = self.content[self.select_start_index:self.select_end_index]
@@ -224,7 +233,7 @@ class Entry(gtk.EventBox):
             clipboard = gtk.Clipboard()
             clipboard.set_text(cut_text)
 
-    def copy_select(self):
+    def copy_to_clipboard(self):
         '''Copy select text to clipboard.'''
         if self.select_start_index != self.select_end_index:
             cut_text = self.content[self.select_start_index:self.select_end_index]
@@ -434,6 +443,14 @@ class Entry(gtk.EventBox):
     def button_press_entry(self, widget, event):
         '''Button press entry.'''
         self.grab_focus()
+        
+        self.right_menu.hide()
+        
+        if is_right_button(event):
+            (wx, wy) = self.window.get_root_origin()
+            (cx, cy, modifier) = self.window.get_pointer()
+            print ((wx, wy), (cx, cy), (event.x, event.y))
+            self.right_menu.show((wx + int(event.x), cy + wy))
         
     def commit_entry(self, input_text):
         '''Entry commit.'''
