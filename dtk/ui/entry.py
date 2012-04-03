@@ -243,9 +243,6 @@ class Entry(gtk.EventBox):
     
     def paste_from_clipboard(self):
         '''Paste text from clipboard.'''
-        if self.select_start_index != self.select_end_index:
-            self.delete()
-            
         clipboard = gtk.Clipboard()    
         clipboard.request_text(lambda clipboard, text, data: self.commit_entry(text))
         
@@ -453,6 +450,9 @@ class Entry(gtk.EventBox):
         
     def commit_entry(self, input_text):
         '''Entry commit.'''
+        if self.select_start_index != self.select_end_index:
+            self.delete()
+            
         self.content = self.content[0:self.cursor_index] + input_text + self.content[self.cursor_index::]
         self.cursor_index += len(input_text)
         
