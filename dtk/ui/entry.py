@@ -25,9 +25,14 @@ import cairo
 from utils import *
 from draw import *
 from keymap import *
+from menu import *
 
 class Entry(gtk.EventBox):
     '''Entry.'''
+    
+    MOVE_LEFT = 1
+    MOVE_RIGHT = 2
+    MOVE_NONE = 3
 	
     def __init__(self, content="", 
                  text_color=ui_theme.get_color("entryText"),
@@ -54,6 +59,7 @@ class Entry(gtk.EventBox):
         self.background_select_color = background_select_color
         self.padding_x = padding_x
         self.padding_y = padding_y
+        self.move_direction = self.MOVE_NONE
         
         # Add keymap.
         self.keymap = {
@@ -62,12 +68,23 @@ class Entry(gtk.EventBox):
             "Home" : self.move_to_start,
             "End" : self.move_to_end,
             "BackSpace" : self.backspace,
-            "Delete" : None,
-            "S-Left" : None,
-            "S-Right" : None,
-            "S-Home" : None,
-            "S-End" : None,
-            "C-a" : self.select_all}
+            "Delete" : self.delete,
+            "S-Left" : self.select_to_prev,
+            "S-Right" : self.select_to_next,
+            "S-Home" : self.select_to_start,
+            "S-End" : self.select_to_end,
+            "C-a" : self.select_all,
+            "C-x" : self.cut_to_clipboard,
+            "C-c" : self.copy_to_clipboard,
+            "C-v" : self.paste_from_clipboard}
+        
+        # Add menu.
+        self.right_menu = Menu(
+            [(None, "剪切", self.cut_to_clipboard),
+             (None, "复制", self.copy_to_clipboard),
+             (None, "粘贴", self.paste_from_clipboard),
+             (None, "全选", self.select_all)],
+            MENU_POS_TOP_LEFT)
         
         # Connect signal.
         self.connect("realize", self.realize_entry)
@@ -75,7 +92,7 @@ class Entry(gtk.EventBox):
         self.connect("expose-event", self.expose_entry)
         self.connect("button-press-event", self.button_press_entry)
         
-        self.im.connect("commit", self.commit_entry)
+        self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
         
     def set_text(self, text):
         '''Set text.'''
@@ -108,10 +125,17 @@ class Entry(gtk.EventBox):
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
             
+    def clear_select_status(self):
+        '''Clear select status.'''
+        self.select_start_index = self.select_end_index = 0
+        self.move_direction = self.MOVE_NONE            
+            
     def move_to_start(self):
         '''Move to start.'''
         self.offset_x = 0
         self.cursor_index = 0
+        
+        self.clear_select_status()
         
         self.queue_draw()
         
@@ -123,11 +147,23 @@ class Entry(gtk.EventBox):
             self.offset_x = text_width - (rect.width - self.padding_x * 2)
         self.cursor_index = len(self.content)
         
+        self.clear_select_status()
+        
         self.queue_draw()
         
     def move_to_left(self):
         '''Move to left char.'''
-        if self.cursor_index > 0:
+        if self.select_start_index != self.select_end_index:
+            self.cursor_index = self.select_start_index
+            (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
+
+            self.clear_select_status()
+
+            if select_start_width < self.offset_x:
+                self.offset_x = select_start_width
+            
+            self.queue_draw()
+        elif self.cursor_index > 0:
             self.cursor_index -= len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
             
             (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
@@ -138,7 +174,18 @@ class Entry(gtk.EventBox):
             
     def move_to_right(self):
         '''Move to right char.'''
-        if self.cursor_index < len(self.content):
+        if self.select_start_index != self.select_end_index:
+            self.cursor_index = self.select_end_index
+            (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
+
+            self.clear_select_status()
+            
+            rect = self.get_allocation()
+            if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
+                self.offset_x = select_end_width - rect.width + self.padding_x * 2
+            
+            self.queue_draw()
+        elif self.cursor_index < len(self.content):
             self.cursor_index += len(self.content[self.cursor_index::].decode('utf-8')[0].encode('utf-8'))            
             
             (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
@@ -150,7 +197,9 @@ class Entry(gtk.EventBox):
             
     def backspace(self):
         '''Backspace.'''
-        if self.cursor_index > 0:
+        if self.select_start_index != self.select_end_index:
+            self.delete()
+        elif self.cursor_index > 0:
             (old_insert_width, old_insert_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
             delete_char = list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8')
             self.cursor_index -= len(delete_char)
@@ -174,7 +223,132 @@ class Entry(gtk.EventBox):
         self.select_end_index = len(self.content)
         
         self.queue_draw()
+        
+    def cut_to_clipboard(self):
+        '''Cut select text to clipboard.'''
+        if self.select_start_index != self.select_end_index:
+            cut_text = self.content[self.select_start_index:self.select_end_index]
+            self.delete()
+            
+            clipboard = gtk.Clipboard()
+            clipboard.set_text(cut_text)
+
+    def copy_to_clipboard(self):
+        '''Copy select text to clipboard.'''
+        if self.select_start_index != self.select_end_index:
+            cut_text = self.content[self.select_start_index:self.select_end_index]
+            
+            clipboard = gtk.Clipboard()
+            clipboard.set_text(cut_text)
     
+    def paste_from_clipboard(self):
+        '''Paste text from clipboard.'''
+        clipboard = gtk.Clipboard()    
+        clipboard.request_text(lambda clipboard, text, data: self.commit_entry(text))
+        
+    def select_to_prev(self):
+        '''Select to preview.'''
+        if self.select_start_index != self.select_end_index:
+            if self.select_start_index > 0:
+                if self.move_direction == self.MOVE_LEFT:
+                    self.select_start_index -= len(list(self.content[0:self.select_start_index].decode('utf-8'))[-1].encode('utf-8'))
+                else:
+                    self.select_end_index -= len(list(self.content[0:self.select_end_index].decode('utf-8'))[-1].encode('utf-8'))
+        else:
+            self.select_end_index = self.cursor_index
+            self.select_start_index = self.cursor_index - len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
+            self.move_direction = self.MOVE_LEFT
+            
+        (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)    
+        if select_start_width < self.offset_x:
+            self.offset_x = select_start_width
+            
+        self.queue_draw()
+        
+    def select_to_next(self):
+        '''Select to next.'''
+        if self.select_start_index != self.select_end_index:
+            if self.select_end_index < len(self.content):
+                if self.move_direction == self.MOVE_RIGHT:
+                    self.select_end_index += len(list(self.content[self.select_end_index::].decode('utf-8')[0].encode('utf-8')))
+                else:
+                    self.select_start_index += len(list(self.content[self.select_start_index::].decode('utf-8')[0].encode('utf-8')))
+        else:
+            self.select_start_index = self.cursor_index
+            self.select_end_index = self.cursor_index + len(list(self.content[self.select_end_index::].decode('utf-8')[0].encode('utf-8')))
+            self.move_direction = self.MOVE_RIGHT
+            
+        rect = self.get_allocation()    
+        (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)    
+        if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
+            self.offset_x = select_end_width - rect.width + self.padding_x * 2
+        
+        self.queue_draw()        
+        
+    def select_to_start(self):
+        '''Select to start.'''
+        if self.select_start_index != self.select_end_index:
+            if self.move_direction == self.MOVE_LEFT:
+                self.select_start_index = 0
+            else:
+                self.select_start_index = 0
+                self.select_end_index = self.select_start_index
+        else:
+            self.select_start_index = 0
+            self.select_end_index = self.cursor_index
+            
+            self.move_direction = self.MOVE_LEFT
+
+        self.offset_x = 0    
+        
+        self.queue_draw()
+        
+    def select_to_end(self):
+        '''Select to end.'''
+        if self.select_start_index != self.select_end_index:
+            if self.move_direction == self.MOVE_RIGHT:
+                self.select_end_index = len(self.content)
+            else:
+                self.select_start_index = self.select_end_index
+                self.select_end_index = len(self.content)
+        else:
+            self.select_start_index = self.cursor_index
+            self.select_end_index = len(self.content)
+            
+            self.move_direction = self.MOVE_RIGHT
+        
+        rect = self.get_allocation()
+        (select_end_width, select_end_height) = get_content_size(self.content, self.font_size)
+        if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
+            self.offset_x = select_end_width - rect.width + self.padding_x * 2
+        else:
+            self.offset_x = 0
+        
+        self.queue_draw()
+        
+    def delete(self):
+        '''Delete select text.'''
+        if self.select_start_index != self.select_end_index:
+            rect = self.get_allocation()
+            
+            self.cursor_index = self.select_start_index
+            
+            (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
+            (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
+            
+            self.cursor_index = self.select_start_index
+            if select_start_width < self.offset_x:
+                if select_end_width < self.offset_x + rect.width - self.padding_x * 2:
+                    self.offset_x = max(select_start_width + self.offset_x - select_end_width, 0)
+                else:
+                    self.offset_x = 0
+                    
+            self.content = self.content[0:self.select_start_index] + self.content[self.select_end_index::]
+                        
+            self.select_start_index = self.select_end_index = 0
+            
+            self.queue_draw()
+                            
     def expose_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
         # Init.
@@ -267,8 +441,18 @@ class Entry(gtk.EventBox):
         '''Button press entry.'''
         self.grab_focus()
         
-    def commit_entry(self, im, input_text):
+        self.right_menu.hide()
+        
+        if is_right_button(event):
+            (wx, wy) = self.window.get_root_origin()
+            (cx, cy, modifier) = self.window.get_pointer()
+            self.right_menu.show((wx + int(event.x), cy + wy))
+        
+    def commit_entry(self, input_text):
         '''Entry commit.'''
+        if self.select_start_index != self.select_end_index:
+            self.delete()
+            
         self.content = self.content[0:self.cursor_index] + input_text + self.content[self.cursor_index::]
         self.cursor_index += len(input_text)
         
