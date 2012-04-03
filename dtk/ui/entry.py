@@ -449,7 +449,6 @@ class Entry(gtk.EventBox):
         if is_right_button(event):
             (wx, wy) = self.window.get_root_origin()
             (cx, cy, modifier) = self.window.get_pointer()
-            print ((wx, wy), (cx, cy), (event.x, event.y))
             self.right_menu.show((wx + int(event.x), cy + wy))
         
     def commit_entry(self, input_text):
