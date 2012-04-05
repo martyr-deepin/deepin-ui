@@ -100,7 +100,7 @@ class Entry(gtk.EventBox):
         self.cursor_index = len(self.content)
         self.select_start_index = self.select_end_index = self.cursor_index
         
-        (text_width, text_height) = get_content_size(self.content, self.font_size)
+        text_width = self.get_content_width(self.content)
         rect = self.get_allocation()
         if text_width > rect.width - self.padding_x * 2:
             self.offset_x = text_width - rect.width + self.padding_x * 2
@@ -112,14 +112,14 @@ class Entry(gtk.EventBox):
     def get_text(self):
         '''Get text.'''
         return self.content
-        
+    
     def realize_entry(self, widget):
         '''Realize entry.'''
         # Init IMContext.
         self.im.set_client_window(widget.window)
         self.im.focus_in()
         
-        (text_width, text_height) = get_content_size(self.content, self.font_size)
+        text_width = self.get_content_width(self.content)
         rect = self.get_allocation()
         self.offset_x = max(0, text_width - rect.width + self.padding_x * 2)
         
@@ -155,7 +155,7 @@ class Entry(gtk.EventBox):
         
     def move_to_end(self):
         '''Move to end.'''
-        (text_width, text_height) = get_content_size(self.content, self.font_size)
+        text_width = self.get_content_width(self.content)
         rect = self.get_allocation()
         if text_width > rect.width - self.padding_x * 2:
             self.offset_x = text_width - (rect.width - self.padding_x * 2)
@@ -169,7 +169,7 @@ class Entry(gtk.EventBox):
         '''Move to left char.'''
         if self.select_start_index != self.select_end_index:
             self.cursor_index = self.select_start_index
-            (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
+            select_start_width = self.get_content_width(self.content[0:self.select_start_index])
 
             self.clear_select_status()
 
@@ -178,9 +178,9 @@ class Entry(gtk.EventBox):
             
             self.queue_draw()
         elif self.cursor_index > 0:
-            self.cursor_index -= len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
+            self.cursor_index -= len(self.get_utf8_string(self.content[0:self.cursor_index], -1))
             
-            (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+            text_width = self.get_content_width(self.content[0:self.cursor_index])
             if text_width - self.offset_x < 0:
                 self.offset_x = text_width
                 
@@ -190,7 +190,7 @@ class Entry(gtk.EventBox):
         '''Move to right char.'''
         if self.select_start_index != self.select_end_index:
             self.cursor_index = self.select_end_index
-            (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
+            select_end_width = self.get_content_width(self.content[0:self.select_end_index])
 
             self.clear_select_status()
             
@@ -202,7 +202,7 @@ class Entry(gtk.EventBox):
         elif self.cursor_index < len(self.content):
             self.cursor_index += len(self.content[self.cursor_index::].decode('utf-8')[0].encode('utf-8'))            
             
-            (text_width, text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+            text_width = self.get_content_width(self.content[0:self.cursor_index])
             rect = self.get_allocation()
             if text_width - self.offset_x > rect.width - self.padding_x * 2:
                 self.offset_x = text_width - (rect.width - self.padding_x * 2)
@@ -214,13 +214,13 @@ class Entry(gtk.EventBox):
         if self.select_start_index != self.select_end_index:
             self.delete()
         elif self.cursor_index > 0:
-            (old_insert_width, old_insert_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
-            delete_char = list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8')
+            old_insert_width = self.get_content_width(self.content[0:self.cursor_index])
+            delete_char = self.get_utf8_string(self.content[0:self.cursor_index], -1)
             self.cursor_index -= len(delete_char)
             
             self.content = self.content[0:self.cursor_index] + self.content[self.cursor_index + len(delete_char)::]
-            (text_width, text_height) = get_content_size(self.content, self.font_size)
-            (insert_width, insert_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+            text_width = self.get_content_width(self.content)
+            insert_width = self.get_content_width(self.content[0:self.cursor_index])
             rect = self.get_allocation()
             if text_width < rect.width - self.padding_x * 2:
                 self.offset_x = 0
@@ -256,26 +256,26 @@ class Entry(gtk.EventBox):
     def paste_from_clipboard(self):
         '''Paste text from clipboard.'''
         clipboard = gtk.Clipboard()    
-        clipboard.request_text(lambda clipboard, text, data: self.commit_entry(text))
+        clipboard.request_text(lambda clipboard, text, data: self.commit_entry('\\n'.join(text.split('\n'))))
         
     def select_to_left(self):
         '''Select to preview.'''
         if self.select_start_index != self.select_end_index:
             if self.move_direction == self.MOVE_LEFT:
                 if self.select_start_index > 0:
-                    self.select_start_index -= len(list(self.content[0:self.select_start_index].decode('utf-8'))[-1].encode('utf-8'))
-                    (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)    
+                    self.select_start_index -= len(self.get_utf8_string(self.content[0:self.select_start_index], -1))
+                    select_start_width = self.get_content_width(self.content[0:self.select_start_index])    
                     if select_start_width < self.offset_x:
                         self.offset_x = select_start_width
             else:
-                self.select_end_index -= len(list(self.content[0:self.select_end_index].decode('utf-8'))[-1].encode('utf-8'))
+                self.select_end_index -= len(self.get_utf8_string(self.content[0:self.select_end_index], -1))
                     
-                (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
+                select_end_width = self.get_content_width(self.content[0:self.select_end_index])
                 if select_end_width < self.offset_x:
                     self.offset_x = select_end_width
         else:
             self.select_end_index = self.cursor_index
-            self.select_start_index = self.cursor_index - len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
+            self.select_start_index = self.cursor_index - len(self.get_utf8_string(self.content[0:self.cursor_index], -1))
             self.move_direction = self.MOVE_LEFT
             
         self.queue_draw()
@@ -287,20 +287,20 @@ class Entry(gtk.EventBox):
             
             if self.move_direction == self.MOVE_RIGHT:
                 if self.select_end_index < len(self.content):
-                    self.select_end_index += len(list(self.content[self.select_end_index::].decode('utf-8')[0].encode('utf-8')))
+                    self.select_end_index += len(self.get_utf8_string(self.content[self.select_end_index::], 0))
                     
-                    (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)    
+                    select_end_width = self.get_content_width(self.content[0:self.select_end_index])    
                     if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
                         self.offset_x = select_end_width - rect.width + self.padding_x * 2
             else:
-                self.select_start_index += len(list(self.content[self.select_start_index::].decode('utf-8')[0].encode('utf-8')))
-                (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
+                self.select_start_index += len(self.get_utf8_string(self.content[self.select_start_index::], 0))
+                select_start_width = self.get_content_width(self.content[0:self.select_start_index])
                 if select_start_width > self.offset_x + rect.width - self.padding_x * 2:
                     self.offset_x = select_start_width - rect.width + self.padding_x * 2
         else:
             if self.select_end_index < len(self.content):
                 self.select_start_index = self.cursor_index
-                self.select_end_index = self.cursor_index + len(list(self.content[self.select_end_index::].decode('utf-8')[0].encode('utf-8')))
+                self.select_end_index = self.cursor_index + len(self.get_utf8_string(self.content[self.select_end_index::], 0))
                 self.move_direction = self.MOVE_RIGHT
             
         self.queue_draw()        
@@ -342,7 +342,7 @@ class Entry(gtk.EventBox):
             self.move_direction = self.MOVE_RIGHT
         
         rect = self.get_allocation()
-        (select_end_width, select_end_height) = get_content_size(self.content, self.font_size)
+        select_end_width = self.get_content_width(self.content)
         if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
             self.offset_x = select_end_width - rect.width + self.padding_x * 2
         else:
@@ -357,8 +357,8 @@ class Entry(gtk.EventBox):
             
             self.cursor_index = self.select_start_index
             
-            (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
-            (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
+            select_start_width = self.get_content_width(self.content[0:self.select_start_index])
+            select_end_width = self.get_content_width(self.content[0:self.select_end_index])
             
             self.cursor_index = self.select_start_index
             if select_start_width < self.offset_x:
@@ -401,8 +401,8 @@ class Entry(gtk.EventBox):
                      self.background_color.get_color_info())
         
         if self.select_start_index != self.select_end_index:
-            (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
-            (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
+            select_start_width = self.get_content_width(self.content[0:self.select_start_index])
+            select_end_width = self.get_content_width(self.content[0:self.select_end_index])
             
             draw_hlinear(cr, 
                          x + self.padding_x + max(select_start_width - self.offset_x, 0),
@@ -450,7 +450,7 @@ class Entry(gtk.EventBox):
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             left_str = self.content[0:self.cursor_index]
             right_str = self.content[self.cursor_index::]
-            (left_str_width, left_str_height) = get_content_size(left_str, self.font_size)
+            left_str_width = self.get_content_width(left_str)
             
             # Draw cursor.
             cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
@@ -479,21 +479,30 @@ class Entry(gtk.EventBox):
         self.content = self.content[0:self.cursor_index] + input_text + self.content[self.cursor_index::]
         self.cursor_index += len(input_text)
         
-        (text_width, text_height) = get_content_size(self.content, self.font_size)
+        text_width = self.get_content_width(self.content)
         rect = self.get_allocation()
         if text_width <= rect.width - self.padding_x * 2:
             self.offset_x = 0
         elif self.cursor_index == len(self.content):
             self.offset_x = text_width - (rect.width - self.padding_x * 2)
         else:
-            (old_text_width, old_text_height) = get_content_size(self.content[0:self.cursor_index - len(input_text)], self.font_size)
-            (input_text_width, input_text_height) = get_content_size(input_text, self.font_size)
+            old_text_width = self.get_content_width(self.content[0:self.cursor_index - len(input_text)])
+            input_text_width = self.get_content_width(input_text)
             if old_text_width - self.offset_x + input_text_width > rect.width - self.padding_x * 2:
-                (new_text_width, new_text_height) = get_content_size(self.content[0:self.cursor_index], self.font_size)
+                new_text_width = self.get_content_width(self.content[0:self.cursor_index])
                 self.offset_x = new_text_width - (rect.width - self.padding_x * 2)
         
         self.queue_draw()
         
+    def get_content_width(self, content):
+        '''Get content width.'''
+        (content_width, content_height) = get_content_size(content, self.font_size)
+        return content_width
+        
+    def get_utf8_string(self, content, index):
+        '''Get utf8 string.'''
+        return list(content.decode('utf-8'))[index].encode('utf-8')
+    
 gobject.type_register(Entry)
 
 if __name__ == "__main__":
