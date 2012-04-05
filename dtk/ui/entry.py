@@ -69,8 +69,8 @@ class Entry(gtk.EventBox):
             "End" : self.move_to_end,
             "BackSpace" : self.backspace,
             "Delete" : self.delete,
-            "S-Left" : self.select_to_prev,
-            "S-Right" : self.select_to_next,
+            "S-Left" : self.select_to_left,
+            "S-Right" : self.select_to_right,
             "S-Home" : self.select_to_start,
             "S-End" : self.select_to_end,
             "C-a" : self.select_all,
@@ -122,7 +122,6 @@ class Entry(gtk.EventBox):
     def handle_key_event(self, event):
         '''Handle key event.'''
         key_name = get_keyevent_name(event)
-        print key_name
         
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
@@ -248,7 +247,7 @@ class Entry(gtk.EventBox):
         clipboard = gtk.Clipboard()    
         clipboard.request_text(lambda clipboard, text, data: self.commit_entry(text))
         
-    def select_to_prev(self):
+    def select_to_left(self):
         '''Select to preview.'''
         if self.select_start_index != self.select_end_index:
             if self.move_direction == self.MOVE_LEFT:
@@ -264,14 +263,13 @@ class Entry(gtk.EventBox):
                 if select_end_width < self.offset_x:
                     self.offset_x = select_end_width
         else:
-            if self.select_start_index > 0:
-                self.select_end_index = self.cursor_index
-                self.select_start_index = self.cursor_index - len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
-                self.move_direction = self.MOVE_LEFT
+            self.select_end_index = self.cursor_index
+            self.select_start_index = self.cursor_index - len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
+            self.move_direction = self.MOVE_LEFT
             
         self.queue_draw()
         
-    def select_to_next(self):
+    def select_to_right(self):
         '''Select to next.'''
         if self.select_start_index != self.select_end_index:
             rect = self.get_allocation()    
@@ -302,8 +300,10 @@ class Entry(gtk.EventBox):
             if self.move_direction == self.MOVE_LEFT:
                 self.select_start_index = 0
             else:
-                self.select_start_index = 0
                 self.select_end_index = self.select_start_index
+                self.select_start_index = 0
+                
+                self.move_direction = self.MOVE_LEFT    
         else:
             self.select_start_index = 0
             self.select_end_index = self.cursor_index
@@ -322,6 +322,8 @@ class Entry(gtk.EventBox):
             else:
                 self.select_start_index = self.select_end_index
                 self.select_end_index = len(self.content)
+                
+                self.move_direction = self.MOVE_RIGHT    
         else:
             self.select_start_index = self.cursor_index
             self.select_end_index = len(self.content)
@@ -356,7 +358,7 @@ class Entry(gtk.EventBox):
                     
             self.content = self.content[0:self.select_start_index] + self.content[self.select_end_index::]
                         
-            self.select_start_index = self.select_end_index = 0
+            self.select_start_index = self.select_end_index = self.cursor_index
             
             self.queue_draw()
                             
