@@ -211,7 +211,7 @@ if __name__ == "__main__":
     application.main_box.pack_start(volume_frame, False, False)
     
     # Add entry widget.
-    entry = Entry("")
+    entry = Entry("Linux Deepin**************************")
     entry.set_size_request(300, 30)
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry)

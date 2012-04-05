@@ -48,11 +48,6 @@ class Entry(gtk.EventBox):
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
         self.font_size = font_size
-        self.content = content
-        self.cursor_index = 0
-        self.select_start_index = 0
-        self.select_end_index = 0
-        self.offset_x = 0
         self.text_color = text_color
         self.text_select_color = text_select_color
         self.background_color = background_color
@@ -60,6 +55,11 @@ class Entry(gtk.EventBox):
         self.padding_x = padding_x
         self.padding_y = padding_y
         self.move_direction = self.MOVE_NONE
+        
+        self.content = content
+        self.cursor_index = len(self.content)
+        self.select_start_index = self.select_end_index = self.cursor_index
+        self.offset_x = 0
         
         # Add keymap.
         self.keymap = {
@@ -97,6 +97,15 @@ class Entry(gtk.EventBox):
     def set_text(self, text):
         '''Set text.'''
         self.content = text
+        self.cursor_index = len(self.content)
+        self.select_start_index = self.select_end_index = self.cursor_index
+        
+        (text_width, text_height) = get_content_size(self.content, self.font_size)
+        rect = self.get_allocation()
+        if text_width > rect.width - self.padding_x * 2:
+            self.offset_x = text_width - rect.width + self.padding_x * 2
+        else:
+            self.offset_x = 0
 
         self.queue_draw()
         
@@ -109,6 +118,10 @@ class Entry(gtk.EventBox):
         # Init IMContext.
         self.im.set_client_window(widget.window)
         self.im.focus_in()
+        
+        (text_width, text_height) = get_content_size(self.content, self.font_size)
+        rect = self.get_allocation()
+        self.offset_x = max(0, text_width - rect.width + self.padding_x * 2)
         
     def key_press_entry(self, widget, event):
         '''Callback for `key-press-event` signal.'''
