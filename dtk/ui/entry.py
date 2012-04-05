@@ -225,9 +225,7 @@ class Entry(gtk.EventBox):
             if text_width < rect.width - self.padding_x * 2:
                 self.offset_x = 0
             else:
-                adjust_x = self.offset_x + (rect.width - self.padding_x * 2) - old_insert_width
-                                
-                self.offset_x = insert_width - (rect.width - self.padding_x * 2) + adjust_x
+                self.offset_x += insert_width - old_insert_width
                 
             self.queue_draw()    
             
