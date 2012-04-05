@@ -122,12 +122,14 @@ class Entry(gtk.EventBox):
     def handle_key_event(self, event):
         '''Handle key event.'''
         key_name = get_keyevent_name(event)
+        print key_name
+        
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
             
     def clear_select_status(self):
         '''Clear select status.'''
-        self.select_start_index = self.select_end_index = 0
+        self.select_start_index = self.select_end_index = self.cursor_index
         self.move_direction = self.MOVE_NONE            
             
     def move_to_start(self):
@@ -249,40 +251,49 @@ class Entry(gtk.EventBox):
     def select_to_prev(self):
         '''Select to preview.'''
         if self.select_start_index != self.select_end_index:
-            if self.select_start_index > 0:
-                if self.move_direction == self.MOVE_LEFT:
+            if self.move_direction == self.MOVE_LEFT:
+                if self.select_start_index > 0:
                     self.select_start_index -= len(list(self.content[0:self.select_start_index].decode('utf-8'))[-1].encode('utf-8'))
-                else:
-                    self.select_end_index -= len(list(self.content[0:self.select_end_index].decode('utf-8'))[-1].encode('utf-8'))
+                    (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)    
+                    if select_start_width < self.offset_x:
+                        self.offset_x = select_start_width
+            else:
+                self.select_end_index -= len(list(self.content[0:self.select_end_index].decode('utf-8'))[-1].encode('utf-8'))
+                    
+                (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)
+                if select_end_width < self.offset_x:
+                    self.offset_x = select_end_width
         else:
-            self.select_end_index = self.cursor_index
-            self.select_start_index = self.cursor_index - len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
-            self.move_direction = self.MOVE_LEFT
-            
-        (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)    
-        if select_start_width < self.offset_x:
-            self.offset_x = select_start_width
+            if self.select_start_index > 0:
+                self.select_end_index = self.cursor_index
+                self.select_start_index = self.cursor_index - len(list(self.content[0:self.cursor_index].decode('utf-8'))[-1].encode('utf-8'))
+                self.move_direction = self.MOVE_LEFT
             
         self.queue_draw()
         
     def select_to_next(self):
         '''Select to next.'''
         if self.select_start_index != self.select_end_index:
-            if self.select_end_index < len(self.content):
-                if self.move_direction == self.MOVE_RIGHT:
-                    self.select_end_index += len(list(self.content[self.select_end_index::].decode('utf-8')[0].encode('utf-8')))
-                else:
-                    self.select_start_index += len(list(self.content[self.select_start_index::].decode('utf-8')[0].encode('utf-8')))
-        else:
-            self.select_start_index = self.cursor_index
-            self.select_end_index = self.cursor_index + len(list(self.content[self.select_end_index::].decode('utf-8')[0].encode('utf-8')))
-            self.move_direction = self.MOVE_RIGHT
+            rect = self.get_allocation()    
             
-        rect = self.get_allocation()    
-        (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)    
-        if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
-            self.offset_x = select_end_width - rect.width + self.padding_x * 2
-        
+            if self.move_direction == self.MOVE_RIGHT:
+                if self.select_end_index < len(self.content):
+                    self.select_end_index += len(list(self.content[self.select_end_index::].decode('utf-8')[0].encode('utf-8')))
+                    
+                    (select_end_width, select_end_height) = get_content_size(self.content[0:self.select_end_index], self.font_size)    
+                    if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
+                        self.offset_x = select_end_width - rect.width + self.padding_x * 2
+            else:
+                self.select_start_index += len(list(self.content[self.select_start_index::].decode('utf-8')[0].encode('utf-8')))
+                (select_start_width, select_start_height) = get_content_size(self.content[0:self.select_start_index], self.font_size)
+                if select_start_width > self.offset_x + rect.width - self.padding_x * 2:
+                    self.offset_x = select_start_width - rect.width + self.padding_x * 2
+        else:
+            if self.select_end_index < len(self.content):
+                self.select_start_index = self.cursor_index
+                self.select_end_index = self.cursor_index + len(list(self.content[self.select_end_index::].decode('utf-8')[0].encode('utf-8')))
+                self.move_direction = self.MOVE_RIGHT
+            
         self.queue_draw()        
         
     def select_to_start(self):
@@ -383,11 +394,10 @@ class Entry(gtk.EventBox):
             draw_hlinear(cr, 
                          x + self.padding_x + max(select_start_width - self.offset_x, 0),
                          y + self.padding_y,
-                         min(select_end_width - select_start_width, 
-                             w - self.padding_x * 2 - max(select_start_width - self.offset_x, 0)),
+                         min(select_end_width, self.offset_x + w - self.padding_x * 2) - max(select_start_width, self.offset_x),
                          h - self.padding_y * 2,
                          self.background_select_color.get_color_info())
-    
+            
     def draw_entry_text(self, cr, rect):
         '''Draw entry text.'''
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
