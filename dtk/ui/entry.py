@@ -62,6 +62,7 @@ class Entry(gtk.EventBox):
         self.left_click_coordindate = None
         self.drag_start_index = 0
         self.drag_end_index = 0
+        self.grab_focus_flag = False
         
         self.content = content
         self.cursor_index = len(self.content)
@@ -100,6 +101,8 @@ class Entry(gtk.EventBox):
         self.connect("button-press-event", self.button_press_entry)
         self.connect("button-release-event", self.button_release_entry)
         self.connect("motion-notify-event", self.motion_notify_entry)
+        self.connect("focus-in-event", self.focus_in_entry)
+        self.connect("focus-out-event", self.focus_out_entry)
         
         self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
         
@@ -486,7 +489,7 @@ class Entry(gtk.EventBox):
             
     def draw_entry_cursor(self, cr, rect):
         '''Draw entry cursor.'''
-        if self.select_start_index == self.select_end_index:
+        if self.grab_focus_flag and self.select_start_index == self.select_end_index:
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             left_str = self.content[0:self.cursor_index]
@@ -553,6 +556,18 @@ class Entry(gtk.EventBox):
                     self.move_offsetx_left(widget, event)
                 
             self.queue_draw()    
+            
+    def focus_in_entry(self, widget, event):
+        '''Callback for `focus-in-event` signal.'''
+        self.grab_focus_flag = True
+        
+        self.queue_draw()
+            
+    def focus_out_entry(self, widget, event):
+        '''Callback for `focus-out-event` signal.'''
+        self.grab_focus_flag = False
+
+        self.queue_draw()
             
     def move_offsetx_right(self, widget, event):
         '''Move offset_x right.'''
