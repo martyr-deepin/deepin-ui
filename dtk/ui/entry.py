@@ -545,11 +545,42 @@ class Entry(gtk.EventBox):
             self.select_end_index = max(self.drag_start_index, self.drag_end_index)
             
             if self.drag_start_index < self.drag_end_index:
-                pass
+                rect = self.get_allocation()
+                if int(event.x) > rect.width:
+                    self.move_offsetx_right(widget, event)
             else:
-                pass
+                if int(event.x) < 0:
+                    self.move_offsetx_left(widget, event)
                 
             self.queue_draw()    
+            
+    def move_offsetx_right(self, widget, event):
+        '''Move offset_x right.'''
+        text_width = self.get_content_width(self.content)
+        rect = self.get_allocation()
+        if self.offset_x + rect.width - self.padding_x * 2 < text_width:
+            cr = widget.window.cairo_create()
+            context = pangocairo.CairoContext(cr)
+            layout = context.create_layout()
+            layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
+            layout.set_text(self.content)
+            (text_width, text_height) = layout.get_pixel_size()
+            (x_index, y_index) = layout.xy_to_index((self.offset_x + rect.width - self.padding_x * 2) * pango.SCALE, 0)
+            
+            self.offset_x += len(self.get_utf8_string(self.content[x_index::], 0))
+            
+    def move_offsetx_left(self, widget, event):
+        '''Move offset_x left.'''
+        if self.offset_x > 0:
+            cr = widget.window.cairo_create()
+            context = pangocairo.CairoContext(cr)
+            layout = context.create_layout()
+            layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
+            layout.set_text(self.content)
+            (text_width, text_height) = layout.get_pixel_size()
+            (x_index, y_index) = layout.xy_to_index((self.offset_x + self.padding_x) * pango.SCALE, 0)
+            
+            self.offset_x -= len(self.get_utf8_string(self.content[0:x_index], -1))
         
     def get_index_at_event(self, widget, event):
         '''Get index at event.'''
@@ -562,8 +593,8 @@ class Entry(gtk.EventBox):
         if int(event.x) + self.offset_x - self.padding_x > text_width:
             return len(self.content)
         else:
-            (render_text_offset_x, render_text_offset_y) = layout.xy_to_index((int(event.x) + self.offset_x - self.padding_x) * pango.SCALE, 0)
-            return render_text_offset_x        
+            (x_index, y_index) = layout.xy_to_index((int(event.x) + self.offset_x - self.padding_x) * pango.SCALE, 0)
+            return x_index
         
     def commit_entry(self, input_text):
         '''Entry commit.'''
