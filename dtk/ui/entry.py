@@ -40,7 +40,9 @@ class Entry(gtk.EventBox):
                  background_color=ui_theme.get_shadow_color("entryBackground"),
                  background_select_color=ui_theme.get_shadow_color("entrySelectBackground"),
                  font_size=DEFAULT_FONT_SIZE, 
-                 padding_x=10, padding_y=5):
+                 padding_x=10, 
+                 padding_y=5
+                 ):
         '''Init entry.'''
         # Init.
         gtk.EventBox.__init__(self)
@@ -58,6 +60,8 @@ class Entry(gtk.EventBox):
         self.double_click_flag = False
         self.left_click_flag = False
         self.left_click_coordindate = None
+        self.drag_start_index = 0
+        self.drag_end_index = 0
         
         self.content = content
         self.cursor_index = len(self.content)
@@ -519,23 +523,13 @@ class Entry(gtk.EventBox):
             self.left_click_flag = True
             self.left_click_coordindate = (event.x, event.y)
             
+            self.drag_start_index = self.get_index_at_event(widget, event)
+            
     def button_release_entry(self, widget, event):
         '''Callback for `button-release-event` signal.'''
         if not self.double_click_flag and self.left_click_coordindate == (event.x, event.y):
-            cr = widget.window.cairo_create()
-            context = pangocairo.CairoContext(cr)
-            layout = context.create_layout()
-            layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
-            layout.set_text(self.content)
-            (text_width, text_height) = layout.get_pixel_size()
-            if int(event.x) > text_width:
-                self.cursor_index = len(self.content)
-            else:
-                (render_text_offset_x, render_text_offset_y) = layout.xy_to_index((int(event.x) + self.offset_x) * pango.SCALE, 0)
-                self.cursor_index = max(render_text_offset_x - 1, 0)
-                
+            self.cursor_index = self.get_index_at_event(widget, event)    
             self.select_start_index = self.select_end_index = self.cursor_index
-            
             self.queue_draw()
             
         self.double_click_flag = False
@@ -543,7 +537,33 @@ class Entry(gtk.EventBox):
             
     def motion_notify_entry(self, widget, event):
         '''Callback for `motion-notify-event` signal.'''
-        print event
+        if not self.double_click_flag and self.left_click_flag:
+            self.cursor_index = self.drag_start_index
+            self.drag_end_index = self.get_index_at_event(widget, event)
+            
+            self.select_start_index = min(self.drag_start_index, self.drag_end_index)
+            self.select_end_index = max(self.drag_start_index, self.drag_end_index)
+            
+            if self.drag_start_index < self.drag_end_index:
+                pass
+            else:
+                pass
+                
+            self.queue_draw()    
+        
+    def get_index_at_event(self, widget, event):
+        '''Get index at event.'''
+        cr = widget.window.cairo_create()
+        context = pangocairo.CairoContext(cr)
+        layout = context.create_layout()
+        layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
+        layout.set_text(self.content)
+        (text_width, text_height) = layout.get_pixel_size()
+        if int(event.x) + self.offset_x - self.padding_x > text_width:
+            return len(self.content)
+        else:
+            (render_text_offset_x, render_text_offset_y) = layout.xy_to_index((int(event.x) + self.offset_x - self.padding_x) * pango.SCALE, 0)
+            return render_text_offset_x        
         
     def commit_entry(self, input_text):
         '''Entry commit.'''
