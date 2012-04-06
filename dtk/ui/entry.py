@@ -533,7 +533,10 @@ class Entry(gtk.EventBox):
         
     def get_utf8_string(self, content, index):
         '''Get utf8 string.'''
-        return list(content.decode('utf-8'))[index].encode('utf-8')
+        try:
+            return list(content.decode('utf-8'))[index].encode('utf-8')
+        except Exception, e:
+            return ""
     
 gobject.type_register(Entry)
 
