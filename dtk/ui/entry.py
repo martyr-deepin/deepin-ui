@@ -55,6 +55,9 @@ class Entry(gtk.EventBox):
         self.padding_x = padding_x
         self.padding_y = padding_y
         self.move_direction = self.MOVE_NONE
+        self.double_click_flag = False
+        self.left_click_flag = False
+        self.left_click_coordindate = None
         
         self.content = content
         self.cursor_index = len(self.content)
@@ -91,6 +94,8 @@ class Entry(gtk.EventBox):
         self.connect("key-press-event", self.key_press_entry)
         self.connect("expose-event", self.expose_entry)
         self.connect("button-press-event", self.button_press_entry)
+        self.connect("button-release-event", self.button_release_entry)
+        self.connect("motion-notify-event", self.motion_notify_entry)
         
         self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
         
@@ -494,14 +499,51 @@ class Entry(gtk.EventBox):
     
     def button_press_entry(self, widget, event):
         '''Button press entry.'''
+        # Get input focus.
         self.grab_focus()
         
+        # Hide right menu immediately.
         self.right_menu.hide()
         
-        if is_right_button(event):
+        # Select all when double click left button.
+        if is_double_click(event):
+            self.double_click_flag = True
+            self.select_all()
+        # Show right menu when click right button.
+        elif is_right_button(event):
             (wx, wy) = self.window.get_root_origin()
             (cx, cy, modifier) = self.window.get_pointer()
             self.right_menu.show((wx + int(event.x), cy + wy))
+        # Change cursor when click left button.
+        elif is_left_button(event):
+            self.left_click_flag = True
+            self.left_click_coordindate = (event.x, event.y)
+            
+    def button_release_entry(self, widget, event):
+        '''Callback for `button-release-event` signal.'''
+        if not self.double_click_flag and self.left_click_coordindate == (event.x, event.y):
+            cr = widget.window.cairo_create()
+            context = pangocairo.CairoContext(cr)
+            layout = context.create_layout()
+            layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
+            layout.set_text(self.content)
+            (text_width, text_height) = layout.get_pixel_size()
+            if int(event.x) > text_width:
+                self.cursor_index = len(self.content)
+            else:
+                (render_text_offset_x, render_text_offset_y) = layout.xy_to_index((int(event.x) + self.offset_x) * pango.SCALE, 0)
+                self.cursor_index = max(render_text_offset_x - 1, 0)
+                
+            self.select_start_index = self.select_end_index = self.cursor_index
+            
+            self.queue_draw()
+            
+        self.double_click_flag = False
+        self.left_click_flag = False
+            
+    def motion_notify_entry(self, widget, event):
+        '''Callback for `motion-notify-event` signal.'''
+        print event
         
     def commit_entry(self, input_text):
         '''Entry commit.'''
