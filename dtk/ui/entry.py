@@ -429,19 +429,51 @@ class Entry(gtk.EventBox):
             # Set layout.
             layout = context.create_layout()
             layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
-            layout.set_text(self.content)
             
-            # Get text size.
-            (text_width, text_height) = layout.get_pixel_size()
-            
-            # Move text.
-            cr.move_to(draw_x - self.offset_x, 
-                       draw_y + (draw_height - text_height) / 2)
-    
-            # Draw text.
-            cr.set_source_rgb(*color_hex_to_cairo(self.text_color.get_color()))
-            context.update_layout(layout)
-            context.show_layout(layout)
+            if self.select_start_index != self.select_end_index:
+                # Get string.
+                before_select_str = self.content[0:self.select_start_index]
+                select_str = self.content[self.select_start_index:self.select_end_index]
+                after_select_str = self.content[self.select_end_index::]
+                
+                # Build render list.
+                render_list = []
+                
+                layout.set_text(before_select_str)
+                (before_select_width, before_select_height) = layout.get_pixel_size()
+                render_list.append((before_select_str, 0, before_select_height, self.text_color))                
+                
+                layout.set_text(select_str)
+                (select_width, select_height) = layout.get_pixel_size()
+                render_list.append((select_str, before_select_width, select_height, self.text_select_color))
+                
+                layout.set_text(after_select_str)
+                (after_select_width, after_select_height) = layout.get_pixel_size()
+                render_list.append((after_select_str, before_select_width + select_width, after_select_height, self.text_color))
+                
+                # Render.
+                for (string, offset, text_height, text_color) in render_list:
+                    layout.set_text(string)
+                    cr.move_to(draw_x - self.offset_x + offset,
+                               draw_y + (draw_height - text_height) / 2)
+                    cr.set_source_rgb(*color_hex_to_cairo(text_color.get_color()))
+                    context.update_layout(layout)
+                    context.show_layout(layout)
+            else:
+                # Set text.
+                layout.set_text(self.content)
+                
+                # Get text size.
+                (text_width, text_height) = layout.get_pixel_size()
+                
+                # Move text.
+                cr.move_to(draw_x - self.offset_x, 
+                           draw_y + (draw_height - text_height) / 2)
+                
+                # Draw text.
+                cr.set_source_rgb(*color_hex_to_cairo(self.text_color.get_color()))
+                context.update_layout(layout)
+                context.show_layout(layout)
             
     def draw_entry_cursor(self, cr, rect):
         '''Draw entry cursor.'''
