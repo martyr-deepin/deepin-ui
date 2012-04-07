@@ -1,7 +1,8 @@
 Deepin UI Toolkit for linux deepin.
 
 * Install:
-  sudo aptitude install python-dev python-cairo-dev && sudo python setup.py install
+  sudo apt-get install git
+  sudo apt-get install python-setuptools libglib2.0-dev python-gtk2-dev python-cairo-dev && sudo python setup.py install
   
 * Use:
   python ./deepin-ui/demo.py	  

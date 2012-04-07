@@ -229,6 +229,11 @@ class MenuItem(object):
         if item_dpixbuf == None and self.have_icon:
             self.content_offset = self.icon_width
             
+        # Set adjust offset x.
+        self.adjust_offset = 0    
+        if not self.have_icon:
+            self.adjust_offset = -self.item_padding_x
+            
         # Create button.
         self.item_box = gtk.Button()
         
@@ -236,11 +241,11 @@ class MenuItem(object):
         (width, height) = get_content_size(item_content, self.font_size)
         if self.have_submenu:
             self.item_box.set_size_request(
-                self.item_padding_x * 4 + self.icon_width + self.submenu_width + int(width), 
+                self.item_padding_x * 4 + self.icon_width + self.submenu_width + int(width) + self.adjust_offset, 
                 self.item_padding_y * 2 + max(int(height), self.icon_height))
         else:
             self.item_box.set_size_request(
-                self.item_padding_x * 3 + self.icon_width + int(width), 
+                self.item_padding_x * 3 + self.icon_width + int(width) + self.adjust_offset, 
                 self.item_padding_y * 2 + max(int(height), self.icon_height))
         
         # Expose button.
@@ -296,9 +301,9 @@ class MenuItem(object):
             
         # Draw item content.
         draw_font(cr, item_content, self.font_size, font_color,
-                 rect.x + self.item_padding_x * 2 + pixbuf_width + self.content_offset,
+                 rect.x + self.item_padding_x * 2 + pixbuf_width + self.content_offset + self.adjust_offset,
                  rect.y,
-                 rect.width - self.item_padding_x * 3 - pixbuf_width - self.content_offset,
+                 rect.width - self.item_padding_x * 3 - pixbuf_width - self.content_offset - self.adjust_offset,
                  rect.height,
                  ALIGN_START, ALIGN_MIDDLE
                  )
