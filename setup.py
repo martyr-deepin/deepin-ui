@@ -19,14 +19,19 @@ def pkg_config_cflags(pkgs):
     '''List all include paths that output by `pkg-config --cflags pkgs`'''
     return map(lambda path: path[2::], commands.getoutput('pkg-config --cflags-only-I %s' % (' '.join(pkgs))).split())
 
-mod = Extension('dtk_cairo_blur',
+cairo_mod = Extension('dtk_cairo_blur',
                 include_dirs = pkg_config_cflags(['cairo']),
                 libraries = ['cairo', 'pthread', 'glib-2.0'],
                 sources = ['./dtk/ui/cairo_blur.c'])
 
+browser_mod = Extension('dtk_browser',
+                include_dirs = pkg_config_cflags(['gtk+-2.0', 'webkit-1.0', 'pygobject-2.0']),
+                libraries = ['webkitgtk-1.0', 'pthread', 'glib-2.0'],
+                sources = ['./dtk/ui/browser.c'])
+
 setup(name='dtk',
       version='0.1',
-      ext_modules = [mod],
+      ext_modules = [cairo_mod, browser_mod],
       description='UI toolkit for Linux Deepin.',
       long_description ="""UI toolkit for Linux Deepin.""",
       author='Linux Deepin Team',

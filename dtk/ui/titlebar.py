@@ -46,14 +46,14 @@ class Titlebar(object):
         self.v_layout_box = gtk.VBox()
         self.h_layout_box = gtk.HBox()
         self.box.add(self.v_layout_box)
-        self.v_layout_box.pack_start(self.h_layout_box, False, False)
+        self.v_layout_box.pack_start(self.h_layout_box, True, True)
         
         # Init separator.
         if add_separator:
             self.separator = gtk.HBox()
             self.separator.set_size_request(-1, 1)
             self.separator.connect("expose-event", self.expose_titlebar_separator)
-            self.v_layout_box.pack_start(self.separator, False, False)
+            self.v_layout_box.pack_start(self.separator, True, True)
         
         # Add drag event box.
         self.drag_box = EventBox()
