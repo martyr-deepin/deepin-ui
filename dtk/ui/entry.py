@@ -127,10 +127,6 @@ class Entry(gtk.EventBox):
     
     def realize_entry(self, widget):
         '''Realize entry.'''
-        # Init IMContext.
-        self.im.set_client_window(widget.window)
-        self.im.focus_in()
-        
         text_width = self.get_content_width(self.content)
         rect = self.get_allocation()
         self.offset_x = max(0, text_width - rect.width + self.padding_x * 2)
@@ -561,11 +557,18 @@ class Entry(gtk.EventBox):
         '''Callback for `focus-in-event` signal.'''
         self.grab_focus_flag = True
         
+        # Focus in IMContext.
+        self.im.set_client_window(widget.window)
+        self.im.focus_in()
+        
         self.queue_draw()
             
     def focus_out_entry(self, widget, event):
         '''Callback for `focus-out-event` signal.'''
         self.grab_focus_flag = False
+        
+        # Focus out IMContext.
+        self.im.focus_out()
 
         self.queue_draw()
             
