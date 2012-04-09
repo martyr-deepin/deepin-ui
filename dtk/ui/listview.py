@@ -1227,12 +1227,29 @@ class ListView(gtk.DrawingArea):
     def set_highlight(self, item):
         '''Set highlight item.'''
         self.highlight_item = item
+        
+        self.visible_highlight()
+        
         self.queue_draw()
         
     def clear_highlight(self):
         '''Clear highlight item.'''
         self.highlight_item = None
         self.queue_draw()
+        
+    def visible_highlight(self):
+        '''Visible highlight item.'''
+        if self.highlight_item == None:
+            print "visible_highlight: highlight item is None."
+        else:
+            # Scroll viewport make sure highlight row in visible area.
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            highlight_index = self.highlight_item.get_index()
+            if offset_y > highlight_index * self.item_height:
+                vadjust.set_value(highlight_index * self.item_height)            
+            elif offset_y + vadjust.get_page_size() < (highlight_index + 1) * self.item_height:
+                vadjust.set_value((highlight_index + 1) * self.item_height - vadjust.get_page_size() + self.title_offset_y)
         
 gobject.type_register(ListView)
 
