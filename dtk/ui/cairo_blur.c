@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <glib/gmem.h>
 
-/* static void blur_image_surface (cairo_surface_t *surface, int radius); */
 static void blur_image_surface (cairo_surface_t *surface, double radius);
 static PyObject* dtk_cairo_blur_gaussian_blur(PyObject* self, PyObject* args);
 
