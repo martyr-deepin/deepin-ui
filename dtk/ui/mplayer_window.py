@@ -273,10 +273,10 @@ class MplayerWindow(gtk.Window):
             
             with cairo_state(cr):
                 # Clip four corner.
-                cr.rectangle(x, y, x + self.shadow_radius, y + self.shadow_radius)
-                cr.rectangle(x + w - self.shadow_radius, y, x + w, y + self.shadow_radius)
-                cr.rectangle(x, y + h - self.shadow_radius, x + self.shadow_radius, y + h)
-                cr.rectangle(x + w - self.shadow_radius, y + h - self.shadow_radius, x + w, y + h)
+                cr.rectangle(x, y, self.shadow_radius, self.shadow_radius)
+                cr.rectangle(x + w - self.shadow_radius, y, self.shadow_radius, self.shadow_radius)
+                cr.rectangle(x, y + h - self.shadow_radius, self.shadow_radius, self.shadow_radius)
+                cr.rectangle(x + w - self.shadow_radius, y + h - self.shadow_radius, self.shadow_radius, self.shadow_radius)
                 cr.clip()
                 
                 # Draw four round.
@@ -287,10 +287,10 @@ class MplayerWindow(gtk.Window):
             
             with cairo_state(cr):
                 # Clip four side.
-                cr.rectangle(x, y + self.shadow_radius, x + self.shadow_padding, y + h - self.shadow_radius)
-                cr.rectangle(x + w - self.shadow_padding, y + self.shadow_radius, x + w, y + h - self.shadow_radius)
-                cr.rectangle(x + self.shadow_radius, y, x + w - self.shadow_radius, y + self.shadow_padding)
-                cr.rectangle(x + self.shadow_radius, y + h - self.shadow_padding, x + w - self.shadow_radius, y + h)
+                cr.rectangle(x, y + self.shadow_radius, self.shadow_padding, h - self.shadow_radius * 2)
+                cr.rectangle(x + w - self.shadow_padding, y + self.shadow_radius, self.shadow_padding, h - self.shadow_radius * 2)
+                cr.rectangle(x + self.shadow_radius, y, w - self.shadow_radius * 2, self.shadow_padding)
+                cr.rectangle(x + self.shadow_radius, y + h - self.shadow_padding, w - self.shadow_radius * 2, self.shadow_padding)
                 cr.clip()
                 
                 # Draw four side.

@@ -29,7 +29,7 @@ from dtk.ui.mplayer_view import *
 
 def show_video(widget, xid):
     '''Show video.'''
-    run_command("mplayer -wid %s %s" % (xid, "/data/Video/Manatee.avi"))
+    run_command("mplayer -fs -wid %s %s" % (xid, "/data/Video/Manatee.avi"))
     
 if __name__ == "__main__":
     # Init application.
