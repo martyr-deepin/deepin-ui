@@ -28,7 +28,7 @@ class RadioButton(gtk.Button):
     '''Radio.'''
     __gsignals__ = {
         "changed":(gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE,(gobject.TYPE_INT,))
+                   gobject.TYPE_NONE,(gobject.TYPE_BOOLEAN,))
         }
     
     def __init__(self):
@@ -107,7 +107,7 @@ class RadioButton(gtk.Button):
     def set_select_flag_status(self, status):
         '''Set select status of radio button.'''
         self.select_flag = status
-        self.emit("changed", int(self.select_flag))
+        self.emit("changed", self.select_flag)
         self.queue_draw()
         
 gobject.type_register(RadioButton)
