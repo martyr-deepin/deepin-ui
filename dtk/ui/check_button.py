@@ -41,13 +41,13 @@ class CheckButton(gtk.Button):
         self.hover_flag = False
         
         # Handle signal.
-        self.connect("expose-event", self.expose_checkbox)
-        self.connect("enter-notify-event", self.enter_notify_checkbox)
-        self.connect("leave-notify-event", self.leave_notify_checkbox)
-        self.connect("clicked", self.clicked_checkbox)
+        self.connect("expose-event", self.expose_check_button)
+        self.connect("enter-notify-event", self.enter_notify_check_button)
+        self.connect("leave-notify-event", self.leave_notify_check_button)
+        self.connect("clicked", self.clicked_check_button)
         
-    def expose_checkbox(self, widget, event):
-        '''Draw checkbox.'''     
+    def expose_check_button(self, widget, event):
+        '''Draw check_button.'''     
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -142,15 +142,15 @@ class CheckButton(gtk.Button):
             
         return True
     
-    def leave_notify_checkbox(self, widget, event):
+    def leave_notify_check_button(self, widget, event):
         self.hover_flag = False
 
-    def enter_notify_checkbox(self, widget, event):
-        '''Press checkbox.'''
+    def enter_notify_check_button(self, widget, event):
+        '''Press check_button.'''
         self.hover_flag = True
         
-    def clicked_checkbox(self, widget):
-        '''Press checkbox'''
+    def clicked_check_button(self, widget):
+        '''Press check_button'''
         self.select_flag = not self.select_flag
         self.hover_flag = True
             
@@ -163,11 +163,11 @@ if __name__ == "__main__":
     window = gtk.Window()    
     fixed  = gtk.Fixed()
     
-    checkbox1 = CheckButton()
-    checkbox2 = CheckButton()
+    check_button1 = CheckButton()
+    check_button2 = CheckButton()
 
-    fixed.put(checkbox1, 30, 130)
-    fixed.put(checkbox2, 30, 180)
+    fixed.put(check_button1, 30, 130)
+    fixed.put(check_button2, 30, 180)
 
     window.add(fixed)
     window.set_size_request(300, 300)
