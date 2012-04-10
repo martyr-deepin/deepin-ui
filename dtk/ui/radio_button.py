@@ -22,12 +22,13 @@
 from draw import *
 import math
 import gobject
+import dtk_cairo_blur    
 
 class RadioButton(gtk.Button):
     '''Radio.'''
     __gsignals__ = {
         "changed":(gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE,(gobject.TYPE_INT,))
+                   gobject.TYPE_NONE,(gobject.TYPE_BOOLEAN,))
         }
     
     def __init__(self):
@@ -35,8 +36,8 @@ class RadioButton(gtk.Button):
         # Init.
         gtk.Button.__init__(self)
         self.select_flag = False
-        self.size = 15
-        self.light_radius = 7.5
+        self.light_radius = 8
+        self.size = self.light_radius * 2
         self.round_background_radius = 5
         self.round_frame_radius = 6
         self.round_dot_radius = 3
@@ -48,7 +49,7 @@ class RadioButton(gtk.Button):
         self.connect("expose-event", self.expose_radio_button)
         self.connect("enter-notify-event", self.enter_notify_radio_button)
         self.connect("leave-notify-event", self.leave_notify_radio_button)
-        self.connect("button-press-event", self.button_press_radio_button)
+        self.connect("clicked", self.clicked_radio_button)
         
     def expose_radio_button(self, widget, event):
         '''Expose radio.'''
@@ -94,19 +95,18 @@ class RadioButton(gtk.Button):
         '''Press radio.'''
         self.hover_flag = True
 
-    def button_press_radio_button(self, widget, event):
+    def clicked_radio_button(self, widget):
         '''Press radio'''
-        if is_left_button(event):
-            for w in get_match_widgets(widget, type(self).__name__):
-                w.set_select_flag_status(False)
+        for w in get_match_widgets(widget, type(self).__name__):
+            w.set_select_flag_status(False)
 
-            self.select_flag = True
-            self.hover_flag = True
+        self.select_flag = True
+        self.hover_flag = True
         
     def set_select_flag_status(self, status):
         '''Set select status of radio button.'''
         self.select_flag = status
-        self.emit("changed", int(self.select_flag))
+        self.emit("changed", self.select_flag)
         self.queue_draw()
         
 gobject.type_register(RadioButton)

@@ -241,7 +241,7 @@ def draw_text(cr, rx, ry, rw, rh, text,
     height = max(text_height + gaussian_radious * 2, rh)
     
     # Create text cairo context.
-    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height);
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
     text_cr = cairo.Context(surface)
     
     # Draw gaussian light.
