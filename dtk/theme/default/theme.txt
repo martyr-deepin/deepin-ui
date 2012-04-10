@@ -18,6 +18,7 @@
  "entrySelectText" : "#535353",
  "entryCursor" : "#333333",
  "labelText" : "#FFFFFF",
+ "radioButtonFrame" : "#B5B5B5",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),
@@ -73,6 +74,14 @@
 	 "listviewHeaderPress" : [
 		(0,		("#DDDDDD", 0.9)),
 		(1,		("#DDDDDD", 0.7)),
+	 ],
+	 "radioButtonLight" : [
+	    (0,		("#000000", 0)),
+	    (1,		("#000000", 1)),
+	 ],
+	 "radioButtonDot" : [
+	    (0,		("#666666", 1)),
+	    (1,		("#666666", 1)),
 	 ],
 	 "hSeparator" : [
 		(0,		("#777777", 0)),

@@ -32,14 +32,19 @@ class RadioButton(gtk.Button):
     
     def __init__(self):
         '''Init.'''        
+        # Init.
         gtk.Button.__init__(self)
+        self.select_flag = False
+        self.size = 15
+        self.light_radius = 7.5
+        self.round_background_radius = 5
+        self.round_frame_radius = 6
+        self.round_dot_radius = 3
+        self.hover_flag = False
+        self.add_events(gtk.gdk.ALL_EVENTS_MASK)
+        self.set_size_request(self.size, self.size)
         
-        self.checked = False
-        self.size = 20,20
-        self.motion = False
-        
-        self.add_events(gtk.gdk.POINTER_MOTION_MASK)
-        self.set_size_request(20, 20)
+        # Handle signal.
         self.connect("expose-event", self.expose_radio_button)
         self.connect("enter-notify-event", self.enter_notify_radio_button)
         self.connect("leave-notify-event", self.leave_notify_radio_button)
@@ -47,31 +52,35 @@ class RadioButton(gtk.Button):
         
     def expose_radio_button(self, widget, event):
         '''Expose radio.'''
+        # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        (x, y, w, h) = (rect.x, rect.y, rect.width, rect.height)
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
-        # Draw Background.
-        if self.motion: 
-            draw_radial_round(cr, x+w/2, y+h/2, w/2+1, ui_theme.get_shadow_color("hSeparator").get_color_info())
+        # Draw background.
+        if self.hover_flag: 
+            draw_radial_round(
+                cr, x + w / 2, y + h / 2, 
+                self.light_radius,
+                ui_theme.get_shadow_color("radioButtonLight").get_color_info())
         
-        # Draw round.
-        cr.set_line_width(0.5)
-        cr.set_source_rgb(0,0.4,0)
-        cr.arc(x+w/2, y+h/2, w/2-4, 0, 2*math.pi)
-        cr.stroke()
-        
-        if self.motion:
-            draw_radial_round(cr, x+w/2, y+h/2, w/2, ui_theme.get_shadow_color("hSeparator").get_color_info())
-
-        # Radio round Background 
-        cr.set_source_rgb(1,1,1)
-        cr.arc(x+w/2, y+h/2, w/2-5, 0, 2*math.pi)
+        # Radio round background 
+        cr.set_source_rgb(1, 1, 1)
+        cr.arc(x + w / 2, y + h / 2, self.round_background_radius, 0, 2 * math.pi)
         cr.fill()
         
-        # Draw radio checked.
-        if self.checked:
-            draw_radial_round(cr, x+w/2, y+h/2, w/6, ui_theme.get_shadow_color("progressbarForeground").get_color_info())
+        # Draw round.
+        cr.set_line_width(1)
+        cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("radioButtonFrame").get_color()))
+        cr.arc(x + w / 2, y + h / 2, self.round_frame_radius, 0, 2 * math.pi)
+        cr.stroke()
+        
+        # Draw radio select dot.
+        if self.select_flag:
+            draw_radial_round(
+                cr, x + w / 2, y + h / 2, 
+                self.round_dot_radius, 
+                ui_theme.get_shadow_color("radioButtonDot").get_color_info())
             
         # Propagate expose.
         propagate_expose(widget, event)
@@ -79,28 +88,25 @@ class RadioButton(gtk.Button):
         return True
             
     def leave_notify_radio_button(self, widget, event):
-        self.motion = False
-        print 'leave radio event'
+        self.hover_flag = False
+
+    def enter_notify_radio_button(self, widget, event):
+        '''Press radio.'''
+        self.hover_flag = True
 
     def button_press_radio_button(self, widget, event):
         '''Press radio'''
-        if event.button == 1:
+        if is_left_button(event):
             for w in get_match_widgets(widget, type(self).__name__):
-                w.toggle(False)
+                w.set_select_flag_status(False)
 
-            self.checked = True
-            self.motion = True
-            print 'clicked radio event %s' % self.checked
+            self.select_flag = True
+            self.hover_flag = True
         
-    def enter_notify_radio_button(self, widget, event):
-        '''Press radio.'''
-        self.motion = True
-        print 'motion radio event'
-
-    def toggle(self, radio_bool):
-        '''Toggle radio button status.'''
-        self.checked = radio_bool
-        self.emit("changed", int(self.checked))
+    def set_select_flag_status(self, status):
+        '''Set select status of radio button.'''
+        self.select_flag = status
+        self.emit("changed", int(self.select_flag))
         self.queue_draw()
         
 gobject.type_register(RadioButton)
