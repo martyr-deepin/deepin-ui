@@ -22,6 +22,7 @@
 from draw import *
 import math
 import gobject
+import dtk_cairo_blur    
 
 class RadioButton(gtk.Button):
     '''Radio.'''
@@ -35,8 +36,8 @@ class RadioButton(gtk.Button):
         # Init.
         gtk.Button.__init__(self)
         self.select_flag = False
-        self.size = 15
-        self.light_radius = 7.5
+        self.light_radius = 8
+        self.size = self.light_radius * 2
         self.round_background_radius = 5
         self.round_frame_radius = 6
         self.round_dot_radius = 3
