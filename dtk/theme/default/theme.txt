@@ -17,6 +17,7 @@
  "entryText" : "#F8F8F8",
  "entrySelectText" : "#535353",
  "entryCursor" : "#333333",
+ "labelText" : "#FFFFFF",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),

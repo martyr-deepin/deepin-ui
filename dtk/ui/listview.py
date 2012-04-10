@@ -293,8 +293,12 @@ class ListView(gtk.DrawingArea):
         # Get coordinate.
         viewport = get_match_parent(widget, "Viewport")
         if viewport: 
-           (offset_x, offset_y) = widget.translate_coordinates(viewport, rect.x, rect.y)
-           return (-offset_x, -offset_y, viewport)
+            coordinate = widget.translate_coordinates(viewport, rect.x, rect.y)
+            if len(coordinate) == 2:
+                (offset_x, offset_y) = coordinate
+                return (-offset_x, -offset_y, viewport)
+            else:
+                return (0, 0, viewport)
         else:
             return (0, 0, viewport)
             
@@ -676,9 +680,10 @@ class ListView(gtk.DrawingArea):
                 select_items.append(self.items[row])
                 
             (wx, wy) = self.window.get_root_origin()    
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
             self.emit("right-press-items", 
                       wx + event.x, 
-                      wy + event.y, 
+                      wy + event.y - offset_y, 
                       current_item,
                       select_items)
             

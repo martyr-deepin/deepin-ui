@@ -175,6 +175,10 @@ class Entry(gtk.EventBox):
         
     def move_to_left(self):
         '''Move to left char.'''
+        # Avoid change focus to other widget in parent.
+        if self.keynav_failed(gtk.DIR_LEFT):
+            self.get_toplevel().set_focus_child(self)
+            
         if self.select_start_index != self.select_end_index:
             self.cursor_index = self.select_start_index
             select_start_width = self.get_content_width(self.content[0:self.select_start_index])
@@ -196,6 +200,10 @@ class Entry(gtk.EventBox):
             
     def move_to_right(self):
         '''Move to right char.'''
+        # Avoid change focus to other widget in parent.
+        if self.keynav_failed(gtk.DIR_RIGHT):
+            self.get_toplevel().set_focus_child(self)
+                        
         if self.select_start_index != self.select_end_index:
             self.cursor_index = self.select_end_index
             select_end_width = self.get_content_width(self.content[0:self.select_end_index])
@@ -516,7 +524,7 @@ class Entry(gtk.EventBox):
         elif is_right_button(event):
             (wx, wy) = self.window.get_root_origin()
             (cx, cy, modifier) = self.window.get_pointer()
-            self.right_menu.show((wx + int(event.x), cy + wy))
+            self.right_menu.show((cx + wx, cy + wy))
         # Change cursor when click left button.
         elif is_left_button(event):
             self.left_click_flag = True
