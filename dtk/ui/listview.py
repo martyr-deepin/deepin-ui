@@ -676,9 +676,10 @@ class ListView(gtk.DrawingArea):
                 select_items.append(self.items[row])
                 
             (wx, wy) = self.window.get_root_origin()    
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
             self.emit("right-press-items", 
                       wx + event.x, 
-                      wy + event.y, 
+                      wy + event.y - offset_y, 
                       current_item,
                       select_items)
             
