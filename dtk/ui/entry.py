@@ -524,7 +524,7 @@ class Entry(gtk.EventBox):
         elif is_right_button(event):
             (wx, wy) = self.window.get_root_origin()
             (cx, cy, modifier) = self.window.get_pointer()
-            self.right_menu.show((wx + int(event.x), cy + wy))
+            self.right_menu.show((cx + wx, cy + wy))
         # Change cursor when click left button.
         elif is_left_button(event):
             self.left_click_flag = True
