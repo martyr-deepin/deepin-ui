@@ -175,6 +175,10 @@ class Entry(gtk.EventBox):
         
     def move_to_left(self):
         '''Move to left char.'''
+        # Avoid change focus to other widget in parent.
+        if self.keynav_failed(gtk.DIR_LEFT):
+            self.get_toplevel().set_focus_child(self)
+            
         if self.select_start_index != self.select_end_index:
             self.cursor_index = self.select_start_index
             select_start_width = self.get_content_width(self.content[0:self.select_start_index])
@@ -196,6 +200,10 @@ class Entry(gtk.EventBox):
             
     def move_to_right(self):
         '''Move to right char.'''
+        # Avoid change focus to other widget in parent.
+        if self.keynav_failed(gtk.DIR_RIGHT):
+            self.get_toplevel().set_focus_child(self)
+                        
         if self.select_start_index != self.select_end_index:
             self.cursor_index = self.select_end_index
             select_end_width = self.get_content_width(self.content[0:self.select_end_index])
