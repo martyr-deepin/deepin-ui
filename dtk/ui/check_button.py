@@ -44,7 +44,7 @@ class CheckButton(gtk.Button):
         self.connect("expose-event", self.expose_checkbox)
         self.connect("enter-notify-event", self.enter_notify_checkbox)
         self.connect("leave-notify-event", self.leave_notify_checkbox)
-        self.connect("button-press-event", self.button_press_checkbox)
+        self.connect("clicked", self.clicked_checkbox)
         
     def expose_checkbox(self, widget, event):
         '''Draw checkbox.'''     
@@ -55,16 +55,15 @@ class CheckButton(gtk.Button):
         
         # Draw light.
         if self.hover_flag:
-        # if True:
             shadow_color_infos = ui_theme.get_shadow_color("checkButtonLight").get_color_info()
             shadow_radius = 4
             shadow_padding = 2
             
             with cairo_state(cr):
-                cr.rectangle(x, y, x + shadow_radius, y + shadow_radius)
-                cr.rectangle(x + w - shadow_radius, y, x + w, y + shadow_radius)
-                cr.rectangle(x, y + h - shadow_radius, x + shadow_radius, y + h)
-                cr.rectangle(x + w - shadow_radius, y + h - shadow_radius, x + w, y + h)
+                cr.rectangle(x, y, shadow_radius, shadow_radius)
+                cr.rectangle(x, y + h - shadow_radius, shadow_radius, shadow_radius)
+                cr.rectangle(x + w - shadow_radius, y, shadow_radius, shadow_radius)
+                cr.rectangle(x + w - shadow_radius, y + h - shadow_radius, shadow_radius, shadow_radius)
                 cr.clip()
                     
                 draw_radial_round(cr, x + shadow_radius, y + shadow_radius, shadow_radius, shadow_color_infos)
@@ -72,29 +71,22 @@ class CheckButton(gtk.Button):
                 draw_radial_round(cr, x + w - shadow_radius, y + shadow_radius, shadow_radius, shadow_color_infos)
                 draw_radial_round(cr, x + w - shadow_radius, y + h - shadow_radius, shadow_radius, shadow_color_infos)
             
-            with cairo_state(cr):
-                cr.rectangle(x, y + shadow_radius, x + shadow_padding, y + h - shadow_radius)
-                cr.rectangle(x + w - shadow_padding, y + shadow_radius, x + w, y + h - shadow_radius)
-                cr.rectangle(x + shadow_radius, y, x + w - shadow_radius, y + shadow_padding)
-                cr.rectangle(x + shadow_radius, y + h - shadow_padding, x + w - shadow_radius, y + h)
-                cr.clip()
-                
-                draw_vlinear(
-                    cr, 
-                    x + shadow_radius, y, 
-                    w - shadow_radius * 2, shadow_radius, shadow_color_infos)
-                draw_vlinear(
-                    cr, 
-                    x + shadow_radius, y + h - shadow_radius, 
-                    w - shadow_radius * 2, shadow_radius, shadow_color_infos, 0, False)
-                draw_hlinear(
-                    cr, 
-                    x, y + shadow_radius, 
-                    shadow_radius, h - shadow_radius * 2, shadow_color_infos)
-                draw_hlinear(
-                    cr, 
-                    x + w - shadow_radius, y + shadow_radius, 
-                    shadow_radius, h - shadow_radius * 2, shadow_color_infos, 0, False)
+            draw_vlinear(
+                cr, 
+                x + shadow_radius, y, 
+                w - shadow_radius * 2, shadow_radius, shadow_color_infos)
+            draw_vlinear(
+                cr, 
+                x + shadow_radius, y + h - shadow_radius, 
+                w - shadow_radius * 2, shadow_radius, shadow_color_infos, 0, False)
+            draw_hlinear(
+                cr, 
+                x, y + shadow_radius, 
+                shadow_radius, h - shadow_radius * 2, shadow_color_infos)
+            draw_hlinear(
+                cr, 
+                x + w - shadow_radius, y + shadow_radius, 
+                shadow_radius, h - shadow_radius * 2, shadow_color_infos, 0, False)
         
         # Draw outside four points.
         cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("checkButtonAcme").get_color_info()))
@@ -157,13 +149,14 @@ class CheckButton(gtk.Button):
         '''Press checkbox.'''
         self.hover_flag = True
         
-    def button_press_checkbox(self, widget, event):
+    def clicked_checkbox(self, widget):
         '''Press checkbox'''
-        if is_left_button(event):
-            self.select_flag = not self.select_flag
-            self.hover_flag = True
+        self.select_flag = not self.select_flag
+        self.hover_flag = True
             
-            self.emit("changed", self.select_flag)
+        self.emit("changed", self.select_flag)
+            
+        self.queue_draw()
           
 if __name__ == "__main__":
     # Test func.
