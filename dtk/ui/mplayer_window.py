@@ -197,11 +197,16 @@ class MplayerWindow(gtk.Window):
             # Draw our shape into the bitmap using cairo.
             cr.set_source_rgb(1.0, 1.0, 1.0)
             cr.set_operator(cairo.OPERATOR_OVER)
-            cr.rectangle(x + 2, y, w - 4, 1)
-            cr.rectangle(x + 1, y + 1, w - 2, 1)
-            cr.rectangle(x, y + 2, w, h - 4)
-            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
-            cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+            
+            if self.window != None and self.window.get_state() == gtk.gdk.WINDOW_STATE_FULLSCREEN:
+                # Don't clip corner when window is fullscreen state.
+                cr.rectangle(x, y, w, h)
+            else:
+                cr.rectangle(x + 2, y, w - 4, 1)
+                cr.rectangle(x + 1, y + 1, w - 2, 1)
+                cr.rectangle(x, y + 2, w, h - 4)
+                cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+                cr.rectangle(x + 2, y + h - 1, w - 4, 1)
             cr.fill()
             
             # Shape with given mask.
