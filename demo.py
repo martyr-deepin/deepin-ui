@@ -38,6 +38,7 @@ from dtk.ui.scalebar import *
 from dtk.ui.volume_button import *
 from dtk.ui.entry import *
 from dtk.ui.paned import *
+from dtk.ui.label import *
 import time
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
@@ -213,8 +214,14 @@ if __name__ == "__main__":
     # Add entry widget.
     entry = Entry("Linux Deepin")
     entry.set_size_request(300, 30)
+    entry_label = Label("标签测试， 内容非常长")
+    entry_label.set_text("标签的内容灰长灰长的长")
+    entry_label.set_size_request(100, 30)
+    entry_box = gtk.HBox()
+    entry_box.pack_start(entry_label, False, False)
+    entry_box.pack_start(entry, True, True)
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
-    entry_frame.add(entry)
+    entry_frame.add(entry_box)
     application.main_box.pack_start(entry_frame, False, False)
     
     # Add statusbar.
