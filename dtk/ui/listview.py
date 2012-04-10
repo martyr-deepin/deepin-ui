@@ -293,8 +293,12 @@ class ListView(gtk.DrawingArea):
         # Get coordinate.
         viewport = get_match_parent(widget, "Viewport")
         if viewport: 
-           (offset_x, offset_y) = widget.translate_coordinates(viewport, rect.x, rect.y)
-           return (-offset_x, -offset_y, viewport)
+            coordinate = widget.translate_coordinates(viewport, rect.x, rect.y)
+            if len(coordinate) == 2:
+                (offset_x, offset_y) = coordinate
+                return (-offset_x, -offset_y, viewport)
+            else:
+                return (0, 0, viewport)
         else:
             return (0, 0, viewport)
             
