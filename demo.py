@@ -172,7 +172,7 @@ if __name__ == "__main__":
     scrolled_window = ScrolledWindow()
     category_box.add2(scrolled_window)
     
-    items_length = 3000
+    items_length = 1000
 
     items = map(lambda index: ListItem(
             "豆浆油条 测试标题 %04d" % index,
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
     
-    list_view.connect("button-press-item", print_button_press)
+    # list_view.connect("button-press-item", print_button_press)
     # list_view.connect("double-click-item", print_double_click)
     # list_view.connect("single-click-item", print_single_click)
     # list_view.connect("motion-notify-item", print_motion_notify)

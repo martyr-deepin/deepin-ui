@@ -184,30 +184,37 @@ def draw_line(cr, sx, sy, ex, ey, line_width=1, antialias_status=cairo.ANTIALIAS
 
 def draw_vlinear(cr, x, y, w, h, color_infos, radius=0, top_to_bottom=True):
     '''Draw linear rectangle.'''
-    if top_to_bottom:
-        pat = cairo.LinearGradient(x, y, x, y + h)
-    else:
-        pat = cairo.LinearGradient(x, y + h, x, y)
+    with cairo_state(cr):
+        # Translate y coordinate, otherwise y is too big for LinearGradient cause render bug.
+        cr.translate(0, y)
         
-    for (pos, color_info) in color_infos:
-        # FIXME, this code will nullity after y is bigger than 24000.
-        add_color_stop_rgba(pat, pos, color_info) 
-    cr.set_source(pat)
-    draw_round_rectangle(cr, x, y, w, h, radius)
-    
-    cr.fill()
+        if top_to_bottom:
+            pat = cairo.LinearGradient(0, 0, 0, h)
+        else:
+            pat = cairo.LinearGradient(0, h, 0, 0)
+            
+        for (pos, color_info) in color_infos:
+            add_color_stop_rgba(pat, pos, color_info) 
+        cr.set_source(pat)
+        draw_round_rectangle(cr, x, 0, w, h, radius)
+        
+        cr.fill()
 
 def draw_hlinear(cr, x, y, w, h, color_infos, radius=0, left_to_right=True):
     '''Draw linear rectangle.'''
-    if left_to_right:
-        pat = cairo.LinearGradient(x, 0, x + w, 0)
-    else:
-        pat = cairo.LinearGradient(x + w, 0, x, 0)
-    for (pos, color_info) in color_infos:
-        add_color_stop_rgba(pat, pos, color_info)
-    cr.set_source(pat)
-    draw_round_rectangle(cr, x, y, w, h, radius)
-    cr.fill()
+    with cairo_state(cr):
+        # Translate x coordinate, otherwise x is too big for LinearGradient cause render bug.
+        cr.translate(x, 0)
+        
+        if left_to_right:
+            pat = cairo.LinearGradient(0, 0, w, 0)
+        else:
+            pat = cairo.LinearGradient(w, 0, 0, 0)
+        for (pos, color_info) in color_infos:
+            add_color_stop_rgba(pat, pos, color_info)
+        cr.set_source(pat)
+        draw_round_rectangle(cr, 0, y, w, h, radius)
+        cr.fill()
     
 def expose_linear_background(widget, event, color_infos):
     '''Expose linear background.'''
