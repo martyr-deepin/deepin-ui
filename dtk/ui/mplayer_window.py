@@ -68,8 +68,11 @@ class MplayerWindow(gtk.Window):
         '''Adjust window shadow position and size. '''
         (x, y) = self.get_position()
         (width, height) = self.get_size()
-        self.window_shadow.resize(width + self.shadow_padding * 2, height + self.shadow_padding * 2)
-        self.window_shadow.move(x - self.shadow_padding, y - self.shadow_padding)
+        
+        self.window_shadow.get_window().move_resize(
+            x - self.shadow_padding, y - self.shadow_padding,
+            width + self.shadow_padding * 2, height + self.shadow_padding * 2
+            )
         
     def show_window(self):
         '''Show.'''

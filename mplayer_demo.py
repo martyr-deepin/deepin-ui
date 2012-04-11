@@ -50,7 +50,7 @@ if __name__ == "__main__":
     
     # Add mplayer view.
     mplayer_view = MplayerView()
-    mplayer_view.connect("get-xid", show_video)
+    # mplayer_view.connect("get-xid", show_video)
     mplayer_frame = HorizontalFrame()
     mplayer_frame.add(mplayer_view)
     application.main_box.pack_start(mplayer_frame)
