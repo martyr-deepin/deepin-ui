@@ -677,9 +677,9 @@ class TextEntry(gtk.Alignment):
         self.frame_color = frame_color
 
         # Handle signal.
-        self.connect("expose-event", self.expose_input_entry)
+        self.connect("expose-event", self.expose_text_entry)
         
-    def expose_input_entry(self, widget, event):
+    def expose_text_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
         # Init.
         cr = widget.window.cairo_create()
