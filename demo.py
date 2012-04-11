@@ -212,8 +212,8 @@ if __name__ == "__main__":
     application.main_box.pack_start(volume_frame, False, False)
     
     # Add entry widget.
-    entry = Entry("Linux Deepin")
-    entry.set_size_request(300, 30)
+    entry = TextEntry("Linux Deepin")
+    entry.set_size(300, 22)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
     entry_label.set_size_request(100, 30)

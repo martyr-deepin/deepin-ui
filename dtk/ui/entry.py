@@ -37,10 +37,9 @@ class Entry(gtk.EventBox):
     def __init__(self, content="", 
                  text_color=ui_theme.get_color("entryText"),
                  text_select_color=ui_theme.get_color("entrySelectText"),
-                 background_color=ui_theme.get_shadow_color("entryBackground"),
                  background_select_color=ui_theme.get_shadow_color("entrySelectBackground"),
                  font_size=DEFAULT_FONT_SIZE, 
-                 padding_x=10, 
+                 padding_x=5, 
                  padding_y=5
                  ):
         '''Init entry.'''
@@ -52,7 +51,6 @@ class Entry(gtk.EventBox):
         self.font_size = font_size
         self.text_color = text_color
         self.text_select_color = text_select_color
-        self.background_color = background_color
         self.background_select_color = background_select_color
         self.padding_x = padding_x
         self.padding_y = padding_y
@@ -413,9 +411,6 @@ class Entry(gtk.EventBox):
         '''Draw entry background.'''
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
-        draw_hlinear(cr, x, y, w, h,
-                     self.background_color.get_color_info())
-        
         if self.select_start_index != self.select_end_index:
             select_start_width = self.get_content_width(self.content[0:self.select_start_index])
             select_end_width = self.get_content_width(self.content[0:self.select_end_index])
@@ -658,6 +653,114 @@ class Entry(gtk.EventBox):
             return ""
     
 gobject.type_register(Entry)
+
+class TextEntry(gtk.Alignment):
+    '''Input entry.'''
+	
+    def __init__(self, content="",
+                 background_color = ui_theme.get_alpha_color("textEntryBackground"),
+                 acme_color = ui_theme.get_alpha_color("textEntryAcme"),
+                 point_color = ui_theme.get_alpha_color("textEntryPoint"),
+                 frame_point_color = ui_theme.get_alpha_color("textEntryFramePoint"),
+                 frame_color = ui_theme.get_alpha_color("textEntryFrame"),
+                 ):
+        '''Init input entry.'''
+        # Init.
+        gtk.Alignment.__init__(self)
+        self.entry = Entry(content)
+        self.add(self.entry)
+        self.set(0.5, 0.5, 1.0, 1.0)
+        self.background_color = background_color
+        self.acme_color = acme_color
+        self.point_color = point_color
+        self.frame_point_color = frame_point_color
+        self.frame_color = frame_color
+
+        # Handle signal.
+        self.connect("expose-event", self.expose_input_entry)
+        
+    def expose_input_entry(self, widget, event):
+        '''Callback for `expose-event` signal.'''
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
+        # Draw background.
+        with cairo_state(cr):
+            cr.rectangle(x + 2, y, w - 4, 1)
+            cr.rectangle(x + 1, y + 1, w - 2, 1)
+            cr.rectangle(x, y + 2, w, h - 4)
+            cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+            cr.clip()
+            
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(self.background_color.get_color_info()))
+            cr.rectangle(x, y, w, h)
+            cr.fill()
+
+        # Draw background four acme points.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.acme_color.get_color_info()))
+        cr.rectangle(x, y, 1, 1)
+        cr.rectangle(x + w - 1, y, 1, 1)
+        cr.rectangle(x, y + h - 1, 1, 1)
+        cr.rectangle(x + w - 1, y + h - 1, 1, 1)
+        cr.fill()
+
+        # Draw background eight points.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.point_color.get_color_info()))
+        
+        cr.rectangle(x + 1, y, 1, 1)
+        cr.rectangle(x, y + 1, 1, 1)
+        
+        cr.rectangle(x + w - 2, y, 1, 1)
+        cr.rectangle(x + w - 1, y + 1, 1, 1)
+        
+        cr.rectangle(x, y + h - 2, 1, 1)
+        cr.rectangle(x + 1, y + h - 1, 1, 1)
+
+        cr.rectangle(x + w - 1, y + h - 2, 1, 1)
+        cr.rectangle(x + w - 2, y + h - 1, 1, 1)
+        
+        cr.fill()
+        
+        # Draw frame point.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.frame_point_color.get_color_info()))
+        
+        cr.rectangle(x + 1, y, 1, 1)
+        cr.rectangle(x, y + 1, 1, 1)
+        
+        cr.rectangle(x + w - 2, y, 1, 1)
+        cr.rectangle(x + w - 1, y + 1, 1, 1)
+        
+        cr.rectangle(x, y + h - 2, 1, 1)
+        cr.rectangle(x + 1, y + h - 1, 1, 1)
+
+        cr.rectangle(x + w - 1, y + h - 2, 1, 1)
+        cr.rectangle(x + w - 2, y + h - 1, 1, 1)
+        
+        cr.fill()
+        
+        # Draw frame.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.frame_color.get_color_info()))
+        
+        cr.rectangle(x + 2, y, w - 4, 1)
+        cr.rectangle(x, y + 2, 1, h - 4)
+        cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+        cr.rectangle(x + w - 1, y + 2, 1, h - 4)
+        
+        cr.fill()
+        
+        propagate_expose(widget, event)
+        
+        return True
+    
+    def set_size(self, width, height):
+        '''Set size.'''
+        self.set_size_request(width, height)    
+        self.entry.set_size_request(width - 2, height - 2)
+        
+gobject.type_register(TextEntry)
 
 if __name__ == "__main__":
     window = gtk.Window()

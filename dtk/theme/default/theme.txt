@@ -14,8 +14,8 @@
  "buttonBorderPrelight" : "#b18ecf",
  "buttonBorderActive" : "#9372c9",
  "buttonFont" : "#000000",
- "entryText" : "#F8F8F8",
- "entrySelectText" : "#535353",
+ "entryText" : "#000000",
+ "entrySelectText" : "#FFFFFF",
  "entryCursor" : "#333333",
  "labelText" : "#FFFFFF",
  "radioButtonFrame" : "#B5B5B5",
@@ -33,6 +33,11 @@
 	 "checkButtonAcme" : ("#A1A1A1", 0.4),
 	 "checkButtonPoint" : ("#A1A1A1", 0.85),
 	 "checkButtonInsidePoint" : ("#000000", 0.2),
+	 "textEntryBackground" : ("#FFFFFF", 0.7),
+	 "textEntryAcme" : ("#FFFFFF", 0.05),
+	 "textEntryPoint" : ("#FFFFFF", 0.5),
+	 "textEntryFramePoint" : ("#FFFFFF", 0.45),
+	 "textEntryFrame" : ("#FFFFFF", 0.7),
  },
  "shadow_colors" : {
      "linearBackground" : [
@@ -158,8 +163,8 @@
 		(1,		("#B8B8B8", 1)),
      ],
 	 "entrySelectBackground" : [
-		(0,		("#DFDFDF", 1)),
-		(1,		("#DFDFDF", 1)),
+		(0,		("#42ADD5", 1)),
+		(1,		("#42ADD5", 1)),
      ],
 	 "panedSeparator" : [
 		(0,		("#666666", 0.5)),
