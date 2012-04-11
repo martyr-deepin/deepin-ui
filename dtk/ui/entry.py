@@ -781,6 +781,18 @@ class TextEntry(gtk.Alignment):
         self.set_size_request(width, height)    
         self.entry.set_size_request(width - 2, height - 2)
         
+    def set_editable(self, editable):
+        '''Set editable.'''
+        self.entry.set_editable(editable)
+        
+    def set_text(self, text):
+        '''Set text.'''
+        self.entry.set_text(text)
+        
+    def get_text(self):
+        '''Get text.'''
+        return self.entry.get_text()
+        
 gobject.type_register(TextEntry)
 
 if __name__ == "__main__":
