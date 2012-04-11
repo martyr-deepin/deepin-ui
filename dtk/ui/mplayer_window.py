@@ -343,6 +343,8 @@ Otherwise hide shadow.'''
         else:
             self.show_shadow()
             
+        self.adjust_window_shadow(widget, event)    
+            
     def min_window(self):
         '''Min window.'''
         self.iconify()
