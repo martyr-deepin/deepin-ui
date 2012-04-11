@@ -213,7 +213,6 @@ if __name__ == "__main__":
     
     # Add entry widget.
     entry = TextEntry("Linux Deepin")
-    entry.entry.set_editable(False)
     entry.set_size(300, 22)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
