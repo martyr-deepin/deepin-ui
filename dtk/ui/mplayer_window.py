@@ -205,7 +205,7 @@ class MplayerWindow(gtk.Window):
             cr.set_source_rgb(1.0, 1.0, 1.0)
             cr.set_operator(cairo.OPERATOR_OVER)
             
-            if (self.window != None and self.window.get_state() == gtk.gdk.WINDOW_STATE_FULLSCREEN) or !shape_status:
+            if (self.window != None and self.window.get_state() == gtk.gdk.WINDOW_STATE_FULLSCREEN) or not shape_status:
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
             else:
