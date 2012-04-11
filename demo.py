@@ -187,7 +187,7 @@ if __name__ == "__main__":
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
     
-    list_view.connect("button-press-item", print_button_press)
+    # list_view.connect("button-press-item", print_button_press)
     # list_view.connect("double-click-item", print_double_click)
     # list_view.connect("single-click-item", print_single_click)
     # list_view.connect("motion-notify-item", print_motion_notify)
@@ -213,6 +213,7 @@ if __name__ == "__main__":
     
     # Add entry widget.
     entry = TextEntry("Linux Deepin")
+    entry.entry.set_editable(False)
     entry.set_size(300, 22)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
