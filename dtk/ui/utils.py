@@ -442,7 +442,6 @@ def add_color_stop_rgba(pat, pos, color_info):
     (color, alpha) = color_info
     (r, g, b) = color_hex_to_cairo(color)
     
-    # FIXME, this code will nullity after y is bigger than 24000.
     pat.add_color_stop_rgba(pos, r, g, b, alpha) 
     
 def alpha_color_hex_to_cairo((color, alpha)):
