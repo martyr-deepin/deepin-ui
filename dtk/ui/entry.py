@@ -533,9 +533,8 @@ class Entry(gtk.EventBox):
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             left_str = self.content[0:self.cursor_index]
-            right_str = self.content[self.cursor_index::]
             left_str_width = self.get_content_width(left_str)
-            padding_y = (h - (get_content_size(self.content, self.font_size)[-1])) / 2
+            padding_y = (h - (get_content_size("Height", self.font_size)[-1])) / 2
             
             # Draw cursor.
             cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
@@ -569,6 +568,8 @@ class Entry(gtk.EventBox):
             self.left_click_coordindate = (event.x, event.y)
             
             self.drag_start_index = self.get_index_at_event(widget, event)
+            
+            print self.drag_start_index
             
     def button_release_entry(self, widget, event):
         '''Callback for `button-release-event` signal.'''
