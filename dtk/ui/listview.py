@@ -37,6 +37,7 @@ class ListView(gtk.DrawingArea):
     TITLE_PADDING = 5
     
     __gsignals__ = {
+        "delete-select-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,))
         "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
@@ -1184,10 +1185,15 @@ class ListView(gtk.DrawingArea):
             # Init select row.
             self.start_select_row = None
             self.select_rows = []
+            cache_remove_items = []
             
             # Remove select items.
             for remove_item in remove_items:
+                cache_remove_items.append(remove_item)
                 self.items.remove(remove_item)
+                
+            # Emit remove items signal.     
+            self.emit("delete-select-items", cache_remove_items)    
                 
             # Update item index.
             self.update_item_index()    
