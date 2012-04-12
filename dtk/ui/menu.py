@@ -35,7 +35,7 @@ class Menu(object):
     '''Menu.'''
 	
     def __init__(self, items, menu_pos=MENU_POS_TOP_CENTER, font_size=DEFAULT_FONT_SIZE, opacity=0.9, 
-                 padding_x=4, padding_y=10, item_padding_x=10, item_padding_y=4):
+                 padding_x=4, padding_y=4, item_padding_x=10, item_padding_y=4):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
         self.menu_pos = menu_pos
@@ -328,6 +328,6 @@ class MenuItem(object):
             (item_x, item_y) = get_widget_root_coordinate(self.item_box)
             self.show_submenu_callback(
                 item_node, 
-                (item_x + widget.get_allocation().width / 2, item_y - widget.get_allocation().height))
+                (item_x + widget.get_allocation().width / 2 + 3, item_y - widget.get_allocation().height))
         else:
             self.hide_submenu_callback()
