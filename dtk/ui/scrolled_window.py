@@ -29,8 +29,7 @@ from constant import *
 class ScrolledWindow(gtk.ScrolledWindow):
     '''Scrolled window.'''
 	
-    # def __init__(self, hscrollbar_policy=gtk.POLICY_AUTOMATIC, vscrollbar_policy=gtk.POLICY_AUTOMATIC, 
-    def __init__(self, hscrollbar_policy=gtk.POLICY_ALWAYS, vscrollbar_policy=gtk.POLICY_AUTOMATIC, 
+    def __init__(self, hscrollbar_policy=gtk.POLICY_AUTOMATIC, vscrollbar_policy=gtk.POLICY_AUTOMATIC, 
                  draw_mask=True):
         '''Init scrolled window.'''
         # Init.
