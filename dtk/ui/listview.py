@@ -44,11 +44,14 @@ class ListView(gtk.DrawingArea):
         "right-press-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int, int, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)),
     }
 
-    def __init__(self, sorts=[]):
+    def __init__(self, 
+                 sorts=[],
+                 background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE)):
         '''Init list view.'''
         # Init.
         gtk.DrawingArea.__init__(self)
         self.sorts = sorts
+        self.background_pixbuf = background_pixbuf
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
@@ -313,7 +316,7 @@ class ListView(gtk.DrawingArea):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
             
         # Draw background.
-        pixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE).get_pixbuf().subpixbuf(
+        pixbuf = self.background_pixbuf.get_pixbuf().subpixbuf(
             viewport.allocation.x,
             viewport.allocation.y,
             viewport.allocation.width,
