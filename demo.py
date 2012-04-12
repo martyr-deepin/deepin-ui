@@ -61,6 +61,10 @@ def print_motion_notify(list_view, list_item, column, offset_x, offset_y):
     '''Print motion notify.'''
     print "* Motion notify: %s" % (str((list_item.title, list_item.artist, list_item.length, column, offset_x, offset_y)))
     
+def print_entry_action(entry, entry_text):
+    '''Print entry action.'''
+    print entry_text
+    
 def simulate_redraw_request(items, items_length):
     '''Simulate item's redraw request.'''
     item_index = int(time.time() * 100) % items_length
@@ -150,6 +154,17 @@ if __name__ == "__main__":
     horizontal_frame.add(body_box)
     application.main_box.pack_start(horizontal_frame, True, True)
     
+    # Add scalebar.
+    scalebar = HScalebar()
+    scalebar_frame = HorizontalFrame()
+    scalebar_frame.add(scalebar)
+    application.main_box.pack_start(scalebar_frame, False, False)
+    
+    vscalebar = VScalebar()
+    vscale_box = gtk.HBox()
+    vscale_box.pack_start(vscalebar, False, False)
+    body_box.pack_start(vscale_box, False, False)
+    
     # Add categorybar.
     # Note if you add list in categorybar make sure height is multiples of list length.
     # Otherwise last one item will heighter than Otherwise items.
@@ -194,17 +209,6 @@ if __name__ == "__main__":
         
     scrolled_window.add_child(list_view)
     
-    # Add scalebar.
-    scalebar = HScalebar()
-    scalebar_frame = HorizontalFrame()
-    scalebar_frame.add(scalebar)
-    application.main_box.pack_start(scalebar_frame, False, False)
-    
-    vscalebar = VScalebar()
-    vscale_box = gtk.HBox()
-    vscale_box.pack_start(vscalebar, False, False)
-    body_box.pack_start(vscale_box, False, False)
-    
     # Add volume button.
     volume_button = VolumeButton(100, 0, 100, 2)
     volume_frame = HorizontalFrame(10, 0, 0, 0, 0)
@@ -212,8 +216,14 @@ if __name__ == "__main__":
     application.main_box.pack_start(volume_frame, False, False)
     
     # Add entry widget.
-    entry = TextEntry("Linux Deepin")
-    entry.set_size(300, 22)
+    entry_button = ImageButton(
+        app_theme.get_pixbuf("entry/search_normal.png"),
+        app_theme.get_pixbuf("entry/search_hover.png"),
+        app_theme.get_pixbuf("entry/search_press.png"),
+        )
+    entry = TextEntry("Linux Deepin", entry_button)
+    entry.connect("action-active", print_entry_action)
+    entry.set_size(300, 24)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
     entry_label.set_size_request(100, 30)

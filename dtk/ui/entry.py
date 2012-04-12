@@ -26,6 +26,7 @@ from utils import *
 from draw import *
 from keymap import *
 from menu import *
+from contextlib import contextmanager 
 
 class Entry(gtk.EventBox):
     '''Entry.'''
@@ -36,6 +37,7 @@ class Entry(gtk.EventBox):
 	
     __gsignals__ = {
         "edit-alarm" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
     def __init__(self, content="", 
@@ -44,7 +46,7 @@ class Entry(gtk.EventBox):
                  background_select_color=ui_theme.get_shadow_color("entrySelectBackground"),
                  font_size=DEFAULT_FONT_SIZE, 
                  padding_x=5, 
-                 padding_y=5
+                 padding_y=2
                  ):
         '''Init entry.'''
         # Init.
@@ -112,6 +114,19 @@ class Entry(gtk.EventBox):
     def set_editable(self, editable):
         '''Set editable.'''
         self.editable_flag = editable
+        
+    @contextmanager
+    def monitor_entry_content(self):
+        '''Monitor entry content.'''
+        old_text = self.get_text()
+        try:  
+            yield  
+        except Exception, e:  
+            print 'monitor_entry_content error %s' % e  
+        else:  
+            new_text = self.get_text()
+            if old_text != new_text:
+                self.emit("changed", new_text)
         
     def is_editable(self):
         '''Whether is editable.'''
@@ -242,23 +257,24 @@ class Entry(gtk.EventBox):
     def backspace(self):
         '''Backspace.'''        
         if self.is_editable():
-            if self.select_start_index != self.select_end_index:
-                self.delete()
-            elif self.cursor_index > 0:
-                old_insert_width = self.get_content_width(self.content[0:self.cursor_index])
-                delete_char = self.get_utf8_string(self.content[0:self.cursor_index], -1)
-                self.cursor_index -= len(delete_char)
-                
-                self.content = self.content[0:self.cursor_index] + self.content[self.cursor_index + len(delete_char)::]
-                text_width = self.get_content_width(self.content)
-                insert_width = self.get_content_width(self.content[0:self.cursor_index])
-                rect = self.get_allocation()
-                if text_width < rect.width - self.padding_x * 2:
-                    self.offset_x = 0
-                else:
-                    self.offset_x += insert_width - old_insert_width
+            with self.monitor_entry_content():
+                if self.select_start_index != self.select_end_index:
+                    self.delete()
+                elif self.cursor_index > 0:
+                    old_insert_width = self.get_content_width(self.content[0:self.cursor_index])
+                    delete_char = self.get_utf8_string(self.content[0:self.cursor_index], -1)
+                    self.cursor_index -= len(delete_char)
                     
-                self.queue_draw()    
+                    self.content = self.content[0:self.cursor_index] + self.content[self.cursor_index + len(delete_char)::]
+                    text_width = self.get_content_width(self.content)
+                    insert_width = self.get_content_width(self.content[0:self.cursor_index])
+                    rect = self.get_allocation()
+                    if text_width < rect.width - self.padding_x * 2:
+                        self.offset_x = 0
+                    else:
+                        self.offset_x += insert_width - old_insert_width
+                        
+                    self.queue_draw()    
             
     def select_all(self):
         '''Select all.'''
@@ -273,7 +289,8 @@ class Entry(gtk.EventBox):
             cut_text = self.content[self.select_start_index:self.select_end_index]
             
             if self.is_editable():
-                self.delete()
+                with self.monitor_entry_content():
+                    self.delete()
             
             clipboard = gtk.Clipboard()
             clipboard.set_text(cut_text)
@@ -289,8 +306,9 @@ class Entry(gtk.EventBox):
     def paste_from_clipboard(self):
         '''Paste text from clipboard.'''
         if self.is_editable():
-            clipboard = gtk.Clipboard()    
-            clipboard.request_text(lambda clipboard, text, data: self.commit_entry('\\n'.join(text.split('\n'))))
+            with self.monitor_entry_content():
+                clipboard = gtk.Clipboard()    
+                clipboard.request_text(lambda clipboard, text, data: self.commit_entry('\\n'.join(text.split('\n'))))
         
     def select_to_left(self):
         '''Select to preview.'''
@@ -387,25 +405,26 @@ class Entry(gtk.EventBox):
     def delete(self):
         '''Delete select text.'''
         if self.is_editable() and self.select_start_index != self.select_end_index:
-            rect = self.get_allocation()
-            
-            self.cursor_index = self.select_start_index
-            
-            select_start_width = self.get_content_width(self.content[0:self.select_start_index])
-            select_end_width = self.get_content_width(self.content[0:self.select_end_index])
-            
-            self.cursor_index = self.select_start_index
-            if select_start_width < self.offset_x:
-                if select_end_width < self.offset_x + rect.width - self.padding_x * 2:
-                    self.offset_x = max(select_start_width + self.offset_x - select_end_width, 0)
-                else:
-                    self.offset_x = 0
-                    
-            self.content = self.content[0:self.select_start_index] + self.content[self.select_end_index::]
+            with self.monitor_entry_content():
+                rect = self.get_allocation()
+                
+                self.cursor_index = self.select_start_index
+                
+                select_start_width = self.get_content_width(self.content[0:self.select_start_index])
+                select_end_width = self.get_content_width(self.content[0:self.select_end_index])
+                
+                self.cursor_index = self.select_start_index
+                if select_start_width < self.offset_x:
+                    if select_end_width < self.offset_x + rect.width - self.padding_x * 2:
+                        self.offset_x = max(select_start_width + self.offset_x - select_end_width, 0)
+                    else:
+                        self.offset_x = 0
                         
-            self.select_start_index = self.select_end_index = self.cursor_index
-            
-            self.queue_draw()
+                self.content = self.content[0:self.select_start_index] + self.content[self.select_end_index::]
+                            
+                self.select_start_index = self.select_end_index = self.cursor_index
+                
+                self.queue_draw()
                             
     def expose_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
@@ -514,13 +533,15 @@ class Entry(gtk.EventBox):
             left_str = self.content[0:self.cursor_index]
             right_str = self.content[self.cursor_index::]
             left_str_width = self.get_content_width(left_str)
+            padding_y = (h - (get_content_size(self.content, self.font_size)[-1])) / 2
             
             # Draw cursor.
             cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
             cr.rectangle(x + self.padding_x + left_str_width - self.offset_x,
-                         y + self.padding_y,
+                         y + padding_y,
                          1, 
-                         h - self.padding_y * 2)
+                         h - padding_y * 2
+                         )
             cr.fill()
     
     def button_press_entry(self, widget, event):
@@ -640,26 +661,27 @@ class Entry(gtk.EventBox):
     def commit_entry(self, input_text):
         '''Entry commit.'''
         if self.is_editable():
-            if self.select_start_index != self.select_end_index:
-                self.delete()
+            with self.monitor_entry_content():
+                if self.select_start_index != self.select_end_index:
+                    self.delete()
+                    
+                self.content = self.content[0:self.cursor_index] + input_text + self.content[self.cursor_index::]
+                self.cursor_index += len(input_text)
                 
-            self.content = self.content[0:self.cursor_index] + input_text + self.content[self.cursor_index::]
-            self.cursor_index += len(input_text)
-            
-            text_width = self.get_content_width(self.content)
-            rect = self.get_allocation()
-            if text_width <= rect.width - self.padding_x * 2:
-                self.offset_x = 0
-            elif self.cursor_index == len(self.content):
-                self.offset_x = text_width - (rect.width - self.padding_x * 2)
-            else:
-                old_text_width = self.get_content_width(self.content[0:self.cursor_index - len(input_text)])
-                input_text_width = self.get_content_width(input_text)
-                if old_text_width - self.offset_x + input_text_width > rect.width - self.padding_x * 2:
-                    new_text_width = self.get_content_width(self.content[0:self.cursor_index])
-                    self.offset_x = new_text_width - (rect.width - self.padding_x * 2)
-            
-            self.queue_draw()
+                text_width = self.get_content_width(self.content)
+                rect = self.get_allocation()
+                if text_width <= rect.width - self.padding_x * 2:
+                    self.offset_x = 0
+                elif self.cursor_index == len(self.content):
+                    self.offset_x = text_width - (rect.width - self.padding_x * 2)
+                else:
+                    old_text_width = self.get_content_width(self.content[0:self.cursor_index - len(input_text)])
+                    input_text_width = self.get_content_width(input_text)
+                    if old_text_width - self.offset_x + input_text_width > rect.width - self.padding_x * 2:
+                        new_text_width = self.get_content_width(self.content[0:self.cursor_index])
+                        self.offset_x = new_text_width - (rect.width - self.padding_x * 2)
+                
+                self.queue_draw()
         
     def get_content_width(self, content):
         '''Get content width.'''
@@ -675,10 +697,15 @@ class Entry(gtk.EventBox):
     
 gobject.type_register(Entry)
 
-class TextEntry(gtk.Alignment):
+class TextEntry(gtk.VBox):
     '''Input entry.'''
 	
+    __gsignals__ = {
+        "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
+    }
+    
     def __init__(self, content="",
+                 action_button=None,
                  background_color = ui_theme.get_alpha_color("textEntryBackground"),
                  acme_color = ui_theme.get_alpha_color("textEntryAcme"),
                  point_color = ui_theme.get_alpha_color("textEntryPoint"),
@@ -687,18 +714,37 @@ class TextEntry(gtk.Alignment):
                  ):
         '''Init input entry.'''
         # Init.
-        gtk.Alignment.__init__(self)
+        gtk.VBox.__init__(self)
+        self.align = gtk.Alignment()
+        self.align.set(0.5, 0.5, 1.0, 1.0)
+        self.action_button = action_button
+        self.h_box = gtk.HBox()
         self.entry = Entry(content)
-        self.add(self.entry)
-        self.set(0.5, 0.5, 1.0, 1.0)
         self.background_color = background_color
         self.acme_color = acme_color
         self.point_color = point_color
         self.frame_point_color = frame_point_color
         self.frame_color = frame_color
+        
+        self.pack_start(self.align, False, False)
+        self.align.add(self.h_box)
+        self.h_box.pack_start(self.entry)
+        if action_button:
+            self.action_align = gtk.Alignment()
+            self.action_align.set(0.0, 0.5, 0, 0)
+            self.action_align.set_padding(0, 0, 0, self.entry.padding_x)
+            self.action_align.add(self.action_button)
+            
+            self.h_box.pack_start(self.action_align)
+            
+            self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
 
         # Handle signal.
-        self.connect("expose-event", self.expose_text_entry)
+        self.align.connect("expose-event", self.expose_text_entry)
+        
+    def emit_action_active_signal(self):
+        '''Emit action-active signal.'''
+        self.emit("action-active", self.get_text())                
         
     def expose_text_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
@@ -779,7 +825,12 @@ class TextEntry(gtk.Alignment):
     def set_size(self, width, height):
         '''Set size.'''
         self.set_size_request(width, height)    
-        self.entry.set_size_request(width - 2, height - 2)
+        
+        action_button_width = 0
+        if self.action_button:
+            action_button_width = self.action_button.get_size_request()[-1] + self.entry.padding_x
+            
+        self.entry.set_size_request(width - 2 - action_button_width, height - 2)
         
     def set_editable(self, editable):
         '''Set editable.'''

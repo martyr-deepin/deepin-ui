@@ -36,11 +36,13 @@ class ScrolledWindow(gtk.ScrolledWindow):
         gtk.ScrolledWindow.__init__(self)
         self.draw_mask = draw_mask
         self.set_policy(hscrollbar_policy, vscrollbar_policy)
+        self.scrollebar_size = 16
+        self.min_progress_size = 15
         
         # Draw vertical scrollbar.
         vscrollbar = self.get_vscrollbar()
         vscrollbar.set_size_request(
-            ui_theme.get_pixbuf("scrollbar/vscrollbar_bg.png").get_pixbuf().get_width(), 
+            self.scrollebar_size,
             -1)
         vscrollbar.connect("expose-event", self.expose_vscrollbar)
         vscrollbar.connect("value-changed", lambda rang: self.queue_draw())
@@ -49,7 +51,7 @@ class ScrolledWindow(gtk.ScrolledWindow):
         hscrollbar = self.get_hscrollbar()
         hscrollbar.set_size_request(
             -1,
-            ui_theme.get_pixbuf("scrollbar/hscrollbar_bg.png").get_pixbuf().get_height(), 
+            self.scrollebar_size
             )
         hscrollbar.connect("expose-event", self.expose_hscrollbar)
         hscrollbar.connect("value-changed", lambda rang: self.queue_draw())
@@ -69,29 +71,29 @@ class ScrolledWindow(gtk.ScrolledWindow):
             # Init.
             cr = widget.window.cairo_create()
             rect = widget.allocation
-            bg_pixbuf = ui_theme.get_pixbuf("scrollbar/hscrollbar_bg.png").get_pixbuf()
-            fg_left_pixbuf = ui_theme.get_pixbuf("scrollbar/hscrollbar_fg_left.png").get_pixbuf()
-            fg_middle_pixbuf = ui_theme.get_pixbuf("scrollbar/hscrollbar_fg_middle.png").get_pixbuf()
-            fg_right_pixbuf = ui_theme.get_pixbuf("scrollbar/hscrollbar_fg_right.png").get_pixbuf()
             value = adjust.get_value()
             page_size = adjust.get_page_size()
-            min_width = fg_left_pixbuf.get_width() + fg_middle_pixbuf.get_width() + fg_right_pixbuf.get_width()
-            progress_width = max(int(rect.width / (upper - lower) * rect.width), min_width)    
+            
+            if upper - lower <= page_size:
+                progress_width = page_size - 2
+            else:
+                progress_width = max(int(rect.width / (upper - lower) * rect.width), self.min_progress_size)    
+            
+            # Draw background.
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("scrollebarBackground").get_color_info()))
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
             
             # Draw foreground.
-            ft_width = fg_left_pixbuf.get_width()
-            
-            if (upper - lower - page_size) == 0:
-                offset_x = rect.x
+            if value == 0:
+                offset_x = rect.x + 1
+            elif upper - value - page_size == 0:
+                offset_x = rect.x + value * (rect.width - progress_width) / (upper - lower - page_size) - 1
             else:
                 offset_x = rect.x + value * (rect.width - progress_width) / (upper - lower - page_size)
-            draw_pixbuf(cr, fg_left_pixbuf, offset_x, rect.y)
-            
-            fm_pixbuf = fg_middle_pixbuf.scale_simple(progress_width - ft_width * 2 + 2, rect.height, gtk.gdk.INTERP_BILINEAR)
-            draw_pixbuf(cr, fm_pixbuf, offset_x + ft_width - 1, rect.y)
-            
-            draw_pixbuf(cr, fg_right_pixbuf, offset_x + progress_width - ft_width, rect.y)
-            
+                
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("scrollebarForeground").get_color_info()))
+            cr.rectangle(offset_x, rect.y + 2, progress_width, rect.height - 4)
             cr.fill()
         
         return True
@@ -106,35 +108,29 @@ class ScrolledWindow(gtk.ScrolledWindow):
             # Init.
             cr = widget.window.cairo_create()
             rect = widget.allocation
-            bg_pixbuf = ui_theme.get_pixbuf("scrollbar/vscrollbar_bg.png").get_pixbuf()
-            fg_top_pixbuf = ui_theme.get_pixbuf("scrollbar/vscrollbar_fg_top.png").get_pixbuf()
-            fg_middle_pixbuf = ui_theme.get_pixbuf("scrollbar/vscrollbar_fg_middle.png").get_pixbuf()
-            fg_bottom_pixbuf = ui_theme.get_pixbuf("scrollbar/vscrollbar_fg_bottom.png").get_pixbuf()
             value = adjust.get_value()
             page_size = adjust.get_page_size()
-            min_height = fg_top_pixbuf.get_height() + fg_middle_pixbuf.get_height() + fg_bottom_pixbuf.get_height()
-            progress_height = max(int(rect.height / (upper - lower) * rect.height), min_height)    
+            
+            if upper - lower <= page_size:
+                progress_height = page_size - 2
+            else:
+                progress_height = max(int(rect.height / (upper - lower) * rect.height), self.min_progress_size)    
         
             # Draw background.
-            if self.draw_mask:
-                vbg_pixbuf = ui_theme.get_pixbuf("scrollbar/vscrollbar_bg.png").get_pixbuf()
-                draw_vlinear(cr, rect.x, rect.y, vbg_pixbuf.get_width(), rect.height,
-                             ui_theme.get_shadow_color("linearBackground").get_color_info())
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("scrollebarBackground").get_color_info()))
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
             
             # Draw foreground.
-            ft_height = fg_top_pixbuf.get_height()
-            
-            if (upper - lower - page_size) == 0:
-                offset_y = rect.y
+            if value == 0:
+                offset_y = rect.y + 1
+            elif upper - value - page_size == 0:
+                offset_y = rect.y + value * (rect.height - progress_height) / (upper - lower - page_size) - 1
             else:
                 offset_y = rect.y + value * (rect.height - progress_height) / (upper - lower - page_size)
-            draw_pixbuf(cr, fg_top_pixbuf, rect.x, offset_y)
             
-            fm_pixbuf = fg_middle_pixbuf.scale_simple(rect.width, progress_height - ft_height * 2 + 2, gtk.gdk.INTERP_BILINEAR)
-            draw_pixbuf(cr, fm_pixbuf, rect.x, offset_y + ft_height - 1)
-            
-            draw_pixbuf(cr, fg_bottom_pixbuf, rect.x, offset_y + progress_height - ft_height)
-            
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("scrollebarForeground").get_color_info()))
+            cr.rectangle(rect.x + 2, offset_y, rect.width - 4, progress_height)
             cr.fill()
         
         return True
