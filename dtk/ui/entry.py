@@ -46,7 +46,7 @@ class Entry(gtk.EventBox):
                  background_select_color=ui_theme.get_shadow_color("entrySelectBackground"),
                  font_size=DEFAULT_FONT_SIZE, 
                  padding_x=5, 
-                 padding_y=5
+                 padding_y=2
                  ):
         '''Init entry.'''
         # Init.
@@ -533,13 +533,15 @@ class Entry(gtk.EventBox):
             left_str = self.content[0:self.cursor_index]
             right_str = self.content[self.cursor_index::]
             left_str_width = self.get_content_width(left_str)
+            padding_y = (h - (get_content_size(self.content, self.font_size)[-1])) / 2
             
             # Draw cursor.
             cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
             cr.rectangle(x + self.padding_x + left_str_width - self.offset_x,
-                         y + self.padding_y,
+                         y + padding_y,
                          1, 
-                         h - self.padding_y * 2)
+                         h - padding_y * 2
+                         )
             cr.fill()
     
     def button_press_entry(self, widget, event):
@@ -695,7 +697,7 @@ class Entry(gtk.EventBox):
     
 gobject.type_register(Entry)
 
-class TextEntry(gtk.Alignment):
+class TextEntry(gtk.VBox):
     '''Input entry.'''
 	
     __gsignals__ = {
@@ -712,31 +714,33 @@ class TextEntry(gtk.Alignment):
                  ):
         '''Init input entry.'''
         # Init.
-        gtk.Alignment.__init__(self)
+        gtk.VBox.__init__(self)
+        self.align = gtk.Alignment()
+        self.align.set(0.5, 0.5, 1.0, 1.0)
         self.action_button = action_button
-        self.box = gtk.HBox()
+        self.h_box = gtk.HBox()
         self.entry = Entry(content)
-        self.set(0.5, 0.5, 1.0, 1.0)
         self.background_color = background_color
         self.acme_color = acme_color
         self.point_color = point_color
         self.frame_point_color = frame_point_color
         self.frame_color = frame_color
         
-        self.add(self.box)
-        self.box.pack_start(self.entry)
+        self.pack_start(self.align, False, False)
+        self.align.add(self.h_box)
+        self.h_box.pack_start(self.entry)
         if action_button:
             self.action_align = gtk.Alignment()
             self.action_align.set(0.0, 0.5, 0, 0)
             self.action_align.set_padding(0, 0, 0, self.entry.padding_x)
             self.action_align.add(self.action_button)
             
-            self.box.pack_start(self.action_align)
+            self.h_box.pack_start(self.action_align)
             
             self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
 
         # Handle signal.
-        self.connect("expose-event", self.expose_text_entry)
+        self.align.connect("expose-event", self.expose_text_entry)
         
     def emit_action_active_signal(self):
         '''Emit action-active signal.'''

@@ -223,7 +223,7 @@ if __name__ == "__main__":
         )
     entry = TextEntry("Linux Deepin", entry_button)
     entry.connect("action-active", print_entry_action)
-    entry.set_size(300, 22)
+    entry.set_size(300, 24)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
     entry_label.set_size_request(100, 30)
