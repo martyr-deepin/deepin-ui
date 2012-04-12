@@ -137,18 +137,20 @@ class Entry(gtk.EventBox):
         
     def set_text(self, text):
         '''Set text.'''
-        self.content = text
-        self.cursor_index = len(self.content)
-        self.select_start_index = self.select_end_index = self.cursor_index
-        
-        text_width = self.get_content_width(self.content)
-        rect = self.get_allocation()
-        if text_width > rect.width - self.padding_x * 2:
-            self.offset_x = text_width - rect.width + self.padding_x * 2
-        else:
-            self.offset_x = 0
-
-        self.queue_draw()
+        if self.is_editable():
+            with self.monitor_entry_content():
+                self.content = text
+                self.cursor_index = len(self.content)
+                self.select_start_index = self.select_end_index = self.cursor_index
+                
+                text_width = self.get_content_width(self.content)
+                rect = self.get_allocation()
+                if text_width > rect.width - self.padding_x * 2:
+                    self.offset_x = text_width - rect.width + self.padding_x * 2
+                else:
+                    self.offset_x = 0
+                
+                self.queue_draw()
         
     def get_text(self):
         '''Get text.'''
