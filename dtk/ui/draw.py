@@ -93,19 +93,19 @@ def draw_window_rectangle(cr, sx, sy, ex, ey, r):
         # Set OPERATOR_OVER operator.
         cr.set_operator(cairo.OPERATOR_OVER)
         
-        cr.move_to(sx + r, sy)        # top line
+        cr.move_to(sx + r, sy)  # top line
         cr.line_to(ex - r, sy)
         cr.stroke()
         
-        cr.move_to(ex, sy + r)    # right side
+        cr.move_to(ex, sy + r)  # right side
         cr.line_to(ex, ey - r)
         cr.stroke()
         
-        cr.move_to(ex - r, ey) # bottom side
+        cr.move_to(ex - r, ey)  # bottom side
         cr.line_to(sx + r, ey)     
         cr.stroke()
         
-        cr.move_to(sx, ey - r)    # left side
+        cr.move_to(sx, ey - r)  # left side
         cr.line_to(sx, sy + r)        
         cr.stroke()
         

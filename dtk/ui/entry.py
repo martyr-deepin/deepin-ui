@@ -678,7 +678,12 @@ gobject.type_register(Entry)
 class TextEntry(gtk.Alignment):
     '''Input entry.'''
 	
+    __gsignals__ = {
+        "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
+    }
+    
     def __init__(self, content="",
+                 action_button=None,
                  background_color = ui_theme.get_alpha_color("textEntryBackground"),
                  acme_color = ui_theme.get_alpha_color("textEntryAcme"),
                  point_color = ui_theme.get_alpha_color("textEntryPoint"),
@@ -688,17 +693,34 @@ class TextEntry(gtk.Alignment):
         '''Init input entry.'''
         # Init.
         gtk.Alignment.__init__(self)
+        self.action_button = action_button
+        self.box = gtk.HBox()
         self.entry = Entry(content)
-        self.add(self.entry)
         self.set(0.5, 0.5, 1.0, 1.0)
         self.background_color = background_color
         self.acme_color = acme_color
         self.point_color = point_color
         self.frame_point_color = frame_point_color
         self.frame_color = frame_color
+        
+        self.add(self.box)
+        self.box.pack_start(self.entry)
+        if action_button:
+            self.action_align = gtk.Alignment()
+            self.action_align.set(0.0, 0.5, 0, 0)
+            self.action_align.set_padding(0, 0, 0, self.entry.padding_x)
+            self.action_align.add(self.action_button)
+            
+            self.box.pack_start(self.action_align)
+            
+            self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
 
         # Handle signal.
         self.connect("expose-event", self.expose_text_entry)
+        
+    def emit_action_active_signal(self):
+        '''Emit action-active signal.'''
+        self.emit("action-active", self.get_text())                
         
     def expose_text_entry(self, widget, event):
         '''Callback for `expose-event` signal.'''
@@ -779,7 +801,12 @@ class TextEntry(gtk.Alignment):
     def set_size(self, width, height):
         '''Set size.'''
         self.set_size_request(width, height)    
-        self.entry.set_size_request(width - 2, height - 2)
+        
+        action_button_width = 0
+        if self.action_button:
+            action_button_width = self.action_button.get_size_request()[-1] + self.entry.padding_x
+            
+        self.entry.set_size_request(width - 2 - action_button_width, height - 2)
         
     def set_editable(self, editable):
         '''Set editable.'''
