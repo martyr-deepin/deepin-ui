@@ -137,18 +137,20 @@ class Entry(gtk.EventBox):
         
     def set_text(self, text):
         '''Set text.'''
-        self.content = text
-        self.cursor_index = len(self.content)
-        self.select_start_index = self.select_end_index = self.cursor_index
-        
-        text_width = self.get_content_width(self.content)
-        rect = self.get_allocation()
-        if text_width > rect.width - self.padding_x * 2:
-            self.offset_x = text_width - rect.width + self.padding_x * 2
-        else:
-            self.offset_x = 0
-
-        self.queue_draw()
+        if self.is_editable():
+            with self.monitor_entry_content():
+                self.content = text
+                self.cursor_index = len(self.content)
+                self.select_start_index = self.select_end_index = self.cursor_index
+                
+                text_width = self.get_content_width(self.content)
+                rect = self.get_allocation()
+                if text_width > rect.width - self.padding_x * 2:
+                    self.offset_x = text_width - rect.width + self.padding_x * 2
+                else:
+                    self.offset_x = 0
+                
+                self.queue_draw()
         
     def get_text(self):
         '''Get text.'''
@@ -531,9 +533,8 @@ class Entry(gtk.EventBox):
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             left_str = self.content[0:self.cursor_index]
-            right_str = self.content[self.cursor_index::]
             left_str_width = self.get_content_width(left_str)
-            padding_y = (h - (get_content_size(self.content, self.font_size)[-1])) / 2
+            padding_y = (h - (get_content_size("Height", self.font_size)[-1])) / 2
             
             # Draw cursor.
             cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
@@ -567,6 +568,8 @@ class Entry(gtk.EventBox):
             self.left_click_coordindate = (event.x, event.y)
             
             self.drag_start_index = self.get_index_at_event(widget, event)
+            
+            print self.drag_start_index
             
     def button_release_entry(self, widget, event):
         '''Callback for `button-release-event` signal.'''
