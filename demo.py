@@ -150,6 +150,17 @@ if __name__ == "__main__":
     horizontal_frame.add(body_box)
     application.main_box.pack_start(horizontal_frame, True, True)
     
+    # Add scalebar.
+    scalebar = HScalebar()
+    scalebar_frame = HorizontalFrame()
+    scalebar_frame.add(scalebar)
+    application.main_box.pack_start(scalebar_frame, False, False)
+    
+    vscalebar = VScalebar()
+    vscale_box = gtk.HBox()
+    vscale_box.pack_start(vscalebar, False, False)
+    body_box.pack_start(vscale_box, False, False)
+    
     # Add categorybar.
     # Note if you add list in categorybar make sure height is multiples of list length.
     # Otherwise last one item will heighter than Otherwise items.
@@ -193,17 +204,6 @@ if __name__ == "__main__":
     # list_view.connect("motion-notify-item", print_motion_notify)
         
     scrolled_window.add_child(list_view)
-    
-    # Add scalebar.
-    scalebar = HScalebar()
-    scalebar_frame = HorizontalFrame()
-    scalebar_frame.add(scalebar)
-    application.main_box.pack_start(scalebar_frame, False, False)
-    
-    vscalebar = VScalebar()
-    vscale_box = gtk.HBox()
-    vscale_box.pack_start(vscalebar, False, False)
-    body_box.pack_start(vscale_box, False, False)
     
     # Add volume button.
     volume_button = VolumeButton(100, 0, 100, 2)

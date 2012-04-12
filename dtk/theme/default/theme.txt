@@ -38,6 +38,8 @@
 	 "textEntryPoint" : ("#FFFFFF", 0.5),
 	 "textEntryFramePoint" : ("#FFFFFF", 0.45),
 	 "textEntryFrame" : ("#FFFFFF", 0.7),
+	 "scrollebarBackground" : ("#FFFFFF", 0.5),
+	 "scrollebarForeground" : ("#42ADD5", 0.9),
  },
  "shadow_colors" : {
      "linearBackground" : [
