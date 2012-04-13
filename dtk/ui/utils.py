@@ -603,4 +603,4 @@ def exec_time():
     except Exception, e:  
         print 'exec_time error %s' % e  
     else:  
-        print "%s time: %s" % (str(func), time.time() - start_time)
+        print "time: %f" % (time.time() - start_time)
