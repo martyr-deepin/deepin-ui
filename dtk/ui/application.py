@@ -60,6 +60,7 @@ class Application(object):
         self.app_service_name = "com.deepin." + self.app_name
         self.app_object_name = "/com/deepin/" + self.app_name
         self.check_unique = check_unique
+        self.close_callback = self.close_window
         
         # Check unique when option `check_unique` is enable.
         if check_unique:
@@ -116,12 +117,16 @@ class Application(object):
         if "max" in button_mask:
             self.titlebar.max_button.connect("clicked", lambda w: self.window.toggle_max_window())
         if "close" in button_mask:
-            self.titlebar.close_button.connect("clicked", lambda w: self.window.close_window())
+            self.titlebar.close_button.connect("clicked", self.close_callback)
         self.add_toggle_window_event(self.titlebar.drag_box)
         self.add_move_window_event(self.titlebar.drag_box)
         
         # Show titlebar.
         self.show_titlebar()
+        
+    def close_window(self, widget):
+        '''Close window.'''
+        self.window.close_window()
         
     def show_titlebar(self):
         '''Show titlebar.'''
