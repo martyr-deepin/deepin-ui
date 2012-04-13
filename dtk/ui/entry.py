@@ -100,7 +100,7 @@ class Entry(gtk.EventBox):
             MENU_POS_TOP_LEFT)
         
         # Connect signal.
-        self.connect("realize", self.realize_entry)
+        self.connect_after("realize", self.realize_entry)
         self.connect("key-press-event", self.key_press_entry)
         self.connect("expose-event", self.expose_entry)
         self.connect("button-press-event", self.button_press_entry)
@@ -145,7 +145,8 @@ class Entry(gtk.EventBox):
                 
                 text_width = self.get_content_width(self.content)
                 rect = self.get_allocation()
-                if text_width > rect.width - self.padding_x * 2:
+
+                if text_width > rect.width - self.padding_x * 2 > 0:
                     self.offset_x = text_width - rect.width + self.padding_x * 2
                 else:
                     self.offset_x = 0
@@ -160,7 +161,11 @@ class Entry(gtk.EventBox):
         '''Realize entry.'''
         text_width = self.get_content_width(self.content)
         rect = self.get_allocation()
-        self.offset_x = max(0, text_width - rect.width + self.padding_x * 2)
+
+        if text_width > rect.width - self.padding_x * 2 > 0:
+            self.offset_x = text_width - rect.width + self.padding_x * 2
+        else:
+            self.offset_x = 0
         
     def key_press_entry(self, widget, event):
         '''Callback for `key-press-event` signal.'''
@@ -196,7 +201,7 @@ class Entry(gtk.EventBox):
         '''Move to end.'''
         text_width = self.get_content_width(self.content)
         rect = self.get_allocation()
-        if text_width > rect.width - self.padding_x * 2:
+        if text_width > rect.width - self.padding_x * 2 > 0:
             self.offset_x = text_width - (rect.width - self.padding_x * 2)
         self.cursor_index = len(self.content)
         
@@ -530,6 +535,7 @@ class Entry(gtk.EventBox):
     def draw_entry_cursor(self, cr, rect):
         '''Draw entry cursor.'''
         if self.grab_focus_flag and self.select_start_index == self.select_end_index:
+            print "***************** "
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             left_str = self.content[0:self.cursor_index]
@@ -537,6 +543,12 @@ class Entry(gtk.EventBox):
             padding_y = (h - (get_content_size("Height", self.font_size)[-1])) / 2
             
             # Draw cursor.
+            # print (x + self.padding_x + left_str_width - self.offset_x,
+            #        y + padding_y,
+            #        1, 
+            #        h - padding_y * 2
+            #        )
+            print (x, self.padding_x, left_str_width, self.offset_x)
             cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
             cr.rectangle(x + self.padding_x + left_str_width - self.offset_x,
                          y + padding_y,
@@ -846,6 +858,10 @@ class TextEntry(gtk.VBox):
     def get_text(self):
         '''Get text.'''
         return self.entry.get_text()
+    
+    def focus_input(self):
+        '''Focus input.'''
+        self.entry.grab_focus()
         
 gobject.type_register(TextEntry)
 

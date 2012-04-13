@@ -221,7 +221,8 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("entry/search_hover.png"),
         app_theme.get_pixbuf("entry/search_press.png"),
         )
-    entry = TextEntry("Linux Deepin", entry_button)
+    # entry = TextEntry("Linux Deepin", entry_button)
+    entry = TextEntry()
     entry.connect("action-active", print_entry_action)
     entry.set_size(300, 24)
     entry_label = Label("标签测试， 内容非常长")
