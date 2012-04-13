@@ -40,6 +40,7 @@ from dtk.ui.entry import *
 from dtk.ui.paned import *
 from dtk.ui.label import *
 import time
+import gc
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
 
@@ -240,6 +241,8 @@ if __name__ == "__main__":
     application.main_box.pack_start(statusbar.status_event_box, False)
     application.add_move_window_event(statusbar.status_event_box)
     application.add_toggle_window_event(statusbar.status_event_box)
+    
+    print gc.isenabled()
     
     # Run.
     application.run()
