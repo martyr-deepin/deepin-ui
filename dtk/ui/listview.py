@@ -317,12 +317,14 @@ class ListView(gtk.DrawingArea):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
             
         # Draw background.
-        pixbuf = self.background_pixbuf.get_pixbuf().subpixbuf(
-            viewport.allocation.x,
-            viewport.allocation.y,
-            viewport.allocation.width,
-            viewport.allocation.height)
-        draw_pixbuf(cr, pixbuf, offset_x, offset_y)
+        with cairo_state(cr):
+            cr.translate(-viewport.allocation.x, -viewport.allocation.y)
+            cr.rectangle(offset_x, offset_y, 
+                         viewport.allocation.x + viewport.allocation.width, 
+                         viewport.allocation.y + viewport.allocation.height)
+            cr.clip()
+            
+            draw_pixbuf(cr, self.background_pixbuf.get_pixbuf(), offset_x, offset_y)
         
         # Draw mask.
         draw_vlinear(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height,

@@ -29,12 +29,10 @@ from constant import *
 class ScrolledWindow(gtk.ScrolledWindow):
     '''Scrolled window.'''
 	
-    def __init__(self, hscrollbar_policy=gtk.POLICY_AUTOMATIC, vscrollbar_policy=gtk.POLICY_AUTOMATIC, 
-                 draw_mask=True):
+    def __init__(self, hscrollbar_policy=gtk.POLICY_AUTOMATIC, vscrollbar_policy=gtk.POLICY_AUTOMATIC):
         '''Init scrolled window.'''
         # Init.
         gtk.ScrolledWindow.__init__(self)
-        self.draw_mask = draw_mask
         self.set_policy(hscrollbar_policy, vscrollbar_policy)
         self.scrollebar_size = 16
         self.min_progress_size = 15

@@ -20,20 +20,49 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from dtk.ui.theme import *
-from dtk.ui.panel import *
-from dtk.ui.utils import *
-from dtk.ui.draw import *
-import dtk_browser
+from dtk.ui.application import Application
+from dtk.ui.constant import *
+from dtk.ui.menu import *
+from dtk.ui.navigatebar import *
+from dtk.ui.statusbar import *
+from dtk.ui.categorybar import *
+from dtk.ui.scrolled_window import *
+from dtk.ui.box import *
+from dtk.ui.button import *
+from dtk.ui.listview import *
+from dtk.ui.tooltip import *
+from dtk.ui.popup_window import *
+from dtk.ui.frame import *
+from dtk.ui.dragbar import *
+from dtk.ui.scalebar import *
+from dtk.ui.volume_button import *
+from dtk.ui.entry import *
+from dtk.ui.paned import *
+from dtk.ui.label import *
+from dtk.ui.browser import *
 
 if __name__ == "__main__":
-    # Init window.
-    window = gtk.Window()
-    window.add_events(gtk.gdk.ALL_EVENTS_MASK)        
-    window.connect("destroy", lambda w: gtk.main_quit())
-    browser = dtk_browser.browser_new("http://web.qq.com", "/home/andy/cookie.txt")
-    window.add(browser)
+    # Init application.
+    application = Application("demo")
     
-    window.show_all()
-
-    gtk.main()
+    # Set application default size.
+    application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
+    
+    # Set application icon.
+    application.set_icon(ui_theme.get_pixbuf("icon.ico"))
+    
+    # Add titlebar.
+    application.add_titlebar(
+        ["theme", "menu", "max", "min", "close"], 
+        ui_theme.get_pixbuf("title.png"), 
+        "深度图形库",
+        "/home/andy/deepin-ui/demo.py")
+    
+    # Add browser.
+    horizontal_frame = HorizontalFrame()
+    browser_client = BrowserClient("http://www.linuxdeepin.com/forum", "/home/andy/cookie.txt")
+    horizontal_frame.add(browser_client)
+    application.main_box.pack_start(horizontal_frame)
+    
+    # Run.
+    application.run()
