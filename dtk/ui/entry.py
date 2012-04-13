@@ -535,7 +535,6 @@ class Entry(gtk.EventBox):
     def draw_entry_cursor(self, cr, rect):
         '''Draw entry cursor.'''
         if self.grab_focus_flag and self.select_start_index == self.select_end_index:
-            print "***************** "
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             left_str = self.content[0:self.cursor_index]
@@ -543,12 +542,6 @@ class Entry(gtk.EventBox):
             padding_y = (h - (get_content_size("Height", self.font_size)[-1])) / 2
             
             # Draw cursor.
-            # print (x + self.padding_x + left_str_width - self.offset_x,
-            #        y + padding_y,
-            #        1, 
-            #        h - padding_y * 2
-            #        )
-            print (x, self.padding_x, left_str_width, self.offset_x)
             cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
             cr.rectangle(x + self.padding_x + left_str_width - self.offset_x,
                          y + padding_y,
@@ -580,8 +573,6 @@ class Entry(gtk.EventBox):
             self.left_click_coordindate = (event.x, event.y)
             
             self.drag_start_index = self.get_index_at_event(widget, event)
-            
-            print self.drag_start_index
             
     def button_release_entry(self, widget, event):
         '''Callback for `button-release-event` signal.'''
