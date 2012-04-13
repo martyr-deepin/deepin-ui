@@ -237,7 +237,9 @@ def expose_button(widget, event,
         image_height = image.get_height()
     
     # Draw button.
-    pixbuf = image.scale_simple(image_width, image_height, gtk.gdk.INTERP_BILINEAR)
+    pixbuf = image
+    if pixbuf.get_width() != image_width or pixbuf.get_height() != image_height:
+        pixbuf = image.scale_simple(image_width, image_height, gtk.gdk.INTERP_BILINEAR)
     cr = widget.window.cairo_create()
     draw_pixbuf(cr, pixbuf, widget.allocation.x, widget.allocation.y)
     
@@ -287,7 +289,9 @@ def expose_max_button(widget, event, sub_dir, max_path_prefix, unmax_path_prefix
     image_height = image.get_height()
     
     # Draw button.
-    pixbuf = image.scale_simple(image_width, image_height, gtk.gdk.INTERP_BILINEAR)
+    pixbuf = image
+    if pixbuf.get_width() != image_width or pixbuf.get_height() != image_height:
+        pixbuf = image.scale_simple(image_width, image_height, gtk.gdk.INTERP_BILINEAR)
     cr = widget.window.cairo_create()
     draw_pixbuf(cr, pixbuf, widget.allocation.x, widget.allocation.y)
 
@@ -368,7 +372,9 @@ def expose_toggle_button(widget, event,
         image_height = image.get_height()
     
     # Draw button.
-    pixbuf = image.scale_simple(image_width, image_height, gtk.gdk.INTERP_BILINEAR)
+    pixbuf = image
+    if pixbuf.get_width() != image_width or pixbuf.get_height() != image_height:
+        pixbuf = image.scale_simple(image_width, image_height, gtk.gdk.INTERP_BILINEAR)
     cr = widget.window.cairo_create()
     draw_pixbuf(cr, pixbuf, widget.allocation.x, widget.allocation.y)
     
