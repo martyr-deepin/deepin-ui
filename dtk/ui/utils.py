@@ -594,5 +594,13 @@ def cairo_disable_antialias(cr):
         # Restore antialias.
         cr.set_antialias(antialias)
 
-    
-
+@contextmanager
+def exec_time():
+    '''Print execute time.'''
+    start_time = time.time()
+    try:  
+        yield  
+    except Exception, e:  
+        print 'exec_time error %s' % e  
+    else:  
+        print "%s time: %s" % (str(func), time.time() - start_time)
