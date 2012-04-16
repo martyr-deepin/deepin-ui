@@ -72,19 +72,28 @@ class BrowserClient(ScrolledWindow):
         '''Callback for `realize` signal.'''
         # Connect browser core.
         self.socket_id = int(self.socket.get_id())
+        
+        # Build dbus service.
         DBusGMainLoop(set_as_default=True)
         self.service = BrowserClientService(
             self.socket_id, 
             {'init-size' : self.init_size})
+        
+        # Open browser core process.
         subprocess.Popen(["python", 
                           os.path.join(os.path.dirname(os.path.realpath(__file__)), "browser_core.py"),
                           self.uri, str(self.socket_id), self.cookie_file])        
         
     def init_size(self, args):
         '''Resize web view.'''
+        # Init.
         vadjust = self.get_vadjustment()
         hadjust = self.get_hadjustment()
+        
+        # Adjust upper value.
         hadjust.set_upper(int(args[0]))
         vadjust.set_upper(int(args[1]))
+        
+        # Adjust init value.
         hadjust.set_value(0)
         vadjust.set_value(0)

@@ -67,18 +67,20 @@ class BrowserCore(Gtk.Plug):
         
     def load_finished_browser_core(self, view, frame):
         '''Callback for `load-finished` signal.'''
+        # Get new width.
         width = int(self.execute_script("document.title=document.body.offsetWidth;"))
         height = int(self.execute_script("document.title=document.body.offsetHeight;"))
         
+        # Set web view size.
         self.view.set_size_request(width, height)
         
+        # Adjust scroll window's size.
         DBusGMainLoop(set_as_default=True)
         bus = dbus.SessionBus()
         self.app_dbus_name = "com.deepin.browserclient%s" % self.socket_id
         self.app_service_name = "com.deepin.browserclient%s" % self.socket_id
         self.app_object_name = "/com/deepin/browserclient/%s" % self.socket_id
         if bus.request_name(self.app_dbus_name) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
-            # Call 'show_window` method when have exist instance.
             method = bus.get_object(
                 self.app_service_name, 
                 self.app_object_name).get_dbus_method('deepin_browser_client_%s' % self.socket_id)
