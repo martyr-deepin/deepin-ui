@@ -26,6 +26,9 @@ from gi.repository import Gdk
 from gi.repository import Soup
 import sys
 import os
+import dbus
+import dbus.service
+from dbus.mainloop.glib import DBusGMainLoop
 
 browser_core_path = os.path.realpath(__file__)
 
@@ -34,6 +37,7 @@ class BrowserCore(Gtk.Plug):
 	
     def __init__(self, uri, socket_id, cookie_file):
         '''Init browser core.'''
+        # Init.
         Gtk.Plug.__init__(self)
         print socket_id
         self.uri = uri
@@ -41,15 +45,44 @@ class BrowserCore(Gtk.Plug):
         self.cookie_file = cookie_file
         self.construct(self.socket_id)
         
+        # Build web view.
         self.view = WebKit.WebView()
         self.session = WebKit.get_default_session()
         self.cookie = Soup.CookieJarText.new(cookie_file, False)
         self.session.add_feature(self.cookie)
-        
         self.view.load_uri(self.uri)
-
         self.add(self.view)
+        
+        # Handle signal.
         self.connect("delete-event", Gtk.main_quit)
+        self.view.connect("load-finished", self.load_finished_browser_core)
+        
+    def execute_script(self, script):
+        '''Execute script.'''
+        self.view.execute_script('oldtitle=document.title;%s' % script)
+        result = self.view.get_main_frame().get_title()
+        self.view.execute_script('document.title=oldtitle;')
+        
+        return result
+        
+    def load_finished_browser_core(self, view, frame):
+        '''Callback for `load-finished` signal.'''
+        width = int(self.execute_script("document.title=document.body.offsetWidth;"))
+        height = int(self.execute_script("document.title=document.body.offsetHeight;"))
+        
+        self.view.set_size_request(width, height)
+        
+        DBusGMainLoop(set_as_default=True)
+        bus = dbus.SessionBus()
+        self.app_dbus_name = "com.deepin.browserclient%s" % self.socket_id
+        self.app_service_name = "com.deepin.browserclient%s" % self.socket_id
+        self.app_object_name = "/com/deepin/browserclient/%s" % self.socket_id
+        if bus.request_name(self.app_dbus_name) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
+            # Call 'show_window` method when have exist instance.
+            method = bus.get_object(
+                self.app_service_name, 
+                self.app_object_name).get_dbus_method('deepin_browser_client_%s' % self.socket_id)
+            method("init-size", (width, height))
         
 if __name__ == "__main__":
     Gdk.threads_init()
