@@ -39,7 +39,7 @@ from dtk.ui.volume_button import *
 from dtk.ui.entry import *
 from dtk.ui.paned import *
 from dtk.ui.label import *
-from dtk.ui.browser import *
+from dtk.ui.browser_client import *
 
 if __name__ == "__main__":
     # Init application.
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         ["theme", "menu", "max", "min", "close"], 
         ui_theme.get_pixbuf("title.png"), 
         "深度图形库",
-        "/home/andy/deepin-ui/demo.py")
+        "/home/andy/deepin-ui/browser_demo.py")
     
     # Add browser.
     horizontal_frame = HorizontalFrame()
