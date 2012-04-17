@@ -109,3 +109,36 @@ class TextBox(gtk.EventBox):
     
 gobject.type_register(TextBox)
 
+class BackgroundBox(gtk.VBox):
+    '''Box to expande background.'''
+	
+    def __init__(self, 
+                 background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE)):
+        '''Init background box.'''
+        # Init.
+        gtk.VBox.__init__(self)
+        self.background_pixbuf = background_pixbuf        
+        
+        self.connect("expose-event", self.expose_background_box)
+        
+    def expose_background_box(self, widget, event):
+        '''Expose background box.'''
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        toplevel = widget.get_toplevel()
+        coordinate = widget.translate_coordinates(toplevel, rect.x, rect.y)
+        (offset_x, offset_y) = coordinate
+        
+        with cairo_state(cr):
+            cr.translate(-offset_x, -offset_y)
+            cr.rectangle(offset_x, offset_y, rect.width, rect.height)
+            cr.clip()
+            
+            draw_pixbuf(cr, self.background_pixbuf.get_pixbuf(), rect.x, rect.y)
+
+        propagate_expose(widget, event)
+        
+        return True
+        
+gobject.type_register(BackgroundBox)
+

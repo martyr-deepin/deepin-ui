@@ -207,7 +207,10 @@ if __name__ == "__main__":
     # list_view.connect("single-click-item", print_single_click)
     # list_view.connect("motion-notify-item", print_motion_notify)
         
-    scrolled_window.add_child(list_view)
+    # scrolled_window.add_child(list_view)
+    
+    background_box = BackgroundBox()
+    scrolled_window.add_child(background_box)
     
     # Add volume button.
     volume_button = VolumeButton(100, 0, 100, 2)
