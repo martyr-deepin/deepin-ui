@@ -281,7 +281,11 @@ if __name__ == "__main__":
     
     items = map(lambda index: PlaylistItem("测试列表%s" % (index)),
                 range(0, 100))
+    items[0].set_editable(False)
     playlist_view = PlaylistView(items)
+    
+    playlist_view.add_item(PlaylistItem("新建列表"))
+    
     tab_3_box.pack_start(playlist_view, True, True)
     
     # Run.

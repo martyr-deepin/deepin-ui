@@ -95,9 +95,15 @@ class PlaylistItemBox(gtk.Alignment):
     def button_press_item_box(self, widget, event):
         '''Callback for `button-press-event` signal.'''
         if is_double_click(event):
-            self.switch_on_editable()
+            if self.item.get_editable():
+                self.switch_on_editable()
         elif is_left_button(event):
             self.active_item()
+        elif is_right_button(event):
+            (wx, wy) = self.window.get_root_origin()
+            self.item.emit("right-press-item", 
+                           wx + event.x,
+                           wy + event.y)
         
     def switch_on_editable(self):
         '''Switch on editable status.'''
@@ -133,7 +139,7 @@ class PlaylistItemBox(gtk.Alignment):
             old_focus_item_box.queue_draw()
             
         # Active item.
-        self.item.active()
+        self.item.emit("active")
         
         self.item_label.grab_focus()
 
@@ -173,12 +179,52 @@ class PlaylistView(ScrolledWindow):
         '''Get focus item box.'''
         return self.focus_item_box
     
-class PlaylistItem(object):
+    def get_items(self):
+        '''Get items.'''
+        return self.items
+    
+    def delete_item(self, item):
+        '''Delete item.'''
+        for item_box in self.background_box.get_children():
+            if item == item_box.item:
+                self.background_box.remove(item_box)
+                self.items.remove(item)
+                break
+            
+    def add_item(self, item):
+        '''Add item.'''
+        # Add item.
+        self.items.append(item)
+        
+        # Create new item box.
+        item_box = PlaylistItemBox(
+                item,
+                self.set_focus_item_box,
+                self.get_focus_item_box,
+                )
+        item_box.set_size_request(-1, 24)
+        self.background_box.pack_start(item_box)
+        
+        # Make new item box editable.
+        item_box.switch_on_editable()
+        
+        # Scroll window to new item.
+        vadjust = self.get_vadjustment()
+        vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+    
+class PlaylistItem(gobject.GObject):
     '''Play list item.'''
-	
+    
+    __gsignals__ = {
+        "active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "right-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int, int,)),
+    }
+    
     def __init__(self, text):
         '''Init playlist item.'''
+        gobject.GObject.__init__(self)
         self.text = text
+        self.editable = True
 
     def set_text(self, text):
         '''Set text.'''
@@ -188,7 +234,12 @@ class PlaylistItem(object):
         '''Get text.'''
         return self.text
         
-    def active(self):
-        '''Active.'''
-        print self.text
+    def get_editable(self):
+        '''Get editable.'''
+        return self.editable
     
+    def set_editable(self, editable):
+        '''Set editable.'''
+        self.editable = editable
+        
+gobject.type_register(PlaylistItem)
