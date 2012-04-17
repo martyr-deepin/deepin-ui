@@ -135,10 +135,13 @@ class BackgroundBox(gtk.VBox):
             cr.clip()
             
             draw_pixbuf(cr, self.background_pixbuf.get_pixbuf(), rect.x, rect.y)
+            
+        draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height,
+                     ui_theme.get_shadow_color("linearBackground").get_color_info())
 
         propagate_expose(widget, event)
         
-        return True
+        return False
         
 gobject.type_register(BackgroundBox)
 

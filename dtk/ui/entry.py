@@ -41,12 +41,12 @@ class Entry(gtk.EventBox):
     }
     
     def __init__(self, content="", 
+                 padding_x=5, 
+                 padding_y=2,
                  text_color=ui_theme.get_color("entryText"),
                  text_select_color=ui_theme.get_color("entrySelectText"),
                  background_select_color=ui_theme.get_shadow_color("entrySelectBackground"),
                  font_size=DEFAULT_FONT_SIZE, 
-                 padding_x=5, 
-                 padding_y=2
                  ):
         '''Init entry.'''
         # Init.

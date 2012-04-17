@@ -38,6 +38,7 @@ class Label(gtk.EventBox):
         # Init.
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
+        self.set_can_focus(True) # can focus to response key-press signal
         
         self.text = text
         self.text_size = text_size

@@ -41,6 +41,7 @@ from dtk.ui.paned import *
 from dtk.ui.label import *
 from dtk.ui.notebook import *
 from dtk.ui.browser_client import *
+from dtk.ui.playlist_view import *
 import time
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
@@ -160,10 +161,13 @@ if __name__ == "__main__":
     notebook_box = gtk.VBox()
     tab_1_box = gtk.VBox()
     tab_2_box = gtk.VBox()
+    tab_3_box = gtk.VBox()
     
     notebook = Notebook(
         [(ui_theme.get_pixbuf("music.png"), "音乐管理器", lambda : switch_tab(notebook_box, tab_1_box)),
-         (ui_theme.get_pixbuf("web.png"), "网络音乐盒", lambda : switch_tab(notebook_box, tab_2_box))])
+         (ui_theme.get_pixbuf("web.png"), "网络音乐盒", lambda : switch_tab(notebook_box, tab_2_box)),
+         (ui_theme.get_pixbuf("music.png"), "测试播放列表", lambda : switch_tab(notebook_box, tab_3_box)),
+         ])
     notebook_frame = HorizontalFrame(20)
     notebook_frame.add(notebook)
     application.main_box.pack_start(notebook_frame, False, False)
@@ -274,6 +278,11 @@ if __name__ == "__main__":
         )
     horizontal_frame.add(browser_client)
     tab_2_box.pack_start(horizontal_frame)
+    
+    items = map(lambda index: PlaylistItem("测试列表%s" % (index)),
+                range(0, 100))
+    playlist_view = PlaylistView(items)
+    tab_3_box.pack_start(playlist_view, True, True)
     
     # Run.
     application.run()
