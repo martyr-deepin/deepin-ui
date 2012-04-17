@@ -101,7 +101,7 @@ class EditableItemBox(gtk.Alignment):
             self.active_item()
         elif is_right_button(event):
             (wx, wy) = self.window.get_root_origin()
-            self.item.emit("right-press-item", 
+            self.item.emit("right-press", 
                            wx + event.x,
                            wy + event.y)
         
@@ -237,7 +237,7 @@ class EditableItem(gobject.GObject):
     
     __gsignals__ = {
         "active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        "right-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int, int,)),
+        "right-press" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int, int,)),
     }
     
     def __init__(self, text):
