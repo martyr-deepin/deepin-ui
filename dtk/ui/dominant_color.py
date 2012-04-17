@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PIL import Image
+import sys
 
 def get_dominant_color(image_path):
     '''Get dominant color of image.'''
@@ -50,4 +51,4 @@ def get_dominant_color(image_path):
     return (r_all / color_count, g_all / color_count, b_all / color_count)    
 
 if __name__ == '__main__':
-    print '#%02x%02x%02x' % get_dominant_color("/home/andy/deepin-ui/dtk/theme/default/image/background9.jpg")
+    print '#%02x%02x%02x' % get_dominant_color(sys.argv[1])
