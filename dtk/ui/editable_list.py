@@ -191,8 +191,20 @@ class EditableList(ScrolledWindow):
                 self.items.remove(item)
                 break
             
-    def add_item(self, item):
-        '''Add item.'''
+    def add_items(self, items):
+        '''Add items.'''
+        for item in items:
+            self.items.append(item)
+            item_box = EditableItemBox(
+                    item,
+                    self.set_focus_item_box,
+                    self.get_focus_item_box,
+                    )
+            item_box.set_size_request(-1, 24)
+            self.background_box.pack_start(item_box)
+            
+    def new_item(self, item):
+        '''New item.'''
         # Add item.
         self.items.append(item)
         

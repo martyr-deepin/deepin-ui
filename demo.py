@@ -284,7 +284,7 @@ if __name__ == "__main__":
     items[0].set_editable(False)
     editable_list = EditableList(items)
     
-    editable_list.add_item(EditableItem("新建列表"))
+    editable_list.new_item(EditableItem("新建列表"))
     
     tab_3_box.pack_start(editable_list, True, True)
     
