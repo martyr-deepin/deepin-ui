@@ -245,7 +245,7 @@ class EditableList(ScrolledWindow):
         '''Highlight item.'''
         for item_box in self.background_box.get_children():
             if item_box.item == item:
-                self.set_focus_item_box = item_box
+                self.set_focus_item_box(item_box)
                 self.queue_draw()
                 break
     
