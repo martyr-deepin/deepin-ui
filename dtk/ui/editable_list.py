@@ -27,15 +27,15 @@ from label import *
 from entry import *
 from scrolled_window import *
 
-class PlaylistItemBox(gtk.Alignment):
-    '''Box for item of playlist.'''
+class EditableItemBox(gtk.Alignment):
+    '''Box for item of editable.'''
 	
     def __init__(self, 
                  item, 
                  set_focus_item_box, 
                  get_focus_item_box,
                  ):
-        '''Init playlist item box.'''
+        '''Init editable item box.'''
         gtk.Alignment.__init__(self)
         self.padding_x = 10
         self.set(0.5, 0.5, 1.0, 1.0)
@@ -83,7 +83,7 @@ class PlaylistItemBox(gtk.Alignment):
     def init_text(self):
         '''Init text.'''
         self.remove_children()
-        self.item_label = Label(self.item.get_text(), ui_theme.get_color("playlistviewFont"))
+        self.item_label = Label(self.item.get_text(), ui_theme.get_color("editablelistFont"))
         self.item_label.set_size_request(-1, 24)
         self.item_label.grab_focus()
         self.add(self.item_label)
@@ -143,14 +143,14 @@ class PlaylistItemBox(gtk.Alignment):
         
         self.item_label.grab_focus()
 
-class PlaylistView(ScrolledWindow):
+class EditableList(ScrolledWindow):
     '''Scroll window.'''
 	
     def __init__(self, 
                  items=[],
                  background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE),
                  ):
-        '''Init playlist view.'''
+        '''Init editable list.'''
         # Init.
         ScrolledWindow.__init__(self, background_pixbuf)
         self.items = items
@@ -163,7 +163,7 @@ class PlaylistView(ScrolledWindow):
         self.add_child(self.background_box)
 
         for item in self.items:
-            item_box = PlaylistItemBox(
+            item_box = EditableItemBox(
                 item, 
                 self.set_focus_item_box, 
                 self.get_focus_item_box,
@@ -197,7 +197,7 @@ class PlaylistView(ScrolledWindow):
         self.items.append(item)
         
         # Create new item box.
-        item_box = PlaylistItemBox(
+        item_box = EditableItemBox(
                 item,
                 self.set_focus_item_box,
                 self.get_focus_item_box,
@@ -212,7 +212,7 @@ class PlaylistView(ScrolledWindow):
         vadjust = self.get_vadjustment()
         vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
     
-class PlaylistItem(gobject.GObject):
+class EditableItem(gobject.GObject):
     '''Play list item.'''
     
     __gsignals__ = {
@@ -221,7 +221,7 @@ class PlaylistItem(gobject.GObject):
     }
     
     def __init__(self, text):
-        '''Init playlist item.'''
+        '''Init editable item.'''
         gobject.GObject.__init__(self)
         self.text = text
         self.editable = True
@@ -242,4 +242,4 @@ class PlaylistItem(gobject.GObject):
         '''Set editable.'''
         self.editable = editable
         
-gobject.type_register(PlaylistItem)
+gobject.type_register(EditableItem)

@@ -41,7 +41,7 @@ from dtk.ui.paned import *
 from dtk.ui.label import *
 from dtk.ui.notebook import *
 from dtk.ui.browser_client import *
-from dtk.ui.playlist_view import *
+from dtk.ui.editable_list import *
 import time
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
@@ -279,14 +279,14 @@ if __name__ == "__main__":
     horizontal_frame.add(browser_client)
     tab_2_box.pack_start(horizontal_frame)
     
-    items = map(lambda index: PlaylistItem("测试列表%s" % (index)),
+    items = map(lambda index: EditableItem("测试列表%s" % (index)),
                 range(0, 100))
     items[0].set_editable(False)
-    playlist_view = PlaylistView(items)
+    editable_list = EditableList(items)
     
-    playlist_view.add_item(PlaylistItem("新建列表"))
+    editable_list.add_item(EditableItem("新建列表"))
     
-    tab_3_box.pack_start(playlist_view, True, True)
+    tab_3_box.pack_start(editable_list, True, True)
     
     # Run.
     application.run()
