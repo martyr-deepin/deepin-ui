@@ -34,9 +34,8 @@ import gtk
 import sys
 
 class UniqueService(dbus.service.Object):
-    def __init__(self, app_dbus_name, app_service_name, app_object_name, start_callback):
+    def __init__(self, bus_name, app_dbus_name, app_object_name, start_callback):
         # Init.
-        bus_name = dbus.service.BusName(app_dbus_name, bus=dbus.SessionBus())
         dbus.service.Object.__init__(self, bus_name, app_object_name)
         self.start_callback = start_callback
         
@@ -46,7 +45,7 @@ class UniqueService(dbus.service.Object):
             
         # Below code export dbus method dyanmically.
         # Don't use @dbus.service.method !
-        setattr(UniqueService, 'show_window', dbus.service.method(app_service_name)(show_window))
+        setattr(UniqueService, 'show_window', dbus.service.method(app_dbus_name)(show_window))
 
 class Application(object):
     '''Application.'''
@@ -54,10 +53,10 @@ class Application(object):
     def __init__(self, app_name, app_support_colormap=True, check_unique=True):
         '''Init application.'''
         # Init.
+        DBusGMainLoop(set_as_default=True) # WARING: only use once in one process
         self.app_name = app_name
         self.app_support_colormap = app_support_colormap
         self.app_dbus_name = "com.deepin." + self.app_name
-        self.app_service_name = "com.deepin." + self.app_name
         self.app_object_name = "/com/deepin/" + self.app_name
         self.check_unique = check_unique
         self.close_callback = self.close_window
@@ -65,16 +64,18 @@ class Application(object):
         # Check unique when option `check_unique` is enable.
         if check_unique:
             # Init dbus. 
-            DBusGMainLoop(set_as_default=True)
             bus = dbus.SessionBus()
             if bus.request_name(self.app_dbus_name) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
                 # Call 'show_window` method when have exist instance.
-                method = bus.get_object(self.app_service_name, self.app_object_name).get_dbus_method("show_window")
+                method = bus.get_object(self.app_dbus_name, self.app_object_name).get_dbus_method("show_window")
                 method()
                 
                 # Exit program.
                 sys.exit()
                 
+        # Register bus name after check unique.
+        self.app_bus_name = dbus.service.BusName(self.app_dbus_name, bus=dbus.SessionBus())
+        
         # Start application.
         self.init()
 
@@ -101,6 +102,7 @@ class Application(object):
         self.titlebar = None
         self.titlebar_box = gtk.HBox()
         self.main_box.pack_start(self.titlebar_box, False)
+        
         
     def add_titlebar(self, 
                      button_mask=["theme", "menu", "max", "min", "close"], 
@@ -168,10 +170,9 @@ class Application(object):
         '''Run.'''
         # Init DBus when option `check_unique` is enable.
         if self.check_unique:
-            DBusGMainLoop(set_as_default=True)
             UniqueService(
+                self.app_bus_name,
                 self.app_dbus_name,
-                self.app_service_name,
                 self.app_object_name,
                 self.raise_to_top)
         

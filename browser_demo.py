@@ -60,7 +60,12 @@ if __name__ == "__main__":
     
     # Add browser.
     horizontal_frame = HorizontalFrame()
-    browser_client = BrowserClient("http://www.linuxdeepin.com/forum", "/home/andy/cookie.txt")
+    browser_client = BrowserClient(
+        "http://www.linuxdeepin.com/forum",
+        "/home/andy/cookie.txt",
+        application.app_bus_name,
+        application.app_dbus_name,
+        )
     horizontal_frame.add(browser_client)
     application.main_box.pack_start(horizontal_frame)
     

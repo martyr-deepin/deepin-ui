@@ -26,18 +26,14 @@ from utils import *
 from scrolled_window import *
 import dbus
 import dbus.service
-from dbus.mainloop.glib import DBusGMainLoop
 
 class BrowserClientService(dbus.service.Object):
-    def __init__(self, socket_id, callbacks):
+    def __init__(self, socket_id, callbacks, app_bus_name, app_dbus_name):
         # Init.
         self.socket_id = socket_id
         self.callbacks = callbacks
-        self.app_dbus_name = "com.deepin.browserclient%s" % self.socket_id
-        self.app_service_name = "com.deepin.browserclient%s" % self.socket_id
         self.app_object_name = "/com/deepin/browserclient/%s" % self.socket_id
-        bus_name = dbus.service.BusName(self.app_dbus_name, bus=dbus.SessionBus())
-        dbus.service.Object.__init__(self, bus_name, self.app_object_name)
+        dbus.service.Object.__init__(self, app_bus_name, self.app_object_name)
         
         # Define DBus method.
         def dbus_callback_wrap(self, name, args):
@@ -50,15 +46,17 @@ class BrowserClientService(dbus.service.Object):
         # Don't use @dbus.service.method !
         setattr(BrowserClientService, 
                 "deepin_browser_client_%s" % self.socket_id,
-                dbus.service.method(self.app_service_name)(dbus_callback_wrap))
-
+                dbus.service.method(app_dbus_name, "ss")(dbus_callback_wrap))
+        
 class BrowserClient(ScrolledWindow):
     '''Browser client.'''
 	
-    def __init__(self, uri, cookie_file):
+    def __init__(self, uri, cookie_file, app_bus_name, app_dbus_name):
         '''Browser client.'''
         # Init.
         ScrolledWindow.__init__(self)
+        self.app_bus_name = app_bus_name
+        self.app_dbus_name = app_dbus_name
 
         self.socket = gtk.Socket()
         self.uri = uri
@@ -74,25 +72,27 @@ class BrowserClient(ScrolledWindow):
         self.socket_id = int(self.socket.get_id())
         
         # Build dbus service.
-        DBusGMainLoop(set_as_default=True)
-        self.service = BrowserClientService(
+        BrowserClientService(
             self.socket_id, 
-            {'init-size' : self.init_size})
+            {'init-size' : self.init_size},
+            self.app_bus_name,
+            self.app_dbus_name)
         
         # Open browser core process.
         subprocess.Popen(["python", 
                           os.path.join(os.path.dirname(os.path.realpath(__file__)), "browser_core.py"),
-                          self.uri, str(self.socket_id), self.cookie_file])        
+                          self.uri, str(self.socket_id), self.cookie_file, self.app_dbus_name])        
         
     def init_size(self, args):
         '''Resize web view.'''
         # Init.
+        (width, height) = eval(args) 
         vadjust = self.get_vadjustment()
         hadjust = self.get_hadjustment()
         
         # Adjust upper value.
-        hadjust.set_upper(int(args[0]))
-        vadjust.set_upper(int(args[1]))
+        hadjust.set_upper(width)
+        vadjust.set_upper(height)
         
         # Adjust init value.
         hadjust.set_value(0)
