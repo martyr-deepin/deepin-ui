@@ -117,6 +117,7 @@ class BackgroundBox(gtk.VBox):
         '''Init background box.'''
         # Init.
         gtk.VBox.__init__(self)
+        self.set_can_focus(True)
         self.background_pixbuf = background_pixbuf        
         
         self.connect("expose-event", self.expose_background_box)

@@ -160,7 +160,9 @@ class EditableList(ScrolledWindow):
         
         # Background box.
         self.background_box = BackgroundBox(background_pixbuf)
-        self.add_child(self.background_box)
+        self.background_eventbox = EventBox()
+        self.add_child(self.background_eventbox)
+        self.background_eventbox.add(self.background_box)
 
         for item in self.items:
             item_box = EditableItemBox(
@@ -170,6 +172,21 @@ class EditableList(ScrolledWindow):
                 )
             item_box.set_size_request(-1, 24)
             self.background_box.pack_start(item_box, False, False)
+            
+        self.background_eventbox.connect("button-press-event", self.button_press_background)    
+        
+    def button_press_background(self, widget, event):
+        '''Button press background box.'''
+        # Find edit item.
+        edit_list = filter(lambda x: x.item_entry, self.background_box.get_children())
+        
+        # Change focus.
+        self.background_box.grab_focus()
+        
+        # Change edit item to focus item if find.
+        if len(edit_list) == 1:
+            self.set_focus_item_box(edit_list[0])
+            self.queue_draw()
             
     def set_focus_item_box(self, item_box):
         '''Set focus item box.'''
