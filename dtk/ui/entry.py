@@ -37,6 +37,7 @@ class Entry(gtk.EventBox):
 	
     __gsignals__ = {
         "edit-alarm" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "press-return" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
@@ -89,7 +90,8 @@ class Entry(gtk.EventBox):
             "C-a" : self.select_all,
             "C-x" : self.cut_to_clipboard,
             "C-c" : self.copy_to_clipboard,
-            "C-v" : self.paste_from_clipboard}
+            "C-v" : self.paste_from_clipboard,
+            "Return" : self.press_return}
         
         # Add menu.
         self.right_menu = Menu(
@@ -316,6 +318,10 @@ class Entry(gtk.EventBox):
             with self.monitor_entry_content():
                 clipboard = gtk.Clipboard()    
                 clipboard.request_text(lambda clipboard, text, data: self.commit_entry('\\n'.join(text.split('\n'))))
+                
+    def press_return(self):
+        '''Press return.'''
+        self.emit("press-return")
         
     def select_to_left(self):
         '''Select to preview.'''

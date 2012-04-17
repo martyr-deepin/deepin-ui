@@ -35,6 +35,7 @@ class EditableItemBox(gtk.Alignment):
                  item, 
                  set_focus_item_box, 
                  get_focus_item_box,
+                 editable=False
                  ):
         '''Init editable item box.'''
         gtk.Alignment.__init__(self)
@@ -49,8 +50,12 @@ class EditableItemBox(gtk.Alignment):
         self.get_focus_item_box = get_focus_item_box
         self.button_press_id = None
         self.focus_out_id = None
+        self.press_entry_id = None
         
-        self.init_text()
+        if editable:
+            self.switch_on_editable()
+        else:
+            self.init_text()
         
         self.connect("expose-event", self.expose_item_box)
         
@@ -72,6 +77,10 @@ class EditableItemBox(gtk.Alignment):
         if self.focus_out_id:
             gobject.source_remove(self.focus_out_id)
             self.focus_out_id = None
+
+        if self.press_entry_id:
+            gobject.source_remove(self.press_entry_id)
+            self.press_entry_id = None
             
         if self.button_press_id:
             gobject.source_remove(self.button_press_id)
@@ -122,13 +131,16 @@ class EditableItemBox(gtk.Alignment):
         self.add(self.item_entry)
         
         self.focus_out_id = self.item_entry.connect("focus-out-event", lambda w, e: self.switch_off_editable())
+        # self.press_entry_id = self.item_entry.connect("press-return", lambda e: self.editable_list.highlight_item(self.item))
         self.item_entry.grab_focus()
         
         self.show_all()
         
     def switch_off_editable(self):
         '''Switch off editable status.'''
-        self.item.set_text(self.item_entry.get_text())
+        if self.item_entry:
+            self.item.set_text(self.item_entry.get_text())
+            
         self.init_text()
         
     def active_item(self):
@@ -189,15 +201,34 @@ class EditableList(ScrolledWindow):
     def button_press_background(self, widget, event):
         '''Button press background box.'''
         # Find edit item.
-        edit_list = filter(lambda x: x.item_entry, self.background_box.get_children())
-        
+        edit_item = None
+        for child in self.background_box.get_children():
+            if child.item_entry:
+                edit_item = child
+                break
+            
         # Change focus.
         self.background_box.grab_focus()
         
         # Change edit item to focus item if find.
-        if len(edit_list) == 1:
-            self.set_focus_item_box(edit_list[0])
+        if edit_item:
+            # Turn off editable.
+            edit_item.switch_off_editable()
+            
+            # Set focus item if cursor at last item or out of list area.
+            click_row = self.get_item_at_cursor(event)
+            if click_row >= len(self.items) - 1:
+                self.set_focus_item_box(edit_item)
+            
+            # Redraw.
             self.queue_draw()
+            
+    def get_item_at_cursor(self, event):
+        '''Get item at cursor.'''
+        vadjust = self.get_vadjustment()
+        (sw_x, sw_y) = self.background_box.translate_coordinates(self.get_toplevel(), 0, int(vadjust.get_value()))
+        (tw_x, tw_y) = self.get_toplevel().get_position()
+        return int((event.y_root - sw_y - tw_y + vadjust.get_value()) / 24)
             
     def set_focus_item_box(self, item_box):
         '''Set focus item box.'''
@@ -234,6 +265,16 @@ class EditableList(ScrolledWindow):
             
     def new_item(self, item):
         '''New item.'''
+        # Find and remove edit item.
+        edit_item = None
+        for child in self.background_box.get_children():
+            if child.item_entry:
+                edit_item = child
+                break
+
+        if edit_item:
+            edit_item.switch_off_editable()
+            
         # Add item.
         self.items.append(item)
         
@@ -243,21 +284,24 @@ class EditableList(ScrolledWindow):
             item,
             self.set_focus_item_box,
             self.get_focus_item_box,
+            True
             )
         item_box.set_size_request(-1, 24)
         self.background_box.pack_start(item_box, False, False)
         
-        # Make new item box editable.
-        item_box.switch_on_editable()
-        
-        # Scroll window to new item.
+        # Scroll window to bottom.
         vadjust = self.get_vadjustment()
-        vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+        vadjust.set_value(vadjust.get_upper())
+        
+        self.queue_draw()
         
     def highlight_item(self, item):
         '''Highlight item.'''
         for item_box in self.background_box.get_children():
             if item_box.item == item:
+                if item_box.item_entry:
+                    item_box.switch_off_editable()
+                
                 self.set_focus_item_box(item_box)
                 self.queue_draw()
                 break
