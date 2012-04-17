@@ -21,6 +21,7 @@
  "radioButtonFrame" : "#B5B5B5",
  "checkButtonFrame" : "#A1A1A1",
  "checkButtonBackground" : "#F7F7F7",
+ "notebookFont" : "#000000",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),

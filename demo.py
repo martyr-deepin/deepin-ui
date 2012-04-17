@@ -39,6 +39,8 @@ from dtk.ui.volume_button import *
 from dtk.ui.entry import *
 from dtk.ui.paned import *
 from dtk.ui.label import *
+from dtk.ui.notebook import *
+from dtk.ui.browser_client import *
 import time
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
@@ -72,6 +74,13 @@ def simulate_redraw_request(items, items_length):
     items[item_index].emit_redraw_request()
     
     return True
+
+def switch_tab(notebook_box, tab_box):
+    '''Switch tab 1.'''
+    container_remove_all(notebook_box)
+    notebook_box.add(tab_box)
+    
+    notebook_box.show_all()
     
 if __name__ == "__main__":
     # Init application.
@@ -148,17 +157,32 @@ if __name__ == "__main__":
     application.add_move_window_event(navigatebar.nav_event_box)
     application.add_toggle_window_event(navigatebar.nav_event_box)
     
+    notebook_box = gtk.VBox()
+    tab_1_box = gtk.VBox()
+    tab_2_box = gtk.VBox()
+    
+    notebook = Notebook(
+        [(ui_theme.get_pixbuf("music.png"), "音乐管理器", lambda : switch_tab(notebook_box, tab_1_box)),
+         (ui_theme.get_pixbuf("web.png"), "网络音乐盒", lambda : switch_tab(notebook_box, tab_2_box))])
+    notebook_frame = HorizontalFrame(20)
+    notebook_frame.add(notebook)
+    application.main_box.pack_start(notebook_frame, False, False)
+    
+    application.main_box.pack_start(notebook_box, True, True)
+    
+    notebook_box.add(tab_1_box)
+    
     # Add body box.
     body_box = gtk.HBox()
     horizontal_frame = HorizontalFrame()
     horizontal_frame.add(body_box)
-    application.main_box.pack_start(horizontal_frame, True, True)
+    tab_1_box.pack_start(horizontal_frame, True, True)
     
     # Add scalebar.
     scalebar = HScalebar()
     scalebar_frame = HorizontalFrame()
     scalebar_frame.add(scalebar)
-    application.main_box.pack_start(scalebar_frame, False, False)
+    tab_1_box.pack_start(scalebar_frame, False, False)
     
     vscalebar = VScalebar()
     vscale_box = gtk.HBox()
@@ -207,16 +231,13 @@ if __name__ == "__main__":
     # list_view.connect("single-click-item", print_single_click)
     # list_view.connect("motion-notify-item", print_motion_notify)
         
-    # scrolled_window.add_child(list_view)
-    
-    background_box = BackgroundBox()
-    scrolled_window.add_child(background_box)
+    scrolled_window.add_child(list_view)
     
     # Add volume button.
     volume_button = VolumeButton(100, 0, 100, 2)
     volume_frame = HorizontalFrame(10, 0, 0, 0, 0)
     volume_frame.add(volume_button)
-    application.main_box.pack_start(volume_frame, False, False)
+    tab_1_box.pack_start(volume_frame, False, False)
     
     # Add entry widget.
     entry_button = ImageButton(
@@ -236,13 +257,23 @@ if __name__ == "__main__":
     entry_box.pack_start(entry, True, True)
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
-    application.main_box.pack_start(entry_frame, False, False)
+    tab_1_box.pack_start(entry_frame, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)
-    application.main_box.pack_start(statusbar.status_event_box, False)
+    tab_1_box.pack_start(statusbar.status_event_box, False)
     application.add_move_window_event(statusbar.status_event_box)
     application.add_toggle_window_event(statusbar.status_event_box)
+    
+    horizontal_frame = HorizontalFrame()
+    browser_client = BrowserClient(
+        "http://www.linuxdeepin.com/forum",
+        "/home/andy/cookie.txt",
+        application.app_bus_name,
+        application.app_dbus_name,
+        )
+    horizontal_frame.add(browser_client)
+    tab_2_box.pack_start(horizontal_frame)
     
     # Run.
     application.run()
