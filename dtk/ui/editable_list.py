@@ -31,12 +31,14 @@ class EditableItemBox(gtk.Alignment):
     '''Box for item of editable.'''
 	
     def __init__(self, 
+                 editable_list,
                  item, 
                  set_focus_item_box, 
                  get_focus_item_box,
                  ):
         '''Init editable item box.'''
         gtk.Alignment.__init__(self)
+        self.editable_list = editable_list
         self.padding_x = 10
         self.set(0.5, 0.5, 1.0, 1.0)
         self.set_padding(0, 0, self.padding_x, self.padding_x)
@@ -100,10 +102,13 @@ class EditableItemBox(gtk.Alignment):
         elif is_left_button(event):
             self.active_item()
         elif is_right_button(event):
-            (wx, wy) = self.window.get_root_origin()
-            self.item.emit("right-press", 
-                           wx + event.x,
-                           wy + event.y)
+            (bx, by) = self.window.get_root_origin()
+            (wx, wy) = self.translate_coordinates(self.get_toplevel(), bx, by)
+            self.editable_list.emit(
+                "right-press", 
+                self.item,
+                wx + event.x,
+                wy + event.y)
         
     def switch_on_editable(self):
         '''Switch on editable status.'''
@@ -139,13 +144,18 @@ class EditableItemBox(gtk.Alignment):
             old_focus_item_box.queue_draw()
             
         # Active item.
-        self.item.emit("active")
+        self.editable_list.emit("active", self.item)
         
         self.item_label.grab_focus()
 
 class EditableList(ScrolledWindow):
     '''Scroll window.'''
 	
+    __gsignals__ = {
+        "active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+        "right-press" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int,)),
+    }
+    
     def __init__(self, 
                  items=[],
                  background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE),
@@ -166,6 +176,7 @@ class EditableList(ScrolledWindow):
 
         for item in self.items:
             item_box = EditableItemBox(
+                self,
                 item, 
                 self.set_focus_item_box, 
                 self.get_focus_item_box,
@@ -213,10 +224,11 @@ class EditableList(ScrolledWindow):
         for item in items:
             self.items.append(item)
             item_box = EditableItemBox(
-                    item,
-                    self.set_focus_item_box,
-                    self.get_focus_item_box,
-                    )
+                self,
+                item,
+                self.set_focus_item_box,
+                self.get_focus_item_box,
+                )
             item_box.set_size_request(-1, 24)
             self.background_box.pack_start(item_box, False, False)
             
@@ -227,10 +239,11 @@ class EditableList(ScrolledWindow):
         
         # Create new item box.
         item_box = EditableItemBox(
-                item,
-                self.set_focus_item_box,
-                self.get_focus_item_box,
-                )
+            self,
+            item,
+            self.set_focus_item_box,
+            self.get_focus_item_box,
+            )
         item_box.set_size_request(-1, 24)
         self.background_box.pack_start(item_box, False, False)
         
@@ -251,11 +264,6 @@ class EditableList(ScrolledWindow):
     
 class EditableItem(gobject.GObject):
     '''Play list item.'''
-    
-    __gsignals__ = {
-        "active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        "right-press" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int, int,)),
-    }
     
     def __init__(self, text):
         '''Init editable item.'''

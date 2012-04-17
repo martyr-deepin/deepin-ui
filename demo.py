@@ -83,6 +83,15 @@ def switch_tab(notebook_box, tab_box):
     
     notebook_box.show_all()
     
+def active_editable_list(editable_list, editable_item):
+    '''docs'''
+    print (editable_list, editable_item)
+    
+def right_press_editable_list(editable_list, editable_item, x, y):
+    '''docs'''
+    print (editable_list, editable_item, x, y)
+    
+    
 if __name__ == "__main__":
     # Init application.
     application = Application("demo")
@@ -283,8 +292,9 @@ if __name__ == "__main__":
                 range(0, 100))
     items[0].set_editable(False)
     editable_list = EditableList(items)
-    
     editable_list.new_item(EditableItem("新建列表"))
+    editable_list.connect("active", active_editable_list)
+    editable_list.connect("right-press", right_press_editable_list)
     
     tab_3_box.pack_start(editable_list, True, True)
     
