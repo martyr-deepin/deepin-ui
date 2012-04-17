@@ -169,7 +169,7 @@ class EditableList(ScrolledWindow):
                 self.get_focus_item_box,
                 )
             item_box.set_size_request(-1, 24)
-            self.background_box.pack_start(item_box)
+            self.background_box.pack_start(item_box, False, False)
             
     def set_focus_item_box(self, item_box):
         '''Set focus item box.'''
@@ -201,7 +201,7 @@ class EditableList(ScrolledWindow):
                     self.get_focus_item_box,
                     )
             item_box.set_size_request(-1, 24)
-            self.background_box.pack_start(item_box)
+            self.background_box.pack_start(item_box, False, False)
             
     def new_item(self, item):
         '''New item.'''
@@ -215,7 +215,7 @@ class EditableList(ScrolledWindow):
                 self.get_focus_item_box,
                 )
         item_box.set_size_request(-1, 24)
-        self.background_box.pack_start(item_box)
+        self.background_box.pack_start(item_box, False, False)
         
         # Make new item box editable.
         item_box.switch_on_editable()
@@ -223,6 +223,14 @@ class EditableList(ScrolledWindow):
         # Scroll window to new item.
         vadjust = self.get_vadjustment()
         vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+        
+    def highlight_item(self, item):
+        '''Highlight item.'''
+        for item_box in self.background_box.get_children():
+            if item_box.item == item:
+                self.set_focus_item_box = item_box
+                self.queue_draw()
+                break
     
 class EditableItem(gobject.GObject):
     '''Play list item.'''
