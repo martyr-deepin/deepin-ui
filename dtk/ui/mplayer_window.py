@@ -280,48 +280,8 @@ class MplayerWindow(gtk.Window):
             cr.set_operator(cairo.OPERATOR_SOURCE)
             cr.paint()
         
-            # Get border width.
-            color_infos = ui_theme.get_shadow_color("windowShadow").get_color_info()
-            
-            with cairo_state(cr):
-                # Clip four corner.
-                cr.rectangle(x, y, self.shadow_radius, self.shadow_radius)
-                cr.rectangle(x + w - self.shadow_radius, y, self.shadow_radius, self.shadow_radius)
-                cr.rectangle(x, y + h - self.shadow_radius, self.shadow_radius, self.shadow_radius)
-                cr.rectangle(x + w - self.shadow_radius, y + h - self.shadow_radius, self.shadow_radius, self.shadow_radius)
-                cr.clip()
-                
-                # Draw four round.
-                draw_radial_round(cr, x + self.shadow_radius, y + self.shadow_radius, self.shadow_radius, color_infos)
-                draw_radial_round(cr, x + self.shadow_radius, y + h - self.shadow_radius, self.shadow_radius, color_infos)
-                draw_radial_round(cr, x + w - self.shadow_radius, y + self.shadow_radius, self.shadow_radius, color_infos)
-                draw_radial_round(cr, x + w - self.shadow_radius, y + h - self.shadow_radius, self.shadow_radius, color_infos)
-            
-            with cairo_state(cr):
-                # Clip four side.
-                cr.rectangle(x, y + self.shadow_radius, self.shadow_padding, h - self.shadow_radius * 2)
-                cr.rectangle(x + w - self.shadow_padding, y + self.shadow_radius, self.shadow_padding, h - self.shadow_radius * 2)
-                cr.rectangle(x + self.shadow_radius, y, w - self.shadow_radius * 2, self.shadow_padding)
-                cr.rectangle(x + self.shadow_radius, y + h - self.shadow_padding, w - self.shadow_radius * 2, self.shadow_padding)
-                cr.clip()
-                
-                # Draw four side.
-                draw_vlinear(
-                    cr, 
-                    x + self.shadow_radius, y, 
-                    w - self.shadow_radius * 2, self.shadow_radius, color_infos)
-                draw_vlinear(
-                    cr, 
-                    x + self.shadow_radius, y + h - self.shadow_radius, 
-                    w - self.shadow_radius * 2, self.shadow_radius, color_infos, 0, False)
-                draw_hlinear(
-                    cr, 
-                    x, y + self.shadow_radius, 
-                    self.shadow_radius, h - self.shadow_radius * 2, color_infos)
-                draw_hlinear(
-                    cr, 
-                    x + w - self.shadow_radius, y + self.shadow_radius, 
-                    self.shadow_radius, h - self.shadow_radius * 2, color_infos, 0, False)
+            # Draw window shadow.
+            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding)
     
         # Propagate expose.
         propagate_expose(widget, event)

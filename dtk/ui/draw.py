@@ -230,10 +230,9 @@ def expose_linear_background(widget, event, color_infos):
     
     return True
 
-def draw_window_shadow(cr, x, y, w, h, r, p):
+def draw_window_shadow(cr, x, y, w, h, r, p,
+                       color_infos = ui_theme.get_shadow_color("windowShadow").get_color_info()):
     '''Draw window shadow.'''
-    color_infos = ui_theme.get_shadow_color("windowShadow").get_color_info()
-    
     with cairo_state(cr):
         # Clip four corner.
         cr.rectangle(x, y, r, r)
