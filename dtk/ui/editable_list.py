@@ -110,14 +110,6 @@ class EditableItemBox(gtk.Alignment):
                 self.switch_on_editable()
         elif is_left_button(event):
             self.active_item()
-        elif is_right_button(event):
-            (bx, by) = self.window.get_root_origin()
-            (wx, wy) = self.translate_coordinates(self.get_toplevel(), bx, by)
-            self.editable_list.emit(
-                "right-press", 
-                self.item,
-                wx + event.x,
-                wy + event.y)
         
     def switch_on_editable(self):
         '''Switch on editable status.'''
@@ -200,28 +192,38 @@ class EditableList(ScrolledWindow):
         
     def button_press_background(self, widget, event):
         '''Button press background box.'''
-        # Find edit item.
-        edit_item = None
-        for child in self.background_box.get_children():
-            if child.item_entry:
-                edit_item = child
-                break
+        if is_left_button(event):
+            # Find edit item.
+            edit_item = None
+            for child in self.background_box.get_children():
+                if child.item_entry:
+                    edit_item = child
+                    break
+                
+            # Change focus.
+            self.background_box.grab_focus()
             
-        # Change focus.
-        self.background_box.grab_focus()
-        
-        # Change edit item to focus item if find.
-        if edit_item:
-            # Turn off editable.
-            edit_item.switch_off_editable()
-            
-            # Set focus item if cursor at last item or out of list area.
-            click_row = self.get_item_at_cursor(event)
-            if click_row >= len(self.items) - 1:
-                self.set_focus_item_box(edit_item)
-            
-            # Redraw.
-            self.queue_draw()
+            # Change edit item to focus item if find.
+            if edit_item:
+                # Turn off editable.
+                edit_item.switch_off_editable()
+                
+                # Set focus item if cursor at last item or out of list area.
+                click_row = self.get_item_at_cursor(event)
+                if click_row >= len(self.items) - 1:
+                    self.set_focus_item_box(edit_item)
+                
+                # Redraw.
+                self.queue_draw()
+        elif is_right_button(event):
+            cursor_index = self.get_item_at_cursor(event)
+            cursor_item = None
+            if cursor_index < len(self.items):
+                cursor_item = self.items[cursor_index]
+            self.emit("right-press", 
+                      cursor_item,
+                      event.x_root,
+                      event.y_root)
             
     def get_item_at_cursor(self, event):
         '''Get item at cursor.'''
