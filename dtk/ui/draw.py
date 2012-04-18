@@ -230,6 +230,50 @@ def expose_linear_background(widget, event, color_infos):
     
     return True
 
+def draw_window_shadow(cr, x, y, w, h, r, p):
+    '''Draw window shadow.'''
+    color_infos = ui_theme.get_shadow_color("windowShadow").get_color_info()
+    
+    with cairo_state(cr):
+        # Clip four corner.
+        cr.rectangle(x, y, r, r)
+        cr.rectangle(x + w - r, y, r, r)
+        cr.rectangle(x, y + h - r, r, r)
+        cr.rectangle(x + w - r, y + h - r, r, r)
+        cr.clip()
+        
+        # Draw four round.
+        draw_radial_round(cr, x + r, y + r, r, color_infos)
+        draw_radial_round(cr, x + r, y + h - r, r, color_infos)
+        draw_radial_round(cr, x + w - r, y + r, r, color_infos)
+        draw_radial_round(cr, x + w - r, y + h - r, r, color_infos)
+    
+    with cairo_state(cr):
+        # Clip four side.
+        cr.rectangle(x, y + r, p, h - r * 2)
+        cr.rectangle(x + w - p, y + r, p, h - r * 2)
+        cr.rectangle(x + r, y, w - r * 2, p)
+        cr.rectangle(x + r, y + h - p, w - r * 2, p)
+        cr.clip()
+        
+        # Draw four side.
+        draw_vlinear(
+            cr, 
+            x + r, y, 
+            w - r * 2, r, color_infos)
+        draw_vlinear(
+            cr, 
+            x + r, y + h - r, 
+            w - r * 2, r, color_infos, 0, False)
+        draw_hlinear(
+            cr, 
+            x, y + r, 
+            r, h - r * 2, color_infos)
+        draw_hlinear(
+            cr, 
+            x + w - r, y + r, 
+            r, h - r * 2, color_infos, 0, False)
+
 def draw_radial_round(cr, x, y, r, color_infos):
     '''Draw radial round.'''
     radial = cairo.RadialGradient(x, y, r, x, y, 0)
