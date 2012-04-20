@@ -170,12 +170,13 @@ class Notebook(gtk.EventBox):
         '''Button press notebook.'''
         # Get tab index.
         tab_index = int(event.x / self.tab_width)
-        self.current_item_index = tab_index
-        
-        # Redraw.
-        self.queue_draw()
-        
-        # Callback.
-        if self.items[tab_index][2] != None:
-            self.items[tab_index][2]()
+        if tab_index < len(self.items):
+            self.current_item_index = tab_index
+            
+            # Redraw.
+            self.queue_draw()
+            
+            # Callback.
+            if self.items[tab_index][2] != None:
+                self.items[tab_index][2]()
         
