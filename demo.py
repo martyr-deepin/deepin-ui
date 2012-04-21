@@ -218,7 +218,7 @@ if __name__ == "__main__":
             (app_theme.get_pixbuf("categorybar/game.png"), "测试分类", None),
             (app_theme.get_pixbuf("categorybar/driver.png"), "测试分类", None),
             ])
-    category_box.add1(categorybar.category_event_box)
+    category_box.add1(categorybar)
     
     # Add scrolled window.
     scrolled_window = ScrolledWindow()

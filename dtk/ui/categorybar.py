@@ -26,22 +26,22 @@ from theme import *
 from draw import *
 from line import *
 
-class Categorybar(object):
+class Categorybar(EventBox):
     '''Categorybar.'''
 	
     def __init__(self, items, font_size=DEFAULT_FONT_SIZE, padding_left=20, padding_middle=10, padding_right=25):
         '''Init categorybar.'''
         # Init event box.
+        super(Categorybar, self).__init__()
         self.category_index = 0
-        self.category_event_box = EventBox()
-        self.category_event_box.connect(
+        self.connect(
             "expose-event",
             lambda w, e:
                 expose_linear_background(w, e, ui_theme.get_shadow_color("categorybarBackground").get_color_info()))
         
         # Init category box.
         self.category_item_box = gtk.VBox()
-        self.category_event_box.add(self.category_item_box)
+        self.add(self.category_item_box)
         
         # Init item.
         if items:
@@ -52,7 +52,7 @@ class Categorybar(object):
                 self.category_item_box.pack_start(category_item)
                 
         # Show.
-        self.category_event_box.show_all()        
+        self.show_all()        
         
     def set_index(self, index):
         '''Set index.'''
@@ -72,6 +72,8 @@ class Categorybar(object):
                 break
             
         return icon_width    
+    
+gobject.type_register(Categorybar)    
     
 class CategoryItem(gtk.Button):
     '''Category item.'''
