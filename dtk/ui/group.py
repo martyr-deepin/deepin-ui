@@ -26,24 +26,22 @@ from theme import *
 from draw import *
 from line import *
 
-class ImageButtonGroup(EventBox):
+class ImageButtonGroup(gtk.HBox):
     
-    def __init__(self, items, orientation=gtk.HBox):
-        gtk.EventBox.__init__(self)
-        
-        self.group_box = orientation()
-        self.add(self.group_box)
+    def __init__(self, items, spacing=5):
+        gtk.HBox.__init__(self)
         self.item_index = 0
         
+        self.set_spacing(spacing)
         # Init item
         if items:
             for index, item in enumerate(items):
                 image_button_item = ImageButtonItem(item, index, self.set_index, self.get_index)
-                self.group_box.pack_start(image_button_item)
+                self.pack_start(image_button_item)
         self.show_all()        
         
     def set_index(self, index):    
-        self.group_box.queue_draw()
+        self.queue_draw()
         self.item_index = index
         
     def get_index(self):    
@@ -51,25 +49,23 @@ class ImageButtonGroup(EventBox):
     
 gobject.type_register(ImageButtonGroup)
 
-class ToggleButtonGroup(EventBox):
+class ToggleButtonGroup(gtk.HBox):
     
-    def __init__(self, items, orientation=gtk.HBox):
-        gtk.EventBox.__init__(self)
-        
-        self.group_box = orientation()
-        self.add(self.group_box)
+    def __init__(self, items, spacing=5):
+        gtk.HBox.__init__(self)
         self.item_index = -1
+        self.set_spacing(spacing)
 
         # Init item
         if items:
             for index, item in enumerate(items):
                 toggle_button_item = ToggleButtonItem(item, index, self.set_index, self.get_index)
-                self.group_box.pack_start(toggle_button_item)
+                self.pack_start(toggle_button_item)
                 
         self.show_all()        
         
     def set_index(self, index):    
-        self.group_box.queue_draw()
+        self.queue_draw()
         self.item_index = index
         
     def get_index(self):    

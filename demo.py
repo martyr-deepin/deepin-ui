@@ -42,6 +42,7 @@ from dtk.ui.label import *
 from dtk.ui.notebook import *
 from dtk.ui.browser_client import *
 from dtk.ui.editable_list import *
+from dtk.ui.group import  ImageButtonGroup, ToggleButtonGroup
 import time
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
@@ -265,9 +266,30 @@ if __name__ == "__main__":
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
     entry_label.set_size_request(100, 30)
-    entry_box = gtk.HBox()
+    entry_box = gtk.HBox(spacing=10)
     entry_box.pack_start(entry_label, False, False)
     entry_box.pack_start(entry, True, True)
+    
+    # Group 
+    image_button_items = [
+        (app_theme.get_pixbuf("toolbar/%s_normal.png" % name),
+         app_theme.get_pixbuf("toolbar/%s_hover.png" % name),
+         app_theme.get_pixbuf("toolbar/%s_press.png" % name),
+         None) for name in ["search", "list", "add", "sort", "delete"]
+        ]
+        
+    toggle_button_items = [
+        (app_theme.get_pixbuf("control/%s_normal.png" % name),
+         app_theme.get_pixbuf("control/%s_press.png" % name),
+         None, None, None) for name in ["lyrics", "media", "playlist", "musicbox"]
+        ]
+    
+    toggle_button_align = gtk.Alignment()
+    toggle_button_align.set(0.5, 0.5, 0, 0)
+    toggle_button_align.add(ToggleButtonGroup(toggle_button_items))
+    entry_box.pack_start(ImageButtonGroup(image_button_items))
+    entry_box.pack_start(toggle_button_align)
+    
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
     tab_1_box.pack_start(entry_frame, False, False)
