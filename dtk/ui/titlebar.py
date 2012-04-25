@@ -20,13 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import *
-from draw import *
-from button import *
-from box import *
+from box import EventBox, ImageBox, TextBox
+from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
+from draw import draw_line
+from utils import window_is_max
 import gtk
-import utils
-import gobject
 
 class Titlebar(object):
     '''Title bar.'''    

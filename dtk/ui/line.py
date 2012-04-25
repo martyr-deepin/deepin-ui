@@ -22,7 +22,7 @@
 
 import gtk
 import gobject
-from draw import *
+from draw import draw_hlinear
 
 class HSeparator(gtk.Alignment):
     '''Horizontal separator.'''
@@ -52,7 +52,6 @@ class HSeparator(gtk.Alignment):
         
         # Draw.
         start_x = rect.x
-        end_x = rect.x + rect.width
         y = rect.y + rect.height / 2
         draw_hlinear(cr, start_x, y, rect.width, 1, self.color_infos)
         

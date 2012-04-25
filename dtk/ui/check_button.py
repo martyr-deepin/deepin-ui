@@ -19,9 +19,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from draw import *
+from draw import draw_radial_round, draw_vlinear, draw_hlinear, draw_pixbuf
+from theme import ui_theme
+from utils import cairo_state, alpha_color_hex_to_cairo, color_hex_to_cairo, propagate_expose
 import gobject
+import gtk
 
 class CheckButton(gtk.Button):
     '''CheckButton.'''
@@ -57,7 +59,6 @@ class CheckButton(gtk.Button):
         if self.hover_flag:
             shadow_color_infos = ui_theme.get_shadow_color("checkButtonLight").get_color_info()
             shadow_radius = 4
-            shadow_padding = 2
             
             with cairo_state(cr):
                 cr.rectangle(x, y, shadow_radius, shadow_radius)

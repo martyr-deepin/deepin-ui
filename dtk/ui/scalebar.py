@@ -20,11 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
+from draw import draw_pixbuf
+from theme import ui_theme
+from utils import propagate_expose, is_left_button
 import gobject
-import cairo
-from utils import *
-from draw import *
+import gtk
 
 class HScalebar(gtk.HScale):
     '''Scalebar.'''

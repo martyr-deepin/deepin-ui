@@ -20,10 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from constant import DEFAULT_FONT_SIZE
+from draw import draw_pixbuf, draw_font
+from theme import ui_theme
+from utils import get_content_size, propagate_expose
 import gtk
-import gobject
-from theme import *
-from draw import *
 
 class Notebook(gtk.EventBox):
     '''Notebook.'''

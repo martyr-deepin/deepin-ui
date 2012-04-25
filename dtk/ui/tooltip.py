@@ -20,13 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from constant import DEFAULT_FONT_SIZE
+from draw import draw_vlinear, draw_font
+from theme import ui_theme
+from utils import get_content_size, propagate_expose
+from window import Window
 import gobject
 import gtk
-import cairo
-from utils import *
-from draw import *
-from line import *
-from window import *
         
 class Tooltip(object):
     '''Tooltip.'''

@@ -20,16 +20,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import subprocess
-import gtk
-import cairo
-import pangocairo
-import pango
-import os
-import threading as td
-from constant import *
-import time
+from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, DEFAULT_FONT
 from contextlib import contextmanager 
+import cairo
+import gtk
+import math
+import os
+import pango
+import pangocairo
+import subprocess
+import time
 
 def tree_view_get_toplevel_node_count(treeview):
     '''Get toplevel node count.'''
@@ -344,7 +344,7 @@ def kill_process(proc):
         if proc != None:
             proc.kill()
     except Exception, e:
-        pass
+        print "kill_process got error: %s" % (e)
     
 def get_command_output_first_line(commands):
     '''Run command and return result.'''

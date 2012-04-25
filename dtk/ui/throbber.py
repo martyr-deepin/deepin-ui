@@ -43,7 +43,6 @@ class Throbber(gtk.Widget):
         gtk.Widget.__init__(self)
 
         style = self.get_style()
-        background = style.dark[gtk.STATE_NORMAL]
         self.color = style.dark[gtk.STATE_NORMAL]
 
         self.mode = MODE_STATIC
@@ -59,7 +58,6 @@ class Throbber(gtk.Widget):
         self.style.attach(self.window)
 
         style = self.get_style()
-        background = style.dark[gtk.STATE_NORMAL]
         self.color = style.dark[gtk.STATE_NORMAL]
 
 

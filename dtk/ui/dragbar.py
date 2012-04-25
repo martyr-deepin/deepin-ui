@@ -20,11 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
+from box import EventBox
+from draw import draw_pixbuf
+from theme import ui_theme
+from utils import set_hover_cursor, propagate_expose, resize_window
 import cairo
-from utils import *
-from draw import *
-from box import *
+import gobject
+import gtk
 
 class Dragbar(gtk.Window):
     '''Drag bar.'''

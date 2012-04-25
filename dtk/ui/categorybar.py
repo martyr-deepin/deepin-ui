@@ -20,11 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from box import EventBox
+from constant import DEFAULT_FONT_SIZE, BUTTON_PRESS, BUTTON_NORMAL, BUTTON_HOVER
+from draw import draw_vlinear, draw_pixbuf, draw_font, expose_linear_background
+from theme import ui_theme
+from utils import get_content_size, widget_fix_cycle_destroy_bug, propagate_expose
+import gobject
 import gtk
-from box import *
-from theme import *
-from draw import *
-from line import *
 
 class Categorybar(EventBox):
     '''Categorybar.'''

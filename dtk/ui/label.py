@@ -20,10 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from constant import DEFAULT_FONT_SIZE, ALIGN_START, ALIGN_MIDDLE
+from draw import draw_font
+from theme import ui_theme
+from utils import propagate_expose
 import gtk
-import gobject
-from draw import *
-from utils import *
 
 class Label(gtk.EventBox):
     '''Label.'''

@@ -21,28 +21,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from dtk.ui.application import Application
-from dtk.ui.constant import *
-from dtk.ui.menu import *
-from dtk.ui.navigatebar import *
-from dtk.ui.statusbar import *
-from dtk.ui.categorybar import *
-from dtk.ui.scrolled_window import *
-from dtk.ui.box import *
-from dtk.ui.button import *
-from dtk.ui.listview import *
-from dtk.ui.tooltip import *
-from dtk.ui.popup_window import *
-from dtk.ui.frame import *
-from dtk.ui.dragbar import *
-from dtk.ui.scalebar import *
-from dtk.ui.volume_button import *
-from dtk.ui.entry import *
-from dtk.ui.paned import *
-from dtk.ui.label import *
-from dtk.ui.notebook import *
-from dtk.ui.browser_client import *
-from dtk.ui.editable_list import *
-from dtk.ui.group import  ImageButtonGroup, ToggleButtonGroup
+from dtk.ui.browser_client import BrowserClient
+from dtk.ui.button import ImageButton
+from dtk.ui.categorybar import Categorybar
+from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
+from dtk.ui.editable_list import EditableItem, EditableList
+from dtk.ui.entry import TextEntry
+from dtk.ui.frame import HorizontalFrame
+from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
+from dtk.ui.label import Label
+from dtk.ui.listview import ListItem, ListView
+from dtk.ui.menu import Menu, MENU_POS_TOP_LEFT
+from dtk.ui.navigatebar import Navigatebar
+from dtk.ui.notebook import Notebook
+from dtk.ui.paned import HPaned
+from dtk.ui.popup_window import PopupWindow
+from dtk.ui.scalebar import HScalebar, VScalebar
+from dtk.ui.scrolled_window import ScrolledWindow
+from dtk.ui.statusbar import Statusbar
+from dtk.ui.theme import Theme, ui_theme
+from dtk.ui.tooltip import Tooltip
+from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
+from dtk.ui.volume_button import VolumeButton
+import gtk
+import os
 import time
 
 app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))

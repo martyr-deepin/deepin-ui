@@ -20,14 +20,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from constant import ALIGN_MIDDLE, ALIGN_START, ALIGN_END, DEFAULT_FONT
+from math import pi
+from theme import ui_theme
+from utils import cairo_state, cairo_disable_antialias, color_hex_to_cairo, add_color_stop_rgba, propagate_expose, get_content_size
+import cairo
 import dtk_cairo_blur    
 import gtk
-import cairo
-from theme import *
-from math import pi
-from utils import *
-from constant import *
 import math
+import pango
+import pangocairo
 
 def draw_radial_ring(cr, x, y, outer_radius, inner_radius, color_infos):
     '''Draw radial ring.'''
@@ -283,7 +285,7 @@ def draw_radial_round(cr, x, y, r, color_infos):
     cr.fill()
 
 def draw_text(cr, rx, ry, rw, rh, text, 
-              (text_color, gaussian_color, border_color, font_size, gaussian_radious, border_radious)):
+                  (text_color, gaussian_color, border_color, font_size, gaussian_radious, border_radious)):
     '''Draw text.'''
     # Get text size.
     (text_width, text_height) = get_content_size(text, font_size)
@@ -322,7 +324,7 @@ def draw_test():
     gdkcr = gtk.gdk.CairoContext(cr)
     draw_pixbuf(gdkcr, get_desktop_pixbuf())
 
-    cairo_blur.gaussian_blur(surface, 5)
+    dtk_cairo_blur.gaussian_blur(surface, 5)
     
     surface.write_to_png("test.png")
     

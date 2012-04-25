@@ -23,10 +23,9 @@
 import gtk
 import gobject
 import cairo
-from utils import *
-from draw import *
-import time
-import math
+from utils import alpha_color_hex_to_cairo, cairo_state, propagate_expose
+from draw import draw_round_rectangle, draw_vlinear, draw_font, draw_radial_round
+from theme import ui_theme
 
 class ProgressBar(gtk.Button):
     '''Progress bar.'''
@@ -35,7 +34,7 @@ class ProgressBar(gtk.Button):
         '''Progress bar.'''
         # Init.
         gtk.Button.__init__(self)
-        self._progress = 0
+        self.progress = 0
         self.light_ticker = 0
         self.test_ticker = 0.0
         
@@ -61,7 +60,7 @@ class ProgressBar(gtk.Button):
                      1)
     
         # Draw foreground.
-        draw_vlinear(cr, rect.x, rect.y, rect.width * self._progress / 100.0, rect.height, 
+        draw_vlinear(cr, rect.x, rect.y, rect.width * self.progress / 100.0, rect.height, 
                      ui_theme.get_shadow_color("progressbarForeground").get_color_info(), 
                      1)
         
@@ -72,7 +71,7 @@ class ProgressBar(gtk.Button):
         light_radius = rect.height * 4
         light_offset_x = min(self.light_ticker % 150, 100) / 100.0 * (rect.width + light_radius * 2)
         with cairo_state(cr):
-            cr.rectangle(rect.x, rect.y, rect.width * self._progress / 100.0, rect.height)
+            cr.rectangle(rect.x, rect.y, rect.width * self.progress / 100.0, rect.height)
             cr.clip()
             draw_radial_round(cr, rect.x + light_offset_x - light_radius, rect.y - light_radius / 2, light_radius, 
                               ui_theme.get_shadow_color("progressbarLight").get_color_info())
@@ -81,25 +80,6 @@ class ProgressBar(gtk.Button):
         propagate_expose(widget, event)
         
         return True        
-    
-    @property
-    def progress(self):
-        return self._progress
-    
-    @progress.setter
-    def progress(self, progress):
-        '''Use 'gtk.timeout_add(100, progressbar.test_progressbar' to test.'''
-        if 0 <= progress <= 100:
-            self._progress = progress
-            self.queue_draw()
-            
-    @progress.getter
-    def progress(self):
-        return self._progress
-    
-    @progress.deleter
-    def progress(self):
-        del self._progress       
         
     def update_light_ticker(self):
         '''Update light ticker.'''
@@ -110,7 +90,7 @@ class ProgressBar(gtk.Button):
         '''Test prorgressbar.'''
         self.test_ticker += 1
         self.progress = self.test_ticker % 101
-        print self.progress
+        self.queue_draw()
         return True
         
 gobject.type_register(ProgressBar)
@@ -127,7 +107,5 @@ if __name__ == "__main__":
     window.connect("destroy", lambda w: gtk.main_quit())
     
     window.show_all()
-    # progressbar.set_size_request(800,80)
-    # progressbar.progress = 50
     gtk.timeout_add(100, progressbar.test_progressbar)
     gtk.main()

@@ -20,10 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from box import EventBox
+from draw import draw_line
 import gtk
-from box import *
-from theme import *
-from draw import *
 
 class Statusbar(object):
     '''Statusbar.'''

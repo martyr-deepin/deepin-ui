@@ -20,11 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
+from constant import BACKGROUND_IMAGE
+from draw import draw_pixbuf, draw_vlinear
+from theme import ui_theme
+from utils import cairo_state, alpha_color_hex_to_cairo
 import gobject
-from box import *
-from draw import *
-from constant import *
+import gtk
 
 class ScrolledWindow(gtk.ScrolledWindow):
     '''Scrolled window.'''

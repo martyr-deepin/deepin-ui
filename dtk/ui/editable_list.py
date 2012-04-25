@@ -20,12 +20,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
+from box import BackgroundBox, EventBox
+from constant import BACKGROUND_IMAGE
+from draw import draw_vlinear
+from entry import Entry
+from label import Label
+from scrolled_window import ScrolledWindow
+from theme import ui_theme
+from utils import propagate_expose, container_remove_all, is_double_click, is_left_button, is_right_button
 import gobject
-from box import *
-from label import *
-from entry import *
-from scrolled_window import *
+import gtk
 
 class EditableItemBox(gtk.Alignment):
     '''Box for item of editable.'''

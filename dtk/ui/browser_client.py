@@ -20,12 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
-import os
-from utils import *
-from scrolled_window import *
+from scrolled_window import ScrolledWindow
 import dbus
 import dbus.service
+import gtk
+import os
+import subprocess
 
 class BrowserClientService(dbus.service.Object):
     def __init__(self, socket_id, callbacks, app_bus_name, app_dbus_name):

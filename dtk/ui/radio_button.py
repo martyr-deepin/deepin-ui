@@ -19,10 +19,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from draw import *
-import math
+from draw import draw_radial_round
+from theme import ui_theme
+from utils import color_hex_to_cairo, propagate_expose, get_match_widgets
 import gobject
-import dtk_cairo_blur    
+import gtk
+import math
 
 class RadioButton(gtk.Button):
     '''Radio.'''

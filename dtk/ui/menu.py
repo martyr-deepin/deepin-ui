@@ -20,12 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MIDDLE
+from draw import draw_vlinear, draw_pixbuf, draw_font
+from line import HSeparator
+from theme import ui_theme
+from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate
+from window import Window
 import gtk
-import cairo
-from utils import *
-from draw import *
-from line import *
-from window import *
 
 MENU_POS_TOP_CENTER = 0
 MENU_POS_TOP_LEFT = 1

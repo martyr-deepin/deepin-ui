@@ -21,11 +21,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from dtk.ui.application import Application
-from dtk.ui.constant import *
-from dtk.ui.theme import *
-from dtk.ui.utils import *
-from dtk.ui.frame import *
-from dtk.ui.mplayer_view import *
+from dtk.ui.constant import DEFAULT_WINDOW_HEIGHT, DEFAULT_WINDOW_WIDTH
+from dtk.ui.theme import ui_theme
+from dtk.ui.utils import run_command
+from dtk.ui.frame import HorizontalFrame
+from dtk.ui.mplayer_view import MplayerView
 
 def show_video(widget, xid):
     '''Show video.'''
@@ -57,6 +57,3 @@ if __name__ == "__main__":
     
     # Run.
     application.run()
-    
-    
-

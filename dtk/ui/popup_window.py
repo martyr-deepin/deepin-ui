@@ -20,13 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from scrolled_window import ScrolledWindow
+from titlebar import Titlebar
+from utils import move_window
+from window import Window
 import gtk
-import cairo
-from utils import *
-from draw import *
-from titlebar import *
-from scrolled_window import *
-from window import *
 
 class PopupWindow(object):
     '''PopupWindow.'''

@@ -22,8 +22,6 @@
 
 import gtk
 import gobject
-from theme import *
-from draw import *
 
 class HorizontalFrame(gtk.Alignment):
     '''Horizontal frame to padding 1 pixel round child.'''

@@ -20,12 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
+from draw import draw_vlinear, draw_pixbuf
+from theme import ui_theme
+from window import Window
 import gobject
-import cairo
-from theme import *
-from box import *
-from window import *
+import gtk
 
 HPANED_DIRECTION_LEFT = 0
 HPANED_DIRECTION_RIGHT = 1

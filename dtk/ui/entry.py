@@ -20,13 +20,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
-import cairo
-from utils import *
-from draw import *
-from keymap import *
-from menu import *
+from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
+from menu import MENU_POS_TOP_LEFT
 from contextlib import contextmanager 
+from draw import draw_hlinear
+from keymap import get_keyevent_name
+from menu import Menu
+from theme import ui_theme
+from utils import propagate_expose, cairo_state, color_hex_to_cairo, get_content_size, is_double_click, is_right_button, is_left_button, alpha_color_hex_to_cairo
+import gobject
+import gtk
+import pango
+import pangocairo
 
 class Entry(gtk.EventBox):
     '''Entry.'''
@@ -705,6 +710,7 @@ class Entry(gtk.EventBox):
         try:
             return list(content.decode('utf-8'))[index].encode('utf-8')
         except Exception, e:
+            print "get_utf8_string got error: %s" % (e)
             return ""
     
 gobject.type_register(Entry)

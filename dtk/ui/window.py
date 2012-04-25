@@ -20,12 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
-import gobject
-from draw import *
-from math import pi
-from box import *
+from constant import EDGE_DICT, BACKGROUND_IMAGE
+from draw import draw_pixbuf, draw_window_shadow
+from theme import ui_theme
+from utils import cairo_state, alpha_color_hex_to_cairo, propagate_expose, cairo_disable_antialias, set_cursor, resize_window, get_event_root_coords
 import cairo
+import gobject
+import gtk
 
 class Window(gtk.Window):
     '''Window.'''
@@ -136,7 +137,6 @@ class Window(gtk.Window):
         '''Expose window frame.'''
         # Init.
         cr = widget.window.cairo_create()
-        pixbuf = self.background_dpixbuf.get_pixbuf()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         

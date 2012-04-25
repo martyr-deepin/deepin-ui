@@ -20,10 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from dtk.ui.theme import *
-from dtk.ui.panel import *
-from dtk.ui.utils import *
-from dtk.ui.draw import *
+import gtk
+import cairo
+from dtk.ui.theme import ui_theme
+from dtk.ui.panel import Panel
+from dtk.ui.utils import propagate_expose
 
 class TestPanel(Panel):
     '''Panel to test fullscreen.'''

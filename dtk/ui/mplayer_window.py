@@ -20,12 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
-import gobject
-from draw import *
-from math import pi
-from box import *
+from constant import BACKGROUND_IMAGE, EDGE_DICT
+from draw import draw_pixbuf, draw_window_shadow
+from theme import ui_theme
+from utils import cairo_state, alpha_color_hex_to_cairo, cairo_disable_antialias, propagate_expose, resize_window, set_cursor, get_event_root_coords
 import cairo
+import gobject
+import gtk
 
 class MplayerWindow(gtk.Window):
     '''Window for mplayer or any software that can't running when window redirect colormap from screen.'''

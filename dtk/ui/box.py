@@ -20,10 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
+from constant import BACKGROUND_IMAGE, DEFAULT_FONT_SIZE
+from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state, draw_text
+from theme import ui_theme
+from utils import get_content_size
 import gobject
-from theme import *
-from draw import *
+import gtk
 
 class EventBox(gtk.EventBox):
     '''Event box.'''

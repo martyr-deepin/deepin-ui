@@ -3,31 +3,29 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Wang Yong
-# 
+#
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import *
 from dbus.mainloop.glib import DBusGMainLoop
-from draw import *
-from menu import *
-from threads import *
+from mplayer_window import MplayerWindow
+from threads import post_gui
 from titlebar import Titlebar
 from window import Window
-from mplayer_window import MplayerWindow
+from utils import container_remove_all, is_double_click, move_window
 import dbus
 import dbus.service
 import gtk
@@ -38,18 +36,18 @@ class UniqueService(dbus.service.Object):
         # Init.
         dbus.service.Object.__init__(self, bus_name, app_object_name)
         self.start_callback = start_callback
-        
+
         # Define DBus method.
         def show_window(self):
             self.start_callback()
-            
+
         # Below code export dbus method dyanmically.
         # Don't use @dbus.service.method !
         setattr(UniqueService, 'show_window', dbus.service.method(app_dbus_name)(show_window))
 
 class Application(object):
     '''Application.'''
-	
+
     def __init__(self, app_name, app_support_colormap=True, check_unique=True):
         '''Init application.'''
         # Init.
@@ -60,22 +58,22 @@ class Application(object):
         self.app_object_name = "/com/deepin/" + self.app_name
         self.check_unique = check_unique
         self.close_callback = self.close_window
-        
+
         # Check unique when option `check_unique` is enable.
         if check_unique:
-            # Init dbus. 
+            # Init dbus.
             bus = dbus.SessionBus()
             if bus.request_name(self.app_dbus_name) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
                 # Call 'show_window` method when have exist instance.
                 method = bus.get_object(self.app_dbus_name, self.app_object_name).get_dbus_method("show_window")
                 method()
-                
+
                 # Exit program.
                 sys.exit()
-                
+
         # Register bus name after check unique.
         self.app_bus_name = dbus.service.BusName(self.app_dbus_name, bus=dbus.SessionBus())
-        
+
         # Start application.
         self.init()
 
@@ -86,7 +84,7 @@ class Application(object):
 
         # Init status.
         self.menu_button_callback = None
-        
+
         # Init window.
         if self.app_support_colormap:
             self.window = Window(True)
@@ -94,18 +92,18 @@ class Application(object):
             self.window = MplayerWindow(True)
         self.window.set_position(gtk.WIN_POS_CENTER)
         self.window.connect("destroy", self.destroy)
-        
+
         # Init main box.
         self.main_box = self.window.window_frame
-        
+
         # Add titlebar box.
         self.titlebar = None
         self.titlebar_box = gtk.HBox()
         self.main_box.pack_start(self.titlebar_box, False)
-        
-        
-    def add_titlebar(self, 
-                     button_mask=["theme", "menu", "max", "min", "close"], 
+
+
+    def add_titlebar(self,
+                     button_mask=["theme", "menu", "max", "min", "close"],
                      icon_dpixbuf=None, app_name=None, title=None, add_separator=False):
         '''Add titlebar.'''
         # Init titlebar.
@@ -122,28 +120,28 @@ class Application(object):
             self.titlebar.close_button.connect("clicked", self.close_callback)
         self.add_toggle_window_event(self.titlebar.drag_box)
         self.add_move_window_event(self.titlebar.drag_box)
-        
+
         # Show titlebar.
         self.show_titlebar()
-        
+
     def close_window(self, widget):
         '''Close window.'''
         self.window.close_window()
-        
+
     def show_titlebar(self):
         '''Show titlebar.'''
         if self.titlebar_box.get_children() == [] and self.titlebar != None:
             self.titlebar_box.add(self.titlebar.box)
-            
+
     def hide_titlebar(self):
         '''Hide titlebar.'''
-        container_remove_all(self.titlebar_box)            
-        
+        container_remove_all(self.titlebar_box)
+
     @post_gui
     def raise_to_top(self):
         '''Raise to top.'''
         self.window.present()
-        
+
     def set_title(self, title):
         '''Set application title.'''
         self.window.set_title(title)
@@ -161,7 +159,7 @@ class Application(object):
     def set_icon(self, icon_dpixbuf):
         '''Set icon.'''
         gtk.window_set_default_icon(icon_dpixbuf.get_pixbuf())
-        
+
     def destroy(self, widget, data=None):
         '''Destroy main window.'''
         gtk.main_quit()
@@ -175,39 +173,39 @@ class Application(object):
                 self.app_dbus_name,
                 self.app_object_name,
                 self.raise_to_top)
-        
+
         # Show window.
         self.window.show_window()
-        
+
         # Run main loop.
         gtk.main()
 
     def theme_callback(self, widget):
         '''Theme button callback.'''
         return False
-    
+
     def menu_callback(self, widget):
         '''Menu button callback.'''
         if self.menu_button_callback:
             self.menu_button_callback(widget)
-        
+
         return False
-    
+
     def double_click_window(self, widget, event):
         '''Handle double click on window.'''
         if is_double_click(event):
             self.window.toggle_max_window()
-            
+
         return False
-            
+
     def add_toggle_window_event(self, widget):
         '''Add toggle window event.'''
         widget.connect("button-press-event", self.double_click_window)
-    
+
     def add_move_window_event(self, widget):
         '''Add move window event.'''
         widget.connect('button-press-event', lambda w, e: move_window(w, e, self.window))
-        
+
     def set_menu_callback(self, callback):
         '''Set menu callback.'''
         self.menu_button_callback = callback

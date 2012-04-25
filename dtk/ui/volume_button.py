@@ -20,11 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from utils import *
-from draw import *
-from box import *
-import gtk
+from draw import draw_pixbuf
+from theme import ui_theme
+from utils import set_clickable_cursor, propagate_expose, is_left_button
 import gobject
+import gtk
 
 class VolumeButton(gtk.HBox):
     '''Volume button.'''

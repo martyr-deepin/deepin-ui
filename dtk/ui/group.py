@@ -21,10 +21,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gtk
-from box import *
-from theme import *
-from draw import *
-from line import *
+import gobject
+from utils import widget_fix_cycle_destroy_bug, propagate_expose
+from constant import BUTTON_NORMAL, BUTTON_PRESS, BUTTON_HOVER
+from draw import draw_pixbuf
 
 class ImageButtonGroup(gtk.HBox):
     

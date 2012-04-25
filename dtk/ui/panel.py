@@ -23,7 +23,7 @@
 import gtk
 import gobject
 import cairo
-from theme import *
+from theme import ui_theme
 
 class Panel(gtk.Window):
     '''Panel.'''

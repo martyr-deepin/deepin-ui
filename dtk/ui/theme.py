@@ -20,9 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from utils import *
-import gobject, gtk
 import os
+import gtk
+from utils import read_file, eval_file, write_file
 
 class DynamicTreeView(object):
     '''Dynamic tree view.'''
