@@ -35,17 +35,16 @@ browser_core_path = os.path.realpath(__file__)
 class BrowserCore(Gtk.Plug):
     '''Browser core.'''
 	
-    def __init__(self, uri, socket_id, cookie_file, app_dbus_name):
+    def __init__(self, uri, client_id, cookie_file, app_dbus_name):
         '''Init browser core.'''
         # Init.
         DBusGMainLoop(set_as_default=True) # WARING: only use once in one process
         Gtk.Plug.__init__(self)
-        print socket_id
+        self.construct(0)
         self.uri = uri
-        self.socket_id = socket_id
+        self.client_id = client_id
         self.cookie_file = cookie_file
         self.app_dbus_name = app_dbus_name
-        self.construct(self.socket_id)
         
         # Build web view.
         self.view = WebKit.WebView()
@@ -56,8 +55,13 @@ class BrowserCore(Gtk.Plug):
         self.add(self.view)
         
         # Handle signal.
+        self.connect("realize", self.realize_browser_core)
         self.connect("delete-event", Gtk.main_quit)
         self.view.connect("load-finished", self.load_finished_browser_core)
+        
+    def realize_browser_core(self, widget):
+        '''Realize browser core.'''
+        self.send_message_to_client("init_plug", str(self.get_id()))
         
     def execute_script(self, script):
         '''Execute script.'''
@@ -77,13 +81,17 @@ class BrowserCore(Gtk.Plug):
         self.view.set_size_request(width, height)
         
         # Adjust scroll window's size.
+        self.send_message_to_client("init_size", str((width, height)))
+        
+    def send_message_to_client(self, method_name, method_args):
+        '''Send message to browser client.'''
         bus = dbus.SessionBus()
-        self.app_object_name = "/com/deepin/browserclient/%s" % self.socket_id
+        self.app_object_name = "/com/deepin/browserclient/%s" % self.client_id
         if bus.request_name(self.app_dbus_name) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
             method = bus.get_object(
                 self.app_dbus_name, 
-                self.app_object_name).get_dbus_method('deepin_browser_client_%s' % self.socket_id)
-            method("init-size", str((width, height)))
+                self.app_object_name).get_dbus_method('deepin_browser_client_%s' % self.client_id)
+            method(method_name, method_args)
         
 if __name__ == "__main__":
     Gdk.threads_init()

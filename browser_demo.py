@@ -28,7 +28,7 @@ from dtk.ui.theme import ui_theme
 
 if __name__ == "__main__":
     # Init application.
-    application = Application("demo")
+    application = Application("browser_demo")
     
     # Set application default size.
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
