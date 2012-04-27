@@ -39,7 +39,6 @@ class MplayerWindow(gtk.Window):
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.shadow_radius = shadow_radius
         self.frame_radius = 2
-        self.shadow_padding = self.shadow_radius - self.frame_radius
         self.shadow_is_visible = True
         self.enable_resize = enable_resize
         self.window_mask = window_mask
@@ -48,38 +47,49 @@ class MplayerWindow(gtk.Window):
         self.add(self.window_frame)
         self.shape_flag = True
         
+        if self.is_composited():
+            self.shadow_padding = self.shadow_radius - self.frame_radius
+        else:
+            self.shadow_padding = 0
+        
         # Init shadow window.
-        self.window_shadow = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window_shadow.add_events(gtk.gdk.ALL_EVENTS_MASK)
-        self.window_shadow.set_decorated(False)
-        self.window_shadow.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
-        self.window_shadow.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_MENU) # make shadow window don't switch in window manager
-        self.window_shadow.set_transient_for(self)
+        if self.is_composited():    
+            self.window_shadow = gtk.Window(gtk.WINDOW_TOPLEVEL)
+            self.window_shadow.add_events(gtk.gdk.ALL_EVENTS_MASK)
+            self.window_shadow.set_decorated(False)
+            self.window_shadow.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
+            self.window_shadow.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_MENU) # make shadow window don't switch in window manager
+            self.window_shadow.set_transient_for(self)
 
         # Handle signal.
         self.connect_after("expose-event", self.expose_window)
         self.connect("size-allocate", self.shape_window)
-        self.window_shadow.connect("expose-event", self.expose_window_shadow)
-        self.window_shadow.connect("size-allocate", self.shape_window_shadow)
         self.connect("configure-event", self.adjust_window_shadow)
         self.connect("window-state-event", self.monitor_window_state)
-        self.window_shadow.connect("button-press-event", self.resize_window)
-        self.window_shadow.connect("motion-notify-event", self.motion_notify)
+        
+        if self.is_composited():    
+            self.window_shadow.connect("expose-event", self.expose_window_shadow)
+            self.window_shadow.connect("size-allocate", self.shape_window_shadow)
+            self.window_shadow.connect("button-press-event", self.resize_window)
+            self.window_shadow.connect("motion-notify-event", self.motion_notify)
         
     def adjust_window_shadow(self, widget, event):
         '''Adjust window shadow position and size. '''
         (x, y) = self.get_position()
         (width, height) = self.get_size()
         
-        self.window_shadow.get_window().move_resize(
-            x - self.shadow_padding, y - self.shadow_padding,
-            width + self.shadow_padding * 2, height + self.shadow_padding * 2
-            )
+        if self.is_composited():
+            self.window_shadow.get_window().move_resize(
+                x - self.shadow_padding, y - self.shadow_padding,
+                width + self.shadow_padding * 2, height + self.shadow_padding * 2
+                )
         
     def show_window(self):
         '''Show.'''
         self.show_all()
-        self.window_shadow.show_all()
+        
+        if self.is_composited():
+            self.window_shadow.show_all()
         
     def change_background(self, background_dpixbuf):
         '''Change background.'''
@@ -215,11 +225,16 @@ class MplayerWindow(gtk.Window):
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
             else:
-                cr.rectangle(x + 2, y, w - 4, 1)
-                cr.rectangle(x + 1, y + 1, w - 2, 1)
-                cr.rectangle(x, y + 2, w, h - 4)
-                cr.rectangle(x + 1, y + h - 2, w - 2, 1)
-                cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+                if self.is_composited():
+                    cr.rectangle(x + 2, y, w - 4, 1)
+                    cr.rectangle(x + 1, y + 1, w - 2, 1)
+                    cr.rectangle(x, y + 2, w, h - 4)
+                    cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+                    cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+                else:
+                    cr.rectangle(x + 1, y, w - 2, 1)
+                    cr.rectangle(x, y + 1, w, h - 2)
+                    cr.rectangle(x + 1, y + h - 1, w - 2, 1)
             cr.fill()
             
             # Shape with given mask.
@@ -227,7 +242,9 @@ class MplayerWindow(gtk.Window):
             
             # Redraw whole window.
             self.queue_draw()
-            self.window_shadow.queue_draw()
+            
+            if self.is_composited():
+                self.window_shadow.queue_draw()
             
     def shape_window_shadow(self, widget, rect):
         '''Shap window shadow.'''
@@ -271,7 +288,9 @@ class MplayerWindow(gtk.Window):
             
             # Redraw whole window.
             self.queue_draw()
-            self.window_shadow.queue_draw()
+            
+            if self.is_composited():
+                self.window_shadow.queue_draw()
             
     def expose_window_shadow(self, widget, event):
         '''Callback for 'expose-event' event of window shadow.'''
@@ -297,12 +316,16 @@ class MplayerWindow(gtk.Window):
     def hide_shadow(self):
         '''Hide shadow.'''
         self.shadow_is_visible = False
-        self.window_shadow.hide_all()
+        
+        if self.is_composited():
+            self.window_shadow.hide_all()
         
     def show_shadow(self):
         '''Show shadow.'''
         self.shadow_is_visible = True
-        self.window_shadow.show_all()
+        
+        if self.is_composited():
+            self.window_shadow.show_all()
         
     def monitor_window_state(self, widget, event):
         '''Monitor window state, add shadow when window at maximized or fullscreen status.

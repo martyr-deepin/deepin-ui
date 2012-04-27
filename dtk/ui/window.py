@@ -42,12 +42,20 @@ class Window(gtk.Window):
         self.window_frame = gtk.VBox()
         self.shadow_radius = shadow_radius
         self.frame_radius = 2
-        self.shadow_padding = self.shadow_radius - self.frame_radius
         self.shadow_is_visible = True
         self.cursor_type = None
         self.enable_resize = enable_resize
         self.window_mask = window_mask
         self.background_dpixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE)
+        
+        # Shadow setup.
+        if self.is_composited():
+            self.shadow_padding = self.shadow_radius - self.frame_radius
+            self.window_frame.connect("size-allocate", self.shape_window_frame)
+        else:
+            # Disable shadow when composited is false.
+            self.shadow_padding = 0
+            self.connect("size-allocate", self.shape_window_frame)
         
         # Init window frame.
         self.window_shadow.set(0.0, 0.0, 1.0, 1.0)
@@ -59,13 +67,12 @@ class Window(gtk.Window):
         
         # Handle signal.
         self.connect_after("expose-event", self.expose_window_background)
-        self.window_shadow.connect("expose-event", self.expose_window_shadow)
-        self.window_frame.connect("expose-event", self.expose_window_frame)
-        self.window_frame.connect("size-allocate", self.shape_window_frame)
         self.connect("size-allocate", lambda w, r: self.queue_draw()) # redraw after size allocation changed
         self.connect("motion-notify-event", self.motion_notify)
         self.connect("button-press-event", self.resize_window)
         self.connect("window-state-event", self.monitor_window_state)
+        self.window_shadow.connect("expose-event", self.expose_window_shadow)
+        self.window_frame.connect("expose-event", self.expose_window_frame)
         
     def show_window(self):
         '''Show.'''
@@ -225,9 +232,11 @@ class Window(gtk.Window):
             # Draw our shape into the bitmap using cairo.
             cr.set_source_rgb(1.0, 1.0, 1.0)
             cr.set_operator(cairo.OPERATOR_OVER)
+            
             cr.rectangle(x + 1, y, w - 2, 1)
             cr.rectangle(x, y + 1, w, h - 2)
             cr.rectangle(x + 1, y + h - 1, w - 2, 1)
+            
             cr.fill()
             
             # Shape with given mask.

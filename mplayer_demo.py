@@ -24,7 +24,7 @@ from dtk.ui.application import Application
 from dtk.ui.constant import DEFAULT_WINDOW_HEIGHT, DEFAULT_WINDOW_WIDTH
 from dtk.ui.theme import ui_theme
 from dtk.ui.utils import run_command
-from dtk.ui.frame import HorizontalFrame
+from dtk.ui.frame import HorizontalFrame, VerticalFrame
 from dtk.ui.mplayer_view import MplayerView
 
 def show_video(widget, xid):
@@ -50,10 +50,13 @@ if __name__ == "__main__":
     
     # Add mplayer view.
     mplayer_view = MplayerView()
-    # mplayer_view.connect("get-xid", show_video)
+    mplayer_view.connect("get-xid", show_video)
     mplayer_frame = HorizontalFrame()
     mplayer_frame.add(mplayer_view)
-    application.main_box.pack_start(mplayer_frame)
+    
+    box_frame = VerticalFrame()
+    box_frame.add(mplayer_frame)
+    application.main_box.pack_start(box_frame)
     
     # Run.
     application.run()
