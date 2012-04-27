@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from scrolled_window import ScrolledWindow
+from utils import container_remove_all
 import dbus
 import dbus.service
 import gtk
@@ -32,7 +33,7 @@ class BrowserClientService(dbus.service.Object):
         # Init.
         self.client_hash = client_hash
         self.callbacks = callbacks
-        self.app_object_name = "/com/deepin/browserclient/%s" % self.client_hash
+        self.app_object_name = "/com/deepin/browser_client/%s" % self.client_hash
         dbus.service.Object.__init__(self, app_bus_name, self.app_object_name)
         
         # Define DBus method.
@@ -40,7 +41,7 @@ class BrowserClientService(dbus.service.Object):
             if self.callbacks.has_key(name):
                 self.callbacks[name](args)
             else:
-                print "Don't know how to handle callback: %s" % name
+                print "BrowserClientService, Don't know how to handle callback: %s" % name
             
         # Below code export dbus method dyanmically.
         # Don't use @dbus.service.method !
@@ -56,8 +57,14 @@ class BrowserClient(ScrolledWindow):
         # Init.
         ScrolledWindow.__init__(self)
         self.client_hash = self.__hash__()
+        self.plug_id = None
+        self.hadjust_value_histroy = 0
+        self.vadjust_value_history = 0
+        self.hadjust_upper_history = 0
+        self.vadjust_upper_history = 0
         self.app_bus_name = app_bus_name
         self.app_dbus_name = app_dbus_name
+        self.exit_signal_id = None
 
         self.uri = uri
         self.cookie_file = cookie_file
@@ -66,24 +73,32 @@ class BrowserClient(ScrolledWindow):
         
     def realize_browser_client(self, widget):
         '''Callback for `realize` signal.'''
-        # Build dbus service.
-        BrowserClientService(
-            self.client_hash, 
-            {'init_size' : self.init_size,
-             'init_plug' : self.init_plug
-             },
-            self.app_bus_name,
-            self.app_dbus_name)
-        
-        # Open browser core process.
-        subprocess.Popen(["python", 
-                          os.path.join(os.path.dirname(os.path.realpath(__file__)), "browser_core.py"),
-                          self.uri, str(self.client_hash), self.cookie_file, self.app_dbus_name])
-        
+        if self.plug_id == None:
+            # Build dbus service.
+            BrowserClientService(
+                self.client_hash, 
+                {'init_size' : self.init_size,
+                 'init_plug' : self.init_plug
+                 },
+                self.app_bus_name,
+                self.app_dbus_name)
+            
+            # Open browser core process.
+            subprocess.Popen(["python", 
+                              os.path.join(os.path.dirname(os.path.realpath(__file__)), "browser_core.py"),
+                              self.uri, str(self.client_hash), self.cookie_file, self.app_dbus_name])
+        else:
+            self.insert_plug(self.plug_id)
+            
     def init_size(self, args):
         '''Resize web view.'''
         # Init.
         (width, height) = eval(args) 
+        
+        # Adjust viewport size.
+        self.socket.set_size_request(width, height)
+        
+        # Get adjustment.
         vadjust = self.get_vadjustment()
         hadjust = self.get_hadjustment()
         
@@ -97,8 +112,11 @@ class BrowserClient(ScrolledWindow):
 
     def init_plug(self, args):
         '''Init plug widget.'''
-        # Extract plug id.
-        plug_id = eval(args)
+        self.insert_plug(eval(args))
+        
+    def insert_plug(self, plug_id):
+        '''Insert plug.'''
+        self.plug_id = plug_id
         
         # Add plug to socket.
         # 
@@ -110,10 +128,47 @@ class BrowserClient(ScrolledWindow):
         # You must create socket widget and add in container after receive plug id.
         # otherwise you will got error "gtk_socket_add_id: GTK_WIDGET_ANCHORED (socket) failed".
         # 
+        container_remove_all(self)
         self.socket = gtk.Socket()
         self.socket.show()      # must show before add to container
         self.add_child(self.socket)
-        self.socket.add_id(plug_id)
-
-        # Show socket widget.
+        self.socket.add_id(self.plug_id)
+        
+        # Save value of adjustment when socket remove from container.
+        self.socket.connect("hierarchy-changed", self.save_adjust_value)
+        
+        # Reset vadjust value.
+        self.get_vadjustment().set_upper(self.vadjust_upper_history)
+        self.get_hadjustment().set_upper(self.hadjust_upper_history)
+        self.get_vadjustment().set_value(self.vadjust_value_history)
+        self.get_hadjustment().set_value(self.hadjust_value_histroy)
+        
+        # Show.
         self.show_all()
+        
+        # Exit browser core when browser client destroy.
+        if self.exit_signal_id == None and self.plug_id:
+            self.exit_signal_id = self.connect("destroy", self.browser_client_exit_core)
+            print "###################"
+            
+    def browser_client_exit_core(self, widget):
+        '''Send 'exit' signal to core process.'''
+        bus = dbus.SessionBus()
+        browser_core_dbus_name = "com.deepin.browser_core_%s" % self.plug_id
+        browser_core_object_name = "/com/deepin/browser_core/%s" % self.plug_id
+        if bus.request_name(browser_core_dbus_name) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
+            method = bus.get_object(
+                browser_core_dbus_name,
+                browser_core_object_name).get_dbus_method('deepin_browser_core_%s' % self.plug_id)
+            method("exit", "")
+        
+    def save_adjust_value(self, widget, previous_toplevel):
+        '''Save value of adjustment.'''
+        # Save value.
+        self.vadjust_upper_history = self.get_vadjustment().get_upper()
+        self.hadjust_upper_history = self.get_hadjustment().get_upper()
+        self.vadjust_value_history = self.get_vadjustment().get_value()
+        self.hadjust_value_histroy = self.get_hadjustment().get_value()
+        
+        # Remove socket widget.
+        container_remove_all(self)

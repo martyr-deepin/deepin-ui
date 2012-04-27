@@ -24,6 +24,7 @@ from gi.repository import WebKit
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Soup
+import gtk
 import sys
 import os
 import dbus
@@ -31,6 +32,34 @@ import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
 
 browser_core_path = os.path.realpath(__file__)
+
+class BrowserCoreService(dbus.service.Object):
+    '''Browser core service.'''
+	
+    def __init__(self, plug_id, callbacks):
+        '''Init browser core service.'''
+        # Init.
+        self.plug_id = plug_id
+        self.callbacks = callbacks
+        browser_core_dbus_name = "com.deepin.browser_core_%s" % self.plug_id
+        browser_core_object_name = "/com/deepin/browser_core/%s" % self.plug_id
+        dbus.service.Object.__init__(
+            self, 
+            browser_core_dbus_name,
+            browser_core_object_name)
+        
+        # Define DBus method.
+        def dbus_callback_wrap(self, name, args):
+            if self.callbacks.has_key(name):
+                self.callbacks[name](args)
+            else:
+                print "BrowserCoreService, Don't know how to handle callback: %s" % name
+                
+        # Below code export dbus method dyanmically.
+        # Don't use @dbus.service.method !
+        setattr(BrowserCoreService, 
+                "deepin_browser_core_%s" % self.plug_id,
+                dbus.service.method(browser_core_dbus_name, "ss")(dbus_callback_wrap))
 
 class BrowserCore(Gtk.Plug):
     '''Browser core.'''
@@ -56,8 +85,24 @@ class BrowserCore(Gtk.Plug):
         
         # Handle signal.
         self.connect("realize", self.realize_browser_core)
-        self.connect("delete-event", Gtk.main_quit)
+        self.connect("delete-event", self.recevie_delete_event)
         self.view.connect("load-finished", self.load_finished_browser_core)
+        
+        # Build service.
+        BrowserCoreService(
+            self.get_id(), 
+            {"exit" : self.browser_core_exit}
+            )
+        
+    def browser_core_exit(self, args):
+        '''Exit browser core progress.'''
+        gtk.main_quit()
+        
+    def recevie_delete_event(self, widget, event):
+        '''Receive delete event.'''
+        print "Receive delete-event."
+        
+        return True
         
     def realize_browser_core(self, widget):
         '''Realize browser core.'''
@@ -86,7 +131,7 @@ class BrowserCore(Gtk.Plug):
     def send_message_to_client(self, method_name, method_args):
         '''Send message to browser client.'''
         bus = dbus.SessionBus()
-        self.app_object_name = "/com/deepin/browserclient/%s" % self.client_id
+        self.app_object_name = "/com/deepin/browser_client/%s" % self.client_id
         if bus.request_name(self.app_dbus_name) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
             method = bus.get_object(
                 self.app_dbus_name, 
