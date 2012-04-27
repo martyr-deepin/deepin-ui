@@ -20,12 +20,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import gtk
 from dtk.ui.application import Application
 from dtk.ui.constant import DEFAULT_WINDOW_HEIGHT, DEFAULT_WINDOW_WIDTH
 from dtk.ui.theme import ui_theme
 from dtk.ui.utils import run_command
 from dtk.ui.frame import HorizontalFrame, VerticalFrame
 from dtk.ui.mplayer_view import MplayerView
+from dtk.ui.statusbar import Statusbar
+from dtk.ui.dragbar import Dragbar
 
 def show_video(widget, xid):
     '''Show video.'''
@@ -54,9 +57,21 @@ if __name__ == "__main__":
     mplayer_frame = HorizontalFrame()
     mplayer_frame.add(mplayer_view)
     
-    box_frame = VerticalFrame()
-    box_frame.add(mplayer_frame)
-    application.main_box.pack_start(box_frame)
+    main_box = gtk.VBox()
+    main_box.pack_start(mplayer_frame)
+    
+    main_frame = VerticalFrame()
+    main_frame.add(main_box)
+    application.main_box.pack_start(main_frame)
+    
+    # Add statusbar.
+    statusbar = Statusbar(36)
+    main_box.pack_start(statusbar.status_event_box, False)
+    application.add_move_window_event(statusbar.status_event_box)
+    application.add_toggle_window_event(statusbar.status_event_box)
+    
+    # Add drag bar.
+    Dragbar(application.window, statusbar.status_event_box)
     
     # Run.
     application.run()
