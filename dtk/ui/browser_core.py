@@ -142,4 +142,4 @@ if __name__ == "__main__":
     Gdk.threads_init()
     BrowserCore(sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4]).show_all()
     Gtk.main()
-    print "********************"
+    print "Exit from webkit subprocess."

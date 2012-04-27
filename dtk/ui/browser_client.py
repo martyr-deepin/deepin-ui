@@ -160,7 +160,8 @@ class BrowserClient(ScrolledWindow):
                 browser_core_dbus_name,
                 browser_core_object_name).get_dbus_method('deepin_browser_core_%s' % self.plug_id)
             method("exit", "")
-        print "###################"
+            
+        print "Send exit signal to webkit subprocess."
         
     def save_adjust_value(self, widget, previous_toplevel):
         '''Save value of adjustment.'''
