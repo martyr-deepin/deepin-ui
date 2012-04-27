@@ -46,6 +46,7 @@ class MplayerWindow(gtk.Window):
         self.background_dpixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE)
         self.window_frame = gtk.VBox()
         self.add(self.window_frame)
+        self.shape_flag = True
         
         # Init shadow window.
         self.window_shadow = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -185,11 +186,12 @@ class MplayerWindow(gtk.Window):
         
         return True
     
-    def set_window_shape(self, shape_status):
+    def set_window_shape(self, shape_flag):
         '''Enable window shape.'''
-        self.shape_window(self, self.get_allocation(), shape_status)
+        self.shape_flag = shape_flag
+        self.shape_window(self, self.get_allocation())
         
-    def shape_window(self, widget, rect, shape_status=True):
+    def shape_window(self, widget, rect):
         '''Shap window.'''
         if rect.width > 0 and rect.height > 0:
             # Init.
@@ -206,7 +208,10 @@ class MplayerWindow(gtk.Window):
             cr.set_source_rgb(1.0, 1.0, 1.0)
             cr.set_operator(cairo.OPERATOR_OVER)
             
-            if (self.window != None and self.window.get_state() == gtk.gdk.WINDOW_STATE_FULLSCREEN) or not shape_status:
+            if not self.shape_flag:
+                # Don't clip corner when window is fullscreen state.
+                cr.rectangle(x, y, w, h)
+            elif self.window != None and self.window.get_state() == gtk.gdk.WINDOW_STATE_FULLSCREEN:
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
             else:
