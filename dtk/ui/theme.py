@@ -159,48 +159,6 @@ class DynamicPixbuf(object):
         '''Get pixbuf.'''
         return self.pixbuf
 
-class DynamicPixbufAnimation(object):
-    '''Dynamic pixbuf animation.'''
-    
-    def __init__(self, filepath):
-        '''Init.'''
-        self.update(filepath)
-        
-    def update(self, filepath):
-        '''Update path.'''
-        self.pixbuf_animation = gtk.gdk.PixbufAnimation(filepath)
-
-    def get_pixbuf_animation(self):
-        '''Get pixbuf animation.'''
-        return self.pixbuf_animation
-    
-class DynamicImage(object):
-    '''Dynamic image.'''
-	
-    def __init__(self, get_theme_ticker, parent, dpixbuf_animation):
-        '''Init dynamic image.'''
-        self.get_theme_ticker = get_theme_ticker
-        self.dpixbuf_animation = dpixbuf_animation
-        self.image = gtk.Image()
-        self.ticker = 0
-
-        self.update_animation()
-        self.image.connect("expose-event", self.expose_callback)
-        
-        parent.connect("size-allocate", lambda w, e: self.image.realize())
-        
-    def update_animation(self):
-        '''Update animation.'''
-        self.image.set_from_animation(self.dpixbuf_animation.get_pixbuf_animation())    
-        
-    def expose_callback(self, widget, event):
-        '''Expose callback.'''
-        if self.ticker != self.get_theme_ticker():
-            self.ticker = self.get_theme_ticker()
-            self.update_animation()
-            
-        return False
-    
 class DynamicTextStyle(object):
     '''Dynamic text style.'''
 	
@@ -238,16 +196,8 @@ class Theme(object):
         self.color_dict = {}
         self.alpha_color_dict = {}
         self.shadow_color_dict = {}
-        self.animation_dict = {}
         self.text_style_dict = {}
         
-        # Scan theme files.
-        image_dir = self.get_image_dir()
-        for root, dirs, files in os.walk(image_dir):
-            for filepath in files:
-                path = (os.path.join(root, filepath)).split(image_dir)[1]
-                self.pixbuf_dict[path] = DynamicPixbuf(self.get_image_path(path))
-                
         # Scan dynamic theme_info file.
         theme_info = eval_file(self.get_theme_path(self.theme_path))
         
@@ -263,13 +213,6 @@ class Theme(object):
         for (color_name, color_info) in theme_info["shadow_colors"].items():
             self.shadow_color_dict[color_name] = DynamicShadowColor(color_info)
             
-        # Scan animation.
-        animation_dir = self.get_animation_dir()
-        for root, dirs, files in os.walk(animation_dir):
-            for filepath in files:
-                path = (os.path.join(root, filepath)).split(animation_dir)[1]
-                self.animation_dict[path] = DynamicPixbufAnimation(self.get_animation_path(path))
-                
         # Scan text styles.
         for (text_style_name, text_style) in theme_info["text_styles"].items():
             self.text_style_dict[text_style_name] = DynamicTextStyle(text_style)
@@ -282,14 +225,6 @@ class Theme(object):
         '''Get pixbuf path.'''
         return os.path.join(self.get_image_dir(), path)
 
-    def get_animation_dir(self):
-        '''Get theme directory.'''
-        return os.path.join(self.theme_dir, "%s/animation/" % (self.theme_name))
-    
-    def get_animation_path(self, path):
-        '''Get pixbuf path.'''
-        return os.path.join(self.get_animation_dir(), path)
-    
     def get_theme_dir(self):
         '''Get theme directory.'''
         return os.path.join(self.theme_dir, "%s/" % (self.theme_name))                
@@ -300,12 +235,12 @@ class Theme(object):
             
     def get_pixbuf(self, path):
         '''Get dynamic pixbuf.'''
+        # Just init pixbuf_dict when first load some pixbuf.
+        if not self.pixbuf_dict.has_key(path):
+            self.pixbuf_dict[path] = DynamicPixbuf(self.get_image_path(path))
+            
         return self.pixbuf_dict[path]
 
-    def get_pixbuf_animation(self, path):
-        '''Get dynamic pixbuf animation.'''
-        return self.animation_dict[path]
-    
     def get_text_style(self, style_name):
         '''Get text style.'''
         return self.text_style_dict[style_name]
@@ -351,10 +286,6 @@ class Theme(object):
         # Update shadow colors.
         for (color_name, color_info) in theme_info["shadow_colors"].items():
             self.shadow_color_dict[color_name].update(color_info)
-            
-        # Update animation.
-        for (path, animation) in self.animation_dict.items():
-            animation.update(self.get_animation_path(path))
             
         # Update text style.
         for (text_style_name, text_style) in self.text_style_dict.items():
