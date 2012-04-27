@@ -149,7 +149,6 @@ class BrowserClient(ScrolledWindow):
         # Exit browser core when browser client destroy.
         if self.exit_signal_id == None and self.plug_id:
             self.exit_signal_id = self.connect("destroy", self.browser_client_exit_core)
-            print "###################"
             
     def browser_client_exit_core(self, widget):
         '''Send 'exit' signal to core process.'''
@@ -161,6 +160,7 @@ class BrowserClient(ScrolledWindow):
                 browser_core_dbus_name,
                 browser_core_object_name).get_dbus_method('deepin_browser_core_%s' % self.plug_id)
             method("exit", "")
+        print "###################"
         
     def save_adjust_value(self, widget, previous_toplevel):
         '''Save value of adjustment.'''

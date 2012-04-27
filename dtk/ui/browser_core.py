@@ -24,7 +24,6 @@ from gi.repository import WebKit
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Soup
-import gtk
 import sys
 import os
 import dbus
@@ -41,12 +40,13 @@ class BrowserCoreService(dbus.service.Object):
         # Init.
         self.plug_id = plug_id
         self.callbacks = callbacks
-        browser_core_dbus_name = "com.deepin.browser_core_%s" % self.plug_id
-        browser_core_object_name = "/com/deepin/browser_core/%s" % self.plug_id
+        self.browser_core_dbus_name = "com.deepin.browser_core_%s" % self.plug_id
+        self.browser_core_object_name = "/com/deepin/browser_core/%s" % self.plug_id
+        self.browser_core_bus_name = dbus.service.BusName(self.browser_core_dbus_name, bus=dbus.SessionBus())
         dbus.service.Object.__init__(
             self, 
-            browser_core_dbus_name,
-            browser_core_object_name)
+            self.browser_core_bus_name,
+            self.browser_core_object_name)
         
         # Define DBus method.
         def dbus_callback_wrap(self, name, args):
@@ -59,7 +59,7 @@ class BrowserCoreService(dbus.service.Object):
         # Don't use @dbus.service.method !
         setattr(BrowserCoreService, 
                 "deepin_browser_core_%s" % self.plug_id,
-                dbus.service.method(browser_core_dbus_name, "ss")(dbus_callback_wrap))
+                dbus.service.method(self.browser_core_dbus_name, "ss")(dbus_callback_wrap))
 
 class BrowserCore(Gtk.Plug):
     '''Browser core.'''
@@ -96,7 +96,7 @@ class BrowserCore(Gtk.Plug):
         
     def browser_core_exit(self, args):
         '''Exit browser core progress.'''
-        gtk.main_quit()
+        Gtk.main_quit()
         
     def recevie_delete_event(self, widget, event):
         '''Receive delete event.'''
