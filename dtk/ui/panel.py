@@ -28,10 +28,10 @@ from theme import ui_theme
 class Panel(gtk.Window):
     '''Panel.'''
 	
-    def __init__(self, width, height):
+    def __init__(self, width, height, window_type=gtk.WINDOW_TOPLEVEL):
         '''Init panel.'''
         # Init.
-        gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
+        gtk.Window.__init__(self, window_type)
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)        
