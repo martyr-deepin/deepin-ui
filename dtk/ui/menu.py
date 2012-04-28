@@ -27,8 +27,9 @@ from theme import ui_theme
 from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate, get_screen_size
 from window import Window
 import gtk
+import gobject
 
-class Menu(object):
+class Menu(Window):
     '''Menu.'''
 	
     def __init__(self, items, 
@@ -40,6 +41,7 @@ class Menu(object):
                  item_padding_y=4):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
+        Window.__init__(self, False, "menuMask")
         self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
         self.submenu = None
         self.root_menu = None
@@ -48,19 +50,18 @@ class Menu(object):
         self.offset_y = 0
         
         # Init menu window.
-        self.menu_window = Window(False, "menuMask")
-        self.menu_window.set_opacity(opacity)
-        self.menu_window.set_skip_taskbar_hint(True)
-        self.menu_window.connect("enter-notify-event", self.enter_notify_menu)
-        self.menu_window.connect("leave-notify-event", self.leave_notify_menu)
-        self.menu_window.connect("focus-out-event", self.focus_out_menu)
+        self.set_opacity(opacity)
+        self.set_skip_taskbar_hint(True)
+        self.connect("enter-notify-event", self.enter_notify_menu)
+        self.connect("leave-notify-event", self.leave_notify_menu)
+        self.connect("focus-out-event", self.focus_out_menu)
         
         # Add menu item.
         self.item_box = gtk.VBox()
         self.item_align = gtk.Alignment()
         self.item_align.set_padding(padding_y, padding_y, padding_x, padding_x)
         self.item_align.add(self.item_box)
-        self.menu_window.window_frame.add(self.item_align)
+        self.window_frame.add(self.item_align)
         self.menu_items = []
         
         if items:
@@ -145,18 +146,18 @@ class Menu(object):
         self.offset_y = offset_y
         
         # Show.
-        self.menu_window.show_all()
+        self.show_all()
         
         # Adjust coordinate.
-        rect = self.menu_window.get_allocation()
-        (screen_width, screen_height) = get_screen_size(self.menu_window)
+        rect = self.get_allocation()
+        (screen_width, screen_height) = get_screen_size(self)
         dx = x
         dy = y
         if x + rect.width > screen_width:
             dx = x - rect.width + offset_x
         if y + rect.height > screen_height:
             dy = y - rect.height + offset_y
-        self.menu_window.move(dx, dy)
+        self.move(dx, dy)
             
     def hide(self):
         '''Hide menu.'''
@@ -164,7 +165,7 @@ class Menu(object):
         self.hide_submenu()
         
         # Hide current menu window.
-        self.menu_window.hide_all()
+        self.hide_all()
         
         # Reset.
         self.submenu = None
@@ -182,8 +183,8 @@ class Menu(object):
             self.submenu.root_menu = self.get_root_menu()
             
             # Show new submenu.
-            rect = self.menu_window.get_allocation()
-            self.submenu.show(coordinate, (-rect.width + self.menu_window.shadow_radius * 2, 0))
+            rect = self.get_allocation()
+            self.submenu.show(coordinate, (-rect.width + self.shadow_radius * 2, 0))
                 
     def hide_submenu(self):
         '''Hide submenu.'''
@@ -203,6 +204,8 @@ class Menu(object):
         else:
             return self
             
+gobject.type_register(Menu)
+
 class MenuItem(object):
     '''Menu item.'''
     
