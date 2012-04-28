@@ -205,7 +205,7 @@ class Application(object):
     def add_move_window_event(self, widget):
         '''Add move window event.'''
         widget.connect('button-press-event', lambda w, e: move_window(w, e, self.window))
-
+        
     def set_menu_callback(self, callback):
         '''Set menu callback.'''
         self.menu_button_callback = callback
