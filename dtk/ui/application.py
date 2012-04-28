@@ -131,7 +131,7 @@ class Application(object):
     def show_titlebar(self):
         '''Show titlebar.'''
         if self.titlebar_box.get_children() == [] and self.titlebar != None:
-            self.titlebar_box.add(self.titlebar.box)
+            self.titlebar_box.add(self.titlebar)
 
     def hide_titlebar(self):
         '''Hide titlebar.'''

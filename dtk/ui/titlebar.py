@@ -26,7 +26,7 @@ from draw import draw_line
 from utils import window_is_max
 import gtk
 
-class Titlebar(object):
+class Titlebar(EventBox):
     '''Title bar.'''    
     
     def __init__(self, 
@@ -39,11 +39,11 @@ class Titlebar(object):
                  ):
         '''Init titlebar.'''
         # Init.
-        self.box = EventBox()
-        self.box.set_size_request(-1, height)
+        EventBox.__init__(self)
+        self.set_size_request(-1, height)
         self.v_layout_box = gtk.VBox()
         self.h_layout_box = gtk.HBox()
-        self.box.add(self.v_layout_box)
+        self.add(self.v_layout_box)
         self.v_layout_box.pack_start(self.h_layout_box, True, True)
         
         # Init separator.
@@ -121,7 +121,7 @@ class Titlebar(object):
             self.button_box.pack_start(self.close_button, False, False)
         
         # Show.
-        self.box.show_all()
+        self.show_all()
         
     def expose_titlebar_separator(self, widget, event):
         '''Expose nav separator.'''
