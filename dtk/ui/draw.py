@@ -52,6 +52,14 @@ def get_desktop_pixbuf():
     
 def draw_round_rectangle(cr, x, y, width, height, r):
     '''Draw round rectangle.'''
+    # Adjust coordinate when width and height is negative.
+    if width < 0:
+        x = x - width
+        width = -width
+    if height < 0:
+        y = y - height
+        height = -height
+    
     # Top side.
     cr.move_to(x + r, y)
     cr.line_to(x + width - r, y)
