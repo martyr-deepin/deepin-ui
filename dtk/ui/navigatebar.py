@@ -85,6 +85,8 @@ class Navigatebar(EventBox):
         
         return True
 
+gobject.type_register(Navigatebar)
+
 class NavItem(object):
     '''Navigate item.'''
 	
@@ -164,4 +166,3 @@ class NavItem(object):
     
         return True
     
-gobject.type_register(Navigatebar)

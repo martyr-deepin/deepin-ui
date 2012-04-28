@@ -25,22 +25,23 @@ from titlebar import Titlebar
 from utils import move_window
 from window import Window
 import gtk
+import gobject
 
-class PopupWindow(object):
+class PopupWindow(Window):
     '''PopupWindow.'''
 	
     def __init__(self, parent_widget=None, widget=None, x=None, y=None):
         '''Init PopupWindow.'''        
+        Window.__init__(self)
         
         # Init Window.
-        self.popup_window = Window()        
-        self.popup_window.set_position(gtk.WIN_POS_MOUSE)
-        self.popup_window.set_modal(True)
-        self.popup_window.set_size_request(200,300)
+        self.set_position(gtk.WIN_POS_MOUSE)
+        self.set_modal(True)
+        self.set_size_request(200,300)
         
         self.main_box = gtk.VBox()
         self.titlebar = Titlebar(["close"])
-        self.titlebar.close_button.connect("clicked", lambda w: self.popup_window.destroy())
+        self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
         self.scrolled_align  = gtk.Alignment()
         self.scrolled_align.set(0.0, 0.0, 1.0, 1.0)
         self.scrolled_window = ScrolledWindow(gtk.POLICY_NEVER)
@@ -56,24 +57,24 @@ class PopupWindow(object):
             self.scrolled_window.add_child(self.text_view)
             
         if x and y:
-            self.popup_window.move(x, y)
+            self.move(x, y)
             
-        self.titlebar.drag_box.connect('button-press-event', lambda w, e: move_window(w, e, self.popup_window))
+        self.titlebar.drag_box.connect('button-press-event', lambda w, e: move_window(w, e, self))
             
         if parent_widget:
-            self.popup_window.connect("show", lambda w:self.show_window(w, parent_widget))
+            self.connect("show", lambda w:self.show_window(w, parent_widget))
             
         self.main_box = gtk.VBox()
         self.main_box.pack_start(self.titlebar.box, False, False)
         self.main_box.pack_start(self.scrolled_align, True, True)
         
-        self.popup_window.window_frame.add(self.main_box)
+        self.window_frame.add(self.main_box)
         
-        self.popup_window.show_all()
+        self.show_all()
 
     def show_window(self, widget, parent_widget):
         '''Show window'''
         parent_rect = parent_widget.get_toplevel().get_allocation()
         widget.move(parent_rect.x + parent_rect.width/2, parent_rect.y + parent_rect.height/2)
         
-
+gobject.type_register(PopupWindow)
