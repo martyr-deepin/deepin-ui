@@ -61,16 +61,23 @@ class Menu(object):
         self.item_align.set_padding(padding_y, padding_y, padding_x, padding_x)
         self.item_align.add(self.item_box)
         self.menu_window.window_frame.add(self.item_align)
+        self.menu_items = []
         
         if items:
             (have_icon, icon_width, icon_height, have_submenu, submenu_width, submenu_height) = self.get_menu_icon_info(items)
             
             for item in items:
-                self.item_box.pack_start(
-                    MenuItem(item, font_size, self.show_submenu, self.hide_submenu, self.get_root_menu,
-                             have_icon, icon_width, icon_height,
-                             have_submenu, submenu_width, submenu_height,
-                             item_padding_x, item_padding_y).item_box, False, False)
+                menu_item = MenuItem(
+                    item, font_size, self.show_submenu, self.hide_submenu, self.get_root_menu, self.get_menu_items,
+                    have_icon, icon_width, icon_height,
+                    have_submenu, submenu_width, submenu_height,
+                    item_padding_x, item_padding_y)
+                self.menu_items.append(menu_item)
+                self.item_box.pack_start(menu_item.item_box, False, False)
+                
+    def get_menu_items(self):
+        '''Get menu items.'''
+        return self.menu_items
                 
     def enter_notify_menu(self, widget, event):
         '''Enter notify menu.'''
@@ -181,8 +188,13 @@ class Menu(object):
     def hide_submenu(self):
         '''Hide submenu.'''
         if self.submenu:
+            # Hide submenu.
             self.submenu.hide()
             self.submenu = None
+            
+            # Reset menu items in submenu.
+            for menu_item in self.menu_items:
+                menu_item.submenu_active = False
             
     def get_root_menu(self):
         '''Get root menu.'''
@@ -194,8 +206,11 @@ class Menu(object):
 class MenuItem(object):
     '''Menu item.'''
     
-    def __init__(self, item, font_size, show_submenu_callback, hide_submenu_callback,
+    def __init__(self, item, font_size, 
+                 show_submenu_callback, 
+                 hide_submenu_callback,
                  get_root_menu_callback,
+                 get_menu_items_callback,
                  have_icon, icon_width, icon_height, 
                  have_submenu, submenu_width, submenu_height,
                  item_padding_x, item_padding_y):
@@ -208,6 +223,7 @@ class MenuItem(object):
         self.show_submenu_callback = show_submenu_callback
         self.hide_submenu_callback = hide_submenu_callback
         self.get_root_menu_callback = get_root_menu_callback
+        self.get_menu_items_callback = get_menu_items_callback
         self.have_icon = have_icon
         self.icon_width = icon_width
         self.icon_height = icon_height
@@ -215,6 +231,7 @@ class MenuItem(object):
         self.submenu_width = submenu_width
         self.submenu_height = submenu_height
         self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")        
+        self.submenu_active = False
 
         # Create.
         if self.item:
@@ -300,6 +317,14 @@ class MenuItem(object):
             
             # Set font color.
             font_color = ui_theme.get_color("menuSelectFont").get_color()
+        elif self.submenu_active:
+            # Draw background.
+            draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
+                         ui_theme.get_shadow_color("menuItemActiveSubmenu").get_color_info(),
+                         MENU_ITEM_RADIUS)
+            
+            # Set font color.
+            font_color = ui_theme.get_color("menuSelectFont").get_color()
             
         # Draw item icon.
         pixbuf = None
@@ -333,6 +358,12 @@ class MenuItem(object):
 
     def enter_notify_menu_item(self, widget, event):
         '''Callback for `enter-notify-event` signal.'''
+        # Reset all items in same menu.
+        for menu_item in self.get_menu_items_callback():
+            if menu_item != self and menu_item.submenu_active:
+                menu_item.submenu_active = False
+                menu_item.item_box.queue_draw()
+        
         (item_dpixbuf, item_content, item_node) = self.item[0:3]
         if isinstance(item_node, Menu):
             menu_window = self.item_box.get_toplevel()
@@ -341,5 +372,7 @@ class MenuItem(object):
             self.show_submenu_callback(
                 item_node, 
                 (menu_window_x - menu_window.shadow_radius, item_y - widget.get_allocation().height))
+            
+            self.submenu_active = True
         else:
             self.hide_submenu_callback()
