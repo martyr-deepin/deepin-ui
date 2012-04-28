@@ -23,6 +23,7 @@
 from box import EventBox
 from draw import draw_line
 import gtk
+import gobject
 
 class Statusbar(EventBox):
     '''Statusbar.'''
@@ -65,3 +66,5 @@ class Statusbar(EventBox):
         draw_line(cr, rect.x + 1, rect.y + 2, rect.x + rect.width - 1, rect.y + 2)
     
         return True
+
+gobject.type_register(Statusbar)

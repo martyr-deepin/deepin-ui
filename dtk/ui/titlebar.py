@@ -25,6 +25,7 @@ from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
 from draw import draw_line
 from utils import window_is_max
 import gtk
+import gobject
 
 class Titlebar(EventBox):
     '''Title bar.'''    
@@ -139,6 +140,8 @@ class Titlebar(EventBox):
         '''Change title.'''
         self.title_box.change_text(title)
         
+gobject.type_register(Titlebar)
+
 if __name__ == "__main__":
     
     def max_signal(w):    

@@ -28,13 +28,14 @@ from window import Window
 import gobject
 import gtk
         
-class Tooltip(object):
+class Tooltip(Window):
     '''Tooltip.'''
     
     def __init__ (self, text, x, y, text_size=DEFAULT_FONT_SIZE, text_color="tooltipText",
                   paddingX=10, paddingY=10):
         '''Init tooltip.'''
         # Init.
+        Window.__init__(self)
         self.text = text
         self.text_size = text_size
         self.text_color = text_color
@@ -47,26 +48,25 @@ class Tooltip(object):
         (font_width, font_height) = get_content_size(text, text_size)
         
         # Init Window.
-        self.tooltip_window = Window()
-        self.tooltip_window.set_opacity(self.opacity)
-        self.tooltip_window.set_modal(True)
-        self.tooltip_window.set_size_request(
+        self.set_opacity(self.opacity)
+        self.set_modal(True)
+        self.set_size_request(
             font_width + paddingX * 2, 
             font_height + paddingY * 2)
-        self.tooltip_window.move(x, y)
+        self.move(x, y)
         
         # Init signal.
-        self.tooltip_window.connect("focus-out-event", lambda w,e: self.exit())
+        self.connect("focus-out-event", lambda w,e: self.exit())
         
         self.tooltip_box = gtk.VBox()
-        self.tooltip_window.window_frame.add(self.tooltip_box)
+        self.window_frame.add(self.tooltip_box)
         self.tooltip_box.connect("expose-event", self.expose_tooltip) 
         
         # # Add time show tooltip.
         self.animation_id = gtk.timeout_add(self.animation_delay, self.start_animation)
         
         # Show.
-        self.tooltip_window.show_all()
+        self.show_all()
         
     def start_animation(self):
         '''Start animation.'''
@@ -88,7 +88,7 @@ class Tooltip(object):
             self.exit()
         # Otherw update window opacity.
         else:
-            self.tooltip_window.set_opacity(self.opacity)
+            self.set_opacity(self.opacity)
             
         return True
     
@@ -98,7 +98,7 @@ class Tooltip(object):
         gobject.source_remove(self.animation_id)
         
         # Destroy window.
-        self.tooltip_window.destroy()
+        self.destroy()
 
     def expose_tooltip(self, widget, event):
         '''Expose tooltip.'''
@@ -119,3 +119,5 @@ class Tooltip(object):
         propagate_expose(widget, event)
         
         return True
+    
+gobject.type_register(Tooltip)
