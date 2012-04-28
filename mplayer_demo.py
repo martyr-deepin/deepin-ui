@@ -66,12 +66,12 @@ if __name__ == "__main__":
     
     # Add statusbar.
     statusbar = Statusbar(36)
-    main_box.pack_start(statusbar.status_event_box, False)
-    application.add_move_window_event(statusbar.status_event_box)
-    application.add_toggle_window_event(statusbar.status_event_box)
+    main_box.pack_start(statusbar, False)
+    application.add_move_window_event(statusbar)
+    application.add_toggle_window_event(statusbar)
     
     # Add drag bar.
-    Dragbar(application.window, statusbar.status_event_box)
+    Dragbar(application.window, statusbar)
     
     # Run.
     application.run()

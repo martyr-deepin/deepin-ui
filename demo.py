@@ -310,12 +310,12 @@ if __name__ == "__main__":
     
     # Add statusbar.
     statusbar = Statusbar(36)
-    tab_1_box.pack_start(statusbar.status_event_box, False)
-    application.add_move_window_event(statusbar.status_event_box)
-    application.add_toggle_window_event(statusbar.status_event_box)
+    tab_1_box.pack_start(statusbar, False)
+    application.add_move_window_event(statusbar)
+    application.add_toggle_window_event(statusbar)
     
     # Add drag bar.
-    Dragbar(application.window, statusbar.status_event_box)
+    Dragbar(application.window, statusbar)
     
     horizontal_frame = HorizontalFrame()
     browser_client = BrowserClient(

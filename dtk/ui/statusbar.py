@@ -24,18 +24,18 @@ from box import EventBox
 from draw import draw_line
 import gtk
 
-class Statusbar(object):
+class Statusbar(EventBox):
     '''Statusbar.'''
 	
     def __init__(self, height, add_separator=False):
         '''Init statusbar.'''
         # Init.
-        self.status_event_box = EventBox()
-        self.status_event_box.set_size_request(-1, height)
+        EventBox.__init__(self)
+        self.set_size_request(-1, height)
         
         # Init status box.
         self.status_box = gtk.VBox()
-        self.status_event_box.add(self.status_box)
+        self.add(self.status_box)
         
         # Init separator.
         if add_separator:
@@ -49,7 +49,7 @@ class Statusbar(object):
         self.status_box.pack_start(self.status_item_box, True, True)
         
         # Show.
-        self.status_event_box.show_all()
+        self.show_all()
 
     def expose_status_separator(self, widget, event):
         '''Expose nav separator.'''
