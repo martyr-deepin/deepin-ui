@@ -32,7 +32,7 @@ class ScrolledWindow(gtk.ScrolledWindow):
 	
     def __init__(self, 
                  background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE),
-                 scrollebar_size = 10):
+                 scrollebar_size = 6):
         '''Init scrolled window.'''
         # Init.
         gtk.ScrolledWindow.__init__(self)
@@ -44,7 +44,7 @@ class ScrolledWindow(gtk.ScrolledWindow):
         # Draw vertical scrollbar.
         vscrollbar = self.get_vscrollbar()
         vscrollbar.set_size_request(
-            self.scrollebar_size,
+            self.scrollebar_size - 1,
             -1)
         vscrollbar.connect("value-changed", lambda rang: self.queue_draw())
         
@@ -52,7 +52,7 @@ class ScrolledWindow(gtk.ScrolledWindow):
         hscrollbar = self.get_hscrollbar()
         hscrollbar.set_size_request(
             -1,
-            self.scrollebar_size
+            self.scrollebar_size - 1
             )
         hscrollbar.connect("value-changed", lambda rang: self.queue_draw())
         
@@ -114,7 +114,7 @@ class ScrolledWindow(gtk.ScrolledWindow):
                 offset_y = rect.y + value * (rect.height - progress_height) / (upper - lower - page_size)
             
             cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("scrollebarForeground").get_color_info()))
-            cr.rectangle(rect.x + 2, offset_y, rect.width - 4, progress_height)
+            cr.rectangle(rect.x - 1, offset_y, rect.width, progress_height)
             cr.fill()
         
         return True
@@ -147,7 +147,7 @@ class ScrolledWindow(gtk.ScrolledWindow):
                 offset_x = rect.x + value * (rect.width - progress_width) / (upper - lower - page_size)
                 
             cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("scrollebarForeground").get_color_info()))
-            cr.rectangle(offset_x, rect.y + 2, progress_width, rect.height - 4)
+            cr.rectangle(offset_x, rect.y - 1, progress_width, rect.height)
             cr.fill()
         
         return True
