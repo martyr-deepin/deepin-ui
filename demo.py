@@ -178,9 +178,9 @@ if __name__ == "__main__":
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),
          (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航8", None),
          ])
-    application.main_box.pack_start(navigatebar.nav_event_box, False)
-    application.add_move_window_event(navigatebar.nav_event_box)
-    application.add_toggle_window_event(navigatebar.nav_event_box)
+    application.main_box.pack_start(navigatebar, False)
+    application.add_move_window_event(navigatebar)
+    application.add_toggle_window_event(navigatebar)
     
     notebook_box = gtk.VBox()
     tab_1_box = gtk.VBox()

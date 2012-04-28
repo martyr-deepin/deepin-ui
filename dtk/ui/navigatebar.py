@@ -26,19 +26,20 @@ from draw import draw_line, draw_pixbuf, draw_text
 from theme import ui_theme
 from utils import widget_fix_cycle_destroy_bug, propagate_expose
 import gtk
+import gobject
 
-class Navigatebar(object):
+class Navigatebar(EventBox):
     '''Navigatebar.'''
     
     def __init__(self, items, add_separator=False, font_size=DEFAULT_FONT_SIZE, padding_x=10, padding_y=10):
         '''Init navigatebar.'''
         # Init event box.
+        EventBox.__init__(self)
         self.nav_index = 0
-        self.nav_event_box = EventBox()
         
         # Init nav box.
         self.nav_box = gtk.VBox()
-        self.nav_event_box.add(self.nav_box)
+        self.add(self.nav_box)
         
         # Init item box.
         self.nav_item_box = gtk.HBox()
@@ -58,7 +59,7 @@ class Navigatebar(object):
             self.nav_box.pack_start(self.separator, False, False)
         
         # Show.
-        self.nav_event_box.show_all()
+        self.show_all()
         
     def set_index(self, index):
         '''Set index.'''
@@ -163,3 +164,4 @@ class NavItem(object):
     
         return True
     
+gobject.type_register(Navigatebar)
