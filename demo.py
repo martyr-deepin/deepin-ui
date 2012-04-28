@@ -24,14 +24,14 @@ from dtk.ui.application import Application
 from dtk.ui.browser_client import BrowserClient
 from dtk.ui.button import ImageButton
 from dtk.ui.categorybar import Categorybar
-from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
+from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
 from dtk.ui.editable_list import EditableItem, EditableList
 from dtk.ui.entry import TextEntry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
-from dtk.ui.menu import Menu, MENU_POS_TOP_LEFT
+from dtk.ui.menu import Menu
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.paned import HPaned
@@ -123,23 +123,32 @@ if __name__ == "__main__":
          None,
          (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单A2", None),
          (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单A3", None),
-         ],
-        MENU_POS_TOP_LEFT)
+         ])
+    sub_menu_e = Menu(
+        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单E1", None),
+         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单E2", None),
+         None,
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单E3", None),
+         ])
+    sub_menu_d = Menu(
+        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单D1", None),
+         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单D2", None),
+         None,
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单D3", sub_menu_e),
+         ])
     sub_menu_c = Menu(
         [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单C1", None),
          (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单C2", None),
          None,
-         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单C3", None),
-         ],
-        MENU_POS_TOP_LEFT)
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单C3", sub_menu_d),
+         ])
     sub_menu_b = Menu(
         [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单B1", None),
          None,
          (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单B2", None),
          None,
          (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单B3", sub_menu_c),
-         ],
-        MENU_POS_TOP_LEFT)
+         ])
     
     menu = Menu(
         [(ui_theme.get_pixbuf("menu/menuItem1.png"), "测试测试测试1", lambda : PopupWindow(application.window)),
@@ -154,7 +163,9 @@ if __name__ == "__main__":
          (ui_theme.get_pixbuf("menu/menuItem8.png"), "测试测试测试6", None),
          ],
         )
-    application.set_menu_callback(lambda button: menu.show(get_widget_root_coordinate(button)))
+    application.set_menu_callback(lambda button: menu.show(
+            get_widget_root_coordinate(button, WIDGET_POS_BOTTOM_LEFT),
+            (button.get_allocation().width, 0)))
     
     # Add navigatebar.
     navigatebar = Navigatebar(

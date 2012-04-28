@@ -20,30 +20,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MIDDLE
+from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_RIGHT_CENTER
 from draw import draw_vlinear, draw_pixbuf, draw_font
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate
+from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate, get_screen_size
 from window import Window
 import gtk
-
-MENU_POS_TOP_CENTER = 0
-MENU_POS_TOP_LEFT = 1
-MENU_POS_TOP_RIGHT = 2
 
 class Menu(object):
     '''Menu.'''
 	
-    def __init__(self, items, menu_pos=MENU_POS_TOP_CENTER, font_size=DEFAULT_FONT_SIZE, opacity=0.9, 
-                 padding_x=4, padding_y=4, item_padding_x=10, item_padding_y=4):
+    def __init__(self, items, 
+                 font_size=DEFAULT_FONT_SIZE, 
+                 opacity=1.0, 
+                 padding_x=4, 
+                 padding_y=4, 
+                 item_padding_x=6, 
+                 item_padding_y=4):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
-        self.menu_pos = menu_pos
         self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
         self.submenu = None
         self.root_menu = None
         self.in_menu_area = False
+        self.offset_x = 0       # use for handle extreme situaiton, such as, menu show at side of screen
+        self.offset_y = 0
         
         # Init menu window.
         self.menu_window = Window(False, "menuMask")
@@ -129,19 +131,25 @@ class Menu(object):
                 
         return (have_icon, icon_width, icon_height, have_submenu, submenu_width, submenu_height)
         
-    def show(self, (x, y)):
+    def show(self, (x, y), (offset_x, offset_y)=(0, 0)):
         '''Show menu.'''
-        # Show menu.
+        # Init offset.
+        self.offset_x = offset_x
+        self.offset_y = offset_y
+        
+        # Show.
         self.menu_window.show_all()
         
-        # Set menu position.
+        # Adjust coordinate.
         rect = self.menu_window.get_allocation()
-        if self.menu_pos == MENU_POS_TOP_CENTER:
-            self.menu_window.move(x - rect.width / 2, y)
-        elif self.menu_pos == MENU_POS_TOP_LEFT:
-            self.menu_window.move(x, y)
-        elif self.menu_pos == MENU_POS_TOP_RIGHT:
-            self.menu_window.move(x + rect.width, y)
+        (screen_width, screen_height) = get_screen_size(self.menu_window)
+        dx = x
+        dy = y
+        if x + rect.width > screen_width:
+            dx = x - rect.width + offset_x
+        if y + rect.height > screen_height:
+            dy = y - rect.height + offset_y
+        self.menu_window.move(dx, dy)
             
     def hide(self):
         '''Hide menu.'''
@@ -167,7 +175,8 @@ class Menu(object):
             self.submenu.root_menu = self.get_root_menu()
             
             # Show new submenu.
-            self.submenu.show(coordinate)
+            rect = self.menu_window.get_allocation()
+            self.submenu.show(coordinate, (-rect.width + self.menu_window.shadow_radius * 2, 0))
                 
     def hide_submenu(self):
         '''Hide submenu.'''
@@ -326,9 +335,11 @@ class MenuItem(object):
         '''Callback for `enter-notify-event` signal.'''
         (item_dpixbuf, item_content, item_node) = self.item[0:3]
         if isinstance(item_node, Menu):
+            menu_window = self.item_box.get_toplevel()
+            (menu_window_x, menu_window_y) = get_widget_root_coordinate(menu_window, WIDGET_POS_RIGHT_CENTER)
             (item_x, item_y) = get_widget_root_coordinate(self.item_box)
             self.show_submenu_callback(
                 item_node, 
-                (item_x + widget.get_allocation().width / 2 + 3, item_y - widget.get_allocation().height))
+                (menu_window_x - menu_window.shadow_radius, item_y - widget.get_allocation().height))
         else:
             self.hide_submenu_callback()

@@ -21,7 +21,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
-from menu import MENU_POS_TOP_LEFT
 from contextlib import contextmanager 
 from draw import draw_hlinear
 from keymap import get_keyevent_name
@@ -103,8 +102,7 @@ class Entry(gtk.EventBox):
             [(None, "剪切", self.cut_to_clipboard),
              (None, "复制", self.copy_to_clipboard),
              (None, "粘贴", self.paste_from_clipboard),
-             (None, "全选", self.select_all)],
-            MENU_POS_TOP_LEFT)
+             (None, "全选", self.select_all)])
         
         # Connect signal.
         self.connect_after("realize", self.realize_entry)
