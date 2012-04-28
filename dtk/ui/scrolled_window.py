@@ -31,13 +31,14 @@ class ScrolledWindow(gtk.ScrolledWindow):
     '''Scrolled window.'''
 	
     def __init__(self, 
-                 background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE)):
+                 background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE),
+                 scrollebar_size = 10):
         '''Init scrolled window.'''
         # Init.
         gtk.ScrolledWindow.__init__(self)
         self.background_pixbuf = background_pixbuf
         self.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.scrollebar_size = 16
+        self.scrollebar_size = scrollebar_size
         self.min_progress_size = 15
         
         # Draw vertical scrollbar.
