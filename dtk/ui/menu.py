@@ -49,15 +49,12 @@ class Menu(Window):
         self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
         self.submenu = None
         self.root_menu = None
-        self.in_menu_area = False
         self.offset_x = 0       # use for handle extreme situaiton, such as, menu show at side of screen
         self.offset_y = 0
         
         # Init menu window.
         self.set_opacity(opacity)
         self.set_skip_taskbar_hint(True)
-        self.connect("enter-notify-event", self.enter_notify_menu)
-        self.connect("leave-notify-event", self.leave_notify_menu)
         self.connect("focus-out-event", self.focus_out_menu)
         
         # Add menu item.
@@ -84,36 +81,23 @@ class Menu(Window):
         '''Get menu items.'''
         return self.menu_items
                 
-    def enter_notify_menu(self, widget, event):
-        '''Enter notify menu.'''
-        self.get_root_menu().in_menu_area = True
+    def focus_out_menu(self, widget, event):
+        '''Focus out menu.'''
+        # Get pointer coordinate.
+        (px, py) = gtk.gdk.display_get_default().get_pointer()[1:3]
         
-    def leave_notify_menu(self, widget, event):
-        '''Leave notify menu.'''
         in_area = False
         all_menus = self.get_root_menu().get_submenus() + [self.get_root_menu()]
         for menu in all_menus:
-            (ex, ey) = event.get_root_coords()
             (wx, wy) = widget.window.get_root_origin()
             ww, wh = widget.get_allocation().width, widget.get_allocation().height
-            if is_in_rect((ex, ey), (wx, wy, ww, wh)):
+            if is_in_rect((px, py), (wx, wy, ww, wh)):
                 in_area = True
                 break
-            
-        self.get_root_menu().in_menu_area = in_area
         
-    def focus_out_menu(self, widget, event):
-        '''Focus out menu.'''
-        print event.window
-        
-        print "Focus out"
-        menu = self.get_root_menu()
-        
-        print "in_menu_area: %s" % (menu.in_menu_area)
-        if not menu.in_menu_area:
-            menu.in_menu_area = False
-            menu.hide()
-            print "Got it ************************"
+        # Hide menu if pointer not in any menu.
+        if not in_area:
+            self.get_root_menu().hide()
 
     def get_submenus(self):
         '''Get submenus.'''
@@ -194,7 +178,6 @@ class Menu(Window):
         # Reset.
         self.submenu = None
         self.root_menu = None
-        self.in_menu_area = False
         
     def show_submenu(self, submenu, coordinate):
         '''Show submenu.'''
