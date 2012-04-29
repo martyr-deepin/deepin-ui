@@ -33,6 +33,8 @@ class Menu(Window):
     '''Menu.'''
 	
     def __init__(self, items, 
+                 x_align=ALIGN_START,
+                 y_align=ALIGN_START,
                  font_size=DEFAULT_FONT_SIZE, 
                  opacity=1.0, 
                  padding_x=4, 
@@ -42,6 +44,8 @@ class Menu(Window):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
         Window.__init__(self, False, "menuMask")
+        self.x_align = x_align
+        self.y_align = y_align
         self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
         self.submenu = None
         self.root_menu = None
@@ -96,14 +100,20 @@ class Menu(Window):
                 in_area = True
                 break
             
-        self.get_root_menu().in_menu_area = in_area    
+        self.get_root_menu().in_menu_area = in_area
         
     def focus_out_menu(self, widget, event):
         '''Focus out menu.'''
+        print event.window
+        
+        print "Focus out"
         menu = self.get_root_menu()
+        
+        print "in_menu_area: %s" % (menu.in_menu_area)
         if not menu.in_menu_area:
             menu.in_menu_area = False
             menu.hide()
+            print "Got it ************************"
 
     def get_submenus(self):
         '''Get submenus.'''
@@ -151,12 +161,26 @@ class Menu(Window):
         # Adjust coordinate.
         rect = self.get_allocation()
         (screen_width, screen_height) = get_screen_size(self)
-        dx = x
-        dy = y
+        
+        if self.x_align == ALIGN_START:
+            dx = x
+        elif self.x_align == ALIGN_MIDDLE:
+            dx = x - rect.width / 2
+        else:
+            dx = x - rect.width
+            
+        if self.y_align == ALIGN_START:
+            dy = y
+        elif self.y_align == ALIGN_MIDDLE:
+            dy = y - rect.height / 2
+        else:
+            dy = y - rect.height
+
         if x + rect.width > screen_width:
             dx = x - rect.width + offset_x
         if y + rect.height > screen_height:
             dy = y - rect.height + offset_y
+            
         self.move(dx, dy)
             
     def hide(self):
