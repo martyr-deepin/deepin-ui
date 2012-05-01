@@ -148,9 +148,9 @@ class BrowserClient(ScrolledWindow):
         
         # Exit browser core when browser client destroy.
         if self.exit_signal_id == None and self.plug_id:
-            self.exit_signal_id = self.connect("destroy", self.browser_client_exit_core)
+            self.exit_signal_id = self.connect("destroy", lambda w: self.browser_client_exit_core())
             
-    def browser_client_exit_core(self, widget):
+    def browser_client_exit_core(self):
         '''Send 'exit' signal to core process.'''
         bus = dbus.SessionBus()
         browser_core_dbus_name = "com.deepin.browser_core_%s" % self.plug_id
