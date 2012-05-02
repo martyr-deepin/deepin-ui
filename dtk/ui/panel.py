@@ -24,6 +24,7 @@ import gtk
 import gobject
 import cairo
 from theme import ui_theme
+from utils import remove_callback_id
 
 class Panel(gtk.Window):
     '''Panel.'''
@@ -52,12 +53,8 @@ class Panel(gtk.Window):
     def stop_render(self):
         '''Stop render callback.'''
         # Stop callback.
-        if self.start_show_id:
-            gobject.source_remove(self.start_show_id)
-            self.start_show_id = None
-        if self.start_hide_id:
-            gobject.source_remove(self.start_hide_id)
-            self.start_hide_id = None
+        remove_callback_id(self.start_show_id)
+        remove_callback_id(self.start_hide_id)
             
     def show_panel(self):
         '''Show panel.'''
@@ -144,18 +141,14 @@ class TestWidget(object):
         
     def show_panel(self):
         '''docs'''
-        if self.test_hide_id:
-            gobject.source_remove(self.test_hide_id)
-            self.test_hide_id = None
+        remove_callback_id(self.test_hide_id)
             
         self.panel.start_show()    
         self.test_hide_id = gtk.timeout_add(5000, self.panel.start_hide)
         
     def enter_notify_callback(self):
         '''docs'''
-        if self.test_hide_id:
-            gobject.source_remove(self.test_hide_id)
-            self.test_hide_id = None
+        remove_callback_id(self.test_hide_id)
             
         self.panel.start_show()    
         

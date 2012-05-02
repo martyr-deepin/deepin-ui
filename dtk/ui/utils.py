@@ -24,6 +24,7 @@ from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_C
 from contextlib import contextmanager 
 import cairo
 import gtk
+import gobject
 import math
 import os
 import pango
@@ -604,3 +605,9 @@ def exec_time():
         print 'exec_time error %s' % e  
     else:  
         print "time: %f" % (time.time() - start_time)
+
+def remove_callback_id(callback_id):
+    '''Remove callback id.'''
+    if callback_id:
+        gobject.source_remove(callback_id)
+        callback_id = None

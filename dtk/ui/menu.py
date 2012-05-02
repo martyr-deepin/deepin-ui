@@ -24,7 +24,7 @@ from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MID
 from draw import draw_vlinear, draw_pixbuf, draw_font
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate, get_screen_size
+from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id
 from window import Window
 import gtk
 import gobject
@@ -70,13 +70,8 @@ def menu_grab_window_button_press(widget, event):
         else:
             menu_grab_window_focus_out()
     
-    if menu_grab_window_press_id:
-        gobject.source_remove(menu_grab_window_press_id)
-        menu_grab_window_press_id = None
-        
-    if menu_grab_window_motion_id:
-        gobject.source_remove(menu_grab_window_motion_id)
-        menu_grab_window_motion_id = None
+    remove_callback_id(menu_grab_window_press_id)        
+    remove_callback_id(menu_grab_window_motion_id)        
         
 def menu_grab_window_motion(widget, event):
     if event and event.window:
@@ -112,7 +107,7 @@ class Menu(Window):
                  padding_x=4, 
                  padding_y=4, 
                  item_padding_x=6, 
-                 item_padding_y=4):
+                 item_padding_y=3):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
         Window.__init__(self, False, "menuMask")
