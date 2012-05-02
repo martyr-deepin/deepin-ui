@@ -27,7 +27,7 @@ from entry import Entry
 from label import Label
 from scrolled_window import ScrolledWindow
 from theme import ui_theme
-from utils import propagate_expose, container_remove_all, is_double_click, is_left_button, is_right_button, remove_callback_id
+from utils import propagate_expose, container_remove_all, is_double_click, is_left_button, is_right_button
 import gobject
 import gtk
 
@@ -78,9 +78,17 @@ class EditableItemBox(gtk.Alignment):
     
     def remove_children(self):
         '''Clear child.'''
-        remove_callback_id(self.focus_out_id)
-        remove_callback_id(self.focus_entry_id)
-        remove_callback_id(self.focus_press_id)
+        if self.focus_out_id:
+            gobject.source_remove(self.focus_out_id)
+            self.focus_out_id = None
+
+        if self.press_entry_id:
+            gobject.source_remove(self.press_entry_id)
+            self.press_entry_id = None
+            
+        if self.button_press_id:
+            gobject.source_remove(self.button_press_id)
+            self.button_press_id = None
         
         container_remove_all(self)
         

@@ -24,7 +24,7 @@ from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MID
 from draw import draw_vlinear, draw_pixbuf, draw_font
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id
+from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate, get_screen_size
 from window import Window
 import gtk
 import gobject
@@ -69,16 +69,23 @@ def menu_grab_window_button_press(widget, event):
                 menu_item.item_box.event(event)
         else:
             menu_grab_window_focus_out()
-            
-    remove_callback_id(menu_grab_window_press_id)        
-    remove_callback_id(menu_grab_window_motion_id)        
     
+    if menu_grab_window_press_id:
+        gobject.source_remove(menu_grab_window_press_id)
+        menu_grab_window_press_id = None
+        
+    if menu_grab_window_motion_id:
+        gobject.source_remove(menu_grab_window_motion_id)
+        menu_grab_window_motion_id = None
+        
 def menu_grab_window_motion(widget, event):
     if event and event.window:
         event_widget = event.window.get_user_data()
         if isinstance(event_widget, Menu):
             menu_item = event_widget.get_menu_item_at_coordinate(event.get_root_coords())
             if menu_item and isinstance(menu_item.item_box, gtk.Button):
+                # menu_item.enter_notify_menu_item(menu_item.item_box)
+                
                 enter_notify_event = gtk.gdk.Event(gtk.gdk.ENTER_NOTIFY)
                 enter_notify_event.window = event.window
                 enter_notify_event.time = event.time
@@ -105,7 +112,7 @@ class Menu(Window):
                  padding_x=4, 
                  padding_y=4, 
                  item_padding_x=6, 
-                 item_padding_y=3):
+                 item_padding_y=4):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
         Window.__init__(self, False, "menuMask")
