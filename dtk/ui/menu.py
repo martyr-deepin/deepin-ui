@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_RIGHT_CENTER
+from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_TOP_LEFT
 from draw import draw_vlinear, draw_pixbuf, draw_font
 from line import HSeparator
 from theme import ui_theme
@@ -29,10 +29,82 @@ from window import Window
 import gtk
 import gobject
 
+menu_grab_window = gtk.Window(gtk.WINDOW_POPUP)
+menu_grab_window.move(0, 0)
+menu_grab_window.set_default_size(0, 0)
+menu_grab_window.show()
+
+root_menus = []
+menu_grab_window_press_id = None
+menu_grab_window_motion_id = None
+
+def menu_grab_window_focus_in():
+    menu_grab_window.grab_add()
+    gtk.gdk.pointer_grab(
+        menu_grab_window.window, 
+        True,
+        gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.ENTER_NOTIFY_MASK | gtk.gdk.LEAVE_NOTIFY_MASK,
+        None, None, gtk.gdk.CURRENT_TIME)
+    
+def menu_grab_window_focus_out():
+    global root_menus
+    
+    for root_menu in root_menus:
+        root_menu.hide()
+    
+    root_menus = []    
+    
+    gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
+    menu_grab_window.grab_remove()
+
+def menu_grab_window_button_press(widget, event):
+    global menu_grab_window_press_id
+    global menu_grab_window_motion_id    
+    
+    if event and event.window:
+        event_widget = event.window.get_user_data()
+        if isinstance(event_widget, Menu):
+            menu_item = event_widget.get_menu_item_at_coordinate(event.get_root_coords())
+            if menu_item:
+                menu_item.item_box.event(event)
+        else:
+            menu_grab_window_focus_out()
+    
+    if menu_grab_window_press_id:
+        gobject.source_remove(menu_grab_window_press_id)
+        menu_grab_window_press_id = None
+        
+    if menu_grab_window_motion_id:
+        gobject.source_remove(menu_grab_window_motion_id)
+        menu_grab_window_motion_id = None
+        
+def menu_grab_window_motion(widget, event):
+    if event and event.window:
+        event_widget = event.window.get_user_data()
+        if isinstance(event_widget, Menu):
+            menu_item = event_widget.get_menu_item_at_coordinate(event.get_root_coords())
+            if menu_item and isinstance(menu_item.item_box, gtk.Button):
+                # menu_item.enter_notify_menu_item(menu_item.item_box)
+                
+                enter_notify_event = gtk.gdk.Event(gtk.gdk.ENTER_NOTIFY)
+                enter_notify_event.window = event.window
+                enter_notify_event.time = event.time
+                enter_notify_event.send_event = True
+                enter_notify_event.x_root = event.x_root
+                enter_notify_event.y_root = event.y_root
+                enter_notify_event.x = event.x
+                enter_notify_event.y = event.y
+                enter_notify_event.state = event.state
+                
+                menu_item.item_box.event(enter_notify_event)
+                
+                menu_item.item_box.queue_draw()
+
 class Menu(Window):
     '''Menu.'''
 	
     def __init__(self, items, 
+                 is_root_menu=False,
                  x_align=ALIGN_START,
                  y_align=ALIGN_START,
                  font_size=DEFAULT_FONT_SIZE, 
@@ -44,6 +116,8 @@ class Menu(Window):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
         Window.__init__(self, False, "menuMask")
+        global root_menus
+        self.is_root_menu = is_root_menu
         self.x_align = x_align
         self.y_align = y_align
         self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
@@ -55,7 +129,7 @@ class Menu(Window):
         # Init menu window.
         self.set_opacity(opacity)
         self.set_skip_taskbar_hint(True)
-        self.connect("focus-out-event", self.focus_out_menu)
+        self.connect_after("show", self.init_menu)
         
         # Add menu item.
         self.item_box = gtk.VBox()
@@ -77,28 +151,36 @@ class Menu(Window):
                 self.menu_items.append(menu_item)
                 self.item_box.pack_start(menu_item.item_box, False, False)
                 
+    def get_menu_item_at_coordinate(self, (x, y)):
+        '''Get menu item at coordinate, return None if haven't any menu item at given coordinate.'''
+        match_menu_item = None
+        for menu_item in self.menu_items:                
+            item_rect = menu_item.item_box.get_allocation()
+            (item_x, item_y) = get_widget_root_coordinate(menu_item.item_box, WIDGET_POS_TOP_LEFT)
+            if is_in_rect((x, y), (item_x, item_y, item_rect.width, item_rect.height)):
+                match_menu_item = menu_item
+                break    
+            
+        return match_menu_item
+                
     def get_menu_items(self):
         '''Get menu items.'''
         return self.menu_items
-                
-    def focus_out_menu(self, widget, event):
-        '''Focus out menu.'''
-        # Get pointer coordinate.
-        (px, py) = gtk.gdk.display_get_default().get_pointer()[1:3]
+    
+    def init_menu(self, widget):
+        '''Realize menu.'''
+        global root_menus
+        global menu_grab_window_press_id
+        global menu_grab_window_motion_id
         
-        in_area = False
-        all_menus = self.get_root_menu().get_submenus() + [self.get_root_menu()]
-        for menu in all_menus:
-            (wx, wy) = widget.window.get_root_origin()
-            ww, wh = widget.get_allocation().width, widget.get_allocation().height
-            if is_in_rect((px, py), (wx, wy, ww, wh)):
-                in_area = True
-                break
-        
-        # Hide menu if pointer not in any menu.
-        if not in_area:
-            self.get_root_menu().hide()
-
+        if not gtk.gdk.pointer_is_grabbed():
+            menu_grab_window_focus_in()
+            menu_grab_window_press_id = menu_grab_window.connect("button-press-event", menu_grab_window_button_press)
+            menu_grab_window_motion_id = menu_grab_window.connect("motion-notify-event", menu_grab_window_motion)
+            
+        if self.is_root_menu and not self in root_menus:
+            root_menus.append(self)
+                            
     def get_submenus(self):
         '''Get submenus.'''
         if self.submenu:
@@ -291,7 +373,7 @@ class MenuItem(object):
             "expose-event", 
             lambda w, e: self.expose_menu_item(
                 w, e, item_dpixbuf, item_content))
-        self.item_box.connect("enter-notify-event", self.enter_notify_menu_item)
+        self.item_box.connect("enter-notify-event", lambda w, e: self.enter_notify_menu_item(w))
         
         # Wrap menu aciton.
         self.item_box.connect("clicked", self.wrap_menu_clicked_action)        
@@ -309,7 +391,8 @@ class MenuItem(object):
                     item_node()
             
             # Hide menu.
-            self.get_root_menu_callback().hide()    
+            # self.get_root_menu_callback().hide()    
+            menu_grab_window_focus_out()
             
     def expose_menu_item(self, widget, event, item_dpixbuf, item_content):
         '''Expose menu item.'''
@@ -366,7 +449,7 @@ class MenuItem(object):
     
         return True
 
-    def enter_notify_menu_item(self, widget, event):
+    def enter_notify_menu_item(self, widget):
         '''Callback for `enter-notify-event` signal.'''
         # Reset all items in same menu.
         for menu_item in self.get_menu_items_callback():

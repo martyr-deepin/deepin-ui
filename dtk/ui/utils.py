@@ -174,7 +174,7 @@ def propagate_expose(widget, event):
     '''Propagate expose to children.'''
     if "get_child" in dir(widget) and widget.get_child() != None:
         widget.propagate_expose(widget.get_child(), event)
-        
+
 def move_window(widget, event, window):
     '''Move window.'''
     window.begin_move_drag(

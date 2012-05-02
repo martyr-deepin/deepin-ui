@@ -102,7 +102,8 @@ class Entry(gtk.EventBox):
             [(None, "剪切", self.cut_to_clipboard),
              (None, "复制", self.copy_to_clipboard),
              (None, "粘贴", self.paste_from_clipboard),
-             (None, "全选", self.select_all)])
+             (None, "全选", self.select_all)],
+            True)
         
         # Connect signal.
         self.connect_after("realize", self.realize_entry)

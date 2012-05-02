@@ -65,7 +65,7 @@ class PopupWindow(Window):
             self.connect("show", lambda w:self.show_window(w, parent_widget))
             
         self.main_box = gtk.VBox()
-        self.main_box.pack_start(self.titlebar.box, False, False)
+        self.main_box.pack_start(self.titlebar, False, False)
         self.main_box.pack_start(self.scrolled_align, True, True)
         
         self.window_frame.add(self.main_box)
