@@ -82,6 +82,7 @@ class BrowserCore(Gtk.Plug):
         self.session.add_feature(self.cookie)
         self.view.load_uri(self.uri)
         self.add(self.view)
+        self.view.connect("create-web-view", self.browser_core_open_link)
         
         # Handle signal.
         self.connect("realize", self.realize_browser_core)
@@ -94,6 +95,11 @@ class BrowserCore(Gtk.Plug):
             {"exit" : self.browser_core_exit}
             )
         
+    def browser_core_open_link(self, view, frame):
+        '''Open link when request new window.'''
+        # Return current view to open link in current view.
+        return self.view
+                
     def browser_core_exit(self, args):
         '''Exit browser core progress.'''
         Gtk.main_quit()

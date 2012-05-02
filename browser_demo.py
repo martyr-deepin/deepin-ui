@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # Add browser.
     horizontal_frame = HorizontalFrame()
     browser_client = BrowserClient(
-        "http://www.linuxdeepin.com/forum",
+        "http://ting.baidu.com",
         "/home/andy/cookie.txt",
         application.app_bus_name,
         application.app_dbus_name,
