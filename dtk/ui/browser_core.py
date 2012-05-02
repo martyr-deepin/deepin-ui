@@ -89,7 +89,9 @@ class BrowserCore(Gtk.Plug):
         # Handle signal.
         self.connect("realize", self.realize_browser_core)
         self.connect("delete-event", self.recevie_delete_event)
-        self.view.connect("load-finished", self.load_finished_browser_core)
+        self.view.connect("load-finished", self.browser_core_load_finished)
+        self.view.connect("notify::load-status", self.browser_core_load_status)
+        self.view.connect("load-error", self.browser_core_load_error)
         
         # Build service.
         BrowserCoreService(
@@ -124,7 +126,7 @@ class BrowserCore(Gtk.Plug):
         
         return result
         
-    def load_finished_browser_core(self, view, frame):
+    def browser_core_load_finished(self, view, frame):
         '''Callback for `load-finished` signal.'''
         try:
             # Get new width.
@@ -137,7 +139,15 @@ class BrowserCore(Gtk.Plug):
             # Adjust scroll window's size.
             self.send_message_to_client("init_size", str((width, height)))
         except Exception, e:
-            print "load_finished_browser_core got error: %s" % (e)
+            print "browser_core_load_finished got error: %s" % (e)
+            
+    def browser_core_load_status(self, view, status):
+        '''Print status.'''
+        print status
+        
+    def browser_core_load_error(self, *error):
+        '''Print error.'''
+        print error
         
     def send_message_to_client(self, method_name, method_args):
         '''Send message to browser client.'''
