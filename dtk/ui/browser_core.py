@@ -78,6 +78,7 @@ class BrowserCore(Gtk.Plug):
         # Build web view.
         self.view = WebKit.WebView()
         self.view.get_settings().set_property("enable-plugins", False) # this is binding bug that should set with `True`
+        self.view.get_settings().set_property("enable-scripts", True)
         self.session = WebKit.get_default_session()
         self.cookie = Soup.CookieJarText.new(cookie_file, False)
         self.session.add_feature(self.cookie)
@@ -118,22 +119,25 @@ class BrowserCore(Gtk.Plug):
     def execute_script(self, script):
         '''Execute script.'''
         self.view.execute_script('oldtitle=document.title;%s' % script)
-        result = self.view.get_main_frame().get_title()
+        result = self.view.get_title()
         self.view.execute_script('document.title=oldtitle;')
         
-        return eval(result)
+        return result
         
     def load_finished_browser_core(self, view, frame):
         '''Callback for `load-finished` signal.'''
-        # Get new width.
-        width = self.execute_script("document.title=document.body.offsetWidth;")
-        height = self.execute_script("document.title=document.body.offsetHeight;")
-        
-        # Set web view size.
-        self.view.set_size_request(width, height)
-        
-        # Adjust scroll window's size.
-        self.send_message_to_client("init_size", str((width, height)))
+        try:
+            # Get new width.
+            width = eval(self.execute_script("document.title=document.body.offsetWidth;"))
+            height = eval(self.execute_script("document.title=document.body.offsetHeight;"))
+            
+            # Set web view size.
+            self.view.set_size_request(width, height)
+            
+            # Adjust scroll window's size.
+            self.send_message_to_client("init_size", str((width, height)))
+        except Exception, e:
+            print "load_finished_browser_core got error: %s" % (e)
         
     def send_message_to_client(self, method_name, method_args):
         '''Send message to browser client.'''
