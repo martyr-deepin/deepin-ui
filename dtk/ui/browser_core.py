@@ -77,6 +77,7 @@ class BrowserCore(Gtk.Plug):
         
         # Build web view.
         self.view = WebKit.WebView()
+        self.view.get_settings().set_property("enable-plugins", False) # this is binding bug that should set with `True`
         self.session = WebKit.get_default_session()
         self.cookie = Soup.CookieJarText.new(cookie_file, False)
         self.session.add_feature(self.cookie)
