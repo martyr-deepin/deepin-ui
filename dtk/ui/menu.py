@@ -69,6 +69,8 @@ def menu_grab_window_button_press(widget, event):
             menu_item = event_widget.get_menu_item_at_coordinate(event.get_root_coords())
             if menu_item:
                 menu_item.item_box.event(event)
+        elif isinstance(event_widget, gtk.Button):
+            event_widget.event(event)
         else:
             menu_grab_window_focus_out()
     
@@ -382,11 +384,10 @@ class MenuItem(object):
         self.item_box.connect("enter-notify-event", lambda w, e: self.enter_notify_menu_item(w))
         
         # Wrap menu aciton.
-        self.item_box.connect("clicked", self.wrap_menu_clicked_action)        
+        self.item_box.connect("button-press-event", self.wrap_menu_clicked_action)        
         
-    def wrap_menu_clicked_action(self, button):
+    def wrap_menu_clicked_action(self, button, event):
         '''Wrap menu action.'''
-        # (item_dpixbuf, item_content, item_node, item_data) = self.item
         item_node = self.item[2]
         if not isinstance(item_node, Menu):
             # Execute callback.
@@ -397,7 +398,6 @@ class MenuItem(object):
                     item_node()
             
             # Hide menu.
-            # self.get_root_menu_callback().hide()    
             menu_grab_window_focus_out()
             
     def expose_menu_item(self, widget, event, item_dpixbuf, item_content):
