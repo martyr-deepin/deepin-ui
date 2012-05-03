@@ -408,7 +408,6 @@ class MenuItem(object):
         font_color = ui_theme.get_color("menuFont").get_color()
         
         # Draw select effect.
-        print (widget.state, gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE)
         if widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
             # Draw background.
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
