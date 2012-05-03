@@ -33,6 +33,7 @@ menu_grab_window = gtk.Window(gtk.WINDOW_POPUP)
 menu_grab_window.move(0, 0)
 menu_grab_window.set_default_size(0, 0)
 menu_grab_window.show()
+menu_active_item = None
 
 root_menus = []
 menu_grab_window_press_id = None
@@ -60,6 +61,7 @@ def menu_grab_window_focus_out():
 def menu_grab_window_button_press(widget, event):
     global menu_grab_window_press_id
     global menu_grab_window_motion_id    
+    global menu_active_item
     
     if event and event.window:
         event_widget = event.window.get_user_data()
@@ -73,13 +75,22 @@ def menu_grab_window_button_press(widget, event):
     remove_callback_id(menu_grab_window_press_id)        
     remove_callback_id(menu_grab_window_motion_id)        
         
+    if menu_active_item:
+        menu_active_item.set_state(gtk.STATE_NORMAL)
+        
 def menu_grab_window_motion(widget, event):
+    global menu_active_item
+    
     if event and event.window:
         event_widget = event.window.get_user_data()
         if isinstance(event_widget, Menu):
             menu_item = event_widget.get_menu_item_at_coordinate(event.get_root_coords())
             if menu_item and isinstance(menu_item.item_box, gtk.Button):
-                # menu_item.enter_notify_menu_item(menu_item.item_box)
+                if menu_active_item:
+                    menu_active_item.set_state(gtk.STATE_NORMAL)
+                
+                menu_item.item_box.set_state(gtk.STATE_PRELIGHT)
+                menu_active_item = menu_item.item_box
                 
                 enter_notify_event = gtk.gdk.Event(gtk.gdk.ENTER_NOTIFY)
                 enter_notify_event.window = event.window
@@ -397,6 +408,7 @@ class MenuItem(object):
         font_color = ui_theme.get_color("menuFont").get_color()
         
         # Draw select effect.
+        print (widget.state, gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE)
         if widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
             # Draw background.
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
