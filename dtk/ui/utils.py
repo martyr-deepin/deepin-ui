@@ -611,3 +611,8 @@ def remove_callback_id(callback_id):
     if callback_id:
         gobject.source_remove(callback_id)
         callback_id = None
+
+def print_callback_args(*args):
+    '''Print callback arguments.'''
+    print "******************"
+    print args

@@ -21,34 +21,92 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PIL import Image
-import sys
+from draw import draw_pixbuf
+from utils import propagate_expose, color_hex_to_cairo
+import gtk
+import scipy
+import scipy.cluster
+import scipy.misc
+import urllib
 
 def get_dominant_color(image_path):
-    '''Get dominant color of image.'''
-    # Get image.
-    image = Image.open(image_path).convert('RGBA')
+    # print 'reading image'
+    im = Image.open(image_path)
+    im = im.resize((150, 150))      # optional, to reduce time
+    ar = scipy.misc.fromimage(im)
+    shape = ar.shape
+    ar = ar.reshape(scipy.product(shape[:2]), shape[2])
     
-    # Init.
-    color_count = 0
-    r_all = 0
-    g_all = 0
-    b_all = 0
+    # print 'finding clusters'
+    NUM_CLUSTERS = 5
+    codes, dist = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
+    # print 'cluster centres:\n', codes
     
-    # Scan image.
-    for count, (r, g, b, a) in image.getcolors(image.size[0] * image.size[1]):
-        # Skip transparent pixel.
-        if a == 0:
-            continue
+    vecs, dist = scipy.cluster.vq.vq(ar, codes)         # assign codes
+    counts, bins = scipy.histogram(vecs, len(codes))    # count occurrences
+    
+    index_max = scipy.argmax(counts)                    # find most frequent
+    peak = codes[index_max]
+    colour = ''.join(chr(c) for c in peak).encode('hex')
+    # print 'most frequent is %s (#%s)' % (peak, colour)
+    
+    return colour
 
-        # Add color information.
-        r_all += r
-        g_all += g
-        b_all += b
+class ColorTestWidget(gtk.DrawingArea):
+	
+    def __init__(self):
+        gtk.DrawingArea.__init__(self)
+        self.add_events(gtk.gdk.ALL_EVENTS_MASK)
+        self.connect("expose-event", self.color_test_widget_expose)        
+        self.pixbuf = None
+        self.background_color = "#000000"
         
-        # Update counter.
-        color_count += 1
+        self.drag_dest_set(
+            gtk.DEST_DEFAULT_MOTION |
+            gtk.DEST_DEFAULT_HIGHLIGHT |
+            gtk.DEST_DEFAULT_DROP,
+            [("text/uri-list", 0, 1)],
+            gtk.gdk.ACTION_COPY)
         
-    return (r_all / color_count, g_all / color_count, b_all / color_count)    
+        self.connect("drag-data-received", self.color_test_widget_drag)
+        
+    def color_test_widget_drag(self, widget, drag_context, x, y, selection_data, info, timestamp):
+        self.set_pixbuf(urllib.unquote(selection_data.get_uris()[0].split("file://")[1]))        
+        
+    def set_pixbuf(self, filename):
+        self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(filename, 400, 400)
+        self.background_color = get_dominant_color(filename)
+        print self.background_color
+        self.queue_draw()
+        
+    def color_test_widget_expose(self, widget, event):
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        
+        # Draw background.
+        cr.set_source_rgb(*color_hex_to_cairo(self.background_color))
+        cr.rectangle(0, 0, rect.width, rect.height)
+        cr.fill()
+        
+        # Draw pixbuf.
+        draw_pixbuf(cr, self.pixbuf, 
+                    (rect.width - self.pixbuf.get_width()) / 2, 
+                    (rect.height - self.pixbuf.get_height()) / 2)
+        
+        propagate_expose(widget, event)
+        
+        return True
 
 if __name__ == '__main__':
-    print '#%02x%02x%02x' % get_dominant_color(sys.argv[1])
+    window = gtk.Window()
+    window.connect("destroy", lambda w: gtk.main_quit())
+    window.set_size_request(500, 500)
+    
+    test = ColorTestWidget()
+    test.set_pixbuf("/data/Picture/壁纸/1713311.jpg")
+    window.add(test)
+    
+    window.show_all()
+    
+    gtk.main()
+    
