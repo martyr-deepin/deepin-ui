@@ -50,7 +50,7 @@ def get_dominant_color(image_path):
     colour = ''.join(chr(c) for c in peak).encode('hex')
     # print 'most frequent is %s (#%s)' % (peak, colour)
     
-    return colour
+    return "#%s" % (colour[0:6])
 
 class ColorTestWidget(gtk.DrawingArea):
 	
