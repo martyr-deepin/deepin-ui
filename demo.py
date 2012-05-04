@@ -27,7 +27,7 @@ from dtk.ui.categorybar import Categorybar
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
 from dtk.ui.editable_list import EditableItem, EditableList
 from dtk.ui.entry import TextEntry
-from dtk.ui.frame import HorizontalFrame
+from dtk.ui.frame import HorizontalFrame, VerticalFrame
 from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
@@ -44,6 +44,7 @@ from dtk.ui.tooltip import Tooltip
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.dragbar import Dragbar
+from dtk.ui.iconview import IconView, IconItem
 import gtk
 import os
 import time
@@ -187,11 +188,13 @@ if __name__ == "__main__":
     tab_1_box = gtk.VBox()
     tab_2_box = gtk.VBox()
     tab_3_box = gtk.VBox()
+    tab_4_box = gtk.VBox()
     
     notebook = Notebook(
         [(ui_theme.get_pixbuf("music.png"), "音乐管理器", lambda : switch_tab(notebook_box, tab_1_box)),
          (ui_theme.get_pixbuf("web.png"), "网络音乐盒", lambda : switch_tab(notebook_box, tab_2_box)),
          (ui_theme.get_pixbuf("music.png"), "测试播放列表", lambda : switch_tab(notebook_box, tab_3_box)),
+         (ui_theme.get_pixbuf("music.png"), "Icon View", lambda : switch_tab(notebook_box, tab_4_box)),
          ])
     notebook_frame = HorizontalFrame(20)
     notebook_frame.add(notebook)
@@ -337,6 +340,23 @@ if __name__ == "__main__":
     editable_list.connect("right-press", right_press_editable_list)
     
     tab_3_box.pack_start(editable_list, True, True)
+    
+    icon_view_hframe = HorizontalFrame()
+    icon_view_vframe = gtk.Alignment()
+    icon_view_vframe.set(0, 0, 1, 1)
+    icon_view_vframe.set_padding(0, 1, 0, 0)
+    icon_view_scrolled_window = ScrolledWindow()
+    icon_view = IconView()
+    icon_view_scrolled_window.add_child(icon_view)
+    icon_view_hframe.add(icon_view_scrolled_window)
+    icon_view_vframe.add(icon_view_hframe)
+    
+    icon_items = map(lambda index: IconItem(
+            app_theme.get_pixbuf("cover/%s.jpg" % (index)).get_pixbuf()
+            ), range(1, 34))
+    icon_view.add_items(icon_items)
+    
+    tab_4_box.pack_start(icon_view_vframe, True, True)
     
     # Run.
     application.run()

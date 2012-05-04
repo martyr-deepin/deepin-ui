@@ -143,7 +143,7 @@ class BrowserCore(Gtk.Plug):
             
     def browser_core_load_status(self, view, status):
         '''Print status.'''
-        print status
+        pass
         
     def browser_core_load_error(self, *error):
         '''Print error.'''
