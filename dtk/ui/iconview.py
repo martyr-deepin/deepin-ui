@@ -24,7 +24,7 @@ import gtk
 import gobject
 from constant import BACKGROUND_IMAGE
 from theme import ui_theme
-from utils import get_match_parent, cairo_state, get_event_coords, is_in_rect
+from utils import get_match_parent, cairo_state, get_event_coords, is_in_rect, is_left_button, is_double_click, is_single_click
 from draw import draw_pixbuf
 
 class IconView(gtk.DrawingArea):
@@ -33,6 +33,8 @@ class IconView(gtk.DrawingArea):
     __gsignals__ = {
         "lost-focus-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
+        "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
+        "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
     }
 
     def __init__(self, 
@@ -45,6 +47,8 @@ class IconView(gtk.DrawingArea):
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
         self.focus_item = None
+        self.double_click_item = None
+        self.single_click_item = None
         
         # Signal.
         self.connect("realize", lambda w: self.grab_focus()) # focus key after realize
@@ -54,7 +58,6 @@ class IconView(gtk.DrawingArea):
         self.connect("button-release-event", self.button_release_icon_view)
         self.connect("leave-notify-event", self.leave_icon_view)
         self.connect("key-press-event", self.key_press_icon_view)
-        self.connect("key-release-event", self.key_release_icon_view)
         
         # Redraw.
         self.redraw_request_list = []
@@ -161,6 +164,19 @@ class IconView(gtk.DrawingArea):
     def motion_icon_view(self, widget, event):
         '''Motion list view.'''
         if len(self.items) > 0:
+            index_info = self.icon_view_get_event_index(event)
+            if index_info == None:
+                self.clear_focus_item()
+            else:
+                (row_index, column_index, item_index, offset_x, offset_y) = index_info
+                self.clear_focus_item()
+                self.focus_item = self.items[item_index]
+                
+                self.emit("motion-notify-item", self.focus_item, offset_x, offset_y)
+                    
+    def icon_view_get_event_index(self, event):
+        '''Get index at event.'''
+        if len(self.items) > 0:
             (event_x, event_y) = get_event_coords(event)
             item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
             scrolled_window = get_match_parent(self, "ScrolledWindow")
@@ -171,9 +187,9 @@ class IconView(gtk.DrawingArea):
                 rows = int(len(self.items) / columns) + 1
                 
             if event_x > columns * item_width:
-                self.clear_focus_item()
+                return None
             elif event_y > rows * item_height:
-                self.clear_focus_item()
+                return None
             else:
             
                 if event_x % item_width == 0:
@@ -188,23 +204,41 @@ class IconView(gtk.DrawingArea):
                     
                 item_index = row_index * columns + column_index
                 if item_index > len(self.items) - 1:
-                    self.clear_focus_item()
+                    return None
                 else:
-                    self.clear_focus_item()
-                    self.focus_item = self.items[item_index]
-                    
-                    self.emit("motion-notify-item", 
-                              self.focus_item,
-                              event_x - column_index * item_width,
-                              event_y - row_index * item_height)
+                    return (row_index, column_index, item_index,
+                            event_x - column_index * item_width,
+                            event_y - row_index * item_height)
 
     def button_press_icon_view(self, widget, event):
         '''Button press event handler.'''
-        pass
+        if len(self.items) > 0 and is_left_button(event):
+            index_info = self.icon_view_get_event_index(event)
+            if is_double_click(event):
+                if index_info:
+                    self.double_click_item = index_info[2]
+                else:
+                    self.double_click_item = None
+            elif is_single_click(event):
+                if index_info:
+                    self.single_click_item = index_info[2]
+                else:
+                    self.single_click_item = None
 
     def button_release_icon_view(self, widget, event):
         '''Button release event handler.'''
-        pass
+        if len(self.items) > 0 and is_left_button(event):
+            index_info = self.icon_view_get_event_index(event)
+            if index_info:
+                (row_index, column_index, item_index, offset_x, offset_y) = index_info
+                
+                if self.double_click_item == item_index:
+                    self.emit("double-click-item", self.items[self.double_click_item], offset_x, offset_y)
+                elif self.single_click_item == item_index:
+                    self.emit("single-click-item", self.items[self.single_click_item], offset_x, offset_y)
+            
+            self.double_click_item = None
+            self.single_click_item = None
         
     def leave_icon_view(self, widget, event):
         '''leave-notify-event signal handler.'''
