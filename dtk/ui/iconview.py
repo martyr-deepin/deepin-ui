@@ -64,6 +64,9 @@ class IconView(gtk.DrawingArea):
         else:
             self.items = self.items[0:insert_pos] + items + self.items[insert_pos::]
             
+        for item in items:
+            item.connect("redraw_request", self.redraw_item)
+            
         self.queue_draw()    
         
     def delete_items(self, items):
@@ -169,8 +172,42 @@ class IconView(gtk.DrawingArea):
         
     def update_redraw_request_list(self):
         '''Update redraw request list.'''
-        pass
+        # Redraw when request list is not empty.
+        if len(self.redraw_request_list) > 0:
+            # Get offset.
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+            
+            # Get viewport index.
+            item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+            scrolled_window = get_match_parent(self, "ScrolledWindow")
+            columns = int(scrolled_window.allocation.width / item_width)
+                
+            start_y = offset_y
+            start_row = max(int(start_y / item_height), 0)
+            start_index = start_row * columns
+            
+            end_y = offset_y + viewport.allocation.height
+            if end_y % item_height == 0:
+                end_row = end_y / item_height - 1
+            else:
+                end_row = end_y / item_height
+            end_index = min((end_row + 1) * columns, len(self.items))
+            
+            # Redraw whole viewport area once found any request item in viewport.
+            for item in self.redraw_request_list:
+                if item in self.items[start_index:end_index]:
+                    self.queue_draw()
+                    break
+        
+        # Clear redraw request list.
+        self.redraw_request_list = []
+
+        return True
     
+    def redraw_item(self, list_item):
+        '''Redraw item.'''
+        self.redraw_request_list.append(list_item)
+        
     def get_offset_coordinate(self, widget):
         '''Get offset coordinate.'''
         # Init.
@@ -215,12 +252,20 @@ gobject.type_register(IconView)
 class IconItem(gobject.GObject):
     '''Icon item.'''
 	
+    __gsignals__ = {
+        "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+    }
+    
     def __init__(self, pixbuf):
         '''Init item icon.'''
         gobject.GObject.__init__(self)
         self.pixbuf = pixbuf
         self.padding_x = 24
         self.padding_y = 24
+        
+    def emit_redraw_request(self):
+        '''Emit redraw-request signal.'''
+        self.emit("redraw-request")
         
     def get_width(self):
         '''Get width.'''
