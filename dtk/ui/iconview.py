@@ -197,6 +197,18 @@ class IconItem(gobject.GObject):
     
     def render(self, cr, rect):
         '''Render item.'''
+        # Draw cover border.
+        border_size = 4
+        
+        cr.set_source_rgb(1, 1, 1)
+        cr.rectangle(
+            rect.x + (rect.width - self.pixbuf.get_width()) / 2 - border_size,
+            rect.y + (rect.height - self.pixbuf.get_height()) / 2 - border_size,
+            self.pixbuf.get_width() + border_size * 2,
+            self.pixbuf.get_height() + border_size * 2)
+        cr.fill()
+        
+        # Draw cover.
         draw_pixbuf(
             cr, 
             self.pixbuf, 
