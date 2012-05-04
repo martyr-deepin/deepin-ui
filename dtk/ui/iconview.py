@@ -66,8 +66,25 @@ class IconView(gtk.DrawingArea):
             
         self.queue_draw()    
         
+    def delete_items(self, items):
+        '''Delete item.'''
+        match_item = False
+        for item in items:
+            if item in self.items:
+                self.items.remove(item)
+                match_item = True
+                
+        if match_item:        
+            self.queue_draw()
+            
+    def clear(self):
+        '''Clear items'''
+        self.items = []            
+        self.queue_draw()
+            
     def expose_icon_view(self, widget, event):
         '''Expose list view.'''
+        # Update vadjustment.
         self.update_vadjustment()    
         
         # Init.
@@ -173,9 +190,10 @@ class IconView(gtk.DrawingArea):
             
     def update_vadjustment(self):
         '''Update vertical adjustment.'''
+        scrolled_window = get_match_parent(self, "ScrolledWindow")
+        
         if len(self.items) > 0:
             item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
-            scrolled_window = get_match_parent(self, "ScrolledWindow")
             columns = int(scrolled_window.allocation.width / item_width)
             if len(self.items) % columns == 0:
                 view_height = int(len(self.items) / columns) * item_height
@@ -186,6 +204,11 @@ class IconView(gtk.DrawingArea):
             if scrolled_window != None:
                 vadjust = scrolled_window.get_vadjustment()
                 vadjust.set_upper(view_height)
+        else:
+            self.set_size_request(scrolled_window.allocation.width, 
+                                  scrolled_window.allocation.height)
+            vadjust = scrolled_window.get_vadjustment()
+            vadjust.set_upper(scrolled_window.allocation.height)
             
 gobject.type_register(IconView)
 
