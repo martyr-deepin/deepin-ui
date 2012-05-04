@@ -24,7 +24,7 @@ import gtk
 import gobject
 from constant import BACKGROUND_IMAGE
 from theme import ui_theme
-from utils import get_match_parent, cairo_state, get_event_coords
+from utils import get_match_parent, cairo_state, get_event_coords, is_in_rect
 from draw import draw_pixbuf
 
 class IconView(gtk.DrawingArea):
@@ -208,7 +208,12 @@ class IconView(gtk.DrawingArea):
         
     def leave_icon_view(self, widget, event):
         '''leave-notify-event signal handler.'''
-        pass
+        # Hide hover row when cursor out of viewport area.
+        vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+        hadjust = get_match_parent(self, "ScrolledWindow").get_hadjustment()
+        if not is_in_rect((event.x, event.y), 
+                          (hadjust.get_value(), vadjust.get_value(), hadjust.get_page_size(), vadjust.get_page_size())):
+            self.clear_focus_item()
         
     def key_press_icon_view(self, widget, event):
         '''Callback to handle key-press signal.'''
