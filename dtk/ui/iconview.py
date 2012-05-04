@@ -24,12 +24,17 @@ import gtk
 import gobject
 from constant import BACKGROUND_IMAGE
 from theme import ui_theme
-from utils import get_match_parent, cairo_state
+from utils import get_match_parent, cairo_state, get_event_coords
 from draw import draw_pixbuf
 
 class IconView(gtk.DrawingArea):
     '''Icon view.'''
 	
+    __gsignals__ = {
+        "lost-focus-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+        "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
+    }
+
     def __init__(self, 
                  background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE)):
         '''Init icon view.'''
@@ -39,6 +44,7 @@ class IconView(gtk.DrawingArea):
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
+        self.focus_item = None
         
         # Signal.
         self.connect("realize", lambda w: self.grab_focus()) # focus key after realize
@@ -146,9 +152,51 @@ class IconView(gtk.DrawingArea):
                         
                         item.render(cr, gtk.gdk.Rectangle(render_x, render_y, item_width, item_height))
                         
+    def clear_focus_item(self):
+        '''Clear focus item status.'''
+        if self.focus_item:
+            self.emit("lost-focus-item", self.focus_item)
+            self.focus_item = None
+                        
     def motion_icon_view(self, widget, event):
         '''Motion list view.'''
-        pass
+        if len(self.items) > 0:
+            (event_x, event_y) = get_event_coords(event)
+            item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+            scrolled_window = get_match_parent(self, "ScrolledWindow")
+            columns = int(scrolled_window.allocation.width / item_width)
+            if len(self.items) % columns == 0:
+                rows = int(len(self.items) / columns)
+            else:
+                rows = int(len(self.items) / columns) + 1
+                
+            if event_x > columns * item_width:
+                self.clear_focus_item()
+            elif event_y > rows * item_height:
+                self.clear_focus_item()
+            else:
+            
+                if event_x % item_width == 0:
+                    column_index = max(event_x / item_width - 1, 0)
+                else:
+                    column_index = min(event_x / item_width, columns - 1)
+                
+                if event_y % item_height == 0:
+                    row_index = max(event_y / item_height - 1, 0)
+                else:
+                    row_index = min(event_y / item_height, rows - 1)
+                    
+                item_index = row_index * columns + column_index
+                if item_index > len(self.items) - 1:
+                    self.clear_focus_item()
+                else:
+                    self.clear_focus_item()
+                    self.focus_item = self.items[item_index]
+                    
+                    self.emit("motion-notify-item", 
+                              self.focus_item,
+                              event_x - column_index * item_width,
+                              event_y - row_index * item_height)
 
     def button_press_icon_view(self, widget, event):
         '''Button press event handler.'''
@@ -262,6 +310,7 @@ class IconItem(gobject.GObject):
         self.pixbuf = pixbuf
         self.padding_x = 24
         self.padding_y = 24
+        self.hover_flag = False
         
     def emit_redraw_request(self):
         '''Emit redraw-request signal.'''
@@ -280,7 +329,10 @@ class IconItem(gobject.GObject):
         # Draw cover border.
         border_size = 4
         
-        cr.set_source_rgb(1, 1, 1)
+        if self.hover_flag:
+            cr.set_source_rgb(1, 0, 0)
+        else:
+            cr.set_source_rgb(1, 1, 1)
         cr.rectangle(
             rect.x + (rect.width - self.pixbuf.get_width()) / 2 - border_size,
             rect.y + (rect.height - self.pixbuf.get_height()) / 2 - border_size,
@@ -294,5 +346,17 @@ class IconItem(gobject.GObject):
             self.pixbuf, 
             rect.x + self.padding_x,
             rect.y + self.padding_y)
+        
+    def icon_item_motion_notify(self, x, y):
+        '''Handle `motion-notify-event` signal.'''
+        self.hover_flag = True
+        
+        self.emit_redraw_request()
+        
+    def icon_item_lost_focus(self):
+        '''Lost focus.'''
+        self.hover_flag = False
+        
+        self.emit_redraw_request()
         
 gobject.type_register(IconItem)

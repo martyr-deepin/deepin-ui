@@ -27,7 +27,7 @@ from dtk.ui.categorybar import Categorybar
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
 from dtk.ui.editable_list import EditableItem, EditableList
 from dtk.ui.entry import TextEntry
-from dtk.ui.frame import HorizontalFrame, VerticalFrame
+from dtk.ui.frame import HorizontalFrame
 from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
@@ -194,7 +194,7 @@ if __name__ == "__main__":
         [(ui_theme.get_pixbuf("music.png"), "音乐管理器", lambda : switch_tab(notebook_box, tab_1_box)),
          (ui_theme.get_pixbuf("web.png"), "网络音乐盒", lambda : switch_tab(notebook_box, tab_2_box)),
          (ui_theme.get_pixbuf("music.png"), "测试播放列表", lambda : switch_tab(notebook_box, tab_3_box)),
-         (ui_theme.get_pixbuf("music.png"), "Icon View", lambda : switch_tab(notebook_box, tab_4_box)),
+         (ui_theme.get_pixbuf("music.png"), "专辑封面", lambda : switch_tab(notebook_box, tab_4_box)),
          ])
     notebook_frame = HorizontalFrame(20)
     notebook_frame.add(notebook)
@@ -355,6 +355,9 @@ if __name__ == "__main__":
             app_theme.get_pixbuf("cover/%s.jpg" % (index)).get_pixbuf()
             ), range(1, 33))
     icon_view.add_items(icon_items)
+    
+    icon_view.connect("motion-notify-item", lambda view, item, x, y: item.icon_item_motion_notify(x, y))
+    icon_view.connect("lost-focus-item", lambda view, item: item.icon_item_lost_focus())
     
     tab_4_box.pack_start(icon_view_vframe, True, True)
     
