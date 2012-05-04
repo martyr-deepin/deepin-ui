@@ -26,6 +26,7 @@ from constant import BACKGROUND_IMAGE
 from theme import ui_theme
 from utils import get_match_parent, cairo_state, get_event_coords, is_in_rect, is_left_button, is_double_click, is_single_click
 from draw import draw_pixbuf
+from keymap import get_keyevent_name
 
 class IconView(gtk.DrawingArea):
     '''Icon view.'''
@@ -64,8 +65,42 @@ class IconView(gtk.DrawingArea):
         self.redraw_delay = 100 # 100 milliseconds should be enough for redraw
         gtk.timeout_add(self.redraw_delay, self.update_redraw_request_list)
         
-        self.keymap = {}
+        self.keymap = {
+            "Home" : self.select_first_item,
+            "End" : self.select_last_item,
+            # "Page_Up" : self.scroll_page_up,
+            # "Page_Down" : self.scroll_page_down,
+            # "Return" : self.double_click_item,
+            # "Up" : self.select_up_item,
+            # "Down" : self.select_down_item,
+            # "Left" : self.select_left_item,
+            # "Right" : self.select_right_item,
+            }
         
+    def select_first_item(self):
+        '''Select first item.'''
+        if len(self.items) > 0:
+            self.clear_focus_item()        
+            self.focus_item = self.items[0]
+            
+            self.emit("motion-notify-item", self.focus_item, 0, 0)
+            
+            # Scroll to top.
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust.set_value(vadjust.get_lower())
+            
+    def select_last_item(self):
+        '''Select last item.'''
+        if len(self.items) > 0:
+            self.clear_focus_item()        
+            self.focus_item = self.items[-1]
+            
+            self.emit("motion-notify-item", self.focus_item, 0, 0)
+        
+            # Scroll to bottom.
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+            
     def add_items(self, items, insert_pos=None):
         '''Add items.'''
         if insert_pos == None:
@@ -212,6 +247,9 @@ class IconView(gtk.DrawingArea):
 
     def button_press_icon_view(self, widget, event):
         '''Button press event handler.'''
+        # Grab focus when button press, otherwise key-press signal can't response.
+        self.grab_focus()
+        
         if len(self.items) > 0 and is_left_button(event):
             index_info = self.icon_view_get_event_index(event)
             if is_double_click(event):
@@ -251,8 +289,12 @@ class IconView(gtk.DrawingArea):
         
     def key_press_icon_view(self, widget, event):
         '''Callback to handle key-press signal.'''
-        pass
-
+        key_name = get_keyevent_name(event)
+        if self.keymap.has_key(key_name):
+            self.keymap[key_name]()
+        
+        return True
+            
     def key_release_icon_view(self, widget, event):
         '''Callback to handle key-release signal.'''
         pass
