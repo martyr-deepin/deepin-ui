@@ -68,13 +68,13 @@ class IconView(gtk.DrawingArea):
         self.keymap = {
             "Home" : self.select_first_item,
             "End" : self.select_last_item,
-            # "Page_Up" : self.scroll_page_up,
-            # "Page_Down" : self.scroll_page_down,
             "Return" : self.double_click_item,
             # "Up" : self.select_up_item,
             # "Down" : self.select_down_item,
             # "Left" : self.select_left_item,
             # "Right" : self.select_right_item,
+            # "Page_Up" : self.scroll_page_up,
+            # "Page_Down" : self.scroll_page_down,
             }
         
     def select_first_item(self):
