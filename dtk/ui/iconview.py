@@ -70,7 +70,7 @@ class IconView(gtk.DrawingArea):
             "End" : self.select_last_item,
             # "Page_Up" : self.scroll_page_up,
             # "Page_Down" : self.scroll_page_down,
-            # "Return" : self.double_click_item,
+            "Return" : self.double_click_item,
             # "Up" : self.select_up_item,
             # "Down" : self.select_down_item,
             # "Left" : self.select_left_item,
@@ -100,6 +100,11 @@ class IconView(gtk.DrawingArea):
             # Scroll to bottom.
             vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
             vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+            
+    def double_click_item(self):
+        '''Double click item.'''
+        if self.focus_item:
+            self.emit("double-click-item", self.focus_item, 0, 0)
             
     def add_items(self, items, insert_pos=None):
         '''Add items.'''
