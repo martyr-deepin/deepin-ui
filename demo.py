@@ -353,7 +353,7 @@ if __name__ == "__main__":
     
     icon_items = map(lambda index: IconItem(
             app_theme.get_pixbuf("cover/%s.jpg" % (index)).get_pixbuf()
-            ), range(1, 34))
+            ), range(1, 33))
     icon_view.add_items(icon_items)
     
     tab_4_box.pack_start(icon_view_vframe, True, True)

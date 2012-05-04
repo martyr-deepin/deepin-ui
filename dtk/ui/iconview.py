@@ -68,6 +68,8 @@ class IconView(gtk.DrawingArea):
         
     def expose_icon_view(self, widget, event):
         '''Expose list view.'''
+        self.update_vadjustment()    
+        
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -155,6 +157,23 @@ class IconView(gtk.DrawingArea):
                 return (0, 0, viewport)
         else:
             return (0, 0, viewport)
+            
+    def update_vadjustment(self):
+        '''Update vertical adjustment.'''
+        if len(self.items) > 0:
+            item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+            rect = self.allocation
+            columns = int(rect.width / item_width)
+            if len(self.items) % columns == 0:
+                view_height = int(len(self.items) / columns) * item_height
+            else:
+                view_height = (int(len(self.items) / columns) + 1) * item_height
+                
+            self.set_size_request(columns * item_width, view_height)    
+            scrolled_window = get_match_parent(self, "ScrolledWindow")
+            if scrolled_window != None:
+                vadjust = scrolled_window.get_vadjustment()
+                vadjust.set_upper(view_height)
             
 gobject.type_register(IconView)
 
