@@ -98,11 +98,24 @@ class IconView(gtk.DrawingArea):
                 
                 # Draw item.
                 item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
-                columns = int(rect.width / item_width)
+                scrolled_window = get_match_parent(self, "ScrolledWindow")
+                columns = int(scrolled_window.allocation.width / item_width)
+                    
+                # Get viewport index.
+                start_y = offset_y
+                start_row = max(int(start_y / item_height), 0)
+                start_index = start_row * columns
                 
-                for (index, item) in enumerate(self.items):
-                    row = int(index / columns)
-                    column = index % columns
+                end_y = offset_y + viewport.allocation.height
+                if end_y % item_height == 0:
+                    end_row = end_y / item_height - 1
+                else:
+                    end_row = end_y / item_height
+                end_index = min((end_row + 1) * columns, len(self.items))
+                
+                for (index, item) in enumerate(self.items[start_index:end_index]):
+                    row = int((start_index + index) / columns)
+                    column = (start_index + index) % columns
                     render_x = rect.x + column * item_width
                     render_y = rect.y + row * item_height
                     
@@ -112,7 +125,7 @@ class IconView(gtk.DrawingArea):
                         cr.clip()
                         
                         item.render(cr, gtk.gdk.Rectangle(render_x, render_y, item_width, item_height))
-
+                        
     def motion_icon_view(self, widget, event):
         '''Motion list view.'''
         pass
@@ -162,15 +175,14 @@ class IconView(gtk.DrawingArea):
         '''Update vertical adjustment.'''
         if len(self.items) > 0:
             item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
-            rect = self.allocation
-            columns = int(rect.width / item_width)
+            scrolled_window = get_match_parent(self, "ScrolledWindow")
+            columns = int(scrolled_window.allocation.width / item_width)
             if len(self.items) % columns == 0:
                 view_height = int(len(self.items) / columns) * item_height
             else:
                 view_height = (int(len(self.items) / columns) + 1) * item_height
                 
-            self.set_size_request(columns * item_width, view_height)    
-            scrolled_window = get_match_parent(self, "ScrolledWindow")
+            self.set_size_request(columns * item_width, view_height)
             if scrolled_window != None:
                 vadjust = scrolled_window.get_vadjustment()
                 vadjust.set_upper(view_height)
