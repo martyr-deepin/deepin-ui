@@ -23,7 +23,7 @@
 from constant import ALIGN_MIDDLE, ALIGN_START, ALIGN_END, DEFAULT_FONT
 from math import pi
 from theme import ui_theme
-from utils import cairo_state, cairo_disable_antialias, color_hex_to_cairo, add_color_stop_rgba, propagate_expose, get_content_size
+from utils import cairo_state, cairo_disable_antialias, color_hex_to_cairo, add_color_stop_rgba, propagate_expose, get_content_size, alpha_color_hex_to_cairo
 import cairo
 import dtk_cairo_blur    
 import gtk
@@ -93,6 +93,72 @@ def draw_pixbuf(cr, pixbuf, x=0, y=0, alpha=1.0):
     if pixbuf != None:
         cr.set_source_pixbuf(pixbuf, x, y)
         cr.paint_with_alpha(alpha)
+        
+def draw_window_frame(cr, x, y, w, h):
+    '''Draw window frame.'''
+    with cairo_disable_antialias(cr):    
+        # Set line width.
+        cr.set_line_width(1)
+        
+        # Set OPERATOR_OVER operator.
+        cr.set_operator(cairo.OPERATOR_OVER)
+        
+        # Draw frame.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frame").get_color_info()))
+        
+        cr.rectangle(x + 2, y, w - 4, 1)         # top side
+        cr.rectangle(x + w - 1, y + 2, 1, h - 4) # right side
+        cr.rectangle(x + 2, y + h - 1, w - 4, 1) # bottom side
+        cr.rectangle(x, y + 2, 1, h - 4)         # left side
+        
+        cr.fill()
+        
+        # Draw frame inner dot.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frame").get_color_info()))
+        
+        cr.rectangle(x + 1, y + 1, 1, 1)         # top-left inner dot
+        cr.rectangle(x + w - 2, y + 1, 1, 1)     # top-right inner dot
+        cr.rectangle(x + w - 2, y + h - 2, 1, 1) # bottom-right inner dot
+        cr.rectangle(x + 1, y + h - 2, 1, 1)     # bottom-left inner dot
+        
+        cr.fill()
+        
+        # Draw frame outter dot.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameDot").get_color_info()))
+        
+        cr.rectangle(x + 1, y, 1, 1) # top-left outter dot
+        cr.rectangle(x, y + 1, 1, 1)
+        
+        cr.rectangle(x + w - 2, y, 1, 1) # top-right outter dot
+        cr.rectangle(x + w - 1, y + 1, 1, 1)
+        
+        cr.rectangle(x + 1, y + h - 1, 1, 1) # bottom-left outter dot
+        cr.rectangle(x, y + h - 2, 1, 1)
+        
+        cr.rectangle(x + w - 2, y + h - 1, 1, 1) # bottom-right outter dot
+        cr.rectangle(x + w - 1, y + h - 2, 1, 1)
+        
+        cr.fill()
+        
+        # Draw frame light.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameLight").get_color_info()))
+        
+        cr.rectangle(x + 2, y + 1, w - 4, 1)     # top side
+        cr.rectangle(x + w - 2, y + 2, 1, h - 4) # right side
+        cr.rectangle(x + 2, y + h - 2, w - 4, 1) # bottom side
+        cr.rectangle(x + 1, y + 2, 1, h - 4)     # left side
+        
+        cr.fill()
+        
+        # Draw frame light dot.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameLightDot").get_color_info()))
+        
+        cr.rectangle(x + 2, y + 2, 1, 1)         # top-left light dot
+        cr.rectangle(x + w - 3, y + 2, 1, 1)     # top-right light dot
+        cr.rectangle(x + w - 3, y + h - 3, 1, 1) # bottom-right light dot
+        cr.rectangle(x + 2, y + h - 3, 1, 1)     # bottom-left light dot
+        
+        cr.fill()
         
 def draw_window_rectangle(cr, sx, sy, ex, ey, r):
     '''Draw window rectangle.'''

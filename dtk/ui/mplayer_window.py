@@ -21,9 +21,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import BACKGROUND_IMAGE, EDGE_DICT
-from draw import draw_pixbuf, draw_window_shadow
+from draw import draw_pixbuf, draw_window_shadow, draw_window_frame
 from theme import ui_theme
-from utils import cairo_state, alpha_color_hex_to_cairo, cairo_disable_antialias, propagate_expose, resize_window, set_cursor, get_event_root_coords
+from utils import cairo_state, alpha_color_hex_to_cairo, propagate_expose, resize_window, set_cursor, get_event_root_coords
 import cairo
 import gobject
 import gtk
@@ -139,70 +139,9 @@ class MplayerWindow(gtk.Window):
                 cr.rectangle(0, 0, rect.width, rect.height)    
                 cr.fill()
         
-        with cairo_disable_antialias(cr):    
-            # Set line width.
-            cr.set_line_width(1)
-            
-            # Set OPERATOR_OVER operator.
-            cr.set_operator(cairo.OPERATOR_OVER)
-            
-            # Draw frame.
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frame").get_color_info()))
-            
-            cr.rectangle(x + 2, y, w - 4, 1)         # top side
-            cr.rectangle(x + w - 1, y + 2, 1, h - 4) # right side
-            cr.rectangle(x + 2, y + h - 1, w - 4, 1) # bottom side
-            cr.rectangle(x, y + 2, 1, h - 4)         # left side
-            
-            cr.fill()
-            
-            # Draw frame inner dot.
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frame").get_color_info()))
-            
-            cr.rectangle(x + 1, y + 1, 1, 1)         # top-left inner dot
-            cr.rectangle(x + w - 2, y + 1, 1, 1)     # top-right inner dot
-            cr.rectangle(x + w - 2, y + h - 2, 1, 1) # bottom-right inner dot
-            cr.rectangle(x + 1, y + h - 2, 1, 1)     # bottom-left inner dot
-            
-            cr.fill()
-            
-            # Draw frame outter dot.
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameDot").get_color_info()))
-            
-            cr.rectangle(x + 1, y, 1, 1) # top-left outter dot
-            cr.rectangle(x, y + 1, 1, 1)
-            
-            cr.rectangle(x + w - 2, y, 1, 1) # top-right outter dot
-            cr.rectangle(x + w - 1, y + 1, 1, 1)
-            
-            cr.rectangle(x + 1, y + h - 1, 1, 1) # bottom-left outter dot
-            cr.rectangle(x, y + h - 2, 1, 1)
-            
-            cr.rectangle(x + w - 2, y + h - 1, 1, 1) # bottom-right outter dot
-            cr.rectangle(x + w - 1, y + h - 2, 1, 1)
-            
-            cr.fill()
-            
-            # Draw frame light.
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameLight").get_color_info()))
-            
-            cr.rectangle(x + 2, y + 1, w - 4, 1)     # top side
-            cr.rectangle(x + w - 2, y + 2, 1, h - 4) # right side
-            cr.rectangle(x + 2, y + h - 2, w - 4, 1) # bottom side
-            cr.rectangle(x + 1, y + 2, 1, h - 4)     # left side
-            
-            cr.fill()
-            
-            # Draw frame light dot.
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameLightDot").get_color_info()))
-            
-            cr.rectangle(x + 2, y + 2, 1, 1)         # top-left light dot
-            cr.rectangle(x + w - 3, y + 2, 1, 1)     # top-right light dot
-            cr.rectangle(x + w - 3, y + h - 3, 1, 1) # bottom-right light dot
-            cr.rectangle(x + 2, y + h - 3, 1, 1)     # bottom-left light dot
-            
-            cr.fill()
-            
+        # Draw window frame.
+        draw_window_frame(cr, x, y, w, h)        
+        
         # Propagate expose.
         propagate_expose(widget, event)
         
