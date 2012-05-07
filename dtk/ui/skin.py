@@ -24,7 +24,7 @@ import gtk
 import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf
-from utils import propagate_expose
+from utils import propagate_expose, is_in_rect, set_cursor
 from titlebar import Titlebar
 
 class SkinWindow(Window):
@@ -56,6 +56,17 @@ gobject.type_register(SkinWindow)
 
 class SkinEditArea(gtk.DrawingArea):
     '''Skin edit area.'''
+    
+    POSITION_LEFT_SIDE = 0
+    POSITION_RIGHT_SIDE = 1
+    POSITION_TOP_SIDE = 2
+    POSITION_BOTTOM_SIDE = 3
+    POSITION_TOP_LEFT_CORNER = 4
+    POSITION_TOP_RIGHT_CORNER = 5
+    POSITION_BOTTOM_LEFT_CORNER = 6
+    POSITION_BOTTOM_RIGHT_CORNER = 7
+    POSITION_INSIDE = 8
+    POSITION_OUTSIDE = 9
 	
     def __init__(self, preview_width, preview_height, background_pixbuf):
         '''Init skin edit area.'''
@@ -65,8 +76,12 @@ class SkinEditArea(gtk.DrawingArea):
         self.preview_width = preview_width
         self.preview_height = preview_height
         self.background_pixbuf = background_pixbuf
-        self.padding_x = 10
-        self.padding_y = 10
+        self.padding_x = 20
+        self.padding_y = 20
+        self.resize_pointer_size = 8
+        self.resize_frame_size = 2
+        self.resize_x = 0
+        self.resize_y = 0
         self.shadow_radius = 6
         self.frame_radius = 2
         self.shadow_padding = self.shadow_radius - self.frame_radius
@@ -77,19 +92,25 @@ class SkinEditArea(gtk.DrawingArea):
             )
         
         self.connect("expose-event", self.expose_skin_edit_area)
+        self.connect("motion-notify-event", self.motion_skin_edit_area)
         
     def expose_skin_edit_area(self, widget, event):
         '''Expose edit area.'''
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        
+        offset_x = self.padding_x + self.shadow_padding
+        offset_y = self.padding_y + self.shadow_padding
+
+        # Draw background.
         draw_pixbuf(
             cr,
             self.background_pixbuf,
-            self.padding_x + self.shadow_padding,
-            self.padding_y + self.shadow_padding)
+            offset_x,
+            offset_y,
+            0.99)
         
+        # Draw window shadow.
         if self.is_composited():
             draw_window_shadow(
                 cr, 
@@ -100,22 +121,205 @@ class SkinEditArea(gtk.DrawingArea):
                 self.shadow_radius, 
                 self.shadow_padding)
 
+        # Draw window frame.
         draw_window_frame(
             cr,
-            self.padding_x + self.shadow_padding,
-            self.padding_y + self.shadow_padding,
-            w - (self.padding_x + self.shadow_padding) * 2,
-            h - (self.padding_y + self.shadow_padding) * 2)    
+            offset_x,
+            offset_y,
+            w - offset_x * 2,
+            h - offset_y * 2)    
+        
+        # Draw resize frame.
+        resize_x = offset_x + self.resize_x
+        resize_y = offset_y + self.resize_y
+        
+        cr.set_source_rgb(0, 1, 1)
+        
+        # Resize frame.
+        cr.rectangle(           # top
+            resize_x, 
+            resize_y - self.resize_frame_size / 2,
+            self.background_pixbuf.get_width(),
+            self.resize_frame_size)
+        cr.rectangle(           # bottom
+            resize_x,
+            resize_y + self.background_pixbuf.get_height() - self.resize_frame_size / 2,
+            self.background_pixbuf.get_width(),
+            self.resize_frame_size)
+        cr.rectangle(           # left
+            resize_x - self.resize_frame_size / 2,
+            resize_y,
+            self.resize_frame_size,
+            self.background_pixbuf.get_height())
+        cr.rectangle(           # right
+            resize_x + self.background_pixbuf.get_width() - self.resize_frame_size / 2,
+            resize_y,
+            self.resize_frame_size,
+            self.background_pixbuf.get_height())
+        
+        # Resize pointer.
+        cr.rectangle(           # top-left
+            resize_x - self.resize_pointer_size / 2,
+            resize_y - self.resize_pointer_size / 2,
+            self.resize_pointer_size,
+            self.resize_pointer_size)
+        cr.rectangle(           # top-center
+            resize_x + self.background_pixbuf.get_width() / 2 - self.resize_pointer_size / 2,
+            resize_y - self.resize_pointer_size / 2,
+            self.resize_pointer_size,
+            self.resize_pointer_size)
+        cr.rectangle(           # top-right
+            resize_x + self.background_pixbuf.get_width() - self.resize_pointer_size / 2,
+            resize_y - self.resize_pointer_size / 2,
+            self.resize_pointer_size,
+            self.resize_pointer_size)
+        cr.rectangle(           # bottom-left
+            resize_x - self.resize_pointer_size / 2,
+            resize_y + self.background_pixbuf.get_height() - self.resize_pointer_size / 2,
+            self.resize_pointer_size,
+            self.resize_pointer_size)
+        cr.rectangle(           # bottom-center
+            resize_x + self.background_pixbuf.get_width() / 2 - self.resize_pointer_size / 2,
+            resize_y + self.background_pixbuf.get_height() - self.resize_pointer_size / 2,
+            self.resize_pointer_size,
+            self.resize_pointer_size)
+        cr.rectangle(           # bottom-right
+            resize_x + self.background_pixbuf.get_width() - self.resize_pointer_size / 2,
+            resize_y + self.background_pixbuf.get_height() - self.resize_pointer_size / 2,
+            self.resize_pointer_size,
+            self.resize_pointer_size)
+        cr.rectangle(           # left-center
+            resize_x - self.resize_pointer_size / 2,
+            resize_y + self.background_pixbuf.get_height() / 2 - self.resize_pointer_size / 2,
+            self.resize_pointer_size,
+            self.resize_pointer_size)
+        cr.rectangle(           # right-center
+            resize_x + self.background_pixbuf.get_width() - self.resize_pointer_size / 2,
+            resize_y + self.background_pixbuf.get_height() / 2 - self.resize_pointer_size / 2,
+            self.resize_pointer_size,
+            self.resize_pointer_size)
+        
+        cr.fill()
         
         propagate_expose(widget, event)
         
         return True
+    
+    def motion_skin_edit_area(self, widget, event):
+        '''Callback for `motion-notify-event`.'''
+        # print (event.x, event.y)    
+        # print self.skin_edit_area_get_action_type(event)
+        self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
+        
+    def skin_edit_area_set_cursor(self, action_type):
+        '''Set cursor.'''
+        if action_type == self.POSITION_INSIDE:
+            set_cursor(self, gtk.gdk.FLEUR)
+        elif action_type == self.POSITION_OUTSIDE:
+            set_cursor(self, gtk.gdk.TOP_LEFT_ARROW)
+        elif action_type == self.POSITION_TOP_LEFT_CORNER:
+            set_cursor(self, gtk.gdk.TOP_LEFT_CORNER)
+        elif action_type == self.POSITION_TOP_RIGHT_CORNER:
+            set_cursor(self, gtk.gdk.TOP_RIGHT_CORNER)
+        elif action_type == self.POSITION_BOTTOM_LEFT_CORNER:
+            set_cursor(self, gtk.gdk.BOTTOM_LEFT_CORNER)
+        elif action_type == self.POSITION_BOTTOM_RIGHT_CORNER:
+            set_cursor(self, gtk.gdk.BOTTOM_RIGHT_CORNER)
+        elif action_type == self.POSITION_TOP_SIDE:
+            set_cursor(self, gtk.gdk.TOP_SIDE)
+        elif action_type == self.POSITION_BOTTOM_SIDE:
+            set_cursor(self, gtk.gdk.BOTTOM_SIDE)
+        elif action_type == self.POSITION_LEFT_SIDE:
+            set_cursor(self, gtk.gdk.LEFT_SIDE)
+        elif action_type == self.POSITION_RIGHT_SIDE:
+            set_cursor(self, gtk.gdk.RIGHT_SIDE)
+                
+        
+    def skin_edit_area_get_action_type(self, event):
+        '''Get action type.'''
+        ex, ey = event.x, event.y
+        resize_x = self.padding_x + self.shadow_padding + self.resize_x
+        resize_y = self.padding_y + self.shadow_padding + self.resize_y
+        
+        if is_in_rect((ex, ey), 
+                      (resize_x - self.resize_pointer_size / 2,
+                       resize_y - self.resize_pointer_size / 2,
+                       self.resize_pointer_size,
+                       self.resize_pointer_size)):
+            return self.POSITION_TOP_LEFT_CORNER
+        elif is_in_rect((ex, ey), 
+                        (resize_x - self.background_pixbuf.get_width() / 2 - self.resize_pointer_size / 2,
+                         resize_y - self.resize_pointer_size / 2,
+                         self.resize_pointer_size,
+                         self.resize_pointer_size)) or is_in_rect((ex, ey),
+                                                                  (resize_x + self.resize_pointer_size / 2,
+                                                                   resize_y - self.resize_frame_size / 2,
+                                                                   self.background_pixbuf.get_width() - self.resize_pointer_size,
+                                                                   self.resize_frame_size)):
+            return self.POSITION_TOP_SIDE
+        elif is_in_rect((ex, ey), 
+                        (resize_x + self.background_pixbuf.get_width() - self.resize_pointer_size / 2,
+                         resize_y - self.resize_pointer_size / 2,
+                         self.resize_pointer_size,
+                         self.resize_pointer_size)):
+            return self.POSITION_TOP_RIGHT_CORNER
+        elif is_in_rect((ex, ey), 
+                        (resize_x - self.resize_pointer_size / 2,
+                         resize_y + self.background_pixbuf.get_height() / 2 - self.resize_pointer_size / 2,
+                         self.resize_pointer_size,
+                         self.resize_pointer_size)) or is_in_rect((ex, ey),
+                                                                  (resize_x - self.resize_frame_size / 2,
+                                                                   resize_y + self.resize_pointer_size / 2,
+                                                                   self.resize_frame_size,
+                                                                   self.background_pixbuf.get_height() - self.resize_pointer_size)):
+            return self.POSITION_LEFT_SIDE
+        elif is_in_rect((ex, ey), 
+                        (resize_x + self.background_pixbuf.get_width() - self.resize_pointer_size / 2,
+                         resize_y + self.background_pixbuf.get_height() / 2 - self.resize_pointer_size / 2,
+                         self.resize_pointer_size,
+                         self.resize_pointer_size)) or is_in_rect((ex, ey),
+                                                                  (resize_x + self.background_pixbuf.get_width() - self.resize_frame_size / 2,
+                                                                   resize_y + self.resize_pointer_size / 2,
+                                                                   self.resize_frame_size,
+                                                                   self.background_pixbuf.get_height() - self.resize_pointer_size)):
+            return self.POSITION_RIGHT_SIDE
+        elif is_in_rect((ex, ey), 
+                        (resize_x - self.resize_pointer_size / 2,
+                         resize_y + self.background_pixbuf.get_height() - self.resize_pointer_size / 2,
+                         self.resize_pointer_size,
+                         self.resize_pointer_size)):
+            return self.POSITION_BOTTOM_LEFT_CORNER
+        elif is_in_rect((ex, ey), 
+                        (resize_x - self.background_pixbuf.get_width() / 2 - self.resize_pointer_size / 2,
+                         resize_y + self.background_pixbuf.get_height() - self.resize_pointer_size / 2,
+                         self.resize_pointer_size,
+                         self.resize_pointer_size)) or is_in_rect((ex, ey),
+                                                                  (resize_x + self.resize_pointer_size / 2,
+                                                                   resize_y + self.background_pixbuf.get_height() - self.resize_frame_size / 2,
+                                                                   self.background_pixbuf.get_width() - self.resize_pointer_size,
+                                                                   self.resize_frame_size)):
+            return self.POSITION_BOTTOM_SIDE
+        elif is_in_rect((ex, ey), 
+                        (resize_x + self.background_pixbuf.get_width() - self.resize_pointer_size / 2,
+                         resize_y + self.background_pixbuf.get_height() - self.resize_pointer_size / 2,
+                         self.resize_pointer_size,
+                         self.resize_pointer_size)):
+            return self.POSITION_BOTTOM_RIGHT_CORNER
+        elif is_in_rect((ex, ey),
+                        (resize_x + self.resize_frame_size / 2,
+                         resize_y + self.resize_frame_size / 2,
+                         self.background_pixbuf.get_width() - self.resize_frame_size,
+                         self.background_pixbuf.get_height() - self.resize_frame_size)):
+            return self.POSITION_INSIDE
+        else:
+            return self.POSITION_OUTSIDE
         
 gobject.type_register(SkinEditArea)
         
 if __name__ == '__main__':
-    skin_window = SkinWindow(600, 400, gtk.gdk.pixbuf_new_from_file("/data/Picture/壁纸/20080519100123935.jpg"))
-    skin_window.move(200, 100)
+    # skin_window = SkinWindow(600, 400, gtk.gdk.pixbuf_new_from_file("/data/Picture/壁纸/20080519100123935.jpg"))
+    skin_window = SkinWindow(600, 400, gtk.gdk.pixbuf_new_from_file("/data/Picture/Misc/23424.jpg"))
+    skin_window.move(400, 100)
     
     skin_window.show_all()
     
