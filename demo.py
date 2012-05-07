@@ -356,9 +356,6 @@ if __name__ == "__main__":
             ), range(1, 33))
     icon_view.add_items(icon_items)
     
-    icon_view.connect("motion-notify-item", lambda view, item, x, y: item.icon_item_motion_notify(x, y))
-    icon_view.connect("lost-focus-item", lambda view, item: item.icon_item_lost_focus())
-    
     tab_4_box.pack_start(icon_view_vframe, True, True)
     
     # Run.

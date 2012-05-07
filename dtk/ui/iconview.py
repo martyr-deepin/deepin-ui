@@ -59,6 +59,8 @@ class IconView(gtk.DrawingArea):
         self.connect("button-release-event", self.button_release_icon_view)
         self.connect("leave-notify-event", self.leave_icon_view)
         self.connect("key-press-event", self.key_press_icon_view)
+        self.connect("motion-notify-item", lambda view, item, x, y: item.icon_item_motion_notify(x, y))
+        self.connect("lost-focus-item", lambda view, item: item.icon_item_lost_focus())
         
         # Redraw.
         self.redraw_request_list = []
