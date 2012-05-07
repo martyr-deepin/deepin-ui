@@ -84,10 +84,6 @@ class SkinEditArea(gtk.DrawingArea):
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
-        cr.set_source_rgba(1, 0, 0, 1)
-        cr.rectangle(0, 0, w, h)
-        cr.fill()
-        
         draw_pixbuf(
             cr,
             self.background_pixbuf,
