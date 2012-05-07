@@ -24,6 +24,7 @@ import gtk
 import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf
+from utils import propagate_expose
 from titlebar import Titlebar
 
 class SkinWindow(Window):
@@ -83,6 +84,10 @@ class SkinEditArea(gtk.DrawingArea):
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
+        cr.set_source_rgba(1, 0, 0, 1)
+        cr.rectangle(0, 0, w, h)
+        cr.fill()
+        
         draw_pixbuf(
             cr,
             self.background_pixbuf,
@@ -106,12 +111,14 @@ class SkinEditArea(gtk.DrawingArea):
             w - (self.padding_x + self.shadow_padding) * 2,
             h - (self.padding_y + self.shadow_padding) * 2)    
         
+        propagate_expose(widget, event)
+        
         return True
         
 gobject.type_register(SkinEditArea)
         
 if __name__ == '__main__':
-    skin_window = SkinWindow(600, 400, gtk.gdk.pixbuf_new_from_file("/data/Picture/壁纸/1713311.jpg"))
+    skin_window = SkinWindow(600, 400, gtk.gdk.pixbuf_new_from_file("/data/Picture/壁纸/20080519100123935.jpg"))
     skin_window.move(200, 100)
     
     skin_window.show_all()
