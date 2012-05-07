@@ -181,6 +181,9 @@ class Menu(Window):
         global menu_grab_window_press_id
         global menu_grab_window_motion_id
         
+        if self.is_root_menu:
+            menu_grab_window_focus_out()
+        
         if not gtk.gdk.pointer_is_grabbed():
             menu_grab_window_focus_in()
             menu_grab_window_press_id = menu_grab_window.connect("button-press-event", menu_grab_window_button_press)
