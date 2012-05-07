@@ -48,6 +48,7 @@ class IconView(gtk.DrawingArea):
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
         self.focus_item = None
+        self.highlight_item = None
         self.double_click_item = None
         self.single_click_item = None
         
@@ -269,6 +270,23 @@ class IconView(gtk.DrawingArea):
                     self.single_click_item = index_info[2]
                 else:
                     self.single_click_item = None
+                    
+            # Set highlight.
+            if index_info:
+                self.clear_highlight()
+                    
+                self.set_highlight(self.items[index_info[2]])
+                
+    def set_highlight(self, item):
+        '''Set highlight item.'''
+        self.highlight_item = item
+        self.highlight_item.icon_item_highlight()
+                
+    def clear_highlight(self):
+        '''Clear highlight.'''
+        if self.highlight_item:
+            self.highlight_item.icon_item_normal()
+            self.highlight_item = None
 
     def button_release_icon_view(self, widget, event):
         '''Button release event handler.'''
@@ -399,6 +417,7 @@ class IconItem(gobject.GObject):
         self.padding_x = 24
         self.padding_y = 24
         self.hover_flag = False
+        self.highlight_flag = False
         
     def emit_redraw_request(self):
         '''Emit redraw-request signal.'''
@@ -419,6 +438,8 @@ class IconItem(gobject.GObject):
         
         if self.hover_flag:
             cr.set_source_rgb(1, 0, 0)
+        elif self.highlight_flag:
+            cr.set_source_rgb(0, 1, 0)
         else:
             cr.set_source_rgb(1, 1, 1)
         cr.rectangle(
@@ -444,6 +465,18 @@ class IconItem(gobject.GObject):
     def icon_item_lost_focus(self):
         '''Lost focus.'''
         self.hover_flag = False
+        
+        self.emit_redraw_request()
+        
+    def icon_item_highlight(self):
+        '''Highlight item.'''
+        self.highlight_flag = True
+
+        self.emit_redraw_request()
+        
+    def icon_item_normal(self):
+        '''Set item with normal status.'''
+        self.highlight_flag = False
         
         self.emit_redraw_request()
         
