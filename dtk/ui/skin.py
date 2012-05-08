@@ -90,6 +90,8 @@ class SkinEditArea(gtk.DrawingArea):
         self.shadow_padding = self.shadow_radius - self.frame_radius
         self.action_type = None
         self.button_press_flag = False
+        self.button_press_x = 0
+        self.button_press_y = 0
         
         self.set_size_request(
             self.preview_width + self.padding_x * 2,
@@ -219,6 +221,9 @@ class SkinEditArea(gtk.DrawingArea):
         self.button_press_flag = True
         self.action_type = self.skin_edit_area_get_action_type(event)
         self.skin_edit_area_set_cursor(self.action_type)
+        
+        self.button_press_x = event.x
+        self.button_press_y = event.y
 
     def button_release_skin_edit_area(self, widget, event):
         '''Callback for `button-release-event`.'''
@@ -231,7 +236,7 @@ class SkinEditArea(gtk.DrawingArea):
         if self.button_press_flag:
             if self.action_type != None:
                 if self.action_type == self.POSITION_INSIDE:
-                    self.skin_edit_area_drag_background()
+                    self.skin_edit_area_drag_background(event)
                 elif self.action_type == self.POSITION_TOP_LEFT_CORNER:
                     self.skin_edit_area_resize(self.action_type, event)
                 elif self.action_type == self.POSITION_TOP_RIGHT_CORNER:
@@ -251,9 +256,16 @@ class SkinEditArea(gtk.DrawingArea):
         else:
             self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
                 
-    def skin_edit_area_drag_background(self):
+    def skin_edit_area_drag_background(self, event):
         '''Drag background.'''
-        pass
+        drag_offset_x = int(event.x) - self.button_press_x + self.resize_x
+        drag_offset_y = int(event.y) - self.button_press_y + self.resize_y
+        offset_x = self.padding_x + self.shadow_padding
+        offset_y = self.padding_y + self.shadow_padding
+        self.resize_x = min(max(drag_offset_x, offset_x + self.min_resize_width - self.resize_width), 0)
+        self.resize_y = min(max(drag_offset_y, offset_y + self.min_resize_height - self.resize_height), 0)
+        
+        self.queue_draw()
             
     def skin_edit_area_resize(self, action_type, event):
         '''Resize.'''
