@@ -412,7 +412,7 @@ class IconView(gtk.DrawingArea):
             self.set_size_request(columns * item_width, view_height)
             if scrolled_window != None:
                 vadjust = scrolled_window.get_vadjustment()
-                vadjust.set_upper(view_height)
+                vadjust.set_upper(max(view_height, scrolled_window.allocation.height))
         else:
             self.set_size_request(scrolled_window.allocation.width, 
                                   scrolled_window.allocation.height)
