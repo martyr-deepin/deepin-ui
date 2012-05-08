@@ -34,6 +34,8 @@ class IconView(gtk.DrawingArea):
     __gsignals__ = {
         "lost-focus-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
+        "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
+        "button-release-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
         "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
     }
@@ -260,6 +262,10 @@ class IconView(gtk.DrawingArea):
         
         if len(self.items) > 0 and is_left_button(event):
             index_info = self.icon_view_get_event_index(event)
+            
+            (row_index, column_index, item_index, offset_x, offset_y) = index_info
+            self.emit("button-press-item", self.items[self.item_index], offset_x, offset_y)
+            
             if is_double_click(event):
                 if index_info:
                     self.double_click_item = index_info[2]
@@ -295,6 +301,7 @@ class IconView(gtk.DrawingArea):
             if index_info:
                 (row_index, column_index, item_index, offset_x, offset_y) = index_info
                 
+                self.emit("button-release-item", self.items[self.item_index], offset_x, offset_y)    
                 if self.double_click_item == item_index:
                     self.emit("double-click-item", self.items[self.double_click_item], offset_x, offset_y)
                 elif self.single_click_item == item_index:
