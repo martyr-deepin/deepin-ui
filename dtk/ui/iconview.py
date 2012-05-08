@@ -31,15 +31,6 @@ from keymap import get_keyevent_name
 class IconView(gtk.DrawingArea):
     '''Icon view.'''
 	
-    __gsignals__ = {
-        "lost-focus-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-        "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
-        "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
-        "button-release-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
-        "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
-        "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
-    }
-
     def __init__(self, 
                  background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE)):
         '''Init icon view.'''
@@ -62,8 +53,6 @@ class IconView(gtk.DrawingArea):
         self.connect("button-release-event", self.button_release_icon_view)
         self.connect("leave-notify-event", self.leave_icon_view)
         self.connect("key-press-event", self.key_press_icon_view)
-        self.connect("motion-notify-item", lambda view, item, x, y: item.icon_item_motion_notify(x, y))
-        self.connect("lost-focus-item", lambda view, item: item.icon_item_lost_focus())
         
         # Redraw.
         self.redraw_request_list = []
@@ -88,7 +77,7 @@ class IconView(gtk.DrawingArea):
             self.clear_focus_item()        
             self.focus_item = self.items[0]
             
-            self.emit("motion-notify-item", self.focus_item, 0, 0)
+            self.focus_item.icon_item_motion_notify(0, 0)
             
             # Scroll to top.
             vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
@@ -100,7 +89,7 @@ class IconView(gtk.DrawingArea):
             self.clear_focus_item()        
             self.focus_item = self.items[-1]
             
-            self.emit("motion-notify-item", self.focus_item, 0, 0)
+            self.focus_item.icon_item_motion_notify(0, 0)
         
             # Scroll to bottom.
             vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
@@ -203,7 +192,7 @@ class IconView(gtk.DrawingArea):
     def clear_focus_item(self):
         '''Clear focus item status.'''
         if self.focus_item:
-            self.emit("lost-focus-item", self.focus_item)
+            self.focus_item.icon_item_lost_focus()
             self.focus_item = None
                         
     def motion_icon_view(self, widget, event):
@@ -217,7 +206,7 @@ class IconView(gtk.DrawingArea):
                 self.clear_focus_item()
                 self.focus_item = self.items[item_index]
                 
-                self.emit("motion-notify-item", self.focus_item, offset_x, offset_y)
+                self.focus_item.icon_item_motion_notify(offset_x, offset_y)
                     
     def icon_view_get_event_index(self, event):
         '''Get index at event.'''
@@ -264,7 +253,7 @@ class IconView(gtk.DrawingArea):
             index_info = self.icon_view_get_event_index(event)
             
             (row_index, column_index, item_index, offset_x, offset_y) = index_info
-            self.emit("button-press-item", self.items[self.item_index], offset_x, offset_y)
+            self.items[self.item_index].icon_item_button_press(offset_x, offset_y)
             
             if is_double_click(event):
                 if index_info:
@@ -301,11 +290,12 @@ class IconView(gtk.DrawingArea):
             if index_info:
                 (row_index, column_index, item_index, offset_x, offset_y) = index_info
                 
-                self.emit("button-release-item", self.items[self.item_index], offset_x, offset_y)    
+                self.items[self.item_index].icon_item_button_release(offset_x, offset_y)
+                
                 if self.double_click_item == item_index:
-                    self.emit("double-click-item", self.items[self.double_click_item], offset_x, offset_y)
+                    self.items[self.double_click_item].icon_item_double_click(offset_x, offset_y)
                 elif self.single_click_item == item_index:
-                    self.emit("single-click-item", self.items[self.single_click_item], offset_x, offset_y)
+                    self.items[self.single_click_item].icon_item_single_click(offset_x, offset_y)
             
             self.double_click_item = None
             self.single_click_item = None
@@ -486,5 +476,21 @@ class IconItem(gobject.GObject):
         self.highlight_flag = False
         
         self.emit_redraw_request()
+    
+    def icon_item_button_press(self, x, y):
+        '''Handle button-press event.'''
+        pass        
+    
+    def icon_item_button_release(self, x, y):
+        '''Handle button-release event.'''
+        pass
+    
+    def icon_item_single_click(self, x, y):
+        '''Handle single click event.'''
+        pass
+
+    def icon_item_double_click(self, x, y):
+        '''Handle double click event.'''
+        pass
         
 gobject.type_register(IconItem)
