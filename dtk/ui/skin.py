@@ -265,10 +265,8 @@ class SkinEditArea(gtk.DrawingArea):
         '''Drag background.'''
         new_resize_x = int(event.x) - self.drag_start_x + self.drag_background_x
         new_resize_y = int(event.y) - self.drag_start_y + self.drag_background_y
-        offset_x = self.padding_x + self.shadow_padding
-        offset_y = self.padding_y + self.shadow_padding
-        self.resize_x = min(max(new_resize_x, offset_x + self.min_resize_width - self.resize_width), 0)
-        self.resize_y = min(max(new_resize_y, offset_y + self.min_resize_height - self.resize_height), 0)
+        self.resize_x = min(max(new_resize_x, self.min_resize_width - self.resize_width), 0)
+        self.resize_y = min(max(new_resize_y, self.min_resize_height - self.resize_height), 0)
         
         self.queue_draw()
             
@@ -321,14 +319,14 @@ class SkinEditArea(gtk.DrawingArea):
         '''Adjust right.'''
         offset_x = self.padding_x + self.shadow_padding
         new_resize_x = max(offset_x + self.min_resize_width, int(event.x))
-        self.resize_width = int(new_resize_x - self.resize_x)
+        self.resize_width = int(new_resize_x - self.resize_x - offset_x)
         
     def skin_edit_area_adjust_bottom(self, event):
         '''Adjust bottom.'''
         offset_y = self.padding_y + self.shadow_padding
         new_resize_y = max(offset_y + self.min_resize_height, int(event.y))
-        self.resize_height = int(new_resize_y - self.resize_y)
-        
+        self.resize_height = int(new_resize_y - self.resize_y - offset_y)
+
     def skin_edit_area_set_cursor(self, action_type):
         '''Set cursor.'''
         if action_type == self.POSITION_INSIDE:
