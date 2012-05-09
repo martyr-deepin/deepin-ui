@@ -620,4 +620,3 @@ def print_callback_args(*args):
 def enable_shadow(widget):
     '''Return True if widget support composited.'''
     return widget.is_composited()
-    # return False

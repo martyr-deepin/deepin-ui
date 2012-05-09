@@ -120,25 +120,24 @@ class MplayerWindow(gtk.Window):
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
         
-        # Save cairo context.
+        # Draw background.
         with cairo_state(cr):
-            x, y, w, h = rect.x, rect.y, rect.width, rect.height
             cr.rectangle(x + 2, y, w - 4, 1)
             cr.rectangle(x + 1, y + 1, w - 2, 1)
             cr.rectangle(x, y + 2, w, h - 4)
-            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
             cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+            
             cr.clip()
             
-            # Draw background.
-            draw_pixbuf(cr, pixbuf, rect.x, rect.y, 0.95)
-            
+            draw_pixbuf(cr, pixbuf, x, y, 0.99) # 0.99 should remove
+        
             # Draw mask.
             if self.window_mask:
                 cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color(self.window_mask).get_color_info()))
-                cr.rectangle(0, 0, rect.width, rect.height)    
+                cr.rectangle(x, y, w, h)    
                 cr.fill()
-        
+            
         # Draw window frame.
         draw_window_frame(cr, x, y, w, h)        
         
@@ -176,16 +175,11 @@ class MplayerWindow(gtk.Window):
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
             else:
-                if enable_shadow(self) and self.enable_shadow:
-                    cr.rectangle(x + 2, y, w - 4, 1)
-                    cr.rectangle(x + 1, y + 1, w - 2, 1)
-                    cr.rectangle(x, y + 2, w, h - 4)
-                    cr.rectangle(x + 1, y + h - 2, w - 2, 1)
-                    cr.rectangle(x + 2, y + h - 1, w - 4, 1)
-                else:
-                    cr.rectangle(x + 1, y, w - 2, 1)
-                    cr.rectangle(x, y + 1, w, h - 2)
-                    cr.rectangle(x + 1, y + h - 1, w - 2, 1)
+                cr.rectangle(x + 2, y, w - 4, 1)
+                cr.rectangle(x + 1, y + 1, w - 2, 1)
+                cr.rectangle(x, y + 2, w, h - 4)
+                cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+                cr.rectangle(x + 2, y + h - 1, w - 4, 1)
             cr.fill()
             
             # Shape with given mask.
