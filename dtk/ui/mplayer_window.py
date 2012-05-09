@@ -130,7 +130,7 @@ class MplayerWindow(gtk.Window):
             
             cr.clip()
             
-            draw_pixbuf(cr, pixbuf, x, y, 0.99) # 0.99 should remove
+            draw_pixbuf(cr, pixbuf, x, y)
         
             # Draw mask.
             if self.window_mask:
