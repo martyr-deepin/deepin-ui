@@ -140,8 +140,7 @@ class SkinEditArea(gtk.DrawingArea):
                 self.resize_height,
                 gtk.gdk.INTERP_BILINEAR),
             resize_x,
-            resize_y,
-            0.99)
+            resize_y)
         
         # Draw dominant shadow color.
         if self.button_release_flag:
