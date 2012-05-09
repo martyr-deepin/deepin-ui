@@ -123,7 +123,7 @@ class Window(gtk.Window):
             
         # Draw corner shadow.
         with cairo_state(cr):
-            cr.set_source_rgba(0, 0, 0, 0.1)
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowShadowCorner").get_color_info()))
             
             cr.rectangle(x, y + 1, 1, 1) # top-left
             cr.rectangle(x + 1, y, 1, 1)

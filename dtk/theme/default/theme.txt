@@ -47,6 +47,7 @@
 	 "windowFrameOutside3" : ("#000000", 0.6),
 	 "windowFrameInside1" : ("#FFFFFF", 0.2),
 	 "windowFrameInside2" : ("#FFFFFF", 0.6),
+	 "windowShadowCorner" : ("#000000", 0.1),
  },
  "shadow_colors" : {
      "linearBackground" : [
