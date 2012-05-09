@@ -23,7 +23,7 @@
 from constant import BACKGROUND_IMAGE, EDGE_DICT
 from draw import draw_pixbuf, draw_window_shadow, draw_window_frame
 from theme import ui_theme
-from utils import cairo_state, alpha_color_hex_to_cairo, propagate_expose, resize_window, set_cursor, get_event_root_coords
+from utils import cairo_state, alpha_color_hex_to_cairo, propagate_expose, resize_window, set_cursor, get_event_root_coords, enable_shadow
 import cairo
 import gobject
 import gtk
@@ -52,13 +52,13 @@ class MplayerWindow(gtk.Window):
         # is not good enough, so we disable shadow temporary for future fixed.
         self.enable_shadow = False
         
-        if self.is_composited() and self.enable_shadow:
+        if enable_shadow(self) and self.enable_shadow:
             self.shadow_padding = self.shadow_radius - self.frame_radius
         else:
             self.shadow_padding = 0
         
         # Init shadow window.
-        if self.is_composited() and self.enable_shadow:    
+        if enable_shadow(self) and self.enable_shadow:    
             # Have two reasons use WINDOW_POPUP here:
             # 1. Make window shadow can move to negative position.
             # 2. Make user can't close window through Alt+Space keystroke.
@@ -76,7 +76,7 @@ class MplayerWindow(gtk.Window):
         self.connect("window-state-event", self.monitor_window_state)
         self.connect("configure-event", self.adjust_window_shadow)
         
-        if self.is_composited() and self.enable_shadow:    
+        if enable_shadow(self) and self.enable_shadow:    
             self.window_shadow.connect("expose-event", self.expose_window_shadow)
             self.window_shadow.connect("size-allocate", self.shape_window_shadow)
             self.window_shadow.connect("button-press-event", self.resize_window)
@@ -84,7 +84,7 @@ class MplayerWindow(gtk.Window):
         
     def adjust_window_shadow(self, widget, event):
         '''Adjust window shadow position and size. '''
-        if self.is_composited() and self.enable_shadow:    
+        if enable_shadow(self) and self.enable_shadow:    
             (x, y) = self.get_position()
             (width, height) = self.get_size()
             
@@ -100,7 +100,7 @@ class MplayerWindow(gtk.Window):
         '''Show.'''
         self.show_all()
         
-        if self.is_composited() and self.enable_shadow:
+        if enable_shadow(self) and self.enable_shadow:
             self.window_shadow.show_all()
         
     def change_background(self, background_dpixbuf):
@@ -176,7 +176,7 @@ class MplayerWindow(gtk.Window):
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
             else:
-                if self.is_composited() and self.enable_shadow:
+                if enable_shadow(self) and self.enable_shadow:
                     cr.rectangle(x + 2, y, w - 4, 1)
                     cr.rectangle(x + 1, y + 1, w - 2, 1)
                     cr.rectangle(x, y + 2, w, h - 4)
@@ -194,7 +194,7 @@ class MplayerWindow(gtk.Window):
             # Redraw whole window.
             self.queue_draw()
             
-            if self.is_composited() and self.enable_shadow:
+            if enable_shadow(self) and self.enable_shadow:
                 self.window_shadow.queue_draw()
             
     def shape_window_shadow(self, widget, rect):
@@ -240,7 +240,7 @@ class MplayerWindow(gtk.Window):
             # Redraw whole window.
             self.queue_draw()
             
-            if self.is_composited() and self.enable_shadow:
+            if enable_shadow(self) and self.enable_shadow:
                 self.window_shadow.queue_draw()
             
     def expose_window_shadow(self, widget, event):
@@ -268,14 +268,14 @@ class MplayerWindow(gtk.Window):
         '''Hide shadow.'''
         self.shadow_is_visible = False
         
-        if self.is_composited() and self.enable_shadow:
+        if enable_shadow(self) and self.enable_shadow:
             self.window_shadow.hide_all()
         
     def show_shadow(self):
         '''Show shadow.'''
         self.shadow_is_visible = True
         
-        if self.is_composited() and self.enable_shadow:
+        if enable_shadow(self) and self.enable_shadow:
             self.window_shadow.show_all()
         
     def monitor_window_state(self, widget, event):

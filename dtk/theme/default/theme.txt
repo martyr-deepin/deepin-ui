@@ -42,6 +42,11 @@
 	 "textEntryFrame" : ("#FFFFFF", 0.7),
 	 "scrollebarBackground" : ("#FFFFFF", 0.5),
 	 "scrollebarForeground" : ("#42ADD5", 0.9),
+	 "windowFrameOutside1" : ("#000000", 0.4),
+	 "windowFrameOutside2" : ("#000000", 0.4),
+	 "windowFrameOutside3" : ("#000000", 0.6),
+	 "windowFrameInside1" : ("#FFFFFF", 0.2),
+	 "windowFrameInside2" : ("#FFFFFF", 0.6),
  },
  "shadow_colors" : {
      "linearBackground" : [

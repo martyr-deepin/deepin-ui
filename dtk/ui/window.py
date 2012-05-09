@@ -23,7 +23,7 @@
 from constant import EDGE_DICT, BACKGROUND_IMAGE
 from draw import draw_pixbuf, draw_window_shadow, draw_window_frame
 from theme import ui_theme
-from utils import cairo_state, alpha_color_hex_to_cairo, propagate_expose, set_cursor, resize_window, get_event_root_coords
+from utils import cairo_state, propagate_expose, set_cursor, resize_window, get_event_root_coords, enable_shadow, alpha_color_hex_to_cairo
 import cairo
 import gobject
 import gtk
@@ -35,6 +35,7 @@ class Window(gtk.Window):
         '''Init window.'''
         # Init.
         gtk.Window.__init__(self, window_type)
+        self.window_mask = window_mask
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
@@ -45,13 +46,13 @@ class Window(gtk.Window):
         self.shadow_is_visible = True
         self.cursor_type = None
         self.enable_resize = enable_resize
-        self.window_mask = window_mask
         self.background_dpixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE)
         
         # Shadow setup.
-        if self.is_composited():
+        if enable_shadow(self):
             self.shadow_padding = self.shadow_radius - self.frame_radius
             self.window_frame.connect("size-allocate", self.shape_window_frame)
+            self.window_shadow.connect("expose-event", self.expose_window_shadow)
         else:
             # Disable shadow when composited is false.
             self.shadow_padding = 0
@@ -71,7 +72,6 @@ class Window(gtk.Window):
         self.connect("motion-notify-event", self.motion_notify)
         self.connect("button-press-event", self.resize_window)
         self.connect("window-state-event", self.monitor_window_state)
-        self.window_shadow.connect("expose-event", self.expose_window_shadow)
         self.window_frame.connect("expose-event", self.expose_window_frame)
         
     def show_window(self):
@@ -95,30 +95,68 @@ class Window(gtk.Window):
         cr.paint()
         
         # Save cairo context.
+        if self.shadow_is_visible:
+            x = rect.x + self.shadow_padding
+            y = rect.y + self.shadow_padding
+            w = rect.width - self.shadow_padding * 2
+            h = rect.height - self.shadow_padding * 2
+        else:
+            x, y, w, h = rect.x, rect.y, rect.width, rect.height
+            
+        # Draw background.
         with cairo_state(cr):
-            if self.shadow_is_visible:
-                x = rect.x + self.shadow_padding
-                y = rect.y + self.shadow_padding
-                w = rect.width - self.shadow_padding * 2
-                h = rect.height - self.shadow_padding * 2
-            else:
-                x, y, w, h = rect.x, rect.y, rect.width, rect.height
             cr.rectangle(x + 2, y, w - 4, 1)
             cr.rectangle(x + 1, y + 1, w - 2, 1)
             cr.rectangle(x, y + 2, w, h - 4)
-            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
             cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+            
             cr.clip()
             
-            # Draw background.
-            draw_pixbuf(cr, pixbuf, rect.x, rect.y, 0.95)
-            
+            draw_pixbuf(cr, pixbuf, x, y, 0.99) # 0.99 should remove
+        
             # Draw mask.
             if self.window_mask:
                 cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color(self.window_mask).get_color_info()))
-                cr.rectangle(0, 0, rect.width, rect.height)    
+                cr.rectangle(x, y, w, h)    
                 cr.fill()
-        
+            
+        # Draw corner shadow.
+        with cairo_state(cr):
+            cr.set_source_rgba(0, 0, 0, 0.1)
+            
+            cr.rectangle(x, y + 1, 1, 1) # top-left
+            cr.rectangle(x + 1, y, 1, 1)
+            
+            cr.rectangle(x + w - 1, y + 1, 1, 1) # top-right
+            cr.rectangle(x + w - 2, y, 1, 1)
+            
+            cr.rectangle(x, y + h - 2, 1, 1) # bottom-left
+            cr.rectangle(x + 1, y + h - 1, 1, 1)
+            
+            cr.rectangle(x + w - 1, y + h - 2, 1, 1) # bottom-right
+            cr.rectangle(x + w - 2, y + h - 1, 1, 1)
+            
+            cr.fill()
+            
+        # Draw background corner.
+        with cairo_state(cr):
+            cr.rectangle(x, y + 1, 1, 1) # top-left
+            cr.rectangle(x + 1, y, 1, 1)
+            
+            cr.rectangle(x + w - 1, y + 1, 1, 1) # top-right
+            cr.rectangle(x + w - 2, y, 1, 1)
+            
+            cr.rectangle(x, y + h - 2, 1, 1) # bottom-left
+            cr.rectangle(x + 1, y + h - 1, 1, 1)
+            
+            cr.rectangle(x + w - 1, y + h - 2, 1, 1) # bottom-right
+            cr.rectangle(x + w - 2, y + h - 1, 1, 1)
+            
+            cr.clip()
+            
+            draw_pixbuf(cr, pixbuf, x, y, 0.5)
+            
         # Propagate expose.
         propagate_expose(widget, event)
         

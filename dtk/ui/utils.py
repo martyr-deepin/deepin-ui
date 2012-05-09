@@ -616,3 +616,8 @@ def print_callback_args(*args):
     '''Print callback arguments.'''
     print "******************"
     print args
+
+def enable_shadow(widget):
+    '''Return True if widget support composited.'''
+    return widget.is_composited()
+    # return False

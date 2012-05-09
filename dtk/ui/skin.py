@@ -24,7 +24,7 @@ import gtk
 import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
-from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo
+from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow
 from titlebar import Titlebar
 from dominant_color import get_dominant_color
 
@@ -184,7 +184,7 @@ class SkinEditArea(gtk.DrawingArea):
                 cr.fill()
         
         # Draw window shadow.
-        if self.is_composited():
+        if enable_shadow(self):
             draw_window_shadow(
                 cr, 
                 self.padding_x, 

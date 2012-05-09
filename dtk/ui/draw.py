@@ -103,60 +103,85 @@ def draw_window_frame(cr, x, y, w, h):
         # Set OPERATOR_OVER operator.
         cr.set_operator(cairo.OPERATOR_OVER)
         
-        # Draw frame.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frame").get_color_info()))
+        # Draw outside 8 points.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameOutside1").get_color_info()))
         
-        cr.rectangle(x + 2, y, w - 4, 1)         # top side
-        cr.rectangle(x + w - 1, y + 2, 1, h - 4) # right side
+        cr.rectangle(x, y + 1, 1, 1) # top-left
+        cr.rectangle(x + 1, y, 1, 1)
+        
+        cr.rectangle(x + w - 1, y + 1, 1, 1) # top-right
+        cr.rectangle(x + w - 2, y, 1, 1)
+        
+        cr.rectangle(x, y + h - 2, 1, 1) # bottom-left
+        cr.rectangle(x + 1, y + h - 1, 1, 1)
+        
+        cr.rectangle(x + w - 1, y + h - 2, 1, 1) # bottom-right
+        cr.rectangle(x + w - 2, y + h - 1, 1, 1)
+        
+        cr.fill()
+        
+        # Draw outside 4 points.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameOutside2").get_color_info()))
+        
+        cr.rectangle(x + 1, y + 1, 1, 1) # top-left
+        
+        cr.rectangle(x + w - 2, y + 1, 1, 1) # top-right
+        
+        cr.rectangle(x + 1, y + h - 2, 1, 1) # bottom-left
+        
+        cr.rectangle(x + w - 2, y + h - 2, 1, 1) # bottom-right
+        
+        cr.fill()
+        
+        # Draw outside frame.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameOutside3").get_color_info()))
+
+        cr.rectangle(x + 2, y, w - 4, 1) # top side
+        
         cr.rectangle(x + 2, y + h - 1, w - 4, 1) # bottom side
-        cr.rectangle(x, y + 2, 1, h - 4)         # left side
+        
+        cr.rectangle(x, y + 2, 1, h - 4) # left side
+        
+        cr.rectangle(x + w - 1, y + 2, 1, h - 4) # right side
         
         cr.fill()
         
-        # Draw frame inner dot.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frame").get_color_info()))
+        # Draw outside 4 points.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameInside1").get_color_info()))
         
-        cr.rectangle(x + 1, y + 1, 1, 1)         # top-left inner dot
-        cr.rectangle(x + w - 2, y + 1, 1, 1)     # top-right inner dot
-        cr.rectangle(x + w - 2, y + h - 2, 1, 1) # bottom-right inner dot
-        cr.rectangle(x + 1, y + h - 2, 1, 1)     # bottom-left inner dot
+        cr.rectangle(x + 1, y + 1, 1, 1) # top-left
         
-        cr.fill()
+        cr.rectangle(x + w - 2, y + 1, 1, 1) # top-right
         
-        # Draw frame outter dot.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameDot").get_color_info()))
+        cr.rectangle(x + 1, y + h - 2, 1, 1) # bottom-left
         
-        cr.rectangle(x + 1, y, 1, 1) # top-left outter dot
-        cr.rectangle(x, y + 1, 1, 1)
-        
-        cr.rectangle(x + w - 2, y, 1, 1) # top-right outter dot
-        cr.rectangle(x + w - 1, y + 1, 1, 1)
-        
-        cr.rectangle(x + 1, y + h - 1, 1, 1) # bottom-left outter dot
-        cr.rectangle(x, y + h - 2, 1, 1)
-        
-        cr.rectangle(x + w - 2, y + h - 1, 1, 1) # bottom-right outter dot
-        cr.rectangle(x + w - 1, y + h - 2, 1, 1)
+        cr.rectangle(x + w - 2, y + h - 2, 1, 1) # bottom-right
         
         cr.fill()
         
-        # Draw frame light.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameLight").get_color_info()))
+        # Draw inside 4 points.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameInside1").get_color_info()))
         
-        cr.rectangle(x + 2, y + 1, w - 4, 1)     # top side
-        cr.rectangle(x + w - 2, y + 2, 1, h - 4) # right side
+        cr.rectangle(x + 2, y + 2, 1, 1) # top-left
+        
+        cr.rectangle(x + w - 3, y + 2, 1, 1) # top-right
+        
+        cr.rectangle(x + 2, y + h - 3, 1, 1) # bottom-left
+        
+        cr.rectangle(x + w - 3, y + h - 3, 1, 1) # bottom-right
+        
+        cr.fill()
+        
+        # Draw inside frame.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameInside2").get_color_info()))
+
+        cr.rectangle(x + 2, y + 1, w - 4, 1) # top side
+        
         cr.rectangle(x + 2, y + h - 2, w - 4, 1) # bottom side
-        cr.rectangle(x + 1, y + 2, 1, h - 4)     # left side
         
-        cr.fill()
+        cr.rectangle(x + 1, y + 2, 1, h - 4) # left side
         
-        # Draw frame light dot.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("frameLightDot").get_color_info()))
-        
-        cr.rectangle(x + 2, y + 2, 1, 1)         # top-left light dot
-        cr.rectangle(x + w - 3, y + 2, 1, 1)     # top-right light dot
-        cr.rectangle(x + w - 3, y + h - 3, 1, 1) # bottom-right light dot
-        cr.rectangle(x + 2, y + h - 3, 1, 1)     # bottom-left light dot
+        cr.rectangle(x + w - 2, y + 2, 1, h - 4) # right side
         
         cr.fill()
         
@@ -311,10 +336,22 @@ def draw_window_shadow(cr, x, y, w, h, r, p,
     '''Draw window shadow.'''
     with cairo_state(cr):
         # Clip four corner.
-        cr.rectangle(x, y, r, r)
-        cr.rectangle(x + w - r, y, r, r)
-        cr.rectangle(x, y + h - r, r, r)
-        cr.rectangle(x + w - r, y + h - r, r, r)
+        cr.rectangle(x, y, r - 1, r - 1) # top-left
+        cr.rectangle(x + r - 1, y, 1, r - 2) # vertical
+        cr.rectangle(x, y + r - 1, r - 2, 1) # horizontal
+        
+        cr.rectangle(x + w - r + 1, y, r - 1, r - 1) # top-right
+        cr.rectangle(x + w - r, y, 1, r - 2)         # vertical
+        cr.rectangle(x + w - r + 2, y + r - 1, r - 2, 1) # horizontal
+        
+        cr.rectangle(x, y + h - r + 1, r - 1, r - 1) # bottom-left
+        cr.rectangle(x + r - 1, y + h - r + 2, 1, r - 2) # vertical
+        cr.rectangle(x, y + h - r, r - 2, 1)     # horizontal
+        
+        cr.rectangle(x + w - r + 1, y + h - r + 1, r - 1, r - 1) # bottom-right
+        cr.rectangle(x + w - r, y + h - r + 2, 1, r - 2)         # vertical
+        cr.rectangle(x + w - r + 2, y + h - r, r - 2, 1) # horizontal
+        
         cr.clip()
         
         # Draw four round.
