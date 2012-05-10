@@ -22,7 +22,7 @@
 
 from PIL import Image
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
-from utils import propagate_expose, color_hex_to_cairo
+from utils import propagate_expose, color_hex_to_cairo, find_similar_color
 import gtk
 import scipy
 import scipy.cluster
@@ -96,14 +96,27 @@ class ColorTestWidget(gtk.DrawingArea):
             cr, rect.x + self.pixbuf.get_width() - self.buffer_size, rect.y, self.buffer_size, rect.height,
             [(0, (self.background_color, 0)),
              (1, (self.background_color, 1))])
-        
+
         # Draw background.
-        cr.set_source_rgb(*color_hex_to_cairo(self.background_color))
+        similar_color = find_similar_color(
+            self.background_color,
+            ["#000000", "#FF0000", "#FF6C00", "#FFC600", "#FCFF00", "#C0FF00", "#00FF60", "#00FDFF", "#00A8FF", "#0006FF", "#8400FF", "#BA00FF", "#FF00B4", "#FFFFFF"])
+        cr.set_source_rgb(*color_hex_to_cairo(similar_color))
         cr.rectangle(rect.x + self.pixbuf.get_width(), rect.y,
                      rect.width - self.pixbuf.get_width(), rect.height)
+        cr.fill()
+        cr.set_source_rgb(*color_hex_to_cairo(self.background_color))
         cr.rectangle(rect.x, rect.y + self.pixbuf.get_height(), 
                      rect.width, rect.height - self.pixbuf.get_height())
         cr.fill()
+        
+        # cr.set_source_rgb(*color_hex_to_cairo(self.background_color))
+        # cr.rectangle(rect.x + self.pixbuf.get_width(), rect.y,
+        #              rect.width - self.pixbuf.get_width(), rect.height)
+        # cr.rectangle(rect.x, rect.y + self.pixbuf.get_height(), 
+        #              rect.width, rect.height - self.pixbuf.get_height())
+        
+        # cr.fill()
         
         propagate_expose(widget, event)
         

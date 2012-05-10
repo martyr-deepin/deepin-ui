@@ -24,8 +24,8 @@ from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_C
 from contextlib import contextmanager 
 import cairo
 import gtk
-import gobject
 import math
+import gobject
 import os
 import pango
 import pangocairo
@@ -620,3 +620,54 @@ def print_callback_args(*args):
 def enable_shadow(widget):
     '''Return True if widget support composited.'''
     return widget.is_composited()
+
+def rgb2hsb(r_value, g_value, b_value):
+    "Convert color from RGB to HSB format."
+    r = r_value
+    g = g_value
+    b = b_value
+
+    max_v = max(r, g, b)
+    min_v = min(r, g, b)
+    
+    h = 0.0
+
+    if max_v == min_v:
+        h = 0
+    elif max_v == r and g >= b:
+        h = 60 * (g - b) / (max_v - min_v)
+    elif max_v == r and g < b:
+        h = 60 * (g - b) / (max_v - min_v) + 360
+    elif max_v == g:
+        h = 60 * (b - r) / (max_v - min_v) + 120
+    elif max_v == b:
+        h = 60 * (r - g) / (max_v - min_v) + 240
+    
+    if max_v == 0:
+        s = 0.0
+    else:
+        s = 1.0 - min_v / max_v
+
+    b = max_v
+    
+    return (h, s, b)
+
+def find_similar_color(search_color, target_colors):
+    '''Find simliar color match search_color.'''
+    (search_h, search_s, search_b) = rgb2hsb(*color_hex_to_cairo(search_color))
+    hsb_colors = map(lambda hex_color: (hex_color, rgb2hsb(*color_hex_to_cairo(hex_color))), target_colors)
+    
+    similar_color = None
+    if search_b < 0.1:
+        similar_color = "#000000"
+    elif search_s < 0.05:
+        similar_color = "#FFFFFF"
+    else:
+        min_color_distance = None
+        for (hex_color, (h, s, b)) in hsb_colors:
+            color_distance = abs(h - search_h)
+            if min_color_distance == None or color_distance < min_color_distance:
+                min_color_distance = color_distance
+                similar_color = hex_color
+
+    return similar_color
