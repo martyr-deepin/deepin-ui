@@ -622,7 +622,7 @@ def enable_shadow(widget):
     return widget.is_composited()
 
 def rgb2hsb(r_value, g_value, b_value):
-    "Convert color from RGB to HSB format."
+    "Convert color from RGB to HSB format, detail look http://zh.wikipedia.org/wiki/HSL%E5%92%8CHSV%E8%89%B2%E5%BD%A9%E7%A9%BA%E9%97%B4."
     r = r_value
     g = g_value
     b = b_value
@@ -653,15 +653,18 @@ def rgb2hsb(r_value, g_value, b_value):
     return (h, s, b)
 
 def find_similar_color(search_color, target_colors):
-    '''Find simliar color match search_color.'''
+    '''Find simliar color match search_color, detail look hsb(hsv).png in current directory.'''
     (search_h, search_s, search_b) = rgb2hsb(*color_hex_to_cairo(search_color))
     hsb_colors = map(lambda hex_color: (hex_color, rgb2hsb(*color_hex_to_cairo(hex_color))), target_colors)
     
     similar_color = None
+    # Return black color if brightness (height) < 0.1
     if search_b < 0.1:
         similar_color = "#000000"
+    # Return white color if saturation (radius) < 0.05
     elif search_s < 0.05:
         similar_color = "#FFFFFF"
+    # Otherwise find nearest color in hsb color space.
     else:
         min_color_distance = None
         for (hex_color, (h, s, b)) in hsb_colors:
