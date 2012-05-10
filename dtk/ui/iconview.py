@@ -273,25 +273,26 @@ class IconView(gtk.DrawingArea):
         if len(self.items) > 0 and is_left_button(event):
             index_info = self.icon_view_get_event_index(event)
             
-            (row_index, column_index, item_index, offset_x, offset_y) = index_info
-            self.emit("button-press-item", self.items[item_index], offset_x, offset_y)
-            
-            if is_double_click(event):
-                if index_info:
-                    self.double_click_item = index_info[2]
-                else:
-                    self.double_click_item = None
-            elif is_single_click(event):
-                if index_info:
-                    self.single_click_item = index_info[2]
-                else:
-                    self.single_click_item = None
-                    
-            # Set highlight.
             if index_info:
-                self.clear_highlight()
-                    
-                self.set_highlight(self.items[index_info[2]])
+                (row_index, column_index, item_index, offset_x, offset_y) = index_info
+                self.emit("button-press-item", self.items[item_index], offset_x, offset_y)
+                
+                if is_double_click(event):
+                    if index_info:
+                        self.double_click_item = index_info[2]
+                    else:
+                        self.double_click_item = None
+                elif is_single_click(event):
+                    if index_info:
+                        self.single_click_item = index_info[2]
+                    else:
+                        self.single_click_item = None
+                        
+                # Set highlight.
+                if index_info:
+                    self.clear_highlight()
+                        
+                    self.set_highlight(self.items[index_info[2]])
                 
     def set_highlight(self, item):
         '''Set highlight item.'''

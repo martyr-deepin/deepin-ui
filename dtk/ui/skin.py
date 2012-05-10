@@ -483,8 +483,8 @@ gobject.type_register(SkinEditArea)
         
 if __name__ == '__main__':
     # skin_window = SkinWindow(600, 400, gtk.gdk.pixbuf_new_from_file("/data/Picture/壁纸/20080519100123935.jpg"))
-    # skin_window = SkinWindow(600, 400, "/data/Picture/Misc/23424.jpg")
-    skin_window = SkinWindow(600, 400, "/data/Picture/壁纸/Clown Fish.jpg")
+    skin_window = SkinWindow(600, 400, "/data/Picture/Misc/23424.jpg")
+    # skin_window = SkinWindow(600, 400, "/data/Picture/壁纸/Clown Fish.jpg")
     skin_window.move(400, 100)
     
     skin_window.show_all()
