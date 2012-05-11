@@ -100,7 +100,9 @@ class ColorTestWidget(gtk.DrawingArea):
         # Draw background.
         similar_color = find_similar_color(
             self.background_color,
-            ["#000000", "#FF0000", "#FF6C00", "#FFC600", "#FCFF00", "#C0FF00", "#00FF60", "#00FDFF", "#00A8FF", "#0006FF", "#8400FF", "#BA00FF", "#FF00B4", "#FFFFFF"])
+            "#333333",
+            "#00A8FF",
+            ["#FF0000", "#FF6C00", "#FFC600", "#FCFF00", "#C0FF00", "#00FF60", "#00FDFF", "#00A8FF", "#0006FF", "#8400FF", "#BA00FF", "#FF00B4"])
         cr.set_source_rgb(*color_hex_to_cairo(similar_color))
         cr.rectangle(rect.x + self.pixbuf.get_width(), rect.y,
                      rect.width - self.pixbuf.get_width(), rect.height)

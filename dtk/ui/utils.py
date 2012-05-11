@@ -652,7 +652,7 @@ def rgb2hsb(r_value, g_value, b_value):
     
     return (h, s, b)
 
-def find_similar_color(search_color, target_colors):
+def find_similar_color(search_color, grey_match_color, white_match_color, target_colors):
     '''Find simliar color match search_color, detail look hsb(hsv).png in current directory.'''
     (search_h, search_s, search_b) = rgb2hsb(*color_hex_to_cairo(search_color))
     hsb_colors = map(lambda hex_color: (hex_color, rgb2hsb(*color_hex_to_cairo(hex_color))), target_colors)
@@ -660,10 +660,10 @@ def find_similar_color(search_color, target_colors):
     similar_color = None
     # Return black color if brightness (height) < 0.1
     if search_b < 0.3:
-        similar_color = "#333333"
+        similar_color = grey_match_color
     # Return white color if saturation (radius) < 0.05
     elif search_s < 0.05:
-        similar_color = "#4DA2E1"
+        similar_color = white_match_color
     # Otherwise find nearest color in hsb color space.
     else:
         min_color_distance = None
