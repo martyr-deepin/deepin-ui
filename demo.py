@@ -83,10 +83,11 @@ def simulate_redraw_request(items, items_length):
 
 def switch_tab(notebook_box, tab_box):
     '''Switch tab 1.'''
-    container_remove_all(notebook_box)
-    notebook_box.add(tab_box)
+    if not tab_box in notebook_box.get_children():
+        container_remove_all(notebook_box)
+        notebook_box.add(tab_box)
     
-    notebook_box.show_all()
+        notebook_box.show_all()
     
 def active_editable_list(editable_list, editable_item):
     '''docs'''

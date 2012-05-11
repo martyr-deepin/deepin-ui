@@ -658,7 +658,7 @@ def find_similar_color(search_color, grey_match_color, white_match_color, target
     hsb_colors = map(lambda hex_color: (hex_color, rgb2hsb(*color_hex_to_cairo(hex_color))), target_colors)
     
     similar_color = None
-    # Return black color if brightness (height) < 0.1
+    # Return black color if brightness (height) < 0.3
     if search_b < 0.3:
         similar_color = grey_match_color
     # Return white color if saturation (radius) < 0.05
