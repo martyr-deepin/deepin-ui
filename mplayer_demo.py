@@ -67,8 +67,8 @@ if __name__ == "__main__":
     # Add statusbar.
     statusbar = Statusbar(36)
     main_box.pack_start(statusbar, False)
-    application.add_move_window_event(statusbar)
-    application.add_toggle_window_event(statusbar)
+    application.window.add_move_event(statusbar)
+    application.window.add_toggle_event(statusbar)
     
     # Add drag bar.
     Dragbar(application.window, statusbar)

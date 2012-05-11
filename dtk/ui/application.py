@@ -25,7 +25,7 @@ from mplayer_window import MplayerWindow
 from threads import post_gui
 from titlebar import Titlebar
 from window import Window
-from utils import container_remove_all, is_double_click, move_window
+from utils import container_remove_all
 import dbus
 import dbus.service
 import gtk
@@ -118,8 +118,8 @@ class Application(object):
             self.titlebar.max_button.connect("clicked", lambda w: self.window.toggle_max_window())
         if "close" in button_mask:
             self.titlebar.close_button.connect("clicked", self.close_callback)
-        self.add_toggle_window_event(self.titlebar.drag_box)
-        self.add_move_window_event(self.titlebar.drag_box)
+        self.window.add_toggle_event(self.titlebar.drag_box)
+        self.window.add_move_event(self.titlebar.drag_box)
 
         # Show titlebar.
         self.show_titlebar()
@@ -191,21 +191,6 @@ class Application(object):
 
         return False
 
-    def double_click_window(self, widget, event):
-        '''Handle double click on window.'''
-        if is_double_click(event):
-            self.window.toggle_max_window()
-
-        return False
-
-    def add_toggle_window_event(self, widget):
-        '''Add toggle window event.'''
-        widget.connect("button-press-event", self.double_click_window)
-
-    def add_move_window_event(self, widget):
-        '''Add move window event.'''
-        widget.connect('button-press-event', lambda w, e: move_window(w, e, self.window))
-        
     def set_menu_callback(self, callback):
         '''Set menu callback.'''
         self.menu_button_callback = callback

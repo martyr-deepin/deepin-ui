@@ -23,7 +23,7 @@
 from constant import BACKGROUND_IMAGE, EDGE_DICT
 from draw import draw_pixbuf, draw_window_shadow, draw_window_frame
 from theme import ui_theme
-from utils import cairo_state, alpha_color_hex_to_cairo, propagate_expose, resize_window, set_cursor, get_event_root_coords, enable_shadow
+from utils import cairo_state, alpha_color_hex_to_cairo, propagate_expose, resize_window, set_cursor, get_event_root_coords, enable_shadow, is_double_click, move_window
 import cairo
 import gobject
 import gtk
@@ -320,6 +320,21 @@ Otherwise hide shadow.'''
             if edge != None:
                 resize_window(self, event, self, edge)
                 
+    def add_move_event(self, widget):
+        '''Add move window event.'''
+        widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
+        
+    def add_toggle_event(self, widget):
+        '''Add toggle window event.'''
+        widget.connect("button-press-event", self.double_click_window)        
+        
+    def double_click_window(self, widget, event):
+        '''Handle double click on window.'''
+        if is_double_click(event):
+            self.toggle_max_window()
+            
+        return False    
+            
     def motion_notify(self, widget, event):
         '''Callback for motion-notify event.'''
         if self.enable_resize and self.shadow_is_visible:

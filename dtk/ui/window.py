@@ -23,7 +23,7 @@
 from constant import EDGE_DICT, BACKGROUND_IMAGE
 from draw import draw_pixbuf, draw_window_shadow, draw_window_frame
 from theme import ui_theme
-from utils import cairo_state, propagate_expose, set_cursor, resize_window, get_event_root_coords, enable_shadow, alpha_color_hex_to_cairo
+from utils import cairo_state, propagate_expose, set_cursor, resize_window, get_event_root_coords, enable_shadow, alpha_color_hex_to_cairo, is_double_click, move_window
 import cairo
 import gobject
 import gtk
@@ -280,6 +280,21 @@ Otherwise hide shadow.'''
         else:
             self.show_shadow()
         
+    def add_move_event(self, widget):
+        '''Add move window event.'''
+        widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
+        
+    def add_toggle_event(self, widget):
+        '''Add toggle window event.'''
+        widget.connect("button-press-event", self.double_click_window)        
+        
+    def double_click_window(self, widget, event):
+        '''Handle double click on window.'''
+        if is_double_click(event):
+            self.toggle_max_window()
+            
+        return False    
+            
     def get_edge(self):
         '''Get edge.'''
         if EDGE_DICT.has_key(self.cursor_type):

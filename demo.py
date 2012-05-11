@@ -181,8 +181,8 @@ if __name__ == "__main__":
          (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航8", None),
          ])
     application.main_box.pack_start(navigatebar, False)
-    application.add_move_window_event(navigatebar)
-    application.add_toggle_window_event(navigatebar)
+    application.window.add_move_event(navigatebar)
+    application.window.add_toggle_event(navigatebar)
     
     notebook_box = gtk.VBox()
     tab_1_box = gtk.VBox()
@@ -315,8 +315,8 @@ if __name__ == "__main__":
     # Add statusbar.
     statusbar = Statusbar(36)
     tab_1_box.pack_start(statusbar, False)
-    application.add_move_window_event(statusbar)
-    application.add_toggle_window_event(statusbar)
+    application.window.add_move_event(statusbar)
+    application.window.add_toggle_event(statusbar)
     
     # Add drag bar.
     Dragbar(application.window, statusbar)
