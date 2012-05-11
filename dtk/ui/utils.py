@@ -659,11 +659,11 @@ def find_similar_color(search_color, target_colors):
     
     similar_color = None
     # Return black color if brightness (height) < 0.1
-    if search_b < 0.1:
-        similar_color = "#000000"
+    if search_b < 0.3:
+        similar_color = "#333333"
     # Return white color if saturation (radius) < 0.05
     elif search_s < 0.05:
-        similar_color = "#FFFFFF"
+        similar_color = "#4DA2E1"
     # Otherwise find nearest color in hsb color space.
     else:
         min_color_distance = None
