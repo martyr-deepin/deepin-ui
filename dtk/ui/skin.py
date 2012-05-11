@@ -24,7 +24,7 @@ import gtk
 import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
-from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow
+from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, has_shift_mask
 from titlebar import Titlebar
 from dominant_color import get_dominant_color
 
@@ -100,6 +100,7 @@ class SkinEditArea(gtk.DrawingArea):
         self.in_resize_area_flag = False
         self.dominant_color = get_dominant_color(background_path)
         self.shadow_size = 200  # pixel
+        self.press_shift_flag = False
         
         self.set_size_request(
             self.preview_width + self.padding_x * 2,
@@ -110,6 +111,8 @@ class SkinEditArea(gtk.DrawingArea):
         self.connect("button-press-event", self.button_press_skin_edit_area)
         self.connect("button-release-event", self.button_release_skin_edit_area)
         self.connect("motion-notify-event", self.motion_skin_edit_area)
+        self.connect("key-press-event", self.key_press_skin_edit_area)
+        self.connect("key-release-event", self.key_release_skin_edit_area)
         
     def is_in_resize_area(self, event):
         '''Is at resize area.'''
@@ -326,6 +329,16 @@ class SkinEditArea(gtk.DrawingArea):
             self.in_resize_area_flag = self.is_in_resize_area(event)
             if old_flag != self.in_resize_area_flag:
                 self.queue_draw()
+                
+    def key_press_skin_edit_area(self, widget, event):
+        '''Callback for `key-press-event` signal.'''
+        if has_shift_mask(event):
+            self.press_shift_flag = True
+        
+    def key_release_skin_edit_area(self, widget, event):
+        '''Callback for `key-release-event` signal.'''
+        if has_shift_mask(event):
+            self.press_shift_flag = False
                 
     def skin_edit_area_drag_background(self, event):
         '''Drag background.'''
