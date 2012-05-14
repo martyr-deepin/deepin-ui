@@ -22,7 +22,7 @@
 
 from draw import draw_pixbuf
 from theme import ui_theme
-from utils import propagate_expose, is_left_button
+from utils import is_left_button
 import gobject
 import gtk
 
@@ -100,9 +100,6 @@ class HScalebar(gtk.HScale):
         # Draw drag point.
         draw_pixbuf(cr, point_pixbuf, x + value - point_pixbuf.get_width() / 2, y)    
                 
-        # Propagate expose.
-        propagate_expose(widget, event)
-        
         return True        
 
     def press_volume_progressbar(self, widget, event):
@@ -195,7 +192,6 @@ class VScalebar(gtk.VScale):
         if self.__has_point:    
             draw_pixbuf(cr, point_pixbuf, x, y + point_y - side_height / 2 - point_height / 2)
             
-        propagate_expose(widget, event)
         return True
         
     def press_progressbar(self, widget, event):
