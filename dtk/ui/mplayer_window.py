@@ -253,11 +253,6 @@ class MplayerWindow(gtk.Window):
             # Draw window shadow.
             draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding)
     
-        # Propagate expose.
-        propagate_expose(widget, event)
-    
-        return True
-            
     def hide_shadow(self):
         '''Hide shadow.'''
         self.shadow_is_visible = False
