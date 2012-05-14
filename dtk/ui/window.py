@@ -68,7 +68,6 @@ class Window(gtk.Window):
         
         # Handle signal.
         self.connect_after("expose-event", self.expose_window_background)
-        self.connect("size-allocate", lambda w, r: self.queue_draw()) # redraw after size allocation changed
         self.connect("motion-notify-event", self.motion_notify)
         self.connect("button-press-event", self.resize_window)
         self.connect("window-state-event", self.monitor_window_state)
@@ -173,11 +172,6 @@ class Window(gtk.Window):
             # Draw window shadow.
             draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding)
     
-        # Propagate expose.
-        propagate_expose(widget, event)
-    
-        return True
-    
     def expose_window_frame(self, widget, event):
         '''Expose window frame.'''
         # Init.
@@ -186,11 +180,6 @@ class Window(gtk.Window):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         draw_window_frame(cr, x, y, w, h)
-        
-        # Propagate expose.
-        propagate_expose(widget, event)
-        
-        return False
 
     def shape_window_frame(self, widget, rect):
         '''Shap window frame.'''
