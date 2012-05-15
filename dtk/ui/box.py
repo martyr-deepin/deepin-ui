@@ -124,6 +124,11 @@ class BackgroundBox(gtk.VBox):
         
         self.connect("expose-event", self.expose_background_box)
         
+    def draw_mask(self, cr, x, y, w, h):
+        '''Draw mask.'''
+        draw_vlinear(cr, x, y, w, h,
+                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+        
     def expose_background_box(self, widget, event):
         '''Expose background box.'''
         cr = widget.window.cairo_create()
@@ -144,8 +149,7 @@ class BackgroundBox(gtk.VBox):
                 rect.x + shadow_x, 
                 rect.y + shadow_y)
             
-        draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height,
-                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+        self.draw_mask(cr, rect.x, rect.y, rect.width, rect.height)    
 
         propagate_expose(widget, event)
         
