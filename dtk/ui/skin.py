@@ -88,8 +88,8 @@ class SkinPreview(gtk.VBox):
         self.pack_start(self.preview_align, True, True)
         
         self.button_align = gtk.Alignment()
-        self.button_align.set(1, 0, 0, 0)
-        self.button_align.set_padding(0, 20, 0, 20)
+        self.button_align.set(1, 0.5, 0, 0)
+        self.button_align.set_padding(10, 10, 0, 20)
         self.close_button = Button("Close")
         self.button_align.add(self.close_button)
         self.pack_start(self.button_align, False, False)
