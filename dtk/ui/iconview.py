@@ -169,7 +169,12 @@ class IconView(gtk.DrawingArea):
                          viewport.allocation.y + viewport.allocation.height)
             cr.clip()
             
-            draw_pixbuf(cr, self.background_pixbuf.get_pixbuf(), offset_x, offset_y)
+            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
+            draw_pixbuf(
+                cr, 
+                self.background_pixbuf.get_pixbuf(),
+                offset_x + shadow_x, 
+                offset_y + shadow_y)
             
         # Draw item.
         if len(self.items) > 0:

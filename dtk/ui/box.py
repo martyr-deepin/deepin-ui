@@ -137,7 +137,12 @@ class BackgroundBox(gtk.VBox):
             cr.rectangle(offset_x, offset_y, rect.width, rect.height)
             cr.clip()
             
-            draw_pixbuf(cr, self.background_pixbuf.get_pixbuf(), rect.x, rect.y)
+            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
+            draw_pixbuf(
+                cr, 
+                self.background_pixbuf.get_pixbuf(),
+                rect.x + shadow_x, 
+                rect.y + shadow_y)
             
         draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height,
                      ui_theme.get_shadow_color("linearBackground").get_color_info())

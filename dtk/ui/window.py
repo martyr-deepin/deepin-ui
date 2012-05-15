@@ -331,6 +331,17 @@ Otherwise hide shadow.'''
                 return None
         else:
             return None
+        
+    def get_shadow_size(self):
+        '''Get shadow size.'''
+        if enable_shadow(self):
+            window_state = self.window.get_state()
+            if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:
+                return (0, 0)
+            else:
+                return (self.shadow_padding, self.shadow_padding)
+        else:
+            return (0, 0)
 
 gobject.type_register(Window)
     

@@ -383,6 +383,10 @@ Otherwise hide shadow.'''
         else:
             return None
         
+    def get_shadow_size(self):
+        '''Get shadow size.'''
+        return (0, 0)
+    
 gobject.type_register(MplayerWindow)
     
 if __name__ == "__main__":

@@ -32,12 +32,14 @@ class ScrolledWindow(gtk.ScrolledWindow):
 	
     def __init__(self, 
                  background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE),
-                 scrollebar_size = 6):
+                 scrollebar_size = 6,
+                 hscrollbar_policy=gtk.POLICY_AUTOMATIC,
+                 vscrollbar_policy=gtk.POLICY_AUTOMATIC):
         '''Init scrolled window.'''
         # Init.
         gtk.ScrolledWindow.__init__(self)
         self.background_pixbuf = background_pixbuf
-        self.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.set_policy(hscrollbar_policy, vscrollbar_policy)
         self.scrollebar_size = scrollebar_size
         self.min_progress_size = 15
         
@@ -58,6 +60,10 @@ class ScrolledWindow(gtk.ScrolledWindow):
         
         self.connect("expose-event", self.expose_scrolled_window)
         
+    def set_scroll_policy(self, hscrollbar_policy, vscrollbar_policy):
+        '''Set policy.'''
+        self.set_policy(hscrollbar_policy, vscrollbar_policy)
+        
     def expose_scrolled_window(self, widget, event):
         '''Expose scrolled window.'''
         cr = widget.window.cairo_create()
@@ -67,7 +73,13 @@ class ScrolledWindow(gtk.ScrolledWindow):
         with cairo_state(cr):
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.clip()
-            draw_pixbuf(cr, self.background_pixbuf.get_pixbuf(), 0, 0)
+            
+            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
+            draw_pixbuf(
+                cr, 
+                self.background_pixbuf.get_pixbuf(), 
+                shadow_x,
+                shadow_y)
             
         # Draw mask.
         draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height,

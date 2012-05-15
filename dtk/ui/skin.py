@@ -20,13 +20,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import gtk
 import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
-from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, has_shift_mask
+from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state
+from keymap import has_shift_mask
 from titlebar import Titlebar
 from dominant_color import get_dominant_color
+from iconview import IconView
+from scrolled_window import ScrolledWindow
+from button import Button
 
 class SkinWindow(Window):
     '''SkinWindow.'''
@@ -40,21 +45,176 @@ class SkinWindow(Window):
             None,
             None,
             "皮肤编辑")
-        self.edit_area_align = gtk.Alignment()
-        self.edit_area_align.set(0, 0, 1, 1)
-        self.edit_area_align.set_padding(0, 1, 1, 1)
-        self.edit_area = SkinEditArea(preview_width, preview_height, background_path)
+        
+        # self.edit_area_align = gtk.Alignment()
+        # self.edit_area_align.set(0, 0, 1, 1)
+        # self.edit_area_align.set_padding(0, 1, 1, 1)
+        # self.edit_area = SkinEditArea(preview_width, preview_height, background_path)
         
         self.window_frame.add(self.main_box)
         self.main_box.pack_start(self.titlebar, False, False)
-        self.main_box.pack_start(self.edit_area_align, True, True)
-        self.edit_area_align.add(self.edit_area)
+        self.set_size_request(preview_width, preview_height)
+        # self.set_resizable(False)
+        # self.main_box.pack_start(self.edit_area_align, True, True)
+        # self.edit_area_align.add(self.edit_area)
+        
+        self.preview = SkinPreview("/home/andy/deepin-ui-private/skin")
+        self.main_box.pack_start(self.preview, True, True)
         
         self.titlebar.close_button.connect("clicked", lambda w: gtk.main_quit())
         self.connect("destroy", lambda w: gtk.main_quit())
         
+        self.add_move_event(self.titlebar)
+        
 gobject.type_register(SkinWindow)
 
+class SkinPreview(gtk.VBox):
+    '''Skin preview.'''
+	
+    def __init__(self, skin_dir):
+        '''Init skin preview.'''
+        gtk.VBox.__init__(self)
+        self.skin_dir = skin_dir
+        
+        self.preview_align = gtk.Alignment()
+        self.preview_align.set(0.5, 0.5, 1, 1)
+        self.preview_align.set_padding(3, 0, 17, 12)
+        self.preview_scrolled_window = ScrolledWindow()
+        self.preview_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        self.preview_view = IconView()
+                
+        self.preview_align.add(self.preview_scrolled_window)
+        self.preview_scrolled_window.add_child(self.preview_view)
+        self.pack_start(self.preview_align, True, True)
+        
+        self.button_align = gtk.Alignment()
+        self.button_align.set(1, 0, 0, 0)
+        self.button_align.set_padding(0, 20, 0, 20)
+        self.close_button = Button("Close")
+        self.button_align.add(self.close_button)
+        self.pack_start(self.button_align, False, False)
+        
+        for root, dirs, files in os.walk(skin_dir):
+            for filename in files:
+                if filename == "background.jpg":
+                    filepath = os.path.join(root, filename)
+                    self.preview_view.add_items([SkinPreviewIcon(filepath)])
+        
+gobject.type_register(SkinPreview)
+        
+class SkinPreviewIcon(gobject.GObject):
+    '''Icon item.'''
+	
+    __gsignals__ = {
+        "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+    }
+    
+    def __init__(self, background_path):
+        '''Init item icon.'''
+        gobject.GObject.__init__(self)
+        self.background_path = background_path
+        self.width = 90
+        self.height = 60
+        self.padding_x = 7
+        self.padding_y = 10
+        self.hover_flag = False
+        self.highlight_flag = False
+        
+        self.create_preview_pixbuf(background_path)
+        
+    def create_preview_pixbuf(self, background_path):
+        '''Create preview pixbuf.'''
+        background_pixbuf = gtk.gdk.pixbuf_new_from_file(background_path)        
+        background_width, background_height = background_pixbuf.get_width(), background_pixbuf.get_height()
+        if background_width >= self.width and background_height >= self.height:
+            if background_width / background_height == self.width / self.height:
+                scale_width, scale_height = self.width, self.height
+            elif background_width / background_height > self.width / self.height:
+                scale_height = self.height
+                scale_width = int(background_width * self.height / background_height)
+            else:
+                scale_width = self.width
+                scale_height = int(background_height * self.width / background_width)
+                
+            self.pixbuf = background_pixbuf.scale_simple(
+                scale_width, 
+                scale_height, 
+                gtk.gdk.INTERP_BILINEAR).subpixbuf(0, 0, self.width, self.height)
+        else:
+            self.pixbuf = background_pixbuf
+                
+    def emit_redraw_request(self):
+        '''Emit redraw-request signal.'''
+        self.emit("redraw-request")
+        
+    def get_width(self):
+        '''Get width.'''
+        return self.width + self.padding_x * 2
+        
+    def get_height(self):
+        '''Get height.'''
+        return self.height + self.padding_y * 2
+    
+    def render(self, cr, rect):
+        '''Render item.'''
+        with cairo_state(cr):
+            cr.rectangle(
+                rect.x + self.padding_x, 
+                rect.y + self.padding_y, 
+                self.width,
+                self.height)
+            cr.clip()
+            
+            # Draw cover.
+            draw_pixbuf(
+                cr, 
+                self.pixbuf, 
+                rect.x + self.padding_x + (rect.width - self.pixbuf.get_width()) / 2,
+                rect.y + self.padding_y + (rect.height - self.pixbuf.get_height()) / 2
+                )
+        
+    def icon_item_motion_notify(self, x, y):
+        '''Handle `motion-notify-event` signal.'''
+        self.hover_flag = True
+        
+        self.emit_redraw_request()
+        
+    def icon_item_lost_focus(self):
+        '''Lost focus.'''
+        self.hover_flag = False
+        
+        self.emit_redraw_request()
+        
+    def icon_item_highlight(self):
+        '''Highlight item.'''
+        self.highlight_flag = True
+
+        self.emit_redraw_request()
+        
+    def icon_item_normal(self):
+        '''Set item with normal status.'''
+        self.highlight_flag = False
+        
+        self.emit_redraw_request()
+    
+    def icon_item_button_press(self, x, y):
+        '''Handle button-press event.'''
+        pass        
+    
+    def icon_item_button_release(self, x, y):
+        '''Handle button-release event.'''
+        pass
+    
+    def icon_item_single_click(self, x, y):
+        '''Handle single click event.'''
+        pass
+
+    def icon_item_double_click(self, x, y):
+        '''Handle double click event.'''
+        pass
+        
+gobject.type_register(SkinPreviewIcon)
+        
 class SkinEditArea(gtk.DrawingArea):
     '''Skin edit area.'''
     
@@ -495,9 +655,7 @@ class SkinEditArea(gtk.DrawingArea):
 gobject.type_register(SkinEditArea)
         
 if __name__ == '__main__':
-    # skin_window = SkinWindow(600, 400, gtk.gdk.pixbuf_new_from_file("/data/Picture/壁纸/20080519100123935.jpg"))
-    skin_window = SkinWindow(600, 400, "/data/Picture/Misc/23424.jpg")
-    # skin_window = SkinWindow(600, 400, "/data/Picture/壁纸/Clown Fish.jpg")
+    skin_window = SkinWindow(450, 500, "/data/Picture/Misc/23424.jpg")
     skin_window.move(400, 100)
     
     skin_window.show_all()
