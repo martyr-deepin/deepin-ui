@@ -100,7 +100,7 @@ class Tooltip(Window):
         # Destroy window.
         self.destroy()
         
-    def hide(self):
+    def hide_tooltip(self):
         '''Hide.'''
         # Make sure animation callback is remove.
         gobject.source_remove(self.animation_id)
