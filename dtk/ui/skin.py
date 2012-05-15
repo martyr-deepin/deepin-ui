@@ -28,6 +28,8 @@ from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinea
 from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, draw_blank_mask
 from keymap import has_shift_mask
 from titlebar import Titlebar
+from constant import BACKGROUND_IMAGE
+from theme import ui_theme
 from dominant_color import get_dominant_color
 from iconview import IconView
 from scrolled_window import ScrolledWindow
@@ -259,7 +261,7 @@ class SkinEditPage(gtk.VBox):
         
         self.color_select_align = gtk.Alignment()
         self.color_select_align.set(0.5, 0.5, 1, 1)
-        self.color_select_align.set_padding(0, 0, 35, 35)
+        self.color_select_align.set_padding(0, 0, 38, 38)
         self.color_select_view = IconView()
         self.color_select_view.draw_mask = draw_blank_mask
         self.color_select_scrolled_window = ScrolledWindow()
@@ -457,9 +459,18 @@ class SkinEditArea(gtk.DrawingArea):
         resize_y = offset_y + self.resize_y
 
         # Draw background.
+        with cairo_state(cr):
+            # Translate coordinate.
+            cr.translate(-x, -y)
+            
+            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
+            draw_pixbuf(
+                cr,
+                ui_theme.get_pixbuf(BACKGROUND_IMAGE).get_pixbuf(),
+                shadow_x,
+                shadow_y)
         
-        
-        # Draw image.
+        # Draw theme background.
         draw_pixbuf(
             cr,
             self.background_pixbuf.scale_simple(
