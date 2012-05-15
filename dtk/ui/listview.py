@@ -310,6 +310,11 @@ class ListView(gtk.DrawingArea):
         else:
             return (0, 0, viewport)
             
+    def draw_mask(self, cr, x, y, w, h):
+        '''Draw mask.'''
+        draw_vlinear(cr, x, y, w, h,
+                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+        
     def expose_list_view(self, widget, event):
         '''Expose list view.'''
         # Init.
@@ -336,8 +341,7 @@ class ListView(gtk.DrawingArea):
                 offset_y + shadow_y)
         
         # Draw mask.
-        draw_vlinear(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height,
-                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+        self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
             
         if len(self.items) > 0:
             with cairo_state(cr):
