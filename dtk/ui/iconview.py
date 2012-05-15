@@ -25,7 +25,7 @@ import gobject
 from constant import BACKGROUND_IMAGE
 from theme import ui_theme
 from utils import get_match_parent, cairo_state, get_event_coords, is_in_rect, is_left_button, is_double_click, is_single_click
-from draw import draw_pixbuf
+from draw import draw_pixbuf, draw_vlinear
 from keymap import get_keyevent_name
 
 class IconView(gtk.DrawingArea):
@@ -149,6 +149,11 @@ class IconView(gtk.DrawingArea):
         self.items = []            
         self.queue_draw()
             
+    def draw_mask(self, cr, x, y, w, h):
+        '''Draw mask.'''
+        draw_vlinear(cr, x, y, w, h,
+                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+        
     def expose_icon_view(self, widget, event):
         '''Expose list view.'''
         # Update vadjustment.
@@ -175,6 +180,9 @@ class IconView(gtk.DrawingArea):
                 self.background_pixbuf.get_pixbuf(),
                 offset_x + shadow_x, 
                 offset_y + shadow_y)
+            
+        # Draw mask.
+        self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
             
         # Draw item.
         if len(self.items) > 0:
