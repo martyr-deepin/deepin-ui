@@ -674,3 +674,7 @@ def find_similar_color(search_color, grey_match_color, white_match_color, target
                 similar_color = hex_color
 
     return similar_color
+
+def draw_blank_mask(cr, x, y, w, h):
+    '''Draw blank mask.'''
+    pass
