@@ -44,7 +44,7 @@ class SkinWindow(Window):
             ["close"],
             None,
             None,
-            "皮肤编辑")
+            "选择皮肤")
         
         # self.edit_area_align = gtk.Alignment()
         # self.edit_area_align.set(0, 0, 1, 1)
@@ -78,7 +78,7 @@ class SkinPreview(gtk.VBox):
         
         self.preview_align = gtk.Alignment()
         self.preview_align.set(0.5, 0.5, 1, 1)
-        self.preview_align.set_padding(3, 0, 17, 12)
+        self.preview_align.set_padding(0, 0, 10, 5)
         self.preview_scrolled_window = ScrolledWindow()
         self.preview_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         self.preview_view = IconView()
@@ -113,8 +113,9 @@ class SkinPreviewIcon(gobject.GObject):
         '''Init item icon.'''
         gobject.GObject.__init__(self)
         self.background_path = background_path
-        self.width = 90
-        self.height = 60
+        self.width = 86
+        self.height = 56
+        self.icon_padding = 2
         self.padding_x = 7
         self.padding_y = 10
         self.hover_flag = False
@@ -149,28 +150,37 @@ class SkinPreviewIcon(gobject.GObject):
         
     def get_width(self):
         '''Get width.'''
-        return self.width + self.padding_x * 2
+        return self.width + (self.icon_padding + self.padding_x) * 2
         
     def get_height(self):
         '''Get height.'''
-        return self.height + self.padding_y * 2
+        return self.height + (self.icon_padding + self.padding_y) * 2
     
     def render(self, cr, rect):
         '''Render item.'''
+        # Draw frame.
+        if self.hover_flag:
+            cr.set_source_rgb(1, 0, 0)
+        elif self.highlight_flag:
+            cr.set_source_rgb(0, 1, 0)
+        else:
+            cr.set_source_rgb(0.3, 0.3, 0.3)
+        cr.rectangle(
+            rect.x + self.padding_x,
+            rect.y + self.padding_y,
+            rect.width - self.padding_x * 2,
+            rect.height - self.padding_y * 2
+            )
+        cr.fill()
+        
+        # Draw background.
         with cairo_state(cr):
-            cr.rectangle(
-                rect.x + self.padding_x, 
-                rect.y + self.padding_y, 
-                self.width,
-                self.height)
-            cr.clip()
-            
             # Draw cover.
             draw_pixbuf(
                 cr, 
                 self.pixbuf, 
-                rect.x + self.padding_x + (rect.width - self.pixbuf.get_width()) / 2,
-                rect.y + self.padding_y + (rect.height - self.pixbuf.get_height()) / 2
+                rect.x + (rect.width - self.pixbuf.get_width()) / 2,
+                rect.y + (rect.height - self.pixbuf.get_height()) / 2
                 )
         
     def icon_item_motion_notify(self, x, y):
