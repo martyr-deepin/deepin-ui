@@ -25,7 +25,7 @@ import gtk
 import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
-from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all
+from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, draw_blank_mask
 from keymap import has_shift_mask
 from titlebar import Titlebar
 from dominant_color import get_dominant_color
@@ -50,13 +50,7 @@ class SkinWindow(Window):
         self.set_size_request(preview_width, preview_height)
         self.set_resizable(False)
         
-        self.edit_area_align = gtk.Alignment()
-        self.edit_area_align.set(0, 0, 1, 1)
-        self.edit_area_align.set_padding(0, 1, 1, 1)
-        # self.edit_area = SkinEditArea(preview_width, preview_height, background_path)
-        # self.edit_area_align.add(self.edit_area)
-        
-        self.preview = SkinPreview("/home/andy/deepin-ui-private/skin")
+        self.preview_page = SkinPreviewPage("/home/andy/deepin-ui-private/skin")
         
         self.main_box.pack_start(self.titlebar, False, False)
         self.body_box = gtk.VBox()
@@ -69,25 +63,27 @@ class SkinWindow(Window):
         
         self.switch_preview_page()
         
-        self.preview.preview_view.connect("button-press-item", lambda view, item, x, y: self.switch_edit_page(item.background_path))
+        self.preview_page.preview_view.connect("button-press-item", lambda view, item, x, y: self.switch_edit_page(item.background_path))
         
     def switch_preview_page(self):
         '''Switch preview page.'''
         container_remove_all(self.body_box)
-        self.body_box.add(self.preview)
+        self.body_box.add(self.preview_page)
         
     def switch_edit_page(self, background_path):
         '''Switch edit page.'''
         container_remove_all(self.body_box)
-        container_remove_all(self.edit_area_align)
-        self.body_box.add(self.edit_area_align)
-        self.edit_area_align.add(SkinEditArea(background_path))
+        edit_page = SkinEditPage(background_path)
+        self.body_box.add(edit_page)
+        
+        edit_page.connect("click-save", lambda page: self.switch_preview_page())
+        edit_page.connect("click-cancel", lambda page: self.switch_preview_page())
         
         self.show_all()
         
 gobject.type_register(SkinWindow)
 
-class SkinPreview(gtk.VBox):
+class SkinPreviewPage(gtk.VBox):
     '''Skin preview.'''
 	
     def __init__(self, skin_dir):
@@ -101,6 +97,7 @@ class SkinPreview(gtk.VBox):
         self.preview_scrolled_window = ScrolledWindow()
         self.preview_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         self.preview_view = IconView()
+        self.preview_view.draw_mask = draw_blank_mask
                 
         self.preview_align.add(self.preview_scrolled_window)
         self.preview_scrolled_window.add_child(self.preview_view)
@@ -109,7 +106,7 @@ class SkinPreview(gtk.VBox):
         self.button_align = gtk.Alignment()
         self.button_align.set(1, 0.5, 0, 0)
         self.button_align.set_padding(10, 10, 0, 20)
-        self.close_button = Button("Close")
+        self.close_button = Button("关闭")
         self.button_align.add(self.close_button)
         self.pack_start(self.button_align, False, False)
         
@@ -119,7 +116,7 @@ class SkinPreview(gtk.VBox):
                     filepath = os.path.join(root, filename)
                     self.preview_view.add_items([SkinPreviewIcon(filepath)])
         
-gobject.type_register(SkinPreview)
+gobject.type_register(SkinPreviewPage)
         
 class SkinPreviewIcon(gobject.GObject):
     '''Icon item.'''
@@ -243,7 +240,149 @@ class SkinPreviewIcon(gobject.GObject):
         pass
         
 gobject.type_register(SkinPreviewIcon)
+
+class SkinEditPage(gtk.VBox):
+    '''Init skin edit page.'''
+	
+    __gsignals__ = {
+        "click-save" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "click-cancel" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+    }
+    def __init__(self, background_path):
+        '''Init skin edit page.'''
+        gtk.VBox.__init__(self)
+        self.edit_area_align = gtk.Alignment()
+        self.edit_area_align.set(0.5, 0.5, 1, 1)
+        self.edit_area_align.set_padding(0, 0, 10, 10)
+        self.edit_area = SkinEditArea(background_path)        
+        self.edit_area_align.add(self.edit_area)
         
+        self.color_select_align = gtk.Alignment()
+        self.color_select_align.set(0.5, 0.5, 1, 1)
+        self.color_select_align.set_padding(0, 0, 35, 35)
+        self.color_select_view = IconView()
+        self.color_select_view.draw_mask = draw_blank_mask
+        self.color_select_scrolled_window = ScrolledWindow()
+        self.color_select_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
+        self.color_select_scrolled_window.add_child(self.color_select_view)
+        self.color_select_align.add(self.color_select_scrolled_window)
+        
+        for color in ["#C0FF00",
+                      "#FFC600",
+                      "#FCFF00",
+                      "#8400FF",
+                      "#00A8FF",
+                      "#FF0000",
+                      "#00FDFF",
+                      "#0006FF",
+                      "#BA00FF",
+                      "#00FF60",
+                      "#333333",
+                      "#FF6C00",
+                      "#FF0000"]:
+            self.color_select_view.add_items([ColorIconItem(color)])
+        
+        self.button_align = gtk.Alignment()
+        self.button_align.set(1, 0.5, 0, 0)
+        self.button_align.set_padding(10, 10, 0, 20)
+        self.button_box = gtk.HBox()
+        self.save_button = Button("保存")
+        self.cancel_button = Button("取消")
+        self.button_align.add(self.button_box)
+        self.button_box.pack_start(self.save_button, False, False, 10)
+        self.button_box.pack_start(self.cancel_button)
+        
+        self.pack_start(self.edit_area_align, True, True)
+        self.pack_start(self.color_select_align, False, False)
+        self.pack_start(self.button_align, False, False)
+        
+        self.save_button.connect("clicked", lambda w: self.emit("click-save"))
+        self.cancel_button.connect("clicked", lambda w: self.emit("click-cancel"))
+        
+gobject.type_register(SkinEditPage)
+
+class ColorIconItem(gobject.GObject):
+    '''Icon item.'''
+	
+    __gsignals__ = {
+        "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+    }
+    
+    def __init__(self, color):
+        '''Init item icon.'''
+        gobject.GObject.__init__(self)
+        self.color = color
+        self.width = 40
+        self.height = 25
+        self.padding_x = 6
+        self.padding_y = 6
+        self.hover_flag = False
+        self.highlight_flag = False
+        
+    def emit_redraw_request(self):
+        '''Emit redraw-request signal.'''
+        self.emit("redraw-request")
+        
+    def get_width(self):
+        '''Get width.'''
+        return self.width + self.padding_x * 2
+        
+    def get_height(self):
+        '''Get height.'''
+        return self.height + self.padding_y * 2
+    
+    def render(self, cr, rect):
+        '''Render item.'''
+        cr.set_source_rgb(*color_hex_to_cairo(self.color))
+        cr.rectangle(
+            rect.x + self.padding_x,
+            rect.y + self.padding_y,
+            self.width,
+            self.height)
+        cr.fill()
+        
+    def icon_item_motion_notify(self, x, y):
+        '''Handle `motion-notify-event` signal.'''
+        self.hover_flag = True
+        
+        self.emit_redraw_request()
+        
+    def icon_item_lost_focus(self):
+        '''Lost focus.'''
+        self.hover_flag = False
+        
+        self.emit_redraw_request()
+        
+    def icon_item_highlight(self):
+        '''Highlight item.'''
+        self.highlight_flag = True
+
+        self.emit_redraw_request()
+        
+    def icon_item_normal(self):
+        '''Set item with normal status.'''
+        self.highlight_flag = False
+        
+        self.emit_redraw_request()
+    
+    def icon_item_button_press(self, x, y):
+        '''Handle button-press event.'''
+        pass        
+    
+    def icon_item_button_release(self, x, y):
+        '''Handle button-release event.'''
+        pass
+    
+    def icon_item_single_click(self, x, y):
+        '''Handle single click event.'''
+        pass
+
+    def icon_item_double_click(self, x, y):
+        '''Handle double click event.'''
+        pass
+    
+gobject.type_register(ColorIconItem)
+
 class SkinEditArea(gtk.DrawingArea):
     '''Skin edit area.'''
     
@@ -258,14 +397,11 @@ class SkinEditArea(gtk.DrawingArea):
     POSITION_INSIDE = 8
     POSITION_OUTSIDE = 9
 	
-    # def __init__(self, preview_width, preview_height, background_path):
     def __init__(self, background_path):
         '''Init skin edit area.'''
         gtk.DrawingArea.__init__(self)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
-        # self.preview_width = preview_width
-        # self.preview_height = preview_height
         self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(background_path)
         self.padding_x = 20
         self.padding_y = 20
@@ -291,11 +427,6 @@ class SkinEditArea(gtk.DrawingArea):
         self.dominant_color = get_dominant_color(background_path)
         self.shadow_size = 200  # pixel
         self.press_shift_flag = False
-        
-        # self.set_size_request(
-        #     self.preview_width + self.padding_x * 2,
-        #     self.preview_height + self.padding_y * 2
-        #     )
         
         self.connect("expose-event", self.expose_skin_edit_area)
         self.connect("button-press-event", self.button_press_skin_edit_area)
@@ -326,6 +457,9 @@ class SkinEditArea(gtk.DrawingArea):
         resize_y = offset_y + self.resize_y
 
         # Draw background.
+        
+        
+        # Draw image.
         draw_pixbuf(
             cr,
             self.background_pixbuf.scale_simple(
