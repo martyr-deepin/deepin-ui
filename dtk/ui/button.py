@@ -305,14 +305,22 @@ def expose_max_button(widget, event, sub_dir, max_path_prefix, unmax_path_prefix
 class ToggleButton(gtk.ToggleButton):
     '''Image button.'''
 	
-    def __init__(self, inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf=None, active_hover_dpixbuf=None, scale_x=False, content=None):
+    def __init__(self, inactive_normal_pixbuf, active_normal_dpixbuf, 
+                 inactive_hover_dpixbuf=None, active_hover_dpixbuf=None, 
+                 inactive_press_dpixbuf=None, active_press_dpixbuf=None,
+                 scale_x=False, content=None):
         '''Init font button.'''
         gtk.ToggleButton.__init__(self)
-        draw_toggle_button(self, inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf, active_hover_dpixbuf, scale_x, content)
+        draw_toggle_button(self, inactive_normal_pixbuf, active_normal_dpixbuf, 
+                           inactive_hover_dpixbuf, active_hover_dpixbuf,
+                           inactive_press_dpixbuf, active_press_dpixbuf,
+                           scale_x, content)
         
 gobject.type_register(ToggleButton)
 
-def draw_toggle_button(widget, inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf, active_hover_dpixbuf,
+def draw_toggle_button(widget, inactive_normal_dpixbuf, active_normal_dpixbuf, 
+                       inactive_hover_dpixbuf, active_hover_dpixbuf,
+                       inactive_press_dpixbuf, active_press_dpixbuf,
                        scale_x=False, button_label=None, font_size=DEFAULT_FONT_SIZE, 
                        label_dcolor=ui_theme.get_color("buttonDefaultFont")):
     '''Create button.'''
@@ -320,20 +328,24 @@ def draw_toggle_button(widget, inactive_dpixbuf, active_dpixbuf, inactive_hover_
     if scale_x:
         request_width = get_content_size(button_label, font_size)[0]
     else:
-        request_width = inactive_dpixbuf.get_pixbuf().get_width()
-    request_height = inactive_dpixbuf.get_pixbuf().get_height()
+        request_width = inactive_normal_dpixbuf.get_pixbuf().get_width()
+    request_height = inactive_normal_dpixbuf.get_pixbuf().get_height()
     widget.set_size_request(request_width, request_height)
     
     # Expose button.
     widget.connect("expose-event", lambda w, e: expose_toggle_button(
             w, e,
             scale_x, False,
-            inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf, active_hover_dpixbuf, 
+            inactive_normal_dpixbuf, active_normal_dpixbuf,
+            inactive_hover_dpixbuf, active_hover_dpixbuf, 
+            inactive_press_dpixbuf, active_press_dpixbuf,
             button_label, font_size, label_dcolor))
         
 def expose_toggle_button(widget, event, 
                          scale_x, scaleY,
-                         inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf, active_hover_dpixbuf,
+                         inactive_normal_dpixbuf, active_normal_dpixbuf, 
+                         inactive_hover_dpixbuf, active_hover_dpixbuf,
+                         inactive_press_dpixbuf, active_press_dpixbuf,
                          button_label, font_size, label_dcolor):
     '''Expose function to replace event box's image.'''
     # Init.
@@ -341,13 +353,13 @@ def expose_toggle_button(widget, event,
     
     # Get pixbuf along with button's sate.
     if widget.state == gtk.STATE_NORMAL:
-        image = inactive_dpixbuf.get_pixbuf()
+        image = inactive_normal_dpixbuf.get_pixbuf()
     elif widget.state == gtk.STATE_PRELIGHT:
         if not inactive_hover_dpixbuf and not active_hover_dpixbuf:
             if widget.get_active():
-                image = active_dpixbuf.get_pixbuf()
+                image = active_normal_dpixbuf.get_pixbuf()
             else:    
-                image = inactive_dpixbuf.get_pixbuf()
+                image = inactive_normal_dpixbuf.get_pixbuf()
         else:    
             if inactive_hover_dpixbuf and active_hover_dpixbuf:
                 if widget.get_active():
@@ -360,7 +372,13 @@ def expose_toggle_button(widget, event,
                 image = active_hover_dpixbuf.get_pixbuf()
                 
     elif widget.state == gtk.STATE_ACTIVE:
-        image = active_dpixbuf.get_pixbuf()
+        if inactive_press_dpixbuf and active_hover_dpixbuf:
+            if widget.get_active():
+                image = active_press_dpixbuf.get_pixbuf()
+            else:    
+                image = inactive_press_dpixbuf.get_pixbuf()
+        else:        
+            image = active_normal_dpixbuf.get_pixbuf()
     
     # Init size.
     if scale_x:
