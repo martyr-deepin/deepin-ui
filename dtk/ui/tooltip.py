@@ -99,6 +99,14 @@ class Tooltip(Window):
         
         # Destroy window.
         self.destroy()
+        
+    def hide(self):
+        '''Hide.'''
+        # Make sure animation callback is remove.
+        gobject.source_remove(self.animation_id)
+        
+        # Destroy window.
+        self.hide_all()
 
     def expose_tooltip(self, widget, event):
         '''Expose tooltip.'''

@@ -25,7 +25,7 @@ import gtk
 import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
-from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state
+from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all
 from keymap import has_shift_mask
 from titlebar import Titlebar
 from dominant_color import get_dominant_color
@@ -46,25 +46,44 @@ class SkinWindow(Window):
             None,
             "选择皮肤")
         
-        # self.edit_area_align = gtk.Alignment()
-        # self.edit_area_align.set(0, 0, 1, 1)
-        # self.edit_area_align.set_padding(0, 1, 1, 1)
-        # self.edit_area = SkinEditArea(preview_width, preview_height, background_path)
-        
         self.window_frame.add(self.main_box)
-        self.main_box.pack_start(self.titlebar, False, False)
         self.set_size_request(preview_width, preview_height)
-        # self.set_resizable(False)
-        # self.main_box.pack_start(self.edit_area_align, True, True)
+        self.set_resizable(False)
+        
+        self.edit_area_align = gtk.Alignment()
+        self.edit_area_align.set(0, 0, 1, 1)
+        self.edit_area_align.set_padding(0, 1, 1, 1)
+        # self.edit_area = SkinEditArea(preview_width, preview_height, background_path)
         # self.edit_area_align.add(self.edit_area)
         
         self.preview = SkinPreview("/home/andy/deepin-ui-private/skin")
-        self.main_box.pack_start(self.preview, True, True)
+        
+        self.main_box.pack_start(self.titlebar, False, False)
+        self.body_box = gtk.VBox()
+        self.main_box.pack_start(self.body_box, True, True)
         
         self.titlebar.close_button.connect("clicked", lambda w: gtk.main_quit())
         self.connect("destroy", lambda w: gtk.main_quit())
         
         self.add_move_event(self.titlebar)
+        
+        self.switch_preview_page()
+        
+        self.preview.preview_view.connect("button-press-item", lambda view, item, x, y: self.switch_edit_page(item.background_path))
+        
+    def switch_preview_page(self):
+        '''Switch preview page.'''
+        container_remove_all(self.body_box)
+        self.body_box.add(self.preview)
+        
+    def switch_edit_page(self, background_path):
+        '''Switch edit page.'''
+        container_remove_all(self.body_box)
+        container_remove_all(self.edit_area_align)
+        self.body_box.add(self.edit_area_align)
+        self.edit_area_align.add(SkinEditArea(background_path))
+        
+        self.show_all()
         
 gobject.type_register(SkinWindow)
 
@@ -239,13 +258,14 @@ class SkinEditArea(gtk.DrawingArea):
     POSITION_INSIDE = 8
     POSITION_OUTSIDE = 9
 	
-    def __init__(self, preview_width, preview_height, background_path):
+    # def __init__(self, preview_width, preview_height, background_path):
+    def __init__(self, background_path):
         '''Init skin edit area.'''
         gtk.DrawingArea.__init__(self)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
-        self.preview_width = preview_width
-        self.preview_height = preview_height
+        # self.preview_width = preview_width
+        # self.preview_height = preview_height
         self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(background_path)
         self.padding_x = 20
         self.padding_y = 20
@@ -272,10 +292,10 @@ class SkinEditArea(gtk.DrawingArea):
         self.shadow_size = 200  # pixel
         self.press_shift_flag = False
         
-        self.set_size_request(
-            self.preview_width + self.padding_x * 2,
-            self.preview_height + self.padding_y * 2
-            )
+        # self.set_size_request(
+        #     self.preview_width + self.padding_x * 2,
+        #     self.preview_height + self.padding_y * 2
+        #     )
         
         self.connect("expose-event", self.expose_skin_edit_area)
         self.connect("button-press-event", self.button_press_skin_edit_area)
