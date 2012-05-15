@@ -64,6 +64,11 @@ class ScrolledWindow(gtk.ScrolledWindow):
         '''Set policy.'''
         self.set_policy(hscrollbar_policy, vscrollbar_policy)
         
+    def draw_mask(self, cr, x, y, w, h):
+        '''Draw mask.'''
+        draw_vlinear(cr, x, y, w, h,
+                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+        
     def expose_scrolled_window(self, widget, event):
         '''Expose scrolled window.'''
         cr = widget.window.cairo_create()
@@ -82,8 +87,7 @@ class ScrolledWindow(gtk.ScrolledWindow):
                 shadow_y)
             
         # Draw mask.
-        draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height,
-                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+        self.draw_mask(cr, rect.x, rect.y, rect.width, rect.height,)
         
         # Draw vertical scrollbar.
         self.draw_v_scrollbar(cr, rect)
