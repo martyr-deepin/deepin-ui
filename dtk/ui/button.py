@@ -353,6 +353,7 @@ class ToggleButton(gtk.ToggleButton):
         '''Expose function to replace event box's image.'''
         # Init.
         rect = widget.allocation
+        image = inactive_normal_dpixbuf.get_pixbuf()
         
         # Get pixbuf along with button's sate.
         if widget.state == gtk.STATE_NORMAL:
