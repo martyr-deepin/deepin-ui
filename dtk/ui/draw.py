@@ -296,6 +296,7 @@ def draw_vlinear(cr, x, y, w, h, color_infos, radius=0, top_to_bottom=True):
             
         for (pos, color_info) in color_infos:
             add_color_stop_rgba(pat, pos, color_info) 
+        cr.set_operator(cairo.OPERATOR_OVER)
         cr.set_source(pat)
         draw_round_rectangle(cr, x, 0, w, h, radius)
         
@@ -313,6 +314,7 @@ def draw_hlinear(cr, x, y, w, h, color_infos, radius=0, left_to_right=True):
             pat = cairo.LinearGradient(w, 0, 0, 0)
         for (pos, color_info) in color_infos:
             add_color_stop_rgba(pat, pos, color_info)
+        cr.set_operator(cairo.OPERATOR_OVER)
         cr.set_source(pat)
         draw_round_rectangle(cr, 0, y, w, h, radius)
         cr.fill()
