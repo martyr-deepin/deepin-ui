@@ -22,7 +22,7 @@
 
 import gtk
 import gobject
-from draw import draw_hlinear
+from draw import draw_hlinear, draw_vlinear
 
 class HSeparator(gtk.Alignment):
     '''Horizontal separator.'''
@@ -59,3 +59,28 @@ class HSeparator(gtk.Alignment):
 
 gobject.type_register(HSeparator)
 
+class VSeparator(gtk.Alignment):
+    
+    def __init__(self, color_infos, padding_x=0, padding_y=0):
+        gtk.Alignment.__init__(self)
+        
+        self.set(0.0, 0.0, 0.0, 1.0)
+        self.set_padding(padding_y, padding_y, padding_x, padding_x)
+        
+        self.color_infos = color_infos
+        self.separator = gtk.VBox()
+        self.separator.set_size_request(1, -1)
+        self.separator.connect("expose-event", self.expose_vseparator)
+        self.add(self.separator)
+        self.show_all()
+        
+    def expose_vseparator(self, widget, event):    
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        
+        start_x = rect.x + rect.width / 2
+        draw_vlinear(cr, start_x, rect.y, 1, rect.height, self.color_infos)
+        
+        return True
+    
+gobject.type_register(VSeparator)    
