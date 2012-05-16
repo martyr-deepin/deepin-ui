@@ -42,7 +42,7 @@ if __name__ == "__main__":
         "blue" : "#0006FF",
         "dark_purple" : "#8400FF",
         "purple" : "#BA00FF",
-        "deep_pink" : "#FF0000"}
+        "deep_pink" : "#FF00B4"}
 
     # Create theme directories.
     for (key, value) in theme_colors.items():

@@ -261,7 +261,7 @@ class SkinEditPage(gtk.VBox):
         
         self.color_select_align = gtk.Alignment()
         self.color_select_align.set(0.5, 0.5, 1, 1)
-        self.color_select_align.set_padding(30, 30, 38, 38)
+        self.color_select_align.set_padding(20, 20, 38, 38)
         self.color_select_view = IconView()
         self.color_select_view.draw_mask = draw_blank_mask
         self.color_select_scrolled_window = ScrolledWindow()
@@ -281,7 +281,7 @@ class SkinEditPage(gtk.VBox):
                       "#00FF60",
                       "#333333",
                       "#FF6C00",
-                      "#FF0000"]:
+                      "#FF00B4"]:
             self.color_select_view.add_items([ColorIconItem(color)])
         
         self.button_align = gtk.Alignment()
