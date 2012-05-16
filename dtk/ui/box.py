@@ -151,8 +151,6 @@ class BackgroundBox(gtk.VBox):
             
         self.draw_mask(cr, rect.x, rect.y, rect.width, rect.height)    
 
-        propagate_expose(widget, event)
-        
         return False
         
 gobject.type_register(BackgroundBox)

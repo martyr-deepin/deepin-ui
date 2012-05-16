@@ -306,10 +306,15 @@ class ListView(gtk.DrawingArea):
                 (offset_x, offset_y) = coordinate
                 return (-offset_x, -offset_y, viewport)
             else:
-                return (0, 0, viewport)
+                return (0, 0, viewport)    
+
         else:
             return (0, 0, viewport)
             
+    def draw_shadow_mask(self, cr, x, y, w, h):
+        '''Draw shadow mask.'''
+        pass
+        
     def draw_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
         draw_vlinear(cr, x, y, w, h,
@@ -448,6 +453,9 @@ class ListView(gtk.DrawingArea):
                     draw_pixbuf(cr, sort_pixbuf,
                                 cell_offset_x + cell_width - sort_pixbuf.get_width() - self.SORT_PADDING_X,
                                 offset_y + (self.title_height - sort_pixbuf.get_height()) / 2)    
+
+        # Draw shadow mask.
+        self.draw_shadow_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
             
         return False
     
