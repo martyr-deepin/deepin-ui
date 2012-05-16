@@ -25,11 +25,9 @@ import gtk
 import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
-from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, draw_blank_mask, cairo_disable_antialias
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, draw_blank_mask, cairo_disable_antialias
 from keymap import has_shift_mask
 from titlebar import Titlebar
-from constant import BACKGROUND_IMAGE
-from theme import ui_theme
 from dominant_color import get_dominant_color
 from iconview import IconView
 from scrolled_window import ScrolledWindow
@@ -450,6 +448,7 @@ class SkinEditArea(gtk.EventBox):
         self.connect("button-press-event", self.button_press_skin_edit_area)
         self.connect("button-release-event", self.button_release_skin_edit_area)
         self.connect("motion-notify-event", self.motion_skin_edit_area)
+        self.connect("leave-notify-event", self.leave_notify_skin_edit_area)
         self.connect("key-press-event", self.key_press_skin_edit_area)
         self.connect("key-release-event", self.key_release_skin_edit_area)
         
@@ -462,6 +461,7 @@ class SkinEditArea(gtk.EventBox):
         if self.button_release_flag:
             offset_x = x + self.padding_x
             offset_y = y + self.padding_y
+            
             # Draw dominant color.
             cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))        
             cr.rectangle(
@@ -526,7 +526,6 @@ class SkinEditArea(gtk.EventBox):
             self.preview_window_height)    
 
         if self.in_resize_area_flag:
-        # if True:
             resize_x = x + self.padding_x + self.resize_x
             resize_y = y + self.padding_y + self.resize_y
             
@@ -648,6 +647,12 @@ class SkinEditArea(gtk.EventBox):
     
         self.queue_draw()
     
+    def leave_notify_skin_edit_area(self, widget, event):
+        '''Callback for `leave-notify-event` signal.'''
+        self.in_resize_area_flag = False        
+        
+        self.queue_draw()
+        
     def motion_skin_edit_area(self, widget, event):
         '''Callback for `motion-notify-event`.'''
         if self.button_press_flag:
