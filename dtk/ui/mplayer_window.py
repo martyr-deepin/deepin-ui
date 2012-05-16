@@ -23,7 +23,7 @@
 from constant import BACKGROUND_IMAGE, EDGE_DICT
 from draw import draw_pixbuf, draw_window_shadow, draw_window_frame
 from theme import ui_theme
-from utils import cairo_state, alpha_color_hex_to_cairo, propagate_expose, resize_window, set_cursor, get_event_root_coords, enable_shadow, is_double_click, move_window
+from utils import cairo_state, propagate_expose, resize_window, set_cursor, get_event_root_coords, enable_shadow, is_double_click, move_window
 import cairo
 import gobject
 import gtk
@@ -31,7 +31,7 @@ import gtk
 class MplayerWindow(gtk.Window):
     '''Window for mplayer or any software that can't running when window redirect colormap from screen.'''
 	
-    def __init__(self, enable_resize=False, window_mask=None, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL):
+    def __init__(self, enable_resize=False, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL):
         '''Init mplayer window.'''
         # Init.
         gtk.Window.__init__(self, window_type)
@@ -41,7 +41,6 @@ class MplayerWindow(gtk.Window):
         self.frame_radius = 2
         self.shadow_is_visible = True
         self.enable_resize = enable_resize
-        self.window_mask = window_mask
         self.background_dpixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE)
         self.window_frame = gtk.VBox()
         self.add(self.window_frame)
@@ -133,10 +132,7 @@ class MplayerWindow(gtk.Window):
             draw_pixbuf(cr, pixbuf, x, y)
         
             # Draw mask.
-            if self.window_mask:
-                cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color(self.window_mask).get_color_info()))
-                cr.rectangle(x, y, w, h)    
-                cr.fill()
+            self.draw_mask(cr, x, y, w, h)
             
         # Draw window frame.
         draw_window_frame(cr, x, y, w, h)        
@@ -145,6 +141,10 @@ class MplayerWindow(gtk.Window):
         propagate_expose(widget, event)
         
         return True
+    
+    def draw_mask(self, cr, x, y, w, h):
+        '''Draw mask.'''
+        pass
     
     def set_window_shape(self, shape_flag):
         '''Enable window shape.'''

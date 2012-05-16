@@ -31,11 +31,10 @@ import gtk
 class Window(gtk.Window):
     '''Window.'''
 	
-    def __init__(self, enable_resize=False, window_mask=None, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL):
+    def __init__(self, enable_resize=False, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL):
         '''Init window.'''
         # Init.
         gtk.Window.__init__(self, window_type)
-        self.window_mask = window_mask
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
@@ -116,10 +115,7 @@ class Window(gtk.Window):
             draw_pixbuf(cr, pixbuf, x, y)
         
             # Draw mask.
-            if self.window_mask:
-                cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color(self.window_mask).get_color_info()))
-                cr.rectangle(x, y, w, h)    
-                cr.fill()
+            self.draw_mask(cr, x, y, w, h)
             
         # Draw corner shadow.
         with cairo_state(cr):
@@ -162,6 +158,10 @@ class Window(gtk.Window):
         
         return True
         
+    def draw_mask(self, cr, x, y, w, h):
+        '''Draw mask.'''
+        pass
+    
     def expose_window_shadow(self, widget, event):
         '''Callback for 'expose-event' event of window shadow.'''
         if self.shadow_is_visible:

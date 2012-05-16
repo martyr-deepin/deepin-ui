@@ -25,7 +25,7 @@ import gtk
 import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
-from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, draw_blank_mask
+from utils import propagate_expose, is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, draw_blank_mask, cairo_disable_antialias
 from keymap import has_shift_mask
 from titlebar import Titlebar
 from constant import BACKGROUND_IMAGE
@@ -34,6 +34,7 @@ from dominant_color import get_dominant_color
 from iconview import IconView
 from scrolled_window import ScrolledWindow
 from button import Button
+import math
 
 class SkinWindow(Window):
     '''SkinWindow.'''
@@ -250,18 +251,19 @@ class SkinEditPage(gtk.VBox):
         "click-save" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "click-cancel" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
+    
     def __init__(self, background_path):
         '''Init skin edit page.'''
         gtk.VBox.__init__(self)
         self.edit_area_align = gtk.Alignment()
         self.edit_area_align.set(0.5, 0.5, 1, 1)
-        self.edit_area_align.set_padding(0, 0, 10, 10)
+        self.edit_area_align.set_padding(0, 0, 25, 25)
         self.edit_area = SkinEditArea(background_path)        
         self.edit_area_align.add(self.edit_area)
         
         self.color_select_align = gtk.Alignment()
         self.color_select_align.set(0.5, 0.5, 1, 1)
-        self.color_select_align.set_padding(0, 0, 38, 38)
+        self.color_select_align.set_padding(30, 30, 38, 38)
         self.color_select_view = IconView()
         self.color_select_view.draw_mask = draw_blank_mask
         self.color_select_scrolled_window = ScrolledWindow()
@@ -294,8 +296,8 @@ class SkinEditPage(gtk.VBox):
         self.button_box.pack_start(self.save_button, False, False, 10)
         self.button_box.pack_start(self.cancel_button)
         
-        self.pack_start(self.edit_area_align, True, True)
-        self.pack_start(self.color_select_align, False, False)
+        self.pack_start(self.edit_area_align, False, False)
+        self.pack_start(self.color_select_align, True, True)
         self.pack_start(self.button_align, False, False)
         
         self.save_button.connect("clicked", lambda w: self.emit("click-save"))
@@ -385,9 +387,9 @@ class ColorIconItem(gobject.GObject):
     
 gobject.type_register(ColorIconItem)
 
-class SkinEditArea(gtk.DrawingArea):
+class SkinEditArea(gtk.EventBox):
     '''Skin edit area.'''
-    
+	
     POSITION_LEFT_SIDE = 0
     POSITION_RIGHT_SIDE = 1
     POSITION_TOP_SIDE = 2
@@ -398,36 +400,50 @@ class SkinEditArea(gtk.DrawingArea):
     POSITION_BOTTOM_RIGHT_CORNER = 7
     POSITION_INSIDE = 8
     POSITION_OUTSIDE = 9
-	
+    
     def __init__(self, background_path):
         '''Init skin edit area.'''
-        gtk.DrawingArea.__init__(self)
+        gtk.EventBox.__init__(self)
+        self.set_has_window(False)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
+        
+        self.app_window_width = 900
+        self.app_window_height = 600
+        self.preview_window_width = 300
+        self.preview_window_height = 200
+        self.preview_frame_width = 400
+        self.preview_frame_height = 300
+        self.padding_x = (self.preview_frame_width - self.preview_window_width) / 2
+        self.padding_y = (self.preview_frame_height - self.preview_window_height) / 2
+        
         self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(background_path)
-        self.padding_x = 20
-        self.padding_y = 20
+        self.set_size_request(self.preview_frame_width, self.preview_frame_height)
+        self.dominant_color = get_dominant_color(background_path)
+        
         self.resize_pointer_size = 8
         self.resize_frame_size = 2
         self.resize_x = 0
         self.resize_y = 0
-        self.resize_width = self.background_pixbuf.get_width()
-        self.resize_height = self.background_pixbuf.get_height()
+        self.resize_width = int(self.background_pixbuf.get_width() * self.preview_window_width / self.app_window_width)
+        self.resize_height = int(self.background_pixbuf.get_height() * self.preview_window_width / self.app_window_width)
         self.min_resize_width = self.min_resize_height = 32
+        
         self.shadow_radius = 6
         self.frame_radius = 2
         self.shadow_padding = self.shadow_radius - self.frame_radius
-        self.action_type = None
-        self.button_press_flag = False
-        self.button_release_flag = True
+        self.shadow_size = 200
+        
         self.drag_start_x = 0
         self.drag_start_y = 0
         self.drag_background_x = 0
         self.drag_background_y = 0
+        
+        self.action_type = None
+        self.button_press_flag = False
+        self.button_release_flag = True
         self.resize_frame_flag = False
         self.in_resize_area_flag = False
-        self.dominant_color = get_dominant_color(background_path)
-        self.shadow_size = 200  # pixel
         self.press_shift_flag = False
         
         self.connect("expose-event", self.expose_skin_edit_area)
@@ -437,109 +453,46 @@ class SkinEditArea(gtk.DrawingArea):
         self.connect("key-press-event", self.key_press_skin_edit_area)
         self.connect("key-release-event", self.key_release_skin_edit_area)
         
-    def is_in_resize_area(self, event):
-        '''Is at resize area.'''
-        offset_x = self.padding_x + self.shadow_padding
-        offset_y = self.padding_y + self.shadow_padding
-        return is_in_rect(
-            (event.x, event.y),
-            (self.resize_x + offset_x - self.resize_pointer_size / 2,
-             self.resize_y + offset_y - self.resize_pointer_size / 2, 
-             self.resize_width + self.resize_pointer_size, 
-             self.resize_height + self.resize_pointer_size))        
-        
     def expose_skin_edit_area(self, widget, event):
         '''Expose edit area.'''
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        offset_x = self.padding_x + self.shadow_padding
-        offset_y = self.padding_y + self.shadow_padding
-        resize_x = offset_x + self.resize_x
-        resize_y = offset_y + self.resize_y
 
         # Draw background.
-        with cairo_state(cr):
-            # Translate coordinate.
-            cr.translate(-x, -y)
-            
-            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
-            draw_pixbuf(
-                cr,
-                ui_theme.get_pixbuf(BACKGROUND_IMAGE).get_pixbuf(),
-                shadow_x,
-                shadow_y)
-        
-        # Draw theme background.
         draw_pixbuf(
-            cr,
+            cr, 
             self.background_pixbuf.scale_simple(
                 self.resize_width,
                 self.resize_height,
                 gtk.gdk.INTERP_BILINEAR),
-            resize_x,
-            resize_y)
-        
-        # Draw dominant shadow color.
-        if self.button_release_flag:
-            background_area_width = self.resize_width + self.resize_x
-            background_area_height = self.resize_height + self.resize_y
-            if background_area_width < w - offset_x * 2:
-                draw_hlinear(
-                    cr, 
-                    offset_x + background_area_width - self.shadow_size,
-                    offset_y + self.resize_y,
-                    self.shadow_size,
-                    background_area_height - self.resize_y,
-                    [(0, (self.dominant_color, 0)),
-                     (1, (self.dominant_color, 1))])
-                
-                cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))        
-                cr.rectangle(
-                    offset_x + background_area_width,
-                    offset_y + self.resize_y,
-                    w - offset_x * 2 - background_area_width,
-                    background_area_height - self.resize_y)
-                cr.fill()
-            if background_area_height < h - offset_y * 2:
-                draw_vlinear(
-                    cr, 
-                    offset_x + self.resize_x,
-                    offset_y + background_area_height - self.shadow_size,
-                    background_area_width - self.resize_x,
-                    self.shadow_size,
-                    [(0, (self.dominant_color, 0)),
-                     (1, (self.dominant_color, 1))]
-                    )
-
-                cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))        
-                cr.rectangle(
-                    offset_x + self.resize_x,
-                    offset_y + background_area_height,
-                    w - offset_x * 2 - self.resize_x,
-                    h - offset_y * 2 - background_area_height)
-                cr.fill()
+            x + self.padding_x + self.resize_x,
+            y + self.padding_y + self.resize_y)
         
         # Draw window shadow.
         if enable_shadow(self):
             draw_window_shadow(
                 cr, 
-                self.padding_x, 
-                self.padding_y, 
-                w - self.padding_x * 2,
-                h - self.padding_y * 2,
+                x + self.padding_x - self.shadow_padding,
+                y + self.padding_y - self.shadow_padding,
+                self.preview_window_width + self.shadow_padding * 2,
+                self.preview_window_height + self.shadow_padding * 2,
                 self.shadow_radius, 
                 self.shadow_padding)
-
+        
         # Draw window frame.
         draw_window_frame(
-            cr,
-            offset_x,
-            offset_y,
-            w - offset_x * 2,
-            h - offset_y * 2)    
-        
-        if self.in_resize_area_flag:
+            cr, 
+            x + self.padding_x,
+            y + self.padding_y,
+            self.preview_window_width,
+            self.preview_window_height)    
+
+        # if self.in_resize_area_flag:
+        if True:
+            resize_x = x + self.padding_x + self.resize_x
+            resize_y = y + self.padding_y + self.resize_y
+            
             # Draw resize frame.
             cr.set_source_rgb(0, 1, 1)
             
@@ -566,266 +519,538 @@ class SkinEditArea(gtk.DrawingArea):
                 self.resize_height)
             
             # Resize pointer.
-            cr.rectangle(           # top-left
-                resize_x - self.resize_pointer_size / 2,
-                resize_y - self.resize_pointer_size / 2,
-                self.resize_pointer_size,
-                self.resize_pointer_size)
-            cr.rectangle(           # top-center
-                resize_x + self.resize_width / 2 - self.resize_pointer_size / 2,
-                resize_y - self.resize_pointer_size / 2,
-                self.resize_pointer_size,
-                self.resize_pointer_size)
-            cr.rectangle(           # top-right
-                resize_x + self.resize_width - self.resize_pointer_size / 2,
-                resize_y - self.resize_pointer_size / 2,
-                self.resize_pointer_size,
-                self.resize_pointer_size)
-            cr.rectangle(           # bottom-left
-                resize_x - self.resize_pointer_size / 2,
-                resize_y + self.resize_height - self.resize_pointer_size / 2,
-                self.resize_pointer_size,
-                self.resize_pointer_size)
-            cr.rectangle(           # bottom-center
-                resize_x + self.resize_width / 2 - self.resize_pointer_size / 2,
-                resize_y + self.resize_height - self.resize_pointer_size / 2,
-                self.resize_pointer_size,
-                self.resize_pointer_size)
-            cr.rectangle(           # bottom-right
-                resize_x + self.resize_width - self.resize_pointer_size / 2,
-                resize_y + self.resize_height - self.resize_pointer_size / 2,
-                self.resize_pointer_size,
-                self.resize_pointer_size)
-            cr.rectangle(           # left-center
-                resize_x - self.resize_pointer_size / 2,
-                resize_y + self.resize_height / 2 - self.resize_pointer_size / 2,
-                self.resize_pointer_size,
-                self.resize_pointer_size)
-            cr.rectangle(           # right-center
-                resize_x + self.resize_width - self.resize_pointer_size / 2,
-                resize_y + self.resize_height / 2 - self.resize_pointer_size / 2,
-                self.resize_pointer_size,
-                self.resize_pointer_size)
+            cr.arc(           # top-left
+                resize_x,
+                resize_y,
+                self.resize_pointer_size / 2,
+                0,
+                2 * math.pi)
+            cr.arc(           # top-center
+                resize_x + self.resize_width / 2,
+                resize_y,
+                self.resize_pointer_size / 2,
+                0,
+                2 * math.pi)
+            cr.arc(           # top-right
+                resize_x + self.resize_width,
+                resize_y,
+                self.resize_pointer_size / 2,
+                0,
+                2 * math.pi)
+            cr.arc(           # bottom-left
+                resize_x,
+                resize_y + self.resize_height,
+                self.resize_pointer_size / 2,
+                0, 
+                2 * math.pi)
+            cr.arc(           # bottom-center
+                resize_x + self.resize_width / 2,
+                resize_y + self.resize_height,
+                self.resize_pointer_size / 2,
+                0,
+                2 * math.pi)
+            cr.arc(           # bottom-right
+                resize_x + self.resize_width,
+                resize_y + self.resize_height,
+                self.resize_pointer_size / 2,
+                0, 
+                2 * math.pi)
+            cr.arc(           # left-center
+                resize_x,
+                resize_y + self.resize_height / 2,
+                self.resize_pointer_size / 2,
+                0,
+                2 * math.pi)
+            cr.arc(           # right-center
+                resize_x + self.resize_width,
+                resize_y + self.resize_height / 2,
+                self.resize_pointer_size / 2,
+                0, 
+                2 * math.pi)
             
             cr.fill()
         
-        propagate_expose(widget, event)
-        
-        return True
-    
+        # Draw preview frame.
+        with cairo_disable_antialias(cr):
+            cr.set_source_rgb(0.3, 0.3, 0.3)
+            cr.rectangle(x, y + 1, w, h)
+            cr.stroke()
+            
     def button_press_skin_edit_area(self, widget, event):
         '''Callback for `button-press-event`'''
-        self.button_press_flag = True
-        self.button_release_flag = False
-        self.action_type = self.skin_edit_area_get_action_type(event)
-        self.skin_edit_area_set_cursor(self.action_type)
-        
-        self.drag_start_x = event.x
-        self.drag_start_y = event.y
-        
-        self.drag_background_x = self.resize_x
-        self.drag_background_y = self.resize_y
-
+        pass
+    
     def button_release_skin_edit_area(self, widget, event):
         '''Callback for `button-release-event`.'''
-        self.button_press_flag = False
-        self.button_release_flag = True
-        self.action_type = None
-        self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
+        pass
     
-        self.queue_draw()
-        
     def motion_skin_edit_area(self, widget, event):
         '''Callback for `motion-notify-event`.'''
-        if self.button_press_flag:
-            if self.action_type != None:
-                if self.action_type == self.POSITION_INSIDE:
-                    self.skin_edit_area_drag_background(event)
-                elif self.action_type == self.POSITION_TOP_LEFT_CORNER:
-                    self.skin_edit_area_resize(self.action_type, event)
-                elif self.action_type == self.POSITION_TOP_RIGHT_CORNER:
-                    self.skin_edit_area_resize(self.action_type, event)
-                elif self.action_type == self.POSITION_BOTTOM_LEFT_CORNER:
-                    self.skin_edit_area_resize(self.action_type, event)
-                elif self.action_type == self.POSITION_BOTTOM_RIGHT_CORNER:
-                    self.skin_edit_area_resize(self.action_type, event)
-                elif self.action_type == self.POSITION_TOP_SIDE:
-                    self.skin_edit_area_resize(self.action_type, event)
-                elif self.action_type == self.POSITION_BOTTOM_SIDE:
-                    self.skin_edit_area_resize(self.action_type, event)
-                elif self.action_type == self.POSITION_LEFT_SIDE:
-                    self.skin_edit_area_resize(self.action_type, event)
-                elif self.action_type == self.POSITION_RIGHT_SIDE:
-                    self.skin_edit_area_resize(self.action_type, event)
-        else:
-            self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
-
-            old_flag = self.in_resize_area_flag
-            self.in_resize_area_flag = self.is_in_resize_area(event)
-            if old_flag != self.in_resize_area_flag:
-                self.queue_draw()
-                
+        pass
+    
     def key_press_skin_edit_area(self, widget, event):
         '''Callback for `key-press-event` signal.'''
         if has_shift_mask(event):
             self.press_shift_flag = True
-        
+    
     def key_release_skin_edit_area(self, widget, event):
         '''Callback for `key-release-event` signal.'''
         if has_shift_mask(event):
             self.press_shift_flag = False
-                
-    def skin_edit_area_drag_background(self, event):
-        '''Drag background.'''
-        new_resize_x = int(event.x) - self.drag_start_x + self.drag_background_x
-        new_resize_y = int(event.y) - self.drag_start_y + self.drag_background_y
-        self.resize_x = min(max(new_resize_x, self.min_resize_width - self.resize_width), 0)
-        self.resize_y = min(max(new_resize_y, self.min_resize_height - self.resize_height), 0)
         
-        self.queue_draw()
-            
-    def skin_edit_area_resize(self, action_type, event):
-        '''Resize.'''
-        if action_type == self.POSITION_LEFT_SIDE:
-            self.skin_edit_area_adjust_left(event)
-            self.queue_draw()
-        elif action_type == self.POSITION_TOP_SIDE:
-            self.skin_edit_area_adjust_top(event)
-            self.queue_draw()
-        elif action_type == self.POSITION_RIGHT_SIDE:
-            self.skin_edit_area_adjust_right(event)
-            self.queue_draw()
-        elif action_type == self.POSITION_BOTTOM_SIDE:
-            self.skin_edit_area_adjust_bottom(event)
-            self.queue_draw()
-        elif action_type == self.POSITION_TOP_LEFT_CORNER:
-            self.skin_edit_area_adjust_top(event)
-            self.skin_edit_area_adjust_left(event)
-            self.queue_draw()
-        elif action_type == self.POSITION_TOP_RIGHT_CORNER:
-            self.skin_edit_area_adjust_top(event)
-            self.skin_edit_area_adjust_right(event)
-            self.queue_draw()
-        elif action_type == self.POSITION_BOTTOM_LEFT_CORNER:
-            self.skin_edit_area_adjust_bottom(event)
-            self.skin_edit_area_adjust_left(event)
-            self.queue_draw()
-        elif action_type == self.POSITION_BOTTOM_RIGHT_CORNER:
-            self.skin_edit_area_adjust_bottom(event)
-            self.skin_edit_area_adjust_right(event)
-            self.queue_draw()
-            
-    def skin_edit_area_adjust_left(self, event):
-        '''Adjust left.'''
-        offset_x = self.padding_x + self.shadow_padding
-        new_resize_x = min(int(event.x) - offset_x, 0)
-        self.resize_width = self.resize_width + self.resize_x - new_resize_x
-        self.resize_x = int(new_resize_x)
+# class SkinEditArea(gtk.DrawingArea):
+# # class SkinEditArea(gtk.EventBox):
+#     '''Skin edit area.'''
+    
+#     POSITION_LEFT_SIDE = 0
+#     POSITION_RIGHT_SIDE = 1
+#     POSITION_TOP_SIDE = 2
+#     POSITION_BOTTOM_SIDE = 3
+#     POSITION_TOP_LEFT_CORNER = 4
+#     POSITION_TOP_RIGHT_CORNER = 5
+#     POSITION_BOTTOM_LEFT_CORNER = 6
+#     POSITION_BOTTOM_RIGHT_CORNER = 7
+#     POSITION_INSIDE = 8
+#     POSITION_OUTSIDE = 9
+	
+#     def __init__(self, background_path):
+#         '''Init skin edit area.'''
+#         gtk.DrawingArea.__init__(self)
+#         # gtk.EventBox.__init__(self)
+#         # self.set_has_window(False)
         
-    def skin_edit_area_adjust_top(self, event):
-        '''Adjust top.'''
-        offset_y = self.padding_y + self.shadow_padding
-        new_resize_y = min(int(event.y) - offset_y, 0)
-        self.resize_height = self.resize_height + self.resize_y - new_resize_y
-        self.resize_y = int(new_resize_y)
+#         self.app_window_width = 900
+#         self.app_window_height = 600
+#         self.preview_window_width = 300
+#         self.preview_window_height = 200
+#         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
+#         self.set_can_focus(True) # can focus to response key-press signal
+#         background_pixbuf = gtk.gdk.pixbuf_new_from_file(background_path)
+#         self.background_pixbuf = background_pixbuf.scale_simple(
+#             int(self.preview_window_width / float(self.app_window_width) * background_pixbuf.get_width()),
+#             int(self.preview_window_width / float(self.app_window_width) * background_pixbuf.get_height()),
+#             gtk.gdk.INTERP_BILINEAR)
+#         self.padding_x = 20
+#         self.padding_y = 20
+#         self.resize_pointer_size = 8
+#         self.resize_frame_size = 2
+#         self.resize_x = 0
+#         self.resize_y = 0
+#         self.resize_width = self.background_pixbuf.get_width()
+#         self.resize_height = self.background_pixbuf.get_height()
+#         self.min_resize_width = self.min_resize_height = 32
+#         self.shadow_radius = 6
+#         self.frame_radius = 2
+#         self.shadow_padding = self.shadow_radius - self.frame_radius
+#         self.action_type = None
+#         self.button_press_flag = False
+#         self.button_release_flag = True
+#         self.drag_start_x = 0
+#         self.drag_start_y = 0
+#         self.drag_background_x = 0
+#         self.drag_background_y = 0
+#         self.resize_frame_flag = False
+#         self.in_resize_area_flag = False
+#         self.dominant_color = get_dominant_color(background_path)
+#         self.shadow_size = 200  # pixel
+#         self.press_shift_flag = False
         
-    def skin_edit_area_adjust_right(self, event):
-        '''Adjust right.'''
-        offset_x = self.padding_x + self.shadow_padding
-        new_resize_x = max(offset_x + self.min_resize_width, int(event.x))
-        self.resize_width = int(new_resize_x - self.resize_x - offset_x)
+#         self.connect("expose-event", self.expose_skin_edit_area)
+#         self.connect("button-press-event", self.button_press_skin_edit_area)
+#         self.connect("button-release-event", self.button_release_skin_edit_area)
+#         self.connect("motion-notify-event", self.motion_skin_edit_area)
+#         self.connect("key-press-event", self.key_press_skin_edit_area)
+#         self.connect("key-release-event", self.key_release_skin_edit_area)
         
-    def skin_edit_area_adjust_bottom(self, event):
-        '''Adjust bottom.'''
-        offset_y = self.padding_y + self.shadow_padding
-        new_resize_y = max(offset_y + self.min_resize_height, int(event.y))
-        self.resize_height = int(new_resize_y - self.resize_y - offset_y)
+#     def is_in_resize_area(self, event):
+#         '''Is at resize area.'''
+#         offset_x = self.padding_x + self.shadow_padding
+#         offset_y = self.padding_y + self.shadow_padding
+#         return is_in_rect(
+#             (event.x, event.y),
+#             (self.resize_x + offset_x - self.resize_pointer_size / 2,
+#              self.resize_y + offset_y - self.resize_pointer_size / 2, 
+#              self.resize_width + self.resize_pointer_size, 
+#              self.resize_height + self.resize_pointer_size))        
+        
+#     def expose_skin_edit_area(self, widget, event):
+#         '''Expose edit area.'''
+#         cr = widget.window.cairo_create()
+#         rect = widget.allocation
+#         x, y, w, h = rect.x, rect.y, rect.width, rect.height
+#         offset_x = self.padding_x + self.shadow_padding
+#         offset_y = self.padding_y + self.shadow_padding
+#         resize_x = offset_x + self.resize_x
+#         resize_y = offset_y + self.resize_y
 
-    def skin_edit_area_set_cursor(self, action_type):
-        '''Set cursor.'''
-        if action_type == self.POSITION_INSIDE:
-            set_cursor(self, gtk.gdk.FLEUR)
-        elif action_type == self.POSITION_TOP_LEFT_CORNER:
-            set_cursor(self, gtk.gdk.TOP_LEFT_CORNER)
-        elif action_type == self.POSITION_TOP_RIGHT_CORNER:
-            set_cursor(self, gtk.gdk.TOP_RIGHT_CORNER)
-        elif action_type == self.POSITION_BOTTOM_LEFT_CORNER:
-            set_cursor(self, gtk.gdk.BOTTOM_LEFT_CORNER)
-        elif action_type == self.POSITION_BOTTOM_RIGHT_CORNER:
-            set_cursor(self, gtk.gdk.BOTTOM_RIGHT_CORNER)
-        elif action_type == self.POSITION_TOP_SIDE:
-            set_cursor(self, gtk.gdk.TOP_SIDE)
-        elif action_type == self.POSITION_BOTTOM_SIDE:
-            set_cursor(self, gtk.gdk.BOTTOM_SIDE)
-        elif action_type == self.POSITION_LEFT_SIDE:
-            set_cursor(self, gtk.gdk.LEFT_SIDE)
-        elif action_type == self.POSITION_RIGHT_SIDE:
-            set_cursor(self, gtk.gdk.RIGHT_SIDE)
-        else:
-            set_cursor(self, None)
+#         # Draw background.
+#         with cairo_state(cr):
+#             # Translate coordinate.
+#             cr.translate(-x, -y)
+            
+#             (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
+#             draw_pixbuf(
+#                 cr,
+#                 ui_theme.get_pixbuf(BACKGROUND_IMAGE).get_pixbuf(),
+#                 shadow_x,
+#                 shadow_y)
         
-    def skin_edit_area_get_action_type(self, event):
-        '''Get action type.'''
-        ex, ey = event.x, event.y
-        resize_x = self.padding_x + self.shadow_padding + self.resize_x
-        resize_y = self.padding_y + self.shadow_padding + self.resize_y
+#         # Draw theme background.
+#         draw_pixbuf(
+#             cr,
+#             self.background_pixbuf.scale_simple(
+#                 self.resize_width,
+#                 self.resize_height,
+#                 gtk.gdk.INTERP_BILINEAR),
+#             resize_x,
+#             resize_y)
         
-        if is_in_rect((ex, ey), 
-                      (resize_x - self.resize_pointer_size / 2,
-                       resize_y - self.resize_pointer_size / 2,
-                       self.resize_pointer_size,
-                       self.resize_pointer_size)):
-            return self.POSITION_TOP_LEFT_CORNER
-        elif is_in_rect((ex, ey), 
-                        (resize_x + self.resize_pointer_size / 2,
-                         resize_y - self.resize_pointer_size / 2,
-                         self.resize_width - self.resize_pointer_size,
-                         self.resize_pointer_size)):
-            return self.POSITION_TOP_SIDE
-        elif is_in_rect((ex, ey), 
-                        (resize_x + self.resize_width - self.resize_pointer_size / 2,
-                         resize_y - self.resize_pointer_size / 2,
-                         self.resize_pointer_size,
-                         self.resize_pointer_size)):
-            return self.POSITION_TOP_RIGHT_CORNER
-        elif is_in_rect((ex, ey), 
-                        (resize_x - self.resize_pointer_size / 2,
-                         resize_y + self.resize_pointer_size / 2,
-                         self.resize_pointer_size,
-                         self.resize_height - self.resize_pointer_size)):
-            return self.POSITION_LEFT_SIDE
-        elif is_in_rect((ex, ey), 
-                        (resize_x + self.resize_width - self.resize_pointer_size / 2,
-                         resize_y + self.resize_pointer_size / 2,
-                         self.resize_pointer_size,
-                         self.resize_height - self.resize_pointer_size)):
-            return self.POSITION_RIGHT_SIDE
-        elif is_in_rect((ex, ey), 
-                        (resize_x - self.resize_pointer_size / 2,
-                         resize_y + self.resize_height - self.resize_pointer_size / 2,
-                         self.resize_pointer_size,
-                         self.resize_pointer_size)):
-            return self.POSITION_BOTTOM_LEFT_CORNER
-        elif is_in_rect((ex, ey), 
-                        (resize_x + self.resize_pointer_size / 2,
-                         resize_y + self.resize_height - self.resize_pointer_size / 2,
-                         self.resize_width - self.resize_pointer_size,
-                         self.resize_pointer_size)):
-            return self.POSITION_BOTTOM_SIDE
-        elif is_in_rect((ex, ey), 
-                        (resize_x + self.resize_width - self.resize_pointer_size / 2,
-                         resize_y + self.resize_height - self.resize_pointer_size / 2,
-                         self.resize_pointer_size,
-                         self.resize_pointer_size)):
-            return self.POSITION_BOTTOM_RIGHT_CORNER
-        elif is_in_rect((ex, ey),
-                        (resize_x + self.resize_pointer_size / 2,
-                         resize_y + self.resize_pointer_size / 2,
-                         self.resize_width - self.resize_pointer_size,
-                         self.resize_height - self.resize_pointer_size)):
-            return self.POSITION_INSIDE
-        else:
-            return self.POSITION_OUTSIDE
+#         # Draw dominant shadow color.
+#         if self.button_release_flag:
+#             background_area_width = self.resize_width + self.resize_x
+#             background_area_height = self.resize_height + self.resize_y
+#             if background_area_width < w - offset_x * 2:
+#                 draw_hlinear(
+#                     cr, 
+#                     offset_x + background_area_width - self.shadow_size,
+#                     offset_y + self.resize_y,
+#                     self.shadow_size,
+#                     background_area_height - self.resize_y,
+#                     [(0, (self.dominant_color, 0)),
+#                      (1, (self.dominant_color, 1))])
+                
+#                 cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))        
+#                 cr.rectangle(
+#                     offset_x + background_area_width,
+#                     offset_y + self.resize_y,
+#                     w - offset_x * 2 - background_area_width,
+#                     background_area_height - self.resize_y)
+#                 cr.fill()
+#             if background_area_height < h - offset_y * 2:
+#                 draw_vlinear(
+#                     cr, 
+#                     offset_x + self.resize_x,
+#                     offset_y + background_area_height - self.shadow_size,
+#                     background_area_width - self.resize_x,
+#                     self.shadow_size,
+#                     [(0, (self.dominant_color, 0)),
+#                      (1, (self.dominant_color, 1))]
+#                     )
+
+#                 cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))        
+#                 cr.rectangle(
+#                     offset_x + self.resize_x,
+#                     offset_y + background_area_height,
+#                     w - offset_x * 2 - self.resize_x,
+#                     h - offset_y * 2 - background_area_height)
+#                 cr.fill()
+        
+#         # Draw window shadow.
+#         if enable_shadow(self):
+#             draw_window_shadow(
+#                 cr, 
+#                 (w - self.preview_window_width) / 2 - self.shadow_padding,
+#                 (h - self.preview_window_height) / 2 - self.shadow_padding,
+#                 self.preview_window_width + self.shadow_padding * 2,
+#                 self.preview_window_height + self.shadow_padding * 2,
+#                 self.shadow_radius, 
+#                 self.shadow_padding)
+
+#         # Draw window frame.
+#         draw_window_frame(
+#             cr,
+#             (w - self.preview_window_width) / 2,
+#             (h - self.preview_window_height) / 2,
+#             self.preview_window_width,
+#             self.preview_window_height)    
+        
+#         if self.in_resize_area_flag:
+#             # Draw resize frame.
+#             cr.set_source_rgb(0, 1, 1)
+            
+#             # Resize frame.
+#             cr.rectangle(           # top
+#                 resize_x, 
+#                 resize_y - self.resize_frame_size / 2,
+#                 self.resize_width,
+#                 self.resize_frame_size)
+#             cr.rectangle(           # bottom
+#                 resize_x,
+#                 resize_y + self.resize_height - self.resize_frame_size / 2,
+#                 self.resize_width,
+#                 self.resize_frame_size)
+#             cr.rectangle(           # left
+#                 resize_x - self.resize_frame_size / 2,
+#                 resize_y,
+#                 self.resize_frame_size,
+#                 self.resize_height)
+#             cr.rectangle(           # right
+#                 resize_x + self.resize_width - self.resize_frame_size / 2,
+#                 resize_y,
+#                 self.resize_frame_size,
+#                 self.resize_height)
+            
+#             # Resize pointer.
+#             cr.rectangle(           # top-left
+#                 resize_x - self.resize_pointer_size / 2,
+#                 resize_y - self.resize_pointer_size / 2,
+#                 self.resize_pointer_size,
+#                 self.resize_pointer_size)
+#             cr.rectangle(           # top-center
+#                 resize_x + self.resize_width / 2 - self.resize_pointer_size / 2,
+#                 resize_y - self.resize_pointer_size / 2,
+#                 self.resize_pointer_size,
+#                 self.resize_pointer_size)
+#             cr.rectangle(           # top-right
+#                 resize_x + self.resize_width - self.resize_pointer_size / 2,
+#                 resize_y - self.resize_pointer_size / 2,
+#                 self.resize_pointer_size,
+#                 self.resize_pointer_size)
+#             cr.rectangle(           # bottom-left
+#                 resize_x - self.resize_pointer_size / 2,
+#                 resize_y + self.resize_height - self.resize_pointer_size / 2,
+#                 self.resize_pointer_size,
+#                 self.resize_pointer_size)
+#             cr.rectangle(           # bottom-center
+#                 resize_x + self.resize_width / 2 - self.resize_pointer_size / 2,
+#                 resize_y + self.resize_height - self.resize_pointer_size / 2,
+#                 self.resize_pointer_size,
+#                 self.resize_pointer_size)
+#             cr.rectangle(           # bottom-right
+#                 resize_x + self.resize_width - self.resize_pointer_size / 2,
+#                 resize_y + self.resize_height - self.resize_pointer_size / 2,
+#                 self.resize_pointer_size,
+#                 self.resize_pointer_size)
+#             cr.rectangle(           # left-center
+#                 resize_x - self.resize_pointer_size / 2,
+#                 resize_y + self.resize_height / 2 - self.resize_pointer_size / 2,
+#                 self.resize_pointer_size,
+#                 self.resize_pointer_size)
+#             cr.rectangle(           # right-center
+#                 resize_x + self.resize_width - self.resize_pointer_size / 2,
+#                 resize_y + self.resize_height / 2 - self.resize_pointer_size / 2,
+#                 self.resize_pointer_size,
+#                 self.resize_pointer_size)
+            
+#             cr.fill()
+        
+#         propagate_expose(widget, event)
+        
+#         return True
+    
+#     def button_press_skin_edit_area(self, widget, event):
+#         '''Callback for `button-press-event`'''
+#         self.button_press_flag = True
+#         self.button_release_flag = False
+#         self.action_type = self.skin_edit_area_get_action_type(event)
+#         self.skin_edit_area_set_cursor(self.action_type)
+        
+#         self.drag_start_x = event.x
+#         self.drag_start_y = event.y
+        
+#         self.drag_background_x = self.resize_x
+#         self.drag_background_y = self.resize_y
+
+#     def button_release_skin_edit_area(self, widget, event):
+#         '''Callback for `button-release-event`.'''
+#         self.button_press_flag = False
+#         self.button_release_flag = True
+#         self.action_type = None
+#         self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
+    
+#         self.queue_draw()
+        
+#     def motion_skin_edit_area(self, widget, event):
+#         '''Callback for `motion-notify-event`.'''
+#         if self.button_press_flag:
+#             if self.action_type != None:
+#                 if self.action_type == self.POSITION_INSIDE:
+#                     self.skin_edit_area_drag_background(event)
+#                 elif self.action_type == self.POSITION_TOP_LEFT_CORNER:
+#                     self.skin_edit_area_resize(self.action_type, event)
+#                 elif self.action_type == self.POSITION_TOP_RIGHT_CORNER:
+#                     self.skin_edit_area_resize(self.action_type, event)
+#                 elif self.action_type == self.POSITION_BOTTOM_LEFT_CORNER:
+#                     self.skin_edit_area_resize(self.action_type, event)
+#                 elif self.action_type == self.POSITION_BOTTOM_RIGHT_CORNER:
+#                     self.skin_edit_area_resize(self.action_type, event)
+#                 elif self.action_type == self.POSITION_TOP_SIDE:
+#                     self.skin_edit_area_resize(self.action_type, event)
+#                 elif self.action_type == self.POSITION_BOTTOM_SIDE:
+#                     self.skin_edit_area_resize(self.action_type, event)
+#                 elif self.action_type == self.POSITION_LEFT_SIDE:
+#                     self.skin_edit_area_resize(self.action_type, event)
+#                 elif self.action_type == self.POSITION_RIGHT_SIDE:
+#                     self.skin_edit_area_resize(self.action_type, event)
+#         else:
+#             self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
+
+#             old_flag = self.in_resize_area_flag
+#             self.in_resize_area_flag = self.is_in_resize_area(event)
+#             if old_flag != self.in_resize_area_flag:
+#                 self.queue_draw()
+                
+#     def key_press_skin_edit_area(self, widget, event):
+#         '''Callback for `key-press-event` signal.'''
+#         if has_shift_mask(event):
+#             self.press_shift_flag = True
+        
+#     def key_release_skin_edit_area(self, widget, event):
+#         '''Callback for `key-release-event` signal.'''
+#         if has_shift_mask(event):
+#             self.press_shift_flag = False
+                
+#     def skin_edit_area_drag_background(self, event):
+#         '''Drag background.'''
+#         new_resize_x = int(event.x) - self.drag_start_x + self.drag_background_x
+#         new_resize_y = int(event.y) - self.drag_start_y + self.drag_background_y
+#         self.resize_x = min(max(new_resize_x, self.min_resize_width - self.resize_width), 0)
+#         self.resize_y = min(max(new_resize_y, self.min_resize_height - self.resize_height), 0)
+        
+#         self.queue_draw()
+            
+#     def skin_edit_area_resize(self, action_type, event):
+#         '''Resize.'''
+#         if action_type == self.POSITION_LEFT_SIDE:
+#             self.skin_edit_area_adjust_left(event)
+#             self.queue_draw()
+#         elif action_type == self.POSITION_TOP_SIDE:
+#             self.skin_edit_area_adjust_top(event)
+#             self.queue_draw()
+#         elif action_type == self.POSITION_RIGHT_SIDE:
+#             self.skin_edit_area_adjust_right(event)
+#             self.queue_draw()
+#         elif action_type == self.POSITION_BOTTOM_SIDE:
+#             self.skin_edit_area_adjust_bottom(event)
+#             self.queue_draw()
+#         elif action_type == self.POSITION_TOP_LEFT_CORNER:
+#             self.skin_edit_area_adjust_top(event)
+#             self.skin_edit_area_adjust_left(event)
+#             self.queue_draw()
+#         elif action_type == self.POSITION_TOP_RIGHT_CORNER:
+#             self.skin_edit_area_adjust_top(event)
+#             self.skin_edit_area_adjust_right(event)
+#             self.queue_draw()
+#         elif action_type == self.POSITION_BOTTOM_LEFT_CORNER:
+#             self.skin_edit_area_adjust_bottom(event)
+#             self.skin_edit_area_adjust_left(event)
+#             self.queue_draw()
+#         elif action_type == self.POSITION_BOTTOM_RIGHT_CORNER:
+#             self.skin_edit_area_adjust_bottom(event)
+#             self.skin_edit_area_adjust_right(event)
+#             self.queue_draw()
+            
+#     def skin_edit_area_adjust_left(self, event):
+#         '''Adjust left.'''
+#         offset_x = self.padding_x + self.shadow_padding
+#         new_resize_x = min(int(event.x) - offset_x, 0)
+#         self.resize_width = self.resize_width + self.resize_x - new_resize_x
+#         self.resize_x = int(new_resize_x)
+        
+#     def skin_edit_area_adjust_top(self, event):
+#         '''Adjust top.'''
+#         offset_y = self.padding_y + self.shadow_padding
+#         new_resize_y = min(int(event.y) - offset_y, 0)
+#         self.resize_height = self.resize_height + self.resize_y - new_resize_y
+#         self.resize_y = int(new_resize_y)
+        
+#     def skin_edit_area_adjust_right(self, event):
+#         '''Adjust right.'''
+#         offset_x = self.padding_x + self.shadow_padding
+#         new_resize_x = max(offset_x + self.min_resize_width, int(event.x))
+#         self.resize_width = int(new_resize_x - self.resize_x - offset_x)
+        
+#     def skin_edit_area_adjust_bottom(self, event):
+#         '''Adjust bottom.'''
+#         offset_y = self.padding_y + self.shadow_padding
+#         new_resize_y = max(offset_y + self.min_resize_height, int(event.y))
+#         self.resize_height = int(new_resize_y - self.resize_y - offset_y)
+
+#     def skin_edit_area_set_cursor(self, action_type):
+#         '''Set cursor.'''
+#         if action_type == self.POSITION_INSIDE:
+#             set_cursor(self, gtk.gdk.FLEUR)
+#         elif action_type == self.POSITION_TOP_LEFT_CORNER:
+#             set_cursor(self, gtk.gdk.TOP_LEFT_CORNER)
+#         elif action_type == self.POSITION_TOP_RIGHT_CORNER:
+#             set_cursor(self, gtk.gdk.TOP_RIGHT_CORNER)
+#         elif action_type == self.POSITION_BOTTOM_LEFT_CORNER:
+#             set_cursor(self, gtk.gdk.BOTTOM_LEFT_CORNER)
+#         elif action_type == self.POSITION_BOTTOM_RIGHT_CORNER:
+#             set_cursor(self, gtk.gdk.BOTTOM_RIGHT_CORNER)
+#         elif action_type == self.POSITION_TOP_SIDE:
+#             set_cursor(self, gtk.gdk.TOP_SIDE)
+#         elif action_type == self.POSITION_BOTTOM_SIDE:
+#             set_cursor(self, gtk.gdk.BOTTOM_SIDE)
+#         elif action_type == self.POSITION_LEFT_SIDE:
+#             set_cursor(self, gtk.gdk.LEFT_SIDE)
+#         elif action_type == self.POSITION_RIGHT_SIDE:
+#             set_cursor(self, gtk.gdk.RIGHT_SIDE)
+#         else:
+#             set_cursor(self, None)
+        
+#     def skin_edit_area_get_action_type(self, event):
+#         '''Get action type.'''
+#         ex, ey = event.x, event.y
+#         resize_x = self.padding_x + self.shadow_padding + self.resize_x
+#         resize_y = self.padding_y + self.shadow_padding + self.resize_y
+        
+#         if is_in_rect((ex, ey), 
+#                       (resize_x - self.resize_pointer_size / 2,
+#                        resize_y - self.resize_pointer_size / 2,
+#                        self.resize_pointer_size,
+#                        self.resize_pointer_size)):
+#             return self.POSITION_TOP_LEFT_CORNER
+#         elif is_in_rect((ex, ey), 
+#                         (resize_x + self.resize_pointer_size / 2,
+#                          resize_y - self.resize_pointer_size / 2,
+#                          self.resize_width - self.resize_pointer_size,
+#                          self.resize_pointer_size)):
+#             return self.POSITION_TOP_SIDE
+#         elif is_in_rect((ex, ey), 
+#                         (resize_x + self.resize_width - self.resize_pointer_size / 2,
+#                          resize_y - self.resize_pointer_size / 2,
+#                          self.resize_pointer_size,
+#                          self.resize_pointer_size)):
+#             return self.POSITION_TOP_RIGHT_CORNER
+#         elif is_in_rect((ex, ey), 
+#                         (resize_x - self.resize_pointer_size / 2,
+#                          resize_y + self.resize_pointer_size / 2,
+#                          self.resize_pointer_size,
+#                          self.resize_height - self.resize_pointer_size)):
+#             return self.POSITION_LEFT_SIDE
+#         elif is_in_rect((ex, ey), 
+#                         (resize_x + self.resize_width - self.resize_pointer_size / 2,
+#                          resize_y + self.resize_pointer_size / 2,
+#                          self.resize_pointer_size,
+#                          self.resize_height - self.resize_pointer_size)):
+#             return self.POSITION_RIGHT_SIDE
+#         elif is_in_rect((ex, ey), 
+#                         (resize_x - self.resize_pointer_size / 2,
+#                          resize_y + self.resize_height - self.resize_pointer_size / 2,
+#                          self.resize_pointer_size,
+#                          self.resize_pointer_size)):
+#             return self.POSITION_BOTTOM_LEFT_CORNER
+#         elif is_in_rect((ex, ey), 
+#                         (resize_x + self.resize_pointer_size / 2,
+#                          resize_y + self.resize_height - self.resize_pointer_size / 2,
+#                          self.resize_width - self.resize_pointer_size,
+#                          self.resize_pointer_size)):
+#             return self.POSITION_BOTTOM_SIDE
+#         elif is_in_rect((ex, ey), 
+#                         (resize_x + self.resize_width - self.resize_pointer_size / 2,
+#                          resize_y + self.resize_height - self.resize_pointer_size / 2,
+#                          self.resize_pointer_size,
+#                          self.resize_pointer_size)):
+#             return self.POSITION_BOTTOM_RIGHT_CORNER
+#         elif is_in_rect((ex, ey),
+#                         (resize_x + self.resize_pointer_size / 2,
+#                          resize_y + self.resize_pointer_size / 2,
+#                          self.resize_width - self.resize_pointer_size,
+#                          self.resize_height - self.resize_pointer_size)):
+#             return self.POSITION_INSIDE
+#         else:
+#             return self.POSITION_OUTSIDE
         
 gobject.type_register(SkinEditArea)
         

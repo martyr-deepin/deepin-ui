@@ -24,7 +24,7 @@ from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MID
 from draw import draw_vlinear, draw_pixbuf, draw_font
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id
+from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo
 from window import Window
 import gtk
 import gobject
@@ -123,7 +123,8 @@ class Menu(Window):
                  item_padding_y=3):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
-        Window.__init__(self, False, "menuMask")
+        Window.__init__(self)
+        self.draw_mask = self.draw_menu_mask
         global root_menus
         self.is_root_menu = is_root_menu
         self.x_align = x_align
@@ -158,6 +159,12 @@ class Menu(Window):
                     item_padding_x, item_padding_y)
                 self.menu_items.append(menu_item)
                 self.item_box.pack_start(menu_item.item_box, False, False)
+                
+    def draw_menu_mask(self, cr, x, y, w, h):
+        '''Draw mask.'''
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("menuMask").get_color_info()))
+        cr.rectangle(x, y, w, h)    
+        cr.fill()
                 
     def get_menu_item_at_coordinate(self, (x, y)):
         '''Get menu item at coordinate, return None if haven't any menu item at given coordinate.'''
