@@ -23,6 +23,7 @@
  "checkButtonBackground" : "#F7F7F7",
  "notebookFont" : "#000000",
  "editablelistFont" : "#000000",
+ "editablelistFontSelect" : "#FFFFFF",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),

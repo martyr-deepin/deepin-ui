@@ -39,7 +39,9 @@ class EditableItemBox(gtk.Alignment):
                  item, 
                  set_focus_item_box, 
                  get_focus_item_box,
-                 editable=False
+                 font_color,
+                 font_select_color,
+                 editable=False,
                  ):
         '''Init editable item box.'''
         gtk.Alignment.__init__(self)
@@ -55,6 +57,8 @@ class EditableItemBox(gtk.Alignment):
         self.button_press_id = None
         self.focus_out_id = None
         self.press_entry_id = None
+        self.font_color = font_color
+        self.font_select_color = font_select_color
         
         if editable:
             self.switch_on_editable()
@@ -79,6 +83,10 @@ class EditableItemBox(gtk.Alignment):
         '''Draw item select.'''
         draw_vlinear(cr, x, y, w, h,
                      ui_theme.get_shadow_color("listviewSelect").get_color_info())
+        
+        if self.item_label != None:
+            self.item_label.text_color = self.font_select_color
+            self.item_label.queue_draw()
     
     def remove_children(self):
         '''Clear child.'''
@@ -94,7 +102,7 @@ class EditableItemBox(gtk.Alignment):
     def init_text(self):
         '''Init text.'''
         self.remove_children()
-        self.item_label = Label(self.item.get_text(), ui_theme.get_color("editablelistFont"))
+        self.item_label = Label(self.item.get_text(), self.font_color)
         self.item_label.set_size_request(-1, 24)
         self.item_label.grab_focus()
         self.add(self.item_label)
@@ -147,6 +155,10 @@ class EditableItemBox(gtk.Alignment):
         if old_focus_item_box:
             old_focus_item_box.queue_draw()
             
+            if old_focus_item_box.item_label != None:
+                old_focus_item_box.item_label.text_color = self.font_color
+                old_focus_item_box.item_label.queue_draw()
+            
         # Active item.
         self.editable_list.emit("active", self.item)
         
@@ -163,6 +175,8 @@ class EditableList(ScrolledWindow):
     def __init__(self, 
                  items=[],
                  background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE),
+                 font_color=ui_theme.get_color("editablelistFont"),
+                 font_select_color=ui_theme.get_color("editablelistFontSelect"),
                  ):
         '''Init editable list.'''
         # Init.
@@ -171,6 +185,8 @@ class EditableList(ScrolledWindow):
         self.focus_item_box = None
         self.edit_item_box = None
         self.background_pixbuf = background_pixbuf
+        self.font_color = font_color
+        self.font_select_color = font_select_color
         
         # Background box.
         self.background_box = BackgroundBox(background_pixbuf)
@@ -184,6 +200,8 @@ class EditableList(ScrolledWindow):
                 item, 
                 self.set_focus_item_box, 
                 self.get_focus_item_box,
+                self.font_color,
+                self.font_select_color
                 )
             item_box.set_size_request(-1, 24)
             self.background_box.pack_start(item_box, False, False)
@@ -261,6 +279,8 @@ class EditableList(ScrolledWindow):
                 item,
                 self.set_focus_item_box,
                 self.get_focus_item_box,
+                self.font_color,
+                self.font_select_color
                 )
             item_box.set_size_request(-1, 24)
             self.background_box.pack_start(item_box, False, False)
@@ -286,6 +306,8 @@ class EditableList(ScrolledWindow):
             item,
             self.set_focus_item_box,
             self.get_focus_item_box,
+            self.font_color,
+            self.font_select_color,
             True
             )
         item_box.set_size_request(-1, 24)
