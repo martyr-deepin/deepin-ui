@@ -69,12 +69,16 @@ class EditableItemBox(gtk.Alignment):
         rect = widget.allocation
 
         if self.get_focus_item_box() == self:
-            draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height,
-                         ui_theme.get_shadow_color("listviewSelect").get_color_info())
+            self.draw_item_select(cr, rect.x, rect.y, rect.width, rect.height)
         
         propagate_expose(widget, event)
         
         return True
+    
+    def draw_item_select(self, cr, x, y, w, h):
+        '''Draw item select.'''
+        draw_vlinear(cr, x, y, w, h,
+                     ui_theme.get_shadow_color("listviewSelect").get_color_info())
     
     def remove_children(self):
         '''Clear child.'''
