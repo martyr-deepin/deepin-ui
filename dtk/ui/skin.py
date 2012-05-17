@@ -25,7 +25,8 @@ import gtk
 import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, draw_blank_mask, cairo_disable_antialias, get_match_parent
+from mask import draw_mask
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, cairo_disable_antialias
 from keymap import has_shift_mask
 from titlebar import Titlebar
 from dominant_color import get_dominant_color
@@ -35,65 +36,18 @@ from button import Button
 from theme import ui_theme
 import math
 
-def draw_skin_window_mask(widget, x, y, w, h):
-    '''Draw window skin mask.'''
-    # Init.
-    cr = widget.window.cairo_create()
-
-    with cairo_state(cr):
-        cr.rectangle(x + 1, y, w - 2, 1)
-        cr.rectangle(x, y + 1, w, h - 2)
-        cr.rectangle(x + 1, y + h - 1, w - 2, 1)
-        cr.clip()
-        
-        draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("skinWindowBackground").get_color_info())
+def draw_skin_mask(cr, x, y, w, h):
+    '''Draw skin mask.'''
+    draw_vlinear(cr, x, y, w, h,
+                 ui_theme.get_shadow_color("skinWindowBackground").get_color_info())
     
-def draw_skin_scrolled_window_mask(widget, x, y, w, h):
-    '''Draw window skin mask.'''
-    # Init.
-    cr = widget.window.cairo_create()
-    toplevel = widget.get_toplevel()
-    (offset_x, offset_y) = widget.translate_coordinates(toplevel, 0, 0)
-
-    with cairo_state(cr):
-        cr.rectangle(x, y, w, h)
-        cr.clip()
-        
-        draw_vlinear(
-            cr, 
-            x - offset_x, 
-            y - offset_y,
-            toplevel.allocation.width,
-            toplevel.allocation.height,
-            ui_theme.get_shadow_color("skinWindowBackground").get_color_info())
-
-def draw_skin_icon_view_mask(widget, x, y, w, h):
-    '''Draw skin preview view mask.'''
-    cr = widget.window.cairo_create()
-    viewport = get_match_parent(widget, "Viewport")
-    toplevel = widget.get_toplevel()
-    (offset_x, offset_y) = viewport.translate_coordinates(toplevel, 0, 0)
-    
-    with cairo_state(cr):
-        cr.rectangle(x, y, w, h)
-        cr.clip()
-        
-        draw_vlinear(
-            cr, 
-            x - offset_x, 
-            y - offset_y,
-            toplevel.allocation.width,
-            toplevel.allocation.height,
-            ui_theme.get_shadow_color("skinWindowBackground").get_color_info())
-
 class SkinWindow(Window):
     '''SkinWindow.'''
 	
     def __init__(self, preview_width, preview_height, background_path):
         '''Init skin.'''
         Window.__init__(self)
-        self.draw_mask = lambda cr, x, y, w, h: draw_skin_window_mask(self, x, y, w, h)
+        self.draw_mask = lambda cr, x, y, w, h: draw_mask(self, x, y, w, h, draw_skin_mask)
         self.main_box = gtk.VBox()
         self.titlebar = Titlebar(
             ["close"],
@@ -151,9 +105,9 @@ class SkinPreviewPage(gtk.VBox):
         self.preview_align.set_padding(0, 0, 10, 5)
         self.preview_scrolled_window = ScrolledWindow()
         self.preview_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-        self.preview_scrolled_window.draw_mask = lambda cr, x, y, w, h: draw_skin_scrolled_window_mask(self.preview_scrolled_window, x, y, w, h)
+        self.preview_scrolled_window.draw_mask = lambda cr, x, y, w, h: draw_mask(self.preview_scrolled_window, x, y, w, h, draw_skin_mask)
         self.preview_view = IconView()
-        self.preview_view.draw_mask = lambda cr, x, y, w, h: draw_skin_icon_view_mask(self.preview_view, x, y, w, h)
+        self.preview_view.draw_mask = lambda cr, x, y, w, h: draw_mask(self.preview_view, x, y, w, h, draw_skin_mask)
                 
         self.preview_align.add(self.preview_scrolled_window)
         self.preview_scrolled_window.add_child(self.preview_view)
@@ -318,7 +272,7 @@ class SkinEditPage(gtk.VBox):
         self.color_select_align.set(0.5, 0.5, 1, 1)
         self.color_select_align.set_padding(20, 20, 38, 38)
         self.color_select_view = IconView()
-        self.color_select_view.draw_mask = lambda cr, x, y, w, h: draw_skin_icon_view_mask(self.color_select_view, x, y, w, h)
+        self.color_select_view.draw_mask = lambda cr, x, y, w, h: draw_mask(self.color_select_view, x, y, w, h, draw_skin_mask)
         self.color_select_scrolled_window = ScrolledWindow()
         self.color_select_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
         self.color_select_scrolled_window.add_child(self.color_select_view)

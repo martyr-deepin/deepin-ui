@@ -440,3 +440,4 @@ def draw_test():
     dtk_cairo_blur.gaussian_blur(surface, 5)
     
     surface.write_to_png("test.png")
+
