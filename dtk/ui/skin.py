@@ -34,6 +34,7 @@ from iconview import IconView
 from scrolled_window import ScrolledWindow
 from button import Button
 from theme import ui_theme
+from config import Config
 import math
 
 def draw_skin_mask(cr, x, y, w, h):
@@ -883,7 +884,71 @@ class SkinEditArea(gtk.EventBox):
         self.queue_draw()
         
 gobject.type_register(SkinEditArea)
+
+class Skin(gobject.GObject):
+    '''Skin.'''
+	
+    def __init__(self):
+        '''Init skin.'''
+        # Init.
+        gobject.GObject.__init__(self)
         
+    def load_skin(self, skin_dir):
+        '''Load skin, return True if load finish, otherwise return False.'''
+        try:
+            # Load config file.
+            config = Config(os.path.join(skin_dir, "config.ini"))
+            config.load()
+            
+            # Get name config.
+            self.ui_theme_name = config.get("name", "ui_theme_name")
+            self.app_theme_name = config.get("name", "app_theme_name")
+            
+            # Get application config.
+            self.app_id = config.get("application", "app_id")
+            self.app_version = config.getfloat("application", "app_version")
+            
+            # Get background config.
+            self.image = config.get("background", "image")
+            self.x = config.getint("background", "x")
+            self.y = config.getint("background", "y")
+            self.scale = config.getfloat("background", "scale")
+            self.dominant_color = config.get("background", "dominant_color")
+            
+            # Get editable config.
+            self.editable = config.getboolean("editable", "editable")
+            
+            return True
+        except Exception, e:
+            print "load_skin: %s" % (e)
+            return False
+    
+    def save_skin(self):
+        '''Save skin.'''
+        pass
+    
+    def apply_skin(self):
+        '''Apply skin.'''
+        pass
+    
+    def import_skin(self):
+        '''Import skin.'''
+        pass
+        
+    def export_skin(self):
+        '''Export skin.'''
+        pass
+    
+    def build_skin_package(self):
+        '''Build skin package.'''
+        pass
+    
+    def extract_skin_package(self):
+        '''Extract skin package.'''
+        pass
+    
+gobject.type_register(Skin)
+
 if __name__ == '__main__':
     skin_window = SkinWindow(450, 500, "/data/Picture/Misc/23424.jpg")
     skin_window.move(400, 100)

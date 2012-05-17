@@ -61,7 +61,8 @@ class Config(gobject.GObject):
         ''' specified the section for read the option value. '''
         try:
             return self.config_parser.get(section, option)
-        except:
+        except Exception, e:
+            print "config.get error: %s" % (e)
             return default
             
     def set(self, section, option, value):        
