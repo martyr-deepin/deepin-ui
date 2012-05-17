@@ -320,6 +320,18 @@ class ListView(gtk.DrawingArea):
         draw_vlinear(cr, x, y, w, h,
                      ui_theme.get_shadow_color("linearBackground").get_color_info())
         
+    def draw_item_hover(self, cr, x, y, w, h):
+        '''Draw hover.'''
+        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listviewHover").get_color_info())
+        
+    def draw_item_select(self, cr, x, y, w, h):
+        '''Draw select.'''
+        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listviewSelect").get_color_info())
+
+    def draw_item_highlight(self, cr, x, y, w, h):
+        '''Draw highlight.'''
+        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listviewHighlight").get_color_info())
+        
     def expose_list_view(self, widget, event):
         '''Expose list view.'''
         # Init.
@@ -361,22 +373,22 @@ class ListView(gtk.DrawingArea):
                     highlight_row = self.highlight_item.get_index()
                 
                 if self.hover_row != None and not self.hover_row in self.select_rows and self.hover_row != highlight_row:
-                    draw_vlinear(cr, offset_x, self.title_offset_y + self.hover_row * self.item_height,
-                                 viewport.allocation.width, self.item_height,
-                                 ui_theme.get_shadow_color("listviewHover").get_color_info())
+                    self.draw_item_hover(
+                        cr, offset_x, self.title_offset_y + self.hover_row * self.item_height,
+                        viewport.allocation.width, self.item_height)
                 
                 # Draw select rows.
                 for select_row in self.select_rows:
                     if select_row != highlight_row:
-                        draw_vlinear(cr, offset_x, self.title_offset_y + select_row * self.item_height,
-                                     viewport.allocation.width, self.item_height,
-                                     ui_theme.get_shadow_color("listviewSelect").get_color_info())
+                        self.draw_item_select(
+                            cr, offset_x, self.title_offset_y + select_row * self.item_height,
+                            viewport.allocation.width, self.item_height)
                     
                 # Draw highlight row.
                 if self.highlight_item:
-                    draw_vlinear(cr, offset_x, self.title_offset_y + self.highlight_item.get_index() * self.item_height,
-                                 viewport.allocation.width, self.item_height,
-                                 ui_theme.get_shadow_color("listviewHighlight").get_color_info())
+                    self.draw_item_highlight(
+                        cr, offset_x, self.title_offset_y + self.highlight_item.get_index() * self.item_height,
+                        viewport.allocation.width, self.item_height)
                     
                 # Get viewport index.
                 start_y = offset_y - self.title_offset_y
