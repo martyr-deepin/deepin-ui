@@ -327,6 +327,7 @@ class ColorIconItem(gobject.GObject):
         self.height = 25
         self.padding_x = 6
         self.padding_y = 6
+        self.select_frame_size = 2
         self.hover_flag = False
         self.highlight_flag = False
         
@@ -344,6 +345,22 @@ class ColorIconItem(gobject.GObject):
     
     def render(self, cr, rect):
         '''Render item.'''
+        # Draw select effect.
+        if self.hover_flag:
+            cr.set_source_rgb(1, 0, 0)
+        elif self.highlight_flag:
+            cr.set_source_rgb(0, 1, 0)
+        else:
+            cr.set_source_rgb(0.3, 0.3, 0.3)
+        cr.rectangle(
+            rect.x + self.padding_x - self.select_frame_size,
+            rect.y + self.padding_y - self.select_frame_size,
+            self.width + self.select_frame_size * 2,
+            self.height + self.select_frame_size * 2,
+            )
+        cr.fill()
+        
+        # Draw color area.
         cr.set_source_rgb(*color_hex_to_cairo(self.color))
         cr.rectangle(
             rect.x + self.padding_x,
