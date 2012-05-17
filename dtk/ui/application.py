@@ -30,6 +30,7 @@ import dbus
 import dbus.service
 import gtk
 import sys
+from skin import SkinWindow
 
 class UniqueService(dbus.service.Object):
     def __init__(self, bus_name, app_dbus_name, app_object_name, start_callback):
@@ -92,7 +93,7 @@ class Application(object):
             self.window = MplayerWindow(True)
         self.window.set_position(gtk.WIN_POS_CENTER)
         self.window.connect("destroy", self.destroy)
-
+        
         # Init main box.
         self.main_box = self.window.window_frame
 
@@ -100,7 +101,6 @@ class Application(object):
         self.titlebar = None
         self.titlebar_box = gtk.HBox()
         self.main_box.pack_start(self.titlebar_box, False)
-
 
     def add_titlebar(self,
                      button_mask=["theme", "menu", "max", "min", "close"],
@@ -182,6 +182,8 @@ class Application(object):
 
     def theme_callback(self, widget):
         '''Theme button callback.'''
+        SkinWindow().show_all()
+
         return False
 
     def menu_callback(self, widget):

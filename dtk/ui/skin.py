@@ -26,7 +26,7 @@ import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, cairo_disable_antialias
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, cairo_disable_antialias, scroll_to_top
 from keymap import has_shift_mask
 from titlebar import Titlebar
 from dominant_color import get_dominant_color
@@ -45,9 +45,10 @@ def draw_skin_mask(cr, x, y, w, h):
 class SkinWindow(Window):
     '''SkinWindow.'''
 	
-    def __init__(self, preview_width, preview_height, background_path):
+    def __init__(self, preview_width=450, preview_height=500):
         '''Init skin.'''
         Window.__init__(self)
+        self.set_position(gtk.WIN_POS_CENTER)
         self.draw_mask = lambda cr, x, y, w, h: draw_mask(self, x, y, w, h, draw_skin_mask)
         self.main_box = gtk.VBox()
         self.titlebar = Titlebar(
@@ -66,14 +67,15 @@ class SkinWindow(Window):
         self.body_box = gtk.VBox()
         self.main_box.pack_start(self.body_box, True, True)
         
-        self.titlebar.close_button.connect("clicked", lambda w: gtk.main_quit())
-        self.connect("destroy", lambda w: gtk.main_quit())
+        self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
         
         self.add_move_event(self.titlebar)
         
         self.switch_preview_page()
         
-        self.preview_page.preview_view.connect("button-press-item", lambda view, item, x, y: self.switch_edit_page(item.background_path))
+        self.preview_page.preview_view.connect(
+            "button-press-item", 
+            lambda view, item, x, y: self.switch_edit_page(item.background_path))
         
     def switch_preview_page(self):
         '''Switch preview page.'''
@@ -118,6 +120,7 @@ class SkinPreviewPage(gtk.VBox):
         self.button_align.set(1, 0.5, 0, 0)
         self.button_align.set_padding(10, 10, 0, 20)
         self.close_button = Button("关闭")
+        self.close_button.connect("clicked", lambda w: w.get_toplevel().destroy())
         self.button_align.add(self.close_button)
         self.pack_start(self.button_align, False, False)
         
@@ -897,26 +900,26 @@ class Skin(gobject.GObject):
         '''Load skin, return True if load finish, otherwise return False.'''
         try:
             # Load config file.
-            config = Config(os.path.join(skin_dir, "config.ini"))
-            config.load()
+            self.config = Config(os.path.join(skin_dir, "config.ini"))
+            self.config.load()
             
             # Get name config.
-            self.ui_theme_name = config.get("name", "ui_theme_name")
-            self.app_theme_name = config.get("name", "app_theme_name")
+            self.ui_theme_name = self.config.get("name", "ui_theme_name")
+            self.app_theme_name = self.config.get("name", "app_theme_name")
             
             # Get application config.
-            self.app_id = config.get("application", "app_id")
-            self.app_version = config.getfloat("application", "app_version")
+            self.app_id = self.config.get("application", "app_id")
+            self.app_version = self.config.getfloat("application", "app_version")
             
             # Get background config.
-            self.image = config.get("background", "image")
-            self.x = config.getint("background", "x")
-            self.y = config.getint("background", "y")
-            self.scale = config.getfloat("background", "scale")
-            self.dominant_color = config.get("background", "dominant_color")
+            self.image = self.config.get("background", "image")
+            self.x = self.config.getint("background", "x")
+            self.y = self.config.getint("background", "y")
+            self.scale = self.config.getfloat("background", "scale")
+            self.dominant_color = self.config.get("background", "dominant_color")
             
             # Get editable config.
-            self.editable = config.getboolean("editable", "editable")
+            self.editable = self.config.getboolean("editable", "editable")
             
             return True
         except Exception, e:
@@ -950,8 +953,7 @@ class Skin(gobject.GObject):
 gobject.type_register(Skin)
 
 if __name__ == '__main__':
-    skin_window = SkinWindow(450, 500, "/data/Picture/Misc/23424.jpg")
-    skin_window.move(400, 100)
+    skin_window = SkinWindow()
     
     skin_window.show_all()
     

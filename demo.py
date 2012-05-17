@@ -45,6 +45,7 @@ from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.dragbar import Dragbar
 from dtk.ui.iconview import IconView, IconItem
+from dtk.ui.skin import SkinWindow
 import gtk
 import os
 import time
@@ -96,7 +97,6 @@ def active_editable_list(editable_list, editable_item):
 def right_press_editable_list(editable_list, editable_item, x, y):
     '''docs'''
     print (editable_list, editable_item, x, y)
-    
     
 if __name__ == "__main__":
     # Init application.
