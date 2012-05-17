@@ -75,6 +75,10 @@ class EditableItemBox(gtk.Alignment):
         if self.get_focus_item_box() == self:
             self.draw_item_select(cr, rect.x, rect.y, rect.width, rect.height)
         
+            if self.item_label != None:
+                self.item_label.text_color = self.font_select_color
+                self.item_label.queue_draw()
+    
         propagate_expose(widget, event)
         
         return True
@@ -84,10 +88,6 @@ class EditableItemBox(gtk.Alignment):
         draw_vlinear(cr, x, y, w, h,
                      ui_theme.get_shadow_color("listviewSelect").get_color_info())
         
-        if self.item_label != None:
-            self.item_label.text_color = self.font_select_color
-            self.item_label.queue_draw()
-    
     def remove_children(self):
         '''Clear child.'''
         remove_callback_id(self.focus_out_id)
