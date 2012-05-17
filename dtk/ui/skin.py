@@ -26,7 +26,7 @@ import gobject
 from window import Window
 from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, cairo_disable_antialias, scroll_to_top
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, cairo_disable_antialias
 from keymap import has_shift_mask
 from titlebar import Titlebar
 from dominant_color import get_dominant_color
@@ -48,6 +48,8 @@ class SkinWindow(Window):
     def __init__(self, preview_width=450, preview_height=500):
         '''Init skin.'''
         Window.__init__(self)
+        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
+        self.set_skip_taskbar_hint(True)                    # skip taskbar
         self.set_position(gtk.WIN_POS_CENTER)
         self.draw_mask = lambda cr, x, y, w, h: draw_mask(self, x, y, w, h, draw_skin_mask)
         self.main_box = gtk.VBox()
