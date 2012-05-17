@@ -41,6 +41,7 @@ class EditableItemBox(gtk.Alignment):
                  get_focus_item_box,
                  font_color,
                  font_select_color,
+                 draw_item_select,
                  editable=False,
                  ):
         '''Init editable item box.'''
@@ -58,6 +59,7 @@ class EditableItemBox(gtk.Alignment):
         self.focus_out_id = None
         self.press_entry_id = None
         self.font_color = font_color
+        self.draw_item_select = draw_item_select
         self.font_select_color = font_select_color
         
         if editable:
@@ -83,11 +85,6 @@ class EditableItemBox(gtk.Alignment):
         
         return True
     
-    def draw_item_select(self, cr, x, y, w, h):
-        '''Draw item select.'''
-        draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("listviewSelect").get_color_info())
-        
     def remove_children(self):
         '''Clear child.'''
         remove_callback_id(self.focus_out_id)
@@ -201,12 +198,18 @@ class EditableList(ScrolledWindow):
                 self.set_focus_item_box, 
                 self.get_focus_item_box,
                 self.font_color,
-                self.font_select_color
+                self.font_select_color,
+                self.draw_item_select
                 )
             item_box.set_size_request(-1, 24)
             self.background_box.pack_start(item_box, False, False)
             
         self.background_eventbox.connect("button-press-event", self.button_press_background)    
+        
+    def draw_item_select(self, cr, x, y, w, h):
+        '''Draw item select.'''
+        draw_vlinear(cr, x, y, w, h,
+                     ui_theme.get_shadow_color("listviewSelect").get_color_info())
         
     def button_press_background(self, widget, event):
         '''Button press background box.'''
@@ -280,7 +283,8 @@ class EditableList(ScrolledWindow):
                 self.set_focus_item_box,
                 self.get_focus_item_box,
                 self.font_color,
-                self.font_select_color
+                self.font_select_color,
+                self.draw_item_select
                 )
             item_box.set_size_request(-1, 24)
             self.background_box.pack_start(item_box, False, False)
@@ -308,6 +312,7 @@ class EditableList(ScrolledWindow):
             self.get_focus_item_box,
             self.font_color,
             self.font_select_color,
+            self.draw_item_select,
             True
             )
         item_box.set_size_request(-1, 24)

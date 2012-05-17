@@ -79,7 +79,7 @@ class Window(gtk.Window):
         
     def change_background(self, background_dpixbuf):
         '''Change background.'''
-        self.background_dpixbuf = background_dpixbuf                
+        self.background_dpixbuf = background_dpixbuf
         
     def expose_window_background(self, widget, event):
         '''Expose window background.'''
