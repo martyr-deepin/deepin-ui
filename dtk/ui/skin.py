@@ -48,6 +48,7 @@ class SkinWindow(Window):
     def __init__(self, preview_width=450, preview_height=500):
         '''Init skin.'''
         Window.__init__(self)
+        self.set_modal(True)                                # grab focus to avoid build too many skin window
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
         self.set_skip_taskbar_hint(True)                    # skip taskbar
         self.set_position(gtk.WIN_POS_CENTER)
