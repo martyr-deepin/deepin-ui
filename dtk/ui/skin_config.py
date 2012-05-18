@@ -38,11 +38,26 @@ class SkinConfig(gobject.GObject):
         
         self.window_list = []
         
+    def set_application_window_size(self, app_window_width, app_window_height):
+        '''Set application window size.'''
+        self.app_window_width = app_window_width
+        self.app_window_height = app_window_height
+        
+    def update_image_size(self, x, y, scale_x, scale_y):
+        '''Update image size.'''
+        self.x = x
+        self.y = y
+        self.scale_x = scale_x
+        self.scale_y = scale_y
+        
     def load_skin(self, skin_dir):
         '''Load skin, return True if load finish, otherwise return False.'''
         try:
+            # Save skin dir.
+            self.skin_dir = skin_dir
+            
             # Load config file.
-            self.config = Config(os.path.join(skin_dir, "config.ini"))
+            self.config = Config(os.path.join(self.skin_dir, "config.ini"))
             self.config.load()
             
             # Get name config.
@@ -57,14 +72,15 @@ class SkinConfig(gobject.GObject):
             self.image = self.config.get("background", "image")
             self.x = self.config.getint("background", "x")
             self.y = self.config.getint("background", "y")
-            self.scale = self.config.getfloat("background", "scale")
+            self.scale_x = self.config.getfloat("background", "scale_x")
+            self.scale_y = self.config.getfloat("background", "scale_y")
             self.dominant_color = self.config.get("background", "dominant_color")
             
             # Get editable config.
             self.editable = self.config.getboolean("editable", "editable")
             
             # Generate background pixbuf.
-            self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(skin_dir, self.image))
+            self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.skin_dir, self.image))
             
             return True
         except Exception, e:
@@ -117,42 +133,52 @@ class SkinConfig(gobject.GObject):
         toplevel_rect = widget.get_toplevel().allocation
         
         # Draw background.
-        draw_pixbuf(cr, self.background_pixbuf, x, y)
+        background_width = int(self.background_pixbuf.get_width() * self.scale_x)
+        background_height = int(self.background_pixbuf.get_height() * self.scale_y)
+        draw_pixbuf(
+            cr,
+            self.background_pixbuf.scale_simple(
+                background_width,
+                background_height,
+                gtk.gdk.INTERP_BILINEAR
+                ),
+            x + self.x,
+            y + self.y)
         
         # Draw dominant color if necessarily.
-        if self.background_pixbuf.get_width() < toplevel_rect.width and self.background_pixbuf.get_height() < toplevel_rect.height:
+        if (background_width + self.x) < toplevel_rect.width and (background_height + self.y) < toplevel_rect.height:
             cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
             cr.rectangle(
-                x + self.background_pixbuf.get_width(),
-                y + self.background_pixbuf.get_height(),
-                toplevel_rect.width - self.background_pixbuf.get_width(),
-                toplevel_rect.height - self.background_pixbuf.get_height())
+                x + self.x + background_width,
+                y + self.y + background_height,
+                toplevel_rect.width - (background_width + self.x),
+                toplevel_rect.height - (background_height + self.y))
             cr.fill()
         
-        if self.background_pixbuf.get_width() < toplevel_rect.width:
+        if (background_width + self.x) < toplevel_rect.width:
             draw_hlinear(
                 cr,
-                x + self.background_pixbuf.get_width() - SHADE_SIZE,
+                x + (background_width + self.x) - SHADE_SIZE,
                 y,
                 SHADE_SIZE,
-                self.background_pixbuf.get_height(),
+                (background_height + self.y),
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
             
             cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
             cr.rectangle(
-                x + self.background_pixbuf.get_width(),
+                x + (background_width + self.x),
                 y,
-                toplevel_rect.width - self.background_pixbuf.get_width(),
-                self.background_pixbuf.get_height())
+                toplevel_rect.width - (background_width + self.x),
+                (background_height + self.y))
             cr.fill()
             
-        if self.background_pixbuf.get_height() < toplevel_rect.height:
+        if (background_height + self.y) < toplevel_rect.height:
             draw_vlinear(
                 cr,
                 x,
-                y + self.background_pixbuf.get_height() - SHADE_SIZE,
-                self.background_pixbuf.get_width(),
+                y + (background_height + self.y) - SHADE_SIZE,
+                (background_width + self.x),
                 SHADE_SIZE,
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
@@ -160,9 +186,9 @@ class SkinConfig(gobject.GObject):
             cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
             cr.rectangle(
                 x,
-                y + self.background_pixbuf.get_height(),
-                self.background_pixbuf.get_width(),
-                toplevel_rect.height - self.background_pixbuf.get_height())
+                y + (background_height + self.y),
+                (background_width + self.x),
+                toplevel_rect.height - (background_height + self.y))
             cr.fill()
             
 gobject.type_register(SkinConfig)

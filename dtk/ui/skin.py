@@ -30,7 +30,6 @@ from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, conta
 from constant import SHADE_SIZE
 from keymap import has_shift_mask
 from titlebar import Titlebar
-from dominant_color import get_dominant_color
 from iconview import IconView
 from scrolled_window import ScrolledWindow
 from button import Button
@@ -95,7 +94,7 @@ class SkinWindow(Window):
     def switch_edit_page(self, view, item, x, y):
         '''Switch edit page.'''
         container_remove_all(self.body_box)
-        edit_page = SkinEditPage(item.background_path)
+        edit_page = SkinEditPage()
         self.body_box.add(edit_page)
         
         edit_page.connect("click-save", lambda page: self.switch_preview_page())
@@ -274,13 +273,13 @@ class SkinEditPage(gtk.VBox):
         "click-cancel" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
-    def __init__(self, background_path):
+    def __init__(self):
         '''Init skin edit page.'''
         gtk.VBox.__init__(self)
         self.edit_area_align = gtk.Alignment()
         self.edit_area_align.set(0.5, 0.5, 1, 1)
         self.edit_area_align.set_padding(0, 0, 25, 25)
-        self.edit_area = SkinEditArea(background_path)        
+        self.edit_area = SkinEditArea()        
         self.edit_area_align.add(self.edit_area)
         
         self.color_select_align = gtk.Alignment()
@@ -440,7 +439,7 @@ class SkinEditArea(gtk.EventBox):
     POSITION_INSIDE = 8
     POSITION_OUTSIDE = 9
     
-    def __init__(self, background_path):
+    def __init__(self):
         '''Init skin edit area.'''
         gtk.EventBox.__init__(self)
         self.set_has_window(False)
@@ -448,25 +447,31 @@ class SkinEditArea(gtk.EventBox):
         self.set_can_focus(True) # can focus to response key-press signal
         
         self.preview_pixbuf = ui_theme.get_pixbuf("frame.png").get_pixbuf()
-        self.app_window_width = 900
-        self.app_window_height = 600
+        self.app_window_width = skin_config.app_window_width
+        self.app_window_height = skin_config.app_window_height
         self.preview_pixbuf_width = self.preview_pixbuf.get_width()
         self.preview_pixbuf_height = self.preview_pixbuf.get_height()
         self.preview_frame_width = 400
         self.preview_frame_height = 300
         self.padding_x = (self.preview_frame_width - self.preview_pixbuf_width) / 2
         self.padding_y = (self.preview_frame_height - self.preview_pixbuf_height) / 2
-        
-        self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(background_path)
         self.set_size_request(self.preview_frame_width, self.preview_frame_height)
-        self.dominant_color = get_dominant_color(background_path)
+        
+        # Load config from skin_config.
+        self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(
+            os.path.join(skin_config.skin_dir, skin_config.image))
+        self.resize_x = skin_config.x
+        self.resize_y = skin_config.y
+        self.resize_scale_x = skin_config.scale_x
+        self.resize_scale_y = skin_config.scale_y
+        self.dominant_color = skin_config.dominant_color
         
         self.resize_pointer_size = 8
         self.resize_frame_size = 2
-        self.resize_x = 0
-        self.resize_y = 0
-        self.resize_width = int(self.background_pixbuf.get_width() * self.preview_pixbuf_width / self.app_window_width)
-        self.resize_height = int(self.background_pixbuf.get_height() * self.preview_pixbuf_width / self.app_window_width)
+        self.background_preview_width = int(self.background_pixbuf.get_width() * self.preview_pixbuf_width / self.app_window_width)
+        self.background_preview_height = int(self.background_pixbuf.get_height() * self.preview_pixbuf_width / self.app_window_width)
+        self.resize_width = int(self.background_preview_width * self.resize_scale_x)
+        self.resize_height = int(self.background_preview_height * self.resize_scale_y)
         self.min_resize_width = self.min_resize_height = 32
         
         self.shadow_radius = 6
@@ -499,161 +504,169 @@ class SkinEditArea(gtk.EventBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-
-        if self.button_release_flag:
-            offset_x = x + self.padding_x
-            offset_y = y + self.padding_y
-            
-            # Draw dominant color.
-            cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))        
-            cr.rectangle(
-                offset_x + self.resize_x,
-                offset_y + self.resize_y,
-                w - self.padding_x - self.resize_x,
-                h - self.padding_y - self.resize_y)
-            cr.fill()
-            
-        # Draw background.
-        draw_pixbuf(
-            cr, 
-            self.background_pixbuf.scale_simple(
-                self.resize_width,
-                self.resize_height,
-                gtk.gdk.INTERP_BILINEAR),
-            x + self.padding_x + self.resize_x,
-            y + self.padding_y + self.resize_y)
         
-        # Draw dominant shadow color.
-        if self.button_release_flag:
-            offset_x = x + self.padding_x
-            offset_y = y + self.padding_y
-            background_area_width = self.resize_width + self.resize_x
-            background_area_height = self.resize_height + self.resize_y
-            draw_hlinear(
-                cr, 
-                offset_x + background_area_width - self.shadow_size,
-                offset_y + self.resize_y,
-                self.shadow_size,
-                background_area_height - self.resize_y,
-                [(0, (self.dominant_color, 0)),
-                 (1, (self.dominant_color, 1))])
+        with cairo_state(cr):
+            cr.rectangle(x, y, w, h)
+            cr.clip()
             
-            draw_vlinear(
-                cr, 
-                offset_x + self.resize_x,
-                offset_y + background_area_height - self.shadow_size,
-                background_area_width - self.resize_x,
-                self.shadow_size,
-                [(0, (self.dominant_color, 0)),
-                 (1, (self.dominant_color, 1))]
-                )
-            
-        # Draw window.
-        draw_pixbuf(
-            cr,
-            self.preview_pixbuf,
-            x + self.padding_x,
-            y + self.padding_y)    
+            cr.set_source_rgb(1, 1, 1)
+            cr.rectangle(x, y, w, h)
+            cr.fill()
 
-        if self.in_resize_area_flag:
-            resize_x = x + self.padding_x + self.resize_x
-            resize_y = y + self.padding_y + self.resize_y
+            if self.button_release_flag:
+                offset_x = x + self.padding_x
+                offset_y = y + self.padding_y
+                
+                # Draw dominant color.
+                cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))        
+                cr.rectangle(
+                    offset_x + self.resize_x,
+                    offset_y + self.resize_y,
+                    w - self.padding_x - self.resize_x,
+                    h - self.padding_y - self.resize_y)
+                cr.fill()
+                
+            # Draw background.
+            draw_pixbuf(
+                cr, 
+                self.background_pixbuf.scale_simple(
+                    self.resize_width,
+                    self.resize_height,
+                    gtk.gdk.INTERP_BILINEAR),
+                x + self.padding_x + self.resize_x,
+                y + self.padding_y + self.resize_y)
             
-            # Draw resize frame.
-            cr.set_source_rgb(0, 1, 1)
+            # Draw dominant shadow color.
+            if self.button_release_flag:
+                offset_x = x + self.padding_x
+                offset_y = y + self.padding_y
+                background_area_width = self.resize_width + self.resize_x
+                background_area_height = self.resize_height + self.resize_y
+                draw_hlinear(
+                    cr, 
+                    offset_x + background_area_width - self.shadow_size,
+                    offset_y + self.resize_y,
+                    self.shadow_size,
+                    background_area_height - self.resize_y,
+                    [(0, (self.dominant_color, 0)),
+                     (1, (self.dominant_color, 1))])
+                
+                draw_vlinear(
+                    cr, 
+                    offset_x + self.resize_x,
+                    offset_y + background_area_height - self.shadow_size,
+                    background_area_width - self.resize_x,
+                    self.shadow_size,
+                    [(0, (self.dominant_color, 0)),
+                     (1, (self.dominant_color, 1))]
+                    )
+                
+            # Draw window.
+            draw_pixbuf(
+                cr,
+                self.preview_pixbuf,
+                x + self.padding_x,
+                y + self.padding_y)    
             
-            # Resize frame.
-            cr.rectangle(           # top
-                resize_x, 
-                resize_y - self.resize_frame_size / 2,
-                self.resize_width,
-                self.resize_frame_size)
-            cr.rectangle(           # bottom
-                resize_x,
-                resize_y + self.resize_height - self.resize_frame_size / 2,
-                self.resize_width,
-                self.resize_frame_size)
-            cr.rectangle(           # left
-                resize_x - self.resize_frame_size / 2,
-                resize_y,
-                self.resize_frame_size,
-                self.resize_height)
-            cr.rectangle(           # right
-                resize_x + self.resize_width - self.resize_frame_size / 2,
-                resize_y,
-                self.resize_frame_size,
-                self.resize_height)
+            if self.in_resize_area_flag:
+                resize_x = x + self.padding_x + self.resize_x
+                resize_y = y + self.padding_y + self.resize_y
+                
+                # Draw resize frame.
+                cr.set_source_rgb(0, 1, 1)
+                
+                # Resize frame.
+                cr.rectangle(           # top
+                    resize_x, 
+                    resize_y - self.resize_frame_size / 2,
+                    self.resize_width,
+                    self.resize_frame_size)
+                cr.rectangle(           # bottom
+                    resize_x,
+                    resize_y + self.resize_height - self.resize_frame_size / 2,
+                    self.resize_width,
+                    self.resize_frame_size)
+                cr.rectangle(           # left
+                    resize_x - self.resize_frame_size / 2,
+                    resize_y,
+                    self.resize_frame_size,
+                    self.resize_height)
+                cr.rectangle(           # right
+                    resize_x + self.resize_width - self.resize_frame_size / 2,
+                    resize_y,
+                    self.resize_frame_size,
+                    self.resize_height)
+                
+                # Resize pointer.
+                cr.arc(           # top-left
+                    resize_x,
+                    resize_y,
+                    self.resize_pointer_size / 2,
+                    0,
+                    2 * math.pi)
+                cr.fill()
+                
+                cr.arc(           # top-center
+                    resize_x + self.resize_width / 2,
+                    resize_y,
+                    self.resize_pointer_size / 2,
+                    0,
+                    2 * math.pi)
+                cr.fill()
+                
+                cr.arc(           # top-right
+                    resize_x + self.resize_width,
+                    resize_y,
+                    self.resize_pointer_size / 2,
+                    0,
+                    2 * math.pi)
+                cr.fill()
+                
+                cr.arc(           # bottom-left
+                    resize_x,
+                    resize_y + self.resize_height,
+                    self.resize_pointer_size / 2,
+                    0, 
+                    2 * math.pi)
+                cr.fill()
+                
+                cr.arc(           # bottom-center
+                    resize_x + self.resize_width / 2,
+                    resize_y + self.resize_height,
+                    self.resize_pointer_size / 2,
+                    0,
+                    2 * math.pi)
+                cr.fill()
+                
+                cr.arc(           # bottom-right
+                    resize_x + self.resize_width,
+                    resize_y + self.resize_height,
+                    self.resize_pointer_size / 2,
+                    0, 
+                    2 * math.pi)
+                cr.fill()
+                
+                cr.arc(           # left-center
+                    resize_x,
+                    resize_y + self.resize_height / 2,
+                    self.resize_pointer_size / 2,
+                    0,
+                    2 * math.pi)
+                cr.fill()
+                
+                cr.arc(           # right-center
+                    resize_x + self.resize_width,
+                    resize_y + self.resize_height / 2,
+                    self.resize_pointer_size / 2,
+                    0, 
+                    2 * math.pi)
+                cr.fill()
             
-            # Resize pointer.
-            cr.arc(           # top-left
-                resize_x,
-                resize_y,
-                self.resize_pointer_size / 2,
-                0,
-                2 * math.pi)
-            cr.fill()
-            
-            cr.arc(           # top-center
-                resize_x + self.resize_width / 2,
-                resize_y,
-                self.resize_pointer_size / 2,
-                0,
-                2 * math.pi)
-            cr.fill()
-            
-            cr.arc(           # top-right
-                resize_x + self.resize_width,
-                resize_y,
-                self.resize_pointer_size / 2,
-                0,
-                2 * math.pi)
-            cr.fill()
-            
-            cr.arc(           # bottom-left
-                resize_x,
-                resize_y + self.resize_height,
-                self.resize_pointer_size / 2,
-                0, 
-                2 * math.pi)
-            cr.fill()
-            
-            cr.arc(           # bottom-center
-                resize_x + self.resize_width / 2,
-                resize_y + self.resize_height,
-                self.resize_pointer_size / 2,
-                0,
-                2 * math.pi)
-            cr.fill()
-            
-            cr.arc(           # bottom-right
-                resize_x + self.resize_width,
-                resize_y + self.resize_height,
-                self.resize_pointer_size / 2,
-                0, 
-                2 * math.pi)
-            cr.fill()
-            
-            cr.arc(           # left-center
-                resize_x,
-                resize_y + self.resize_height / 2,
-                self.resize_pointer_size / 2,
-                0,
-                2 * math.pi)
-            cr.fill()
-            
-            cr.arc(           # right-center
-                resize_x + self.resize_width,
-                resize_y + self.resize_height / 2,
-                self.resize_pointer_size / 2,
-                0, 
-                2 * math.pi)
-            cr.fill()
-        
-        # Draw preview frame.
-        with cairo_disable_antialias(cr):
-            cr.set_source_rgb(0.3, 0.3, 0.3)
-            cr.rectangle(x, y + 1, w, h)
-            cr.stroke()
+            # Draw preview frame.
+            with cairo_disable_antialias(cr):
+                cr.set_source_rgb(0.3, 0.3, 0.3)
+                cr.rectangle(x, y, w, h)
+                cr.stroke()
             
     def button_press_skin_edit_area(self, widget, event):
         '''Callback for `button-press-event`'''
@@ -670,12 +683,24 @@ class SkinEditArea(gtk.EventBox):
     
     def button_release_skin_edit_area(self, widget, event):
         '''Callback for `button-release-event`.'''
+        # Update status.
         self.button_press_flag = False
         self.button_release_flag = True
         self.action_type = None
         self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
     
-        self.queue_draw()
+        # Change skin.
+        skin_config.update_image_size(
+            self.resize_x * self.app_window_width / self.preview_pixbuf_width,
+            self.resize_y * self.app_window_height / self.preview_pixbuf_height, 
+            self.resize_width / float(self.background_preview_width),
+            self.resize_height / float(self.background_preview_height)
+            )
+        
+        print (skin_config.x, skin_config.y, skin_config.scale_x, skin_config.scale_y)
+
+        # Apply skin.
+        skin_config.apply_skin()
     
     def leave_notify_skin_edit_area(self, widget, event):
         '''Callback for `leave-notify-event` signal.'''

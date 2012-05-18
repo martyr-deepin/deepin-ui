@@ -31,6 +31,7 @@ import dbus.service
 import gtk
 import sys
 from skin import SkinWindow
+from skin_config import skin_config
 
 class UniqueService(dbus.service.Object):
     def __init__(self, bus_name, app_dbus_name, app_object_name, start_callback):
@@ -155,6 +156,9 @@ class Application(object):
             default_height       # minimum height
             -1, -1, -1, -1, -1, -1, -1, -1
             )
+        
+        # Pass application size to skin config.
+        skin_config.set_application_window_size(default_width, default_height)
 
     def set_icon(self, icon_dpixbuf):
         '''Set icon.'''
