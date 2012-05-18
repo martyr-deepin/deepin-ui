@@ -28,6 +28,7 @@ import scipy
 import scipy.cluster
 import scipy.misc
 import urllib
+from constant import SHADE_SIZE
 
 def get_dominant_color(image_path):
     # print 'reading image'
@@ -60,7 +61,6 @@ class ColorTestWidget(gtk.DrawingArea):
         self.connect("expose-event", self.color_test_widget_expose)        
         self.pixbuf = None
         self.background_color = "#000000"
-        self.buffer_size = 200       # pixel
         
         self.drag_dest_set(
             gtk.DEST_DEFAULT_MOTION |
@@ -89,12 +89,12 @@ class ColorTestWidget(gtk.DrawingArea):
         
         # Draw mask.
         draw_vlinear(
-            cr, rect.x, rect.y + self.pixbuf.get_height() - self.buffer_size, rect.width, self.buffer_size,
+            cr, rect.x, rect.y + self.pixbuf.get_height() - SHADE_SIZE, rect.width, SHADE_SIZE,
             [(0, (self.background_color, 0)),
              (1, (self.background_color, 1))])
         
         draw_hlinear(
-            cr, rect.x + self.pixbuf.get_width() - self.buffer_size, rect.y, self.buffer_size, rect.height,
+            cr, rect.x + self.pixbuf.get_width() - SHADE_SIZE, rect.y, SHADE_SIZE, rect.height,
             [(0, (self.background_color, 0)),
              (1, (self.background_color, 1))])
 

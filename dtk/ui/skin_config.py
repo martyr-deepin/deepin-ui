@@ -26,6 +26,7 @@ import os
 from utils import color_hex_to_cairo
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from config import Config
+from constant import SHADE_SIZE
 
 class SkinConfig(gobject.GObject):
     '''SkinConfig.'''
@@ -78,7 +79,6 @@ class SkinConfig(gobject.GObject):
         '''Apply skin.'''
         for window in self.window_list:
             window.queue_draw()
-            print "Draw: %s" % (window)
     
     def import_skin(self):
         '''Import skin.'''
@@ -120,8 +120,6 @@ class SkinConfig(gobject.GObject):
         draw_pixbuf(cr, self.background_pixbuf, x, y)
         
         # Draw dominant color if necessarily.
-        shadow_size = 200
-        
         if self.background_pixbuf.get_width() < toplevel_rect.width and self.background_pixbuf.get_height() < toplevel_rect.height:
             cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
             cr.rectangle(
@@ -134,9 +132,9 @@ class SkinConfig(gobject.GObject):
         if self.background_pixbuf.get_width() < toplevel_rect.width:
             draw_hlinear(
                 cr,
-                x + self.background_pixbuf.get_width() - shadow_size,
+                x + self.background_pixbuf.get_width() - SHADE_SIZE,
                 y,
-                shadow_size,
+                SHADE_SIZE,
                 self.background_pixbuf.get_height(),
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
@@ -153,9 +151,9 @@ class SkinConfig(gobject.GObject):
             draw_vlinear(
                 cr,
                 x,
-                y + self.background_pixbuf.get_height() - shadow_size,
+                y + self.background_pixbuf.get_height() - SHADE_SIZE,
                 self.background_pixbuf.get_width(),
-                shadow_size,
+                SHADE_SIZE,
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
     
