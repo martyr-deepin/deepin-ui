@@ -77,6 +77,7 @@ class ColorTestWidget(gtk.DrawingArea):
     def set_pixbuf(self, filename):
         self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(filename, 800, 800)
         self.background_color = get_dominant_color(filename)
+        print (filename, self.background_color)
         self.queue_draw()
         
     def color_test_widget_expose(self, widget, event):

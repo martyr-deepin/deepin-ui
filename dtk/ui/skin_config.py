@@ -20,8 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import gtk
 import gobject
 import os
+from utils import color_hex_to_cairo
+from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from config import Config
 
 class SkinConfig(gobject.GObject):
@@ -58,6 +61,9 @@ class SkinConfig(gobject.GObject):
             
             # Get editable config.
             self.editable = self.config.getboolean("editable", "editable")
+            
+            # Generate background pixbuf.
+            self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(skin_dir, self.image))
             
             return True
         except Exception, e:
@@ -104,7 +110,65 @@ class SkinConfig(gobject.GObject):
         '''Remove skin window.'''
         if window in self.window_list:
             self.window_list.remove(window)
+            
+    def render_background(self, cr, widget, x, y):
+        '''Render background.'''
+        # Get toplevel size.
+        toplevel_rect = widget.get_toplevel().allocation
+        
+        # Draw background.
+        draw_pixbuf(cr, self.background_pixbuf, x, y)
+        
+        # Draw dominant color if necessarily.
+        shadow_size = 200
+        
+        if self.background_pixbuf.get_width() < toplevel_rect.width and self.background_pixbuf.get_height() < toplevel_rect.height:
+            cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
+            cr.rectangle(
+                x + self.background_pixbuf.get_width(),
+                y + self.background_pixbuf.get_height(),
+                toplevel_rect.width - self.background_pixbuf.get_width(),
+                toplevel_rect.height - self.background_pixbuf.get_height())
+            cr.fill()
+        
+        if self.background_pixbuf.get_width() < toplevel_rect.width:
+            draw_hlinear(
+                cr,
+                x + self.background_pixbuf.get_width() - shadow_size,
+                y,
+                shadow_size,
+                self.background_pixbuf.get_height(),
+                [(0, (self.dominant_color, 0)),
+                 (1, (self.dominant_color, 1))])
+            
+            cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
+            cr.rectangle(
+                x + self.background_pixbuf.get_width(),
+                y,
+                toplevel_rect.width - self.background_pixbuf.get_width(),
+                self.background_pixbuf.get_height())
+            cr.fill()
+            
+        if self.background_pixbuf.get_height() < toplevel_rect.height:
+            draw_vlinear(
+                cr,
+                x,
+                y + self.background_pixbuf.get_height() - shadow_size,
+                self.background_pixbuf.get_width(),
+                shadow_size,
+                [(0, (self.dominant_color, 0)),
+                 (1, (self.dominant_color, 1))])
     
+            cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
+            cr.rectangle(
+                x,
+                y + self.background_pixbuf.get_height(),
+                self.background_pixbuf.get_width(),
+                toplevel_rect.height - self.background_pixbuf.get_height())
+            cr.fill()
+            
 gobject.type_register(SkinConfig)
 
 skin_config = SkinConfig()
+skin_config.load_skin("/home/andy/deepin-ui-private/skin/01")
+

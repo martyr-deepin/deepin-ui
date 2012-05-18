@@ -21,7 +21,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from box import BackgroundBox, EventBox
-from constant import BACKGROUND_IMAGE
 from draw import draw_vlinear
 from entry import Entry
 from label import Label
@@ -171,22 +170,20 @@ class EditableList(ScrolledWindow):
     
     def __init__(self, 
                  items=[],
-                 background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE),
                  font_color=ui_theme.get_color("editablelistFont"),
                  font_select_color=ui_theme.get_color("editablelistFontSelect"),
                  ):
         '''Init editable list.'''
         # Init.
-        ScrolledWindow.__init__(self, background_pixbuf)
+        ScrolledWindow.__init__(self)
         self.items = items
         self.focus_item_box = None
         self.edit_item_box = None
-        self.background_pixbuf = background_pixbuf
         self.font_color = font_color
         self.font_select_color = font_select_color
         
         # Background box.
-        self.background_box = BackgroundBox(background_pixbuf)
+        self.background_box = BackgroundBox()
         self.background_eventbox = EventBox()
         self.add_child(self.background_eventbox)
         self.background_eventbox.add(self.background_box)

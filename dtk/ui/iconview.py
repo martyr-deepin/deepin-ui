@@ -22,7 +22,7 @@
 
 import gtk
 import gobject
-from constant import BACKGROUND_IMAGE
+from skin_config import skin_config
 from theme import ui_theme
 from utils import get_match_parent, cairo_state, get_event_coords, is_in_rect, is_left_button, is_double_click, is_single_click
 from draw import draw_pixbuf, draw_vlinear
@@ -42,12 +42,10 @@ class IconView(gtk.DrawingArea):
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
     }
 
-    def __init__(self, 
-                 background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE)):
+    def __init__(self):
         '''Init icon view.'''
         # Init.
         gtk.DrawingArea.__init__(self)
-        self.background_pixbuf = background_pixbuf
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
@@ -175,11 +173,7 @@ class IconView(gtk.DrawingArea):
             cr.clip()
             
             (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
-            draw_pixbuf(
-                cr, 
-                self.background_pixbuf.get_pixbuf(),
-                offset_x + shadow_x, 
-                offset_y + shadow_y)
+            skin_config.render_background(cr, self, offset_x + shadow_x, offset_y + shadow_y)
             
         # Draw mask.
         self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)

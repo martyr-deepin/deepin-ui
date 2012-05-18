@@ -20,25 +20,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import BACKGROUND_IMAGE
-from draw import draw_pixbuf, draw_vlinear
+from draw import draw_vlinear
 from theme import ui_theme
 from utils import cairo_state, alpha_color_hex_to_cairo
 import gobject
 import gtk
+from skin_config import skin_config
 
 class ScrolledWindow(gtk.ScrolledWindow):
     '''Scrolled window.'''
 	
     def __init__(self, 
-                 background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE),
                  scrollebar_size = 6,
                  hscrollbar_policy=gtk.POLICY_AUTOMATIC,
                  vscrollbar_policy=gtk.POLICY_AUTOMATIC):
         '''Init scrolled window.'''
         # Init.
         gtk.ScrolledWindow.__init__(self)
-        self.background_pixbuf = background_pixbuf
         self.set_policy(hscrollbar_policy, vscrollbar_policy)
         self.scrollebar_size = scrollebar_size
         self.min_progress_size = 15
@@ -80,11 +78,7 @@ class ScrolledWindow(gtk.ScrolledWindow):
             cr.clip()
             
             (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
-            draw_pixbuf(
-                cr, 
-                self.background_pixbuf.get_pixbuf(), 
-                shadow_x,
-                shadow_y)
+            skin_config.render_background(cr, self, shadow_x, shadow_y)
             
         # Draw mask.
         self.draw_mask(cr, rect.x, rect.y, rect.width, rect.height,)

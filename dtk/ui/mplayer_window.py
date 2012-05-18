@@ -20,9 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import BACKGROUND_IMAGE, EDGE_DICT
-from draw import draw_pixbuf, draw_window_shadow, draw_window_frame
-from theme import ui_theme
+from constant import EDGE_DICT
+from draw import draw_window_shadow, draw_window_frame
 from utils import cairo_state, propagate_expose, resize_window, set_cursor, get_event_root_coords, enable_shadow, is_double_click, move_window
 import cairo
 import gobject
@@ -43,7 +42,6 @@ class MplayerWindow(gtk.Window):
         self.frame_radius = 2
         self.shadow_is_visible = True
         self.enable_resize = enable_resize
-        self.background_dpixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE)
         self.window_frame = gtk.VBox()
         self.add(self.window_frame)
         self.shape_flag = True
@@ -104,15 +102,10 @@ class MplayerWindow(gtk.Window):
         if enable_shadow(self) and self.enable_shadow:
             self.window_shadow.show_all()
         
-    def change_background(self, background_dpixbuf):
-        '''Change background.'''
-        self.background_dpixbuf = background_dpixbuf                
-        
     def expose_window(self, widget, event):
         '''Expose window.'''
         # Init.
         cr = widget.window.cairo_create()
-        pixbuf = self.background_dpixbuf.get_pixbuf()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
@@ -131,7 +124,7 @@ class MplayerWindow(gtk.Window):
             
             cr.clip()
             
-            draw_pixbuf(cr, pixbuf, x, y)
+            skin_config.render_background(cr, self, x, y)
         
             # Draw mask.
             self.draw_mask(cr, x, y, w, h)

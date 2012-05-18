@@ -20,7 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import BACKGROUND_IMAGE, DEFAULT_FONT_SIZE
+from skin_config import skin_config
+from constant import DEFAULT_FONT_SIZE
 from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state, draw_text
 from theme import ui_theme
 from utils import get_content_size
@@ -114,13 +115,11 @@ gobject.type_register(TextBox)
 class BackgroundBox(gtk.VBox):
     '''Box to expande background.'''
 	
-    def __init__(self, 
-                 background_pixbuf=ui_theme.get_pixbuf(BACKGROUND_IMAGE)):
+    def __init__(self):
         '''Init background box.'''
         # Init.
         gtk.VBox.__init__(self)
         self.set_can_focus(True)
-        self.background_pixbuf = background_pixbuf        
         
         self.connect("expose-event", self.expose_background_box)
         
@@ -143,11 +142,7 @@ class BackgroundBox(gtk.VBox):
             cr.clip()
             
             (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
-            draw_pixbuf(
-                cr, 
-                self.background_pixbuf.get_pixbuf(),
-                rect.x + shadow_x, 
-                rect.y + shadow_y)
+            skin_config.render_background(cr, self, rect.x + shadow_x, rect.y + shadow_y)
             
         self.draw_mask(cr, rect.x, rect.y, rect.width, rect.height)    
 
