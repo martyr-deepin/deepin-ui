@@ -24,9 +24,9 @@ import os
 import gtk
 import gobject
 from window import Window
-from draw import draw_window_shadow, draw_window_frame, draw_pixbuf, draw_vlinear, draw_hlinear
+from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, enable_shadow, cairo_state, container_remove_all, cairo_disable_antialias
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias
 from constant import SHADE_SIZE
 from keymap import has_shift_mask
 from titlebar import Titlebar
@@ -77,19 +77,14 @@ class SkinWindow(Window):
         
         self.switch_preview_page()
         
-        self.preview_page.preview_view.connect(
-            "button-press-item", 
-            self.change_skin)
+        self.preview_page.preview_view.connect("button-press-item", self.change_skin)
         
-        self.preview_page.preview_view.connect(
-            "double-click-item", 
-            lambda view, item, x, y: self.switch_edit_page(item.background_path))
+        self.preview_page.preview_view.connect("double-click-item", self.switch_edit_page)
         
     def change_skin(self, view, item, x, y):
         '''Change skin.'''
         # Load skin.
         if skin_config.load_skin(item.skin_dir):
-            print "Load skin successful."
             skin_config.apply_skin()
         
     def switch_preview_page(self):
@@ -97,10 +92,10 @@ class SkinWindow(Window):
         container_remove_all(self.body_box)
         self.body_box.add(self.preview_page)
         
-    def switch_edit_page(self, background_path):
+    def switch_edit_page(self, view, item, x, y):
         '''Switch edit page.'''
         container_remove_all(self.body_box)
-        edit_page = SkinEditPage(background_path)
+        edit_page = SkinEditPage(item.background_path)
         self.body_box.add(edit_page)
         
         edit_page.connect("click-save", lambda page: self.switch_preview_page())
@@ -452,14 +447,15 @@ class SkinEditArea(gtk.EventBox):
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         
+        self.preview_pixbuf = ui_theme.get_pixbuf("frame.png").get_pixbuf()
         self.app_window_width = 900
         self.app_window_height = 600
-        self.preview_window_width = 300
-        self.preview_window_height = 200
+        self.preview_pixbuf_width = self.preview_pixbuf.get_width()
+        self.preview_pixbuf_height = self.preview_pixbuf.get_height()
         self.preview_frame_width = 400
         self.preview_frame_height = 300
-        self.padding_x = (self.preview_frame_width - self.preview_window_width) / 2
-        self.padding_y = (self.preview_frame_height - self.preview_window_height) / 2
+        self.padding_x = (self.preview_frame_width - self.preview_pixbuf_width) / 2
+        self.padding_y = (self.preview_frame_height - self.preview_pixbuf_height) / 2
         
         self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(background_path)
         self.set_size_request(self.preview_frame_width, self.preview_frame_height)
@@ -469,14 +465,14 @@ class SkinEditArea(gtk.EventBox):
         self.resize_frame_size = 2
         self.resize_x = 0
         self.resize_y = 0
-        self.resize_width = int(self.background_pixbuf.get_width() * self.preview_window_width / self.app_window_width)
-        self.resize_height = int(self.background_pixbuf.get_height() * self.preview_window_width / self.app_window_width)
+        self.resize_width = int(self.background_pixbuf.get_width() * self.preview_pixbuf_width / self.app_window_width)
+        self.resize_height = int(self.background_pixbuf.get_height() * self.preview_pixbuf_width / self.app_window_width)
         self.min_resize_width = self.min_resize_height = 32
         
         self.shadow_radius = 6
         self.frame_radius = 2
         self.shadow_padding = self.shadow_radius - self.frame_radius
-        self.shadow_size = int(SHADE_SIZE * self.preview_window_width / self.app_window_width)
+        self.shadow_size = int(SHADE_SIZE * self.preview_pixbuf_width / self.app_window_width)
         
         self.drag_start_x = 0
         self.drag_start_y = 0
@@ -552,24 +548,12 @@ class SkinEditArea(gtk.EventBox):
                  (1, (self.dominant_color, 1))]
                 )
             
-        # Draw window shadow.
-        if enable_shadow(self):
-            draw_window_shadow(
-                cr, 
-                x + self.padding_x - self.shadow_padding,
-                y + self.padding_y - self.shadow_padding,
-                self.preview_window_width + self.shadow_padding * 2,
-                self.preview_window_height + self.shadow_padding * 2,
-                self.shadow_radius, 
-                self.shadow_padding)
-        
-        # Draw window frame.
-        draw_window_frame(
-            cr, 
+        # Draw window.
+        draw_pixbuf(
+            cr,
+            self.preview_pixbuf,
             x + self.padding_x,
-            y + self.padding_y,
-            self.preview_window_width,
-            self.preview_window_height)    
+            y + self.padding_y)    
 
         if self.in_resize_area_flag:
             resize_x = x + self.padding_x + self.resize_x
