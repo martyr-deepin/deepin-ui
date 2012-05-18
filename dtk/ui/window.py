@@ -27,6 +27,7 @@ from utils import cairo_state, propagate_expose, set_cursor, resize_window, get_
 import cairo
 import gobject
 import gtk
+from skin_config import skin_config
 
 class Window(gtk.Window):
     '''Window.'''
@@ -35,6 +36,7 @@ class Window(gtk.Window):
         '''Init window.'''
         # Init.
         gtk.Window.__init__(self, window_type)
+        skin_config.wrap_skin_window(self)
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)

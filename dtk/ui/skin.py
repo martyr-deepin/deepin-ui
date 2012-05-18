@@ -34,8 +34,8 @@ from iconview import IconView
 from scrolled_window import ScrolledWindow
 from button import Button
 from theme import ui_theme
-from config import Config
 import math
+from skin_config import skin_config
 
 def draw_skin_mask(cr, x, y, w, h):
     '''Draw skin mask.'''
@@ -78,7 +78,18 @@ class SkinWindow(Window):
         
         self.preview_page.preview_view.connect(
             "button-press-item", 
+            self.change_skin)
+        
+        self.preview_page.preview_view.connect(
+            "double-click-item", 
             lambda view, item, x, y: self.switch_edit_page(item.background_path))
+        
+    def change_skin(self, view, item, x, y):
+        '''Change skin.'''
+        # Load skin.
+        if skin_config.load_skin(item.skin_dir):
+            print "Load skin successful."
+            skin_config.apply_skin()
         
     def switch_preview_page(self):
         '''Switch preview page.'''
@@ -129,9 +140,8 @@ class SkinPreviewPage(gtk.VBox):
         
         for root, dirs, files in os.walk(skin_dir):
             for filename in files:
-                if filename == "background.jpg":
-                    filepath = os.path.join(root, filename)
-                    self.preview_view.add_items([SkinPreviewIcon(filepath)])
+                if filename in ["background.jpg", "background.png", "background.jpeg"]:
+                    self.preview_view.add_items([SkinPreviewIcon(root, filename)])
         
 gobject.type_register(SkinPreviewPage)
         
@@ -142,10 +152,12 @@ class SkinPreviewIcon(gobject.GObject):
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
-    def __init__(self, background_path):
+    def __init__(self, skin_dir, background_file):
         '''Init item icon.'''
         gobject.GObject.__init__(self)
-        self.background_path = background_path
+        self.skin_dir = skin_dir
+        self.background_file = background_file
+        self.background_path = os.path.join(skin_dir, background_file)
         self.width = 86
         self.height = 56
         self.icon_padding = 2
@@ -154,7 +166,7 @@ class SkinPreviewIcon(gobject.GObject):
         self.hover_flag = False
         self.highlight_flag = False
         
-        self.create_preview_pixbuf(background_path)
+        self.create_preview_pixbuf(self.background_path)
         
     def create_preview_pixbuf(self, background_path):
         '''Create preview pixbuf.'''
@@ -890,70 +902,6 @@ class SkinEditArea(gtk.EventBox):
         self.queue_draw()
         
 gobject.type_register(SkinEditArea)
-
-class Skin(gobject.GObject):
-    '''Skin.'''
-	
-    def __init__(self):
-        '''Init skin.'''
-        # Init.
-        gobject.GObject.__init__(self)
-        
-    def load_skin(self, skin_dir):
-        '''Load skin, return True if load finish, otherwise return False.'''
-        try:
-            # Load config file.
-            self.config = Config(os.path.join(skin_dir, "config.ini"))
-            self.config.load()
-            
-            # Get name config.
-            self.ui_theme_name = self.config.get("name", "ui_theme_name")
-            self.app_theme_name = self.config.get("name", "app_theme_name")
-            
-            # Get application config.
-            self.app_id = self.config.get("application", "app_id")
-            self.app_version = self.config.getfloat("application", "app_version")
-            
-            # Get background config.
-            self.image = self.config.get("background", "image")
-            self.x = self.config.getint("background", "x")
-            self.y = self.config.getint("background", "y")
-            self.scale = self.config.getfloat("background", "scale")
-            self.dominant_color = self.config.get("background", "dominant_color")
-            
-            # Get editable config.
-            self.editable = self.config.getboolean("editable", "editable")
-            
-            return True
-        except Exception, e:
-            print "load_skin: %s" % (e)
-            return False
-    
-    def save_skin(self):
-        '''Save skin.'''
-        pass
-    
-    def apply_skin(self):
-        '''Apply skin.'''
-        pass
-    
-    def import_skin(self):
-        '''Import skin.'''
-        pass
-        
-    def export_skin(self):
-        '''Export skin.'''
-        pass
-    
-    def build_skin_package(self):
-        '''Build skin package.'''
-        pass
-    
-    def extract_skin_package(self):
-        '''Extract skin package.'''
-        pass
-    
-gobject.type_register(Skin)
 
 if __name__ == '__main__':
     skin_window = SkinWindow()

@@ -27,6 +27,7 @@ from utils import cairo_state, propagate_expose, resize_window, set_cursor, get_
 import cairo
 import gobject
 import gtk
+from skin_config import skin_config
 
 class MplayerWindow(gtk.Window):
     '''Window for mplayer or any software that can't running when window redirect colormap from screen.'''
@@ -35,6 +36,7 @@ class MplayerWindow(gtk.Window):
         '''Init mplayer window.'''
         # Init.
         gtk.Window.__init__(self, window_type)
+        skin_config.wrap_skin_window(self)
         self.set_decorated(False)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.shadow_radius = shadow_radius
