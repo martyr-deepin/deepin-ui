@@ -213,6 +213,8 @@ class SkinPreviewIcon(gobject.GObject):
             )
         cr.fill()
         
+        # print (rect.width - self.padding_x * 2, rect.height - self.padding_y * 2)
+        
         # Draw background.
         with cairo_state(cr):
             # Draw cover.
@@ -337,10 +339,10 @@ class ColorIconItem(gobject.GObject):
         '''Init item icon.'''
         gobject.GObject.__init__(self)
         self.color = color
-        self.width = 40
-        self.height = 25
-        self.padding_x = 6
-        self.padding_y = 6
+        self.width = 42
+        self.height = 27
+        self.padding_x = 5 
+        self.padding_y = 5
         self.select_frame_size = 2
         self.hover_flag = False
         self.highlight_flag = False
@@ -683,11 +685,19 @@ class SkinEditArea(gtk.EventBox):
     
     def button_release_skin_edit_area(self, widget, event):
         '''Callback for `button-release-event`.'''
+        # Init.
+        rect = widget.allocation
+        
         # Update status.
         self.button_press_flag = False
         self.button_release_flag = True
         self.action_type = None
-        self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
+        
+        # 
+        if is_in_rect((event.x, event.y), (rect.x, rect.y, rect.width, rect.width)):
+            self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
+        else:
+            self.skin_edit_area_set_cursor(None)
     
         # Change skin.
         skin_config.update_image_size(
@@ -697,8 +707,6 @@ class SkinEditArea(gtk.EventBox):
             self.resize_height / float(self.background_preview_height)
             )
         
-        print (skin_config.x, skin_config.y, skin_config.scale_x, skin_config.scale_y)
-
         # Apply skin.
         skin_config.apply_skin()
     
