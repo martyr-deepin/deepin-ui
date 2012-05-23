@@ -77,7 +77,8 @@ class SkinConfig(gobject.GObject):
             self.dominant_color = self.config.get("background", "dominant_color")
             
             # Get editable config.
-            self.editable = self.config.getboolean("editable", "editable")
+            self.deletable = self.config.getboolean("action", "deletable")
+            self.editable = self.config.getboolean("action", "editable")
             
             # Generate background pixbuf.
             self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.skin_dir, self.image))

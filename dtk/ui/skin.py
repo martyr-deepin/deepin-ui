@@ -156,6 +156,8 @@ class SkinPreviewPage(gtk.VBox):
                 if filename in ["background.jpg", "background.png", "background.jpeg"]:
                     self.preview_view.add_items([SkinPreviewIcon(root, filename)])
                     
+        self.preview_view.add_items([SkinAddIcon()])
+                    
     def highlight_skin(self):
         '''Highlight skin.'''
         # Highlight skin.
@@ -292,6 +294,106 @@ class SkinPreviewIcon(gobject.GObject):
         pass
         
 gobject.type_register(SkinPreviewIcon)
+
+class SkinAddIcon(gobject.GObject):
+    '''Icon item.'''
+	
+    __gsignals__ = {
+        "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+    }
+    
+    def __init__(self):
+        '''Init item icon.'''
+        gobject.GObject.__init__(self)
+        self.width = 86
+        self.height = 56
+        self.icon_padding = 2
+        self.padding_x = 7
+        self.padding_y = 10
+        self.hover_flag = False
+        self.highlight_flag = False
+        
+    def emit_redraw_request(self):
+        '''Emit redraw-request signal.'''
+        self.emit("redraw-request")
+        
+    def get_width(self):
+        '''Get width.'''
+        return self.width + (self.icon_padding + self.padding_x) * 2
+        
+    def get_height(self):
+        '''Get height.'''
+        return self.height + (self.icon_padding + self.padding_y) * 2
+    
+    def render(self, cr, rect):
+        '''Render item.'''
+        # Draw frame.
+        if self.hover_flag:
+            cr.set_source_rgb(1, 0, 0)
+        elif self.highlight_flag:
+            cr.set_source_rgb(0, 1, 0)
+        else:
+            cr.set_source_rgb(0.3, 0.3, 0.3)
+        cr.rectangle(
+            rect.x + self.padding_x,
+            rect.y + self.padding_y,
+            rect.width - self.padding_x * 2,
+            rect.height - self.padding_y * 2
+            )
+        cr.fill()
+        
+        # Draw background.
+        with cairo_state(cr):
+            pixbuf = ui_theme.get_pixbuf("skin/add.png").get_pixbuf()
+            # Draw cover.
+            draw_pixbuf(
+                cr, 
+                pixbuf,
+                rect.x + (rect.width - pixbuf.get_width()) / 2,
+                rect.y + (rect.height - pixbuf.get_height()) / 2
+                )
+        
+    def icon_item_motion_notify(self, x, y):
+        '''Handle `motion-notify-event` signal.'''
+        self.hover_flag = True
+        
+        self.emit_redraw_request()
+        
+    def icon_item_lost_focus(self):
+        '''Lost focus.'''
+        self.hover_flag = False
+        
+        self.emit_redraw_request()
+        
+    def icon_item_highlight(self):
+        '''Highlight item.'''
+        self.highlight_flag = True
+
+        self.emit_redraw_request()
+        
+    def icon_item_normal(self):
+        '''Set item with normal status.'''
+        self.highlight_flag = False
+        
+        self.emit_redraw_request()
+    
+    def icon_item_button_press(self, x, y):
+        '''Handle button-press event.'''
+        pass        
+    
+    def icon_item_button_release(self, x, y):
+        '''Handle button-release event.'''
+        pass
+    
+    def icon_item_single_click(self, x, y):
+        '''Handle single click event.'''
+        pass
+
+    def icon_item_double_click(self, x, y):
+        '''Handle double click event.'''
+        pass
+        
+gobject.type_register(SkinAddIcon)
 
 class SkinEditPage(gtk.VBox):
     '''Init skin edit page.'''
