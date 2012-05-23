@@ -36,7 +36,6 @@ from button import Button
 from theme import ui_theme
 import math
 from skin_config import skin_config
-import copy
 
 def draw_skin_mask(cr, x, y, w, h):
     '''Draw skin mask.'''
@@ -90,6 +89,7 @@ class SkinWindow(Window):
         '''Switch preview page.'''
         container_remove_all(self.body_box)
         self.body_box.add(self.preview_page)
+        self.preview_page.highlight_skin()
         
     def switch_edit_page(self, view, item, x, y):
         '''Switch edit page.'''
@@ -138,7 +138,7 @@ class SkinPreviewPage(gtk.VBox):
         self.preview_scrolled_window.draw_mask = lambda cr, x, y, w, h: draw_mask(self.preview_scrolled_window, x, y, w, h, draw_skin_mask)
         self.preview_view = IconView()
         self.preview_view.draw_mask = lambda cr, x, y, w, h: draw_mask(self.preview_view, x, y, w, h, draw_skin_mask)
-                
+        
         self.preview_align.add(self.preview_scrolled_window)
         self.preview_scrolled_window.add_child(self.preview_view)
         self.pack_start(self.preview_align, True, True)
@@ -155,6 +155,14 @@ class SkinPreviewPage(gtk.VBox):
             for filename in files:
                 if filename in ["background.jpg", "background.png", "background.jpeg"]:
                     self.preview_view.add_items([SkinPreviewIcon(root, filename)])
+                    
+    def highlight_skin(self):
+        '''Highlight skin.'''
+        # Highlight skin.
+        for item in self.preview_view.items:
+            if item.skin_dir == skin_config.skin_dir:
+                self.preview_view.set_highlight(item)
+                break
         
 gobject.type_register(SkinPreviewPage)
         
