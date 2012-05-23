@@ -24,7 +24,7 @@ import os
 import gtk
 import gobject
 from window import Window
-from draw import draw_pixbuf, draw_vlinear, draw_hlinear
+from draw import draw_pixbuf, draw_vlinear, draw_hlinear, draw_font
 from mask import draw_mask
 from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias
 from constant import SHADE_SIZE
@@ -228,20 +228,16 @@ class SkinPreviewIcon(gobject.GObject):
         '''Render item.'''
         # Draw frame.
         if self.hover_flag:
-            cr.set_source_rgb(1, 0, 0)
+            pixbuf = ui_theme.get_pixbuf("skin/preview_hover.png").get_pixbuf()
         elif self.highlight_flag:
-            cr.set_source_rgb(0, 1, 0)
+            pixbuf = ui_theme.get_pixbuf("skin/preview_highlight.png").get_pixbuf()
         else:
-            cr.set_source_rgb(0.3, 0.3, 0.3)
-        cr.rectangle(
+            pixbuf = ui_theme.get_pixbuf("skin/preview_normal.png").get_pixbuf()
+        draw_pixbuf(
+            cr,
+            pixbuf,
             rect.x + self.padding_x,
-            rect.y + self.padding_y,
-            rect.width - self.padding_x * 2,
-            rect.height - self.padding_y * 2
-            )
-        cr.fill()
-        
-        # print (rect.width - self.padding_x * 2, rect.height - self.padding_y * 2)
+            rect.y + self.padding_y)    
         
         # Draw background.
         with cairo_state(cr):
@@ -329,18 +325,16 @@ class SkinAddIcon(gobject.GObject):
         '''Render item.'''
         # Draw frame.
         if self.hover_flag:
-            cr.set_source_rgb(1, 0, 0)
+            pixbuf = ui_theme.get_pixbuf("skin/preview_hover.png").get_pixbuf()
         elif self.highlight_flag:
-            cr.set_source_rgb(0, 1, 0)
+            pixbuf = ui_theme.get_pixbuf("skin/preview_highlight.png").get_pixbuf()
         else:
-            cr.set_source_rgb(0.3, 0.3, 0.3)
-        cr.rectangle(
+            pixbuf = ui_theme.get_pixbuf("skin/preview_normal.png").get_pixbuf()
+        draw_pixbuf(
+            cr,
+            pixbuf,
             rect.x + self.padding_x,
-            rect.y + self.padding_y,
-            rect.width - self.padding_x * 2,
-            rect.height - self.padding_y * 2
-            )
-        cr.fill()
+            rect.y + self.padding_y)    
         
         # Draw background.
         with cairo_state(cr):
@@ -422,19 +416,21 @@ class SkinEditPage(gtk.VBox):
         self.color_select_scrolled_window.add_child(self.color_select_view)
         self.color_select_align.add(self.color_select_scrolled_window)
         
-        for color in ["#C0FF00",
-                      "#FFC600",
-                      "#FCFF00",
-                      "#8400FF",
-                      "#00A8FF",
-                      "#FF0000",
-                      "#00FDFF",
-                      "#0006FF",
-                      "#BA00FF",
-                      "#00FF60",
-                      "#333333",
-                      "#FF6C00",
-                      "#FF00B4"]:
+        for color in [
+            "#FF0000",
+            "#FF6C00",
+            "#FFC600",
+            "#FCFF00",
+            "#C0FF00",
+            "#00FF60",
+            "#333333",
+            "#FF00B4",
+            "#BA00FF",
+            "#8400FF",
+            "#0006FF",
+            "#00A8FF",
+            "#00FDFF",
+            ]:
             self.color_select_view.add_items([ColorIconItem(color)])
         
         self.button_align = gtk.Alignment()
@@ -471,7 +467,6 @@ class ColorIconItem(gobject.GObject):
         self.height = 27
         self.padding_x = 5 
         self.padding_y = 5
-        self.select_frame_size = 2
         self.hover_flag = False
         self.highlight_flag = False
         
@@ -489,29 +484,32 @@ class ColorIconItem(gobject.GObject):
     
     def render(self, cr, rect):
         '''Render item.'''
-        # Draw select effect.
-        if self.hover_flag:
-            cr.set_source_rgb(1, 0, 0)
-        elif self.highlight_flag:
-            cr.set_source_rgb(0, 1, 0)
-        else:
-            cr.set_source_rgb(0.3, 0.3, 0.3)
-        cr.rectangle(
-            rect.x + self.padding_x - self.select_frame_size,
-            rect.y + self.padding_y - self.select_frame_size,
-            self.width + self.select_frame_size * 2,
-            self.height + self.select_frame_size * 2,
-            )
-        cr.fill()
+        # Init.
+        draw_x = rect.x + self.padding_x
+        draw_y = rect.y + self.padding_y
         
         # Draw color area.
-        cr.set_source_rgb(*color_hex_to_cairo(self.color))
-        cr.rectangle(
-            rect.x + self.padding_x,
-            rect.y + self.padding_y,
-            self.width,
-            self.height)
-        cr.fill()
+        draw_pixbuf(
+            cr,
+            ui_theme.get_pixbuf("skin/%s.png" % (self.color)).get_pixbuf(),
+            draw_x,
+            draw_y)
+        
+        # Draw select effect.
+        if self.hover_flag:
+            draw_pixbuf(
+                cr,
+                ui_theme.get_pixbuf("skin/color_frame_hover.png").get_pixbuf(),
+                draw_x,
+                draw_y)
+        elif self.highlight_flag:
+            draw_pixbuf(
+                cr,
+                ui_theme.get_pixbuf("skin/color_frame_highlight.png").get_pixbuf(),
+                draw_x,
+                draw_y)
+            
+        # draw_font(cr, self.color, 6, "#000000", draw_x, draw_y, rect.width, rect.height)
         
     def icon_item_motion_notify(self, x, y):
         '''Handle `motion-notify-event` signal.'''
