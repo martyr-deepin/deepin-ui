@@ -23,6 +23,7 @@
 import os
 import gtk
 import gobject
+from config import Config
 from window import Window
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
@@ -211,7 +212,7 @@ class SkinPreviewIcon(gobject.GObject):
                 gtk.gdk.INTERP_BILINEAR).subpixbuf(0, 0, self.width, self.height)
         else:
             self.pixbuf = background_pixbuf
-                
+            
     def emit_redraw_request(self):
         '''Emit redraw-request signal.'''
         self.emit("redraw-request")
@@ -241,10 +242,21 @@ class SkinPreviewIcon(gobject.GObject):
         
         # Draw background.
         with cairo_state(cr):
+            # Mirror image if necessarily.
+            preview_config = Config(os.path.join(self.skin_dir, "config.ini"))    
+            preview_config.load()
+            
+            pixbuf = self.pixbuf.copy()
+            if preview_config.getboolean("action", "vertical_mirror"):
+                pixbuf = pixbuf.flip(True)
+            
+            if preview_config.getboolean("action", "horizontal_mirror"):
+                pixbuf = pixbuf.flip(False)
+                
             # Draw cover.
             draw_pixbuf(
                 cr, 
-                self.pixbuf, 
+                pixbuf,
                 rect.x + (rect.width - self.pixbuf.get_width()) / 2,
                 rect.y + (rect.height - self.pixbuf.get_height()) / 2
                 )
