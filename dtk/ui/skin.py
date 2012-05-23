@@ -469,7 +469,7 @@ class SkinEditPage(gtk.VBox):
             )
         self.action_right_box.pack_start(self.export_button)
         
-        self.reset_button.connect("clicked", lambda w: skin_config.reset())
+        self.reset_button.connect("clicked", lambda w: self.edit_area.click_reset_button())
         self.v_split_button.connect("clicked", lambda w: skin_config.vertical_mirror_background())
         self.h_split_button.connect("clicked", lambda w: skin_config.horizontal_mirror_background())
         
@@ -664,10 +664,10 @@ class SkinEditArea(gtk.EventBox):
         # Load config from skin_config.
         self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(
             os.path.join(skin_config.skin_dir, skin_config.image))
-        self.resize_x = skin_config.x
-        self.resize_y = skin_config.y
         self.resize_scale_x = skin_config.scale_x
         self.resize_scale_y = skin_config.scale_y
+        self.resize_x = skin_config.x * self.resize_scale_x * self.preview_pixbuf_width / self.app_window_width
+        self.resize_y = skin_config.y * self.resize_scale_y * self.preview_pixbuf_width / self.app_window_width
         self.dominant_color = skin_config.dominant_color
         
         self.resize_pointer_size = 8
@@ -1116,6 +1116,21 @@ class SkinEditArea(gtk.EventBox):
         
         self.queue_draw()
         
+    def click_reset_button(self):
+        '''Click reset button.'''
+        # Reset skin config.
+        skin_config.reset()
+        
+        self.resize_scale_x = skin_config.scale_x
+        self.resize_scale_y = skin_config.scale_y
+        self.resize_x = skin_config.x * self.resize_scale_x * self.preview_pixbuf_width / self.app_window_width
+        self.resize_y = skin_config.y * self.resize_scale_y * self.preview_pixbuf_width / self.app_window_width
+        self.resize_width = int(self.background_preview_width * self.resize_scale_x)
+        self.resize_height = int(self.background_preview_height * self.resize_scale_y)
+        
+        # Apply skin.
+        skin_config.apply_skin()
+    
 gobject.type_register(SkinEditArea)
 
 if __name__ == '__main__':

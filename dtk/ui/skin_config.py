@@ -148,8 +148,6 @@ class SkinConfig(gobject.GObject):
         self.vertical_mirror = False
         self.horizontal_mirror = False
         
-        self.apply_skin()
-        
     def vertical_mirror_background(self):
         '''Vertical mirror background.'''
         self.vertical_mirror = not self.vertical_mirror
