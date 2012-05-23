@@ -24,6 +24,7 @@
  "notebookFont" : "#000000",
  "editablelistFont" : "#000000",
  "editablelistFontSelect" : "#FFFFFF",
+ "skinTitle" : "#000000",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),

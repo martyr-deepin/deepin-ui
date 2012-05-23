@@ -70,8 +70,8 @@ class SkinConfig(gobject.GObject):
             
             # Get background config.
             self.image = self.config.get("background", "image")
-            self.x = self.config.getint("background", "x")
-            self.y = self.config.getint("background", "y")
+            self.x = self.config.getfloat("background", "x")
+            self.y = self.config.getfloat("background", "y")
             self.scale_x = self.config.getfloat("background", "scale_x")
             self.scale_y = self.config.getfloat("background", "scale_y")
             self.dominant_color = self.config.get("background", "dominant_color")

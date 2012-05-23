@@ -24,18 +24,18 @@ import os
 import gtk
 import gobject
 from window import Window
-from draw import draw_pixbuf, draw_vlinear, draw_hlinear, draw_font
+from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
 from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias
 from constant import SHADE_SIZE
-from keymap import has_shift_mask
 from titlebar import Titlebar
 from iconview import IconView
 from scrolled_window import ScrolledWindow
-from button import Button
+from button import Button, ImageButton, ToggleButton
 from theme import ui_theme
 import math
 from skin_config import skin_config
+from label import Label
 
 def draw_skin_mask(cr, x, y, w, h):
     '''Draw skin mask.'''
@@ -402,13 +402,83 @@ class SkinEditPage(gtk.VBox):
         gtk.VBox.__init__(self)
         self.edit_area_align = gtk.Alignment()
         self.edit_area_align.set(0.5, 0.5, 1, 1)
-        self.edit_area_align.set_padding(0, 0, 25, 25)
+        self.edit_area_align.set_padding(5, 0, 30, 30)
         self.edit_area = SkinEditArea()        
         self.edit_area_align.add(self.edit_area)
         
+        self.action_align = gtk.Alignment()
+        self.action_align.set(0.5, 0.5, 1, 1)
+        self.action_align.set_padding(5, 5, 30, 30)
+        self.action_box = gtk.HBox()
+        self.action_left_align = gtk.Alignment()
+        self.action_left_align.set(0.0, 0.5, 0, 0)
+        self.action_right_align = gtk.Alignment()
+        self.action_right_align.set(1.0, 0.5, 0, 0)
+        self.action_left_box = gtk.HBox()
+        self.action_left_box.set_size_request(-1, 20)
+        self.action_right_box = gtk.HBox()
+        self.action_right_box.set_size_request(-1, 20)
+        self.action_align.add(self.action_box)
+        self.action_box.pack_start(self.action_left_align, True, True)
+        self.action_box.pack_start(self.action_right_align, False, False)
+        self.action_left_align.add(self.action_left_box)
+        self.action_right_align.add(self.action_right_box)
+        
+        self.reset_button = ImageButton(
+            ui_theme.get_pixbuf("skin/reset_normal.png"),
+            ui_theme.get_pixbuf("skin/reset_hover.png"),
+            ui_theme.get_pixbuf("skin/reset_press.png"),
+            )
+        self.v_split_button = ImageButton(
+            ui_theme.get_pixbuf("skin/v_split_normal.png"),
+            ui_theme.get_pixbuf("skin/v_split_hover.png"),
+            ui_theme.get_pixbuf("skin/v_split_press.png"),
+            )
+        self.h_split_button = ImageButton(
+            ui_theme.get_pixbuf("skin/h_split_normal.png"),
+            ui_theme.get_pixbuf("skin/h_split_hover.png"),
+            ui_theme.get_pixbuf("skin/h_split_press.png"),
+            )
+        self.turn_left_button = ImageButton(
+            ui_theme.get_pixbuf("skin/turn_left_normal.png"),
+            ui_theme.get_pixbuf("skin/turn_left_hover.png"),
+            ui_theme.get_pixbuf("skin/turn_left_press.png"),
+            )
+        self.turn_right_button = ImageButton(
+            ui_theme.get_pixbuf("skin/turn_right_normal.png"),
+            ui_theme.get_pixbuf("skin/turn_right_hover.png"),
+            ui_theme.get_pixbuf("skin/turn_right_press.png"),
+            )
+        self.lock_button = ToggleButton(
+            ui_theme.get_pixbuf("skin/lock_normal.png"),
+            ui_theme.get_pixbuf("skin/lock_press.png"),
+            ui_theme.get_pixbuf("skin/lock_hover.png"),
+            ui_theme.get_pixbuf("skin/lock_press.png"),
+            )
+        self.action_left_box.pack_start(self.reset_button)
+        self.action_left_box.pack_start(self.v_split_button)
+        self.action_left_box.pack_start(self.h_split_button)
+        self.action_left_box.pack_start(self.turn_left_button)
+        self.action_left_box.pack_start(self.turn_right_button)
+        self.action_left_box.pack_start(self.lock_button)
+        
+        self.export_button = ImageButton(
+            ui_theme.get_pixbuf("skin/export_normal.png"),
+            ui_theme.get_pixbuf("skin/export_hover.png"),
+            ui_theme.get_pixbuf("skin/export_press.png"),
+            )
+        self.action_right_box.pack_start(self.export_button)
+        
+        self.color_label_align = gtk.Alignment()
+        self.color_label_align.set(0.0, 0.5, 0, 0)
+        self.color_label_align.set_padding(0, 0, 20, 0)
+        self.color_label = Label("配色选择", ui_theme.get_color("skinTitle"), 11)
+        self.color_label.set_size_request(100, 30)
+        self.color_label_align.add(self.color_label)
+        
         self.color_select_align = gtk.Alignment()
         self.color_select_align.set(0.5, 0.5, 1, 1)
-        self.color_select_align.set_padding(20, 20, 38, 38)
+        self.color_select_align.set_padding(0, 0, 32, 32)
         self.color_select_view = IconView()
         self.color_select_view.draw_mask = lambda cr, x, y, w, h: draw_mask(self.color_select_view, x, y, w, h, draw_skin_mask)
         self.color_select_scrolled_window = ScrolledWindow()
@@ -444,6 +514,8 @@ class SkinEditPage(gtk.VBox):
         self.button_box.pack_start(self.cancel_button)
         
         self.pack_start(self.edit_area_align, False, False)
+        self.pack_start(self.action_align, False, False)
+        self.pack_start(self.color_label_align, True, True)
         self.pack_start(self.color_select_align, True, True)
         self.pack_start(self.button_align, False, False)
         
@@ -465,8 +537,8 @@ class ColorIconItem(gobject.GObject):
         self.color = color
         self.width = 42
         self.height = 27
-        self.padding_x = 5 
-        self.padding_y = 5
+        self.padding_x = 6
+        self.padding_y = 6
         self.hover_flag = False
         self.highlight_flag = False
         
@@ -579,8 +651,8 @@ class SkinEditArea(gtk.EventBox):
         self.app_window_height = skin_config.app_window_height
         self.preview_pixbuf_width = self.preview_pixbuf.get_width()
         self.preview_pixbuf_height = self.preview_pixbuf.get_height()
-        self.preview_frame_width = 400
-        self.preview_frame_height = 300
+        self.preview_frame_width = 390
+        self.preview_frame_height = 270
         self.padding_x = (self.preview_frame_width - self.preview_pixbuf_width) / 2
         self.padding_y = (self.preview_frame_height - self.preview_pixbuf_height) / 2
         self.set_size_request(self.preview_frame_width, self.preview_frame_height)
@@ -617,15 +689,12 @@ class SkinEditArea(gtk.EventBox):
         self.button_release_flag = True
         self.resize_frame_flag = False
         self.in_resize_area_flag = False
-        self.press_shift_flag = False
         
         self.connect("expose-event", self.expose_skin_edit_area)
         self.connect("button-press-event", self.button_press_skin_edit_area)
         self.connect("button-release-event", self.button_release_skin_edit_area)
         self.connect("motion-notify-event", self.motion_skin_edit_area)
         self.connect("leave-notify-event", self.leave_notify_skin_edit_area)
-        self.connect("key-press-event", self.key_press_skin_edit_area)
-        self.connect("key-release-event", self.key_release_skin_edit_area)
         
     def expose_skin_edit_area(self, widget, event):
         '''Expose edit area.'''
@@ -792,7 +861,7 @@ class SkinEditArea(gtk.EventBox):
             
             # Draw preview frame.
             with cairo_disable_antialias(cr):
-                cr.set_source_rgb(0.3, 0.3, 0.3)
+                cr.set_source_rgb(*color_hex_to_cairo("#CCCCCC"))
                 cr.rectangle(x, y, w, h)
                 cr.stroke()
             
@@ -872,16 +941,6 @@ class SkinEditArea(gtk.EventBox):
             if old_flag != self.in_resize_area_flag:
                 self.queue_draw()
     
-    def key_press_skin_edit_area(self, widget, event):
-        '''Callback for `key-press-event` signal.'''
-        if has_shift_mask(event):
-            self.press_shift_flag = True
-    
-    def key_release_skin_edit_area(self, widget, event):
-        '''Callback for `key-release-event` signal.'''
-        if has_shift_mask(event):
-            self.press_shift_flag = False
-        
     def skin_edit_area_set_cursor(self, action_type):
         '''Set cursor.'''
         if action_type == self.POSITION_INSIDE:

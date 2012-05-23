@@ -305,7 +305,8 @@ def expose_max_button(widget, event, sub_dir, max_path_prefix, unmax_path_prefix
 class ToggleButton(gtk.ToggleButton):
     '''Image button.'''
 	
-    def __init__(self, inactive_normal_dpixbuf, active_normal_dpixbuf, 
+    def __init__(self, 
+                 inactive_normal_dpixbuf, active_normal_dpixbuf, 
                  inactive_hover_dpixbuf=None, active_hover_dpixbuf=None, 
                  inactive_press_dpixbuf=None, active_press_dpixbuf=None,
                  scale_x=False, content=None):
