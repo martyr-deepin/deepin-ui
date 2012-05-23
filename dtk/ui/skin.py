@@ -439,16 +439,6 @@ class SkinEditPage(gtk.VBox):
             ui_theme.get_pixbuf("skin/h_split_hover.png"),
             ui_theme.get_pixbuf("skin/h_split_press.png"),
             )
-        self.turn_left_button = ImageButton(
-            ui_theme.get_pixbuf("skin/turn_left_normal.png"),
-            ui_theme.get_pixbuf("skin/turn_left_hover.png"),
-            ui_theme.get_pixbuf("skin/turn_left_press.png"),
-            )
-        self.turn_right_button = ImageButton(
-            ui_theme.get_pixbuf("skin/turn_right_normal.png"),
-            ui_theme.get_pixbuf("skin/turn_right_hover.png"),
-            ui_theme.get_pixbuf("skin/turn_right_press.png"),
-            )
         self.lock_button = ToggleButton(
             ui_theme.get_pixbuf("skin/lock_normal.png"),
             ui_theme.get_pixbuf("skin/lock_press.png"),
@@ -458,8 +448,6 @@ class SkinEditPage(gtk.VBox):
         self.action_left_box.pack_start(self.reset_button)
         self.action_left_box.pack_start(self.v_split_button)
         self.action_left_box.pack_start(self.h_split_button)
-        self.action_left_box.pack_start(self.turn_left_button)
-        self.action_left_box.pack_start(self.turn_right_button)
         self.action_left_box.pack_start(self.lock_button)
         
         self.export_button = ImageButton(
@@ -468,6 +456,10 @@ class SkinEditPage(gtk.VBox):
             ui_theme.get_pixbuf("skin/export_press.png"),
             )
         self.action_right_box.pack_start(self.export_button)
+        
+        self.reset_button.connect("clicked", lambda w: skin_config.reset())
+        self.v_split_button.connect("clicked", lambda w: skin_config.vertical_mirror_background())
+        self.h_split_button.connect("clicked", lambda w: skin_config.horizontal_mirror_background())
         
         self.color_label_align = gtk.Alignment()
         self.color_label_align.set(0.0, 0.5, 0, 0)
@@ -724,12 +716,20 @@ class SkinEditArea(gtk.EventBox):
                 cr.fill()
                 
             # Draw background.
+            pixbuf = self.background_pixbuf.scale_simple(
+                self.resize_width,
+                self.resize_height,
+                gtk.gdk.INTERP_BILINEAR)
+            
+            if skin_config.vertical_mirror:
+                pixbuf = pixbuf.flip(True)
+                
+            if skin_config.horizontal_mirror:
+                pixbuf = pixbuf.flip(False)
+            
             draw_pixbuf(
                 cr, 
-                self.background_pixbuf.scale_simple(
-                    self.resize_width,
-                    self.resize_height,
-                    gtk.gdk.INTERP_BILINEAR),
+                pixbuf,
                 x + self.padding_x + self.resize_x,
                 y + self.padding_y + self.resize_y)
             

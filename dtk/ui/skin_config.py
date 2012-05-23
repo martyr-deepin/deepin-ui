@@ -76,9 +76,11 @@ class SkinConfig(gobject.GObject):
             self.scale_y = self.config.getfloat("background", "scale_y")
             self.dominant_color = self.config.get("background", "dominant_color")
             
-            # Get editable config.
+            # Get action config.
             self.deletable = self.config.getboolean("action", "deletable")
             self.editable = self.config.getboolean("action", "editable")
+            self.vertical_mirror = self.config.getboolean("action", "vertical_mirror")
+            self.horizontal_mirror = self.config.getboolean("action", "horizontal_mirror")
             
             # Generate background pixbuf.
             self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.skin_dir, self.image))
@@ -94,6 +96,9 @@ class SkinConfig(gobject.GObject):
         self.config.set("background", "y", self.y)
         self.config.set("background", "scale_x", self.scale_x)
         self.config.set("background", "scale_y", self.scale_y)
+        
+        self.config.set("action", "vertical_mirror", self.vertical_mirror)
+        self.config.set("action", "horizontal_mirror", self.horizontal_mirror)
         
         self.config.write()
     
@@ -133,6 +138,30 @@ class SkinConfig(gobject.GObject):
         if window in self.window_list:
             self.window_list.remove(window)
             
+    def reset(self):
+        '''Reset.'''
+        self.x = 0
+        self.y = 0
+        self.scale_x = 1.0
+        self.scale_y = 1.0
+        
+        self.vertical_mirror = False
+        self.horizontal_mirror = False
+        
+        self.apply_skin()
+        
+    def vertical_mirror_background(self):
+        '''Vertical mirror background.'''
+        self.vertical_mirror = not self.vertical_mirror
+        
+        self.apply_skin()
+        
+    def horizontal_mirror_background(self):
+        '''Horizontal mirror background.'''
+        self.horizontal_mirror = not self.horizontal_mirror
+        
+        self.apply_skin()
+    
     def render_background(self, cr, widget, x, y):
         '''Render background.'''
         # Get toplevel size.
@@ -141,13 +170,21 @@ class SkinConfig(gobject.GObject):
         # Draw background.
         background_width = int(self.background_pixbuf.get_width() * self.scale_x)
         background_height = int(self.background_pixbuf.get_height() * self.scale_y)
-        draw_pixbuf(
-            cr,
-            self.background_pixbuf.scale_simple(
+        pixbuf = self.background_pixbuf.scale_simple(
                 background_width,
                 background_height,
                 gtk.gdk.INTERP_BILINEAR
-                ),
+                )
+        
+        if self.vertical_mirror:
+            pixbuf = pixbuf.flip(True)
+            
+        if self.horizontal_mirror:
+            pixbuf = pixbuf.flip(False)
+            
+        draw_pixbuf(
+            cr,
+            pixbuf,
             x + self.x,
             y + self.y)
         
