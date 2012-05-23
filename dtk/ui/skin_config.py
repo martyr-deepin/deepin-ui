@@ -89,7 +89,12 @@ class SkinConfig(gobject.GObject):
     
     def save_skin(self):
         '''Save skin.'''
-        pass
+        self.config.set("background", "x", self.x)
+        self.config.set("background", "y", self.y)
+        self.config.set("background", "scale_x", self.scale_x)
+        self.config.set("background", "scale_y", self.scale_y)
+        
+        self.config.write()
     
     def apply_skin(self):
         '''Apply skin.'''

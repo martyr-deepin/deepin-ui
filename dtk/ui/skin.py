@@ -36,6 +36,7 @@ from button import Button
 from theme import ui_theme
 import math
 from skin_config import skin_config
+import copy
 
 def draw_skin_mask(cr, x, y, w, h):
     '''Draw skin mask.'''
@@ -77,7 +78,6 @@ class SkinWindow(Window):
         self.switch_preview_page()
         
         self.preview_page.preview_view.connect("button-press-item", self.change_skin)
-        
         self.preview_page.preview_view.connect("double-click-item", self.switch_edit_page)
         
     def change_skin(self, view, item, x, y):
@@ -93,14 +93,32 @@ class SkinWindow(Window):
         
     def switch_edit_page(self, view, item, x, y):
         '''Switch edit page.'''
+        # Switch to edit page.
         container_remove_all(self.body_box)
         edit_page = SkinEditPage()
         self.body_box.add(edit_page)
         
-        edit_page.connect("click-save", lambda page: self.switch_preview_page())
-        edit_page.connect("click-cancel", lambda page: self.switch_preview_page())
+        edit_page.connect("click-save", lambda page: self.click_save_button())
+        edit_page.connect("click-cancel", lambda page: self.click_cancel_button())
         
         self.show_all()
+        
+    def click_save_button(self):
+        '''Click save button..'''
+        # Save skin.
+        skin_config.save_skin()
+        
+        # Switch to preview page.
+        self.switch_preview_page()        
+        
+    def click_cancel_button(self):
+        '''Click cancel button.'''
+        # Reload skin from config file.
+        skin_config.load_skin(skin_config.skin_dir)
+        skin_config.apply_skin()
+        
+        # Switch to preview page.
+        self.switch_preview_page()        
         
 gobject.type_register(SkinWindow)
 
