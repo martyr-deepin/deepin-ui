@@ -315,6 +315,14 @@ class ToggleButton(gtk.ToggleButton):
         font_size = DEFAULT_FONT_SIZE
         label_dcolor = ui_theme.get_color("buttonDefaultFont")
         self.button_press_flag = False
+        
+        self.inactive_pixbuf_group = (inactive_normal_dpixbuf,
+                                      inactive_hover_dpixbuf,
+                                      inactive_press_dpixbuf)
+        
+        self.active_pixbuf_group = (active_normal_dpixbuf,
+                                    active_hover_dpixbuf,
+                                    active_press_dpixbuf)
 
         # Init request size.
         if scale_x:
@@ -331,9 +339,6 @@ class ToggleButton(gtk.ToggleButton):
         self.connect("expose-event", lambda w, e : self.expose_toggle_button(
                 w, e,
                 scale_x, False,
-                inactive_normal_dpixbuf, active_normal_dpixbuf,
-                inactive_hover_dpixbuf, active_hover_dpixbuf, 
-                inactive_press_dpixbuf, active_press_dpixbuf,
                 button_label, font_size, label_dcolor))
         
     def button_press_cb(self, widget, event):    
@@ -346,12 +351,11 @@ class ToggleButton(gtk.ToggleButton):
         
     def expose_toggle_button(self, widget, event, 
                              scale_x, scaleY,
-                             inactive_normal_dpixbuf, active_normal_dpixbuf, 
-                             inactive_hover_dpixbuf, active_hover_dpixbuf,
-                             inactive_press_dpixbuf, active_press_dpixbuf,
                              button_label, font_size, label_dcolor):
         '''Expose function to replace event box's image.'''
         # Init.
+        inactive_normal_dpixbuf, inactive_hover_dpixbuf, inactive_press_dpixbuf = self.inactive_pixbuf_group
+        active_normal_dpixbuf, active_hover_dpixbuf, active_press_dpixbuf = self.active_pixbuf_group
         rect = widget.allocation
         image = inactive_normal_dpixbuf.get_pixbuf()
         
@@ -415,3 +419,9 @@ class ToggleButton(gtk.ToggleButton):
         propagate_expose(widget, event)
         
         return True
+    
+    def set_inactive_pixbuf_group(self,  new_group):
+        self.inactive_pixbuf_group = new_group
+        
+    def set_active_pixbuf_group(self, new_group):    
+        self.active_pixbuf_group = new_group
