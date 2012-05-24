@@ -457,6 +457,8 @@ class SkinEditPage(gtk.VBox):
             ui_theme.get_pixbuf("skin/lock_hover.png"),
             ui_theme.get_pixbuf("skin/lock_press.png"),
             )
+        self.lock_button.connect("toggled", self.edit_area.update_lock_status)
+        self.lock_button.set_active(True)
         self.action_left_box.pack_start(self.reset_button)
         self.action_left_box.pack_start(self.v_split_button)
         self.action_left_box.pack_start(self.h_split_button)
@@ -688,6 +690,7 @@ class SkinEditArea(gtk.EventBox):
         self.button_release_flag = True
         self.resize_frame_flag = False
         self.in_resize_area_flag = False
+        self.lock_flag = True
         
         self.connect("expose-event", self.expose_skin_edit_area)
         self.connect("button-press-event", self.button_press_skin_edit_area)
@@ -1136,7 +1139,11 @@ class SkinEditArea(gtk.EventBox):
         
         # Apply skin.
         skin_config.apply_skin()
-    
+        
+    def update_lock_status(self, toggle_button):
+        '''Update lock status.'''
+        self.lock_flag = toggle_button.get_active()
+        
 gobject.type_register(SkinEditArea)
 
 if __name__ == '__main__':
