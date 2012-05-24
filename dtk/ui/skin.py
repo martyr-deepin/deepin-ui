@@ -1088,28 +1088,60 @@ class SkinEditArea(gtk.EventBox):
     def skin_edit_area_adjust_left(self, event):
         '''Adjust left.'''
         offset_x = self.padding_x + self.shadow_padding
-        new_resize_x = min(int(event.x) - offset_x, 0)
-        self.resize_width = int(self.resize_width + self.resize_x - new_resize_x)
-        self.resize_x = int(new_resize_x)
+        if self.lock_flag:
+            if self.background_pixbuf.get_width() > self.background_pixbuf.get_height():
+                pass
+            else:
+                pass
+        else:
+            new_resize_x = min(int(event.x) - offset_x, 0)
+            self.resize_width = int(self.resize_width + self.resize_x - new_resize_x)
+            self.resize_x = int(new_resize_x)
         
     def skin_edit_area_adjust_top(self, event):
         '''Adjust top.'''
         offset_y = self.padding_y + self.shadow_padding
-        new_resize_y = min(int(event.y) - offset_y, 0)
-        self.resize_height = int(self.resize_height + self.resize_y - new_resize_y)
-        self.resize_y = int(new_resize_y)
+        if self.lock_flag:
+            if self.background_pixbuf.get_height() > self.background_pixbuf.get_width():
+                pass
+            else:
+                pass
+        else:
+            new_resize_y = min(int(event.y) - offset_y, 0)
+            self.resize_height = int(self.resize_height + self.resize_y - new_resize_y)
+            self.resize_y = int(new_resize_y)
         
     def skin_edit_area_adjust_right(self, event):
         '''Adjust right.'''
         offset_x = self.padding_x + self.shadow_padding
-        new_resize_x = max(offset_x + self.min_resize_width, int(event.x))
-        self.resize_width = int(new_resize_x - self.resize_x - offset_x)
+        if self.lock_flag:
+            if self.background_pixbuf.get_width() > self.background_pixbuf.get_height():
+                min_width = int(self.min_resize_height * self.background_pixbuf.get_width() / self.background_pixbuf.get_height())
+            else:
+                min_width = self.min_resize_width
+                
+            new_resize_x = max(offset_x + min_width, int(event.x))
+            self.resize_width = int(new_resize_x - self.resize_x - offset_x)
+            self.resize_height = int(self.resize_width * self.background_pixbuf.get_height() / self.background_pixbuf.get_width())
+        else:
+            new_resize_x = max(offset_x + self.min_resize_width, int(event.x))
+            self.resize_width = int(new_resize_x - self.resize_x - offset_x)
         
     def skin_edit_area_adjust_bottom(self, event):
         '''Adjust bottom.'''
         offset_y = self.padding_y + self.shadow_padding
-        new_resize_y = max(offset_y + self.min_resize_height, int(event.y))
-        self.resize_height = int(new_resize_y - self.resize_y - offset_y)
+        if self.lock_flag:
+            if self.background_pixbuf.get_height() > self.background_pixbuf.get_width():
+                min_height = int(self.min_resize_width * self.background_pixbuf.get_height() / self.background_pixbuf.get_width())
+            else:
+                min_height = self.min_resize_height
+                
+            new_resize_y = max(offset_y + min_height, int(event.y))    
+            self.resize_height = int(new_resize_y - self.resize_y - offset_y)
+            self.resize_width = int(self.resize_height * self.background_pixbuf.get_width() / self.background_pixbuf.get_height())
+        else:
+            new_resize_y = max(offset_y + self.min_resize_height, int(event.y))
+            self.resize_height = int(new_resize_y - self.resize_y - offset_y)
     
     def skin_edit_area_drag_background(self, event):
         '''Drag background.'''
