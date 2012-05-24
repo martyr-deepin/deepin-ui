@@ -1090,9 +1090,15 @@ class SkinEditArea(gtk.EventBox):
         offset_x = self.padding_x + self.shadow_padding
         if self.lock_flag:
             if self.background_pixbuf.get_width() > self.background_pixbuf.get_height():
-                pass
+                new_resize_x = min(int(event.x) - offset_x, int(self.resize_width + self.resize_x - (self.resize_height + self.resize_y) * self.background_pixbuf.get_width() / self.background_pixbuf.get_height()))
             else:
-                pass
+                new_resize_x = min(int(event.x) - offset_x, 0)
+                
+            self.resize_width = int(self.resize_width + self.resize_x - new_resize_x)
+            self.resize_x = int(new_resize_x)
+            new_resize_height = int(self.resize_width * self.background_pixbuf.get_height() / self.background_pixbuf.get_width())
+            self.resize_y += self.resize_height - new_resize_height
+            self.resize_height = new_resize_height
         else:
             new_resize_x = min(int(event.x) - offset_x, 0)
             self.resize_width = int(self.resize_width + self.resize_x - new_resize_x)
@@ -1103,9 +1109,16 @@ class SkinEditArea(gtk.EventBox):
         offset_y = self.padding_y + self.shadow_padding
         if self.lock_flag:
             if self.background_pixbuf.get_height() > self.background_pixbuf.get_width():
-                pass
+                new_resize_y = min(int(event.y) - offset_y, int(self.resize_height + self.resize_y - (self.resize_width + self.resize_x) * self.background_pixbuf.get_height() / self.background_pixbuf.get_width()))
+                
             else:
-                pass
+                new_resize_y = min(int(event.y) - offset_y, 0)
+                
+            self.resize_height = int(self.resize_height + self.resize_y - new_resize_y)
+            self.resize_y = int(new_resize_y)
+            new_resize_width = int(self.resize_height * self.background_pixbuf.get_width() / self.background_pixbuf.get_height())
+            self.resize_x += self.resize_width - new_resize_width
+            self.resize_width = new_resize_width
         else:
             new_resize_y = min(int(event.y) - offset_y, 0)
             self.resize_height = int(self.resize_height + self.resize_y - new_resize_y)
