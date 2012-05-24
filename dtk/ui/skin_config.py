@@ -166,6 +166,8 @@ class SkinConfig(gobject.GObject):
         toplevel_rect = widget.get_toplevel().allocation
         
         # Draw background.
+        background_x = self.x * self.scale_x
+        background_y = self.y * self.scale_y
         background_width = int(self.background_pixbuf.get_width() * self.scale_x)
         background_height = int(self.background_pixbuf.get_height() * self.scale_y)
         pixbuf = self.background_pixbuf.scale_simple(
@@ -183,43 +185,43 @@ class SkinConfig(gobject.GObject):
         draw_pixbuf(
             cr,
             pixbuf,
-            x + self.x,
-            y + self.y)
+            x + background_x,
+            y + background_y)
         
         # Draw dominant color if necessarily.
-        if (background_width + self.x) < toplevel_rect.width and (background_height + self.y) < toplevel_rect.height:
+        if (background_width + background_x) < toplevel_rect.width and (background_height + background_y) < toplevel_rect.height:
             cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
             cr.rectangle(
-                x + self.x + background_width,
-                y + self.y + background_height,
-                toplevel_rect.width - (background_width + self.x),
-                toplevel_rect.height - (background_height + self.y))
+                x + background_x + background_width,
+                y + background_y + background_height,
+                toplevel_rect.width - (background_width + background_x),
+                toplevel_rect.height - (background_height + background_y))
             cr.fill()
         
-        if (background_width + self.x) < toplevel_rect.width:
+        if (background_width + background_x) < toplevel_rect.width:
             draw_hlinear(
                 cr,
-                x + (background_width + self.x) - SHADE_SIZE,
+                x + (background_width + background_x) - SHADE_SIZE,
                 y,
                 SHADE_SIZE,
-                (background_height + self.y),
+                (background_height + background_y),
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
             
             cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
             cr.rectangle(
-                x + (background_width + self.x),
+                x + (background_width + background_x),
                 y,
-                toplevel_rect.width - (background_width + self.x),
-                (background_height + self.y))
+                toplevel_rect.width - (background_width + background_x),
+                (background_height + background_y))
             cr.fill()
             
-        if (background_height + self.y) < toplevel_rect.height:
+        if (background_height + background_y) < toplevel_rect.height:
             draw_vlinear(
                 cr,
                 x,
-                y + (background_height + self.y) - SHADE_SIZE,
-                (background_width + self.x),
+                y + (background_height + background_y) - SHADE_SIZE,
+                (background_width + background_x),
                 SHADE_SIZE,
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
@@ -227,9 +229,9 @@ class SkinConfig(gobject.GObject):
             cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
             cr.rectangle(
                 x,
-                y + (background_height + self.y),
-                (background_width + self.x),
-                toplevel_rect.height - (background_height + self.y))
+                y + (background_height + background_y),
+                (background_width + background_x),
+                toplevel_rect.height - (background_height + background_y))
             cr.fill()
             
 gobject.type_register(SkinConfig)

@@ -651,37 +651,36 @@ class SkinEditArea(gtk.EventBox):
         self.set_can_focus(True) # can focus to response key-press signal
         
         self.preview_pixbuf = ui_theme.get_pixbuf("frame.png").get_pixbuf()
+        self.preview_frame_width = 390
+        self.preview_frame_height = 270
         self.app_window_width = skin_config.app_window_width
         self.app_window_height = skin_config.app_window_height
         self.preview_pixbuf_width = self.preview_pixbuf.get_width()
         self.preview_pixbuf_height = self.preview_pixbuf.get_height()
-        self.preview_frame_width = 390
-        self.preview_frame_height = 270
         self.padding_x = (self.preview_frame_width - self.preview_pixbuf_width) / 2
         self.padding_y = (self.preview_frame_height - self.preview_pixbuf_height) / 2
         self.set_size_request(self.preview_frame_width, self.preview_frame_height)
         
         # Load config from skin_config.
-        self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(
-            os.path.join(skin_config.skin_dir, skin_config.image))
+        self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(skin_config.skin_dir, skin_config.image))
         self.resize_scale_x = skin_config.scale_x
         self.resize_scale_y = skin_config.scale_y
-        self.resize_x = skin_config.x * self.resize_scale_x * self.preview_pixbuf_width / self.app_window_width
-        self.resize_y = skin_config.y * self.resize_scale_y * self.preview_pixbuf_width / self.app_window_width
+        self.resize_x = self.eval_scale(skin_config.x * self.resize_scale_x)
+        self.resize_y = self.eval_scale(skin_config.y * self.resize_scale_y)
         self.dominant_color = skin_config.dominant_color
         
+        self.background_preview_width = int(self.eval_scale(self.background_pixbuf.get_width()))
+        self.background_preview_height = int(self.eval_scale(self.background_pixbuf.get_height()))
+        self.resize_width = int(self.eval_scale(self.background_pixbuf.get_width() * self.resize_scale_x))
+        self.resize_height = int(self.eval_scale(self.background_pixbuf.get_height() * self.resize_scale_y))
+        
+        self.min_resize_width = self.min_resize_height = 32
         self.resize_pointer_size = 8
         self.resize_frame_size = 2
-        self.background_preview_width = int(self.background_pixbuf.get_width() * self.preview_pixbuf_width / self.app_window_width)
-        self.background_preview_height = int(self.background_pixbuf.get_height() * self.preview_pixbuf_width / self.app_window_width)
-        self.resize_width = int(self.background_preview_width * self.resize_scale_x)
-        self.resize_height = int(self.background_preview_height * self.resize_scale_y)
-        self.min_resize_width = self.min_resize_height = 32
-        
         self.shadow_radius = 6
         self.frame_radius = 2
         self.shadow_padding = self.shadow_radius - self.frame_radius
-        self.shadow_size = int(SHADE_SIZE * self.preview_pixbuf_width / self.app_window_width)
+        self.shadow_size = int(self.eval_scale(SHADE_SIZE))
         
         self.drag_start_x = 0
         self.drag_start_y = 0
@@ -699,6 +698,10 @@ class SkinEditArea(gtk.EventBox):
         self.connect("button-release-event", self.button_release_skin_edit_area)
         self.connect("motion-notify-event", self.motion_skin_edit_area)
         self.connect("leave-notify-event", self.leave_notify_skin_edit_area)
+        
+    def eval_scale(self, value):
+        '''Eval scale.'''
+        return value * self.preview_pixbuf_width / self.app_window_width
         
     def expose_skin_edit_area(self, widget, event):
         '''Expose edit area.'''
@@ -908,8 +911,8 @@ class SkinEditArea(gtk.EventBox):
     
         # Change skin.
         skin_config.update_image_size(
-            self.resize_x * self.app_window_width / self.preview_pixbuf_width,
-            self.resize_y * self.app_window_height / self.preview_pixbuf_height, 
+            self.resize_x * self.background_preview_width * self.app_window_width / self.preview_pixbuf_width / self.resize_width,
+            self.resize_y * self.background_preview_height * self.app_window_width / self.preview_pixbuf_width / self.resize_height,
             self.resize_width / float(self.background_preview_width),
             self.resize_height / float(self.background_preview_height)
             )
@@ -1123,8 +1126,8 @@ class SkinEditArea(gtk.EventBox):
         
         self.resize_scale_x = skin_config.scale_x
         self.resize_scale_y = skin_config.scale_y
-        self.resize_x = skin_config.x * self.resize_scale_x * self.preview_pixbuf_width / self.app_window_width
-        self.resize_y = skin_config.y * self.resize_scale_y * self.preview_pixbuf_width / self.app_window_width
+        self.resize_x = self.eval_scale(skin_config.x * self.resize_scale_x)
+        self.resize_y = self.eval_scale(skin_config.y * self.resize_scale_y)
         self.resize_width = int(self.background_preview_width * self.resize_scale_x)
         self.resize_height = int(self.background_preview_height * self.resize_scale_y)
         
