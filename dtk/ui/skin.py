@@ -918,14 +918,18 @@ class SkinEditArea(gtk.EventBox):
             self.resize_height / float(self.background_preview_height)
             )
         
+        # Update in_resize_area_flag.
+        self.in_resize_area_flag = self.is_in_resize_area(event)
+        
         # Apply skin.
         skin_config.apply_skin()
     
     def leave_notify_skin_edit_area(self, widget, event):
         '''Callback for `leave-notify-event` signal.'''
-        self.in_resize_area_flag = False        
+        if not self.button_press_flag:
+            self.in_resize_area_flag = False        
         
-        self.queue_draw()
+            self.queue_draw()
         
     def motion_skin_edit_area(self, widget, event):
         '''Callback for `motion-notify-event`.'''
@@ -952,10 +956,11 @@ class SkinEditArea(gtk.EventBox):
         else:
             self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
 
-            old_flag = self.in_resize_area_flag
-            self.in_resize_area_flag = self.is_in_resize_area(event)
-            if old_flag != self.in_resize_area_flag:
-                self.queue_draw()
+            if not self.button_press_flag:
+                old_flag = self.in_resize_area_flag
+                self.in_resize_area_flag = self.is_in_resize_area(event)
+                if old_flag != self.in_resize_area_flag:
+                    self.queue_draw()
     
     def skin_edit_area_set_cursor(self, action_type):
         '''Set cursor.'''
