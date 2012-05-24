@@ -667,20 +667,16 @@ class SkinEditArea(gtk.EventBox):
         self.background_preview_height = int(self.eval_scale(self.background_pixbuf.get_height()))
         self.dominant_color = skin_config.dominant_color
         
-        self.resize_scale_x = skin_config.scale_x
-        self.resize_scale_y = skin_config.scale_y
-        self.resize_x = self.eval_scale(skin_config.x * self.resize_scale_x)
-        self.resize_y = self.eval_scale(skin_config.y * self.resize_scale_y)
-        self.resize_width = int(self.eval_scale(self.background_pixbuf.get_width() * self.resize_scale_x))
-        self.resize_height = int(self.eval_scale(self.background_pixbuf.get_height() * self.resize_scale_y))
+        # Update skin config.
+        self.update_skin_config()
         
-        self.min_resize_width = self.min_resize_height = 32
         self.resize_pointer_size = 8
         self.resize_frame_size = 2
         self.shadow_radius = 6
         self.frame_radius = 2
         self.shadow_padding = self.shadow_radius - self.frame_radius
         self.shadow_size = int(self.eval_scale(SHADE_SIZE))
+        self.min_resize_width = self.min_resize_height = self.shadow_size
         
         self.drag_start_x = 0
         self.drag_start_y = 0
@@ -1121,17 +1117,22 @@ class SkinEditArea(gtk.EventBox):
         
         self.queue_draw()
         
+    def update_skin_config(self):
+        '''Update skin config.'''
+        self.resize_scale_x = skin_config.scale_x
+        self.resize_scale_y = skin_config.scale_y
+        self.resize_x = self.eval_scale(skin_config.x * self.resize_scale_x)
+        self.resize_y = self.eval_scale(skin_config.y * self.resize_scale_y)
+        self.resize_width = int(self.eval_scale(self.background_pixbuf.get_width() * self.resize_scale_x))
+        self.resize_height = int(self.eval_scale(self.background_pixbuf.get_height() * self.resize_scale_y))
+        
     def click_reset_button(self):
         '''Click reset button.'''
         # Reset skin config.
         skin_config.reset()
         
-        self.resize_scale_x = skin_config.scale_x
-        self.resize_scale_y = skin_config.scale_y
-        self.resize_x = self.eval_scale(skin_config.x * self.resize_scale_x)
-        self.resize_y = self.eval_scale(skin_config.y * self.resize_scale_y)
-        self.resize_width = int(self.eval_scale(self.background_preview_width * self.resize_scale_x))
-        self.resize_height = int(self.eval_scale(self.background_preview_height * self.resize_scale_y))
+        # Update skin config.
+        self.update_skin_config()
         
         # Apply skin.
         skin_config.apply_skin()
