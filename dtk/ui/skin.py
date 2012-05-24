@@ -901,8 +901,8 @@ class SkinEditArea(gtk.EventBox):
         self.button_release_flag = True
         self.action_type = None
         
-        # 
-        if is_in_rect((event.x, event.y), (rect.x, rect.y, rect.width, rect.width)):
+        # Update cursor.
+        if is_in_rect((event.x, event.y), (0, 0, rect.width, rect.height)):
             self.skin_edit_area_set_cursor(self.skin_edit_area_get_action_type(event))
         else:
             self.skin_edit_area_set_cursor(None)
@@ -1086,14 +1086,14 @@ class SkinEditArea(gtk.EventBox):
         '''Adjust left.'''
         offset_x = self.padding_x + self.shadow_padding
         new_resize_x = min(int(event.x) - offset_x, 0)
-        self.resize_width = self.resize_width + self.resize_x - new_resize_x
+        self.resize_width = int(self.resize_width + self.resize_x - new_resize_x)
         self.resize_x = int(new_resize_x)
         
     def skin_edit_area_adjust_top(self, event):
         '''Adjust top.'''
         offset_y = self.padding_y + self.shadow_padding
         new_resize_y = min(int(event.y) - offset_y, 0)
-        self.resize_height = self.resize_height + self.resize_y - new_resize_y
+        self.resize_height = int(self.resize_height + self.resize_y - new_resize_y)
         self.resize_y = int(new_resize_y)
         
     def skin_edit_area_adjust_right(self, event):
