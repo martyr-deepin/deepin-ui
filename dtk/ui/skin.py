@@ -1137,14 +1137,15 @@ class SkinEditArea(gtk.EventBox):
         '''Adjust right.'''
         offset_x = self.padding_x + self.shadow_padding
         if self.lock_flag:
-            if self.background_pixbuf.get_width() > self.background_pixbuf.get_height():
-                min_width = int(self.min_resize_height * self.background_pixbuf.get_width() / self.background_pixbuf.get_height())
+            new_resize_width = max(int(event.x) - self.resize_x - offset_x, self.min_resize_width - self.resize_x)
+            new_resize_height = int(new_resize_width * self.background_pixbuf.get_height() / self.background_pixbuf.get_width())
+            
+            if new_resize_height + self.resize_y < self.min_resize_height:
+                self.resize_height = int(self.min_resize_height - self.resize_y)
+                self.resize_width = int(self.resize_height * self.background_pixbuf.get_width() / self.background_pixbuf.get_height())
             else:
-                min_width = self.min_resize_width
-                
-            new_resize_x = max(offset_x + min_width, int(event.x))
-            self.resize_width = int(new_resize_x - self.resize_x - offset_x)
-            self.resize_height = int(self.resize_width * self.background_pixbuf.get_height() / self.background_pixbuf.get_width())
+                self.resize_width = int(new_resize_width)
+                self.resize_height = int(new_resize_height)
         else:
             new_resize_x = max(offset_x + self.min_resize_width, int(event.x))
             self.resize_width = int(new_resize_x - self.resize_x - offset_x)
@@ -1153,14 +1154,15 @@ class SkinEditArea(gtk.EventBox):
         '''Adjust bottom.'''
         offset_y = self.padding_y + self.shadow_padding
         if self.lock_flag:
-            if self.background_pixbuf.get_height() > self.background_pixbuf.get_width():
-                min_height = int(self.min_resize_width * self.background_pixbuf.get_height() / self.background_pixbuf.get_width())
+            new_resize_height = max(int(event.y) - self.resize_y - offset_y, self.min_resize_height - self.resize_y)
+            new_resize_width = int(new_resize_height * self.background_pixbuf.get_width() / self.background_pixbuf.get_height())
+            
+            if new_resize_width + self.resize_x < self.min_resize_width:
+                self.resize_width = int(self.min_resize_width - self.resize_x)
+                self.resize_height = int(self.resize_width * self.background_pixbuf.get_height() / self.background_pixbuf.get_width())
             else:
-                min_height = self.min_resize_height
-                
-            new_resize_y = max(offset_y + min_height, int(event.y))    
-            self.resize_height = int(new_resize_y - self.resize_y - offset_y)
-            self.resize_width = int(self.resize_height * self.background_pixbuf.get_width() / self.background_pixbuf.get_height())
+                self.resize_height = int(new_resize_height)
+                self.resize_width = int(new_resize_width)
         else:
             new_resize_y = max(offset_y + self.min_resize_height, int(event.y))
             self.resize_height = int(new_resize_y - self.resize_y - offset_y)
