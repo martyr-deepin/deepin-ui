@@ -708,6 +708,8 @@ class SkinEditArea(gtk.EventBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        resize_x = int(self.resize_x)
+        resize_y = int(self.resize_y)
         
         with cairo_state(cr):
             cr.rectangle(x, y, w, h)
@@ -724,10 +726,10 @@ class SkinEditArea(gtk.EventBox):
                 # Draw dominant color.
                 cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))        
                 cr.rectangle(
-                    offset_x + self.resize_x,
-                    offset_y + self.resize_y,
-                    w - self.padding_x - self.resize_x,
-                    h - self.padding_y - self.resize_y)
+                    offset_x + resize_x,
+                    offset_y + resize_y,
+                    w - self.padding_x - resize_x,
+                    h - self.padding_y - resize_y)
                 cr.fill()
                 
             # Draw background.
@@ -745,29 +747,29 @@ class SkinEditArea(gtk.EventBox):
             draw_pixbuf(
                 cr, 
                 pixbuf,
-                x + self.padding_x + self.resize_x,
-                y + self.padding_y + self.resize_y)
+                x + self.padding_x + resize_x,
+                y + self.padding_y + resize_y)
             
             # Draw dominant shadow color.
             if self.button_release_flag:
                 offset_x = x + self.padding_x
                 offset_y = y + self.padding_y
-                background_area_width = self.resize_width + self.resize_x
-                background_area_height = self.resize_height + self.resize_y
+                background_area_width = self.resize_width + resize_x
+                background_area_height = self.resize_height + resize_y
                 draw_hlinear(
                     cr, 
                     offset_x + background_area_width - self.shadow_size,
-                    offset_y + self.resize_y,
+                    offset_y + resize_y,
                     self.shadow_size,
-                    background_area_height - self.resize_y,
+                    background_area_height - resize_y,
                     [(0, (self.dominant_color, 0)),
                      (1, (self.dominant_color, 1))])
                 
                 draw_vlinear(
                     cr, 
-                    offset_x + self.resize_x,
+                    offset_x + resize_x,
                     offset_y + background_area_height - self.shadow_size,
-                    background_area_width - self.resize_x,
+                    background_area_width - resize_x,
                     self.shadow_size,
                     [(0, (self.dominant_color, 0)),
                      (1, (self.dominant_color, 1))]
@@ -781,8 +783,8 @@ class SkinEditArea(gtk.EventBox):
                 y + self.padding_y)    
             
             if self.in_resize_area_flag:
-                resize_x = x + self.padding_x + self.resize_x
-                resize_y = y + self.padding_y + self.resize_y
+                resize_x = x + self.padding_x + resize_x
+                resize_y = y + self.padding_y + resize_y
                 
                 # Draw resize frame.
                 cr.set_source_rgb(0, 1, 1)
