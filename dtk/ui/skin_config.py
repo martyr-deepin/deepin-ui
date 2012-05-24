@@ -166,8 +166,8 @@ class SkinConfig(gobject.GObject):
         toplevel_rect = widget.get_toplevel().allocation
         
         # Draw background.
-        background_x = self.x * self.scale_x
-        background_y = self.y * self.scale_y
+        background_x = int(self.x * self.scale_x)
+        background_y = int(self.y * self.scale_y)
         background_width = int(self.background_pixbuf.get_width() * self.scale_x)
         background_height = int(self.background_pixbuf.get_height() * self.scale_y)
         pixbuf = self.background_pixbuf.scale_simple(
@@ -238,4 +238,3 @@ gobject.type_register(SkinConfig)
 
 skin_config = SkinConfig()
 skin_config.load_skin("/home/andy/deepin-ui-private/skin/01")
-

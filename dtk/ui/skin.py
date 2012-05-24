@@ -663,14 +663,14 @@ class SkinEditArea(gtk.EventBox):
         
         # Load config from skin_config.
         self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(skin_config.skin_dir, skin_config.image))
+        self.background_preview_width = int(self.eval_scale(self.background_pixbuf.get_width()))
+        self.background_preview_height = int(self.eval_scale(self.background_pixbuf.get_height()))
+        self.dominant_color = skin_config.dominant_color
+        
         self.resize_scale_x = skin_config.scale_x
         self.resize_scale_y = skin_config.scale_y
         self.resize_x = self.eval_scale(skin_config.x * self.resize_scale_x)
         self.resize_y = self.eval_scale(skin_config.y * self.resize_scale_y)
-        self.dominant_color = skin_config.dominant_color
-        
-        self.background_preview_width = int(self.eval_scale(self.background_pixbuf.get_width()))
-        self.background_preview_height = int(self.eval_scale(self.background_pixbuf.get_height()))
         self.resize_width = int(self.eval_scale(self.background_pixbuf.get_width() * self.resize_scale_x))
         self.resize_height = int(self.eval_scale(self.background_pixbuf.get_height() * self.resize_scale_y))
         
@@ -1128,8 +1128,8 @@ class SkinEditArea(gtk.EventBox):
         self.resize_scale_y = skin_config.scale_y
         self.resize_x = self.eval_scale(skin_config.x * self.resize_scale_x)
         self.resize_y = self.eval_scale(skin_config.y * self.resize_scale_y)
-        self.resize_width = int(self.background_preview_width * self.resize_scale_x)
-        self.resize_height = int(self.background_preview_height * self.resize_scale_y)
+        self.resize_width = int(self.eval_scale(self.background_preview_width * self.resize_scale_x))
+        self.resize_height = int(self.eval_scale(self.background_preview_height * self.resize_scale_y))
         
         # Apply skin.
         skin_config.apply_skin()
