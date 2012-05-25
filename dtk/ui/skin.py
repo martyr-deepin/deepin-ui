@@ -65,7 +65,10 @@ class SkinWindow(Window):
         self.set_size_request(preview_width, preview_height)
         self.set_resizable(False)
         
-        self.preview_page = SkinPreviewPage("/home/andy/deepin-ui-private/skin")
+        self.preview_page = SkinPreviewPage(
+            "/home/andy/deepin-ui-private/skin",
+            self.change_skin,
+            self.switch_edit_page)
         
         self.main_box.pack_start(self.titlebar, False, False)
         self.body_box = gtk.VBox()
@@ -77,10 +80,7 @@ class SkinWindow(Window):
         
         self.switch_preview_page()
         
-        self.preview_page.preview_view.connect("button-press-item", self.change_skin)
-        self.preview_page.preview_view.connect("double-click-item", self.switch_edit_page)
-        
-    def change_skin(self, view, item, x, y):
+    def change_skin(self, item):
         '''Change skin.'''
         # Load skin.
         if skin_config.load_skin(item.skin_dir):
@@ -92,7 +92,7 @@ class SkinWindow(Window):
         self.body_box.add(self.preview_page)
         self.preview_page.highlight_skin()
         
-    def switch_edit_page(self, view, item, x, y):
+    def switch_edit_page(self):
         '''Switch edit page.'''
         # Switch to edit page.
         container_remove_all(self.body_box)
@@ -126,10 +126,12 @@ gobject.type_register(SkinWindow)
 class SkinPreviewPage(gtk.VBox):
     '''Skin preview.'''
 	
-    def __init__(self, skin_dir):
+    def __init__(self, skin_dir, change_skin_callback, switch_edit_page_callback):
         '''Init skin preview.'''
         gtk.VBox.__init__(self)
         self.skin_dir = skin_dir
+        self.change_skin_callback = change_skin_callback
+        self.switch_edit_page_callback = switch_edit_page_callback
         
         self.preview_align = gtk.Alignment()
         self.preview_align.set(0.5, 0.5, 1, 1)
@@ -155,7 +157,11 @@ class SkinPreviewPage(gtk.VBox):
         for root, dirs, files in os.walk(skin_dir):
             for filename in files:
                 if filename in ["background.jpg", "background.png", "background.jpeg"]:
-                    self.preview_view.add_items([SkinPreviewIcon(root, filename)])
+                    self.preview_view.add_items([SkinPreviewIcon(
+                                root, 
+                                filename, 
+                                self.change_skin_callback, 
+                                self.switch_edit_page_callback)])
                     
         self.preview_view.add_items([SkinAddIcon()])
                     
@@ -175,17 +181,22 @@ class SkinPreviewIcon(gobject.GObject):
     BUTTON_HIDE = 0
     BUTTON_NORMAL = 1
     BUTTON_HOVER = 2
-    BUTTON_PRESS = 3
 	
     __gsignals__ = {
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
-    def __init__(self, skin_dir, background_file):
+    def __init__(self, 
+                 skin_dir, 
+                 background_file, 
+                 change_skin_callback,
+                 switch_edit_page_callback):
         '''Init item icon.'''
         gobject.GObject.__init__(self)
         self.skin_dir = skin_dir
         self.background_file = background_file
+        self.change_skin_callback = change_skin_callback
+        self.switch_edit_page_callback = switch_edit_page_callback
         self.background_path = os.path.join(skin_dir, background_file)
         self.width = 86
         self.height = 56
@@ -306,8 +317,6 @@ class SkinPreviewIcon(gobject.GObject):
                 pixbuf = ui_theme.get_pixbuf("skin/delete_normal.png").get_pixbuf()
             elif self.delete_button_status == self.BUTTON_HOVER:
                 pixbuf = ui_theme.get_pixbuf("skin/delete_hover.png").get_pixbuf()
-            elif self.delete_button_status == self.BUTTON_PRESS:
-                pixbuf = ui_theme.get_pixbuf("skin/delete_press.png").get_pixbuf()
             
             delete_button_x = rect.x + rect.width - pixbuf.get_width() - (self.icon_padding + self.padding_x) - 3
             delete_button_y = rect.y + (self.icon_padding + self.padding_x) + 4
@@ -320,8 +329,6 @@ class SkinPreviewIcon(gobject.GObject):
                 pixbuf = ui_theme.get_pixbuf("skin/edit_normal.png").get_pixbuf()
             elif self.edit_button_status == self.BUTTON_HOVER:
                 pixbuf = ui_theme.get_pixbuf("skin/edit_hover.png").get_pixbuf()
-            elif self.edit_button_status == self.BUTTON_PRESS:
-                pixbuf = ui_theme.get_pixbuf("skin/edit_press.png").get_pixbuf()
             
             edit_button_x = rect.x + rect.width - pixbuf.get_width() - (self.icon_padding + self.padding_x) - 3
             edit_button_y = rect.y + rect.height - pixbuf.get_height() - (self.icon_padding + self.padding_x) - 4
@@ -372,11 +379,21 @@ class SkinPreviewIcon(gobject.GObject):
     
     def icon_item_button_press(self, x, y):
         '''Handle button-press event.'''
-        if self.is_deletable() and self.is_in_delete_button_area(x, y):
-            self.delete_button_status = self.BUTTON_PRESS
+        if not self.is_deletable() and not self.is_editable():
+            self.change_skin_callback(self)    
+        else:
+            if self.is_deletable() and self.is_in_delete_button_area(x, y):
+                self.delete_button_status = self.BUTTON_HIDE
                 
-        if self.is_editable() and self.is_in_edit_button_area(x, y):
-            self.edit_button_status = self.BUTTON_PRESS
+                # Pop delete dialog.
+                print "Popup delete dialog."
+            elif self.is_editable() and self.is_in_edit_button_area(x, y):
+                self.edit_button_status = self.BUTTON_HIDE
+                
+                self.change_skin_callback(self)
+                self.switch_edit_page_callback()
+            else:
+                self.change_skin_callback(self)
             
         self.emit_redraw_request()    
     
@@ -403,7 +420,7 @@ class SkinPreviewIcon(gobject.GObject):
     def icon_item_double_click(self, x, y):
         '''Handle double click event.'''
         pass
-        
+    
 gobject.type_register(SkinPreviewIcon)
 
 class SkinAddIcon(gobject.GObject):
