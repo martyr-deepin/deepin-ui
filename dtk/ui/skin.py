@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from dialog import ConfirmDialog
 import os
 import gtk
 import gobject
@@ -27,7 +28,7 @@ from config import Config
 from window import Window
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory
 from constant import SHADE_SIZE
 from titlebar import Titlebar
 from iconview import IconView
@@ -115,8 +116,8 @@ class SkinWindow(Window):
     def click_cancel_button(self):
         '''Click cancel button.'''
         # Reload skin from config file.
-        skin_config.load_skin(skin_config.skin_dir)
-        skin_config.apply_skin()
+        if skin_config.load_skin(skin_config.skin_dir):
+            skin_config.apply_skin()
         
         # Switch to preview page.
         self.switch_preview_page()        
@@ -155,13 +156,15 @@ class SkinPreviewPage(gtk.VBox):
         self.pack_start(self.button_align, False, False)
         
         for root, dirs, files in os.walk(skin_dir):
+            dirs.sort()         # sort directory with alpha order
             for filename in files:
                 if filename in ["background.jpg", "background.png", "background.jpeg"]:
                     self.preview_view.add_items([SkinPreviewIcon(
                                 root, 
                                 filename, 
                                 self.change_skin_callback, 
-                                self.switch_edit_page_callback)])
+                                self.switch_edit_page_callback,
+                                self.pop_delete_skin_dialog)])
                     
         self.preview_view.add_items([SkinAddIcon()])
                     
@@ -172,6 +175,32 @@ class SkinPreviewPage(gtk.VBox):
             if item.skin_dir == skin_config.skin_dir:
                 self.preview_view.set_highlight(item)
                 break
+            
+    def pop_delete_skin_dialog(self, item):
+        '''Pop delete skin dialog.'''
+        ConfirmDialog(
+            "删除主题",
+            "你确定要删除当前主题吗？",
+            200, 
+            100,
+            lambda : self.remove_skin(item)).show_all()
+            
+    def remove_skin(self, item):
+        '''Remove skin.'''
+        if len(self.preview_view.items) > 1:
+            # Change to first theme if delete current theme.
+            if item.skin_dir == skin_config.skin_dir:
+                print self.preview_view.items[0].skin_dir
+                if skin_config.load_skin(self.preview_view.items[0].skin_dir):
+                    skin_config.apply_skin()
+                        
+            # Remove skin directory.
+            remove_directory(item.skin_dir)
+            
+            # Remove item from icon view.
+            self.preview_view.delete_items([item])
+        else:
+            print "You can't delete last skin to make application can't use any skin! :)"
         
 gobject.type_register(SkinPreviewPage)
         
@@ -190,13 +219,15 @@ class SkinPreviewIcon(gobject.GObject):
                  skin_dir, 
                  background_file, 
                  change_skin_callback,
-                 switch_edit_page_callback):
+                 switch_edit_page_callback,
+                 pop_delete_skin_dialog_callback):
         '''Init item icon.'''
         gobject.GObject.__init__(self)
         self.skin_dir = skin_dir
         self.background_file = background_file
         self.change_skin_callback = change_skin_callback
         self.switch_edit_page_callback = switch_edit_page_callback
+        self.pop_delete_skin_dialog_callback = pop_delete_skin_dialog_callback
         self.background_path = os.path.join(skin_dir, background_file)
         self.width = 86
         self.height = 56
@@ -386,7 +417,7 @@ class SkinPreviewIcon(gobject.GObject):
                 self.delete_button_status = self.BUTTON_HIDE
                 
                 # Pop delete dialog.
-                print "Popup delete dialog."
+                self.pop_delete_skin_dialog_callback(self)
             elif self.is_editable() and self.is_in_edit_button_area(x, y):
                 self.edit_button_status = self.BUTTON_HIDE
                 

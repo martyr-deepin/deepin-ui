@@ -316,7 +316,7 @@ class ToggleButton(gtk.ToggleButton):
         font_size = DEFAULT_FONT_SIZE
         label_dcolor = ui_theme.get_color("buttonDefaultFont")
         self.button_press_flag = False
-
+        
         # Init request size.
         if scale_x:
             request_width = get_content_size(button_label, font_size)[0]
