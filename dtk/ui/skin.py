@@ -171,6 +171,11 @@ gobject.type_register(SkinPreviewPage)
         
 class SkinPreviewIcon(gobject.GObject):
     '''Icon item.'''
+    
+    BUTTON_HIDE = 0
+    BUTTON_NORMAL = 1
+    BUTTON_HOVER = 2
+    BUTTON_PRESS = 3
 	
     __gsignals__ = {
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
@@ -189,8 +194,42 @@ class SkinPreviewIcon(gobject.GObject):
         self.padding_y = 10
         self.hover_flag = False
         self.highlight_flag = False
+        self.delete_button_status = self.BUTTON_HIDE
+        self.edit_button_status = self.BUTTON_HIDE
         
         self.create_preview_pixbuf(self.background_path)
+        
+        # Load skin config information.
+        self.config = Config(os.path.join(self.skin_dir, "config.ini"))
+        self.config.load()
+        
+    def is_in_delete_button_area(self, x, y):
+        '''Is cursor in delete button area.'''
+        delete_pixbuf = ui_theme.get_pixbuf("skin/delete_normal.png").get_pixbuf()
+        
+        return is_in_rect((x, y), 
+                          (self.get_width() - delete_pixbuf.get_width() - (self.icon_padding + self.padding_x) - 3,
+                           (self.icon_padding + self.padding_x) + 4, 
+                           delete_pixbuf.get_width(),
+                           delete_pixbuf.get_height()))
+    
+    def is_in_edit_button_area(self, x, y):
+        '''Is cursor in edit button area.'''
+        edit_pixbuf = ui_theme.get_pixbuf("skin/edit_normal.png").get_pixbuf()
+        
+        return is_in_rect((x, y), 
+                          (self.get_width() - edit_pixbuf.get_width() - (self.icon_padding + self.padding_x) - 3,
+                           self.get_height() - edit_pixbuf.get_height() - (self.icon_padding + self.padding_x) - 4, 
+                           edit_pixbuf.get_width(),
+                           edit_pixbuf.get_height()))
+    
+    def is_deletable(self):
+        '''Is deletable.'''
+        return self.config.getboolean("action", "deletable")
+    
+    def is_editable(self):
+        '''Is editable.'''
+        return self.config.getboolean("action", "editable")    
         
     def create_preview_pixbuf(self, background_path):
         '''Create preview pixbuf.'''
@@ -260,16 +299,62 @@ class SkinPreviewIcon(gobject.GObject):
                 rect.x + (rect.width - self.pixbuf.get_width()) / 2,
                 rect.y + (rect.height - self.pixbuf.get_height()) / 2
                 )
-        
+            
+        # Draw delete button.
+        if self.delete_button_status != self.BUTTON_HIDE:
+            if self.delete_button_status == self.BUTTON_NORMAL:
+                pixbuf = ui_theme.get_pixbuf("skin/delete_normal.png").get_pixbuf()
+            elif self.delete_button_status == self.BUTTON_HOVER:
+                pixbuf = ui_theme.get_pixbuf("skin/delete_hover.png").get_pixbuf()
+            elif self.delete_button_status == self.BUTTON_PRESS:
+                pixbuf = ui_theme.get_pixbuf("skin/delete_press.png").get_pixbuf()
+            
+            delete_button_x = rect.x + rect.width - pixbuf.get_width() - (self.icon_padding + self.padding_x) - 3
+            delete_button_y = rect.y + (self.icon_padding + self.padding_x) + 4
+            
+            draw_pixbuf(cr, pixbuf, delete_button_x, delete_button_y)
+            
+        # Draw edit button.
+        if self.edit_button_status != self.BUTTON_HIDE:
+            if self.edit_button_status == self.BUTTON_NORMAL:
+                pixbuf = ui_theme.get_pixbuf("skin/edit_normal.png").get_pixbuf()
+            elif self.edit_button_status == self.BUTTON_HOVER:
+                pixbuf = ui_theme.get_pixbuf("skin/edit_hover.png").get_pixbuf()
+            elif self.edit_button_status == self.BUTTON_PRESS:
+                pixbuf = ui_theme.get_pixbuf("skin/edit_press.png").get_pixbuf()
+            
+            edit_button_x = rect.x + rect.width - pixbuf.get_width() - (self.icon_padding + self.padding_x) - 3
+            edit_button_y = rect.y + rect.height - pixbuf.get_height() - (self.icon_padding + self.padding_x) - 4
+            
+            draw_pixbuf(cr, pixbuf, edit_button_x, edit_button_y)
+            
     def icon_item_motion_notify(self, x, y):
         '''Handle `motion-notify-event` signal.'''
         self.hover_flag = True
+        
+        if self.is_deletable():
+            if self.is_in_delete_button_area(x, y):
+                self.delete_button_status = self.BUTTON_HOVER
+            else:
+                self.delete_button_status = self.BUTTON_NORMAL
+        else:
+            self.delete_button_status = self.BUTTON_HIDE
+            
+        if self.is_editable():
+            if self.is_in_edit_button_area(x, y):
+                self.edit_button_status = self.BUTTON_HOVER
+            else:
+                self.edit_button_status = self.BUTTON_NORMAL
+        else:
+            self.edit_button_status = self.BUTTON_HIDE
         
         self.emit_redraw_request()
         
     def icon_item_lost_focus(self):
         '''Lost focus.'''
         self.hover_flag = False
+        self.delete_button_status = self.BUTTON_HIDE
+        self.edit_button_status = self.BUTTON_HIDE
         
         self.emit_redraw_request()
         
@@ -287,11 +372,29 @@ class SkinPreviewIcon(gobject.GObject):
     
     def icon_item_button_press(self, x, y):
         '''Handle button-press event.'''
-        pass        
+        if self.is_deletable() and self.is_in_delete_button_area(x, y):
+            self.delete_button_status = self.BUTTON_PRESS
+                
+        if self.is_editable() and self.is_in_edit_button_area(x, y):
+            self.edit_button_status = self.BUTTON_PRESS
+            
+        self.emit_redraw_request()    
     
     def icon_item_button_release(self, x, y):
         '''Handle button-release event.'''
-        pass
+        if self.is_deletable():
+            if self.is_in_delete_button_area(x, y):
+                self.delete_button_status = self.BUTTON_HOVER
+            else:
+                self.delete_button_status = self.BUTTON_NORMAL
+                
+        if self.is_editable():
+            if self.is_in_edit_button_area(x, y):
+                self.edit_button_status = self.BUTTON_HOVER
+            else:
+                self.edit_button_status = self.BUTTON_NORMAL
+            
+        self.emit_redraw_request()    
     
     def icon_item_single_click(self, x, y):
         '''Handle single click event.'''
