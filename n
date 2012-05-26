@@ -1,0 +1,2 @@
+type([])
+# OUT: <type 'list'>

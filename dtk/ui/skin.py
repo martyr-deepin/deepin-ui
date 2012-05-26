@@ -202,21 +202,20 @@ class SkinPreviewPage(gtk.VBox):
         skin_image_file = os.path.basename(filepath)
         config_file = os.path.join(skin_dir, "config.ini")
         dominant_color = get_dominant_color(filepath)
-        default_config = {
-            "name" : {"ui_theme_name" : "default",
-                      "app_theme_name" : "default"},
-            "application" : {"app_id" : "demo",
-                             "app_version" : "0.1"},
-            "background" : {"image" : skin_image_file,
-                            "x" : "0",
-                            "y" : "0",
-                            "scale_x" : "1.0",
-                            "scale_y" : "1.0",
-                            "dominant_color" : dominant_color},
-            "action" : {"deletable" : "True",
-                        "editable" : "True",
-                        "vertical_mirror" : "False",
-                        "horizontal_mirror" : "False"}}
+        default_config = [
+            ("theme", [("theme_name", "default")]),
+            ("application", [("app_id", "demo"),
+                             ("app_version", "0.1")]),
+            ("background", [("image", skin_image_file),
+                            ("x", "0"),
+                            ("y", "0"),
+                            ("scale_x", "1.0"),
+                            ("scale_y", "1.0"),
+                            ("dominant_color", dominant_color)]),
+            ("action", [("deletable", "True"),
+                        ("editable", "True"),
+                        ("vertical_mirror", "False"),
+                        ("horizontal_mirror", "False")])]
         
         # Create skin directory.
         create_directory(skin_dir, True)

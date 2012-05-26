@@ -20,8 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import gobject    
+from collections import OrderedDict
 from ConfigParser import RawConfigParser as ConfigParser
 
 class Config(gobject.GObject):
@@ -41,7 +41,10 @@ class Config(gobject.GObject):
         self.getfloat = self.config_parser.getfloat
         self.options = self.config_parser.options
         self.config_file = config_file
-        self.default_config = default_config
+        if isinstance(default_config, list):
+            self.default_config = self.build_config_dict(default_config)
+        else:
+            self.default_config = default_config
         
         # Load default configure.
         self.load_default()
@@ -85,5 +88,16 @@ class Config(gobject.GObject):
     def set_default(self, default_config):
         self.default_config = default_config
         self.load_default()
+        
+    def build_config_dict(self, config_list):
+        '''Build config dict.'''
+        config_dict = OrderedDict()
+        for (section, option_list) in config_list:
+            option_dict = OrderedDict()
+            for (option, value) in option_list:
+                option_dict[option] = value
+            config_dict[section] = option_dict
+        
+        return config_dict    
         
 gobject.type_register(Config)
