@@ -250,6 +250,7 @@ class SkinPreviewPage(gtk.VBox):
         # Highlight skin.
         for item in self.preview_view.items:
             if item.skin_dir == skin_config.skin_dir:
+                self.preview_view.clear_highlight()
                 self.preview_view.set_highlight(item)
                 break
             
@@ -669,6 +670,11 @@ class SkinEditPage(gtk.VBox):
             ui_theme.get_pixbuf("skin/reset_hover.png"),
             ui_theme.get_pixbuf("skin/reset_press.png"),
             )
+        self.auto_resize_button = ImageButton(
+            ui_theme.get_pixbuf("skin/reset_normal.png"),
+            ui_theme.get_pixbuf("skin/reset_hover.png"),
+            ui_theme.get_pixbuf("skin/reset_press.png"),
+            )
         self.v_split_button = ImageButton(
             ui_theme.get_pixbuf("skin/v_split_normal.png"),
             ui_theme.get_pixbuf("skin/v_split_hover.png"),
@@ -688,6 +694,7 @@ class SkinEditPage(gtk.VBox):
         self.lock_button.connect("toggled", self.edit_area.update_lock_status)
         self.lock_button.set_active(True)
         self.action_left_box.pack_start(self.reset_button)
+        self.action_left_box.pack_start(self.auto_resize_button)
         self.action_left_box.pack_start(self.v_split_button)
         self.action_left_box.pack_start(self.h_split_button)
         self.action_left_box.pack_start(self.lock_button)
@@ -700,6 +707,7 @@ class SkinEditPage(gtk.VBox):
         self.action_right_box.pack_start(self.export_button)
         
         self.reset_button.connect("clicked", lambda w: self.edit_area.click_reset_button())
+        self.auto_resize_button.connect("clicked", lambda w: self.edit_area.click_auto_resize_button())
         self.v_split_button.connect("clicked", lambda w: skin_config.vertical_mirror_background())
         self.h_split_button.connect("clicked", lambda w: skin_config.horizontal_mirror_background())
         
@@ -1422,6 +1430,17 @@ class SkinEditArea(gtk.EventBox):
         '''Click reset button.'''
         # Reset skin config.
         skin_config.reset()
+        
+        # Update skin config.
+        self.update_skin_config()
+        
+        # Apply skin.
+        skin_config.apply_skin()
+        
+    def click_auto_resize_button(self):
+        '''Click auto resize button.'''
+        # Auto resize skin config.
+        skin_config.auto_resize()
         
         # Update skin config.
         self.update_skin_config()

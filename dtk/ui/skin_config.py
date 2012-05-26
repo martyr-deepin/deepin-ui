@@ -148,6 +148,20 @@ class SkinConfig(gobject.GObject):
         self.vertical_mirror = False
         self.horizontal_mirror = False
         
+    def auto_resize(self):
+        '''Auto resize.'''
+        self.x = 0
+        self.y = 0
+        
+        pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.skin_dir, self.image))
+        if self.app_window_width > self.app_window_height:
+            self.scale_x = self.scale_y =  float(self.app_window_height) / pixbuf.get_height()
+        else:
+            self.scale_x = self.scale_y = float(self.app_window_width) / pixbuf.get_width()
+        
+        self.vertical_mirror = False
+        self.horizontal_mirror = False
+        
     def vertical_mirror_background(self):
         '''Vertical mirror background.'''
         self.vertical_mirror = not self.vertical_mirror
