@@ -30,7 +30,7 @@ from config import Config
 from window import Window
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file, scroll_to_bottom, place_center
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file, scroll_to_bottom, place_center, get_pixbuf_support_foramts
 from constant import SHADE_SIZE
 from titlebar import Titlebar
 from iconview import IconView
@@ -159,10 +159,11 @@ class SkinPreviewPage(gtk.VBox):
         self.button_align.add(self.close_button)
         self.pack_start(self.button_align, False, False)
         
+        support_foramts = get_pixbuf_support_foramts()
         for root, dirs, files in os.walk(skin_dir):
             dirs.sort()         # sort directory with alpha order
             for filename in files:
-                if end_with_suffixs(filename, ["jpg", "png", "jpeg"]):
+                if end_with_suffixs(filename, support_foramts):
                     self.preview_view.add_items([SkinPreviewIcon(
                                 root, 
                                 filename, 
@@ -185,7 +186,8 @@ class SkinPreviewPage(gtk.VBox):
     def drag_skin_file(self, widget, drag_context, x, y, selection_data, info, timestamp):
         '''Drag skin file.'''
         skin_file = urllib.unquote(selection_data.get_uris()[0].split("file://")[1])                
-        if end_with_suffixs(skin_file, ["jpg", "png", "jpeg"]):
+        support_foramts = get_pixbuf_support_foramts()
+        if end_with_suffixs(skin_file, support_foramts):
             self.create_skin_from_image(skin_file)
         elif end_with_suffixs(skin_file, ["tar.gz"]):
             self.create_skin_from_package(skin_file)

@@ -711,3 +711,10 @@ def place_center(refer_window, place_window):
         center_y - place_window.allocation.height / 2
         )
 
+def get_pixbuf_support_foramts():
+    '''Get formats that support by pixbuf.'''
+    support_formats = []
+    for support_format in gtk.gdk.pixbuf_get_formats():
+        support_formats += support_format.get("extensions")
+        
+    return support_formats    
