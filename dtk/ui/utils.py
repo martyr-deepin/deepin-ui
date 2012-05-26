@@ -255,6 +255,11 @@ def is_in_rect((cx, cy), (x, y, w, h)):
 def scroll_to_top(scrolled_window):
     '''Scroll scrolled window to top.'''
     scrolled_window.get_vadjustment().set_value(0)
+    
+def scroll_to_bottom(scrolled_window):
+    '''Scroll scrolled window to bottom.'''
+    vadjust = scrolled_window.get_vadjustment()
+    vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
 
 def get_content_size(text, size):
     '''Get size of text, in pixel.'''

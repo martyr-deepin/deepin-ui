@@ -30,7 +30,7 @@ from config import Config
 from window import Window
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file, scroll_to_bottom
 from constant import SHADE_SIZE
 from titlebar import Titlebar
 from iconview import IconView
@@ -237,7 +237,10 @@ class SkinPreviewPage(gtk.VBox):
             skin_config.apply_skin()
             
         self.highlight_skin()    
-            
+        
+        # Scroll scrollbar to bottom.
+        scroll_to_bottom(self.preview_scrolled_window)            
+        
     def create_skin_from_package(self, filepath):
         '''Create skin from package.'''
         pass
