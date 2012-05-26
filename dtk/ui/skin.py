@@ -20,7 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from dominant_color import get_dominant_color
 from dialog import ConfirmDialog
+import uuid
 import os
 import gtk
 import gobject
@@ -28,7 +30,7 @@ from config import Config
 from window import Window
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file
 from constant import SHADE_SIZE
 from titlebar import Titlebar
 from iconview import IconView
@@ -38,6 +40,8 @@ from theme import ui_theme
 import math
 from skin_config import skin_config
 from label import Label
+import urllib
+import shutil
 
 def draw_skin_mask(cr, x, y, w, h):
     '''Draw skin mask.'''
@@ -158,7 +162,7 @@ class SkinPreviewPage(gtk.VBox):
         for root, dirs, files in os.walk(skin_dir):
             dirs.sort()         # sort directory with alpha order
             for filename in files:
-                if filename in ["background.jpg", "background.png", "background.jpeg"]:
+                if end_with_suffixs(filename, ["jpg", "png", "jpeg"]):
                     self.preview_view.add_items([SkinPreviewIcon(
                                 root, 
                                 filename, 
@@ -167,6 +171,76 @@ class SkinPreviewPage(gtk.VBox):
                                 self.pop_delete_skin_dialog)])
                     
         self.preview_view.add_items([SkinAddIcon()])
+        
+        # Add drag image support.
+        self.drag_dest_set(
+            gtk.DEST_DEFAULT_MOTION |
+            gtk.DEST_DEFAULT_HIGHLIGHT |
+            gtk.DEST_DEFAULT_DROP,
+            [("text/uri-list", 0, 1)],
+            gtk.gdk.ACTION_COPY)
+
+        self.connect("drag-data-received", self.drag_skin_file)
+        
+    def drag_skin_file(self, widget, drag_context, x, y, selection_data, info, timestamp):
+        '''Drag skin file.'''
+        skin_file = urllib.unquote(selection_data.get_uris()[0].split("file://")[1])                
+        if end_with_suffixs(skin_file, ["jpg", "png", "jpeg"]):
+            self.create_skin_from_image(skin_file)
+        elif end_with_suffixs(skin_file, ["tar.gz"]):
+            self.create_skin_from_package(skin_file)
+        
+    def create_skin_from_image(self, filepath):
+        '''Create skin from image.'''
+        # Init.
+        skin_dir = os.path.join("/home/andy/deepin-ui-private/skin", str(uuid.uuid4()))
+        skin_image_file = os.path.basename(filepath)
+        config_file = os.path.join(skin_dir, "config.ini")
+        dominant_color = get_dominant_color(filepath)
+        default_config = {
+            "name" : {"ui_theme_name" : "default",
+                      "app_theme_name" : "default"},
+            "application" : {"app_id" : "demo",
+                             "app_version" : "0.1"},
+            "background" : {"image" : skin_image_file,
+                            "x" : "0",
+                            "y" : "0",
+                            "scale_x" : "1.0",
+                            "scale_y" : "1.0",
+                            "dominant_color" : dominant_color},
+            "action" : {"deletable" : "True",
+                        "editable" : "True",
+                        "vertical_mirror" : "False",
+                        "horizontal_mirror" : "False"}}
+        
+        # Create skin directory.
+        create_directory(skin_dir, True)
+        
+        # Copy skin image file.
+        shutil.copy(filepath, skin_dir)        
+        
+        # Touch skin config file.
+        touch_file(config_file)
+        
+        # Write default skin config information.
+        Config(config_file, default_config).write()
+        
+        # Apply new skin.
+        self.preview_view.add_items([SkinPreviewIcon(
+                    skin_dir,
+                    skin_image_file,
+                    self.change_skin_callback,
+                    self.switch_edit_page_callback,
+                    self.pop_delete_skin_dialog
+                    )], -1)
+        if skin_config.load_skin(skin_dir):
+            skin_config.apply_skin()
+            
+        self.highlight_skin()    
+            
+    def create_skin_from_package(self, filepath):
+        '''Create skin from package.'''
+        pass
                     
     def highlight_skin(self):
         '''Highlight skin.'''

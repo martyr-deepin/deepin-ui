@@ -270,6 +270,14 @@ def get_content_size(text, size):
     else:
         return (0, 0)
     
+def create_directory(directory, remove_first=False):
+    '''Create directory.'''
+    if remove_first and os.path.exists(directory):
+        remove_directory(directory)
+    
+    if not os.path.exists(directory):
+        os.mkdir(directory)
+    
 def remove_file(path):
     '''Remove file.'''
     if os.path.exists(path):
@@ -678,3 +686,11 @@ def find_similar_color(search_color, grey_match_color, white_match_color, target
 def draw_blank_mask(cr, x, y, w, h):
     '''Draw blank mask.'''
     pass
+
+def end_with_suffixs(filepath, suffixs):
+    '''File endswith given suffixs.'''
+    for suffix in suffixs:
+        if filepath.endswith(suffix):
+            return True
+        
+    return False    
