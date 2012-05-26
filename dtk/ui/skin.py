@@ -35,7 +35,7 @@ from constant import SHADE_SIZE
 from titlebar import Titlebar
 from iconview import IconView
 from scrolled_window import ScrolledWindow
-from button import Button, ImageButton, ToggleButton
+from button import Button, ImageButton, ToggleButton, ActionButton
 from theme import ui_theme
 import math
 from skin_config import skin_config
@@ -665,15 +665,22 @@ class SkinEditPage(gtk.VBox):
         self.action_left_align.add(self.action_left_box)
         self.action_right_align.add(self.action_right_box)
         
-        self.reset_button = ImageButton(
-            ui_theme.get_pixbuf("skin/reset_normal.png"),
-            ui_theme.get_pixbuf("skin/reset_hover.png"),
-            ui_theme.get_pixbuf("skin/reset_press.png"),
-            )
-        self.auto_resize_button = ImageButton(
-            ui_theme.get_pixbuf("skin/reset_normal.png"),
-            ui_theme.get_pixbuf("skin/reset_hover.png"),
-            ui_theme.get_pixbuf("skin/reset_press.png"),
+        # Default display auto resize status when image is 1:1 status.
+        if skin_config.scale_x == 1.0 and skin_config.scale_y == 1.0:
+            action_index = 1
+        # Otherwise default display 1:1 status.
+        else:
+            action_index = 0
+        self.resize_button = ActionButton(
+            [((ui_theme.get_pixbuf("skin/reset_normal.png"),
+                        ui_theme.get_pixbuf("skin/reset_hover.png"),
+                        ui_theme.get_pixbuf("skin/reset_press.png")),
+              lambda w: self.edit_area.click_reset_button()),
+             ((ui_theme.get_pixbuf("skin/auto_resize_normal.png"),
+                        ui_theme.get_pixbuf("skin/auto_resize_hover.png"),
+                        ui_theme.get_pixbuf("skin/auto_resize_press.png")),
+              lambda w: self.edit_area.click_auto_resize_button())],
+            action_index
             )
         self.v_split_button = ImageButton(
             ui_theme.get_pixbuf("skin/v_split_normal.png"),
@@ -693,8 +700,7 @@ class SkinEditPage(gtk.VBox):
             )
         self.lock_button.connect("toggled", self.edit_area.update_lock_status)
         self.lock_button.set_active(True)
-        self.action_left_box.pack_start(self.reset_button)
-        self.action_left_box.pack_start(self.auto_resize_button)
+        self.action_left_box.pack_start(self.resize_button)
         self.action_left_box.pack_start(self.v_split_button)
         self.action_left_box.pack_start(self.h_split_button)
         self.action_left_box.pack_start(self.lock_button)
@@ -706,8 +712,6 @@ class SkinEditPage(gtk.VBox):
             )
         self.action_right_box.pack_start(self.export_button)
         
-        self.reset_button.connect("clicked", lambda w: self.edit_area.click_reset_button())
-        self.auto_resize_button.connect("clicked", lambda w: self.edit_area.click_auto_resize_button())
         self.v_split_button.connect("clicked", lambda w: skin_config.vertical_mirror_background())
         self.h_split_button.connect("clicked", lambda w: skin_config.horizontal_mirror_background())
         

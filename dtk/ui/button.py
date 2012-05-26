@@ -416,3 +416,53 @@ class ToggleButton(gtk.ToggleButton):
         propagate_expose(widget, event)
         
         return True
+
+class ActionButton(gtk.Button):
+    '''Action button.'''
+	
+    def __init__(self, actions, index=0):
+        '''Action button.'''
+        gtk.Button.__init__(self)
+        self.actions = actions
+        self.index = index
+        
+        pixbuf = self.actions[self.index][0][0].get_pixbuf()
+        self.set_size_request(pixbuf.get_width(), pixbuf.get_height())
+        
+        self.connect("expose-event", self.expose_action_button)
+        self.connect("clicked", lambda w: self.update_action_index(w))
+        
+    def update_action_index(self, widget):
+        '''Update action index.'''
+        # Call click callback.
+        self.actions[self.index][1](widget)
+        
+        # Update index.
+        self.index += 1
+        if self.index >= len(self.actions):
+            self.index = 0
+        
+        # Redraw.
+        self.queue_draw()    
+        
+    def expose_action_button(self, widget, event):
+        '''Expose action button.'''
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        
+        if widget.state == gtk.STATE_NORMAL:
+            pixbuf = self.actions[self.index][0][0].get_pixbuf()
+        elif widget.state == gtk.STATE_PRELIGHT:
+            pixbuf = self.actions[self.index][0][1].get_pixbuf()
+        elif widget.state == gtk.STATE_ACTIVE:
+            pixbuf = self.actions[self.index][0][2].get_pixbuf()
+            
+        draw_pixbuf(cr, pixbuf, rect.x, rect.y)    
+        
+        # Propagate expose to children.
+        propagate_expose(widget, event)
+    
+        return True
+        
+gobject.type_register(ActionButton)
