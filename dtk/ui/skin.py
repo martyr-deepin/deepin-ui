@@ -671,6 +671,7 @@ class SkinEditPage(gtk.VBox):
         # Otherwise default display 1:1 status.
         else:
             action_index = 0
+            
         self.resize_button = ActionButton(
             [((ui_theme.get_pixbuf("skin/reset_normal.png"),
                         ui_theme.get_pixbuf("skin/reset_hover.png"),
