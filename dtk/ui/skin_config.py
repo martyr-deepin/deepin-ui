@@ -60,9 +60,8 @@ class SkinConfig(gobject.GObject):
             self.config = Config(os.path.join(self.skin_dir, "config.ini"))
             self.config.load()
             
-            # Get name config.
-            self.ui_theme_name = self.config.get("name", "ui_theme_name")
-            self.app_theme_name = self.config.get("name", "app_theme_name")
+            # Get theme config.
+            self.theme_name = self.config.get("theme", "theme_name")
             
             # Get application config.
             self.app_id = self.config.get("application", "app_id")
