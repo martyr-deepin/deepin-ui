@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from dominant_color import get_dominant_color
-from dialog import ConfirmDialog
+from dialog import ConfirmDialog, OpenFileDialog
 import uuid
 import os
 import gtk
@@ -171,7 +171,7 @@ class SkinPreviewPage(gtk.VBox):
                                 self.switch_edit_page_callback,
                                 self.pop_delete_skin_dialog)])
                     
-        self.preview_view.add_items([SkinAddIcon()])
+        self.preview_view.add_items([SkinAddIcon(self.create_skin_from_file)])
         
         # Add drag image support.
         self.drag_dest_set(
@@ -185,7 +185,10 @@ class SkinPreviewPage(gtk.VBox):
         
     def drag_skin_file(self, widget, drag_context, x, y, selection_data, info, timestamp):
         '''Drag skin file.'''
-        skin_file = urllib.unquote(selection_data.get_uris()[0].split("file://")[1])                
+        self.create_skin_from_file(urllib.unquote(selection_data.get_uris()[0].split("file://")[1]))            
+        
+    def create_skin_from_file(self, skin_file):
+        '''Create skin from file.'''
         support_foramts = get_pixbuf_support_foramts()
         if end_with_suffixs(skin_file, support_foramts):
             self.create_skin_from_image(skin_file)
@@ -544,9 +547,11 @@ class SkinAddIcon(gobject.GObject):
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
-    def __init__(self):
+    def __init__(self, ok_callback=None, cancel_callback=None):
         '''Init item icon.'''
         gobject.GObject.__init__(self)
+        self.ok_callback = ok_callback
+        self.cancel_callback = cancel_callback
         self.width = 86
         self.height = 56
         self.icon_padding = 2
@@ -619,7 +624,7 @@ class SkinAddIcon(gobject.GObject):
     
     def icon_item_button_press(self, x, y):
         '''Handle button-press event.'''
-        pass        
+        OpenFileDialog("添加皮肤文件", None, self.ok_callback, self.cancel_callback)
     
     def icon_item_button_release(self, x, y):
         '''Handle button-release event.'''
