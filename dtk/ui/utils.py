@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, DEFAULT_FONT
+from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_CENTER, DEFAULT_FONT
 from contextlib import contextmanager 
 import cairo
 import gtk
@@ -157,6 +157,9 @@ def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER):
         offset_y = rect.height / 2
     elif pos_type == WIDGET_POS_RIGHT_CENTER:
         offset_x = rect.width
+        offset_y = rect.height / 2
+    elif pos_type == WIDGET_POS_CENTER:
+        offset_x = rect.width / 2
         offset_y = rect.height / 2
         
     return (x + offset_x, y + offset_y)
@@ -699,3 +702,12 @@ def end_with_suffixs(filepath, suffixs):
             return True
         
     return False    
+
+def place_center(refer_window, place_window):
+    '''Place place_window in center of refer_window.'''
+    (center_x, center_y) = get_widget_root_coordinate(refer_window, WIDGET_POS_CENTER)
+    place_window.move(
+        center_x - place_window.allocation.width / 2,
+        center_y - place_window.allocation.height / 2
+        )
+

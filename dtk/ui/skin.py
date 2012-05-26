@@ -30,7 +30,7 @@ from config import Config
 from window import Window
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file, scroll_to_bottom
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file, scroll_to_bottom, place_center
 from constant import SHADE_SIZE
 from titlebar import Titlebar
 from iconview import IconView
@@ -256,12 +256,14 @@ class SkinPreviewPage(gtk.VBox):
             
     def pop_delete_skin_dialog(self, item):
         '''Pop delete skin dialog.'''
-        ConfirmDialog(
+        dialog = ConfirmDialog(
             "删除主题",
             "你确定要删除当前主题吗？",
             200, 
             100,
-            lambda : self.remove_skin(item)).show_all()
+            lambda : self.remove_skin(item))
+        dialog.show_all()
+        place_center(self.get_toplevel(), dialog)        
             
     def remove_skin(self, item):
         '''Remove skin.'''

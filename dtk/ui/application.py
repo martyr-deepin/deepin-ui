@@ -25,7 +25,7 @@ from mplayer_window import MplayerWindow
 from threads import post_gui
 from titlebar import Titlebar
 from window import Window
-from utils import container_remove_all
+from utils import container_remove_all, place_center
 import dbus
 import dbus.service
 import gtk
@@ -186,7 +186,9 @@ class Application(object):
 
     def theme_callback(self, widget):
         '''Theme button callback.'''
-        SkinWindow().show_all()
+        skin_window = SkinWindow()
+        skin_window.show_all()
+        place_center(self.window, skin_window)
 
         return False
 
