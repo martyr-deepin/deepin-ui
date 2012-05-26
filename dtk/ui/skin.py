@@ -268,9 +268,10 @@ class SkinPreviewPage(gtk.VBox):
         if len(self.preview_view.items) > 1:
             # Change to first theme if delete current theme.
             if item.skin_dir == skin_config.skin_dir:
-                print self.preview_view.items[0].skin_dir
-                if skin_config.load_skin(self.preview_view.items[0].skin_dir):
+                item_index = max(self.preview_view.items.index(item) - 1, 0)
+                if skin_config.load_skin(self.preview_view.items[item_index].skin_dir):
                     skin_config.apply_skin()
+                    self.highlight_skin()
                         
             # Remove skin directory.
             remove_directory(item.skin_dir)
