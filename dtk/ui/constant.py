@@ -59,3 +59,21 @@ BUTTON_HOVER = 2
 
 DEFAULT_FONT_SIZE = 10
 SHADE_SIZE = 200
+
+COLOR_NAME_DICT = {
+        "dark_grey" : "#333333",
+        "red" : "#FF0000",
+        "orange" : "#FF6C00",
+        "gold" : "#FFC600",
+        "yellow" : "#FCFF00",
+        "green_yellow" : "#C0FF00",
+        "chartreuse" : "#00FF60",
+        "cyan" : "#00FDFF",
+        "dodger_blue" : "#00A8FF",
+        "blue" : "#0006FF",
+        "dark_purple" : "#8400FF",
+        "purple" : "#BA00FF",
+        "deep_pink" : "#FF00B4"
+        }
+BLACK_COLOR_MAPPED = "dark_grey" # when detect `black` use `dark grey` instead
+WHITE_COLOR_MAPPED = "dodger_blue" # when detect `white` use `dodger blue` instead

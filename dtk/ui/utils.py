@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_CENTER, DEFAULT_FONT
+from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_CENTER, DEFAULT_FONT, COLOR_NAME_DICT, BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED
 from contextlib import contextmanager 
 import cairo
 import gtk
@@ -668,28 +668,30 @@ def rgb2hsb(r_value, g_value, b_value):
     
     return (h, s, b)
 
-def find_similar_color(search_color, grey_match_color, white_match_color, target_colors):
+def find_similar_color(search_color):
     '''Find simliar color match search_color, detail look hsb(hsv).png in current directory.'''
     (search_h, search_s, search_b) = rgb2hsb(*color_hex_to_cairo(search_color))
-    hsb_colors = map(lambda hex_color: (hex_color, rgb2hsb(*color_hex_to_cairo(hex_color))), target_colors)
+    hsb_colors = map(lambda (name, value): (name, rgb2hsb(*color_hex_to_cairo(value))), COLOR_NAME_DICT.iteritems())
     
-    similar_color = None
+    similar_color_name = None
+    similar_color_value = None
     # Return black color if brightness (height) < 0.3
     if search_b < 0.3:
-        similar_color = grey_match_color
+        similar_color_name = BLACK_COLOR_MAPPED
     # Return white color if saturation (radius) < 0.05
     elif search_s < 0.05:
-        similar_color = white_match_color
+        similar_color_name = WHITE_COLOR_MAPPED
     # Otherwise find nearest color in hsb color space.
     else:
         min_color_distance = None
-        for (hex_color, (h, s, b)) in hsb_colors:
+        for (color_name, (h, s, b)) in hsb_colors:
             color_distance = abs(h - search_h)
             if min_color_distance == None or color_distance < min_color_distance:
                 min_color_distance = color_distance
-                similar_color = hex_color
+                similar_color_name = color_name
 
-    return similar_color
+    similar_color_value = COLOR_NAME_DICT[similar_color_name]
+    return (similar_color_name, similar_color_value)
 
 def draw_blank_mask(cr, x, y, w, h):
     '''Draw blank mask.'''
