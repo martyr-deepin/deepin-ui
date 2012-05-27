@@ -41,15 +41,16 @@ class Config(gobject.GObject):
         self.getfloat = self.config_parser.getfloat
         self.options = self.config_parser.options
         self.config_file = config_file
-        if isinstance(default_config, list):
-            self.default_config = self.build_config_dict(default_config)
-        else:
-            self.default_config = default_config
+        self.default_config = default_config
         
         # Load default configure.
         self.load_default()
                 
     def load_default(self):            
+        # Convert config when config is list format.
+        if isinstance(self.default_config, list):
+            self.default_config = self.convert_from_list(self.default_config)
+            
         if self.default_config:
             for section, items in self.default_config.iteritems():
                 self.add_section(section)
@@ -89,8 +90,8 @@ class Config(gobject.GObject):
         self.default_config = default_config
         self.load_default()
         
-    def build_config_dict(self, config_list):
-        '''Build config dict.'''
+    def convert_from_list(self, config_list):
+        '''Convert to dict from list format.'''
         config_dict = OrderedDict()
         for (section, option_list) in config_list:
             option_dict = OrderedDict()
