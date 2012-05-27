@@ -76,8 +76,8 @@ class ColorTestWidget(gtk.DrawingArea):
         
     def set_pixbuf(self, filename):
         self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(filename, 800, 800)
+        print filename
         self.background_color = get_dominant_color(filename)
-        print (filename, self.background_color)
         self.queue_draw()
         
     def color_test_widget_expose(self, widget, event):
@@ -100,6 +100,7 @@ class ColorTestWidget(gtk.DrawingArea):
 
         # Draw background.
         (similar_color_name, similar_color_value) = find_similar_color(self.background_color)
+        print (similar_color_name, similar_color_value)
         cr.set_source_rgb(*color_hex_to_cairo(similar_color_value))
         cr.rectangle(rect.x + self.pixbuf.get_width(), rect.y,
                      rect.width - self.pixbuf.get_width(), rect.height)

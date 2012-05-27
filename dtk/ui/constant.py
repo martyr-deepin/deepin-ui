@@ -77,3 +77,5 @@ COLOR_NAME_DICT = {
         }
 BLACK_COLOR_MAPPED = "dark_grey" # when detect `black` use `dark grey` instead
 WHITE_COLOR_MAPPED = "dodger_blue" # when detect `white` use `dodger blue` instead
+COLOR_SEQUENCE = ["red", "orange", "gold", "yellow", "green_yellow", "chartreuse", "dark_grey",
+                  "deep_pink", "purple", "dark_purple", "blue", "dodger_blue", "cyan"]

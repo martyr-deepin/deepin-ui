@@ -30,8 +30,8 @@ from config import Config
 from window import Window
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file, scroll_to_bottom, place_center, get_pixbuf_support_foramts
-from constant import SHADE_SIZE
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file, scroll_to_bottom, place_center, get_pixbuf_support_foramts, find_similar_color
+from constant import SHADE_SIZE, COLOR_SEQUENCE
 from titlebar import Titlebar
 from iconview import IconView
 from scrolled_window import ScrolledWindow
@@ -202,8 +202,9 @@ class SkinPreviewPage(gtk.VBox):
         skin_image_file = os.path.basename(filepath)
         config_file = os.path.join(skin_dir, "config.ini")
         dominant_color = get_dominant_color(filepath)
+        similar_color = find_similar_color(dominant_color)[0]
         default_config = [
-            ("theme", [("theme_name", "default")]),
+            ("theme", [("theme_name", similar_color)]),
             ("application", [("app_id", "demo"),
                              ("app_version", "0.1")]),
             ("background", [("image", skin_image_file),
@@ -742,21 +743,7 @@ class SkinEditPage(gtk.VBox):
         self.color_select_scrolled_window.add_child(self.color_select_view)
         self.color_select_align.add(self.color_select_scrolled_window)
         
-        for color in [
-            "#FF0000",
-            "#FF6C00",
-            "#FFC600",
-            "#FCFF00",
-            "#C0FF00",
-            "#00FF60",
-            "#333333",
-            "#FF00B4",
-            "#BA00FF",
-            "#8400FF",
-            "#0006FF",
-            "#00A8FF",
-            "#00FDFF",
-            ]:
+        for color in COLOR_SEQUENCE:
             self.color_select_view.add_items([ColorIconItem(color)])
         
         self.button_align = gtk.Alignment()
@@ -819,7 +806,7 @@ class ColorIconItem(gobject.GObject):
         # Draw color area.
         draw_pixbuf(
             cr,
-            ui_theme.get_pixbuf("skin/%s.png" % (self.color)).get_pixbuf(),
+            ui_theme.get_pixbuf("skin/color_%s.png" % (self.color)).get_pixbuf(),
             draw_x,
             draw_y)
         
@@ -837,8 +824,6 @@ class ColorIconItem(gobject.GObject):
                 draw_x,
                 draw_y)
             
-        # draw_font(cr, self.color, 6, "#000000", draw_x, draw_y, rect.width, rect.height)
-        
     def icon_item_motion_notify(self, x, y):
         '''Handle `motion-notify-event` signal.'''
         self.hover_flag = True
