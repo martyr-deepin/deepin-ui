@@ -23,6 +23,7 @@
 from constant import EDGE_DICT
 from draw import draw_window_shadow, draw_window_frame
 from utils import cairo_state, propagate_expose, resize_window, set_cursor, get_event_root_coords, enable_shadow, is_double_click, move_window
+from theme import ui_theme
 import cairo
 import gobject
 import gtk
@@ -130,7 +131,13 @@ class MplayerWindow(gtk.Window):
             self.draw_mask(cr, x, y, w, h)
             
         # Draw window frame.
-        draw_window_frame(cr, x, y, w, h)        
+        draw_window_frame(cr, x, y, w, h,
+                          ui_theme.get_alpha_color("windowFrameOutside1"),
+                          ui_theme.get_alpha_color("windowFrameOutside2"),
+                          ui_theme.get_alpha_color("windowFrameOutside3"),
+                          ui_theme.get_alpha_color("windowFrameInside1"),
+                          ui_theme.get_alpha_color("windowFrameInside2"),
+                          )
         
         # Propagate expose.
         propagate_expose(widget, event)
@@ -246,7 +253,7 @@ class MplayerWindow(gtk.Window):
             cr.paint()
         
             # Draw window shadow.
-            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding)
+            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding, ui_theme.get_shadow_color("windowShadow"))
     
     def hide_shadow(self):
         '''Hide shadow.'''

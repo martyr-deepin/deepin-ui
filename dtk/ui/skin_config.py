@@ -36,6 +36,7 @@ class SkinConfig(gobject.GObject):
         # Init.
         gobject.GObject.__init__(self)
         
+        self.theme_list = []
         self.window_list = []
         
     def set_application_window_size(self, app_window_width, app_window_height):
@@ -91,6 +92,8 @@ class SkinConfig(gobject.GObject):
     
     def save_skin(self):
         '''Save skin.'''
+        self.config.set("theme", "theme_name", self.theme_name)
+        
         self.config.set("background", "x", self.x)
         self.config.set("background", "y", self.y)
         self.config.set("background", "scale_x", self.scale_x)
@@ -101,8 +104,21 @@ class SkinConfig(gobject.GObject):
         
         self.config.write()
     
+    def change_theme(self, theme_name):
+        '''Change theme.'''
+        self.theme_name = theme_name        
+        
+        self.apply_skin()
+        
     def apply_skin(self):
         '''Apply skin.'''
+        # Change theme.
+        for theme in self.theme_list:
+            if theme.theme_name != self.theme_name:
+                theme.change_theme(self.theme_name)
+                print "Change theme: %s" % (self.theme_name)
+            
+        # Redraw application.
         for window in self.window_list:
             window.queue_draw()
     
@@ -121,6 +137,16 @@ class SkinConfig(gobject.GObject):
     def extract_skin_package(self):
         '''Extract skin package.'''
         pass
+    
+    def add_theme(self, theme):
+        '''Add theme.'''
+        if not theme in self.theme_list:
+            self.theme_list.append(theme)
+            
+    def remove_theme(self, theme):
+        '''Remove theme.'''
+        if theme in self.theme_list:
+            self.theme_list.remove(theme)
     
     def wrap_skin_window(self, window):
         '''Wrap skin window.'''

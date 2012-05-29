@@ -765,6 +765,26 @@ class SkinEditPage(gtk.VBox):
         self.save_button.connect("clicked", lambda w: self.emit("click-save"))
         self.cancel_button.connect("clicked", lambda w: self.emit("click-cancel"))
         
+        self.highlight_color_icon(skin_config.theme_name)
+        
+        self.color_select_view.connect("button-press-item", self.change_skin_theme)
+        
+    def change_skin_theme(self, view, item, x, y):
+        '''Change skin theme.'''
+        # Highlight theme icon.
+        self.highlight_color_icon(item.color)
+        
+        # Change theme.
+        skin_config.change_theme(item.color)
+        
+    def highlight_color_icon(self, color):
+        '''Highlight color icon.'''
+        for item in self.color_select_view.items:
+            if item.color == color:
+                self.color_select_view.clear_highlight()
+                self.color_select_view.set_highlight(item)
+                break
+        
 gobject.type_register(SkinEditPage)
 
 class ColorIconItem(gobject.GObject):

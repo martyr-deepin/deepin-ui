@@ -43,9 +43,7 @@ from dtk.ui.theme import Theme, ui_theme
 from dtk.ui.tooltip import Tooltip
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
-from dtk.ui.dragbar import Dragbar
 from dtk.ui.iconview import IconView, IconItem
-from dtk.ui.skin import SkinWindow
 import gtk
 import os
 import time
@@ -318,9 +316,6 @@ if __name__ == "__main__":
     tab_1_box.pack_start(statusbar, False)
     application.window.add_move_event(statusbar)
     application.window.add_toggle_event(statusbar)
-    
-    # Add drag bar.
-    Dragbar(application.window, statusbar)
     
     horizontal_frame = HorizontalFrame()
     browser_client = BrowserClient(

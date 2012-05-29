@@ -22,7 +22,8 @@
 
 import os
 import gtk
-from utils import read_file, eval_file, write_file
+from skin_config import skin_config
+from utils import eval_file
 
 class DynamicTreeView(object):
     '''Dynamic tree view.'''
@@ -181,15 +182,7 @@ class Theme(object):
         '''Init ui_theme.'''
         # Init.
         self.theme_dir = theme_dir
-        themes = os.listdir(self.theme_dir)
-        theme_name = read_file("./defaultTheme", True)
-        if theme_name == "" or not theme_name in themes:
-            if "default" in themes:
-                self.theme_name = "default"
-            else:
-                self.theme_name = themes[0]
-        else:
-            self.theme_name = theme_name
+        self.theme_name = skin_config.theme_name
         self.theme_path = "theme.txt"
         self.ticker = 0
         self.pixbuf_dict = {}
@@ -216,7 +209,10 @@ class Theme(object):
         # Scan text styles.
         for (text_style_name, text_style) in theme_info["text_styles"].items():
             self.text_style_dict[text_style_name] = DynamicTextStyle(text_style)
-                
+            
+        # Add in theme list of skin_config.
+        skin_config.add_theme(self)
+            
     def get_image_dir(self):
         '''Get theme directory.'''
         return os.path.join(self.theme_dir, "%s/image/" % (self.theme_name))
@@ -288,11 +284,8 @@ class Theme(object):
             self.shadow_color_dict[color_name].update(color_info)
             
         # Update text style.
-        for (text_style_name, text_style) in self.text_style_dict.items():
+        for (text_style_name, text_style) in theme_info["text_styles"].items():
             self.text_style_dict[text_style_name].update(text_style)
-            
-        # Remeber ui_theme.
-        write_file("./defaultTheme", new_theme_name)
             
 # Init.
 ui_theme = Theme(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "theme"))            

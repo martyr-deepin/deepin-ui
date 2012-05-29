@@ -169,7 +169,7 @@ class Window(gtk.Window):
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             
             # Draw window shadow.
-            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding)
+            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding, ui_theme.get_shadow_color("windowShadow"))
     
     def expose_window_frame(self, widget, event):
         '''Expose window frame.'''
@@ -178,7 +178,13 @@ class Window(gtk.Window):
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
-        draw_window_frame(cr, x, y, w, h)
+        draw_window_frame(cr, x, y, w, h,
+                          ui_theme.get_alpha_color("windowFrameOutside1"),
+                          ui_theme.get_alpha_color("windowFrameOutside2"),
+                          ui_theme.get_alpha_color("windowFrameOutside3"),
+                          ui_theme.get_alpha_color("windowFrameInside1"),
+                          ui_theme.get_alpha_color("windowFrameInside2"),
+                          )
 
     def shape_window_frame(self, widget, rect):
         '''Shap window frame.'''
