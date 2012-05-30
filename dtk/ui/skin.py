@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from dominant_color import get_dominant_color
-from dialog import ConfirmDialog, OpenFileDialog
+from dialog import ConfirmDialog, OpenFileDialog, SaveFileDialog
 import uuid
 import os
 import gtk
@@ -723,6 +723,7 @@ class SkinEditPage(gtk.VBox):
             )
         self.action_right_box.pack_start(self.export_button)
         
+        self.export_button.connect("clicked", self.export_skin)
         self.v_split_button.connect("clicked", lambda w: skin_config.vertical_mirror_background())
         self.h_split_button.connect("clicked", lambda w: skin_config.horizontal_mirror_background())
         
@@ -784,6 +785,10 @@ class SkinEditPage(gtk.VBox):
                 self.color_select_view.clear_highlight()
                 self.color_select_view.set_highlight(item)
                 break
+            
+    def export_skin(self, button):
+        '''Export skin.'''
+        SaveFileDialog("导出皮肤", None, skin_config.export_skin)
         
 gobject.type_register(SkinEditPage)
 

@@ -20,13 +20,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import uuid
 import gtk
 import gobject
 import os
-from utils import color_hex_to_cairo
+from utils import color_hex_to_cairo, remove_file, touch_file
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from config import Config
 from constant import SHADE_SIZE
+import tarfile
 
 class SkinConfig(gobject.GObject):
     '''SkinConfig.'''
@@ -90,7 +92,7 @@ class SkinConfig(gobject.GObject):
             print "load_skin error: %s" % (e)
             return False
     
-    def save_skin(self):
+    def save_skin(self, given_filepath=None):
         '''Save skin.'''
         self.config.set("theme", "theme_name", self.theme_name)
         
@@ -102,7 +104,7 @@ class SkinConfig(gobject.GObject):
         self.config.set("action", "vertical_mirror", self.vertical_mirror)
         self.config.set("action", "horizontal_mirror", self.horizontal_mirror)
         
-        self.config.write()
+        self.config.write(given_filepath)
     
     def change_theme(self, theme_name):
         '''Change theme.'''
@@ -121,22 +123,6 @@ class SkinConfig(gobject.GObject):
         # Redraw application.
         for window in self.window_list:
             window.queue_draw()
-    
-    def import_skin(self):
-        '''Import skin.'''
-        pass
-        
-    def export_skin(self):
-        '''Export skin.'''
-        pass
-    
-    def build_skin_package(self):
-        '''Build skin package.'''
-        pass
-    
-    def extract_skin_package(self):
-        '''Extract skin package.'''
-        pass
     
     def add_theme(self, theme):
         '''Add theme.'''
@@ -272,6 +258,24 @@ class SkinConfig(gobject.GObject):
                 (background_width + background_x),
                 toplevel_rect.height - (background_height + background_y))
             cr.fill()
+            
+    def export_skin(self, filepath):
+        '''Export skin.'''
+        # Build temp config file.
+        config_filepath = os.path.join("/tmp/%s", str(uuid.uuid4()))
+        touch_file(config_filepath)
+        self.save_skin(config_filepath)
+        
+        # Build skin package.
+        with tarfile.open("%s.tar.gz" % filepath, "w:gz") as tar:
+            # Add config file.
+            tar.add(config_filepath, "config.ini", False)
+            
+            # Add background image file.
+            tar.add(os.path.join(self.skin_dir, self.image), self.image, False)
+        
+        # Remove temp config file.
+        remove_file(config_filepath)    
             
 gobject.type_register(SkinConfig)
 

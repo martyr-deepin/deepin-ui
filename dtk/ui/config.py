@@ -77,9 +77,12 @@ class Config(gobject.GObject):
         self.config_parser.set(section, option, value)
         self.emit("config-changed", section, option, value)
         
-    def write(self):    
+    def write(self, given_filepath=None):    
         ''' write configure to file. '''
-        f = file(self.config_file, "w")
+        if given_filepath:
+            f = file(given_filepath, "w")
+        else:
+            f = file(self.config_file, "w")
         self.config_parser.write(f)
         f.close()
         

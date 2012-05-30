@@ -108,13 +108,40 @@ gobject.type_register(ConfirmDialog)
 class OpenFileDialog(gtk.FileChooserDialog):
     '''Open file dialog.'''
 	
-    def __init__(self, title, parent, ok_callback, cancel_callback):
+    def __init__(self, title, parent, ok_callback=None, cancel_callback=None):
         '''Open file dialog.'''
         gtk.FileChooserDialog.__init__(
             self,
             title,
             parent,
             gtk.FILE_CHOOSER_ACTION_OPEN,
+            (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
+             gtk.STOCK_OPEN, gtk.RESPONSE_ACCEPT))
+        self.set_default_response(gtk.RESPONSE_ACCEPT)
+        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_local_only(True)
+        response = self.run()
+        filename = self.get_filename()
+        if response == gtk.RESPONSE_ACCEPT:
+            if ok_callback != None:
+                ok_callback(filename)
+        elif response == gtk.RESPONSE_REJECT:
+            if cancel_callback != None:
+                cancel_callback(filename)
+        self.destroy()
+        
+gobject.type_register(OpenFileDialog)
+        
+class SaveFileDialog(gtk.FileChooserDialog):
+    '''Save file dialog.'''
+	
+    def __init__(self, title, parent, ok_callback=None, cancel_callback=None):
+        '''Save file dialog.'''
+        gtk.FileChooserDialog.__init__(
+            self,
+            title,
+            parent,
+            gtk.FILE_CHOOSER_ACTION_SAVE,
             (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT,
              gtk.STOCK_SAVE, gtk.RESPONSE_ACCEPT))
         self.set_default_response(gtk.RESPONSE_ACCEPT)
@@ -130,7 +157,7 @@ class OpenFileDialog(gtk.FileChooserDialog):
                 cancel_callback(filename)
         self.destroy()
         
-gobject.type_register(OpenFileDialog)
+gobject.type_register(SaveFileDialog)
         
 if __name__ == '__main__':
     dialog = ConfirmDialog("确认对话框", "你确定吗？", 200, 100)
