@@ -41,14 +41,16 @@ from dtk.ui.scrolled_window import ScrolledWindow
 from dtk.ui.statusbar import Statusbar
 from dtk.ui.theme import Theme, ui_theme
 from dtk.ui.tooltip import Tooltip
-from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
+from dtk.ui.utils import container_remove_all, get_widget_root_coordinate, get_parent_dir
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.iconview import IconView, IconItem
 import gtk
 import os
 import time
 
-app_theme = Theme(os.path.join((os.path.dirname(os.path.realpath(__file__))), "app_theme"))
+app_theme = Theme([
+        os.path.join(get_parent_dir(__file__), "app_theme"),
+        os.path.expanduser("~/.config/deepin-demo/theme")])
 
 def print_button_press(list_view, list_item, column, offset_x, offset_y):
     '''Print button press.'''

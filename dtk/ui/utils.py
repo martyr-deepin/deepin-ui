@@ -720,3 +720,13 @@ def get_pixbuf_support_foramts():
         support_formats += support_format.get("extensions")
         
     return support_formats    
+
+def get_parent_dir(filepath):
+    '''Get parent dir.'''
+    return os.path.dirname(os.path.realpath(filepath))
+
+def get_grandpapa_dir(filepath):
+    '''Get .... path.'''
+    return os.path.dirname(os.path.dirname(os.path.realpath(filepath)))
+    
+
