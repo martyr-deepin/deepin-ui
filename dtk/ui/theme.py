@@ -176,12 +176,13 @@ class DynamicTextStyle(object):
         return self.text_style
     
 class Theme(object):
-    '''Ui_Theme.'''
+    '''Theme.'''
     
-    def __init__(self, theme_dirs):
-        '''Init ui_theme.'''
+    def __init__(self, system_theme_dir, user_theme_dir):
+        '''Init theme.'''
         # Init.
-        self.theme_dirs = theme_dirs
+        self.system_theme_dir = system_theme_dir
+        self.user_theme_dir = user_theme_dir
         self.theme_name = skin_config.theme_name
         self.theme_info_file = "theme.txt"
         self.ticker = 0
@@ -216,7 +217,7 @@ class Theme(object):
     def get_theme_file_path(self, filename):
         '''Get theme file path.'''
         theme_file_dir = None
-        for theme_dir in self.theme_dirs:
+        for theme_dir in [self.system_theme_dir, self.user_theme_dir]:
             if os.path.exists(theme_dir):
                 if self.theme_name in os.listdir(os.path.expanduser(theme_dir)):
                     theme_file_dir = theme_dir
@@ -286,6 +287,5 @@ class Theme(object):
             self.text_style_dict[text_style_name].update(text_style)
             
 # Init.
-ui_theme = Theme([
-        os.path.join(get_grandpapa_dir(__file__), "theme"),
-        os.path.expanduser("~/.config/deepin-ui/theme")]) 
+ui_theme = Theme(os.path.join(get_grandpapa_dir(__file__), "theme"),
+                 os.path.expanduser("~/.config/deepin-ui/theme")) 
