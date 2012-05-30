@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import tarfile
 from dominant_color import get_dominant_color
 from dialog import ConfirmDialog, OpenFileDialog, SaveFileDialog
 import uuid
@@ -248,7 +249,36 @@ class SkinPreviewPage(gtk.VBox):
         
     def create_skin_from_package(self, filepath):
         '''Create skin from package.'''
-        pass
+        # Init.
+        skin_dir = os.path.join("/home/andy/deepin-ui-private/skin", str(uuid.uuid4()))
+        
+        # Create skin directory.
+        create_directory(skin_dir, True)
+        
+        # Extract skin package.
+        tar = tarfile.open(filepath, "r:gz")
+        tar.extractall(skin_dir)
+        
+        # Get skin image file.
+        config = Config(os.path.join(skin_dir, "config.ini"))
+        config.load()
+        skin_image_file = config.get("background", "image")
+        
+        # Apply new skin.
+        self.preview_view.add_items([SkinPreviewIcon(
+                    skin_dir,
+                    skin_image_file,
+                    self.change_skin_callback,
+                    self.switch_edit_page_callback,
+                    self.pop_delete_skin_dialog
+                    )], -1)
+        if skin_config.load_skin(skin_dir):
+            skin_config.apply_skin()
+            
+        self.highlight_skin()    
+        
+        # Scroll scrollbar to bottom.
+        scroll_to_bottom(self.preview_scrolled_window)            
                     
     def highlight_skin(self):
         '''Highlight skin.'''
