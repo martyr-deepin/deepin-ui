@@ -23,7 +23,7 @@
 import os
 import gtk
 from skin_config import skin_config
-from utils import eval_file, get_grandpapa_dir
+from utils import eval_file, get_grandpapa_dir, create_directory
 
 class DynamicTreeView(object):
     '''Dynamic tree view.'''
@@ -190,6 +190,10 @@ class Theme(object):
         self.alpha_color_dict = {}
         self.shadow_color_dict = {}
         self.text_style_dict = {}
+        
+        # Create directory if necessarily.
+        for theme_dir in [self.system_theme_dir, self.user_theme_dir]:
+            create_directory(theme_dir)
         
     def load_theme(self):
         '''Load.'''

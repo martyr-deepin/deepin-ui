@@ -284,7 +284,7 @@ def create_directory(directory, remove_first=False):
         remove_directory(directory)
     
     if not os.path.exists(directory):
-        os.mkdir(directory)
+        os.makedirs(directory)
     
 def remove_file(path):
     '''Remove file.'''

@@ -24,7 +24,7 @@ import uuid
 import gtk
 import gobject
 import os
-from utils import color_hex_to_cairo, remove_file, touch_file
+from utils import color_hex_to_cairo, remove_file, touch_file, create_directory
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from config import Config
 from constant import SHADE_SIZE
@@ -86,10 +86,15 @@ class SkinConfig(gobject.GObject):
         try:
             # Save skin dir.
             self.skin_name = skin_name
+            
             if system_skin_dir:
                 self.system_skin_dir = system_skin_dir
+                create_directory(self.system_skin_dir)
+                
             if user_skin_dir:
                 self.user_skin_dir = user_skin_dir
+                create_directory(self.user_skin_dir)
+                
             self.skin_dir = self.get_skin_dir()
             
             # Load config file.
