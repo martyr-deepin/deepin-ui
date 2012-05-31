@@ -156,7 +156,6 @@ class SkinConfig(gobject.GObject):
         for theme in self.theme_list:
             if theme.theme_name != self.theme_name:
                 theme.change_theme(self.theme_name)
-                print "Change theme: %s" % (self.theme_name)
             
         # Redraw application.
         for window in self.window_list:
