@@ -56,7 +56,7 @@ class ComboBox(gtk.VBox):
         self.item_label.set_size_request(80, 18)
         
         self.main_align = gtk.Alignment()
-        self.main_align.set(0.5, 0.5, 1.0, 1.0)
+        self.main_align.set(0.5, 0.5, 0, 0)
         self.main_align.set_padding(1, 1, 1, 1)
         hbox = gtk.HBox()
         hbox.pack_start(self.item_label, False, False)
