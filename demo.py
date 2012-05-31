@@ -120,6 +120,9 @@ if __name__ == "__main__":
     # Set application icon.
     application.set_icon(ui_theme.get_pixbuf("icon.ico"))
     
+    # Set application preview pixbuf.
+    application.set_skin_preview(app_theme.get_pixbuf("frame.png"))
+    
     # Add titlebar.
     application.add_titlebar(
         ["theme", "menu", "max", "min", "close"], 

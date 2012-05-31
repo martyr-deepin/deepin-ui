@@ -52,9 +52,10 @@ def draw_skin_mask(cr, x, y, w, h):
 class SkinWindow(Window):
     '''SkinWindow.'''
 	
-    def __init__(self, preview_width=450, preview_height=500):
+    def __init__(self, app_frame_pixbuf, preview_width=450, preview_height=500):
         '''Init skin.'''
         Window.__init__(self)
+        self.app_frame_pixbuf = app_frame_pixbuf
         self.set_modal(True)                                # grab focus to avoid build too many skin window
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
         self.set_skip_taskbar_hint(True)                    # skip taskbar
@@ -99,7 +100,7 @@ class SkinWindow(Window):
         '''Switch edit page.'''
         # Switch to edit page.
         container_remove_all(self.body_box)
-        edit_page = SkinEditPage()
+        edit_page = SkinEditPage(self.app_frame_pixbuf)
         self.body_box.add(edit_page)
         
         edit_page.connect("click-save", lambda page: self.click_save_button())
@@ -675,13 +676,13 @@ class SkinEditPage(gtk.VBox):
         "click-cancel" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
-    def __init__(self):
+    def __init__(self, app_frame_pixbuf):
         '''Init skin edit page.'''
         gtk.VBox.__init__(self)
         self.edit_area_align = gtk.Alignment()
         self.edit_area_align.set(0.5, 0.5, 1, 1)
         self.edit_area_align.set_padding(5, 0, 30, 30)
-        self.edit_area = SkinEditArea()        
+        self.edit_area = SkinEditArea(app_frame_pixbuf)        
         self.edit_area_align.add(self.edit_area)
         
         self.action_align = gtk.Alignment()
@@ -932,14 +933,14 @@ class SkinEditArea(gtk.EventBox):
     POSITION_INSIDE = 8
     POSITION_OUTSIDE = 9
     
-    def __init__(self):
+    def __init__(self, app_frame_pixbuf):
         '''Init skin edit area.'''
         gtk.EventBox.__init__(self)
         self.set_has_window(False)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         
-        self.preview_pixbuf = ui_theme.get_pixbuf("frame.png").get_pixbuf()
+        self.preview_pixbuf = app_frame_pixbuf.get_pixbuf()
         self.preview_frame_width = 390
         self.preview_frame_height = 270
         self.app_window_width = skin_config.app_window_width

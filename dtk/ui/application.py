@@ -184,9 +184,13 @@ class Application(object):
         # Run main loop.
         gtk.main()
 
+    def set_skin_preview(self, preview_pixbuf):
+        '''Set skin preview pixbuf.'''
+        self.skin_preview_pixbuf = preview_pixbuf
+        
     def theme_callback(self, widget):
         '''Theme button callback.'''
-        skin_window = SkinWindow()
+        skin_window = SkinWindow(self.skin_preview_pixbuf)
         skin_window.show_all()
         place_center(self.window, skin_window)
 
