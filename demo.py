@@ -63,6 +63,7 @@ from dtk.ui.volume_button import VolumeButton
 from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.check_button import CheckButton
 from dtk.ui.radio_button import RadioButton
+from dtk.ui.throbber import Throbber, MODE_SPINNING
 import gtk
 import time
 
@@ -341,6 +342,12 @@ if __name__ == "__main__":
     button_box.pack_start(radio_button_2, False, False)
     button_box.pack_start(radio_button_3, False, False)
     tab_1_box.pack_start(button_box, False, False)
+    
+    throbber = Throbber(16, 16)
+    throbber.set_mode(MODE_SPINNING)
+    throbber.set_progress(.3)
+    button_box.pack_start(throbber, False, False)
+
     
     # Add statusbar.
     statusbar = Statusbar(36)

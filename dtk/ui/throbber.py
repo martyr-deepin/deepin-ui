@@ -38,9 +38,11 @@ class Throbber(gtk.Widget):
 
     __gtype_name__ = 'Throbber'
 
-    def __init__(self):
+    def __init__(self, width=32, height=32):
 
         gtk.Widget.__init__(self)
+        self.width = width
+        self.height = height
 
         style = self.get_style()
         self.color = style.dark[gtk.STATE_NORMAL]
@@ -62,11 +64,8 @@ class Throbber(gtk.Widget):
 
 
     def do_size_request(self, requisition):
-
-        width, height = 32, 32
-        requisition.width = width
-        requisition.height = height
-
+        requisition.width = self.width
+        requisition.height = self.height
 
     def do_size_allocate(self, allocation):
         self.allocation = allocation
@@ -153,7 +152,7 @@ class Throbber(gtk.Widget):
 
 if __name__ == '__main__':
     win = gtk.Window()
-    t = Throbber()
+    t = Throbber(16, 16)
     t.set_mode(MODE_SPINNING)
     t.set_progress(.3)
     win.add(t)
