@@ -108,6 +108,9 @@ class ComboBox(gtk.VBox):
             self.item_label.set_text(combo_item.get_label())
         except:
             pass
+        
+    def clear(self):    
+        del self.items[:]
     
     def emit_popup_signal(self, widget, event):
         self.emit("will-popup-items")
