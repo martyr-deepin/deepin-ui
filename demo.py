@@ -61,7 +61,7 @@ from dtk.ui.tooltip import Tooltip
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.iconview import IconView, IconItem
-from dtk.ui.check_button import CheckButton
+from dtk.ui.button import CheckButton
 from dtk.ui.radio_button import RadioButton
 from dtk.ui.throbber import Throbber, MODE_SPINNING
 import gtk

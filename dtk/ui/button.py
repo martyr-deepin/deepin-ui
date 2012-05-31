@@ -478,3 +478,20 @@ class ActionButton(gtk.Button):
         return True
         
 gobject.type_register(ActionButton)
+
+class CheckButton(ToggleButton):
+    '''Check button.'''
+	
+    def __init__(self):
+        '''Init check button.'''
+        ToggleButton.__init__(
+            self,
+            ui_theme.get_pixbuf("button/check_button_inactive_normal.png"),
+            ui_theme.get_pixbuf("button/check_button_active_normal.png"),
+            ui_theme.get_pixbuf("button/check_button_inactive_hover.png"),
+            ui_theme.get_pixbuf("button/check_button_active_hover.png"),
+            ui_theme.get_pixbuf("button/check_button_inactive_press.png"),
+            ui_theme.get_pixbuf("button/check_button_active_press.png"),
+            )
+        
+gobject.type_register(CheckButton)
