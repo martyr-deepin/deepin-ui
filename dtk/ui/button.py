@@ -510,7 +510,7 @@ gobject.type_register(CheckButton)
 class RadioButton(gtk.HBox):
     '''Radio button.'''
 	
-    def __init__(self, label_text=None, padding_x=7):
+    def __init__(self, label_text=None, padding_x=8):
         '''Init radio button.'''
         gtk.HBox.__init__(self)
         self.button = ToggleButton(
