@@ -53,14 +53,47 @@ class SkinConfig(gobject.GObject):
         self.scale_x = scale_x
         self.scale_y = scale_y
         
-    def load_skin(self, skin_dir):
+        
+    def get_skin_file_path(self, filename):
+        '''Get skin file path.'''
+        skin_file_dir = None
+        for skin_dir in [self.system_skin_dir, self.user_skin_dir]:
+            if os.path.exists(skin_dir):
+                if self.skin_name in os.listdir(os.path.expanduser(skin_dir)):
+                    skin_file_dir = skin_dir
+                    break
+            
+        if skin_file_dir:
+            return os.path.join(skin_file_dir, self.skin_name, filename)
+        else:
+            return None
+        
+    def get_skin_dir(self):
+        '''Get skin dir.'''
+        for skin_dir in [self.system_skin_dir, self.user_skin_dir]:
+            if os.path.exists(skin_dir):
+                if self.skin_name in os.listdir(os.path.expanduser(skin_dir)):
+                    return os.path.join(skin_dir, self.skin_name)                
+                
+        return None       
+        
+    def reload_skin(self):
+        '''Reload skin.'''
+        return self.load_skin(self.skin_name)
+        
+    def load_skin(self, skin_name, system_skin_dir=None, user_skin_dir=None):
         '''Load skin, return True if load finish, otherwise return False.'''
         try:
             # Save skin dir.
-            self.skin_dir = skin_dir
+            self.skin_name = skin_name
+            if system_skin_dir:
+                self.system_skin_dir = system_skin_dir
+            if user_skin_dir:
+                self.user_skin_dir = user_skin_dir
+            self.skin_dir = self.get_skin_dir()
             
             # Load config file.
-            self.config = Config(os.path.join(self.skin_dir, "config.ini"))
+            self.config = Config(self.get_skin_file_path("config.ini"))
             self.config.load()
             
             # Get theme config.
@@ -85,7 +118,7 @@ class SkinConfig(gobject.GObject):
             self.horizontal_mirror = self.config.getboolean("action", "horizontal_mirror")
             
             # Generate background pixbuf.
-            self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.skin_dir, self.image))
+            self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(self.get_skin_file_path(self.image))
             
             return True
         except Exception, e:
@@ -164,7 +197,7 @@ class SkinConfig(gobject.GObject):
         self.x = 0
         self.y = 0
         
-        pixbuf = gtk.gdk.pixbuf_new_from_file(os.path.join(self.skin_dir, self.image))
+        pixbuf = gtk.gdk.pixbuf_new_from_file(self.get_skin_file_path(self.image))
         if self.app_window_width > self.app_window_height:
             self.scale_x = self.scale_y =  float(self.app_window_height) / pixbuf.get_height()
         else:
@@ -272,7 +305,7 @@ class SkinConfig(gobject.GObject):
             tar.add(config_filepath, "config.ini", False)
             
             # Add background image file.
-            tar.add(os.path.join(self.skin_dir, self.image), self.image, False)
+            tar.add(self.get_skin_file_path(self.image), self.image, False)
         
         # Remove temp config file.
         remove_file(config_filepath)    
@@ -280,4 +313,3 @@ class SkinConfig(gobject.GObject):
 gobject.type_register(SkinConfig)
 
 skin_config = SkinConfig()
-skin_config.load_skin("/home/andy/deepin-ui-private/skin/01")

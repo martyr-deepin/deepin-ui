@@ -183,7 +183,6 @@ class Theme(object):
         # Init.
         self.system_theme_dir = system_theme_dir
         self.user_theme_dir = user_theme_dir
-        self.theme_name = skin_config.theme_name
         self.theme_info_file = "theme.txt"
         self.ticker = 0
         self.pixbuf_dict = {}
@@ -191,6 +190,10 @@ class Theme(object):
         self.alpha_color_dict = {}
         self.shadow_color_dict = {}
         self.text_style_dict = {}
+        
+    def load_theme(self):
+        '''Load.'''
+        self.theme_name = skin_config.theme_name
         
         # Scan dynamic theme_info file.
         theme_info = eval_file(self.get_theme_file_path(self.theme_info_file))

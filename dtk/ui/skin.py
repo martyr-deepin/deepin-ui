@@ -71,10 +71,7 @@ class SkinWindow(Window):
         self.set_size_request(preview_width, preview_height)
         self.set_resizable(False)
         
-        self.preview_page = SkinPreviewPage(
-            "/home/andy/deepin-ui-private/skin",
-            self.change_skin,
-            self.switch_edit_page)
+        self.preview_page = SkinPreviewPage(self.change_skin, self.switch_edit_page)
         
         self.main_box.pack_start(self.titlebar, False, False)
         self.body_box = gtk.VBox()
@@ -89,7 +86,7 @@ class SkinWindow(Window):
     def change_skin(self, item):
         '''Change skin.'''
         # Load skin.
-        if skin_config.load_skin(item.skin_dir):
+        if skin_config.load_skin(os.path.basename(item.skin_dir)):
             skin_config.apply_skin()
         
     def switch_preview_page(self):
@@ -121,7 +118,7 @@ class SkinWindow(Window):
     def click_cancel_button(self):
         '''Click cancel button.'''
         # Reload skin from config file.
-        if skin_config.load_skin(skin_config.skin_dir):
+        if skin_config.reload_skin():
             skin_config.apply_skin()
         
         # Switch to preview page.
@@ -132,10 +129,9 @@ gobject.type_register(SkinWindow)
 class SkinPreviewPage(gtk.VBox):
     '''Skin preview.'''
 	
-    def __init__(self, skin_dir, change_skin_callback, switch_edit_page_callback):
+    def __init__(self, change_skin_callback, switch_edit_page_callback):
         '''Init skin preview.'''
         gtk.VBox.__init__(self)
-        self.skin_dir = skin_dir
         self.change_skin_callback = change_skin_callback
         self.switch_edit_page_callback = switch_edit_page_callback
         
@@ -161,16 +157,17 @@ class SkinPreviewPage(gtk.VBox):
         self.pack_start(self.button_align, False, False)
         
         support_foramts = get_pixbuf_support_foramts()
-        for root, dirs, files in os.walk(skin_dir):
-            dirs.sort()         # sort directory with alpha order
-            for filename in files:
-                if end_with_suffixs(filename, support_foramts):
-                    self.preview_view.add_items([SkinPreviewIcon(
-                                root, 
-                                filename, 
-                                self.change_skin_callback, 
-                                self.switch_edit_page_callback,
-                                self.pop_delete_skin_dialog)])
+        for skin_dir in [skin_config.system_skin_dir, skin_config.user_skin_dir]:
+            for root, dirs, files in os.walk(skin_dir):
+                dirs.sort()         # sort directory with alpha order
+                for filename in files:
+                    if end_with_suffixs(filename, support_foramts):
+                        self.preview_view.add_items([SkinPreviewIcon(
+                                    root, 
+                                    filename, 
+                                    self.change_skin_callback, 
+                                    self.switch_edit_page_callback,
+                                    self.pop_delete_skin_dialog)])
                     
         self.preview_view.add_items([SkinAddIcon(self.create_skin_from_file)])
         
@@ -199,7 +196,7 @@ class SkinPreviewPage(gtk.VBox):
     def create_skin_from_image(self, filepath):
         '''Create skin from image.'''
         # Init.
-        skin_dir = os.path.join("/home/andy/deepin-ui-private/skin", str(uuid.uuid4()))
+        skin_dir = os.path.join(skin_config.user_skin_dir, str(uuid.uuid4()))
         skin_image_file = os.path.basename(filepath)
         config_file = os.path.join(skin_dir, "config.ini")
         dominant_color = get_dominant_color(filepath)
@@ -239,7 +236,7 @@ class SkinPreviewPage(gtk.VBox):
                     self.switch_edit_page_callback,
                     self.pop_delete_skin_dialog
                     )], -1)
-        if skin_config.load_skin(skin_dir):
+        if skin_config.load_skin(os.path.basename(skin_dir)):
             skin_config.apply_skin()
             
         self.highlight_skin()    
@@ -250,7 +247,7 @@ class SkinPreviewPage(gtk.VBox):
     def create_skin_from_package(self, filepath):
         '''Create skin from package.'''
         # Init.
-        skin_dir = os.path.join("/home/andy/deepin-ui-private/skin", str(uuid.uuid4()))
+        skin_dir = os.path.join(skin_config.user_skin_dir, str(uuid.uuid4()))
         
         # Create skin directory.
         create_directory(skin_dir, True)
@@ -272,7 +269,7 @@ class SkinPreviewPage(gtk.VBox):
                     self.switch_edit_page_callback,
                     self.pop_delete_skin_dialog
                     )], -1)
-        if skin_config.load_skin(skin_dir):
+        if skin_config.load_skin(os.path.basename(skin_dir)):
             skin_config.apply_skin()
             
         self.highlight_skin()    
@@ -284,7 +281,7 @@ class SkinPreviewPage(gtk.VBox):
         '''Highlight skin.'''
         # Highlight skin.
         for item in self.preview_view.items:
-            if item.skin_dir == skin_config.skin_dir:
+            if isinstance(item, SkinPreviewIcon) and item.skin_dir == skin_config.skin_dir:
                 self.preview_view.clear_highlight()
                 self.preview_view.set_highlight(item)
                 break
@@ -306,7 +303,7 @@ class SkinPreviewPage(gtk.VBox):
             # Change to first theme if delete current theme.
             if item.skin_dir == skin_config.skin_dir:
                 item_index = max(self.preview_view.items.index(item) - 1, 0)
-                if skin_config.load_skin(self.preview_view.items[item_index].skin_dir):
+                if skin_config.load_skin(os.path.basename(self.preview_view.items[item_index].skin_dir)):
                     skin_config.apply_skin()
                     self.highlight_skin()
                         
