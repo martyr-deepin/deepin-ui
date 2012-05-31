@@ -78,6 +78,7 @@ class ListView(gtk.DrawingArea):
         self.press_shift = False
         self.select_rows = []
         self.start_select_row = None
+        self.press_in_select_rows = None
         
         # Signal.
         self.connect("realize", lambda w: self.grab_focus()) # focus key after realize
@@ -500,6 +501,9 @@ class ListView(gtk.DrawingArea):
                     self.hover_item(event)
         elif len(self.items) > 0:
             self.hover_item(event)
+            
+        # Disable press_in_select_rows once move mouse.
+        self.press_in_select_rows = None
                     
         # Redraw after motion.
         self.queue_draw()
@@ -678,6 +682,9 @@ class ListView(gtk.DrawingArea):
                                 self.before_drag_items.append(self.items[row])
                             elif row > click_row:
                                 self.after_drag_items.append(self.items[row])
+                                
+                        # Record press_in_select_rows, disable select rows if mouse not move after release button.
+                        self.press_in_select_rows = click_row
                     else:
                         self.start_drag = False
                     
@@ -819,7 +826,17 @@ class ListView(gtk.DrawingArea):
                     
             self.double_click_row = None
             self.single_click_row = None
-        
+            
+            # Disable select rows when press_in_select_rows valid after button release.
+            if self.press_in_select_rows:
+                self.start_drag = False
+                self.start_select_row = self.press_in_select_rows
+                self.select_rows = [self.press_in_select_rows]
+                
+                self.press_in_select_rows = None
+                
+                self.queue_draw()
+            
     def leave_list_view(self, widget, event):
         '''leave-notify-event signal handler.'''
         # Reset.

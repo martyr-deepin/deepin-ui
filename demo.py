@@ -335,11 +335,9 @@ if __name__ == "__main__":
     check_button = CheckButton("Check Button")
     radio_button_1 = RadioButton("Radio Button1")
     radio_button_2 = RadioButton("Radio Button2")
-    radio_button_3 = RadioButton("Radio Button3")
     button_box.pack_start(check_button, False, False)
     button_box.pack_start(radio_button_1, False, False)
     button_box.pack_start(radio_button_2, False, False)
-    button_box.pack_start(radio_button_3, False, False)
     tab_1_box.pack_start(button_box, False, False)
     
     throbber = Throbber(16, 16)
