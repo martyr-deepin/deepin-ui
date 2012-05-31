@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, DEFAULT_FONT
+from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_CENTER, DEFAULT_FONT, COLOR_NAME_DICT, BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED
 from contextlib import contextmanager 
 import cairo
 import gtk
@@ -158,6 +158,9 @@ def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER):
     elif pos_type == WIDGET_POS_RIGHT_CENTER:
         offset_x = rect.width
         offset_y = rect.height / 2
+    elif pos_type == WIDGET_POS_CENTER:
+        offset_x = rect.width / 2
+        offset_y = rect.height / 2
         
     return (x + offset_x, y + offset_y)
 
@@ -255,6 +258,11 @@ def is_in_rect((cx, cy), (x, y, w, h)):
 def scroll_to_top(scrolled_window):
     '''Scroll scrolled window to top.'''
     scrolled_window.get_vadjustment().set_value(0)
+    
+def scroll_to_bottom(scrolled_window):
+    '''Scroll scrolled window to bottom.'''
+    vadjust = scrolled_window.get_vadjustment()
+    vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
 
 def get_content_size(text, size):
     '''Get size of text, in pixel.'''
@@ -270,13 +278,21 @@ def get_content_size(text, size):
     else:
         return (0, 0)
     
+def create_directory(directory, remove_first=False):
+    '''Create directory.'''
+    if remove_first and os.path.exists(directory):
+        remove_directory(directory)
+    
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
 def remove_file(path):
     '''Remove file.'''
     if os.path.exists(path):
         os.remove(path)
         
 def remove_directory(path):
-    """equivalent to rm -rf path"""
+    """equivalent to command `rm -rf path`"""
     for i in os.listdir(path):
         full_path = os.path.join(path, i)
         if os.path.isdir(full_path):
@@ -652,29 +668,65 @@ def rgb2hsb(r_value, g_value, b_value):
     
     return (h, s, b)
 
-def find_similar_color(search_color, grey_match_color, white_match_color, target_colors):
+def find_similar_color(search_color):
     '''Find simliar color match search_color, detail look hsb(hsv).png in current directory.'''
     (search_h, search_s, search_b) = rgb2hsb(*color_hex_to_cairo(search_color))
-    hsb_colors = map(lambda hex_color: (hex_color, rgb2hsb(*color_hex_to_cairo(hex_color))), target_colors)
+    hsb_colors = map(lambda (name, value): (name, rgb2hsb(*color_hex_to_cairo(value))), COLOR_NAME_DICT.iteritems())
     
-    similar_color = None
+    similar_color_name = None
+    similar_color_value = None
     # Return black color if brightness (height) < 0.3
     if search_b < 0.3:
-        similar_color = grey_match_color
+        similar_color_name = BLACK_COLOR_MAPPED
     # Return white color if saturation (radius) < 0.05
     elif search_s < 0.05:
-        similar_color = white_match_color
+        similar_color_name = WHITE_COLOR_MAPPED
     # Otherwise find nearest color in hsb color space.
     else:
         min_color_distance = None
-        for (hex_color, (h, s, b)) in hsb_colors:
+        for (color_name, (h, s, b)) in hsb_colors:
             color_distance = abs(h - search_h)
             if min_color_distance == None or color_distance < min_color_distance:
                 min_color_distance = color_distance
-                similar_color = hex_color
+                similar_color_name = color_name
 
-    return similar_color
+    similar_color_value = COLOR_NAME_DICT[similar_color_name]
+    return (similar_color_name, similar_color_value)
 
 def draw_blank_mask(cr, x, y, w, h):
     '''Draw blank mask.'''
     pass
+
+def end_with_suffixs(filepath, suffixs):
+    '''File endswith given suffixs.'''
+    for suffix in suffixs:
+        if filepath.endswith(suffix):
+            return True
+        
+    return False    
+
+def place_center(refer_window, place_window):
+    '''Place place_window in center of refer_window.'''
+    (center_x, center_y) = get_widget_root_coordinate(refer_window, WIDGET_POS_CENTER)
+    place_window.move(
+        center_x - place_window.allocation.width / 2,
+        center_y - place_window.allocation.height / 2
+        )
+
+def get_pixbuf_support_foramts():
+    '''Get formats that support by pixbuf.'''
+    support_formats = []
+    for support_format in gtk.gdk.pixbuf_get_formats():
+        support_formats += support_format.get("extensions")
+        
+    return support_formats    
+
+def get_parent_dir(filepath, level=1):
+    '''Get parent dir.'''
+    parent_dir = os.path.realpath(filepath)
+    
+    while(level > 0):
+        parent_dir = os.path.dirname(parent_dir)
+        level -= 1
+    
+    return parent_dir

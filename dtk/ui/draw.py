@@ -22,7 +22,6 @@
 
 from constant import ALIGN_MIDDLE, ALIGN_START, ALIGN_END, DEFAULT_FONT
 from math import pi
-from theme import ui_theme
 from utils import cairo_state, cairo_disable_antialias, color_hex_to_cairo, add_color_stop_rgba, propagate_expose, get_content_size, alpha_color_hex_to_cairo
 import cairo
 import dtk_cairo_blur    
@@ -94,7 +93,13 @@ def draw_pixbuf(cr, pixbuf, x=0, y=0, alpha=1.0):
         cr.set_source_pixbuf(pixbuf, x, y)
         cr.paint_with_alpha(alpha)
         
-def draw_window_frame(cr, x, y, w, h):
+def draw_window_frame(cr, x, y, w, h,
+                      color_frame_outside_1,
+                      color_frame_outside_2,
+                      color_frame_outside_3,
+                      color_frame_inside_1,
+                      color_frame_inside_2,
+                      ):
     '''Draw window frame.'''
     with cairo_disable_antialias(cr):    
         # Set line width.
@@ -104,7 +109,7 @@ def draw_window_frame(cr, x, y, w, h):
         cr.set_operator(cairo.OPERATOR_OVER)
         
         # Draw outside 8 points.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameOutside1").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(color_frame_outside_1.get_color_info()))
         
         cr.rectangle(x, y + 1, 1, 1) # top-left
         cr.rectangle(x + 1, y, 1, 1)
@@ -121,7 +126,7 @@ def draw_window_frame(cr, x, y, w, h):
         cr.fill()
         
         # Draw outside 4 points.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameOutside2").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(color_frame_outside_2.get_color_info()))
         
         cr.rectangle(x + 1, y + 1, 1, 1) # top-left
         
@@ -134,7 +139,7 @@ def draw_window_frame(cr, x, y, w, h):
         cr.fill()
         
         # Draw outside frame.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameOutside3").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(color_frame_outside_3.get_color_info()))
 
         cr.rectangle(x + 2, y, w - 4, 1) # top side
         
@@ -147,7 +152,7 @@ def draw_window_frame(cr, x, y, w, h):
         cr.fill()
         
         # Draw outside 4 points.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameInside1").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(color_frame_inside_1.get_color_info()))
         
         cr.rectangle(x + 1, y + 1, 1, 1) # top-left
         
@@ -160,7 +165,7 @@ def draw_window_frame(cr, x, y, w, h):
         cr.fill()
         
         # Draw inside 4 points.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameInside1").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(color_frame_inside_1.get_color_info()))
         
         cr.rectangle(x + 2, y + 2, 1, 1) # top-left
         
@@ -173,7 +178,7 @@ def draw_window_frame(cr, x, y, w, h):
         cr.fill()
         
         # Draw inside frame.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowFrameInside2").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(color_frame_inside_2.get_color_info()))
 
         cr.rectangle(x + 2, y + 1, w - 4, 1) # top side
         
@@ -333,9 +338,9 @@ def expose_linear_background(widget, event, color_infos):
     
     return True
 
-def draw_window_shadow(cr, x, y, w, h, r, p,
-                       color_infos = ui_theme.get_shadow_color("windowShadow").get_color_info()):
+def draw_window_shadow(cr, x, y, w, h, r, p, color_window_shadow):
     '''Draw window shadow.'''
+    color_infos = color_window_shadow.get_color_info()
     with cairo_state(cr):
         # Clip four corner.
         cr.rectangle(x, y, r - 1, r - 1) # top-left
@@ -397,9 +402,10 @@ def draw_radial_round(cr, x, y, r, color_infos):
     cr.set_source(radial)
     cr.fill()
 
-def draw_text(cr, rx, ry, rw, rh, text, 
-                  (text_color, gaussian_color, border_color, font_size, gaussian_radious, border_radious)):
+def draw_text(cr, rx, ry, rw, rh, text, text_style):
     '''Draw text.'''
+    (text_color, gaussian_color, border_color, font_size, gaussian_radious, border_radious) = text_style
+    
     # Get text size.
     (text_width, text_height) = get_content_size(text, font_size)
     width = max(text_width + gaussian_radious * 2, rw)

@@ -22,7 +22,8 @@
 
 import os
 import gtk
-from utils import read_file, eval_file, write_file
+from skin_config import skin_config
+from utils import eval_file, get_parent_dir, create_directory
 
 class DynamicTreeView(object):
     '''Dynamic tree view.'''
@@ -175,22 +176,14 @@ class DynamicTextStyle(object):
         return self.text_style
     
 class Theme(object):
-    '''Ui_Theme.'''
+    '''Theme.'''
     
-    def __init__(self, theme_dir):
-        '''Init ui_theme.'''
+    def __init__(self, system_theme_dir, user_theme_dir):
+        '''Init theme.'''
         # Init.
-        self.theme_dir = theme_dir
-        themes = os.listdir(self.theme_dir)
-        theme_name = read_file("./defaultTheme", True)
-        if theme_name == "" or not theme_name in themes:
-            if "default" in themes:
-                self.theme_name = "default"
-            else:
-                self.theme_name = themes[0]
-        else:
-            self.theme_name = theme_name
-        self.theme_path = "theme.txt"
+        self.system_theme_dir = system_theme_dir
+        self.user_theme_dir = user_theme_dir
+        self.theme_info_file = "theme.txt"
         self.ticker = 0
         self.pixbuf_dict = {}
         self.color_dict = {}
@@ -198,8 +191,16 @@ class Theme(object):
         self.shadow_color_dict = {}
         self.text_style_dict = {}
         
+        # Create directory if necessarily.
+        for theme_dir in [self.system_theme_dir, self.user_theme_dir]:
+            create_directory(theme_dir)
+        
+    def load_theme(self):
+        '''Load.'''
+        self.theme_name = skin_config.theme_name
+        
         # Scan dynamic theme_info file.
-        theme_info = eval_file(self.get_theme_path(self.theme_path))
+        theme_info = eval_file(self.get_theme_file_path(self.theme_info_file))
         
         # Init dynamic colors.
         for (color_name, color) in theme_info["colors"].items():
@@ -216,28 +217,29 @@ class Theme(object):
         # Scan text styles.
         for (text_style_name, text_style) in theme_info["text_styles"].items():
             self.text_style_dict[text_style_name] = DynamicTextStyle(text_style)
-                
-    def get_image_dir(self):
-        '''Get theme directory.'''
-        return os.path.join(self.theme_dir, "%s/image/" % (self.theme_name))
-
-    def get_image_path(self, path):
-        '''Get pixbuf path.'''
-        return os.path.join(self.get_image_dir(), path)
-
-    def get_theme_dir(self):
-        '''Get theme directory.'''
-        return os.path.join(self.theme_dir, "%s/" % (self.theme_name))                
-    
-    def get_theme_path(self, path):
-        '''Get pixbuf path.'''
-        return os.path.join(self.get_theme_dir(), path)
+            
+        # Add in theme list of skin_config.
+        skin_config.add_theme(self)
+        
+    def get_theme_file_path(self, filename):
+        '''Get theme file path.'''
+        theme_file_dir = None
+        for theme_dir in [self.system_theme_dir, self.user_theme_dir]:
+            if os.path.exists(theme_dir):
+                if self.theme_name in os.listdir(os.path.expanduser(theme_dir)):
+                    theme_file_dir = theme_dir
+                    break
+            
+        if theme_file_dir:
+            return os.path.join(theme_file_dir, self.theme_name, filename)
+        else:
+            return None
             
     def get_pixbuf(self, path):
         '''Get dynamic pixbuf.'''
         # Just init pixbuf_dict when first load some pixbuf.
         if not self.pixbuf_dict.has_key(path):
-            self.pixbuf_dict[path] = DynamicPixbuf(self.get_image_path(path))
+            self.pixbuf_dict[path] = DynamicPixbuf(self.get_theme_file_path("image/%s" % (path)))
             
         return self.pixbuf_dict[path]
 
@@ -271,10 +273,10 @@ class Theme(object):
 
         # Update dynmaic pixbuf.
         for (path, pixbuf) in self.pixbuf_dict.items():
-            pixbuf.update(self.get_image_path(path))
+            pixbuf.update(self.get_theme_file_path("image/%s" % (path)))
             
         # Update dynamic colors.
-        theme_info = eval_file(self.get_theme_path(self.theme_path))
+        theme_info = eval_file(self.get_theme_file_path(self.theme_info_file))
             
         for (color_name, color) in theme_info["colors"].items():
             self.color_dict[color_name].update(color)
@@ -288,11 +290,9 @@ class Theme(object):
             self.shadow_color_dict[color_name].update(color_info)
             
         # Update text style.
-        for (text_style_name, text_style) in self.text_style_dict.items():
+        for (text_style_name, text_style) in theme_info["text_styles"].items():
             self.text_style_dict[text_style_name].update(text_style)
             
-        # Remeber ui_theme.
-        write_file("./defaultTheme", new_theme_name)
-            
 # Init.
-ui_theme = Theme(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "theme"))            
+ui_theme = Theme(os.path.join(get_parent_dir(__file__, 2), "theme"),
+                 os.path.expanduser("~/.config/deepin-ui/theme")) 

@@ -20,13 +20,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import BACKGROUND_IMAGE, EDGE_DICT
-from draw import draw_pixbuf, draw_window_shadow, draw_window_frame
-from theme import ui_theme
+from constant import EDGE_DICT
+from draw import draw_window_shadow, draw_window_frame
 from utils import cairo_state, propagate_expose, resize_window, set_cursor, get_event_root_coords, enable_shadow, is_double_click, move_window
+from theme import ui_theme
 import cairo
 import gobject
 import gtk
+from skin_config import skin_config
 
 class MplayerWindow(gtk.Window):
     '''Window for mplayer or any software that can't running when window redirect colormap from screen.'''
@@ -35,13 +36,13 @@ class MplayerWindow(gtk.Window):
         '''Init mplayer window.'''
         # Init.
         gtk.Window.__init__(self, window_type)
+        skin_config.wrap_skin_window(self)
         self.set_decorated(False)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.shadow_radius = shadow_radius
         self.frame_radius = 2
         self.shadow_is_visible = True
         self.enable_resize = enable_resize
-        self.background_dpixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE)
         self.window_frame = gtk.VBox()
         self.add(self.window_frame)
         self.shape_flag = True
@@ -102,15 +103,10 @@ class MplayerWindow(gtk.Window):
         if enable_shadow(self) and self.enable_shadow:
             self.window_shadow.show_all()
         
-    def change_background(self, background_dpixbuf):
-        '''Change background.'''
-        self.background_dpixbuf = background_dpixbuf                
-        
     def expose_window(self, widget, event):
         '''Expose window.'''
         # Init.
         cr = widget.window.cairo_create()
-        pixbuf = self.background_dpixbuf.get_pixbuf()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
@@ -129,13 +125,19 @@ class MplayerWindow(gtk.Window):
             
             cr.clip()
             
-            draw_pixbuf(cr, pixbuf, x, y)
+            skin_config.render_background(cr, self, x, y)
         
             # Draw mask.
             self.draw_mask(cr, x, y, w, h)
             
         # Draw window frame.
-        draw_window_frame(cr, x, y, w, h)        
+        draw_window_frame(cr, x, y, w, h,
+                          ui_theme.get_alpha_color("windowFrameOutside1"),
+                          ui_theme.get_alpha_color("windowFrameOutside2"),
+                          ui_theme.get_alpha_color("windowFrameOutside3"),
+                          ui_theme.get_alpha_color("windowFrameInside1"),
+                          ui_theme.get_alpha_color("windowFrameInside2"),
+                          )
         
         # Propagate expose.
         propagate_expose(widget, event)
@@ -251,7 +253,7 @@ class MplayerWindow(gtk.Window):
             cr.paint()
         
             # Draw window shadow.
-            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding)
+            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding, ui_theme.get_shadow_color("windowShadow"))
     
     def hide_shadow(self):
         '''Hide shadow.'''

@@ -20,13 +20,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import EDGE_DICT, BACKGROUND_IMAGE
-from draw import draw_pixbuf, draw_window_shadow, draw_window_frame
+from constant import EDGE_DICT
+from draw import draw_window_shadow, draw_window_frame
 from theme import ui_theme
 from utils import cairo_state, propagate_expose, set_cursor, resize_window, get_event_root_coords, enable_shadow, alpha_color_hex_to_cairo, is_double_click, move_window
 import cairo
 import gobject
 import gtk
+from skin_config import skin_config
 
 class Window(gtk.Window):
     '''Window.'''
@@ -35,6 +36,7 @@ class Window(gtk.Window):
         '''Init window.'''
         # Init.
         gtk.Window.__init__(self, window_type)
+        skin_config.wrap_skin_window(self)
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
@@ -45,7 +47,6 @@ class Window(gtk.Window):
         self.shadow_is_visible = True
         self.cursor_type = None
         self.enable_resize = enable_resize
-        self.background_dpixbuf = ui_theme.get_pixbuf(BACKGROUND_IMAGE)
         
         # Shadow setup.
         if enable_shadow(self):
@@ -77,15 +78,10 @@ class Window(gtk.Window):
         '''Show.'''
         self.show_all()
         
-    def change_background(self, background_dpixbuf):
-        '''Change background.'''
-        self.background_dpixbuf = background_dpixbuf                
-        
     def expose_window_background(self, widget, event):
         '''Expose window background.'''
         # Init.
         cr = widget.window.cairo_create()
-        pixbuf = self.background_dpixbuf.get_pixbuf()
         rect = widget.allocation
         
         # Clear color to transparent window.
@@ -112,7 +108,8 @@ class Window(gtk.Window):
             
             cr.clip()
             
-            draw_pixbuf(cr, pixbuf, x, y)
+            # draw_pixbuf(cr, pixbuf, x, y)
+            skin_config.render_background(cr, self, x, y)
         
             # Draw mask.
             self.draw_mask(cr, x, y, w, h)
@@ -151,7 +148,8 @@ class Window(gtk.Window):
             
             cr.clip()
             
-            draw_pixbuf(cr, pixbuf, x, y, 0.5)
+            # draw_pixbuf(cr, pixbuf, x, y, 0.5)
+            skin_config.render_background(cr, self, x, y)
             
         # Propagate expose.
         propagate_expose(widget, event)
@@ -171,7 +169,7 @@ class Window(gtk.Window):
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             
             # Draw window shadow.
-            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding)
+            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding, ui_theme.get_shadow_color("windowShadow"))
     
     def expose_window_frame(self, widget, event):
         '''Expose window frame.'''
@@ -180,7 +178,13 @@ class Window(gtk.Window):
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
-        draw_window_frame(cr, x, y, w, h)
+        draw_window_frame(cr, x, y, w, h,
+                          ui_theme.get_alpha_color("windowFrameOutside1"),
+                          ui_theme.get_alpha_color("windowFrameOutside2"),
+                          ui_theme.get_alpha_color("windowFrameOutside3"),
+                          ui_theme.get_alpha_color("windowFrameInside1"),
+                          ui_theme.get_alpha_color("windowFrameInside2"),
+                          )
 
     def shape_window_frame(self, widget, rect):
         '''Shap window frame.'''

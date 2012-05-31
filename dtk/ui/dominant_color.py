@@ -28,6 +28,7 @@ import scipy
 import scipy.cluster
 import scipy.misc
 import urllib
+from constant import SHADE_SIZE
 
 def get_dominant_color(image_path):
     # print 'reading image'
@@ -60,7 +61,6 @@ class ColorTestWidget(gtk.DrawingArea):
         self.connect("expose-event", self.color_test_widget_expose)        
         self.pixbuf = None
         self.background_color = "#000000"
-        self.buffer_size = 200       # pixel
         
         self.drag_dest_set(
             gtk.DEST_DEFAULT_MOTION |
@@ -76,6 +76,7 @@ class ColorTestWidget(gtk.DrawingArea):
         
     def set_pixbuf(self, filename):
         self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(filename, 800, 800)
+        print filename
         self.background_color = get_dominant_color(filename)
         self.queue_draw()
         
@@ -88,22 +89,19 @@ class ColorTestWidget(gtk.DrawingArea):
         
         # Draw mask.
         draw_vlinear(
-            cr, rect.x, rect.y + self.pixbuf.get_height() - self.buffer_size, rect.width, self.buffer_size,
+            cr, rect.x, rect.y + self.pixbuf.get_height() - SHADE_SIZE, rect.width, SHADE_SIZE,
             [(0, (self.background_color, 0)),
              (1, (self.background_color, 1))])
         
         draw_hlinear(
-            cr, rect.x + self.pixbuf.get_width() - self.buffer_size, rect.y, self.buffer_size, rect.height,
+            cr, rect.x + self.pixbuf.get_width() - SHADE_SIZE, rect.y, SHADE_SIZE, rect.height,
             [(0, (self.background_color, 0)),
              (1, (self.background_color, 1))])
 
         # Draw background.
-        similar_color = find_similar_color(
-            self.background_color,
-            "#333333",
-            "#00A8FF",
-            ["#FF0000", "#FF6C00", "#FFC600", "#FCFF00", "#C0FF00", "#00FF60", "#00FDFF", "#00A8FF", "#0006FF", "#8400FF", "#BA00FF", "#FF00B4"])
-        cr.set_source_rgb(*color_hex_to_cairo(similar_color))
+        (similar_color_name, similar_color_value) = find_similar_color(self.background_color)
+        print (similar_color_name, similar_color_value)
+        cr.set_source_rgb(*color_hex_to_cairo(similar_color_value))
         cr.rectangle(rect.x + self.pixbuf.get_width(), rect.y,
                      rect.width - self.pixbuf.get_width(), rect.height)
         cr.fill()
