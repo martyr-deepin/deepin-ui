@@ -64,6 +64,7 @@ from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.check_button import CheckButton
 from dtk.ui.radio_button import RadioButton
 from dtk.ui.throbber import Throbber, MODE_SPINNING
+from dtk.ui.combo import ComboBox
 import gtk
 import time
 
@@ -326,6 +327,7 @@ if __name__ == "__main__":
     toggle_button_align.add(ToggleButtonGroup(toggle_button_items))
     entry_box.pack_start(ImageButtonGroup(image_button_items))
     entry_box.pack_start(toggle_button_align)
+    entry_box.pack_start(ComboBox(), False, False)
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
