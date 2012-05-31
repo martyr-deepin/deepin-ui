@@ -39,11 +39,12 @@ class ComboBox(gtk.VBox):
         "will-popup-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
         }
     
-    def __init__(self):
+    def __init__(self, items=[], default_width=100):
         super(ComboBox, self).__init__()
         
         # Init.
-        self.items = []
+        self.items = items
+        self.default_width = default_width
         self.background_color = ui_theme.get_alpha_color("textEntryBackground")
         self.acme_color = ui_theme.get_alpha_color("textEntryAcme")
         self.point_color = ui_theme.get_alpha_color("textEntryPoint")
@@ -51,16 +52,15 @@ class ComboBox(gtk.VBox):
         self.frame_color = ui_theme.get_alpha_color("textEntryFrame")
         
         # Widget.
-        self.arrow_button = self.__create_arrow_button()
-        self.item_label = Label("")
-        self.item_label.set_size_request(80, 18)
+        arrow_button = self.__create_arrow_button()
+        self.item_label = Label("", ui_theme.get_color("comboBoxText"))
         
         self.main_align = gtk.Alignment()
         self.main_align.set(0.5, 0.5, 0, 0)
         self.main_align.set_padding(1, 1, 1, 1)
         hbox = gtk.HBox()
-        hbox.pack_start(self.item_label, False, False)
-        hbox.pack_start(self.arrow_button, False, False)
+        hbox.pack_start(self.item_label, False, False)        
+        hbox.pack_start(arrow_button, False, False)
         hbox_align = gtk.Alignment()
         hbox_align.set(0.5, 0.5, 1.0, 1.0)
         hbox_align.set_padding(0, 0, 2, 0)
@@ -69,20 +69,31 @@ class ComboBox(gtk.VBox):
         self.pack_start(self.main_align, False, False)
         
         # Signals.
-        self.arrow_button.connect("clicked", self.popup_items)
-        self.arrow_button.connect("button-press-event", self.emit_popup_signal)
+        self.connect("size-allocate", self.size_change_cb)
+        arrow_button.connect("clicked", self.popup_items)
+        arrow_button.connect("button-press-event", self.emit_popup_signal)
         self.item_label.connect("button-release-event", lambda w, e: self.popup_items(w))
         self.item_label.connect("button-press-event", self.emit_popup_signal)
-        self.main_align.connect("expose-event", self.expose_vbox_bg)
+        self.main_align.connect("expose-event", self.expose_combo_bg)
+        
+    def size_change_cb(self, widget, rect):    
+        height = 18
+        if rect.width > self.default_width:
+            self.default_width = rect.width
+            
+        label_width = self.default_width - 16
+        self.set_size_request(self.default_width, height)
+        self.item_label.set_size_request(label_width, height)
         
     def popup_items(self, widget):    
         x, y = get_widget_root_coordinate(self, WIDGET_POS_TOP_LEFT)
         w = self.allocation.width + 8
         menu_items = []
         for combo_item in self.items:
-            menu_items.append((None, combo_item.get_label(), self.item_selected_cb, combo_item))
+            menu_items.append((combo_item.get_icon(), combo_item.get_label(), self.item_selected_cb, combo_item))
         
         popup_menu = Menu(menu_items, True)
+        popup_menu.set_keep_above(True)
         if menu_items:
             popup_menu.set_size_request(w, -1)
         else:    
@@ -96,26 +107,42 @@ class ComboBox(gtk.VBox):
     def add_item(self, combo_item):    
         self.items.append(combo_item)
         
+    def set_select_label(self, item_label):    
+        self.item_label.set_text(item_label)
+        
+    def set_select_item(self, combo_item):    
+        self.item_label.set_text(combo_item.get_label())
+        
+    def set_select_index(self, item_index):    
+        try:
+            combo_item = self.items[item_index]
+            self.item_label.set_text(combo_item.get_label())
+        except:
+            pass
+        
+    def label_in_items(self, label):    
+        labels = [item.get_label() for item in self.items]
+        if label in labels:
+            return True
+        else:
+            return False
+        
+    def delete_item(self, index):    
+        self.items.pop(index)
+        
     def insert_item(self, index, combo_item):
         self.items.insert(index, combo_item)
         
     def get_count(self):    
         return len(self.items)
     
-    def set_top_index(self, index):
-        try:
-            combo_item = self.items[index]
-            self.item_label.set_text(combo_item.get_label())
-        except:
-            pass
-        
     def clear(self):    
         del self.items[:]
     
     def emit_popup_signal(self, widget, event):
         self.emit("will-popup-items")
         
-    def expose_vbox_bg(self, widget, event):    
+    def expose_combo_bg(self, widget, event):    
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -205,12 +232,20 @@ gobject.type_register(ComboBox)
 
 class ComboBoxItem(object):
     
-    def __init__(self, item_label):
+    def __init__(self, item_label, item_icon=None):
         
         self.item_label = item_label
+        self.item_icon = item_icon
         
     def get_label(self):    
         return self.item_label
     
     def set_label(self, value):
         self.item_label = value
+
+    def get_icon(self):    
+        return self.item_icon 
+    
+    def set_icon(self, value):
+        self.item_icon = value
+        

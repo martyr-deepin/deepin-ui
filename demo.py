@@ -65,6 +65,7 @@ from dtk.ui.button import CheckButton
 from dtk.ui.radio_button import RadioButton
 from dtk.ui.throbber import Throbber, MODE_SPINNING
 from dtk.ui.combo import ComboBox, ComboBoxItem
+from dtk.ui.spin import SpinBox
 import gtk
 import time
 
@@ -330,14 +331,14 @@ if __name__ == "__main__":
 
     
     # combobox
-    combo_box = ComboBox()
-    combo_box.add_item(ComboBoxItem("Linux Deepin"))
-    combo_box.add_item(ComboBoxItem("Deepin Music"))
-    combo_box.add_item(ComboBoxItem("Deepin Meida"))
-    combo_box.add_item(ComboBoxItem("Deepin UI"))
-    combo_box.insert_item(2, ComboBoxItem("Deepin Down"))
-    combo_box.set_top_index(2)
+    combo_box = ComboBox() # args have (items=[], default_width=100)
+    combo_box.add_item(ComboBoxItem("播放列表"))
+    combo_box.add_item(ComboBoxItem("桌面歌词", app_theme.get_pixbuf("control/lyrics_press.png")))
+    combo_box.add_item(ComboBoxItem("音乐管理", app_theme.get_pixbuf("control/media_press.png")))
+    combo_box.insert_item(2, ComboBoxItem("网络音乐"))
+    combo_box.set_select_index(2) # or combo_box.set_select_label("网络音乐") , or set_select_item()
     entry_box.pack_start(combo_box, False, False)    
+    entry_box.pack_start(SpinBox(), False, False)
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
