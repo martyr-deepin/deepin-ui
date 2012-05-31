@@ -83,11 +83,14 @@ class ScrolledWindow(gtk.ScrolledWindow):
         # Draw mask.
         self.draw_mask(cr, rect.x, rect.y, rect.width, rect.height,)
         
+        (h_policy, v_policy) = self.get_policy()
         # Draw vertical scrollbar.
-        self.draw_v_scrollbar(cr, rect)
+        if not v_policy == gtk.POLICY_NEVER:
+            self.draw_v_scrollbar(cr, rect)
 
         # Draw horizontal scrollbar.
-        self.draw_h_scrollbar(cr, rect)
+        if not h_policy == gtk.POLICY_NEVER:
+            self.draw_h_scrollbar(cr, rect)
         
         return True
         
