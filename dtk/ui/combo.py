@@ -44,6 +44,7 @@ class ComboBox(gtk.VBox):
         
         # Init.
         self.items = items
+        self.current_item = None
         self.default_width = default_width
         self.background_color = ui_theme.get_alpha_color("textEntryBackground")
         self.acme_color = ui_theme.get_alpha_color("textEntryAcme")
@@ -101,21 +102,37 @@ class ComboBox(gtk.VBox):
         popup_menu.show((x - 4, y + 16))    
         
     def item_selected_cb(self, combo_item):    
+        self.current_item = combo_item
         self.item_label.set_text(combo_item.get_label())
         self.emit("item-selected", combo_item)
         
     def add_item(self, combo_item):    
         self.items.append(combo_item)
         
+    def get_items(self):    
+        return self.items
+    
+    def get_current_item(self):
+        return self.current_item
+    
+    def set_items(self, items):
+        self.items = items
+        
     def set_select_label(self, item_label):    
-        self.item_label.set_text(item_label)
+        index = self.label_in_items(item_label)
+        if index is not None:
+            self.current_item = self.items[index]
+            self.item_label.set_text(item_label)
         
     def set_select_item(self, combo_item):    
-        self.item_label.set_text(combo_item.get_label())
+        if combo_item in self.items:
+            self.current_item = combo_item
+            self.item_label.set_text(combo_item.get_label())
         
     def set_select_index(self, item_index):    
         try:
             combo_item = self.items[item_index]
+            self.current_item = combo_item
             self.item_label.set_text(combo_item.get_label())
         except:
             pass
@@ -123,9 +140,9 @@ class ComboBox(gtk.VBox):
     def label_in_items(self, label):    
         labels = [item.get_label() for item in self.items]
         if label in labels:
-            return True
+            return labels.index(label)
         else:
-            return False
+            return None
         
     def delete_item(self, index):    
         self.items.pop(index)
