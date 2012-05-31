@@ -61,8 +61,7 @@ from dtk.ui.tooltip import Tooltip
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.iconview import IconView, IconItem
-from dtk.ui.button import CheckButton
-from dtk.ui.radio_button import RadioButton
+from dtk.ui.button import CheckButton, RadioButton
 from dtk.ui.throbber import Throbber, MODE_SPINNING
 import gtk
 import time
@@ -332,11 +331,11 @@ if __name__ == "__main__":
     tab_1_box.pack_start(entry_frame, False, False)
     
     # Add check/radio buton.
-    button_box = gtk.HBox()
-    check_button = CheckButton()
-    radio_button_1 = RadioButton()
-    radio_button_2 = RadioButton()
-    radio_button_3 = RadioButton()
+    button_box = gtk.VBox()
+    check_button = CheckButton("Check Button")
+    radio_button_1 = RadioButton("Radio Button1")
+    radio_button_2 = RadioButton("Radio Button2")
+    radio_button_3 = RadioButton("Radio Button3")
     button_box.pack_start(check_button, False, False)
     button_box.pack_start(radio_button_1, False, False)
     button_box.pack_start(radio_button_2, False, False)
