@@ -36,7 +36,7 @@ class SpinBox(gtk.VBox):
         "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT,)),
         }
     
-    def __init__(self, value=0, lower=0, upper=100, step=10, default_width=50):
+    def __init__(self, value=0, lower=0, upper=100, step=10, default_width=55):
         gtk.VBox.__init__(self)
         self.current_value = value
         self.lower_value = lower

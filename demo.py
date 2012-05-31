@@ -337,7 +337,7 @@ if __name__ == "__main__":
     combo_box.insert_item(2, ComboBoxItem("网络音乐"))
     combo_box.set_select_index(2) # or combo_box.set_select_label("网络音乐") , or set_select_item()
     entry_box.pack_start(combo_box, False, False)    
-    entry_box.pack_start(SpinBox(), False, False)
+    entry_box.pack_start(SpinBox(3000, 0, 5000, 100), False, False)
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
