@@ -721,12 +721,12 @@ def get_pixbuf_support_foramts():
         
     return support_formats    
 
-def get_parent_dir(filepath):
+def get_parent_dir(filepath, level=1):
     '''Get parent dir.'''
-    return os.path.dirname(os.path.realpath(filepath))
-
-def get_grandpapa_dir(filepath):
-    '''Get .... path.'''
-    return os.path.dirname(os.path.dirname(os.path.realpath(filepath)))
+    parent_dir = os.path.realpath(filepath)
     
-
+    while(level > 0):
+        parent_dir = os.path.dirname(parent_dir)
+        level -= 1
+    
+    return parent_dir

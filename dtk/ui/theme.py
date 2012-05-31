@@ -23,7 +23,7 @@
 import os
 import gtk
 from skin_config import skin_config
-from utils import eval_file, get_grandpapa_dir, create_directory
+from utils import eval_file, get_parent_dir, create_directory
 
 class DynamicTreeView(object):
     '''Dynamic tree view.'''
@@ -294,5 +294,5 @@ class Theme(object):
             self.text_style_dict[text_style_name].update(text_style)
             
 # Init.
-ui_theme = Theme(os.path.join(get_grandpapa_dir(__file__), "theme"),
+ui_theme = Theme(os.path.join(get_parent_dir(__file__, 2), "theme"),
                  os.path.expanduser("~/.config/deepin-ui/theme")) 

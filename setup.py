@@ -12,7 +12,7 @@ def list_files(target_dir, install_dir):
             data_dir = os.path.dirname(os.path.join(root, filepath))
             data_file = os.path.join(root, filepath)
             results.append((data_dir, [data_file]))
-            print results
+            # print results
     return results                
 
 def pkg_config_cflags(pkgs):
