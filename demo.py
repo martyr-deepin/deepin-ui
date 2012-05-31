@@ -64,7 +64,7 @@ from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.button import CheckButton
 from dtk.ui.radio_button import RadioButton
 from dtk.ui.throbber import Throbber, MODE_SPINNING
-from dtk.ui.combo import ComboBox
+from dtk.ui.combo import ComboBox, ComboBoxItem
 import gtk
 import time
 
@@ -327,7 +327,17 @@ if __name__ == "__main__":
     toggle_button_align.add(ToggleButtonGroup(toggle_button_items))
     entry_box.pack_start(ImageButtonGroup(image_button_items))
     entry_box.pack_start(toggle_button_align)
-    entry_box.pack_start(ComboBox(), False, False)
+
+    
+    # combobox
+    combo_box = ComboBox()
+    combo_box.add_item(ComboBoxItem("Linux Deepin"))
+    combo_box.add_item(ComboBoxItem("Deepin Music"))
+    combo_box.add_item(ComboBoxItem("Deepin Meida"))
+    combo_box.add_item(ComboBoxItem("Deepin UI"))
+    combo_box.insert_item(2, ComboBoxItem("Deepin Down"))
+    combo_box.set_top_index(2)
+    entry_box.pack_start(combo_box, False, False)    
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
