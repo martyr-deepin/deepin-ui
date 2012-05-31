@@ -522,13 +522,13 @@ def map_value(value_list, get_value_callback):
     else:
         return map(get_value_callback, value_list)
 
-def get_match_widgets(widget, type_name):
+def get_same_level_widgets(widget):
     '''Get widget match given type, those widget at same level with widget argument.'''
     parent = widget.get_parent()
     if parent == None:
         return []
     else:
-        return filter(lambda w:type(widget).__name__ == type_name, parent.get_children())
+        return filter(lambda w:type(w).__name__ == type(widget).__name__, parent.get_children())
 
 def mix_list_max(list_a, list_b):
     '''Mix max item in two list.'''

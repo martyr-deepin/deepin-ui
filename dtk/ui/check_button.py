@@ -159,6 +159,8 @@ class CheckButton(gtk.Button):
             
         self.queue_draw()
           
+gobject.type_register(CheckButton)
+
 if __name__ == "__main__":
     # Test func.
     window = gtk.Window()    

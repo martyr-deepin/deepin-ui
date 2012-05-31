@@ -21,7 +21,7 @@
 
 from draw import draw_radial_round
 from theme import ui_theme
-from utils import color_hex_to_cairo, propagate_expose, get_match_widgets
+from utils import color_hex_to_cairo, propagate_expose, get_same_level_widgets
 import gobject
 import gtk
 import math
@@ -99,7 +99,7 @@ class RadioButton(gtk.Button):
 
     def clicked_radio_button(self, widget):
         '''Press radio'''
-        for w in get_match_widgets(widget, type(self).__name__):
+        for w in get_same_level_widgets(widget):
             w.set_select_flag_status(False)
 
         self.select_flag = True

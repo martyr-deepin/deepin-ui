@@ -61,6 +61,8 @@ from dtk.ui.tooltip import Tooltip
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.iconview import IconView, IconItem
+from dtk.ui.check_button import CheckButton
+from dtk.ui.radio_button import RadioButton
 import gtk
 import time
 
@@ -327,6 +329,18 @@ if __name__ == "__main__":
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
     tab_1_box.pack_start(entry_frame, False, False)
+    
+    # Add check/radio buton.
+    button_box = gtk.HBox()
+    check_button = CheckButton()
+    radio_button_1 = RadioButton()
+    radio_button_2 = RadioButton()
+    radio_button_3 = RadioButton()
+    button_box.pack_start(check_button, False, False)
+    button_box.pack_start(radio_button_1, False, False)
+    button_box.pack_start(radio_button_2, False, False)
+    button_box.pack_start(radio_button_3, False, False)
+    tab_1_box.pack_start(button_box, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)
