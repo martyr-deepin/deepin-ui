@@ -93,7 +93,7 @@ class ComboBox(gtk.VBox):
         for combo_item in self.items:
             menu_items.append((combo_item.get_icon(), combo_item.get_label(), self.item_selected_cb, combo_item))
         
-        popup_menu = Menu(menu_items, True)
+        popup_menu = Menu(menu_items, True, True)
         popup_menu.set_keep_above(True)
         if menu_items:
             popup_menu.set_size_request(w, -1)

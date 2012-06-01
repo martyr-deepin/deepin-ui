@@ -113,6 +113,7 @@ class Menu(Window):
 	
     def __init__(self, items, 
                  is_root_menu=False,
+                 select_scale=False,
                  x_align=ALIGN_START,
                  y_align=ALIGN_START,
                  font_size=DEFAULT_FONT_SIZE, 
@@ -127,6 +128,7 @@ class Menu(Window):
         self.draw_mask = self.draw_menu_mask
         global root_menus
         self.is_root_menu = is_root_menu
+        self.select_scale = select_scale
         self.x_align = x_align
         self.y_align = y_align
         self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
@@ -153,7 +155,7 @@ class Menu(Window):
             
             for item in items:
                 menu_item = MenuItem(
-                    item, font_size, self.show_submenu, self.hide_submenu, self.get_root_menu, self.get_menu_items,
+                    item, font_size, self.select_scale, self.show_submenu, self.hide_submenu, self.get_root_menu, self.get_menu_items,
                     have_icon, icon_width, icon_height,
                     have_submenu, submenu_width, submenu_height,
                     item_padding_x, item_padding_y)
@@ -317,6 +319,7 @@ class MenuItem(object):
     '''Menu item.'''
     
     def __init__(self, item, font_size, 
+                 select_scale,
                  show_submenu_callback, 
                  hide_submenu_callback,
                  get_root_menu_callback,
@@ -328,6 +331,7 @@ class MenuItem(object):
         # Init.
         self.item = item
         self.font_size = font_size
+        self.select_scale = select_scale
         self.item_padding_x = item_padding_x
         self.item_padding_y = item_padding_y
         self.show_submenu_callback = show_submenu_callback
@@ -374,17 +378,6 @@ class MenuItem(object):
         # Create button.
         self.item_box = gtk.Button()
         
-        # Set button size.
-        (width, height) = get_content_size(item_content, self.font_size)
-        if self.have_submenu:
-            self.item_box.set_size_request(
-                self.item_padding_x * 4 + self.icon_width + self.submenu_width + int(width) + self.adjust_offset, 
-                self.item_padding_y * 2 + max(int(height), self.icon_height))
-        else:
-            self.item_box.set_size_request(
-                self.item_padding_x * 3 + self.icon_width + int(width) + self.adjust_offset, 
-                self.item_padding_y * 2 + max(int(height), self.icon_height))
-        
         # Expose button.
         widget_fix_cycle_destroy_bug(self.item_box)
         self.item_box.connect(
@@ -395,6 +388,23 @@ class MenuItem(object):
         
         # Wrap menu aciton.
         self.item_box.connect("button-press-event", self.wrap_menu_clicked_action)        
+        
+        self.item_box.connect("realize", lambda w: self.realize_item_box(w, item_content))
+        
+    def realize_item_box(self, widget, item_content):
+        '''Realize item box.'''
+        # Set button size.
+        (width, height) = get_content_size(item_content, self.font_size)
+        self.item_box_height = self.item_padding_y * 2 + max(int(height), self.icon_height)
+        if self.select_scale:
+            self.item_box_width = widget.get_parent().get_parent().allocation.width
+        else:
+            if self.have_submenu:
+                self.item_box_width = self.item_padding_x * 4 + self.icon_width + self.submenu_width + int(width) + self.adjust_offset
+            else:
+                self.item_box_width = self.item_padding_x * 3 + self.icon_width + int(width) + self.adjust_offset
+                
+        self.item_box.set_size_request(self.item_box_width, self.item_box_height)        
         
     def wrap_menu_clicked_action(self, button, event):
         '''Wrap menu action.'''

@@ -331,7 +331,7 @@ if __name__ == "__main__":
 
     
     # combobox
-    combo_box = ComboBox() # args have (items=[], default_width=100)
+    combo_box = ComboBox(default_width=200) # args have (items=[], default_width=100)
     combo_box.add_item(ComboBoxItem("播放列表"))
     combo_box.add_item(ComboBoxItem("桌面歌词", app_theme.get_pixbuf("control/lyrics_press.png")))
     combo_box.add_item(ComboBoxItem("音乐管理", app_theme.get_pixbuf("control/media_press.png")))
