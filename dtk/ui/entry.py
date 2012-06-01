@@ -723,8 +723,6 @@ class TextEntry(gtk.VBox):
     
     def __init__(self, content="",
                  action_button=None,
-                 padding_x=5,
-                 padding_y=2,
                  background_color = ui_theme.get_alpha_color("textEntryBackground"),
                  acme_color = ui_theme.get_alpha_color("textEntryAcme"),
                  point_color = ui_theme.get_alpha_color("textEntryPoint"),
@@ -738,7 +736,7 @@ class TextEntry(gtk.VBox):
         self.align.set(0.5, 0.5, 1.0, 1.0)
         self.action_button = action_button
         self.h_box = gtk.HBox()
-        self.entry = Entry(content, padding_x, padding_y)
+        self.entry = Entry(content)
         self.background_color = background_color
         self.acme_color = acme_color
         self.point_color = point_color

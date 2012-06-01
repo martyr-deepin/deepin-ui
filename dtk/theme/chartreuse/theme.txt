@@ -18,6 +18,7 @@
  "entrySelectText" : "#FFFFFF",
  "entryCursor" : "#333333",
  "labelText" : "#FFFFFF",
+ "comboBoxText" : "#000000",
  "radioButtonFrame" : "#B5B5B5",
  "checkButtonFrame" : "#A1A1A1",
  "checkButtonBackground" : "#F7F7F7",
