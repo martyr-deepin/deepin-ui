@@ -693,10 +693,6 @@ def find_similar_color(search_color):
     similar_color_value = COLOR_NAME_DICT[similar_color_name]
     return (similar_color_name, similar_color_value)
 
-def draw_blank_mask(cr, x, y, w, h):
-    '''Draw blank mask.'''
-    pass
-
 def end_with_suffixs(filepath, suffixs):
     '''File endswith given suffixs.'''
     for suffix in suffixs:

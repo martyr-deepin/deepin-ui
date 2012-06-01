@@ -447,3 +447,7 @@ def draw_test():
     
     surface.write_to_png("test.png")
 
+def draw_blank_mask(cr, x, y, w, h):
+    '''Draw blank mask.'''
+    pass
+

@@ -326,8 +326,8 @@ class ToggleButton(gtk.ToggleButton):
 
         # Init request size.
         label_width = 0
-        button_width = inactive_press_dpixbuf.get_pixbuf().get_width()
-        button_height = inactive_press_dpixbuf.get_pixbuf().get_height()
+        button_width = inactive_normal_dpixbuf.get_pixbuf().get_width()
+        button_height = inactive_normal_dpixbuf.get_pixbuf().get_height()
         if button_label:
             label_width = get_content_size(button_label, font_size)[0]
         self.set_size_request(button_width + label_width + padding_x * 2,
