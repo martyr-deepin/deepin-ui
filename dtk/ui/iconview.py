@@ -126,6 +126,7 @@ class IconView(gtk.DrawingArea):
             
             if self.focus_index == None:
                 self.focus_index = 0
+                self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
                 
                 # Scroll to top.
                 vadjust.set_value(vadjust.get_lower())
@@ -150,6 +151,7 @@ class IconView(gtk.DrawingArea):
             vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
             if self.focus_index == None:
                 self.focus_index = 0
+                self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
                 
                 # Scroll to top.
                 vadjust.set_value(vadjust.get_lower())
@@ -174,7 +176,8 @@ class IconView(gtk.DrawingArea):
             vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
             if self.focus_index == None:
                 self.focus_index = 0
-                
+                self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+
                 # Scroll to top.
                 vadjust.set_value(vadjust.get_lower())
             else:
@@ -195,6 +198,7 @@ class IconView(gtk.DrawingArea):
             vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
             if self.focus_index == None:
                 self.focus_index = 0
+                self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
                 
                 # Scroll to top.
                 vadjust.set_value(vadjust.get_lower())
@@ -212,11 +216,64 @@ class IconView(gtk.DrawingArea):
                 
     def scroll_page_up(self):
         '''Scroll iconview up.'''
-        pass
-    
+        if len(self.items) > 0:
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            if self.focus_index == None:
+                self.focus_index = 0
+                self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+                
+                # Scroll to top.
+                vadjust.set_value(vadjust.get_lower())
+            else:
+                item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+                scrolled_window = get_match_parent(self, "ScrolledWindow")
+                columns = int(scrolled_window.allocation.width / item_width)
+                column = int(self.focus_index % columns)
+                if (vadjust.get_value() - vadjust.get_lower()) % item_height == 0:
+                    row = int((vadjust.get_value() - vadjust.get_lower()) / item_height) - 1
+                else:
+                    row = int((vadjust.get_value() - vadjust.get_lower()) / item_height)
+                if row * columns + column >= 0:    
+                    self.emit("lost-focus-item", self.items[self.focus_index])
+                    self.focus_index = row * columns + column    
+                    self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+                else:
+                    self.emit("lost-focus-item", self.items[self.focus_index])
+                    self.focus_index = column
+                    self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+                    
+                vadjust.set_value(max(0, vadjust.get_value() - vadjust.get_page_size()))
+                
     def scroll_page_down(self):
         '''Scroll iconview down.'''
-        pass
+        if len(self.items):
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            if self.focus_index == None:
+                self.focus_index = len(self.items) - 1
+                self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+
+                # Scroll to top.
+                vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+            else:
+                item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+                scrolled_window = get_match_parent(self, "ScrolledWindow")
+                columns = int(scrolled_window.allocation.width / item_width)
+                column = int(self.focus_index % columns)
+                if (vadjust.get_value() - vadjust.get_lower() + vadjust.get_page_size()) % item_height == 0:
+                    row = int((vadjust.get_value() - vadjust.get_lower() + vadjust.get_page_size()) / item_height) - 1
+                else:
+                    row = int((vadjust.get_value() - vadjust.get_lower() + vadjust.get_page_size()) / item_height)
+                if row * columns + column <= len(self.items) - 1:
+                    self.emit("lost-focus-item", self.items[self.focus_index])
+                    self.focus_index = row * columns + column
+                    self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+                else:
+                    self.emit("lost-focus-item", self.items[self.focus_index])
+                    self.focus_index = (row - 1) * columns + column
+                    self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+                    
+                vadjust.set_value(min(vadjust.get_upper() - vadjust.get_page_size(),
+                                      vadjust.get_value() + vadjust.get_page_size()))
             
     def add_items(self, items, insert_pos=None):
         '''Add items.'''
