@@ -49,7 +49,7 @@ class IconView(gtk.DrawingArea):
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
-        self.focus_item = None
+        self.focus_index = None
         self.highlight_item = None
         self.double_click_item = None
         self.single_click_item = None
@@ -81,22 +81,22 @@ class IconView(gtk.DrawingArea):
         self.keymap = {
             "Home" : self.select_first_item,
             "End" : self.select_last_item,
-            "Return" : self.double_click_item,
-            # "Up" : self.select_up_item,
-            # "Down" : self.select_down_item,
-            # "Left" : self.select_left_item,
-            # "Right" : self.select_right_item,
-            # "Page_Up" : self.scroll_page_up,
-            # "Page_Down" : self.scroll_page_down,
+            "Return" : self.return_item,
+            "Up" : self.select_up_item,
+            "Down" : self.select_down_item,
+            "Left" : self.select_left_item,
+            "Right" : self.select_right_item,
+            "Page_Up" : self.scroll_page_up,
+            "Page_Down" : self.scroll_page_down,
             }
         
     def select_first_item(self):
         '''Select first item.'''
         if len(self.items) > 0:
             self.clear_focus_item()        
-            self.focus_item = self.items[0]
+            self.focus_index = 0
             
-            self.emit("motion-notify-item", self.focus_item, 0, 0)
+            self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
             
             # Scroll to top.
             vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
@@ -106,18 +106,115 @@ class IconView(gtk.DrawingArea):
         '''Select last item.'''
         if len(self.items) > 0:
             self.clear_focus_item()        
-            self.focus_item = self.items[-1]
+            self.focus_index = len(self.items) - 1
             
-            self.emit("motion-notify-item", self.focus_item, 0, 0)
+            self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
         
             # Scroll to bottom.
             vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
             vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
             
-    def double_click_item(self):
+    def return_item(self):
         '''Double click item.'''
-        if self.focus_item:
-            self.emit("double-click-item", self.focus_item, 0, 0)
+        if self.focus_index:
+            self.emit("double-click-item", self.items[self.focus_index], 0, 0)
+            
+    def select_up_item(self):
+        '''Select preview row.'''
+        if len(self.items) > 0:
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            
+            if self.focus_index == None:
+                self.focus_index = 0
+                
+                # Scroll to top.
+                vadjust.set_value(vadjust.get_lower())
+            else:
+                item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+                scrolled_window = get_match_parent(self, "ScrolledWindow")
+                columns = int(scrolled_window.allocation.width / item_width)
+                
+                if self.focus_index - columns >= 0:
+                    self.emit("lost-focus-item", self.items[self.focus_index])
+                    self.focus_index -= columns
+                    self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+    
+                # Scroll to item.
+                row = int(self.focus_index / columns)    
+                vadjust.set_value(vadjust.get_lower() + row * item_height)
+                
+    def select_down_item(self):
+        '''Select next row.'''
+        if len(self.items) > 0:
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            if self.focus_index == None:
+                self.focus_index = 0
+                
+                # Scroll to top.
+                vadjust.set_value(vadjust.get_lower())
+            else:
+                item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+                scrolled_window = get_match_parent(self, "ScrolledWindow")
+                columns = int(scrolled_window.allocation.width / item_width)
+                
+                if self.focus_index + columns <= len(self.items) - 1:
+                    self.emit("lost-focus-item", self.items[self.focus_index])
+                    self.focus_index += columns
+                    self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+    
+                # Scroll to item.
+                row = int(self.focus_index / columns)    
+                vadjust.set_value(vadjust.get_lower() + (row + 1) * item_height - vadjust.get_page_size()) 
+                
+    def select_left_item(self):
+        '''Select preview column.'''
+        if len(self.items) > 0:
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            if self.focus_index == None:
+                self.focus_index = 0
+                
+                # Scroll to top.
+                vadjust.set_value(vadjust.get_lower())
+            else:
+                item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+                scrolled_window = get_match_parent(self, "ScrolledWindow")
+                columns = int(scrolled_window.allocation.width / item_width)
+                row = int(self.focus_index / columns)
+                min_index = row * columns
+                
+                if self.focus_index - 1 >= min_index:
+                    self.emit("lost-focus-item", self.items[self.focus_index])
+                    self.focus_index -= 1
+                    self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+                
+    def select_right_item(self):
+        '''Select next column.'''
+        if len(self.items) > 0:
+            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            if self.focus_index == None:
+                self.focus_index = 0
+                
+                # Scroll to top.
+                vadjust.set_value(vadjust.get_lower())
+            else:
+                item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+                scrolled_window = get_match_parent(self, "ScrolledWindow")
+                columns = int(scrolled_window.allocation.width / item_width)
+                row = int(self.focus_index / columns)
+                max_index = min((row + 1) * columns - 1, len(self.items) - 1)
+                
+                if self.focus_index + 1 <= max_index:
+                    self.emit("lost-focus-item", self.items[self.focus_index])
+                    self.focus_index += 1
+                    self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
+                
+    def scroll_page_up(self):
+        '''Scroll iconview up.'''
+        pass
+    
+    def scroll_page_down(self):
+        '''Scroll iconview down.'''
+        pass
             
     def add_items(self, items, insert_pos=None):
         '''Add items.'''
@@ -219,9 +316,9 @@ class IconView(gtk.DrawingArea):
                         
     def clear_focus_item(self):
         '''Clear focus item status.'''
-        if self.focus_item:
-            self.emit("lost-focus-item", self.focus_item)
-            self.focus_item = None
+        if self.focus_index:
+            self.emit("lost-focus-item", self.items[self.focus_index])
+            self.focus_index = None
                         
     def motion_icon_view(self, widget, event):
         '''Motion list view.'''
@@ -232,9 +329,9 @@ class IconView(gtk.DrawingArea):
             else:
                 (row_index, column_index, item_index, offset_x, offset_y) = index_info
                 self.clear_focus_item()
-                self.focus_item = self.items[item_index]
+                self.focus_index = item_index
                 
-                self.emit("motion-notify-item", self.focus_item, offset_x, offset_y)
+                self.emit("motion-notify-item", self.items[self.focus_index], offset_x, offset_y)
                     
     def icon_view_get_event_index(self, event):
         '''Get index at event.'''

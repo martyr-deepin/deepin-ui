@@ -27,7 +27,7 @@ import os
 from dtk.ui.utils import get_parent_dir
 
 skin_config.load_skin(
-    "01",
+    "03",
     os.path.join(get_parent_dir(__file__), "skin"),
     os.path.expanduser("~/.config/deepin-demo/skin")
     )
@@ -335,9 +335,9 @@ if __name__ == "__main__":
     check_button = CheckButton("Check Button")
     radio_button_1 = RadioButton("Radio Button1")
     radio_button_2 = RadioButton("Radio Button2")
-    button_box.pack_start(check_button, False, False)
-    button_box.pack_start(radio_button_1, False, False)
-    button_box.pack_start(radio_button_2, False, False)
+    button_box.pack_start(check_button, False, False, 4)
+    button_box.pack_start(radio_button_1, False, False, 4)
+    button_box.pack_start(radio_button_2, False, False, 4)
     tab_1_box.pack_start(button_box, False, False)
     
     throbber = Throbber(16, 16)

@@ -21,10 +21,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from utils import get_content_size, color_hex_to_cairo, propagate_expose, window_is_max, get_same_level_widgets
-from label import Label
 from theme import ui_theme
 from draw import cairo_state, draw_vlinear, draw_pixbuf, draw_line, draw_font
-from constant import DEFAULT_FONT_SIZE
+from constant import DEFAULT_FONT_SIZE, ALIGN_START
 import gtk
 import gobject
 
@@ -310,10 +309,9 @@ class ToggleButton(gtk.ToggleButton):
                  inactive_normal_dpixbuf, active_normal_dpixbuf, 
                  inactive_hover_dpixbuf=None, active_hover_dpixbuf=None, 
                  inactive_press_dpixbuf=None, active_press_dpixbuf=None,
-                 scale_x=False, content=None):
+                 button_label=None, padding_x=0):
         '''Init font button.'''
         gtk.ToggleButton.__init__(self)
-        button_label = None
         font_size = DEFAULT_FONT_SIZE
         label_dcolor = ui_theme.get_color("buttonDefaultFont")
         self.button_press_flag = False
@@ -326,15 +324,14 @@ class ToggleButton(gtk.ToggleButton):
                                     active_hover_dpixbuf,
                                     active_press_dpixbuf)
 
-
-
         # Init request size.
-        if scale_x:
-            request_width = get_content_size(button_label, font_size)[0]
-        else:
-            request_width = inactive_normal_dpixbuf.get_pixbuf().get_width()
-        request_height = inactive_normal_dpixbuf.get_pixbuf().get_height()
-        self.set_size_request(request_width, request_height)
+        label_width = 0
+        button_width = inactive_press_dpixbuf.get_pixbuf().get_width()
+        button_height = inactive_press_dpixbuf.get_pixbuf().get_height()
+        if button_label:
+            label_width = get_content_size(button_label, font_size)[0]
+        self.set_size_request(button_width + label_width + padding_x * 2,
+                              button_height)
         
         self.connect("button-press-event", self.button_press_cb)
         self.connect("button-release-event", self.button_release_cb)
@@ -342,8 +339,7 @@ class ToggleButton(gtk.ToggleButton):
         # Expose button.
         self.connect("expose-event", lambda w, e : self.expose_toggle_button(
                 w, e,
-                scale_x, False,
-                button_label, font_size, label_dcolor))
+                button_label, padding_x, font_size, label_dcolor))
         
     def button_press_cb(self, widget, event):    
         self.button_press_flag = True
@@ -354,8 +350,7 @@ class ToggleButton(gtk.ToggleButton):
         self.queue_draw()    
         
     def expose_toggle_button(self, widget, event, 
-                             scale_x, scaleY,
-                             button_label, font_size, label_dcolor):
+                             button_label, padding_x, font_size, label_dcolor):
         '''Expose function to replace event box's image.'''
         # Init.
         inactive_normal_dpixbuf, inactive_hover_dpixbuf, inactive_press_dpixbuf = self.inactive_pixbuf_group
@@ -395,29 +390,19 @@ class ToggleButton(gtk.ToggleButton):
             else:        
                 image = active_normal_dpixbuf.get_pixbuf()
         
-        # Init size.
-        if scale_x:
-            image_width = widget.allocation.width
-        else:
-            image_width = image.get_width()
-            
-        if scaleY:
-            image_height = widget.allocation.height
-        else:
-            image_height = image.get_height()
-        
         # Draw button.
-        pixbuf = image
-        if pixbuf.get_width() != image_width or pixbuf.get_height() != image_height:
-            pixbuf = image.scale_simple(image_width, image_height, gtk.gdk.INTERP_BILINEAR)
         cr = widget.window.cairo_create()
-        draw_pixbuf(cr, pixbuf, widget.allocation.x, widget.allocation.y)
+        draw_pixbuf(cr, image, rect.x + padding_x, rect.y)
         
         # Draw font.
         if button_label:
             draw_font(cr, button_label, font_size, 
                       label_dcolor.get_color(),
-                      rect.x, rect.y, rect.width, rect.height)
+                      rect.x + image.get_width() + padding_x * 2,
+                      rect.y, 
+                      rect.width - image.get_width() - padding_x * 2,
+                      rect.height,
+                      ALIGN_START)
     
         # Propagate expose to children.
         propagate_expose(widget, event)
@@ -480,67 +465,50 @@ class ActionButton(gtk.Button):
         
 gobject.type_register(ActionButton)
 
-class CheckButton(gtk.HBox):
+class CheckButton(ToggleButton):
     '''Check button.'''
 	
     def __init__(self, label_text=None, padding_x=8):
         '''Init check button.'''
-        gtk.HBox.__init__(self)
-        self.button = ToggleButton(
+        ToggleButton.__init__(
+            self,
             ui_theme.get_pixbuf("button/check_button_inactive_normal.png"),
             ui_theme.get_pixbuf("button/check_button_active_normal.png"),
             ui_theme.get_pixbuf("button/check_button_inactive_hover.png"),
             ui_theme.get_pixbuf("button/check_button_active_hover.png"),
             ui_theme.get_pixbuf("button/check_button_inactive_press.png"),
             ui_theme.get_pixbuf("button/check_button_active_press.png"),
+            label_text, padding_x
             )
-        self.button_align = gtk.Alignment()
-        self.button_align.set(0.5, 0.5, 0.0, 0.0)
-        self.button_align.set_padding(0, 0, padding_x, padding_x)
-        self.button_align.add(self.button)
-        self.pack_start(self.button_align, False, False)
-        
-        if label_text:
-            self.label = Label(label_text)
-            self.label.set_size_request(*get_content_size(label_text, DEFAULT_FONT_SIZE))
-            self.pack_start(self.label, False, False)
         
 gobject.type_register(CheckButton)
 
-class RadioButton(gtk.HBox):
+class RadioButton(ToggleButton):
     '''Radio button.'''
 	
     def __init__(self, label_text=None, padding_x=8):
         '''Init radio button.'''
-        gtk.HBox.__init__(self)
-        self.button = ToggleButton(
+        ToggleButton.__init__(
+            self,
             ui_theme.get_pixbuf("button/radio_button_inactive_normal.png"),
             ui_theme.get_pixbuf("button/radio_button_active_normal.png"),
             ui_theme.get_pixbuf("button/radio_button_inactive_hover.png"),
             ui_theme.get_pixbuf("button/radio_button_active_hover.png"),
             ui_theme.get_pixbuf("button/radio_button_inactive_press.png"),
             ui_theme.get_pixbuf("button/radio_button_active_press.png"),
+            label_text,
+            padding_x
             )
-        self.button_align = gtk.Alignment()
-        self.button_align.set(0.5, 0.5, 0.0, 0.0)
-        self.button_align.set_padding(0, 0, padding_x, padding_x)
-        self.button_align.add(self.button)
-        self.pack_start(self.button_align, False, False)
-        
-        if label_text:
-            self.label = Label(label_text)
-            self.label.set_size_request(*get_content_size(label_text, DEFAULT_FONT_SIZE))
-            self.pack_start(self.label, False, False)
 
         self.switch_lock = False    
-        self.button.connect("clicked", self.click_radio_button)
+        self.connect("clicked", self.click_radio_button)
         
     def click_radio_button(self, widget):
         '''Click radio button.'''
         if not self.switch_lock:
             for w in get_same_level_widgets(self):
                 w.switch_lock = True
-                w.button.set_active(w == self)
+                w.set_active(w == self)
                 w.switch_lock = False
         
 gobject.type_register(RadioButton)
