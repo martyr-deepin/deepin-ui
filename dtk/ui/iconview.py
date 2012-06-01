@@ -140,8 +140,9 @@ class IconView(gtk.DrawingArea):
                     self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
     
                 # Scroll to item.
-                row = int(self.focus_index / columns)    
-                vadjust.set_value(vadjust.get_lower() + row * item_height)
+                row = int(self.focus_index / columns)
+                if vadjust.get_value() > row * item_height:
+                    vadjust.set_value(vadjust.get_lower() + row * item_height)
                 
     def select_down_item(self):
         '''Select next row.'''
@@ -164,7 +165,8 @@ class IconView(gtk.DrawingArea):
     
                 # Scroll to item.
                 row = int(self.focus_index / columns)    
-                vadjust.set_value(vadjust.get_lower() + (row + 1) * item_height - vadjust.get_page_size()) 
+                if vadjust.get_value() + vadjust.get_page_size() < (row + 1) * item_height:
+                    vadjust.set_value(vadjust.get_lower() + (row + 1) * item_height - vadjust.get_page_size()) 
                 
     def select_left_item(self):
         '''Select preview column.'''
