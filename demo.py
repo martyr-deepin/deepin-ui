@@ -207,12 +207,14 @@ if __name__ == "__main__":
     tab_2_box = gtk.VBox()
     tab_3_box = gtk.VBox()
     tab_4_box = gtk.VBox()
+    tab_5_box = gtk.VBox()
     
     notebook = Notebook(
-        [(ui_theme.get_pixbuf("music.png"), "音乐管理器", lambda : switch_tab(notebook_box, tab_1_box)),
-         (ui_theme.get_pixbuf("web.png"), "网络音乐盒", lambda : switch_tab(notebook_box, tab_2_box)),
-         (ui_theme.get_pixbuf("music.png"), "测试播放列表", lambda : switch_tab(notebook_box, tab_3_box)),
+        [(ui_theme.get_pixbuf("music.png"), "分类列表", lambda : switch_tab(notebook_box, tab_1_box)),
+         (ui_theme.get_pixbuf("web.png"), "网络浏览器", lambda : switch_tab(notebook_box, tab_2_box)),
+         (ui_theme.get_pixbuf("music.png"), "播放列表", lambda : switch_tab(notebook_box, tab_3_box)),
          (ui_theme.get_pixbuf("music.png"), "专辑封面", lambda : switch_tab(notebook_box, tab_4_box)),
+         (ui_theme.get_pixbuf("music.png"), "自定义控件", lambda : switch_tab(notebook_box, tab_5_box)),
          ])
     notebook_frame = HorizontalFrame(20)
     notebook_frame.add(notebook)
@@ -295,7 +297,6 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("entry/search_hover.png"),
         app_theme.get_pixbuf("entry/search_press.png"),
         )
-    # entry = TextEntry("Linux Deepin", entry_button)
     entry = TextEntry()
     entry.connect("action-active", print_entry_action)
     entry.set_size(300, 24)
@@ -329,22 +330,6 @@ if __name__ == "__main__":
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
     tab_1_box.pack_start(entry_frame, False, False)
-    
-    # Add check/radio buton.
-    button_box = gtk.VBox()
-    check_button = CheckButton("Check Button")
-    radio_button_1 = RadioButton("Radio Button1")
-    radio_button_2 = RadioButton("Radio Button2")
-    button_box.pack_start(check_button, False, False, 4)
-    button_box.pack_start(radio_button_1, False, False, 4)
-    button_box.pack_start(radio_button_2, False, False, 4)
-    tab_1_box.pack_start(button_box, False, False)
-    
-    throbber = Throbber(16, 16)
-    throbber.set_mode(MODE_SPINNING)
-    throbber.set_progress(.3)
-    button_box.pack_start(throbber, False, False)
-
     
     # Add statusbar.
     statusbar = Statusbar(36)
@@ -388,6 +373,21 @@ if __name__ == "__main__":
     icon_view.add_items(icon_items)
     
     tab_4_box.pack_start(icon_view_vframe, True, True)
+    
+    # Tab 5.
+    button_box = gtk.VBox()
+    check_button = CheckButton("Check Button")
+    radio_button_1 = RadioButton("Radio Button1")
+    radio_button_2 = RadioButton("Radio Button2")
+    button_box.pack_start(check_button, False, False, 4)
+    button_box.pack_start(radio_button_1, False, False, 4)
+    button_box.pack_start(radio_button_2, False, False, 4)
+    tab_5_box.pack_start(button_box, False, False)
+    
+    throbber = Throbber(16, 16)
+    throbber.set_mode(MODE_SPINNING)
+    throbber.set_progress(.3)
+    button_box.pack_start(throbber, False, False)
     
     # Run.
     application.run()
