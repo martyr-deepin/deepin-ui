@@ -69,10 +69,9 @@ def menu_grab_window_button_press(widget, event):
             menu_item = event_widget.get_menu_item_at_coordinate(event.get_root_coords())
             if menu_item:
                 menu_item.item_box.event(event)
-        elif isinstance(event_widget, gtk.Button):
-            event_widget.event(event)
         else:
             menu_grab_window_focus_out()
+            event_widget.event(event)
     
     remove_callback_id(menu_grab_window_press_id)        
     remove_callback_id(menu_grab_window_motion_id)        
