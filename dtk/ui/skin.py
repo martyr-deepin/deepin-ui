@@ -405,6 +405,18 @@ class SkinPreviewIcon(gobject.GObject):
                 scale_width, 
                 scale_height, 
                 gtk.gdk.INTERP_BILINEAR).subpixbuf(0, 0, self.width, self.height)
+        elif background_width >= self.width:
+            self.pixbuf = background_pixbuf.scale_simple(
+                self.width,
+                self.width * background_height / background_width,
+                gtk.gdk.INTERP_BILINEAR
+                )
+        elif background_height >= self.height:
+            self.pixbuf = background_pixbuf.scale_simple(
+                self.height * background_width / background_height,
+                self.height,
+                gtk.gdk.INTERP_BILINEAR
+                )
         else:
             self.pixbuf = background_pixbuf
             
