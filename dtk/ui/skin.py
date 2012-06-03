@@ -240,10 +240,10 @@ class SkinPreviewPage(gtk.VBox):
         if skin_config.load_skin(os.path.basename(skin_dir)):
             skin_config.apply_skin()
             
-        self.highlight_skin()    
-        
-        # Scroll scrollbar to bottom.
-        scroll_to_bottom(self.preview_scrolled_window)            
+            self.highlight_skin()    
+            
+            # Scroll scrollbar to bottom.
+            scroll_to_bottom(self.preview_scrolled_window)            
         
     def create_skin_from_package(self, filepath):
         '''Create skin from package.'''
@@ -273,10 +273,10 @@ class SkinPreviewPage(gtk.VBox):
         if skin_config.load_skin(os.path.basename(skin_dir)):
             skin_config.apply_skin()
             
-        self.highlight_skin()    
-        
-        # Scroll scrollbar to bottom.
-        scroll_to_bottom(self.preview_scrolled_window)            
+            self.highlight_skin()    
+            
+            # Scroll scrollbar to bottom.
+            scroll_to_bottom(self.preview_scrolled_window)            
                     
     def highlight_skin(self):
         '''Highlight skin.'''
@@ -1055,24 +1055,34 @@ class SkinEditArea(gtk.EventBox):
                 offset_y = y + self.padding_y
                 background_area_width = self.resize_width + resize_x
                 background_area_height = self.resize_height + resize_y
-                draw_hlinear(
-                    cr, 
-                    offset_x + background_area_width - self.shadow_size,
-                    offset_y + resize_y,
-                    self.shadow_size,
-                    background_area_height - resize_y,
-                    [(0, (self.dominant_color, 0)),
-                     (1, (self.dominant_color, 1))])
                 
-                draw_vlinear(
-                    cr, 
-                    offset_x + resize_x,
-                    offset_y + background_area_height - self.shadow_size,
-                    background_area_width - resize_x,
-                    self.shadow_size,
-                    [(0, (self.dominant_color, 0)),
-                     (1, (self.dominant_color, 1))]
-                    )
+                with cairo_state(cr):
+                    cr.rectangle(
+                        x + self.padding_x + resize_x,
+                        y + self.padding_y + resize_y,
+                        w - (x + self.padding_x + resize_x),
+                        h - (y + self.padding_y + resize_y),
+                        )
+                    cr.clip()
+                    
+                    draw_hlinear(
+                        cr, 
+                        offset_x + background_area_width - self.shadow_size,
+                        offset_y + resize_y,
+                        self.shadow_size,
+                        background_area_height - resize_y,
+                        [(0, (self.dominant_color, 0)),
+                         (1, (self.dominant_color, 1))])
+                    
+                    draw_vlinear(
+                        cr, 
+                        offset_x + resize_x,
+                        offset_y + background_area_height - self.shadow_size,
+                        background_area_width - resize_x,
+                        self.shadow_size,
+                        [(0, (self.dominant_color, 0)),
+                         (1, (self.dominant_color, 1))]
+                        )
                 
             # Draw window.
             draw_pixbuf(

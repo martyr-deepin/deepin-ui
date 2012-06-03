@@ -53,7 +53,6 @@ class SkinConfig(gobject.GObject):
         self.scale_x = scale_x
         self.scale_y = scale_y
         
-        
     def get_skin_file_path(self, filename):
         '''Get skin file path.'''
         skin_file_dir = None
@@ -287,7 +286,7 @@ class SkinConfig(gobject.GObject):
                 SHADE_SIZE,
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
-    
+            
             cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
             cr.rectangle(
                 x,
