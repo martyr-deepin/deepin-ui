@@ -58,6 +58,18 @@ def menu_grab_window_focus_out():
     gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
     menu_grab_window.grab_remove()
 
+def is_press_on_menu_grab_window(window):
+    '''Is press on menu grab window.'''
+    for toplevel in gtk.window_list_toplevels():
+        if isinstance(window, gtk.Window):
+            if window == toplevel:
+                return True
+        elif isinstance(window, gtk.gdk.Window):
+            if window == toplevel.window:
+                return True
+            
+    return False        
+    
 def menu_grab_window_button_press(widget, event):
     global menu_grab_window_press_id
     global menu_grab_window_motion_id    
@@ -65,7 +77,9 @@ def menu_grab_window_button_press(widget, event):
     
     if event and event.window:
         event_widget = event.window.get_user_data()
-        if isinstance(event_widget, Menu):
+        if is_press_on_menu_grab_window(event.window):
+            menu_grab_window_focus_out()
+        elif isinstance(event_widget, Menu):
             menu_item = event_widget.get_menu_item_at_coordinate(event.get_root_coords())
             if menu_item:
                 menu_item.item_box.event(event)

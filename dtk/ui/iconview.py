@@ -568,15 +568,16 @@ class IconView(gtk.DrawingArea):
         if len(self.items) > 0:
             item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
             columns = int(scrolled_window.allocation.width / item_width)
-            if len(self.items) % columns == 0:
-                view_height = int(len(self.items) / columns) * item_height
-            else:
-                view_height = (int(len(self.items) / columns) + 1) * item_height
-                
-            self.set_size_request(columns * item_width, view_height)
-            if scrolled_window != None:
-                vadjust = scrolled_window.get_vadjustment()
-                vadjust.set_upper(max(view_height, scrolled_window.allocation.height))
+            if columns > 0:
+                if len(self.items) % columns == 0:
+                    view_height = int(len(self.items) / columns) * item_height
+                else:
+                    view_height = (int(len(self.items) / columns) + 1) * item_height
+                    
+                self.set_size_request(columns * item_width, view_height)
+                if scrolled_window != None:
+                    vadjust = scrolled_window.get_vadjustment()
+                    vadjust.set_upper(max(view_height, scrolled_window.allocation.height))
         else:
             self.set_size_request(scrolled_window.allocation.width, 
                                   scrolled_window.allocation.height)
