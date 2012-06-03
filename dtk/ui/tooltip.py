@@ -62,7 +62,7 @@ class Tooltip(Window):
         self.window_frame.add(self.tooltip_box)
         self.tooltip_box.connect("expose-event", self.expose_tooltip) 
         
-        # # Add time show tooltip.
+        # Add time show tooltip.
         self.animation_id = gtk.timeout_add(self.animation_delay, self.start_animation)
         
         # Show.

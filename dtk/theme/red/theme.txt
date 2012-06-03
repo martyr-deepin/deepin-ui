@@ -33,7 +33,7 @@
      "frameLight" : ("#FFFFFF", 0.2),
      "frameLightDot" : ("#FFFFFF", 0.1),
 	 "scrollbarBackground" : ("#FFFFFF", 0.5),
-	 "menuMask" : ("#FFFFFF", 0.9),
+	 "menuMask" : ("#FFFFFF", 1.0),
 	 "progressbarFrame" : ("#EF12AB", 1.0),
 	 "checkButtonAcme" : ("#A1A1A1", 0.4),
 	 "checkButtonPoint" : ("#A1A1A1", 0.85),
