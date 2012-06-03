@@ -79,9 +79,11 @@ class ListView(gtk.DrawingArea):
         self.select_rows = []
         self.start_select_row = None
         self.press_in_select_rows = None
+        self.expand_column = None
         
         # Signal.
-        self.connect("realize", lambda w: self.grab_focus()) # focus key after realize
+        self.connect("realize", self.realize_list_view)
+        self.connect("size-allocate", self.size_allocate_list_view)
         self.connect("expose-event", self.expose_list_view)    
         self.connect("motion-notify-event", self.motion_list_view)
         self.connect("button-press-event", self.button_press_list_view)
@@ -111,6 +113,10 @@ class ListView(gtk.DrawingArea):
             "S-End" : self.select_to_last_item,
             "C-a" : self.select_all_items,
             }
+        
+    def set_expand_column(self, column):
+        '''Set expand column.'''
+        self.expand_column = column
         
     def update_redraw_request_list(self):
         '''Update redraw request list.'''
@@ -330,6 +336,20 @@ class ListView(gtk.DrawingArea):
         '''Draw highlight.'''
         draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listviewHighlight").get_color_info())
         
+    def realize_list_view(self, widget):
+        '''Realize list view.'''
+        self.grab_focus()       # focus key after realize
+
+        rect = widget.allocation
+        if 0 <= self.expand_column < len(self.cell_widths):
+            self.set_cell_width(self.expand_column, rect.width - (sum(self.cell_widths) - self.cell_widths[self.expand_column]))
+            
+    def size_allocate_list_view(self, widget, allocation):
+        '''Callback for `size_allocated` signal.'''
+        rect = widget.allocation
+        if 0 <= self.expand_column < len(self.cell_widths):
+            self.set_cell_width(self.expand_column, rect.width - (sum(self.cell_widths) - self.cell_widths[self.expand_column]))
+            
     def expose_list_view(self, widget, event):
         '''Expose list view.'''
         # Init.
