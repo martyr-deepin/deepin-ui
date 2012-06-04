@@ -45,7 +45,10 @@ class TreeView(gtk.DrawingArea):
         }
     
     def __init__(self, width=20, height = 30,
-                 font_size = None, font_color="#000000", font_x_padding=5, font_width=120, font_height = 0,font_align=0):        
+                 font_size = None, font_color="#000000", font_x_padding=5, font_width=120, font_height = 0,font_align=0,
+                 arrow_x_padding = 10,
+                 normal_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png"), 
+                 press_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png")):        
         gtk.DrawingArea.__init__(self)
         self.root = Tree()
         self.tree_list = []                
@@ -65,6 +68,10 @@ class TreeView(gtk.DrawingArea):
         
         self.width = width
         self.height = height
+        # Draw icon.
+        self.normal_pixbuf = normal_pixbuf
+        self.press_pixbuf = press_pixbuf
+        self.arrow_x_padding = arrow_x_padding
         # Draw move background. 
         self.move_height = 0        
         self.move_draw_bool = True                            
@@ -160,7 +167,8 @@ class TreeView(gtk.DrawingArea):
         
         # Get offset.
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
-            
+        
+        
         # Draw background.
         with cairo_state(cr):
             cr.translate(-viewport.allocation.x, -viewport.allocation.y)
@@ -190,8 +198,7 @@ class TreeView(gtk.DrawingArea):
         if self.tree_list:    
             temp_height = 0
             # (cr, text, font_size, font_color, x, y, width, height, font_align
-            for draw_widget in self.tree_list:                
-                pass
+            for draw_widget in self.tree_list:
                 if draw_widget.text:
                     draw_font(cr, 
                               draw_widget.text,
@@ -199,11 +206,22 @@ class TreeView(gtk.DrawingArea):
                               self.font_color,
                               self.font_x_padding + draw_widget.width,
                               temp_height + self.height/2, 
-                              self.font_width, self.font_height, self.font_align)                     
+                              self.font_width, self.font_height, self.font_align)                   
                     
-                    temp_height += self.height
-                    
-                    
+                font_w, font_h = get_content_size(draw_widget.text, self.font_size)    
+                if draw_widget.tree_view_item.get_has_arrow():
+                    if not draw_widget.show_child_items_bool:
+                        draw_pixbuf(cr, self.normal_pixbuf.get_pixbuf(), 
+                                    font_w + self.font_x_padding + draw_widget.width + self.arrow_x_padding, 
+                                    temp_height + (self.height - self.normal_pixbuf.get_pixbuf().get_height()) / 2)
+                    else:
+                        draw_pixbuf(cr, self.press_pixbuf.get_pixbuf(), 
+                                    font_w + self.font_x_padding + draw_widget.width + self.arrow_x_padding, 
+                                    temp_height + (self.height - self.normal_pixbuf.get_pixbuf().get_height()) / 2)
+                        
+                temp_height += self.height     
+               
+               
     def tree_view_key_press_event(self, widget, event):
         pass
     
@@ -272,7 +290,7 @@ class Tree(object):
         self.child_itmes = {}
         self.text = ""
         self.show_child_items_bool = False
-    
+        
         self.has_arrow = True
         self.item_left_image = None
         
@@ -313,7 +331,7 @@ class TreeViewItem(object):
     def get_title(self):    
         return self.item_title
     
-    def has_arrow(self):
+    def get_has_arrow(self):
         return self.has_arrow
     
     def get_left_image(self):
