@@ -726,3 +726,7 @@ def get_parent_dir(filepath, level=1):
         level -= 1
     
     return parent_dir
+
+def gdkcolor_to_string(gdkcolor):
+    '''Gdk color to string '''
+    return "#%0.2X%0.2X%0.2X" % (gdkcolor.red / 256, gdkcolor.green / 256, gdkcolor.blue / 256)
