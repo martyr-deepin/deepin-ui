@@ -38,6 +38,10 @@ class HSV(gtk.ColorSelection):
         
         # Remove bottom color pick button.
         self.get_children()[0].get_children()[0].remove(self.get_children()[0].get_children()[0].get_children()[1])
+        
+    def get_hsv_widget(self):
+        '''Get HSV widget.'''
+        return self.get_children()[0].get_children()[0].get_children()[0]
 
 gobject.type_register(HSV)
 
@@ -58,11 +62,18 @@ class ColorSelectDialog(Window):
         
         self.color_box = gtk.HBox()
         self.color_hsv = HSV()
+        self.color = self.color_hsv.get_current_color()
+        self.color_hsv.get_hsv_widget().connect("button-release-event", self.update_color_info)
         self.color_box.pack_start(self.color_hsv, False, False)
         
         self.color_right_box = gtk.VBox()
+        self.color_box.pack_start(self.color_right_box, False, False)
+        
         self.color_info_box = gtk.HBox()
+        self.color_right_box.pack_start(self.color_info_box, False, False)
+        
         self.color_rgb_box = gtk.VBox()
+        self.color_info_box.pack_start(self.color_rgb_box, False, False)
         
         self.confirm_button = Button("确定")
         self.cancel_button = Button("取消")
@@ -98,5 +109,11 @@ class ColorSelectDialog(Window):
             self.cancel_callback()
         
         self.destroy()
+        
+    def update_color_info(self, widget, event):
+        '''Update color info.'''
+        self.color = self.color_hsv.get_current_color()        
+        
+        print ((self.color.red >> 8) << 16) + ((self.color.green >> 8) << 8) + (self.color.blue >> 8)
         
 gobject.type_register(ColorSelectDialog)

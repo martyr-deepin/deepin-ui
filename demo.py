@@ -51,6 +51,7 @@ from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
 from dtk.ui.menu import Menu
 from dtk.ui.treeview import TreeView, TreeViewItem
+from dtk.ui.color_selection import ColorSelectDialog
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.paned import HPaned
@@ -193,7 +194,7 @@ if __name__ == "__main__":
     # Add navigatebar.
     navigatebar = Navigatebar(
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : ColorSelectDialog().show_all()),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", None),
          (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
          (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
@@ -421,9 +422,9 @@ if __name__ == "__main__":
     wuhan_des_node = tree_view.add_item(wuhan_node, TreeViewItem("设计部"))
     wuhan_sys_node = tree_view.add_item(wuhan_node, TreeViewItem("系统部"))
     
-    wangyong = tree_view.add_item(wuhan_dev_node, TreeViewItem("王勇"))    
-    tree_view.add_item(wangyong, TreeViewItem("王勇1"))    
-    tree_view.add_item(wangyong, TreeViewItem("王勇2"))    
+    wangyong = tree_view.add_item(wuhan_dev_node, TreeViewItem("Linux Deepin"))    
+    tree_view.add_item(wangyong, TreeViewItem("Open Heart"))    
+    tree_view.add_item(wangyong, TreeViewItem("Open Source"))    
     
     tree_view.add_item(wuhan_dev_node, TreeViewItem("侯少辉"))
     tree_view.add_item(wuhan_dev_node, TreeViewItem("邱海龙"))
