@@ -111,14 +111,14 @@ class TextView(gtk.EventBox):
 				result += self.get_text(x)
 				result += "\r\n"
 			return result
-		
-    
+			
 gobject.type_register(TextView)
 	
 	
 def click(widget, key):
-	tv = widget.get_children()
-	tv[0].set_text("changed\r\nhi")
+	children = widget.get_children()
+	tv = children[0]
+	tv.set_text("chassssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssnged\r\nhi")
 
 if __name__ == "__main__":
 	window = gtk.Window()
