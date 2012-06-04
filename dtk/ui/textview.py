@@ -46,7 +46,7 @@ class TextView(gtk.EventBox):
 				text_select_color="#000000", 
 				background_select_color="#000000", ):
 		gtk.EventBox.__init__(self)
-		self.connect("expose-event", self.expose_text_view)
+		self.connect("expose-event", self.expose_textview)
 		self.buf = buf
 		self.padding_x = padding_x
 		self.padding_y = padding_y
@@ -58,7 +58,7 @@ class TextView(gtk.EventBox):
 		self.background_select_color = background_select_color
 		pass
 		
-	def expose_text_view(self, widget, event):
+	def expose_textview(self, widget, event):
 		cr = widget.window.cairo_create()
 		rect = widget.allocation
 		self.draw_text(cr, rect)
@@ -111,22 +111,31 @@ class TextView(gtk.EventBox):
 				result += self.get_text(x)
 				result += "\r\n"
 			return result
+
+	def get_content_width(self, content):
+		'''Get content width.'''
+		(content_width, content_height) = get_content_size(content, self.font_size)
+		return content_width
 			
 gobject.type_register(TextView)
 	
 	
 def click(widget, key):
 	children = widget.get_children()
-	tv = children[0]
-	tv.set_text("chassssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssnged\r\nhi")
+	tv = children[0].get_children()[0].get_children()[0]
+	tv.set_text("chassssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssnged\r\nhijwefjifowiejfw")
 
 if __name__ == "__main__":
 	window = gtk.Window()
 	tb = gtk.TextBuffer()
-	tb.set_text("hello")
+	tb.set_text("hello\r\n")
 	tv = TextView(buf = tb)
 	
-	window.add(tv)
+	sw = gtk.ScrolledWindow()
+	
+	sw.add_with_viewport(tv)
+	
+	window.add(sw)
 	
 	window.set_size_request(300, 200)
 	
