@@ -25,7 +25,7 @@ import gobject
 
 from theme import ui_theme
 from utils import (cairo_state , alpha_color_hex_to_cairo,
-                   propagate_expose)
+                   propagate_expose, is_float)
 
 from button import ImageButton
 from entry import Entry
@@ -61,6 +61,7 @@ class SpinBox(gtk.VBox):
         button_box.pack_start(arrow_up_button, False, False)
         button_box.pack_start(arrow_down_button, False, False)
         self.value_entry = Entry(str(value))
+        self.value_entry.check_text = is_float
         
         self.main_align = gtk.Alignment()
         self.main_align.set(0.5, 0.5, 0, 0)

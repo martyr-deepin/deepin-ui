@@ -740,3 +740,62 @@ def get_parent_dir(filepath, level=1):
 def gdkcolor_to_string(gdkcolor):
     '''Gdk color to string '''
     return "#%0.2X%0.2X%0.2X" % (gdkcolor.red / 256, gdkcolor.green / 256, gdkcolor.blue / 256)
+
+def is_long(string):
+    '''Is long.'''
+    if string == "":
+        return True
+    
+    try:
+        long(string)
+        return True
+    except ValueError:
+        return False
+
+def is_int(string):
+    '''Is int.'''
+    if string == "":
+        return True
+    
+    try:
+        int(string)
+        return True
+    except ValueError:
+        return False
+
+def is_float(string):
+    '''Is float.'''
+    if string == "":
+        return True
+    
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+def is_hex_color(string):
+    '''Is hex color'''
+    HEX_CHAR = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                "a", "b", "c", "d", "e", "f",
+                "A", "B", "C", "D", "E", "F",
+                "#"
+                ]
+    
+    if string == "":
+        return True
+    else:
+        for c in string:
+            if not c in HEX_CHAR:
+                return False
+            
+        if string.startswith("#"):
+            if len(string) > 7:
+                return False
+            else:
+                return True
+        else:            
+            if len(string) > 6:
+                return False
+            else:
+                return True    

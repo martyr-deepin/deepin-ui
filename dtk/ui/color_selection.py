@@ -28,7 +28,7 @@ from scrolled_window import ScrolledWindow
 from iconview import IconView
 from titlebar import Titlebar
 from button import Button
-from utils import gdkcolor_to_string, color_hex_to_cairo, propagate_expose, color_hex_to_rgb, color_rgb_to_hex
+from utils import gdkcolor_to_string, color_hex_to_cairo, propagate_expose, color_hex_to_rgb, color_rgb_to_hex, is_hex_color
 from label import Label
 from spin import SpinBox
 from entry import TextEntry
@@ -115,6 +115,7 @@ class ColorSelectDialog(Window):
         self.color_hex_label = Label("颜色值")
         self.color_hex_box.pack_start(self.color_hex_label, False, False, 5)
         self.color_hex_entry = TextEntry(self.color_string)
+        self.color_hex_entry.entry.check_text = is_hex_color
         self.color_hex_entry.entry.connect("press-return", self.press_return_color_entry)
         self.color_hex_entry.set_size(70, 24)
         self.color_hex_box.pack_start(self.color_hex_entry, False, False, 5)
