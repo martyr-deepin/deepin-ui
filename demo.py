@@ -36,7 +36,6 @@ app_theme = Theme(
     os.path.join(get_parent_dir(__file__), "app_theme"),
     os.path.expanduser("~/.config/deepin-demo/theme"))
 app_theme.load_theme()
-skin_config.set_themes(ui_theme, app_theme)
 
 # Load other modules.
 from dtk.ui.application import Application
@@ -51,12 +50,7 @@ from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
 from dtk.ui.menu import Menu
-<<<<<<< HEAD
-from dtk.ui.treeview import TreeView
-from dtk.ui.color_selection import HSV, ColorSelectDialog
-=======
 from dtk.ui.treeview import TreeView, TreeViewItem
->>>>>>> hailongqiu/master
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.paned import HPaned
@@ -199,7 +193,7 @@ if __name__ == "__main__":
     # Add navigatebar.
     navigatebar = Navigatebar(
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : ColorSelectDialog().show_all()),
+         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", None),
          (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
          (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
@@ -312,6 +306,7 @@ if __name__ == "__main__":
     entry.set_size(300, 24)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
+    entry_label.set_size_request(100, 30)
     entry_box = gtk.HBox(spacing=10)
     entry_box.pack_start(entry_label, False, False)
     entry_box.pack_start(entry, True, True)
@@ -350,7 +345,6 @@ if __name__ == "__main__":
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
     tab_1_box.pack_start(entry_frame, False, False)
-    
     
     # Add statusbar.
     statusbar = Statusbar(36)
@@ -417,34 +411,6 @@ if __name__ == "__main__":
     tree_view = TreeView()
     tree_view_scrolled_window = ScrolledWindow()
     tree_view_scrolled_window.add_child(tree_view)
-<<<<<<< HEAD
-    tab_5_box.pack_start(tree_view_scrolled_window)
-    
-    tree_view.add_node(None, "小学", False, pixbuf_x_align=0)
-    tree_view.add_node(None, "初中",pixbuf_x= 0, pixbuf_x_align=0)
-    tree_view.add_node(None, "大学")
-    tree_view.add_node(None, "深度")
-    
-    tree_view.add_node("小学", "1年级")
-    tree_view.add_node("1年级", "1:1:2")    
-    tree_view.add_node("小学", "2年级")
-    tree_view.add_node("小学", "3年级")
-    
-    tree_view.add_node("大学", "软件学院")
-    tree_view.add_node("软件学院", "ZB48901")
-    tree_view.add_node("软件学院", "ZB48902")
-    tree_view.add_node("软件学院", "ZB48903")
-    tree_view.add_node("大学", "工商学院")
-    tree_view.add_node("大学", "理工学院")
-    tree_view.add_node("大学", "机电学院")
-    
-    tree_view.add_node("深度", "开发部")
-    tree_view.add_node("开发部", "王勇")
-    tree_view.add_node("开发部", "猴哥")
-    tree_view.add_node("开发部", "邱海龙")        
-
-    tab_5_box.pack_start(HSV())
-=======
     tree_view.connect("single-click-item", tree_view_single_click_cb)    
     
     tab_5_box.pack_start(tree_view_scrolled_window)
@@ -456,8 +422,8 @@ if __name__ == "__main__":
     wuhan_sys_node = tree_view.add_item(wuhan_node, TreeViewItem("系统部"))
     
     wangyong = tree_view.add_item(wuhan_dev_node, TreeViewItem("王勇"))    
-    tree_view.add_item(wangyong, TreeViewItem("王勇他老婆"))    
-    tree_view.add_item(wangyong, TreeViewItem("王勇他女儿"))    
+    tree_view.add_item(wangyong, TreeViewItem("王勇1"))    
+    tree_view.add_item(wangyong, TreeViewItem("王勇2"))    
     
     tree_view.add_item(wuhan_dev_node, TreeViewItem("侯少辉"))
     tree_view.add_item(wuhan_dev_node, TreeViewItem("邱海龙"))
@@ -474,7 +440,6 @@ if __name__ == "__main__":
     tree_view.add_item(beijing_node, TreeViewItem("开发部"))
     tree_view.add_item(beijing_node, TreeViewItem("设计部"))
     tree_view.add_item(beijing_node, TreeViewItem("系统部"))
->>>>>>> hailongqiu/master
     
     # Run.
     application.run()

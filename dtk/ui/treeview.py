@@ -28,34 +28,17 @@
 import gtk
 import gobject
 from collections import OrderedDict
-<<<<<<< HEAD
-from skin_config import skin_config
-from theme import ui_theme
-from draw import draw_pixbuf, draw_vlinear, draw_font
-=======
 
 from draw import draw_pixbuf, draw_vlinear, draw_font
 from utils import (get_content_size, is_single_click, is_double_click, is_right_button,
                    get_match_parent, cairo_state)
 from theme import ui_theme
 from skin_config import skin_config
->>>>>>> hailongqiu/master
 
 # (cr, text, font_size, font_color, x, y, width, height, font_align
 class TreeView(gtk.DrawingArea):
     
     __gsignals__ = {
-<<<<<<< HEAD
-        "single-click-view" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, int, )),
-        "motion-notify-view" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, int)),
-    }        
-    
-    def __init__(self, height = 30, width = 50,
-                 font_x = 20, font_size = 10, font_color = "#000000",          
-                 normal_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png"),
-                 press_pixbuf= ui_theme.get_pixbuf("treeview/arrow_down.png")):        
-        
-=======
         "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "right-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject.TYPE_INT, gobject.TYPE_INT)),
@@ -63,7 +46,6 @@ class TreeView(gtk.DrawingArea):
     
     def __init__(self, width=20, height = 30,
                  font_size = None, font_color="#000000", font_x_padding=5, font_width=120, font_height = 0,font_align=0):        
->>>>>>> hailongqiu/master
         gtk.DrawingArea.__init__(self)
         self.root = Tree()
         self.tree_list = []                
@@ -180,14 +162,6 @@ class TreeView(gtk.DrawingArea):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
             
         # Draw background.
-<<<<<<< HEAD
-        cr.translate(x, y)
-        try:
-            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()            
-            skin_config.render_background(cr, self, shadow_x, shadow_y)
-        except Exception, e:
-            print e
-=======
         with cairo_state(cr):
             cr.translate(-viewport.allocation.x, -viewport.allocation.y)
             cr.rectangle(offset_x, offset_y, 
@@ -197,15 +171,9 @@ class TreeView(gtk.DrawingArea):
             
             (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
             skin_config.render_background(cr, self, offset_x + shadow_x, offset_y + shadow_y)
->>>>>>> hailongqiu/master
             
         # Draw mask.
-<<<<<<< HEAD
-        draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("linearBackground").get_color_info())
-=======
         self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
->>>>>>> hailongqiu/master
         
         if self.press_draw_bool:
             cr.set_source_rgba(1, 0, 0, 0.3)
@@ -221,31 +189,10 @@ class TreeView(gtk.DrawingArea):
             
         if self.tree_list:    
             temp_height = 0
-<<<<<<< HEAD
-            for draw_widget in self.draw_widget_list:
-                draw_pixbuf_x_padding = draw_widget[0].pixbuf_x
-                
-                if draw_widget[0].draw_pixbuf_bool:
-                    if not draw_widget[0].child_show_bool:
-                        pixbuf = draw_widget[0].tree_normal_pixbuf.get_pixbuf()#self.press_pixbuf.get_pixbuf()
-                    else:    
-                        pixbuf = draw_widget[0].tree_press_pixbuf.get_pixbuf()#self.normal_pixbuf.get_pixbuf()                                        
-                    draw_pixbuf_x = 30                     
-                    if 0 == draw_widget[0].pixbuf_x_align: # Left
-                        draw_pixbuf_x = 0
-                        
-                    draw_pixbuf(cr, pixbuf,
-                                draw_pixbuf_x + draw_widget[1] + draw_pixbuf_x_padding,
-                                temp_height + self.height/2 - pixbuf.get_height()/2)
-                
-                if draw_widget[0].name:
-                    draw_font_width = 80
-=======
             # (cr, text, font_size, font_color, x, y, width, height, font_align
             for draw_widget in self.tree_list:                
                 pass
                 if draw_widget.text:
->>>>>>> hailongqiu/master
                     draw_font(cr, 
                               draw_widget.text,
                               self.font_size,
@@ -333,62 +280,6 @@ class Tree(object):
         
     def add_node(self, root_id, node_id, node_item):
         # Root node add child widget.
-<<<<<<< HEAD
-        if not root_name:
-            if node_name and node:
-                # Set node.
-                node.name = node_name
-                node.draw_pixbuf_bool = draw_pixbuf_bool
-                node.pixbuf_x_align = pixbuf_x_align
-                node.pixbuf_x = pixbuf_x
-                node.tree_normal_pixbuf = normal_pixbuf
-                node.tree_press_pixbuf = press_pixbuf                
-                
-                # node.parent_node = None
-                self.child_dict[node_name] = node
-        else:    
-            for key in self.child_dict.keys():                
-                if key == root_name:                    
-                    # Set node.
-                    node.name = node_name
-                    node.draw_pixbuf_bool = draw_pixbuf_bool
-                    node.pixbuf_x = pixbuf_x
-                    node.pixbuf_x_align = pixbuf_x_align                    
-                    node.tree_normal_pixbuf = normal_pixbuf
-                    node.tree_press_pixbuf = press_pixbuf
-                    # print node.tree_press_pixbuf
-                    # self.parent_node = None
-                    self.child_dict[key].child_dict[node_name] = node
-                    break                
-                
-                self.scan_node(self.child_dict[key], root_name, node_name, node, 
-                               draw_pixbuf_bool, pixbuf_x, pixbuf_x_align,
-                               normal_pixbuf, press_pixbuf)
-                    
-    def scan_node(self, node, scan_root_name, node_name, save_node, 
-                  draw_pixbuf_bool, pixbuf_x = 50, pixbuf_x_align=1,
-                  normal_pixbuf=None, press_pixbuf=None):
-        if node.child_dict:
-            for key in node.child_dict.keys():
-                if key == scan_root_name:                    
-                    save_node.name = node_name
-                    save_node.draw_pixbuf_bool = draw_pixbuf_bool
-                    save_node.pixbuf_x = pixbuf_x                        
-                    save_node.tree_normal_pixbuf = normal_pixbuf
-                    save_node.tree_press_pixbuf = press_pixbuf
-                    
-                    save_node.pixbuf_x_align = pixbuf_x_align
-                    
-                    node.child_dict[key].child_dict[node_name] = save_node                
-                else:    
-                    self.scan_node(node.child_dict[key], scan_root_name, node_name, save_node, 
-                                   draw_pixbuf_bool, pixbuf_x, pixbuf_x_align)
-                    
-    def sort(self):                
-        for key in self.child_dict.keys():
-            if self.child_dict[key].child_dict:
-                self.sort2(self.child_dict[key])
-=======
         if None == root_id:
             self.child_itmes[node_id] = node_item
         else:        
@@ -397,7 +288,6 @@ class Tree(object):
                     node_item.parent_item = self.child_itmes[key] # Save parent Node.
                     self.child_itmes[key].child_itmes[node_id] = node_item
                     return True
->>>>>>> hailongqiu/master
         
                 if self.scan_node(self.child_itmes[key], root_id, node_id, node_item):
                     return True
@@ -453,5 +343,3 @@ if __name__ == "__main__":
     win.add(tree_view)
     win.show_all()
     gtk.main()
-    
-    
