@@ -171,7 +171,7 @@ class TreeView(gtk.DrawingArea):
                 draw_pixbuf_x_padding = draw_widget[0].pixbuf_x
                 
                 if draw_widget[0].draw_pixbuf_bool:
-                    if draw_widget[0].child_show_bool:
+                    if not draw_widget[0].child_show_bool:
                         pixbuf = draw_widget[0].tree_normal_pixbuf.get_pixbuf()#self.press_pixbuf.get_pixbuf()
                     else:    
                         pixbuf = draw_widget[0].tree_press_pixbuf.get_pixbuf()#self.normal_pixbuf.get_pixbuf()                                        
