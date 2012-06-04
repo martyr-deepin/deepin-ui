@@ -422,7 +422,8 @@ if __name__ == "__main__":
     wuhan_sys_node = tree_view.add_item(wuhan_node, TreeViewItem("系统部"))
     
     wangyong = tree_view.add_item(wuhan_dev_node, TreeViewItem("王勇"))    
-    tree_view.add_item(wangyong, TreeViewItem("王勇他老婆"))    
+    wangyong_home = TreeViewItem("王勇他老婆")
+    tree_view.add_item(wangyong, wangyong_home)    
     tree_view.add_item(wangyong, TreeViewItem("王勇他女儿"))    
     
     tree_view.add_item(wuhan_dev_node, TreeViewItem("侯少辉"))
@@ -437,9 +438,16 @@ if __name__ == "__main__":
     tree_view.add_item(wuhan_des_node, TreeViewItem("zhm"))
     
     beijing_node = tree_view.add_item(None, TreeViewItem("北京深度"))    
-    tree_view.add_item(beijing_node, TreeViewItem("开发部"))
-    tree_view.add_item(beijing_node, TreeViewItem("设计部"))
-    tree_view.add_item(beijing_node, TreeViewItem("系统部"))
+    # tree_view.add_item(beijing_node, TreeViewItem("开发部"))
+    # tree_view.add_item(beijing_node, TreeViewItem("设计部"))
+    # tree_view.add_item(beijing_node, TreeViewItem("系统部"))
+    tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
+    
+
+    print wangyong_home in tree_view.get_items(wangyong)
+        
+
+
     
     # Run.
     application.run()
