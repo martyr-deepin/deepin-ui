@@ -52,6 +52,7 @@ from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
 from dtk.ui.menu import Menu
 from dtk.ui.treeview import TreeView
+from dtk.ui.color_selection import HSV
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.paned import HPaned
@@ -346,6 +347,7 @@ if __name__ == "__main__":
     entry_frame.add(entry_box)
     tab_1_box.pack_start(entry_frame, False, False)
     
+    
     # Add statusbar.
     statusbar = Statusbar(36)
     tab_1_box.pack_start(statusbar, False)
@@ -432,6 +434,8 @@ if __name__ == "__main__":
     tree_view.add_node("开发部", "王勇")
     tree_view.add_node("开发部", "猴哥")
     tree_view.add_node("开发部", "邱海龙")        
+
+    tab_5_box.pack_start(HSV())
     
     # Run.
     application.run()
