@@ -306,7 +306,6 @@ if __name__ == "__main__":
     entry.set_size(300, 24)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
-    entry_label.set_size_request(100, 30)
     entry_box = gtk.HBox(spacing=10)
     entry_box.pack_start(entry_label, False, False)
     entry_box.pack_start(entry, True, True)
