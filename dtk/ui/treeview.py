@@ -87,6 +87,8 @@ class TreeView(gtk.DrawingArea):
         self.font_align = font_align
         self.font_size = font_size
         
+        self.highlight_index = None
+        
         if not self.font_size:
             self.font_size = self.height/2 - 4
             
@@ -104,13 +106,13 @@ class TreeView(gtk.DrawingArea):
         self.press_height = event.y
         index_len = len(self.tree_list)
         index = int(self.press_height / self.height)
-        
+        self.highlight_index = index
         
         if index_len > index:
             if is_single_click(event):
                 self.press_draw_bool = True
             
-                if self.tree_list[index].child_itmes:                 
+                if self.tree_list[index].child_itmes:        
                     self.tree_list[index].show_child_items_bool = not self.tree_list[index].show_child_items_bool 
                     self.sort()
                 # for list in self.tree_list:
@@ -127,6 +129,20 @@ class TreeView(gtk.DrawingArea):
         else:
             self.press_height = temp_press_height
                     
+    def set_highlight_index(self, index):        
+        index_len = len(self.tree_list)
+        self.highlight_index = index
+        if index_len > index:
+            self.press_height =  self.height * index
+            self.press_draw_bool = True
+            self.queue_draw()
+            
+    def get_highlight_index(self):    
+        return self.highlight_index
+        
+    def get_highlight_item(self):
+        return self.tree_list[self.highlight_index].tree_view_item
+        
     def tree_view_motion_event(self, widget, event):
         temp_move_height = self.move_height # Save move_height.
         self.move_height = event.y
@@ -333,6 +349,7 @@ class Tree(object):
         
         self.width = 0
         
+    
     def add_node(self, root_id, node_id, node_item):
         # Root node add child widget.
         if None == root_id:
