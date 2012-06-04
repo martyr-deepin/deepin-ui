@@ -89,9 +89,22 @@ class TextView(gtk.EventBox):
 	def move_to_left(self):
 		if self.current_line_offset >= 1:
 			self.current_line_offset -= 1
-		pass
+			self.queue_draw()
+		else:
+			if self.current_line != 0:
+				self.current_line -= 1
+				self.current_line_offset = self.buf.get_iter_at_line(self.current_line).get_chars_in_line()
+				self.queue_draw()
     
 	def move_to_right(self):
+		if self.current_line_offset != self.buf.get_iter_at_line(self.current_line).get_chars_in_line():
+			self.current_line_offset += 1 # forward cursor
+			self.queue_draw()
+		else:
+			if self.current_line < (self.buf.get_line_count() - 1):
+				self.current_line += 1 # go to next line
+				self.current_line_offset = 0 # line start
+				self.queue_draw()
 		pass
 	
 	def move_to_start(self):
@@ -104,14 +117,17 @@ class TextView(gtk.EventBox):
 		#TODO fix delete while there is a line-break
 		ir = self.buf.get_iter_at_line(self.current_line)
 		if self.current_line_offset == 0:
-			self.current_line = self.current_line - 1
-			self.current_line_offset = self.buf.get_iter_at_line(self.current_line).get_chars_in_line()
+			if self.current_line != 0:
+				self.current_line = self.current_line - 1
+				self.current_line_offset = self.buf.get_iter_at_line(self.current_line).get_chars_in_line()
 		else:
 			ir.set_line_offset(self.current_line_offset)
 			ir2 = self.buf.get_iter_at_line(self.current_line)
 			ir2.set_line_offset(self.current_line_offset - 1 )
 			self.buf.delete(ir2, ir)
 			self.current_line_offset -= 1
+			
+		print self.buf.get_line_count()
 		
 		self.queue_draw()
 		
@@ -168,7 +184,12 @@ class TextView(gtk.EventBox):
 	def expose_textview(self, widget, event):
 		cr = widget.window.cairo_create()
 		rect = widget.allocation
+		
+		# draw text
 		self.draw_text(cr, rect)
+		
+		# draw cursor
+		self.draw_cursor(cr, rect)
 		
 		propagate_expose(widget, event)
 		
@@ -213,6 +234,26 @@ class TextView(gtk.EventBox):
 			cr.set_source_rgb(0,0,0)
 			context.update_layout(layout)
 			context.show_layout(layout)
+
+	def draw_cursor(self, cr, rect):
+		
+		x, y, w, h = rect.x, rect.y, rect.width, rect.height
+		left_str = self.get_text(self.current_line)[0:self.current_line_offset]
+		left_str_width = self.get_content_width(left_str)
+		padding_y = (h - (get_content_size("Height", self.font_size)[-1])) / 2
+		
+		#TODO fix cursor position and height
+		middle_line = self.buf.get_line_count() / 2
+		line_offset = get_content_size("Height", self.font_size)[-1] * (self.current_line - middle_line)
+		
+		cr.set_source_rgb(0,0,0)
+		cr.rectangle(x + self.padding_x + left_str_width - self.offset_x,
+						y + padding_y + line_offset,
+						1, 
+						h - padding_y * 2
+						)
+		cr.fill()
+		
 		
 	def set_text(self, text):
 		self.buf.set_text(text)
@@ -249,11 +290,9 @@ class TextView(gtk.EventBox):
 	
 	def commit_entry(self, input_text):
 		ir = self.buf.get_iter_at_line(self.current_line)
-		print "%s%s%s" % (self.current_line_offset, "|", ir.get_chars_in_line())
 		ir.set_line_offset(self.current_line_offset)
 		self.buf.insert(ir, input_text)
 		self.current_line_offset += 1
-		print "%s%s%s" % (self.current_line_offset, "|", ir.get_chars_in_line())
 		self.queue_draw()
 			
 gobject.type_register(TextView)
@@ -267,7 +306,7 @@ def click(widget, event):
 if __name__ == "__main__":
 	window = gtk.Window()
 	tb = gtk.TextBuffer()
-	tb.set_text("hello\nworld")
+	tb.set_text("hello\nworld\nline3")
 	tv = TextView(buf = tb)
 	
 	window.add(tv)
