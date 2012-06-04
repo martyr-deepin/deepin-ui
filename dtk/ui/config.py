@@ -69,7 +69,7 @@ class Config(gobject.GObject):
             print "config.get error: %s" % (e)
             return default
             
-    def set(self, section, option, value):        
+    def set(self, section, option, value):  
         if not self.config_parser.has_section(section):
             print "Section \"%s\" not exist. create..." % (section)
             self.add_section(section)
