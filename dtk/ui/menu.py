@@ -84,8 +84,8 @@ def menu_grab_window_button_press(widget, event):
             if menu_item:
                 menu_item.item_box.event(event)
         else:
-            menu_grab_window_focus_out()
             event_widget.event(event)
+            menu_grab_window_focus_out()
     
     remove_callback_id(menu_grab_window_press_id)        
     remove_callback_id(menu_grab_window_motion_id)        
