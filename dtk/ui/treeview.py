@@ -20,339 +20,284 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# from dtk.ui.skin_config import skin_config
+# from dtk.ui.theme import Theme, ui_theme
+# normal_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png")
+# press_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png")
+
 import gtk
 import gobject
 from collections import OrderedDict
 
-from skin_config import skin_config
-from theme import Theme, ui_theme
-
 from draw import draw_pixbuf, draw_vlinear, draw_font
-from utils import get_content_size
+from utils import get_content_size, is_single_click, is_double_click, is_right_button
 
-
+# (cr, text, font_size, font_color, x, y, width, height, font_align
 class TreeView(gtk.DrawingArea):
+    
     __gsignals__ = {
-        "single-click-view" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, int, )),
-        "motion-notify-view" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, int)),
-    }        
-    def __init__(self, height = 30, width = 50,
-                 font_x = 20, font_size = 10, font_color = "#000000",          
-                 normal_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png"),
-                 press_pixbuf= ui_theme.get_pixbuf("treeview/arrow_down.png")):        
-        
+        "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+        "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+        "right-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject.TYPE_INT, gobject.TYPE_INT)),
+        }
+    
+    def __init__(self, width=20, height = 30,
+                 font_size = None, font_color="#000000", font_x_padding=5, font_width=120, font_height = 0,font_align=0):        
         gtk.DrawingArea.__init__(self)
-        # pixbuf.
-        self.normal_pixbuf = normal_pixbuf
-        self.press_pixbuf = press_pixbuf
-        # root node.
         self.root = Tree()
+        self.tree_list = []                
+        self.tree_id_list = []
+        self.tree_id_num = 0
+        
         self.set_can_focus(True)
         # Init DrawingArea event.
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)        
-        self.connect("button-press-event", self.press_notify_event)
-        self.connect("motion-notify-event", self.move_notify_event)
-        self.connect("expose-event", self.draw_expose_event)
-        self.connect("key-press-event", self.key_press_tree_view)
-        self.connect("leave-notify-event", self.clear_move_notify_event)
+        self.connect("button-press-event", self.tree_view_press_event)
+        self.connect("motion-notify-event", self.tree_view_motion_event)
+        self.connect("expose-event", self.tree_view_expose_event)
+        self.connect("key-press-event", self.tree_view_key_press_event)
+        self.connect("leave-notify-event", self.tree_view_leave_notify_event)
+        
         self.connect("realize", lambda w: self.grab_focus()) # focus key after realize
-        # 
-        self.height = height # child widget height.
-        self.width = width # draw widget width.
-        self.move_height = 0 #
+        
+        self.width = width
+        self.height = height
+        # Draw move background. 
+        self.move_height = 0        
+        self.move_draw_bool = True                            
+        # Draw press background.
         self.press_height = 0
-        # Position y.
-        self.draw_y_padding = 0
-        # Draw press move bool.
         self.press_draw_bool = False
-        self.move_draw_bool = False
-        # Font init.
-        self.font_size = font_size
+        # Draw font.
         self.font_color = font_color
-        self.font_x = font_x
-        # Draw tree view child widget(save postion and Tree).
-        self.draw_widget_list = []
+        self.font_x_padding = font_x_padding
+        self.font_width = font_width
+        self.font_height = font_height
+        self.font_align = font_align
+        self.font_size = font_size
         
-        # Key map dict.
-        self.keymap = {
-            "Up"     : self.up_key_press,
-            "Down"   : self.down_key_press,
-            "Return" : lambda :self.press_notify_function(self.move_height)
-            }
-        
-    def set_draw_pixbuf_bool(self, draw_pixbuf_bool):    
-        self.draw_pixbuf_bool = draw_pixbuf_bool
-        
-    def clear_move_notify_event(self, widget, event): # focus-out-event
-        self.move_color = False
-        self.queue_draw()
-        
-    def move_bool(self, operation):    
-        temp_move_height = self.move_height
-        
-        if "-" == operation:
-            temp_move_height -= self.height
-        elif "+" == operation:    
-            temp_move_height += self.height
+        if not self.font_size:
+            self.font_size = self.height/2 - 4
             
-        index = int(temp_move_height) / self.height
-        index_len = len(self.draw_widget_list)
+        if self.font_size > self.height - 15:    
+            self.font_size = self.height - 15
+            # print self.font_size
+            
+    # DrawingArea event function.           
+    def tree_view_press_event(self, widget, event):
+        self.press_notify_function(event) 
+
+    def press_notify_function(self, event):    
+        temp_press_height = self.press_height
+        self.press_height = event.y
+        index_len = len(self.tree_list)
+        index = int(self.press_height / self.height)
+        
         
         if index_len > index:
-            self.emit("motion-notify-view", self.draw_widget_list[index][0].name, index)
-            return True
-        else:
-            return False
-        
-    def up_key_press(self):        
-        if self.move_bool("-"):
-            self.move_height -= self.height            
+            if is_single_click(event):
+                self.press_draw_bool = True
             
+                if self.tree_list[index].child_itmes:                 
+                    self.tree_list[index].show_child_items_bool = not self.tree_list[index].show_child_items_bool 
+                    self.sort()
+                # for list in self.tree_list:
+                #     print list.text
+                    self.queue_draw()
             
-    def down_key_press(self):
-        if self.move_bool("+"):
-            self.move_height += self.height
-            
-            
-    def key_press_tree_view(self, widget, event):
-        keyval = gtk.gdk.keyval_name(event.keyval)
-        
-        # Up Left.
-        if self.keymap.has_key(keyval):
-            self.keymap[keyval]()
+            if is_single_click(event):
+                self.emit("single-click-item", self.tree_list[index].tree_view_item)
+            elif is_double_click(event):    
+                self.emit("double-click-item", self.tree_list[index].tree_view_item)
+            elif is_right_button(event):    
+                self.emit("right-press-item", self.tree_list[index].tree_view_item, event.x_root, event.y_root)
                 
-        # Set : 0 < self.move_height > self.allocation.height ->
-        if (self.move_height < 0) or (self.move_height > self.allocation.height):
-            if self.move_height < 0:
-                self.move_height = 0
-            elif self.move_height > self.allocation.height:
-                self.move_height = int(self.allocation.height) / self.height * self.height
-        # expose-evet queue_draw.
-        self.queue_draw()
-        
-    def draw_expose_event(self, widget, event):
+        else:
+            self.press_height = temp_press_height
+                    
+    def tree_view_motion_event(self, widget, event):
+        temp_move_height = self.move_height # Save move_height.
+        self.move_height = event.y
+        index_len = len(self.tree_list)
+        index_num = int(self.move_height) / self.height 
+
+        if index_len > index_num: 
+            self.move_draw_bool = True                            
+            self.queue_draw()       
+        else:
+            self.move_height = temp_move_height
+            
+    def tree_view_expose_event(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        
-        # Draw background.
-        cr.translate(x, y)
-        try:
-            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()            
-            skin_config.render_background(cr, self, shadow_x, shadow_y)
-        except Exception, e:
-            pass
-            
-        cr.rectangle(x, y, w, h)
-        # cr.fill()
-        cr.clip()
-        
-        # Draw mask.
-        draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("linearBackground").get_color_info())
-        
         
         if self.press_draw_bool:
             cr.set_source_rgba(1, 0, 0, 0.3)
             self.draw_y_padding = int(self.press_height) / self.height * self.height
             cr.rectangle(x, y + self.draw_y_padding, w, self.height)
             cr.fill()
-                                    
+        
         if self.move_draw_bool:
             cr.set_source_rgba(0, 0, 1, 0.3)
             self.draw_y_padding = int(self.move_height) / self.height * self.height
             cr.rectangle(x, y + self.draw_y_padding, w, self.height)
             cr.fill()
-        
-        if self.draw_widget_list:    
-            # (cr, text, font_size, font_color, x, y, width, height, 
+            
+        if self.tree_list:    
             temp_height = 0
-            for draw_widget in self.draw_widget_list:
-                draw_pixbuf_x_padding = draw_widget[0].pixbuf_x
-                
-                if draw_widget[0].draw_pixbuf_bool:
-                    if draw_widget[0].child_show_bool:
-                        pixbuf = draw_widget[0].tree_normal_pixbuf.get_pixbuf()#self.press_pixbuf.get_pixbuf()
-                    else:    
-                        pixbuf = draw_widget[0].tree_press_pixbuf.get_pixbuf()#self.normal_pixbuf.get_pixbuf()                                        
-                        
-
-                    draw_pixbuf_x = 30                     
-                    if 0 == draw_widget[0].pixbuf_x_align: # Left
-                        draw_pixbuf_x = 0
-                        
-                    draw_pixbuf(cr, pixbuf,
-                                draw_pixbuf_x + draw_widget[1] + draw_pixbuf_x_padding,
-                                temp_height + self.height/2 - pixbuf.get_height()/2)
-                
-                if draw_widget[0].name:
-                    draw_font_width = 80
+            # (cr, text, font_size, font_color, x, y, width, height, font_align
+            for draw_widget in self.tree_list:                
+                pass
+                if draw_widget.text:
                     draw_font(cr, 
-                              draw_widget[0].name, 
-                              self.font_size, 
-                              self.font_color, 
-                              self.font_x + draw_widget[1], 
-                              temp_height + self.height/2, draw_font_width, 0, 0)
-                                        
-                temp_height += self.height
-        return True
-    
-    def set_font_size(self, size):
-        if size > self.height / 2:
-            size = self.height / 2        
-        self.font_size = size
-        
-    def press_notify_event(self, widget, event):        
-        self.press_notify_function(event.y) 
-        
-    def press_notify_function(self, y):    
-        temp_press_height = self.press_height
-        self.press_height = y
-        index_len = len(self.draw_widget_list)
-        index = int(self.press_height / self.height)
-        
-        if index_len > index:
-            self.press_draw_bool = True
-            if self.draw_widget_list[index][0].child_dict:
-                self.draw_widget_list[index][0].child_show_bool = not self.draw_widget_list[index][0].child_show_bool 
-            self.sort()
-            self.queue_draw()
-            self.emit("single-click-view", self.draw_widget_list[index][0].name, index)
-        else:
-            self.press_height = temp_press_height
-        
-    def move_notify_event(self, widget, event):
-        temp_move_height = self.move_height # Save move_height.
-        self.move_height = event.y
-        index_len = len(self.draw_widget_list)
-        index_num = int(self.move_height) / self.height
-        
-        if index_len > index_num: 
-            self.move_draw_bool = True                            
-            self.queue_draw()
-            self.emit("motion-notify-view", self.draw_widget_list[index_num][0].name, index_num)
-        else:
-            self.move_height = temp_move_height
-            
-    def add_node(self,root_name, node_name, 
-                 draw_pixbuf_bool=True, pixbuf_x=50,pixbuf_x_align=1, 
-                 normal_pixbuf=None, press_pixbuf=None):
-                 # font_x = 20, font_size = 10, font_color = "#000000",):
-        # self.font_x = font_x
-        # self.font_size = font_size
-        # self.font_color = font_color        
-        if not normal_pixbuf:
-            normal_pixbuf = self.normal_pixbuf
-        if not press_pixbuf:    
-            press_pixbuf = self.press_pixbuf            
-
-        self.root.add_node(root_name, node_name, Tree(), 
-                           draw_pixbuf_bool, pixbuf_x, pixbuf_x_align,
-                           normal_pixbuf, press_pixbuf)
-        self.sort()
-        
-    def sort(self):                
-        self.draw_widget_list = []
-        for key in self.root.child_dict.keys():
-            temp_list = [] 
-            temp_list.append(self.root.child_dict[key])
-            temp_list.append(0)
-            self.draw_widget_list.append(temp_list)            
-            
-            if self.root.child_dict[key].child_dict:
-                self.sort2(self.root.child_dict[key], self.width)
-                
-        self.queue_draw()
+                              draw_widget.text,
+                              self.font_size,
+                              self.font_color,
+                              self.font_x_padding + draw_widget.width,
+                              temp_height + self.height/2, 
+                              self.font_width, self.font_height, self.font_align)                     
                     
-    def sort2(self, node, width):        
-        for key in node.child_dict.keys():
-            if node.child_show_bool:
-                temp_list = [] 
-                temp_list.append(node.child_dict[key])
-                temp_list.append(width)
-                self.draw_widget_list.append(temp_list)            
-            
-                if node.child_dict[key].child_dict:
-                    self.sort2(node.child_dict[key], width+self.width)
-                
+                    temp_height += self.height
+                    
+    def tree_view_key_press_event(self, widget, event):
+        pass
+    
+    
+    def tree_view_leave_notify_event(self, widget, event):
+        self.move_draw_bool = False
+        self.queue_draw()            
+    
+    def add_item(self, parent_id, child_item):    
+        temp_tree = self.create_tree(child_item)
         
+        temp_child_id = self.tree_id_num
+
+        if None == parent_id:            
+            self.tree_id_list.append(self.tree_id_num)
+            self.tree_list.append(temp_tree)
+                        
+        self.root.add_node(parent_id, temp_child_id, temp_tree)
+        
+        self.tree_id_num += 1
+        
+        return temp_child_id
+    
+    def create_tree(self, child_item):
+        temp_tree = Tree()
+        temp_tree.id = self.tree_id_num
+        temp_tree.tree_view_item = child_item
+        temp_tree.child_itmes = {}
+        temp_tree.text = child_item.get_title()        
+        return temp_tree
+    
+    def del_item(self, item):
+        pass
+    
+    def set_text(self, item):
+        pass
+    def get_text(self, item):
+        pass
+    
+    def clear(self):
+        pass
+    
+    def sort(self):               
+        self.tree_list = []
+        for key in self.root.child_itmes.keys():
+            self.tree_list.append(self.root.child_itmes[key])
+            if self.root.child_itmes[key].child_itmes:
+                self.sort2(self.root.child_itmes[key], self.width)                                        
+            
+    def sort2(self, node, width):
+        for key in node.child_itmes.keys():            
+            if node.child_itmes[key].parent_item.show_child_items_bool:                      
+                node.child_itmes[key].width = width
+                self.tree_list.append(node.child_itmes[key])
+                if node.child_itmes[key].child_itmes:
+                    self.sort2(node.child_itmes[key], width + self.width)                
+    
 class Tree(object):
     def __init__(self):
-        self.parent_node = None
-        self.child_dict = OrderedDict()
-        self.child_show_bool = False        
-        self.name = ""
-        self.pixbuf = None
-        self.draw_pixbuf_ = 1 # 0 -> Left : 1 -> Right.
-        self.draw_pixbuf_bool = True # True -> draw icon.
-        self.tree_normal_pixbuf = None
-        self.tree_press_pixbuf = None
-        self.pixbuf_x = 50
-        self.pixbuf_x_align = 1 # 0-> left: 1 -> Right
+        self.id = None
         
-    def add_node(self, root_name, node_name, node, 
-                 draw_pixbuf_bool=True, pixbuf_x = 50, pixbuf_x_align = 1,
-                 normal_pixbuf=None, press_pixbuf=None):
+        self.tree_view_item = None
+        self.parent_item = None
+        
+        self.child_itmes = OrderedDict()    
+        self.child_itmes = {}
+        self.text = ""
+        self.show_child_items_bool = False
+    
+        self.has_arrow = True
+        self.item_left_image = None
+        
+        self.width = 0
+        
+    def add_node(self, root_id, node_id, node_item):
         # Root node add child widget.
-        if not root_name:
-            if node_name and node:
-                # Set node.
-                node.name = node_name
-                node.draw_pixbuf_bool = draw_pixbuf_bool
-                node.pixbuf_x_align = pixbuf_x_align
-                node.pixbuf_x = pixbuf_x
-                node.tree_normal_pixbuf = normal_pixbuf
-                node.tree_press_pixbuf = press_pixbuf                
-                
-                # node.parent_node = None
-                self.child_dict[node_name] = node
-        else:    
-            for key in self.child_dict.keys():                
-                if key == root_name:                    
-                    # Set node.
-                    node.name = node_name
-                    node.draw_pixbuf_bool = draw_pixbuf_bool
-                    node.pixbuf_x = pixbuf_x
-                    node.pixbuf_x_align = pixbuf_x_align                    
-                    node.tree_normal_pixbuf = normal_pixbuf
-                    node.tree_press_pixbuf = press_pixbuf
-                    # print node.tree_press_pixbuf
-                    # self.parent_node = None
-                    self.child_dict[key].child_dict[node_name] = node
-                    break                
-                
-                self.scan_node(self.child_dict[key], root_name, node_name, node, 
-                               draw_pixbuf_bool, pixbuf_x, pixbuf_x_align,
-                               normal_pixbuf, press_pixbuf)
-                    
-    def scan_node(self, node, scan_root_name, node_name, save_node, 
-                  draw_pixbuf_bool, pixbuf_x = 50, pixbuf_x_align=1,
-                  normal_pixbuf=None, press_pixbuf=None):
-        if node.child_dict:
-            for key in node.child_dict.keys():
-                if key == scan_root_name:                    
-                    save_node.name = node_name
-                    save_node.draw_pixbuf_bool = draw_pixbuf_bool
-                    save_node.pixbuf_x = pixbuf_x                        
-                    save_node.tree_normal_pixbuf = normal_pixbuf
-                    save_node.tree_press_pixbuf = press_pixbuf
-                    
-                    save_node.pixbuf_x_align = pixbuf_x_align
-                    
-                    node.child_dict[key].child_dict[node_name] = save_node                
-                else:    
-                    self.scan_node(node.child_dict[key], scan_root_name, node_name, save_node, 
-                                   draw_pixbuf_bool, pixbuf_x, pixbuf_x_align)
-                    
-                    
-    def sort(self):                
-        for key in self.child_dict.keys():
-            if self.child_dict[key].child_dict:
-                self.sort2(self.child_dict[key])
+        if None == root_id:
+            self.child_itmes[node_id] = node_item
+        else:        
+            for key in self.child_itmes.keys():
+                if key == root_id:
+                    node_item.parent_item = self.child_itmes[key] # Save parent Node.
+                    self.child_itmes[key].child_itmes[node_id] = node_item
+                    return True
         
-    def sort2(self, node):        
-        for key in node.child_dict.keys():
-            if node.child_dict[key].child_dict:
-                self.sort2(node.child_dict[key])
+                if self.scan_node(self.child_itmes[key], root_id, node_id, node_item):
+                    return True
+            
+    def scan_node(self, root_node, root_id, node_id, node_item):
+        if root_node.child_itmes:
+            for key in root_node.child_itmes.keys():
+                if key == root_id:                    
+                    node_item.parent_item = root_node.child_itmes[key] # Save parent Node.
+                    root_node.child_itmes[key].child_itmes[node_id] = node_item                
+                    return True
+                else:    
+                    self.scan_node(root_node.child_itmes[key], root_id, node_id, node_item)        
                 
-                
+gobject.type_register(TreeView)                    
+
+class TreeViewItem(object):    
+    def __init__(self, item_title, has_arrow=True, item_left_image=None):
+        self.item_title = item_title
+        self.has_arrow = has_arrow
+        self.item_left_image = item_left_image
+        
+    def get_title(self):    
+        return self.item_title
+    
+    def has_arrow(self):
+        return self.has_arrow
+    
+    def get_left_image(self):
+        return self.item_left_image                
+
+    
+if __name__ == "__main__":
+    
+    def single_click_cb(widget, item, x, y):
+        print item.get_title(), x, y
+    
+    win = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    tree_view = TreeView()    
+    # tree_view.connect("single-click-item", single_click_cb)
+    # tree_view.connect("double-click-item", single_click_cb)
+    tree_view.connect("right-press-item", single_click_cb)
+    
+    a = tree_view.add_item(None, TreeViewItem("高中"))
+    a1 =tree_view.add_item(a, TreeViewItem("高一"))
+    b = tree_view.add_item(None, TreeViewItem("大学"))
+    b1 = tree_view.add_item(b, TreeViewItem("软件学院"))
+    c = tree_view.add_item(None, TreeViewItem("深度"))
+    d = tree_view.add_item(None, TreeViewItem("社会大学"))
+    d1 = tree_view.add_item(d, TreeViewItem("系统分析师"))        
+    d2 = tree_view.add_item(d, TreeViewItem("系统架构师"))        
+    d3 = tree_view.add_item(d, TreeViewItem("软件工程师"))        
+    win.add(tree_view)
+    win.show_all()
+    gtk.main()
+    
+    
