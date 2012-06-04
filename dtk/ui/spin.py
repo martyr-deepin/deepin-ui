@@ -139,6 +139,11 @@ class SpinBox(gtk.VBox):
         if new_value != self.current_value:
             self.update_and_emit(new_value)
         
+    def update(self, new_value):
+        '''Update value, just use when need avoid emit signal recursively.'''
+        self.current_value = new_value
+        self.value_entry.set_text(str(self.current_value))
+            
     def update_and_emit(self, new_value):    
         self.current_value = new_value
         self.value_entry.set_text(str(self.current_value))

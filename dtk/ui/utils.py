@@ -466,6 +466,12 @@ def alpha_color_hex_to_cairo((color, alpha)):
     (r, g, b) = color_hex_to_cairo(color)
     return (r, g, b, alpha)
 
+def color_hex_to_rgb(color):
+    '''Convert hex RGB to (r, g, b)'''
+    if color[0] == '#': 
+        color = color[1:] 
+    return (int(color[:2], 16), int(color[2:4], 16), int(color[4:], 16)) 
+    
 def color_hex_to_cairo(color):
     """ 
     Convert a html (hex) RGB value to cairo color. 
@@ -477,9 +483,13 @@ def color_hex_to_cairo(color):
     if color[0] == '#': 
         color = color[1:] 
     (r, g, b) = (int(color[:2], 16), 
-                    int(color[2:4], 16),  
-                    int(color[4:], 16)) 
+                 int(color[2:4], 16),  
+                 int(color[4:], 16)) 
     return color_rgb_to_cairo((r, g, b)) 
+
+def color_rgb_to_hex(rgb_color):
+    '''Convert (r, g, b) to hex color.'''
+    return "#%02X%02X%02X" % rgb_color
 
 def color_rgb_to_cairo(color): 
     """ 

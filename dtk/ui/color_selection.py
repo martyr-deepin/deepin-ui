@@ -28,7 +28,7 @@ from scrolled_window import ScrolledWindow
 from iconview import IconView
 from titlebar import Titlebar
 from button import Button
-from utils import gdkcolor_to_string, color_hex_to_cairo, propagate_expose
+from utils import gdkcolor_to_string, color_hex_to_cairo, propagate_expose, color_hex_to_rgb, color_rgb_to_hex
 from label import Label
 from spin import SpinBox
 from entry import TextEntry
@@ -86,7 +86,9 @@ class ColorSelectDialog(Window):
         self.color_hsv = HSV()
         self.color_string = self.color_hsv.get_color_string()
         (self.color_r, self.color_g, self.color_b) = self.color_hsv.get_rgb_color()
-        self.color_hsv.get_hsv_widget().connect("button-release-event", lambda w, e: self.update_color_info())
+        self.color_hsv.get_hsv_widget().connect(
+            "button-release-event", 
+            lambda w, e: self.update_color_info(self.color_hsv.get_color_string()))
         self.color_box.pack_start(self.color_hsv, False, False)
         
         self.color_right_box = gtk.VBox()
@@ -113,6 +115,7 @@ class ColorSelectDialog(Window):
         self.color_hex_label = Label("颜色值")
         self.color_hex_box.pack_start(self.color_hex_label, False, False, 5)
         self.color_hex_entry = TextEntry(self.color_string)
+        self.color_hex_entry.entry.connect("press-return", self.press_return_color_entry)
         self.color_hex_entry.set_size(70, 24)
         self.color_hex_box.pack_start(self.color_hex_entry, False, False, 5)
         self.color_display_box.pack_start(self.color_hex_box, False, False, 5)
@@ -123,16 +126,19 @@ class ColorSelectDialog(Window):
         self.color_r_box = gtk.HBox()
         self.color_r_label = Label("红色: ")
         self.color_r_spin = SpinBox(self.color_r, 0, 255, 1)
+        self.color_r_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_r_box.pack_start(self.color_r_label, False, False)
         self.color_r_box.pack_start(self.color_r_spin, False, False)
         self.color_g_box = gtk.HBox()
         self.color_g_label = Label("绿色: ")
         self.color_g_spin = SpinBox(self.color_g, 0, 255, 1)
+        self.color_g_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_g_box.pack_start(self.color_g_label, False, False)
         self.color_g_box.pack_start(self.color_g_spin, False, False)
         self.color_b_box = gtk.HBox()
         self.color_b_label = Label("蓝色: ")
         self.color_b_spin = SpinBox(self.color_b, 0, 255, 1)
+        self.color_b_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_b_box.pack_start(self.color_b_label, False, False)
         self.color_b_box.pack_start(self.color_b_spin, False, False)
         
@@ -142,6 +148,7 @@ class ColorSelectDialog(Window):
         self.color_info_box.pack_start(self.color_rgb_box, False, False, 5)
         
         self.color_select_view = IconView()
+        self.color_select_view.connect("button-press-item", lambda view, item, x, y: self.update_color_info(item.color, False))
         self.color_select_view.draw_mask = draw_blank_mask
         self.color_select_scrolled_window = ScrolledWindow()
         self.color_select_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
@@ -177,12 +184,12 @@ class ColorSelectDialog(Window):
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
         self.connect("destroy", lambda w: self.destroy())
         
-        self.update_color_info()
+        self.update_color_info(self.color_string)
         
     def click_confirm_button(self):
         '''Click confirm button.'''
         if self.confirm_callback != None:
-            self.confirm_callback()        
+            self.confirm_callback(self.color_hex_entry.get_text())
         
         self.destroy()
         
@@ -192,6 +199,17 @@ class ColorSelectDialog(Window):
             self.cancel_callback()
         
         self.destroy()
+        
+    def click_rgb_spin(self):
+        '''Click rgb spin.'''
+        self.update_color_info(color_rgb_to_hex((self.color_r_spin.get_value(),
+                                                 self.color_g_spin.get_value(),
+                                                 self.color_b_spin.get_value())))        
+        
+    def press_return_color_entry(self, entry):
+        '''Press return on color entry.'''
+        self.update_color_info(entry.get_text())
+        entry.select_all()
         
     def expose_display_button(self, widget, event):
         '''Expose display button.'''
@@ -208,14 +226,18 @@ class ColorSelectDialog(Window):
         
         return True
         
-    def update_color_info(self):
+    def update_color_info(self, color_string, clear_highlight=True):
         '''Update color info.'''
-        self.color_string = self.color_hsv.get_color_string()
-        (self.color_r, self.color_g, self.color_b) = self.color_hsv.get_rgb_color()
-        self.color_r_spin.set_value(self.color_r)
-        self.color_g_spin.set_value(self.color_g)
-        self.color_b_spin.set_value(self.color_b)
+        self.color_string = color_string
+        (self.color_r, self.color_g, self.color_b) = color_hex_to_rgb(self.color_string)
+        self.color_r_spin.update(self.color_r)
+        self.color_g_spin.update(self.color_g)
+        self.color_b_spin.update(self.color_b)
         self.color_hex_entry.set_text(self.color_string)
+        self.color_hsv.set_current_color(gtk.gdk.color_parse(color_string))
+        
+        if clear_highlight:
+            self.color_select_view.clear_highlight()
         
         self.color_display_button.queue_draw()
         
@@ -297,7 +319,7 @@ class ColorItem(gobject.GObject):
     
     def icon_item_button_press(self, x, y):
         '''Handle button-press event.'''
-        pass        
+        pass
     
     def icon_item_button_release(self, x, y):
         '''Handle button-release event.'''
