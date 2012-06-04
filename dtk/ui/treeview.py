@@ -30,7 +30,10 @@ import gobject
 from collections import OrderedDict
 
 from draw import draw_pixbuf, draw_vlinear, draw_font
-from utils import get_content_size, is_single_click, is_double_click, is_right_button
+from utils import (get_content_size, is_single_click, is_double_click, is_right_button,
+                   get_match_parent, cairo_state)
+from theme import ui_theme
+from skin_config import skin_config
 
 # (cr, text, font_size, font_color, x, y, width, height, font_align
 class TreeView(gtk.DrawingArea):
@@ -83,6 +86,7 @@ class TreeView(gtk.DrawingArea):
             self.font_size = self.height - 15
             # print self.font_size
             
+            
     # DrawingArea event function.           
     def tree_view_press_event(self, widget, event):
         self.press_notify_function(event) 
@@ -127,10 +131,49 @@ class TreeView(gtk.DrawingArea):
         else:
             self.move_height = temp_move_height
             
+    def get_offset_coordinate(self, widget):
+        '''Get offset coordinate.'''
+        # Init.
+        rect = widget.allocation
+
+        # Get coordinate.
+        viewport = get_match_parent(widget, "Viewport")
+        if viewport: 
+            coordinate = widget.translate_coordinates(viewport, rect.x, rect.y)
+            if len(coordinate) == 2:
+                (offset_x, offset_y) = coordinate
+                return (-offset_x, -offset_y, viewport)
+            else:
+                return (0, 0, viewport)    
+
+        else:
+            return (0, 0, viewport)
+            
+    def draw_mask(self, cr, x, y, w, h):        
+        draw_vlinear(cr, x, y, w, h,
+                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+            
     def tree_view_expose_event(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
+        # Get offset.
+        (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
+            
+        # Draw background.
+        with cairo_state(cr):
+            cr.translate(-viewport.allocation.x, -viewport.allocation.y)
+            cr.rectangle(offset_x, offset_y, 
+                         viewport.allocation.x + viewport.allocation.width, 
+                         viewport.allocation.y + viewport.allocation.height)
+            cr.clip()
+            
+            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
+            skin_config.render_background(cr, self, offset_x + shadow_x, offset_y + shadow_y)
+            
+        # Draw mask.
+        self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
         
         if self.press_draw_bool:
             cr.set_source_rgba(1, 0, 0, 0.3)
@@ -159,6 +202,7 @@ class TreeView(gtk.DrawingArea):
                               self.font_width, self.font_height, self.font_align)                     
                     
                     temp_height += self.height
+                    
                     
     def tree_view_key_press_event(self, widget, event):
         pass
