@@ -116,7 +116,7 @@ class TextView(gtk.EventBox):
 gobject.type_register(TextView)
 	
 	
-def click(widget):
+def click(widget, key):
 	tv = widget.get_children()
 	tv[0].set_text("changed\r\nhi")
 
@@ -132,7 +132,7 @@ if __name__ == "__main__":
 	
 	window.connect("destroy", lambda w: gtk.main_quit())
 	
-	window.connect("show", click)
+	window.connect("key-press-event", click)
 	
 	window.show_all()
 	
