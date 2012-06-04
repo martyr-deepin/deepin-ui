@@ -51,8 +51,12 @@ from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
 from dtk.ui.menu import Menu
+<<<<<<< HEAD
 from dtk.ui.treeview import TreeView
 from dtk.ui.color_selection import HSV, ColorSelectDialog
+=======
+from dtk.ui.treeview import TreeView, TreeViewItem
+>>>>>>> hailongqiu/master
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.paned import HPaned
@@ -407,9 +411,13 @@ if __name__ == "__main__":
     button_box.pack_start(throbber, False, False)
     
     # Tree view.
-    tree_view = TreeView(font_x=10)
+    def tree_view_single_click_cb(widget, item):
+        print item.get_title()
+    
+    tree_view = TreeView()
     tree_view_scrolled_window = ScrolledWindow()
     tree_view_scrolled_window.add_child(tree_view)
+<<<<<<< HEAD
     tab_5_box.pack_start(tree_view_scrolled_window)
     
     tree_view.add_node(None, "小学", False, pixbuf_x_align=0)
@@ -436,6 +444,37 @@ if __name__ == "__main__":
     tree_view.add_node("开发部", "邱海龙")        
 
     tab_5_box.pack_start(HSV())
+=======
+    tree_view.connect("single-click-item", tree_view_single_click_cb)    
+    
+    tab_5_box.pack_start(tree_view_scrolled_window)
+    
+    wuhan_node = tree_view.add_item(None, TreeViewItem("武汉深度"))
+
+    wuhan_dev_node = tree_view.add_item(wuhan_node, TreeViewItem("开发部"))
+    wuhan_des_node = tree_view.add_item(wuhan_node, TreeViewItem("设计部"))
+    wuhan_sys_node = tree_view.add_item(wuhan_node, TreeViewItem("系统部"))
+    
+    wangyong = tree_view.add_item(wuhan_dev_node, TreeViewItem("王勇"))    
+    tree_view.add_item(wangyong, TreeViewItem("王勇他老婆"))    
+    tree_view.add_item(wangyong, TreeViewItem("王勇他女儿"))    
+    
+    tree_view.add_item(wuhan_dev_node, TreeViewItem("侯少辉"))
+    tree_view.add_item(wuhan_dev_node, TreeViewItem("邱海龙"))
+    
+    tree_view.add_item(wuhan_sys_node, TreeViewItem("苏运强"))    
+    tree_view.add_item(wuhan_sys_node, TreeViewItem("黎龙宇"))
+    tree_view.add_item(wuhan_sys_node, TreeViewItem("张月乾"))
+    
+    tree_view.add_item(wuhan_des_node, TreeViewItem("ZHL"))    
+    tree_view.add_item(wuhan_des_node, TreeViewItem("ZHL"))
+    tree_view.add_item(wuhan_des_node, TreeViewItem("zhm"))
+    
+    beijing_node = tree_view.add_item(None, TreeViewItem("北京深度"))    
+    tree_view.add_item(beijing_node, TreeViewItem("开发部"))
+    tree_view.add_item(beijing_node, TreeViewItem("设计部"))
+    tree_view.add_item(beijing_node, TreeViewItem("系统部"))
+>>>>>>> hailongqiu/master
     
     # Run.
     application.run()
