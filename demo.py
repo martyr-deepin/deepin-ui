@@ -408,8 +408,6 @@ if __name__ == "__main__":
     tree_view = TreeView(font_x=10)
     tree_view_scrolled_window = ScrolledWindow()
     tree_view_scrolled_window.add_child(tree_view)
-    # tree_view.connect("single-click-view", test_show_tree_view)    
-    
     tab_5_box.pack_start(tree_view_scrolled_window)
     
     tree_view.add_node(None, "小学", False, pixbuf_x_align=0)

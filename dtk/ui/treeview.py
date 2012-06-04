@@ -23,19 +23,16 @@
 import gtk
 import gobject
 from collections import OrderedDict
-
 from skin_config import skin_config
-from theme import Theme, ui_theme
-
+from theme import ui_theme
 from draw import draw_pixbuf, draw_vlinear, draw_font
-from utils import get_content_size
-
 
 class TreeView(gtk.DrawingArea):
     __gsignals__ = {
         "single-click-view" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, int, )),
         "motion-notify-view" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, int)),
     }        
+    
     def __init__(self, height = 30, width = 50,
                  font_x = 20, font_size = 10, font_color = "#000000",          
                  normal_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png"),
@@ -141,7 +138,7 @@ class TreeView(gtk.DrawingArea):
             (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()            
             skin_config.render_background(cr, self, shadow_x, shadow_y)
         except Exception, e:
-            pass
+            print e
             
         cr.rectangle(x, y, w, h)
         # cr.fill()
@@ -150,7 +147,6 @@ class TreeView(gtk.DrawingArea):
         # Draw mask.
         draw_vlinear(cr, x, y, w, h,
                      ui_theme.get_shadow_color("linearBackground").get_color_info())
-        
         
         if self.press_draw_bool:
             cr.set_source_rgba(1, 0, 0, 0.3)
@@ -175,8 +171,6 @@ class TreeView(gtk.DrawingArea):
                         pixbuf = draw_widget[0].tree_normal_pixbuf.get_pixbuf()#self.press_pixbuf.get_pixbuf()
                     else:    
                         pixbuf = draw_widget[0].tree_press_pixbuf.get_pixbuf()#self.normal_pixbuf.get_pixbuf()                                        
-                        
-
                     draw_pixbuf_x = 30                     
                     if 0 == draw_widget[0].pixbuf_x_align: # Left
                         draw_pixbuf_x = 0
@@ -343,7 +337,6 @@ class Tree(object):
                 else:    
                     self.scan_node(node.child_dict[key], scan_root_name, node_name, save_node, 
                                    draw_pixbuf_bool, pixbuf_x, pixbuf_x_align)
-                    
                     
     def sort(self):                
         for key in self.child_dict.keys():
