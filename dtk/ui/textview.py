@@ -56,6 +56,8 @@ class TextView(gtk.EventBox):
 		self.text_select_color = text_select_color
 		self.background_select_color = background_select_color
 		self.grab_focus_flag = False
+		self.current_line = self.buf.get_line_count() - 1 # get currrent line index default set to last
+		self.current_line_offset = self.buf.get_iter_at_line(self.current_line).get_chars_in_line() # get offset in current line default set to 0
 		
 		self.im = gtk.IMMulticontext()
 		self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
@@ -85,6 +87,8 @@ class TextView(gtk.EventBox):
 		self.connect("focus-out-event", self.focus_out_textview)
 		
 	def move_to_left(self):
+		if self.current_line_offset >= 1:
+			self.current_line_offset -= 1
 		pass
     
 	def move_to_right(self):
@@ -97,7 +101,20 @@ class TextView(gtk.EventBox):
 		pass
 	
 	def backspace(self):
-		pass
+		#TODO fix delete while there is a line-break
+		ir = self.buf.get_iter_at_line(self.current_line)
+		if self.current_line_offset == 0:
+			self.current_line = self.current_line - 1
+			self.current_line_offset = self.buf.get_iter_at_line(self.current_line).get_chars_in_line()
+		else:
+			ir.set_line_offset(self.current_line_offset)
+			ir2 = self.buf.get_iter_at_line(self.current_line)
+			ir2.set_line_offset(self.current_line_offset - 1 )
+			self.buf.delete(ir2, ir)
+			self.current_line_offset -= 1
+		
+		self.queue_draw()
+		
 	
 	def delete(self):
 		pass
@@ -231,7 +248,13 @@ class TextView(gtk.EventBox):
 		return content_width
 	
 	def commit_entry(self, input_text):
-		self.set_text(self.get_text(-1) + input_text)
+		ir = self.buf.get_iter_at_line(self.current_line)
+		print "%s%s%s" % (self.current_line_offset, "|", ir.get_chars_in_line())
+		ir.set_line_offset(self.current_line_offset)
+		self.buf.insert(ir, input_text)
+		self.current_line_offset += 1
+		print "%s%s%s" % (self.current_line_offset, "|", ir.get_chars_in_line())
+		self.queue_draw()
 			
 gobject.type_register(TextView)
 	
@@ -244,7 +267,7 @@ def click(widget, event):
 if __name__ == "__main__":
 	window = gtk.Window()
 	tb = gtk.TextBuffer()
-	tb.set_text("hello\r\nworld")
+	tb.set_text("hello\nworld")
 	tv = TextView(buf = tb)
 	
 	window.add(tv)
