@@ -46,7 +46,6 @@ class TextView(gtk.EventBox):
 				text_select_color="#000000", 
 				background_select_color="#000000", ):
 		gtk.EventBox.__init__(self)
-		self.connect("expose-event", self.expose_textview)
 		self.buf = buf
 		self.padding_x = padding_x
 		self.padding_y = padding_y
@@ -56,8 +55,99 @@ class TextView(gtk.EventBox):
 		self.text_color = text_color
 		self.text_select_color = text_select_color
 		self.background_select_color = background_select_color
-		pass
+		self.grab_focus_flag = False
 		
+		self.im = gtk.IMMulticontext()
+		self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
+		
+		# Add keymap.
+		self.keymap = {
+				"Left" : self.move_to_left,
+				"Right" : self.move_to_right,
+				"Home" : self.move_to_start,
+				"End" : self.move_to_end,
+				"BackSpace" : self.backspace,
+				"Delete" : self.delete,
+				"S-Left" : self.select_to_left,
+				"S-Right" : self.select_to_right,
+				"S-Home" : self.select_to_start,
+				"S-End" : self.select_to_end,
+				"C-a" : self.select_all,
+				"C-x" : self.cut_to_clipboard,
+				"C-c" : self.copy_to_clipboard,
+				"C-v" : self.paste_from_clipboard,
+				"Return" : self.press_return }
+				
+		self.connect_after("realize", self.realize_textview)
+		self.connect("key-press-event", self.key_press_textview)
+		self.connect("expose-event", self.expose_textview)
+		self.connect("focus-in-event", self.focus_in_textview)
+		self.connect("focus-out-event", self.focus_out_textview)
+		
+	def move_to_left(self):
+		pass
+    
+	def move_to_right(self):
+		pass
+	
+	def move_to_start(self):
+		pass
+	
+	def move_to_end(self):
+		pass
+	
+	def backspace(self):
+		pass
+	
+	def delete(self):
+		pass
+	
+	def select_to_left(self):
+		pass
+	
+	def select_to_right(self):
+		pass
+	
+	def select_to_start(self):
+		pass
+	
+	def select_to_end(self):
+		pass
+	
+	def select_all(self):
+		pass
+	
+	def cut_to_clipboard(self):
+		pass
+	
+	def copy_to_clipboard(self):
+		pass
+	
+	def paste_from_clipboard(self):
+		pass
+	
+	def press_return(self):
+		pass
+
+	def focus_in_textview(self, widget, event):
+		'''Callback for `focus-in-event` signal.'''
+		self.grab_focus_flag = True
+
+		# Focus in IMContext.
+		self.im.set_client_window(widget.window)
+		self.im.focus_in()
+
+		self.queue_draw()
+            
+	def focus_out_textview(self, widget, event):
+		'''Callback for `focus-out-event` signal.'''
+		self.grab_focus_flag = False
+
+		# Focus out IMContext.
+		self.im.focus_out()
+
+		self.queue_draw()
+    
 	def expose_textview(self, widget, event):
 		cr = widget.window.cairo_create()
 		rect = widget.allocation
@@ -66,6 +156,16 @@ class TextView(gtk.EventBox):
 		propagate_expose(widget, event)
 		
 		return True
+
+	def realize_textview(self, widget):
+		'''Realize entry.'''
+		text_width = self.get_content_width(self.get_text(-1))
+		rect = self.get_allocation()
+
+		if text_width > rect.width - self.padding_x * 2 > 0:
+			self.offset_x = text_width - rect.width + self.padding_x * 2
+		else:
+			self.offset_x = 0
 
 	def draw_background(self, cr, rect):
 		pass
@@ -109,33 +209,45 @@ class TextView(gtk.EventBox):
 			result = ""
 			for x in range(0, self.buf.get_line_count()):
 				result += self.get_text(x)
-				result += "\r\n"
 			return result
+			
+	def key_press_textview(self, widget, event):
+		input_method_filt = self.im.filter_keypress(event)
+		if not input_method_filt:
+			self.handle_key_event(event)
+		return False
+		
+	def handle_key_event(self, event):
+		'''Handle key event.'''
+		key_name = get_keyevent_name(event)
+
+		if self.keymap.has_key(key_name):
+			self.keymap[key_name]()
+			
 
 	def get_content_width(self, content):
 		'''Get content width.'''
 		(content_width, content_height) = get_content_size(content, self.font_size)
 		return content_width
+	
+	def commit_entry(self, input_text):
+		self.set_text(self.get_text(-1) + input_text)
 			
 gobject.type_register(TextView)
 	
 	
-def click(widget, key):
+def click(widget, event):
 	children = widget.get_children()
-	tv = children[0].get_children()[0].get_children()[0]
-	tv.set_text("chassssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssnged\r\nhijwefjifowiejfw")
+	tv = children[0]
+	tv.key_press_textview(tv, event)
 
 if __name__ == "__main__":
 	window = gtk.Window()
 	tb = gtk.TextBuffer()
-	tb.set_text("hello\r\n")
+	tb.set_text("hello\r\nworld")
 	tv = TextView(buf = tb)
 	
-	sw = gtk.ScrolledWindow()
-	
-	sw.add_with_viewport(tv)
-	
-	window.add(sw)
+	window.add(tv)
 	
 	window.set_size_request(300, 200)
 	
