@@ -27,7 +27,7 @@ import os
 from utils import color_hex_to_cairo, remove_file, touch_file, create_directory
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from config import Config
-from constant import SHADE_SIZE
+from constant import SHADE_SIZE, COLOR_SEQUENCE
 import tarfile
 
 class SkinConfig(gobject.GObject):
@@ -309,9 +309,19 @@ class SkinConfig(gobject.GObject):
             
             # Add background image file.
             tar.add(self.get_skin_file_path(self.image), self.image, False)
+            
+            # Copy theme files is theme is not standard theme.
+            if not self.theme_name in COLOR_SEQUENCE:
+                tar.add(os.path.join(self.ui_theme_dir, self.theme_name), os.path.join("ui_theme", self.theme_name))
+                tar.add(os.path.join(self.app_theme_dir, self.theme_name), os.path.join("app_theme", self.theme_name))
         
         # Remove temp config file.
         remove_file(config_filepath)    
+        
+    def set_themes(self, ui_theme, app_theme):
+        '''Set theme directories.'''
+        self.ui_theme_dir = ui_theme.user_theme_dir
+        self.app_theme_dir = app_theme.user_theme_dir
             
 gobject.type_register(SkinConfig)
 

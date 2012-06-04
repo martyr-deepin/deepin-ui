@@ -238,7 +238,7 @@ class SaveFileDialog(gtk.FileChooserDialog):
         self.destroy()
         
 gobject.type_register(SaveFileDialog)
-        
+
 if __name__ == '__main__':
     dialog = ConfirmDialog("确认对话框", "你确定吗？", 200, 100)
     dialog.show_all()

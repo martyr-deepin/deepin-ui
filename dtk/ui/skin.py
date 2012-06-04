@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import shutil
 import tarfile
 from dominant_color import get_dominant_color
 from dialog import ConfirmDialog, OpenFileDialog, SaveFileDialog
@@ -261,6 +262,21 @@ class SkinPreviewPage(gtk.VBox):
         config = Config(os.path.join(skin_dir, "config.ini"))
         config.load()
         skin_image_file = config.get("background", "image")
+
+        # Move theme files to given directory if theme is not in default theme list.
+        skin_theme_name = config.get("theme", "theme_name")
+        if not skin_theme_name in COLOR_SEQUENCE:
+            # Remove same theme from given directories.
+            remove_directory(os.path.join(skin_config.ui_theme_dir, skin_theme_name))
+            remove_directory(os.path.join(skin_config.app_theme_dir, skin_theme_name))
+            
+            # Move new theme files to given directories.
+            shutil.move(os.path.join(skin_dir, "ui_theme", skin_theme_name), skin_config.ui_theme_dir)
+            shutil.move(os.path.join(skin_dir, "app_theme", skin_theme_name), skin_config.app_theme_dir)
+            
+            # Remove temp theme directories under skin directory.
+            remove_directory(os.path.join(skin_dir, "ui_theme"))        
+            remove_directory(os.path.join(skin_dir, "app_theme"))        
         
         # Apply new skin.
         self.preview_view.add_items([SkinPreviewIcon(

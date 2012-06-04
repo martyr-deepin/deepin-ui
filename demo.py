@@ -50,7 +50,8 @@ from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
 from dtk.ui.menu import Menu
-from dtk.ui.treeview import TreeView
+from dtk.ui.treeview import TreeView, TreeViewItem
+from dtk.ui.color_selection import ColorSelectDialog
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.paned import HPaned
@@ -193,7 +194,7 @@ if __name__ == "__main__":
     # Add navigatebar.
     navigatebar = Navigatebar(
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : ColorSelectDialog().show_all()),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", None),
          (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
          (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
@@ -306,6 +307,7 @@ if __name__ == "__main__":
     entry.set_size(300, 24)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
+    entry_label.set_size_request(100, 30)
     entry_box = gtk.HBox(spacing=10)
     entry_box.pack_start(entry_label, False, False)
     entry_box.pack_start(entry, True, True)
@@ -404,33 +406,41 @@ if __name__ == "__main__":
     button_box.pack_start(throbber, False, False)
     
     # Tree view.
-    tree_view = TreeView(font_x=10)
+    def tree_view_single_click_cb(widget, item):
+        print item.get_title()
+    
+    tree_view = TreeView()
     tree_view_scrolled_window = ScrolledWindow()
     tree_view_scrolled_window.add_child(tree_view)
+    tree_view.connect("single-click-item", tree_view_single_click_cb)    
+    
     tab_5_box.pack_start(tree_view_scrolled_window)
     
-    tree_view.add_node(None, "小学", False, pixbuf_x_align=0)
-    tree_view.add_node(None, "初中",pixbuf_x= 0, pixbuf_x_align=0)
-    tree_view.add_node(None, "大学")
-    tree_view.add_node(None, "深度")
+    wuhan_node = tree_view.add_item(None, TreeViewItem("武汉深度"))
+
+    wuhan_dev_node = tree_view.add_item(wuhan_node, TreeViewItem("开发部"))
+    wuhan_des_node = tree_view.add_item(wuhan_node, TreeViewItem("设计部"))
+    wuhan_sys_node = tree_view.add_item(wuhan_node, TreeViewItem("系统部"))
     
-    tree_view.add_node("小学", "1年级")
-    tree_view.add_node("1年级", "1:1:2")    
-    tree_view.add_node("小学", "2年级")
-    tree_view.add_node("小学", "3年级")
+    wangyong = tree_view.add_item(wuhan_dev_node, TreeViewItem("Linux Deepin"))    
+    tree_view.add_item(wangyong, TreeViewItem("Open Heart"))    
+    tree_view.add_item(wangyong, TreeViewItem("Open Source"))    
     
-    tree_view.add_node("大学", "软件学院")
-    tree_view.add_node("软件学院", "ZB48901")
-    tree_view.add_node("软件学院", "ZB48902")
-    tree_view.add_node("软件学院", "ZB48903")
-    tree_view.add_node("大学", "工商学院")
-    tree_view.add_node("大学", "理工学院")
-    tree_view.add_node("大学", "机电学院")
+    tree_view.add_item(wuhan_dev_node, TreeViewItem("侯少辉"))
+    tree_view.add_item(wuhan_dev_node, TreeViewItem("邱海龙"))
     
-    tree_view.add_node("深度", "开发部")
-    tree_view.add_node("开发部", "王勇")
-    tree_view.add_node("开发部", "猴哥")
-    tree_view.add_node("开发部", "邱海龙")        
+    tree_view.add_item(wuhan_sys_node, TreeViewItem("苏运强"))    
+    tree_view.add_item(wuhan_sys_node, TreeViewItem("黎龙宇"))
+    tree_view.add_item(wuhan_sys_node, TreeViewItem("张月乾"))
+    
+    tree_view.add_item(wuhan_des_node, TreeViewItem("ZHL"))    
+    tree_view.add_item(wuhan_des_node, TreeViewItem("ZHL"))
+    tree_view.add_item(wuhan_des_node, TreeViewItem("zhm"))
+    
+    beijing_node = tree_view.add_item(None, TreeViewItem("北京深度"))    
+    tree_view.add_item(beijing_node, TreeViewItem("开发部"))
+    tree_view.add_item(beijing_node, TreeViewItem("设计部"))
+    tree_view.add_item(beijing_node, TreeViewItem("系统部"))
     
     # Run.
     application.run()
