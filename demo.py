@@ -50,6 +50,7 @@ from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
 from dtk.ui.menu import Menu
+from dtk.ui.treeview import TreeView
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.paned import HPaned
@@ -305,7 +306,6 @@ if __name__ == "__main__":
     entry.set_size(300, 24)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
-    entry_label.set_size_request(100, 30)
     entry_box = gtk.HBox(spacing=10)
     entry_box.pack_start(entry_label, False, False)
     entry_box.pack_start(entry, True, True)
@@ -402,6 +402,35 @@ if __name__ == "__main__":
     throbber.set_mode(MODE_SPINNING)
     throbber.set_progress(.3)
     button_box.pack_start(throbber, False, False)
+    
+    # Tree view.
+    tree_view = TreeView(font_x=10)
+    tree_view_scrolled_window = ScrolledWindow()
+    tree_view_scrolled_window.add_child(tree_view)
+    tab_5_box.pack_start(tree_view_scrolled_window)
+    
+    tree_view.add_node(None, "小学", False, pixbuf_x_align=0)
+    tree_view.add_node(None, "初中",pixbuf_x= 0, pixbuf_x_align=0)
+    tree_view.add_node(None, "大学")
+    tree_view.add_node(None, "深度")
+    
+    tree_view.add_node("小学", "1年级")
+    tree_view.add_node("1年级", "1:1:2")    
+    tree_view.add_node("小学", "2年级")
+    tree_view.add_node("小学", "3年级")
+    
+    tree_view.add_node("大学", "软件学院")
+    tree_view.add_node("软件学院", "ZB48901")
+    tree_view.add_node("软件学院", "ZB48902")
+    tree_view.add_node("软件学院", "ZB48903")
+    tree_view.add_node("大学", "工商学院")
+    tree_view.add_node("大学", "理工学院")
+    tree_view.add_node("大学", "机电学院")
+    
+    tree_view.add_node("深度", "开发部")
+    tree_view.add_node("开发部", "王勇")
+    tree_view.add_node("开发部", "猴哥")
+    tree_view.add_node("开发部", "邱海龙")        
     
     # Run.
     application.run()

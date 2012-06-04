@@ -19,11 +19,11 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+                 
 from constant import DEFAULT_FONT_SIZE, ALIGN_START, ALIGN_MIDDLE
 from draw import draw_font
 from theme import ui_theme
-from utils import propagate_expose
+from utils import propagate_expose, get_content_size
 import gtk
 
 class Label(gtk.EventBox):
@@ -49,6 +49,8 @@ class Label(gtk.EventBox):
         
         self.connect("expose-event", self.expose_label)    
 
+        self.set_size_request(*get_content_size(self.text, self.text_size))
+        
     def expose_label(self, widget, event):
         '''Expose label.'''
         cr = widget.window.cairo_create()
@@ -71,6 +73,7 @@ class Label(gtk.EventBox):
     def set_text(self, text):
         '''Set text.'''
         self.text = text
+        self.set_size_request(*get_content_size(self.text, self.text_size))        
 
         self.queue_draw()
     
