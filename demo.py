@@ -405,15 +405,15 @@ if __name__ == "__main__":
     button_box.pack_start(throbber, False, False)
     
     # Tree view.
-    tree_view = TreeView()
+    tree_view = TreeView(font_x=10)
     tree_view_scrolled_window = ScrolledWindow()
     tree_view_scrolled_window.add_child(tree_view)
     # tree_view.connect("single-click-view", test_show_tree_view)    
     
     tab_5_box.pack_start(tree_view_scrolled_window)
     
-    tree_view.add_node(None, "小学")
-    tree_view.add_node(None, "初中")
+    tree_view.add_node(None, "小学", False, pixbuf_x_align=0)
+    tree_view.add_node(None, "初中",pixbuf_x= 0, pixbuf_x_align=0)
     tree_view.add_node(None, "大学")
     tree_view.add_node(None, "深度")
     
