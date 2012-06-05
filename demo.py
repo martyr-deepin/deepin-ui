@@ -55,6 +55,7 @@ from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.paned import HPaned
 from dtk.ui.popup_window import PopupWindow
+from dtk.ui.color_selection import ColorSelectDialog
 from dtk.ui.scalebar import HScalebar, VScalebar
 from dtk.ui.scrolled_window import ScrolledWindow
 from dtk.ui.statusbar import Statusbar
@@ -193,7 +194,7 @@ if __name__ == "__main__":
     # Add navigatebar.
     navigatebar = Navigatebar(
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : ColorSelectDialog().show_all()),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", None),
          (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
          (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
@@ -438,12 +439,7 @@ if __name__ == "__main__":
     beijing_node = tree_view.add_item(None, TreeViewItem("北京深度"))    
     tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
     
-    # tree_view.scan_item(beijing_node, tree_view.root.child_itmes)
-    print tree_view.get_items(wuhan_des_node)
     tree_view.del_item(wuhan_des_node)
-    # tree_view.del_item(beijing_node)
-    print tree_view.get_items(beijing_node)
-    
     
     # Run.
     application.run()

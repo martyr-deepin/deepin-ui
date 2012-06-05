@@ -29,10 +29,9 @@ import gtk
 import gobject
 from collections import OrderedDict
 
-from scrolled_window import ScrolledWindow
 from draw import draw_pixbuf, draw_vlinear, draw_font
 from utils import (get_content_size, is_single_click, is_double_click, is_right_button,
-                   get_match_parent, cairo_state, get_match_parent)
+                   cairo_state, get_match_parent)
 from theme import ui_theme
 from skin_config import skin_config
 
@@ -95,7 +94,6 @@ class TreeView(gtk.DrawingArea):
             
         if self.font_size > self.height - 15:    
             self.font_size = self.height - 15
-            # print self.font_size
         
     # DrawingArea event function.           
     def tree_view_press_event(self, widget, event):
@@ -116,8 +114,6 @@ class TreeView(gtk.DrawingArea):
                 if self.tree_list[index].child_items:        
                     self.tree_list[index].show_child_items_bool = not self.tree_list[index].show_child_items_bool 
                     self.sort()
-                # for list in self.tree_list:
-                #     print list.text
                     self.queue_draw()
             
             if is_single_click(event):
@@ -296,7 +292,6 @@ class TreeView(gtk.DrawingArea):
     def del_item(self, item_id):
         if item_id is not None:            
             item = self.scan_item(item_id, self.root.child_items)
-            # print item
             if not item:
                 return
             
