@@ -250,6 +250,8 @@ class TreeView(gtk.DrawingArea):
             child_items = [ child_items ]
         for child_item in child_items:
             self.add_item(parent_id, child_item)
+            
+        self.queue_draw()    
         
     def add_item(self, parent_id, child_item):    
         temp_tree = self.create_tree(child_item)
