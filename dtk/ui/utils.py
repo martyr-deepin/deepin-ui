@@ -466,6 +466,12 @@ def alpha_color_hex_to_cairo((color, alpha)):
     (r, g, b) = color_hex_to_cairo(color)
     return (r, g, b, alpha)
 
+def color_hex_to_rgb(color):
+    '''Convert hex RGB to (r, g, b)'''
+    if color[0] == '#': 
+        color = color[1:] 
+    return (int(color[:2], 16), int(color[2:4], 16), int(color[4:], 16)) 
+    
 def color_hex_to_cairo(color):
     """ 
     Convert a html (hex) RGB value to cairo color. 
@@ -477,9 +483,13 @@ def color_hex_to_cairo(color):
     if color[0] == '#': 
         color = color[1:] 
     (r, g, b) = (int(color[:2], 16), 
-                    int(color[2:4], 16),  
-                    int(color[4:], 16)) 
+                 int(color[2:4], 16),  
+                 int(color[4:], 16)) 
     return color_rgb_to_cairo((r, g, b)) 
+
+def color_rgb_to_hex(rgb_color):
+    '''Convert (r, g, b) to hex color.'''
+    return "#%02X%02X%02X" % rgb_color
 
 def color_rgb_to_cairo(color): 
     """ 
@@ -726,3 +736,66 @@ def get_parent_dir(filepath, level=1):
         level -= 1
     
     return parent_dir
+
+def gdkcolor_to_string(gdkcolor):
+    '''Gdk color to string '''
+    return "#%0.2X%0.2X%0.2X" % (gdkcolor.red / 256, gdkcolor.green / 256, gdkcolor.blue / 256)
+
+def is_long(string):
+    '''Is long.'''
+    if string == "":
+        return True
+    
+    try:
+        long(string)
+        return True
+    except ValueError:
+        return False
+
+def is_int(string):
+    '''Is int.'''
+    if string == "":
+        return True
+    
+    try:
+        int(string)
+        return True
+    except ValueError:
+        return False
+
+def is_float(string):
+    '''Is float.'''
+    if string == "":
+        return True
+    
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+def is_hex_color(string):
+    '''Is hex color'''
+    HEX_CHAR = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                "a", "b", "c", "d", "e", "f",
+                "A", "B", "C", "D", "E", "F",
+                "#"
+                ]
+    
+    if string == "":
+        return True
+    else:
+        for c in string:
+            if not c in HEX_CHAR:
+                return False
+            
+        if string.startswith("#"):
+            if len(string) > 7:
+                return False
+            else:
+                return True
+        else:            
+            if len(string) > 6:
+                return False
+            else:
+                return True    

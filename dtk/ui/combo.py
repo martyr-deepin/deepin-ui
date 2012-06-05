@@ -41,6 +41,7 @@ class ComboBox(gtk.VBox):
     
     def __init__(self, items=[], default_width=100):
         super(ComboBox, self).__init__()
+
         
         # Init.
         self.items = items
@@ -252,7 +253,7 @@ class ComboBoxItem(object):
     def __init__(self, item_label, item_icon=None):
         
         self.item_label = item_label
-        self.item_icon = item_icon
+        self.item_icon = item_icon        
         
     def get_label(self):    
         return self.item_label

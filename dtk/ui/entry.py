@@ -38,11 +38,12 @@ class Entry(gtk.EventBox):
     MOVE_LEFT = 1
     MOVE_RIGHT = 2
     MOVE_NONE = 3
-	
+    
     __gsignals__ = {
         "edit-alarm" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "press-return" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
+        "invalid-value" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
     def __init__(self, content="", 
@@ -73,6 +74,7 @@ class Entry(gtk.EventBox):
         self.drag_end_index = 0
         self.grab_focus_flag = False
         self.editable_flag = True
+        self.check_text = None
         
         self.content = content
         self.cursor_index = len(self.content)
@@ -121,6 +123,10 @@ class Entry(gtk.EventBox):
         '''Set editable.'''
         self.editable_flag = editable
         
+    def set_edit_mode(self, mode):
+        '''Set edit mode.'''
+        self.edit_mode = mode
+        
     @contextmanager
     def monitor_entry_content(self):
         '''Monitor entry content.'''
@@ -131,9 +137,13 @@ class Entry(gtk.EventBox):
             print 'monitor_entry_content error %s' % e  
         else:  
             new_text = self.get_text()
-            if old_text != new_text:
-                self.emit("changed", new_text)
-        
+            if self.check_text == None or self.check_text(new_text):
+                if old_text != new_text:
+                    self.emit("changed", new_text)
+            else:
+                self.emit("invalid-value", new_text)
+                self.set_text(old_text)
+                
     def is_editable(self):
         '''Whether is editable.'''
         if not self.editable_flag:
