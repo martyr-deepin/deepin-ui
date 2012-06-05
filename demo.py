@@ -51,7 +51,6 @@ from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
 from dtk.ui.menu import Menu
 from dtk.ui.treeview import TreeView, TreeViewItem
-from dtk.ui.color_selection import ColorSelectDialog
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.paned import HPaned
@@ -194,7 +193,7 @@ if __name__ == "__main__":
     # Add navigatebar.
     navigatebar = Navigatebar(
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : ColorSelectDialog().show_all()),
+         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", None),
          (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
          (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
@@ -407,7 +406,9 @@ if __name__ == "__main__":
     
     # Tree view.
     def tree_view_single_click_cb(widget, item):
-        print item.get_title()
+        pass
+        # tree_view.del_item(item.get_item_id())
+
     
     tree_view = TreeView()
     tree_view_scrolled_window = ScrolledWindow()
@@ -422,10 +423,7 @@ if __name__ == "__main__":
     wuhan_des_node = tree_view.add_item(wuhan_node, TreeViewItem("设计部"))
     wuhan_sys_node = tree_view.add_item(wuhan_node, TreeViewItem("系统部"))
     
-    wangyong = tree_view.add_item(wuhan_dev_node, TreeViewItem("Linux Deepin"))    
-    tree_view.add_item(wangyong, TreeViewItem("Open Heart"))    
-    tree_view.add_item(wangyong, TreeViewItem("Open Source"))    
-    
+    tree_view.add_item(wuhan_dev_node, TreeViewItem("王勇"))    
     tree_view.add_item(wuhan_dev_node, TreeViewItem("侯少辉"))
     tree_view.add_item(wuhan_dev_node, TreeViewItem("邱海龙"))
     
@@ -438,9 +436,14 @@ if __name__ == "__main__":
     tree_view.add_item(wuhan_des_node, TreeViewItem("zhm"))
     
     beijing_node = tree_view.add_item(None, TreeViewItem("北京深度"))    
-    tree_view.add_item(beijing_node, TreeViewItem("开发部"))
-    tree_view.add_item(beijing_node, TreeViewItem("设计部"))
-    tree_view.add_item(beijing_node, TreeViewItem("系统部"))
+    tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
+    
+    # tree_view.scan_item(beijing_node, tree_view.root.child_itmes)
+    print tree_view.get_items(wuhan_des_node)
+    tree_view.del_item(wuhan_des_node)
+    # tree_view.del_item(beijing_node)
+    print tree_view.get_items(beijing_node)
+    
     
     # Run.
     application.run()
