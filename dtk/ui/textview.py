@@ -260,6 +260,14 @@ class TextView(gtk.EventBox):
 			self.draw_cursor(cr, rect)
 		
 		propagate_expose(widget, event)
+
+		# resize widget for scrolledwindow-support
+		max = 0
+		for x in self.content.keys():
+ 			if max < self.get_content_width(self.content[x]):
+				max = self.get_content_width(self.content[x])
+		height = get_content_size("好Height", self.font_size)[-1] * (self.current_line)
+		self.set_size_request(max, height)
 		
 		return True
 
@@ -397,7 +405,10 @@ if __name__ == "__main__":
 	
 	tv = TextView(content = "hello\r\nworld\r\nline3")
 	
-	window.add(tv)
+	sw = gtk.ScrolledWindow()
+	sw.add_with_viewport(tv)
+
+	window.add(sw)
 	
 	window.set_size_request(300, 200)
 	
