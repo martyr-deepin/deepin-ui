@@ -28,7 +28,7 @@ import gobject
 from collections import OrderedDict
 
 from draw import draw_pixbuf, draw_vlinear, draw_font
-from utils import (get_content_size, is_single_click, is_double_click, is_right_button,
+from utils import (get_content_size, is_single_click, is_double_click, is_right_button, color_hex_to_cairo,
                    cairo_state, get_match_parent)
 from theme import ui_theme
 from skin_config import skin_config
@@ -43,7 +43,7 @@ class TreeView(gtk.DrawingArea):
         }
     
     def __init__(self, width=20, height = 30,
-                 font_size = None, font_color="#000000", font_x_padding=5, font_width=120, font_height = 0,font_align=0,
+                 font_size = 10, font_color="#000000", font_x_padding=5, font_width=120, font_height = 0,font_align=0,
                  arrow_x_padding = 10,
                  normal_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png"), 
                  press_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png")):        
@@ -199,13 +199,13 @@ class TreeView(gtk.DrawingArea):
         self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
         
         if self.press_draw_bool:
-            cr.set_source_rgba(1, 0, 0, 0.3)
+            cr.set_source_rgb(*color_hex_to_cairo("#8AC6DE"))
             self.draw_y_padding = int(self.press_height) / self.height * self.height
             cr.rectangle(x, y + self.draw_y_padding, w, self.height)
             cr.fill()
         
         if self.move_draw_bool:
-            cr.set_source_rgba(0, 0, 1, 0.3)
+            cr.set_source_rgb(*color_hex_to_cairo("#CEF1FF"))
             self.draw_y_padding = int(self.move_height) / self.height * self.height
             cr.rectangle(x, y + self.draw_y_padding, w, self.height)
             cr.fill()
