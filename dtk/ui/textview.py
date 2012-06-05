@@ -217,7 +217,6 @@ class TextView(gtk.EventBox):
 		pass
 	
 	def motion_notify_text_view(self, widget, event):
-		print self.current_line, self.current_line_offset
 		self.queue_draw()
 		
 	def button_press_textview(self, widget, event):
@@ -380,12 +379,7 @@ class TextView(gtk.EventBox):
 		self.queue_draw()
 			
 gobject.type_register(TextView)
-	
-	
-def click(widget, event):
-	children = widget.get_children()
-	tv = children[0]
-	tv.key_press_textview(tv, event)
+
 
 if __name__ == "__main__":
 	window = gtk.Window()
@@ -397,8 +391,6 @@ if __name__ == "__main__":
 	window.set_size_request(300, 200)
 	
 	window.connect("destroy", lambda w: gtk.main_quit())
-	
-	window.connect("key-press-event", click)
 	
 	window.show_all()
 	
