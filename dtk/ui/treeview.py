@@ -32,7 +32,7 @@ from collections import OrderedDict
 from scrolled_window import ScrolledWindow
 from draw import draw_pixbuf, draw_vlinear, draw_font
 from utils import (get_content_size, is_single_click, is_double_click, is_right_button,
-                   get_match_parent, cairo_state)
+                   get_match_parent, cairo_state, get_match_parent)
 from theme import ui_theme
 from skin_config import skin_config
 
@@ -55,10 +55,11 @@ class TreeView(gtk.DrawingArea):
         self.tree_list = []                
         self.tree_id_list = []
         self.tree_id_num = 0
+        self.scan_save_item = None
         
         self.set_can_focus(True)
         # Init DrawingArea event.
-        self.add_events(gtk.gdk.ALL_EVENTS_MASK)        
+        self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.connect("button-press-event", self.tree_view_press_event)
         self.connect("motion-notify-event", self.tree_view_motion_event)
         self.connect("expose-event", self.tree_view_expose_event)
@@ -95,12 +96,12 @@ class TreeView(gtk.DrawingArea):
         if self.font_size > self.height - 15:    
             self.font_size = self.height - 15
             # print self.font_size
-            
-            
+        
     # DrawingArea event function.           
     def tree_view_press_event(self, widget, event):
         self.press_notify_function(event) 
-
+        
+        
     def press_notify_function(self, event):    
         temp_press_height = self.press_height
         self.press_height = event.y
@@ -112,7 +113,7 @@ class TreeView(gtk.DrawingArea):
             if is_single_click(event):
                 self.press_draw_bool = True
             
-                if self.tree_list[index].child_itmes:        
+                if self.tree_list[index].child_items:        
                     self.tree_list[index].show_child_items_bool = not self.tree_list[index].show_child_items_bool 
                     self.sort()
                 # for list in self.tree_list:
@@ -155,6 +156,8 @@ class TreeView(gtk.DrawingArea):
         else:
             self.move_height = temp_move_height
             
+            
+    # print get_match_parent(self, "ScrolledWindow")    
     def get_offset_coordinate(self, widget):
         '''Get offset coordinate.'''
         # Init.
@@ -246,11 +249,11 @@ class TreeView(gtk.DrawingArea):
         self.move_draw_bool = False
         self.queue_draw()            
     
-    def add_items(self, parent_id, child_itmes):            
-        if not isinstance(child_itmes, (tuple, list, set)):
-            child_itmes = [ child_itmes ]
-        for child_itme in child_itmes:
-            self.add_item(parent_id, child_itme)
+    def add_items(self, parent_id, child_items):            
+        if not isinstance(child_items, (tuple, list, set)):
+            child_items = [ child_items ]
+        for child_item in child_items:
+            self.add_item(parent_id, child_item)
         
     def add_item(self, parent_id, child_item):    
         temp_tree = self.create_tree(child_item)
@@ -264,44 +267,60 @@ class TreeView(gtk.DrawingArea):
         self.root.add_node(parent_id, temp_child_id, temp_tree)
         
         self.tree_id_num += 1        
+        child_item.set_item_id(temp_child_id)
         return temp_child_id
         
     def create_tree(self, child_item):
         temp_tree = Tree()
         temp_tree.id = self.tree_id_num
         temp_tree.tree_view_item = child_item
-        temp_tree.child_itmes = {}
+        temp_tree.child_items = {}
         temp_tree.text = child_item.get_title()        
         return temp_tree
     
     def scan_item(self, item_id, node):
+
         for key in node.keys():
-            if node[key].id == item_id:
-                return node[key]
+            if node[key].id == item_id:                                           
+                self.scan_save_item = node[key]
+                break
+            
+            child_items = node[key].child_items
+            if child_items:
+                self.scan_item(item_id, child_items)                    
+        return self.scan_save_item
+    
+    def clear_scan_save_item(self):
+        self.scan_save_item = None
+                        
+    def del_item(self, item_id):
+        if item_id is not None:            
+            item = self.scan_item(item_id, self.root.child_items)
+            # print item
+            if not item:
+                return
+            
+            item.child_items = {}
+            if item.parent_item:
+                del item.parent_item.child_items[item_id]
             else:
-                if node[key].child_itmes:
-                    return self.scan_item(item_id, node[key].child_itmes)
-                    
-    def del_item(self, item_id):       
-        if item_id is not None:
-            
-            item = self.scan_item(item_id, self.root.child_itmes)
-            del item.child_itmes
-            del item.parent_item.child_itmes[item_id]
+                del self.root.child_items[item_id]
         else:    
-            del self.root.child_itmes
+            del self.root.child_items
             del self.tree_list[:]
-            
-        self.move_draw_bool = False     
+
+        self.sort()
+        self.move_draw_bool = False
         self.queue_draw()
-        
+        self.clear_scan_save_item()
             
     def get_items(self, parent_id):        
         if parent_id is not None:
-            scan_results = self.scan_item(parent_id, self.root.child_itmes)
-            return [item.tree_view_item for item in scan_results.child_itmes.values()]
+            scan_results = self.scan_item(parent_id, self.root.child_items)
+            self.clear_scan_save_item()
+            return [item.tree_view_item for item in scan_results.child_items.values()]
         else:
-            return [item.tree_view_item for item in self.root.child_itmes.values()]
+            return [item.tree_view_item for item in self.root.child_items.values()]
             
     def set_text(self, item):        
         pass
@@ -310,7 +329,7 @@ class TreeView(gtk.DrawingArea):
         pass
     
     def clear(self):
-        del self.root.child_itmes
+        del self.root.child_items
         del self.tree_list[:]
             
         self.move_draw_bool = False     
@@ -319,18 +338,18 @@ class TreeView(gtk.DrawingArea):
     
     def sort(self):               
         self.tree_list = []
-        for key in self.root.child_itmes.keys():
-            self.tree_list.append(self.root.child_itmes[key])
-            if self.root.child_itmes[key].child_itmes:
-                self.sort2(self.root.child_itmes[key], self.width)                                        
+        for key in self.root.child_items.keys():
+            self.tree_list.append(self.root.child_items[key])
+            if self.root.child_items[key].child_items:
+                self.sort2(self.root.child_items[key], self.width)                                        
             
     def sort2(self, node, width):
-        for key in node.child_itmes.keys():            
-            if node.child_itmes[key].parent_item.show_child_items_bool:                      
-                node.child_itmes[key].width = width
-                self.tree_list.append(node.child_itmes[key])
-                if node.child_itmes[key].child_itmes:
-                    self.sort2(node.child_itmes[key], width + self.width)                
+        for key in node.child_items.keys():            
+            if node.child_items[key].parent_item.show_child_items_bool:                      
+                node.child_items[key].width = width
+                self.tree_list.append(node.child_items[key])
+                if node.child_items[key].child_items:
+                    self.sort2(node.child_items[key], width + self.width)                
     
 class Tree(object):
     def __init__(self):
@@ -339,8 +358,8 @@ class Tree(object):
         self.tree_view_item = None
         self.parent_item = None
         
-        self.child_itmes = OrderedDict()    
-        self.child_itmes = {}
+        self.child_items = OrderedDict()    
+        self.child_items = {}
         self.text = ""
         self.show_child_items_bool = False
         
@@ -353,26 +372,26 @@ class Tree(object):
     def add_node(self, root_id, node_id, node_item):
         # Root node add child widget.
         if None == root_id:
-            self.child_itmes[node_id] = node_item
+            self.child_items[node_id] = node_item
         else:        
-            for key in self.child_itmes.keys():
+            for key in self.child_items.keys():
                 if key == root_id:
-                    node_item.parent_item = self.child_itmes[key] # Save parent Node.
-                    self.child_itmes[key].child_itmes[node_id] = node_item
+                    node_item.parent_item = self.child_items[key] # Save parent Node.
+                    self.child_items[key].child_items[node_id] = node_item
                     return True
         
-                if self.scan_node(self.child_itmes[key], root_id, node_id, node_item):
+                if self.scan_node(self.child_items[key], root_id, node_id, node_item):
                     return True
             
     def scan_node(self, root_node, root_id, node_id, node_item):
-        if root_node.child_itmes:
-            for key in root_node.child_itmes.keys():
+        if root_node.child_items:
+            for key in root_node.child_items.keys():
                 if key == root_id:                    
-                    node_item.parent_item = root_node.child_itmes[key] # Save parent Node.
-                    root_node.child_itmes[key].child_itmes[node_id] = node_item                
+                    node_item.parent_item = root_node.child_items[key] # Save parent Node.
+                    root_node.child_items[key].child_items[node_id] = node_item                
                     return True
                 else:    
-                    self.scan_node(root_node.child_itmes[key], root_id, node_id, node_item)        
+                    self.scan_node(root_node.child_items[key], root_id, node_id, node_item)        
                 
 gobject.type_register(TreeView)               
 
@@ -381,6 +400,7 @@ class TreeViewItem(object):
         self.item_title = item_title
         self.has_arrow = has_arrow
         self.item_left_image = item_left_image
+        self.item_id = None
         
     def get_title(self):    
         return self.item_title
@@ -390,4 +410,11 @@ class TreeViewItem(object):
     
     def get_left_image(self):
         return self.item_left_image                    
+    
+    def set_item_id(self, new_id):
+        self.item_id = new_id
+        
+    def get_item_id(self):    
+        return self.item_id
+    
     

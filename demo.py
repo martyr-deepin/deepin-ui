@@ -407,6 +407,8 @@ if __name__ == "__main__":
     # Tree view.
     def tree_view_single_click_cb(widget, item):
         pass
+        # tree_view.del_item(item.get_item_id())
+
     
     tree_view = TreeView()
     tree_view_scrolled_window = ScrolledWindow()
@@ -434,8 +436,14 @@ if __name__ == "__main__":
     tree_view.add_item(wuhan_des_node, TreeViewItem("zhm"))
     
     beijing_node = tree_view.add_item(None, TreeViewItem("北京深度"))    
-    
     tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
-    tree_view.set_highlight_index(1)    
+    
+    # tree_view.scan_item(beijing_node, tree_view.root.child_itmes)
+    print tree_view.get_items(wuhan_des_node)
+    tree_view.del_item(wuhan_des_node)
+    # tree_view.del_item(beijing_node)
+    print tree_view.get_items(beijing_node)
+    
+    
     # Run.
     application.run()
