@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#TODO fix utf8 problem move_up move_down should be changed
 
 from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
 from contextlib import contextmanager 
@@ -103,25 +104,25 @@ class TextView(gtk.EventBox):
 		
 	def move_to_left(self):
 		if self.current_line_offset >= 1:
-			self.current_line_offset -= 1
+			self.current_line_offset -= len(self.get_utf8_string(self.content[self.current_line][0:self.current_line_offset], -1))
 			self.queue_draw()
 		else:
 			if self.current_line != 0:
 				self.current_line -= 1
 				self.current_line_offset = len(self.content[self.current_line])
 				self.queue_draw()
+		
     
 	def move_to_right(self):
 		if self.current_line_offset != len(self.content[self.current_line]):
-			self.current_line_offset += 1 # forward cursor
+			self.current_line_offset += len(self.get_utf8_string(self.content[self.current_line][self.current_line_offset:len(self.content[self.current_line])], 0)) # forward cursor
 			self.queue_draw()
 		else:
 			if self.current_line < len(self.content.keys()) - 1:
 				self.current_line += 1 # go to next line
 				self.current_line_offset = 0 # line start
 				self.queue_draw()
-		pass
-	
+		
 	def move_up(self):
 		if self.current_line != 0:
 			self.current_line -= 1
@@ -166,8 +167,9 @@ class TextView(gtk.EventBox):
 				self.current_line -= 1
 				self.current_line_offset = len(self.content[self.current_line]) - char_left
 		else:
-			self.__delete_text(self.current_line, self.current_line_offset, 1)
-			self.current_line_offset -= 1
+			delete_length = len(self.get_utf8_string(self.content[self.current_line][0:self.current_line_offset], -1))
+			self.__delete_text(self.current_line, self.current_line_offset, delete_length)
+			self.current_line_offset -= delete_length
 		
 		self.queue_draw()
 		
@@ -180,7 +182,8 @@ class TextView(gtk.EventBox):
 				# not the last line
 				self.__join_line(self.current_line)
 		else:
-			self.__delete_text(self.current_line, self.current_line_offset + 1, 1)
+			delete_length = len(self.get_utf8_string(self.content[self.current_line][self.current_line_offset:len(self.content[self.current_line])], 0))
+			self.__delete_text(self.current_line, self.current_line_offset + delete_length, delete_length)
 		
 		self.queue_draw()
 	
@@ -295,7 +298,7 @@ class TextView(gtk.EventBox):
 		left_str = self.get_text(self.current_line)[0:self.current_line_offset]
 		left_str_width = self.get_content_width(left_str) + self.get_content_width("x") / 3 * 2
 		
-		line_offset = get_content_size("Height", self.font_size)[-1] * (self.current_line)
+		line_offset = get_content_size("好Height", self.font_size)[-1] * (self.current_line)
 		
 		cr.set_source_rgb(0,0,0)
 		cr.rectangle(x + self.padding_x + left_str_width, y + self.padding_y + line_offset, 1, get_content_size("Height", self.font_size)[-1])
@@ -377,6 +380,14 @@ class TextView(gtk.EventBox):
 		self.__insert_text(self.current_line, self.current_line_offset, input_text)
 		self.current_line_offset += len(input_text)
 		self.queue_draw()
+		
+	def get_utf8_string(self, content, index):
+		'''Get utf8 string.'''
+		try:
+			return list(content.decode('utf-8'))[index].encode('utf-8')
+		except Exception, e:
+			print "get_utf8_string got error: %s" % (e)
+			return ""
 			
 gobject.type_register(TextView)
 
