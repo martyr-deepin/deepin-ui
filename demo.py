@@ -43,7 +43,6 @@ from dtk.ui.browser_client import BrowserClient
 from dtk.ui.button import ImageButton
 from dtk.ui.categorybar import Categorybar
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
-from dtk.ui.editable_list import EditableItem, EditableList
 from dtk.ui.entry import TextEntry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
@@ -107,14 +106,6 @@ def switch_tab(notebook_box, tab_box):
         notebook_box.add(tab_box)
     
         notebook_box.show_all()
-    
-def active_editable_list(editable_list, editable_item):
-    '''docs'''
-    print (editable_list, editable_item)
-    
-def right_press_editable_list(editable_list, editable_item, x, y):
-    '''docs'''
-    print (editable_list, editable_item, x, y)
     
 if __name__ == "__main__":
     # Init application.
@@ -209,14 +200,12 @@ if __name__ == "__main__":
     notebook_box = gtk.VBox()
     tab_1_box = gtk.VBox()
     tab_2_box = gtk.VBox()
-    tab_3_box = gtk.VBox()
     tab_4_box = gtk.VBox()
     tab_5_box = gtk.VBox()
     
     notebook = Notebook(
         [(ui_theme.get_pixbuf("music.png"), "分类列表", lambda : switch_tab(notebook_box, tab_1_box)),
          (ui_theme.get_pixbuf("web.png"), "网络浏览器", lambda : switch_tab(notebook_box, tab_2_box)),
-         (ui_theme.get_pixbuf("music.png"), "播放列表", lambda : switch_tab(notebook_box, tab_3_box)),
          (ui_theme.get_pixbuf("music.png"), "专辑封面", lambda : switch_tab(notebook_box, tab_4_box)),
          (ui_theme.get_pixbuf("music.png"), "自定义控件", lambda : switch_tab(notebook_box, tab_5_box)),
          ])
@@ -362,16 +351,6 @@ if __name__ == "__main__":
         )
     horizontal_frame.add(browser_client)
     tab_2_box.pack_start(horizontal_frame)
-    
-    items = map(lambda index: EditableItem("测试列表%s" % (index)),
-                range(0, 100))
-    items[0].set_editable(False)
-    editable_list = EditableList(items)
-    editable_list.new_item(EditableItem("新建列表"))
-    editable_list.connect("active", active_editable_list)
-    editable_list.connect("right-press", right_press_editable_list)
-    
-    tab_3_box.pack_start(editable_list, True, True)
     
     icon_view_hframe = HorizontalFrame()
     icon_view_vframe = gtk.Alignment()
