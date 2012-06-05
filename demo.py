@@ -440,8 +440,11 @@ if __name__ == "__main__":
     tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
     
     text_view = TextView("this is line one\r\nline break is awesome\r\nblahblahlooooooooooooooooooooooooooooooooooooooooooooooooooooooooog")
-    
-    tab_5_box.pack_start(text_view, True, True)
+    sw = ScrolledWindow()
+    text_viewport = gtk.Viewport()
+    text_viewport.add(text_view)
+    sw.add(text_viewport)
+    tab_5_box.pack_start(sw, True, True)
     
     # Run.
     application.run()
