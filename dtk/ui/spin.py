@@ -25,7 +25,7 @@ import gobject
 
 from theme import ui_theme
 from utils import (cairo_state , alpha_color_hex_to_cairo,
-                   propagate_expose)
+                   propagate_expose, is_float)
 
 from button import ImageButton
 from entry import Entry
@@ -42,6 +42,9 @@ class SpinBox(gtk.VBox):
         self.lower_value = lower
         self.upper_value = upper
         self.step_value  = step
+        self.update_delay = 100 # milliseconds
+        self.increase_value_id = None
+        self.decrease_value_id = None
         
         # Init.
         self.default_width = default_width
@@ -52,12 +55,13 @@ class SpinBox(gtk.VBox):
         self.frame_color = ui_theme.get_alpha_color("textEntryFrame")
         
         # Widget.
-        arrow_up_button = self.create_simple_button("up", self.increase_value)
-        arrow_down_button = self.create_simple_button("down", self.decrease_value)
+        arrow_up_button = self.create_simple_button("up", self.press_increase_button)
+        arrow_down_button = self.create_simple_button("down", self.press_decrease_button)
         button_box = gtk.VBox()
         button_box.pack_start(arrow_up_button, False, False)
         button_box.pack_start(arrow_down_button, False, False)
         self.value_entry = Entry(str(value))
+        self.value_entry.check_text = is_float
         
         self.main_align = gtk.Alignment()
         self.main_align.set(0.5, 0.5, 0, 0)
@@ -114,13 +118,47 @@ class SpinBox(gtk.VBox):
         self.set_size_request(self.default_width, height)
         self.value_entry.set_size_request(label_width, height)
         
-    def increase_value(self, widget):    
+    def press_increase_button(self, widget, event):
+        '''Press increase arrow.'''
+        self.stop_update_value()
+        
+        self.increase_value()
+        
+        self.increase_value_id = gtk.timeout_add(self.update_delay, self.increase_value)
+                
+    def press_decrease_button(self, widget, event):
+        '''Press decrease arrow.'''
+        self.stop_update_value()
+        
+        self.decrease_value()
+        
+        self.decrease_value_id = gtk.timeout_add(self.update_delay, self.decrease_value)
+        
+    def stop_update_value(self):
+        '''Stop update value.'''
+        for timeout_id in [self.increase_value_id, self.decrease_value_id]:
+            if timeout_id:
+                gobject.source_remove(timeout_id)
+                timeout_id = None
+        
+    def increase_value(self):    
         new_value = self.current_value + self.step_value
         if new_value > self.upper_value: 
             new_value = self.upper_value
         if new_value != self.current_value:
             self.update_and_emit(new_value)
             
+        return True    
+            
+    def decrease_value(self):     
+        new_value = self.current_value - self.step_value
+        if new_value < self.lower_value: 
+            new_value = self.lower_value
+        if new_value != self.current_value:
+            self.update_and_emit(new_value)
+            
+        return True                
+        
     def adjust_value(self, value):        
         if not isinstance(value, int):
             return self.current_value
@@ -132,13 +170,11 @@ class SpinBox(gtk.VBox):
             else:
                 return value
         
-    def decrease_value(self, widget):     
-        new_value = self.current_value - self.step_value
-        if new_value < self.lower_value: 
-            new_value = self.lower_value
-        if new_value != self.current_value:
-            self.update_and_emit(new_value)
-        
+    def update(self, new_value):
+        '''Update value, just use when need avoid emit signal recursively.'''
+        self.current_value = new_value
+        self.value_entry.set_text(str(self.current_value))
+            
     def update_and_emit(self, new_value):    
         self.current_value = new_value
         self.value_entry.set_text(str(self.current_value))
@@ -226,7 +262,8 @@ class SpinBox(gtk.VBox):
             ui_theme.get_pixbuf("spin/%s_press.png" % name)
             )
         if callback:
-            button.connect("clicked", callback)
+            button.connect("button-press-event", callback)
+            button.connect("button-release-event", lambda w, e: self.stop_update_value())
         return button
 
 gobject.type_register(SpinBox)    

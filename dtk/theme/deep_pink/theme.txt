@@ -17,7 +17,7 @@
  "entryText" : "#000000",
  "entrySelectText" : "#FFFFFF",
  "entryCursor" : "#333333",
- "labelText" : "#FFFFFF",
+ "labelText" : "#000000",
  "comboBoxText" : "#000000",
  "radioButtonFrame" : "#B5B5B5",
  "checkButtonFrame" : "#A1A1A1",

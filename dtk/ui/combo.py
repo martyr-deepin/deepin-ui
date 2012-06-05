@@ -41,6 +41,7 @@ class ComboBox(gtk.VBox):
     
     def __init__(self, items=[], default_width=100):
         super(ComboBox, self).__init__()
+
         
         # Init.
         self.items = items
