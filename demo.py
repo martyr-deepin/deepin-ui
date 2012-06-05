@@ -417,25 +417,25 @@ if __name__ == "__main__":
     
     tab_5_box.pack_start(tree_view_scrolled_window)
     
-    wuhan_node = tree_view.add_item(None, TreeViewItem("武汉深度"))
+    wuhan_node = tree_view.add_item(None, TreeViewItem("Linux Deepin"))
 
-    wuhan_dev_node = tree_view.add_item(wuhan_node, TreeViewItem("开发部"))
-    wuhan_des_node = tree_view.add_item(wuhan_node, TreeViewItem("设计部"))
-    wuhan_sys_node = tree_view.add_item(wuhan_node, TreeViewItem("系统部"))
+    wuhan_dev_node = tree_view.add_item(wuhan_node, TreeViewItem("test1"))
+    wuhan_des_node = tree_view.add_item(wuhan_node, TreeViewItem("test2"))
+    wuhan_sys_node = tree_view.add_item(wuhan_node, TreeViewItem("test3"))
     
-    tree_view.add_item(wuhan_dev_node, TreeViewItem("王勇"))    
-    tree_view.add_item(wuhan_dev_node, TreeViewItem("侯少辉"))
-    tree_view.add_item(wuhan_dev_node, TreeViewItem("邱海龙"))
+    tree_view.add_item(wuhan_dev_node, TreeViewItem("Deepin Music Player"))    
+    tree_view.add_item(wuhan_dev_node, TreeViewItem("Deepin Media Player"))
+    tree_view.add_item(wuhan_dev_node, TreeViewItem("Deepin Software Center"))
     
-    tree_view.add_item(wuhan_sys_node, TreeViewItem("苏运强"))    
-    tree_view.add_item(wuhan_sys_node, TreeViewItem("黎龙宇"))
-    tree_view.add_item(wuhan_sys_node, TreeViewItem("张月乾"))
+    tree_view.add_item(wuhan_sys_node, TreeViewItem("Deepin Talk"))    
+    tree_view.add_item(wuhan_sys_node, TreeViewItem("Deepin IM"))
+    tree_view.add_item(wuhan_sys_node, TreeViewItem("Deepin Reader"))
     
     tree_view.add_item(wuhan_des_node, TreeViewItem("ZHL"))    
     tree_view.add_item(wuhan_des_node, TreeViewItem("ZHL"))
     tree_view.add_item(wuhan_des_node, TreeViewItem("zhm"))
     
-    beijing_node = tree_view.add_item(None, TreeViewItem("北京深度"))    
+    beijing_node = tree_view.add_item(None, TreeViewItem("深度 Linux"))    
     tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
             
     
