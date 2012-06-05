@@ -67,6 +67,7 @@ from dtk.ui.button import CheckButton, RadioButton
 from dtk.ui.throbber import Throbber, MODE_SPINNING
 from dtk.ui.combo import ComboBox, ComboBoxItem
 from dtk.ui.spin import SpinBox
+from dtk.ui.textview import TextView
 import gtk
 import time
 
@@ -437,7 +438,10 @@ if __name__ == "__main__":
     
     beijing_node = tree_view.add_item(None, TreeViewItem("深度 Linux"))    
     tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
-            
+    
+    text_view = TextView("this is line one\r\nline break is awesome\r\nblahblahlooooooooooooooooooooooooooooooooooooooooooooooooooooooooog")
+    
+    tab_5_box.pack_start(text_view, True, True)
     
     # Run.
     application.run()
