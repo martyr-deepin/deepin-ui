@@ -289,6 +289,15 @@ class TreeView(gtk.DrawingArea):
     def clear_scan_save_item(self):
         self.scan_save_item = None
                         
+    def del_item_index(self, y):    
+        self.press_height = y
+        index_len = len(self.tree_list)
+        index = int(self.press_height / self.height)
+        if index_len > index:
+            if self.highlight_index == index:
+                self.press_draw_bool = False                
+            self.del_item(self.tree_list[index].id)
+            
     def del_item(self, item_id):
         if item_id is not None:            
             item = self.scan_item(item_id, self.root.child_items)
