@@ -407,8 +407,7 @@ if __name__ == "__main__":
     
     # Tree view.
     def tree_view_single_click_cb(widget, item):
-        pass
-        # tree_view.del_item(item.get_item_id())
+        pass    
 
     
     tree_view = TreeView()
@@ -438,8 +437,7 @@ if __name__ == "__main__":
     
     beijing_node = tree_view.add_item(None, TreeViewItem("北京深度"))    
     tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
-    
-    tree_view.del_item(wuhan_des_node)
+            
     
     # Run.
     application.run()

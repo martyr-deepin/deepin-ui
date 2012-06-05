@@ -22,8 +22,6 @@
 
 # from dtk.ui.skin_config import skin_config
 # from dtk.ui.theme import Theme, ui_theme
-# normal_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png")
-# press_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png")
 
 import gtk
 import gobject
@@ -51,8 +49,10 @@ class TreeView(gtk.DrawingArea):
                  press_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png")):        
         gtk.DrawingArea.__init__(self)
         self.root = Tree()
-        self.tree_list = []                
-        self.tree_id_list = []
+        self.tree_list = []
+        self.tree_all_node_list = [] # Save all node.
+        
+        self.tree_id_list = []        
         self.tree_id_num = 0
         self.scan_save_item = None
         
@@ -64,7 +64,6 @@ class TreeView(gtk.DrawingArea):
         self.connect("expose-event", self.tree_view_expose_event)
         self.connect("key-press-event", self.tree_view_key_press_event)
         self.connect("leave-notify-event", self.tree_view_leave_notify_event)
-        
         self.connect("realize", lambda w: self.grab_focus()) # focus key after realize
         
         self.width = width
@@ -76,6 +75,7 @@ class TreeView(gtk.DrawingArea):
         # Draw move background. 
         self.move_height = 0        
         self.move_draw_bool = True                            
+        self.move_index_num = None
         # Draw press background.
         self.press_height = 0
         self.press_draw_bool = False
@@ -139,20 +139,20 @@ class TreeView(gtk.DrawingArea):
         
     def get_highlight_item(self):
         return self.tree_list[self.highlight_index].tree_view_item
-        
+    
     def tree_view_motion_event(self, widget, event):
         temp_move_height = self.move_height # Save move_height.
         self.move_height = event.y
         index_len = len(self.tree_list)
         index_num = int(self.move_height) / self.height 
-
+                        
         if index_len > index_num: 
-            self.move_draw_bool = True                            
+            self.move_index_num = index_num
+            self.move_draw_bool = True
             self.queue_draw()       
         else:
             self.move_height = temp_move_height
-            
-            
+                                
     # print get_match_parent(self, "ScrolledWindow")    
     def get_offset_coordinate(self, widget):
         '''Get offset coordinate.'''
@@ -239,13 +239,13 @@ class TreeView(gtk.DrawingArea):
                
     def tree_view_key_press_event(self, widget, event):
         pass
-    
-    
+        
     def tree_view_leave_notify_event(self, widget, event):
         self.move_draw_bool = False
+        self.move_index_num = None
         self.queue_draw()            
-    
-    def add_items(self, parent_id, child_items):            
+            
+    def add_items(self, parent_id, child_items):
         if not isinstance(child_items, (tuple, list, set)):
             child_items = [ child_items ]
         for child_item in child_items:
@@ -274,9 +274,10 @@ class TreeView(gtk.DrawingArea):
         temp_tree.text = child_item.get_title()        
         return temp_tree
     
+    
     def scan_item(self, item_id, node):
-
-        for key in node.keys():
+                
+        for key in node.keys():            
             if node[key].id == item_id:                                           
                 self.scan_save_item = node[key]
                 break
@@ -289,6 +290,18 @@ class TreeView(gtk.DrawingArea):
     def clear_scan_save_item(self):
         self.scan_save_item = None
                         
+    def del_item_index(self):
+        if self.move_index_num is not None:
+            self.del_item(self.tree_list[self.move_index_num].id)            
+            index = int(self.press_height / self.height)
+            if self.move_index_num == index:
+                self.press_draw_bool = False
+                self.queue_draw()
+                
+    def del_item_from_index(self, index):                
+        item_id = self.tree_list[index].id
+        self.del_item(item_id)
+        
     def del_item(self, item_id):
         if item_id is not None:            
             item = self.scan_item(item_id, self.root.child_items)
@@ -309,6 +322,20 @@ class TreeView(gtk.DrawingArea):
         self.queue_draw()
         self.clear_scan_save_item()
             
+    def get_other_item(self, index):            
+        other_item = []
+        large_index = len(self.tree_list)
+        if large_index <= index:
+            return other_item
+        else:
+            for each_index, item in enumerate(self.tree_list):
+                if each_index != index:
+                    other_item.append(item.tree_view_item)
+            return other_item        
+            
+    def get_item_from_index(self, index):    
+        return self.tree_list[index].tree_view_item
+    
     def get_items(self, parent_id):        
         if parent_id is not None:
             scan_results = self.scan_item(parent_id, self.root.child_items)
@@ -330,6 +357,16 @@ class TreeView(gtk.DrawingArea):
         self.move_draw_bool = False     
         self.queue_draw()
         
+    def sort_all_nodes(self, nodes):        
+        for key in nodes.keys():
+            self.tree_all_node_list.append(nodes[key])
+            if nodes[key].child_items:
+                self.sort_all_nodes(nodes[key].child_items)
+            
+    def get_all_items(self):        
+        self.tree_all_node_list = []
+        self.sort_all_nodes(self.root.child_items)
+        return self.tree_all_node_list
     
     def sort(self):               
         self.tree_list = []
