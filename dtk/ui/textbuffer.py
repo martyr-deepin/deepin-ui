@@ -27,13 +27,21 @@ import gobject
 class TextIter(gobject.GObject):
 
     def __init__(self, line_number = 0, text_buffer = None,
-            line_offset = 0, text = dict()):
+            line_offset = 0, text = u""):
         gobject.GObject.__init__(self) # super class init
-        self.__line_text = text[line_number]
         self.__line_number = line_number
         self.__text_buffer = text_buffer
         self.__line_offset = line_offset
-        self.__text = text
+        self.__text = self.__parse_text(text)
+        self.__line_text = self.__text[line_number]
+
+    def __parse_text(self, text):
+        result = dict()
+        index = 0
+        for line in text.split("\n"):
+            result[index] = line
+            index += 1
+        return result
 
     def get_buffer(self):
         return self.__text_buffer
@@ -41,7 +49,7 @@ class TextIter(gobject.GObject):
     def get_offset(self):
         offset = 0
         for x in range(0, self.get_line()):
-            offset += len(self.__text[x])
+            offset += len(self.__text[x]) + 1
         offset += self.get_line_offset()
         return offset
 
@@ -115,7 +123,8 @@ class TextIter(gobject.GObject):
 
     def is_end(self):
         """return True if at the end of iter"""
-        if self.get_offset() == self.get_chars_in_iter():
+        if self.get_offset() == self.get_chars_in_iter() + 1:
+            print len(self.__text.keys())
             return True
         else:
             return False
@@ -165,3 +174,12 @@ class TextIter(gobject.GObject):
             self.__line_offset = len(self.__line_text)
         else:
             self.__line_offset = 0 # move to start of first line
+
+    def set_offset(self, offset):
+        if offset <= self.get_chars_in_iter() + 1:
+            self.__line_number = 0
+            self.__line_offset = 0
+            for x in range(0, offset):
+                self.forward_char()
+        else:
+            raise Exception()
