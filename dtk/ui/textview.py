@@ -94,10 +94,10 @@ class TextView(gtk.EventBox):
 		
 	def __parse_content(self, text):
 		content = dict()
-		split = text.split("\r\n")
+		split = text.split("\n")
 		index = 0
 		for x in split:
-			content[index] = x.rstrip("\r\n")
+			content[index] = x.rstrip("\n")
 			index += 1
 		
 		return content
@@ -203,13 +203,23 @@ class TextView(gtk.EventBox):
 		pass
 	
 	def cut_to_clipboard(self):
+		clipboard = gtk.Clipboard()
+		clipboard.set_text(self.get_text(-1))
+		self.set_text("")
 		pass
 	
 	def copy_to_clipboard(self):
+		clipboard = gtk.Clipboard()
+		clipboard.set_text(self.get_text(-1))
 		pass
 	
 	def paste_from_clipboard(self):
+		clipboard = gtk.Clipboard()
+		clipboard.request_text(self.__read_clipboard)
 		pass
+	
+	def __read_clipboard(self, clipboard, text, data):
+		self.set_text(text)
 	
 	def press_return(self):
 		self.__insert_new_line(self.current_line, self.current_line_offset)
@@ -267,7 +277,7 @@ class TextView(gtk.EventBox):
  			if max < self.get_content_width(self.content[x]):
 				max = self.get_content_width(self.content[x])
 		height = get_content_size("好Height", self.font_size)[-1] * (self.current_line)
-		self.set_size_request(max, height)
+		self.set_size_request(max + 10, height)
 		
 		return True
 
@@ -295,21 +305,39 @@ class TextView(gtk.EventBox):
 			layout.set_text(text)
 			
 			(text_width, text_height) = layout.get_pixel_size()
-			cr.move_to(draw_x + self.padding_x , draw_y + self.padding_y)
+			cr.move_to(x + self.padding_x , y + self.padding_y)
 			
 			cr.set_source_rgb(0,0,0)
 			context.update_layout(layout)
 			context.show_layout(layout)
 
+	def __is_utf_8_text_in_line(self, line):
+		decode_list = list(self.content[line].decode('utf-8'))
+		for l in decode_list:
+			if len(l.encode('utf-8')) != 1:
+				# utf-8 character length = 3
+				return True
+
 	def draw_cursor(self, cr, rect):
 		x, y, w, h = rect.x, rect.y, rect.width, rect.height
 		left_str = self.get_text(self.current_line)[0:self.current_line_offset]
-		left_str_width = self.get_content_width(left_str) + self.get_content_width("x") / 3 * 2
+		left_str_width = self.get_content_width(left_str)
 		
-		line_offset = get_content_size("好Height", self.font_size)[-1] * (self.current_line)
+		line_offset = 0
+		
+		utf_8_height = get_content_size("好Height", self.font_size)[-1]
+		no_utf_8_height = get_content_size("Height", self.font_size)[-1]
+		
+		for x in range(0, self.current_line):
+			if self.__is_utf_8_text_in_line(x):
+				line_offset += utf_8_height
+			else:
+				line_offset += no_utf_8_height
+
+		temp_line_offset = 1 # solve the offset problem while adding lines
 		
 		cr.set_source_rgb(0,0,0)
-		cr.rectangle(x + self.padding_x + left_str_width, y + self.padding_y + line_offset, 1, get_content_size("Height", self.font_size)[-1])
+		cr.rectangle(x + self.padding_x + left_str_width - temp_line_offset * self.current_line, y  + line_offset + utf_8_height - no_utf_8_height , 1, no_utf_8_height)
 		cr.fill()
 		
 		
@@ -317,6 +345,8 @@ class TextView(gtk.EventBox):
 		self.content = self.__parse_content(text)
 		self.current_line = len(self.content.keys()) - 1 # currrent line index
 		self.current_line_offset = len(self.content[self.current_line]) # offset in current line
+		print self.current_line
+		print self.current_line_offset
 		self.queue_draw()
 		
 	def get_text(self, line = 0):
@@ -403,7 +433,7 @@ gobject.type_register(TextView)
 if __name__ == "__main__":
 	window = gtk.Window()
 	
-	tv = TextView(content = "hello\r\nworld\r\nline3")
+	tv = TextView(content = "hello\nworld\nline3")
 	
 	sw = gtk.ScrolledWindow()
 	sw.add_with_viewport(tv)
