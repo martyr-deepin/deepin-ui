@@ -183,3 +183,11 @@ class TextIter(gobject.GObject):
                 self.forward_char()
         else:
             raise Exception()
+
+
+
+class TextBuffer(gobject.GObject):
+
+    def __init__(self):
+        gobject.GObject.__init__(self)
+
