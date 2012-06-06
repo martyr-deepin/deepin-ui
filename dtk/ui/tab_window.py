@@ -204,7 +204,9 @@ class TabWindow(Window):
 	
     def __init__(self, title, items, 
                  confirm_callback=None, 
-                 cancel_callback=None):
+                 cancel_callback=None,
+                 window_width=458,
+                 window_height=472):
         '''Init tab window.'''
         Window.__init__(self)
         self.set_resizable(False)
@@ -222,8 +224,8 @@ class TabWindow(Window):
             None,
             title)
         
-        self.tab_window_width = 458
-        self.tab_window_height = 472
+        self.tab_window_width = window_width
+        self.tab_window_height = window_height
         self.tab_box = TabBox()
         self.tab_box.add_items(items)
         self.tab_align = gtk.Alignment()
