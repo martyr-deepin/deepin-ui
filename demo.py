@@ -54,6 +54,7 @@ from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.paned import HPaned
 from dtk.ui.popup_window import PopupWindow
+from dtk.ui.tab_window import TabWindow
 from dtk.ui.color_selection import ColorSelectDialog
 from dtk.ui.scalebar import HScalebar, VScalebar
 from dtk.ui.scrolled_window import ScrolledWindow
@@ -107,6 +108,14 @@ def switch_tab(notebook_box, tab_box):
         notebook_box.add(tab_box)
     
         notebook_box.show_all()
+        
+def create_tab_window_item(name):
+    '''docs'''
+    align = gtk.Alignment()
+    align.set(0.5, 0.5, 0.0, 0.0)
+    align.add(gtk.Button(name))
+    
+    return (name, align)
     
 if __name__ == "__main__":
     # Init application.
@@ -184,10 +193,12 @@ if __name__ == "__main__":
             (button.get_allocation().width, 0)))
     
     # Add navigatebar.
+    tab_window_items = map(create_tab_window_item, ["Tab1", "Tab2", "Tab3", "Tab4", "Tab5"])
+    
     navigatebar = Navigatebar(
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
          (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : ColorSelectDialog().show_all()),
-         (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
          (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
          (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
          (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
