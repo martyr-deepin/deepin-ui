@@ -116,7 +116,7 @@ class IconView(gtk.DrawingArea):
             
     def return_item(self):
         '''Double click item.'''
-        if self.focus_index:
+        if self.focus_index != None:
             self.emit("double-click-item", self.items[self.focus_index], 0, 0)
             
     def select_up_item(self):
@@ -375,7 +375,7 @@ class IconView(gtk.DrawingArea):
                         
     def clear_focus_item(self):
         '''Clear focus item status.'''
-        if self.focus_index:
+        if self.focus_index != None:
             self.emit("lost-focus-item", self.items[self.focus_index])
             self.focus_index = None
                         
@@ -464,7 +464,7 @@ class IconView(gtk.DrawingArea):
                 
     def clear_highlight(self):
         '''Clear highlight.'''
-        if self.highlight_item:
+        if self.highlight_item != None:
             self.emit("normal-item", self.highlight_item)
             self.highlight_item = None
 
