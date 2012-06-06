@@ -62,6 +62,8 @@ class TextView(gtk.EventBox):
         self.current_line_offset = len(self.content[self.current_line]) # offset in current line
         self.select_start = (0, 0)
         self.select_end = (0, 0)
+        self.drag_start_index = (0, 0)
+        self.drag_end_index = (0, 0)
         self.offset_x = 0
         self.offset_y = 0
         
@@ -251,6 +253,42 @@ class TextView(gtk.EventBox):
         self.grab_focus()
         
         self.grab_focus_flag = True
+        
+        if is_left_button(event):
+            self.left_click_flag = True
+            self.left_click_coordindate = (event.x, event.y)
+            print event.x, event.y
+            
+            self.drag_start_index = self.get_index_at_event(widget, event)
+
+    def get_index_at_event(self, widget, event):
+        '''Get index at event.'''
+        cr = widget.window.cairo_create()
+        context = pangocairo.CairoContext(cr)
+        layout = context.create_layout()
+        layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
+        layout.set_text(self.get_text(-1))
+        text_width = self.get_content_width("x")
+        text_height = get_content_size("好Height", self.font_size)[-1]
+        index_x = 0
+        index_y = 0
+        event.x -= self.padding_x
+        event.y -= self.padding_y
+        for x in range(0, len(self.content.keys())):
+            if text_height * x < event.y and event.y < text_height * (x + 1):
+                index_y = x
+                
+        if index_y == 0:
+            index_y = len(self.content.keys()) - 1
+
+        for x in range(0, len(self.content[index_y])):
+            if self.get_content_width(self.content[index_y][0:x]) < event.x and event.x < self.get_content_width(self.content[index_y][0:x+1]):
+                index_x = x
+        if index_x == 0:
+            # not in text area
+            index_x = len(self.content[index_y])
+
+        return (index_x, index_y)
 
     def focus_in_textview(self, widget, event):
         '''Callback for `focus-in-event` signal.'''
