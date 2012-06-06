@@ -93,33 +93,34 @@ class Titlebar(EventBox):
         self.button_box = gtk.HBox()
         self.button_align = gtk.Alignment()
         self.button_align.set(1.0, 0.0, 0.0, 0.0)
+        self.button_align.set_padding(4, 0, 0, 2)
         self.button_align.add(self.button_box)
         self.h_layout_box.pack_start(self.button_align, False, False)
         
         # Add theme button.
         if "theme" in button_mask:
             self.theme_button = ThemeButton()
-            self.button_box.pack_start(self.theme_button, False, False)
+            self.button_box.pack_start(self.theme_button, False, False, 1)
 
         # Add menu button.
         if "menu" in button_mask:
             self.menu_button = MenuButton()
-            self.button_box.pack_start(self.menu_button, False, False)
+            self.button_box.pack_start(self.menu_button, False, False, 1)
         
         # Add min button.
         if "min" in button_mask:
             self.min_button = MinButton()
-            self.button_box.pack_start(self.min_button, False, False)
+            self.button_box.pack_start(self.min_button, False, False, 1)
         
         # Add max button.
         if "max" in button_mask:
             self.max_button = MaxButton()
-            self.button_box.pack_start(self.max_button, False, False)
+            self.button_box.pack_start(self.max_button, False, False, 1)
 
         # Add close button.
         if "close" in button_mask:
             self.close_button = CloseButton()
-            self.button_box.pack_start(self.close_button, False, False)
+            self.button_box.pack_start(self.close_button, False, False, 1)
         
         # Show.
         self.show_all()
