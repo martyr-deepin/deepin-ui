@@ -25,9 +25,18 @@ import gtk
 import gobject
 
 class TextIter(gobject.GObject):
+    """TextIter for TextBuffer"""
 
     def __init__(self, line_number = 0, text_buffer = None,
             line_offset = 0, text = u""):
+        """
+        Args:
+            line_number : current line number
+            text_buffer : text buffer object to which this iter belongs
+            line_offset : offset in current line
+            text : the whole text in text buffer
+        """
+
         gobject.GObject.__init__(self) # super class init
         self.__line_number = line_number
         self.__text_buffer = text_buffer
@@ -73,7 +82,10 @@ class TextIter(gobject.GObject):
         return self.__line_text[self.__line_offset:self.__line_offset+1]
 
     def get_slice(self, end):
-        """return a slice of text in Unicode-8 format\nTODO:add multiline support if <end> is not in the same line as <self>"""
+        """
+        return a slice of text in Unicode-8 format
+        TODO:add multiline support if <end> is not in the same line as <self>
+        """
         if end.get_line() == self.get_line():
             # in the same line
             if self.get_line_offset() < end.get_line_offset():
@@ -88,13 +100,17 @@ class TextIter(gobject.GObject):
         return False
 
     def __is_editable_at_current_location(self):
-        """TODO:return True if current location with tags is
-        editable\nimplemented only after self.has_tag is implemented"""
+        """
+        TODO:return True if current location with tags is editable
+        implemented only after self.has_tag is implemented
+        """
         pass
 
     def __can_insert_at_current_location(self):
-        """TODO:return True if text inserted at current location is
-        editable\nimplemented only after self.has_tag is implemented"""
+        """
+        TODO:return True if text inserted at current location is editable
+        implemented only after self.has_tag is implemented
+        """
 
     def editable(default_setting):
         """return True is current offset is in an editable range"""
@@ -216,7 +232,10 @@ class TextIter(gobject.GObject):
             self.__goto_line_offset(offset)
 
     def set_line_index(self, index):
-        """The given byte index must be at the start of a character, it can't be in the middle of a UTF-8 encoded character.\nWe won't check for you here"""
+        """
+        The given byte index must be at the start of a character, it can't be in the middle of a UTF-8 encoded character.
+        We won't check for you here
+        """
         self.__goto_line_index(index)
 
     def forward_to_end(self):
