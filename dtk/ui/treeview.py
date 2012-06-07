@@ -199,16 +199,24 @@ class TreeView(gtk.DrawingArea):
         self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
         
         if self.press_draw_bool:
-            cr.set_source_rgb(*color_hex_to_cairo("#8AC6DE"))
             self.draw_y_padding = int(self.press_height) / self.height * self.height
-            cr.rectangle(x, y + self.draw_y_padding, w, self.height)
-            cr.fill()
+            draw_vlinear(
+                cr,
+                x, y + self.draw_y_padding, w, self.height,
+                ui_theme.get_shadow_color("treeItemSelect").get_color_info())
+            # cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_shadow_color("treeItemSelect").get_color_info()))
+            # cr.rectangle(x, y + self.draw_y_padding, w, self.height)
+            # cr.fill()
         
         if self.move_draw_bool:
-            cr.set_source_rgb(*color_hex_to_cairo("#CEF1FF"))
             self.draw_y_padding = int(self.move_height) / self.height * self.height
-            cr.rectangle(x, y + self.draw_y_padding, w, self.height)
-            cr.fill()
+            draw_vlinear(
+                cr,
+                x, y + self.draw_y_padding, w, self.height,
+                ui_theme.get_shadow_color("treeItemHover").get_color_info())
+            # cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_shadow_color("treeItemHover").get_color_info()))
+            # cr.rectangle(x, y + self.draw_y_padding, w, self.height)
+            # cr.fill()
             
         if self.tree_list:    
             temp_height = 0

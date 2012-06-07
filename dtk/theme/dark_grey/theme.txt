@@ -77,6 +77,14 @@
 		(0.95,	("#FFFFFF", 0.95)),
 		(1,		("#FFFFFF", 0.6)),
 	 ],
+	 "treeItemSelect" : [
+	    (0, ("#4D4D4D", 1.0)),
+	    (1, ("#4D4D4D", 1.0)),
+	 ],
+	 "treeItemHover" : [
+	    (0, ("#cccccc", 1.0)),
+	    (1, ("#cccccc", 1.0)),
+	 ],
 	 "menuItemSelect" : [
 		(0, ("#4D4D4D", 1.0)),
 		(1, ("#4D4D4D", 1.0)),

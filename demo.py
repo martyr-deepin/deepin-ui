@@ -179,7 +179,7 @@ if __name__ == "__main__":
          (None, "测试测试测试2", sub_menu_a),
          (None, "测试测试测试3", sub_menu_b),
          None,
-         (None, "测试测试测试", None),
+         (ui_theme.get_pixbuf("menu/menuItem3.png"), "测试测试测试", None),
          (None, "测试测试测试", None),
          None,
          (None, "测试测试测试4", None, (1, 2, 3)),
