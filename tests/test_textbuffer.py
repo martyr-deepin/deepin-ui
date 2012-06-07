@@ -100,6 +100,15 @@ class TextBufferTest(unittest.TestCase):
         self.assertEqual(ir.get_line(), 1) # check line number
         self.assertEqual(ir.get_line_offset(), 0) # check line offset
 
+    def testDelete(self):
+        start = self.__buf.get_iter_at_line(0)
+        end = self.__buf.get_iter_at_line(2)
+        start.set_line_offset(1)
+        end.set_line_offset(2)
+        self.__buf.delete(start, end)
+        self.assertEqual(self.__buf.get_text(), u"开ne3\nline4") # check text
+        self.assertEqual(self.__buf.get_line_count(), 2) # check line count
+        self.assertEqual(start.get_line_offset(), end.get_line_offset()) # start and end should point to the same place
 
 if __name__ == "__main__":
     unittest.main()
