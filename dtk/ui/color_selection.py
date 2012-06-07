@@ -235,6 +235,8 @@ class ColorSelectDialog(Window):
         self.color_g_spin.update(self.color_g)
         self.color_b_spin.update(self.color_b)
         self.color_hex_entry.set_text(self.color_string)
+        if not color_string.startswith("#"):
+            color_string = "#" + color_string
         self.color_hsv.set_current_color(gtk.gdk.color_parse(color_string))
         
         if clear_highlight:

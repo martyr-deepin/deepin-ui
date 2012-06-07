@@ -26,7 +26,7 @@ from draw import draw_hlinear
 from keymap import get_keyevent_name
 from menu import Menu
 from theme import ui_theme
-from utils import propagate_expose, cairo_state, color_hex_to_cairo, get_content_size, is_double_click, is_right_button, is_left_button, alpha_color_hex_to_cairo
+from utils import propagate_expose, cairo_state, color_hex_to_cairo, get_content_size, is_double_click, is_right_button, is_left_button, alpha_color_hex_to_cairo, set_cursor, is_in_rect
 import gobject
 import gtk
 import pango
@@ -641,7 +641,7 @@ class Entry(gtk.EventBox):
         self.im.focus_out()
 
         self.queue_draw()
-            
+        
     def move_offsetx_right(self, widget, event):
         '''Move offset_x right.'''
         text_width = self.get_content_width(self.content)
@@ -768,7 +768,7 @@ class TextEntry(gtk.VBox):
 
         # Handle signal.
         self.align.connect("expose-event", self.expose_text_entry)
-        
+            
     def emit_action_active_signal(self):
         '''Emit action-active signal.'''
         self.emit("action-active", self.get_text())                
