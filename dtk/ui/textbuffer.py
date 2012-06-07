@@ -112,14 +112,14 @@ class TextIter(gobject.GObject):
         implemented only after self.has_tag is implemented
         """
 
-    def editable(default_setting):
+    def editable(self, default_setting):
         """return True is current offset is in an editable range"""
         if self.has_tag():
             return self.__is_editable_at_current_location()
         else:
             return default_setting
 
-    def can_insert(default_editability):
+    def can_insert(self, default_editability):
         """return True is text inserted in current location is editable"""
         if self.has_tag():
             return self.__can_insert_at_current_location()
@@ -205,7 +205,7 @@ class TextIter(gobject.GObject):
             raise Exception()
 
     def __goto_line(self, line):
-        self.__line_number = 0
+        self.__line_number = line
         self.__line_text = self.__text[self.__line_number]
         self.__line_offset = 0 # move to line start
 
@@ -245,7 +245,7 @@ class TextIter(gobject.GObject):
     def forward_to_line_end(self):
         self.__line_offset = len(self.get_line_text())
 
-    def in_range(start, end):
+    def in_range(self, start, end):
         """start and end must be in ascending order"""
         if start.get_line() > end.get_line():
             # start and end not in ascending order
@@ -266,4 +266,3 @@ class TextBuffer(gobject.GObject):
 
     def __init__(self):
         gobject.GObject.__init__(self)
-
