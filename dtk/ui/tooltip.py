@@ -28,6 +28,30 @@ from window import Window
 import gobject
 import gtk
         
+class TooltipWindow(Window):
+    '''Tooltip window.'''
+	
+    def __init__(self):
+        '''Init window.'''
+        
+gobject.type_register(TooltipWindow)
+
+class TooltipBox(TooltipWindow):
+    '''Tooltip box.'''
+	
+    def __init__(self):
+        '''Init tooltip box.'''
+
+gobject.type_register(TooltipBox)
+
+class TooltipOSD(TooltipWindow):
+    '''OSD tooltip.'''
+	
+    def __init__(self):
+        '''Init osd tooltip.'''
+
+gobject.type_register(TooltipOSD)
+
 class Tooltip(Window):
     '''Tooltip.'''
     
