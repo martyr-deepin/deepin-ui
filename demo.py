@@ -175,16 +175,16 @@ if __name__ == "__main__":
          ])
     
     menu = Menu(
-        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "测试测试测试1", lambda : PopupWindow(application.window)),
-         (ui_theme.get_pixbuf("menu/menuItem2.png"), "测试测试测试2", sub_menu_a),
-         (ui_theme.get_pixbuf("menu/menuItem3.png"), "测试测试测试3", sub_menu_b),
+        [(None, "测试测试测试1", lambda : PopupWindow(application.window)),
+         (None, "测试测试测试2", sub_menu_a),
+         (None, "测试测试测试3", sub_menu_b),
          None,
          (None, "测试测试测试", None),
          (None, "测试测试测试", None),
          None,
-         (ui_theme.get_pixbuf("menu/menuItem6.png"), "测试测试测试4", None, (1, 2, 3)),
-         (ui_theme.get_pixbuf("menu/menuItem7.png"), "测试测试测试5", None),
-         (ui_theme.get_pixbuf("menu/menuItem8.png"), "测试测试测试6", None),
+         (None, "测试测试测试4", None, (1, 2, 3)),
+         (None, "测试测试测试5", None),
+         (None, "测试测试测试6", None),
          ],
         True
         )
