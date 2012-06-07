@@ -24,6 +24,15 @@
 import gtk
 import gobject
 
+
+def parse_text(text):
+    result = dict()
+    index = 0
+    for line in text.split("\n"):
+        result[index] = line + "\n"
+        index += 1
+    return result
+
 class TextIter(gobject.GObject):
     """TextIter for TextBuffer"""
 
@@ -41,16 +50,9 @@ class TextIter(gobject.GObject):
         self.__line_number = line_number
         self.__text_buffer = text_buffer
         self.__line_offset = line_offset
-        self.__text = self.__parse_text(text)
+        self.__text = parse_text(text)
         self.__line_text = self.__text[line_number]
-
-    def __parse_text(self, text):
-        result = dict()
-        index = 0
-        for line in text.split("\n"):
-            result[index] = line + "\n"
-            index += 1
-        return result
+        self.__is_valid = True
 
     def get_buffer(self):
         return self.__text_buffer
@@ -262,7 +264,49 @@ class TextIter(gobject.GObject):
                 else:
                     return False
 
+    def set_invalid(self):
+        """set textiter to invalid mode"""
+        self.__is_valid = False
+
+gobject.type_register(TextIter)
+
 class TextBuffer(gobject.GObject):
 
-    def __init__(self):
+    __gsignals__ = {
+        'insert-text': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (TextIter, str)),
+    }
+
+    def __init__(self, text = u""):
         gobject.GObject.__init__(self)
+        self.__text = parse_text(text)
+        self.__text_iter_list = list() # setup a list for textiter storage
+    
+    def get_line_count(self):
+        return count(self.__text.keys())
+
+    def get_char_count(self):
+        return self.__text_iter.get_chars_in_iter()
+
+    def __set_iter_in_list_invalid(self, except_list = list()):
+        for ir in self.__text_iter_list:
+            if ir not in except_list:
+                ir.set_invalid()
+                self.__text_iter_list.remove(ir)
+
+    def set_text(self, text):
+        self.__text = parse_text(text)
+        self.__set_iter_in_list_invalid()
+
+    def do_insert_text(self, text_iter, text):
+        pass #TODO
+
+    def insert_text(self, text_iter, text):
+        self.__set_iter_in_list_invalid([text_iter,]) # set text iter invalid except this one because we can revalidate it by default
+        self.emit("insert-text", text_iter, text)
+
+
+
+gobject.type_register(TextBuffer)
+
+if __name__ == "__main__":
+    tb = TextBuffer()
