@@ -280,6 +280,7 @@ class TextBuffer(gobject.GObject):
         gobject.GObject.__init__(self)
         self.__text = parse_text(text)
         self.__text_iter_list = list() # setup a list for textiter storage
+        self.cusor = (0, 0) # (line_offset, line)
     
     def get_line_count(self):
         return count(self.__text.keys())
@@ -303,6 +304,20 @@ class TextBuffer(gobject.GObject):
     def insert_text(self, text_iter, text):
         self.__set_iter_in_list_invalid([text_iter,]) # set text iter invalid except this one because we can revalidate it by default
         self.emit("insert-text", text_iter, text)
+
+    def insert_text_at_cursor(self, text):
+        self.insert_text(self.get_iter_at_cursor, text)
+
+    def get_iter_at_cursor(self):
+        pass# TODO
+
+    def get_slice(self, start, end):
+        pass# TODO
+
+    def insert_range(text_iter, start, end):
+        """copy text between start and end (the order of start and end doesn't matter) form TextBuffer and inserts the copy at iter"""
+        self.insert(text_iter, self.get_slice(start, end))
+
 
 
 
