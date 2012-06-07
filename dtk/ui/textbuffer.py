@@ -39,7 +39,7 @@ class TextIter(gobject.GObject):
         result = dict()
         index = 0
         for line in text.split("\n"):
-            result[index] = line
+            result[index] = line + "\n"
             index += 1
         return result
 
@@ -49,7 +49,7 @@ class TextIter(gobject.GObject):
     def get_offset(self):
         offset = 0
         for x in range(0, self.get_line()):
-            offset += len(self.__text[x]) + 1
+            offset += len(self.__text[x])
         offset += self.get_line_offset()
         return offset
 
@@ -137,7 +137,7 @@ class TextIter(gobject.GObject):
 
     def forward_char(self):
         if not self.is_end():
-            if self.__line_offset == len(self.__line_text):
+            if self.get_char() == "\n":
                 # at line end, go to the next line
                 self.forward_line()
             else:
@@ -171,7 +171,7 @@ class TextIter(gobject.GObject):
             # not the first line
             self.__line_number -= 1 # go to previous line
             self.__line_text = self.__text[self.get_line()] # get new line text
-            self.__line_offset = len(self.__line_text)
+            self.__line_offset = len(self.__line_text) - 1 # minus one to ignore the \n
         else:
             self.__line_offset = 0 # move to start of first line
 
