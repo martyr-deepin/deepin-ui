@@ -53,6 +53,10 @@ class TextIter(gobject.GObject):
         offset += self.get_line_offset()
         return offset
 
+    def get_line_text(self):
+        """return text of current line including \n"""
+        return self.__text[self.get_line()]
+
     def get_line(self):
         return self.__line_number
 
@@ -184,7 +188,60 @@ class TextIter(gobject.GObject):
         else:
             raise Exception()
 
+    def __goto_line(self, line):
+        self.__line_number = 0
+        self.__line_text = self.__text[self.__line_number]
+        self.__line_offset = 0 # move to line start
 
+    def set_line(self, line):
+        if line < 0:
+            self.__goto_line(0)
+        elif line < len(self.__text.keys()):
+            self.__goto_line(line)
+        else:
+            self.__goto_line(len(self.__text.keys() - 1)) # go to the last line
+
+    def __goto_line_offset(self, offset):
+        self.__line_offset = offset
+
+    def __goto_line_index(self, index):
+        self.set_line_offset(len((self.get_line_text().encode("utf8")[0:index]).decode("utf8"))) # go to some index
+        #TODO check this with gtk.TextIter
+
+    def set_line_offset(self, offset):
+        """The character offset must be less than or equal to the number of characters in the line"""
+        if offset < 0 or offset > len(self.get_line_text()):
+            raise Exception()
+        else:
+            self.__goto_line_offset(offset)
+
+    def set_line_index(self, index):
+        """The given byte index must be at the start of a character, it can't be in the middle of a UTF-8 encoded character.\nWe won't check for you here"""
+        self.__goto_line_index(index)
+
+    def forward_to_end(self):
+        while not self.is_end():
+            self.forward_char()
+
+    def forward_to_line_end(self):
+        self.__line_offset = len(self.get_line_text())
+
+    def in_range(start, end):
+        """start and end must be in ascending order"""
+        if start.get_line() > end.get_line():
+            # start and end not in ascending order
+            raise Exception()
+        elif start.get_line() == end.get_line():
+            if start.get_line() == self.get_line():
+                if start.get_line_offset() <= self.get_line_offset() and self.get_line_offset() <= end.get_line_offset():
+                    return True
+                else:
+                    return False
+            else:
+                if start.get_line() <= self.get_line() and self.get_line() <= end.get_line():
+                    return True
+                else:
+                    return False
 
 class TextBuffer(gobject.GObject):
 
