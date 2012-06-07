@@ -53,6 +53,10 @@
 	 "windowShadowCorner" : ("#000000", 0.1),
  },
  "shadow_colors" : {
+     "menuSide" : [
+	    (0,     ("#9BC1D1", 1.0)),
+	    (1,     ("#FFFFFF", 0.0)),
+     ],
      "linearBackground" : [
 	    (0,		("#EFEFEF", 0.6)),
 		(0.05,	("#EFEFEF", 0.75)),

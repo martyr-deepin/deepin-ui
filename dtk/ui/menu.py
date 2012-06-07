@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_TOP_LEFT
-from draw import draw_vlinear, draw_pixbuf, draw_font
+from draw import draw_vlinear, draw_pixbuf, draw_font, draw_hlinear
 from line import HSeparator
 from theme import ui_theme
 from utils import is_in_rect, get_content_size, widget_fix_cycle_destroy_bug, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo
@@ -131,8 +131,8 @@ class Menu(Window):
                  y_align=ALIGN_START,
                  font_size=DEFAULT_FONT_SIZE, 
                  opacity=1.0, 
-                 padding_x=4, 
-                 padding_y=4, 
+                 padding_x=3, 
+                 padding_y=3, 
                  item_padding_x=6, 
                  item_padding_y=3):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
@@ -149,6 +149,10 @@ class Menu(Window):
         self.root_menu = None
         self.offset_x = 0       # use for handle extreme situaiton, such as, menu show at side of screen
         self.offset_y = 0
+        self.padding_x = padding_x
+        self.padding_y = padding_y
+        self.item_padding_x = item_padding_x
+        self.item_padding_y = item_padding_y
         
         # Init menu window.
         self.set_opacity(opacity)
@@ -177,9 +181,17 @@ class Menu(Window):
                 
     def draw_menu_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
+        # Draw background.
         cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("menuMask").get_color_info()))
         cr.rectangle(x, y, w, h)    
         cr.fill()
+        
+        # Draw left side.
+        draw_hlinear(cr, x + 1, y + 1, 16 + self.padding_x + self.padding_x * 2, h - 2,
+                     ui_theme.get_shadow_color("menuSide").get_color_info())
+        # cr.set_source_rgb(*color_hex_to_cairo("#FF0000"))
+        # cr.rectangle(x + 1, y + 1, 16 + self.padding_x + self.padding_x * 2, h - 2)
+        # cr.fill()
                 
     def get_menu_item_at_coordinate(self, (x, y)):
         '''Get menu item at coordinate, return None if haven't any menu item at given coordinate.'''
@@ -224,8 +236,8 @@ class Menu(Window):
     def get_menu_icon_info(self, items):
         '''Get menu icon information.'''
         have_icon = False
-        icon_width = 0
-        icon_height = 0
+        icon_width = 16
+        icon_height = 16
         have_submenu = False
         submenu_width = 0
         submenu_height = 0
@@ -235,8 +247,6 @@ class Menu(Window):
                 (item_dpixbuf, item_content, item_node) = item[0:3]
                 if item_dpixbuf:
                     have_icon = True
-                    icon_width = item_dpixbuf.get_pixbuf().get_width()
-                    icon_height = item_dpixbuf.get_pixbuf().get_height()
                 
                 if isinstance(item_node, Menu):
                     have_submenu = True
@@ -381,12 +391,7 @@ class MenuItem(object):
         # Calcuate content offset.
         self.content_offset = 0
         if item_dpixbuf == None and self.have_icon:
-            self.content_offset = self.icon_width
-            
-        # Set adjust offset x.
-        self.adjust_offset = 0    
-        if not self.have_icon:
-            self.adjust_offset = -self.item_padding_x
+            self.content_offset = self.icon_width + self.item_padding_x
             
         # Create button.
         self.item_box = gtk.Button()
@@ -412,10 +417,10 @@ class MenuItem(object):
         if self.select_scale:
             self.item_box_width = widget.get_parent().get_parent().allocation.width
         else:
+            self.item_box_width = self.item_padding_x * 3 + self.icon_width + int(width)
+
             if self.have_submenu:
-                self.item_box_width = self.item_padding_x * 4 + self.icon_width + self.submenu_width + int(width) + self.adjust_offset
-            else:
-                self.item_box_width = self.item_padding_x * 3 + self.icon_width + int(width) + self.adjust_offset
+                self.item_box_width += self.item_padding_x + self.submenu_width
                 
         self.item_box.set_size_request(self.item_box_width, self.item_box_height)        
         
@@ -468,9 +473,9 @@ class MenuItem(object):
             
         # Draw item content.
         draw_font(cr, item_content, self.font_size, font_color,
-                 rect.x + self.item_padding_x * 2 + pixbuf_width + self.content_offset + self.adjust_offset,
+                 rect.x + self.item_padding_x * 2 + self.icon_width + self.content_offset,
                  rect.y,
-                 rect.width - self.item_padding_x * 3 - pixbuf_width - self.content_offset - self.adjust_offset,
+                 rect.width - self.item_padding_x * 3 - pixbuf_width - self.content_offset,
                  rect.height,
                  ALIGN_START, ALIGN_MIDDLE
                  )
