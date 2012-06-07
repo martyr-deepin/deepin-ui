@@ -86,16 +86,32 @@ class TextIter(gobject.GObject):
     def get_slice(self, end):
         """
         return a slice of text in Unicode-8 format
-        TODO:add multiline support if <end> is not in the same line as <self>
         """
         if end.get_line() == self.get_line():
             # in the same line
             if self.get_line_offset() < end.get_line_offset():
                 return self.__line_text[self.get_line_offset():end.get_line_offset()]
+        else:
+            if end.get_line() < self.get_line():
+                up = end
+                down = self
+            else:
+                up = self
+                down = end
+            result = u""
+            temp = up.get_line_text()
+            result += temp[up.get_line_offset():len(temp)] # add first line after offset
+            for x in range(up.get_line() + 1, down.get_line()):
+                # add lines between
+                up.forward_line()
+                result += up.get_line_text()
+            result += down.get_line_text()[0:down.get_line_offset()] # add last line before offset
+            return result
+
 
     def get_text(self, end):
         """TODO:what is the difference between this and get_slice()?"""
-        pass
+        return self.get_slice(end)
 
     def has_tag(self):
         """TODO:return True if current location is tagged with tag"""
@@ -233,6 +249,11 @@ class TextIter(gobject.GObject):
         else:
             self.__goto_line_offset(offset)
 
+    def set_new_text(self, text, new_line_inserted):
+        self.__text = parse_text(text)
+        self.set_line(self.get_line()+new_line_inserted) # if there is u"\n" in text then there will be new lines
+        self.__line_text = self.__text[self.get_line()]
+
     def set_line_index(self, index):
         """
         The given byte index must be at the start of a character, it can't be in the middle of a UTF-8 encoded character.
@@ -280,7 +301,7 @@ class TextBuffer(gobject.GObject):
         gobject.GObject.__init__(self)
         self.__text = parse_text(text)
         self.__text_iter_list = list() # setup a list for textiter storage
-        self.cusor = (0, 0) # (line_offset, line)
+        self.__cusor = (0, 0) # (line_offset, line)
     
     def get_line_count(self):
         return count(self.__text.keys())
@@ -288,31 +309,61 @@ class TextBuffer(gobject.GObject):
     def get_char_count(self):
         return self.__text_iter.get_chars_in_iter()
 
-    def __set_iter_in_list_invalid(self, except_list = list()):
-        for ir in self.__text_iter_list:
-            if ir not in except_list:
-                ir.set_invalid()
-                self.__text_iter_list.remove(ir)
+    def __set_iter_in_list_invalid(self, except_list = list(), some_iter = None):
+        if some_iter == None:
+            # delete multiple iter
+            for ir in self.__text_iter_list:
+                if ir not in except_list:
+                    ir.set_invalid()
+                    self.__text_iter_list.remove(ir)
+        else:
+            # delete single iter
+            if some_iter in self.__text_iter_list:
+                some_iter.set_invalid()
+                self.__text_iter_list.remove(some_iter)
 
     def set_text(self, text):
         self.__text = parse_text(text)
         self.__set_iter_in_list_invalid()
 
+    def get_text(self):
+        result = u""
+        for x in range(0, len(self.get_line_count())):
+            result += self.__text[x]
+        return result
+
     def do_insert_text(self, text_iter, text):
-        pass #TODO
+        """
+        default handler fo insert-text
+        we should do some real work inserting text here
+        and revalidate the text_iter
+        """
+        line = text_iter.get_line()
+        line_text = self.__text[line]
+        line_offset = text_iter.get_line_offset()
+        self.__text[line] = line_text[0:line_offset] + text + line_text[line_offset:len(line_text)] # insert
+        # set new text for the textiter
+        # new line will be automatically added in the set_text function, so only thing has to be done is providing the new line count
+        text_iter.set_text(self.get_text(), text.count(u"\n"))
+        text_iter.set_line_offset(line_offset + len(text)) # set new line offset
 
     def insert_text(self, text_iter, text):
         self.__set_iter_in_list_invalid([text_iter,]) # set text iter invalid except this one because we can revalidate it by default
         self.emit("insert-text", text_iter, text)
 
     def insert_text_at_cursor(self, text):
-        self.insert_text(self.get_iter_at_cursor, text)
+        ir = self.get_iter_at_cursor()
+        self.insert_text(ir, text)
+        self.__set_iter_in_list_invalid(some_iter = ir)
 
     def get_iter_at_cursor(self):
-        pass# TODO
+        (line_offset, line) = self.__cursor
+        ir = TextIter(text = self.get_text(), line_number = line, line_offset = line_offset) # create new textiter
+        self.__text_iter_list.append(ir)
+        return ir
 
     def get_slice(self, start, end):
-        pass# TODO
+        return start.get_slice(end)
 
     def insert_range(text_iter, start, end):
         """copy text between start and end (the order of start and end doesn't matter) form TextBuffer and inserts the copy at iter"""

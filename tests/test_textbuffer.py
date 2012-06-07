@@ -50,7 +50,16 @@ class TextIterTest(unittest.TestCase):
         self.__iter.forward_char()
         self.assertEqual(self.__iter.get_char(), u"t") # to next line
 
+    def testGetSlice(self):
+        end = TextIter(text = u"开始test\ntextiter\nline3\nline4", line_number = 1, line_offset = 4)
+        self.assertEqual(self.__iter.get_slice(end), u"开始test\ntext")
+
+    def testGetSliceReverse(self):
+        end = TextIter(text = u"开始test\ntextiter\nline3\nline4", line_number = 0, line_offset = 0)
+        self.__iter.set_line(1)
+        self.__iter.set_line_offset(4)
+        self.assertEqual(self.__iter.get_slice(end), u"开始test\ntext")
+
 if __name__ == "__main__":
     unittest.main()
-
 
