@@ -60,6 +60,47 @@ class TextIterTest(unittest.TestCase):
         self.__iter.set_line_offset(4)
         self.assertEqual(self.__iter.get_slice(end), u"开始test\ntext")
 
+class TextBufferTest(unittest.TestCase):
+    def setUp(self):
+        self.__buf = TextBuffer(text = u"开始test\ntextiter\nline3\nline4")
+
+    def tearDown(self):
+        pass
+
+    def testGetLineCount(self):
+        self.assertEqual(self.__buf.get_line_count(), 4)
+
+    def testGetCharCount(self):
+        self.assertEqual(self.__buf.get_char_count(), len(u"开始test\ntextiter\nline3\nline4"))
+
+    def testGetText(self):
+        self.assertEqual(self.__buf.get_text(), u"开始test\ntextiter\nline3\nline4")
+
+    def testSetText(self):
+        self.__buf.set_text(u"new\ntext")
+        self.assertEqual(self.__buf.get_text(), u"new\ntext")
+
+    def testGetIterAtCursor(self):
+        self.assertEqual(self.__buf.get_iter_at_cursor().get_char(), u"开")
+
+    def testInsertText(self):
+        self.__buf.insert_text(self.__buf.get_iter_at_cursor(), u"newtextatstart")
+        self.assertEqual(self.__buf.get_line_count(), 4)
+        self.assertEqual(self.__buf.get_text(), u"newtextatstart开始test\ntextiter\nline3\nline4")
+
+    def testInsertTextWithNewLine(self):
+        ir = self.__buf.get_iter_at_cursor()
+        self.__buf.insert_text(ir, u"newline1\nline0\nnotnewline")
+        self.assertEqual(self.__buf.get_line_count(), 6)
+        self.assertEqual(self.__buf.get_text(), u"newline1\nline0\nnotnewline开始test\ntextiter\nline3\nline4")
+        self.assertEqual(ir.get_line_offset(), 10)
+
+    def testGetIterAtLine(self):
+        ir = self.__buf.get_iter_at_line(1)
+        self.assertEqual(ir.get_line(), 1) # check line number
+        self.assertEqual(ir.get_line_offset(), 0) # check line offset
+
+
 if __name__ == "__main__":
     unittest.main()
 

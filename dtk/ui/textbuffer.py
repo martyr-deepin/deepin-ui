@@ -28,9 +28,10 @@ import gobject
 def parse_text(text):
     result = dict()
     index = 0
-    for line in text.split("\n"):
-        result[index] = line + "\n"
+    for line in text.split(u"\n"):
+        result[index] = line + u"\n"
         index += 1
+    result[index-1] = result[index-1].rstrip(u"\n") # remove the line break that does not exist actually
     return result
 
 class TextIter(gobject.GObject):
@@ -162,7 +163,6 @@ class TextIter(gobject.GObject):
     def is_end(self):
         """return True if at the end of iter"""
         if self.get_offset() == self.get_chars_in_iter() + 1:
-            print len(self.__text.keys())
             return True
         else:
             return False
@@ -251,7 +251,7 @@ class TextIter(gobject.GObject):
 
     def set_new_text(self, text, new_line_inserted):
         self.__text = parse_text(text)
-        self.set_line(self.get_line()+new_line_inserted) # if there is u"\n" in text then there will be new lines
+        self.set_line(self.get_line() + new_line_inserted) # if there is u"\n" in text then there will be new lines
         self.__line_text = self.__text[self.get_line()]
 
     def set_line_index(self, index):
@@ -301,13 +301,19 @@ class TextBuffer(gobject.GObject):
         gobject.GObject.__init__(self)
         self.__text = parse_text(text)
         self.__text_iter_list = list() # setup a list for textiter storage
-        self.__cusor = (0, 0) # (line_offset, line)
+        self.__cursor = (0, 0) # (line_offset, line)
     
     def get_line_count(self):
-        return count(self.__text.keys())
+        return len(self.__text.keys())
 
     def get_char_count(self):
-        return self.__text_iter.get_chars_in_iter()
+        result = 0
+        for x in range(0,self.get_line_count()):
+            result += len(self.__text[x])
+        return result
+
+    def get_line_text(self, line):
+        return self.__text[line]
 
     def __set_iter_in_list_invalid(self, except_list = list(), some_iter = None):
         if some_iter == None:
@@ -328,7 +334,7 @@ class TextBuffer(gobject.GObject):
 
     def get_text(self):
         result = u""
-        for x in range(0, len(self.get_line_count())):
+        for x in range(0, self.get_line_count()):
             result += self.__text[x]
         return result
 
@@ -339,13 +345,20 @@ class TextBuffer(gobject.GObject):
         and revalidate the text_iter
         """
         line = text_iter.get_line()
-        line_text = self.__text[line]
         line_offset = text_iter.get_line_offset()
-        self.__text[line] = line_text[0:line_offset] + text + line_text[line_offset:len(line_text)] # insert
+        old_line_text = self.get_line_text(line)
+        new_text = self.get_text().replace(old_line_text, old_line_text[0:line_offset] + text + old_line_text[line_offset:len(old_line_text)])
+        self.__text = parse_text(new_text) # insert and parse new self.__text
         # set new text for the textiter
         # new line will be automatically added in the set_text function, so only thing has to be done is providing the new line count
-        text_iter.set_text(self.get_text(), text.count(u"\n"))
-        text_iter.set_line_offset(line_offset + len(text)) # set new line offset
+        text_iter.set_new_text(self.get_text(), text.count(u"\n"))
+        # set new line offset, should be len(text.split("\n")[-1]) instead of len(text)
+        text_iter.set_line_offset(line_offset + len(text.split("\n")[-1]))
+
+    def get_iter_at_line(self, line):
+        ir = TextIter(text = self.get_text(), line_number = line, line_offset = 0, text_buffer = self)
+        self.__text_iter_list.append(ir) # add to textiter list
+        return ir
 
     def insert_text(self, text_iter, text):
         self.__set_iter_in_list_invalid([text_iter,]) # set text iter invalid except this one because we can revalidate it by default
