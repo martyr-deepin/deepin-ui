@@ -78,8 +78,8 @@
 		(1,		("#FFFFFF", 0.6)),
 	 ],
 	 "menuItemSelect" : [
-		(0, ("#CACC00", 0.5)),
-		(1, ("#CACC00", 0.5)),
+		(0, ("#CACC00", 1.0)),
+		(1, ("#CACC00", 1.0)),
 	 ],
 	 "menuItemActiveSubmenu" : [
 		(0, ("#888888", 0.5)),
