@@ -22,54 +22,8 @@
 
 import gobject
 import gtk
-import math
+from timeline import Timeline, CURVE_SINE
 
-CURVE_LINEAR = lambda x: x
-CURVE_SINE = lambda x: math.sin(math.pi / 2 * x)
-FRAMERATE = 30.0
-
-class Timeline(gobject.GObject):
-
-    __gtype_name__ = 'Timeline'
-    __gsignals__ = {
-        'update': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_FLOAT,)),
-        'completed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
-        }
-
-    def __init__(self, duration, curve):
-
-        gobject.GObject.__init__(self)
-
-        self.duration = duration
-        self.curve = curve
-
-        self._states = []
-        self._stopped = False
-
-    def run(self):
-
-        n_frames = (self.duration / 1000.0) * FRAMERATE
-
-        while len(self._states) <= n_frames:
-            self._states.append(self.curve(len(self._states) * (1.0 / n_frames)))
-        self._states.reverse()
-
-        gobject.timeout_add(int(self.duration / n_frames), self.update)
-
-    def stop(self):
-        self._stopped = True
-
-    def update(self):
-        if self._stopped:
-            self.emit('completed')
-            return False
-
-        self.emit('update', self._states.pop())
-        if len(self._states) == 0:
-            self.emit('completed')
-            return False
-        return True
-    
 class Slider(gtk.Viewport):
     active_widget = None
     _size_cache = None
@@ -171,6 +125,8 @@ class Slider(gtk.Viewport):
         """
         if widget in self.timeouts:
             self.reset_slide_timeout(widget, *args, **kwargs)
+
+gobject.type_register(Slider)
 
 if __name__ == "__main__":
     window = gtk.Window()    
