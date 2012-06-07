@@ -110,6 +110,35 @@ class TextBufferTest(unittest.TestCase):
         self.assertEqual(self.__buf.get_line_count(), 2) # check line count
         self.assertEqual(start.get_line_offset(), end.get_line_offset()) # start and end should point to the same place
 
+    def testGetIterAtOffset(self):
+        ir = self.__buf.get_iter_at_offset(17)
+        self.assertEqual(ir.get_line(), 2)
+        self.assertEqual(ir.get_line_offset(), 1)
+
+        ir = self.__buf.get_iter_at_offset(16)
+        self.assertEqual(ir.get_line(), 2)
+        self.assertEqual(ir.get_line_offset(), 0)
+
+        ir = self.__buf.get_iter_at_offset(15)
+        self.assertEqual(ir.get_line(), 1)
+        self.assertEqual(ir.get_line_offset(), 8)
+
+
+    def testBackspace(self):
+        ir = self.__buf.get_iter_at_line(1)
+        ir.set_line_offset(1)
+        original_count = ir.get_chars_in_line()
+        self.__buf.backspace(ir)
+        self.assertEqual(self.__buf.get_text(), u"开始test\nextiter\nline3\nline4")
+        self.assertEqual(ir.get_char(), u"e")
+        self.assertEqual(ir.get_line_offset(), 0) # check line offset
+        self.__buf.backspace(ir)
+        self.assertEqual(ir.get_line(), 0) # join the lines
+        self.assertEqual(ir.get_line_offset(), 6) # should be at line end
+        self.assertEqual(self.__buf.get_text(), u"开始testextiter\nline3\nline4") # join lines
+        self.assertEqual(self.__buf.get_line_count(), 3) # one line less
+
+
 if __name__ == "__main__":
     unittest.main()
 

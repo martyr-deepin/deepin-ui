@@ -88,17 +88,21 @@ class TextIter(gobject.GObject):
         """
         return a slice of text in Unicode-8 format
         """
-        if end.get_line() == self.get_line():
+
+        tempir = end.copy()
+        tempir2 = self.copy()
+
+        if tempir.get_line() == tempir2.get_line():
             # in the same line
-            if self.get_line_offset() < end.get_line_offset():
-                return self.__line_text[self.get_line_offset():end.get_line_offset()]
+            if tempir2.get_line_offset() < tempir.get_line_offset():
+                return tempir2.__line_text[tempir2.get_line_offset():tempir.get_line_offset()]
         else:
-            if end.get_line() < self.get_line():
-                up = end
-                down = self
+            if tempir.get_line() < tempir2.get_line():
+                up = tempir
+                down = tempir2
             else:
-                up = self
-                down = end
+                up = tempir2
+                down = tempir
             result = u""
             temp = up.get_line_text()
             result += temp[up.get_line_offset():len(temp)] # add first line after offset
@@ -109,6 +113,12 @@ class TextIter(gobject.GObject):
             result += down.get_line_text()[0:down.get_line_offset()] # add last line before offset
             return result
 
+    def copy(self):
+        text = u""
+        for x in range(0, len(self.__text.keys())):
+            text += self.__text[x]
+
+        return TextIter(text = text, text_buffer = self.__text_buffer, line_number = self.get_line(), line_offset = self.get_line_offset())
 
     def get_text(self, end):
         """TODO:what is the difference between this and get_slice()?"""
@@ -392,33 +402,73 @@ class TextBuffer(gobject.GObject):
         we should do some real work deleting text here
         and revalidate the start and end iter
         """
-        start_line_offset = start.get_line_offset()
+        if start.get_offset() > end.get_offset():
+            up = end
+            down = start
+        else:
+            up = start
+            down = end
 
-        delete_text = start.get_slice(end)
-        # delete by replacing with empty string
-        new_text = self.get_text().replace(delete_text, u"")
+        start_line_offset = up.get_line_offset()
+
+        delete_text = up.get_slice(down)
+        # delete
+        start_offset = up.get_offset()
+        old_text = self.get_text()
+        stop = start_offset + len(delete_text)
+        new_text = old_text[0:start_offset] + old_text[stop:len(old_text)]
         # insert and parse new self.__text
         self.__text = parse_text(new_text)
         # <start> points to the line that line number won't change
-        start.set_new_text(self.get_text(), 0, True)
+        up.set_new_text(self.get_text(), 0, True)
         # <end> points to the line that line number may change
-        end.set_new_text(self.get_text(), delete_text.count(u"\n"), True)
+        down.set_new_text(self.get_text(), delete_text.count(u"\n"), True)
         # only the line_offset of <end> will change, in fact the <start> and <end> now point to the same position
-        start.set_line_offset(start_line_offset)
-        end.set_line_offset(start_line_offset)
+        up.set_line_offset(start_line_offset)
+        down.set_line_offset(start_line_offset)
 
     def delete(self, start, end):
         """
-        The delete() method deletes the text between start and end. The order of start and end is not actually relevant as the delete() method will reorder them. This method emits the "delete_range" signal, and the default handler of that signal deletes the text. Because the textbuffer is modified, all outstanding iterators become invalid after calling this function; however, start and end will be re-initialized to point to the location where text was deleted.
+        The delete() method deletes the text between start and end.
+        The order of start and end is not actually relevant as the delete() method will reorder them.
+        This method emits the "delete_range" signal, and the default handler of that signal deletes the text.
+        Because the textbuffer is modified, all outstanding iterators become invalid after calling this function;
+        however, start and end will be re-initialized to point to the location where text was deleted.
         """
-        self.__set_iter_in_list_invalid(except_list = [start,end])
         self.emit("delete-range", start, end)
+        self.__set_iter_in_list_invalid(except_list = [start,end])
+
+    def get_iter_at_offset(self, offset):
+        line = 0
+        # find the position
+        for x in range(0, len(self.__text.keys())):
+            if offset - len(self.__text[x]) < 0:
+                line = x
+                break
+            offset -= len(self.__text[x])
+        
+        line_offset = offset
+        ir = TextIter(text = self.get_text(), text_buffer = self, line_number = line, line_offset = line_offset)
+        self.__text_iter_list.append(ir)
+        return ir
 
 
 
+    def backspace(self, ir):
+        if ir.get_offset() == 0:
+            # at buffer start, do nothing
+            pass
+        else:
+            self.__set_iter_in_list_invalid(except_list = [ir, ])
+            start = self.get_iter_at_offset(ir.get_offset()-1)
+            self.do_delete_range(start, ir)
 
 
 gobject.type_register(TextBuffer)
 
 if __name__ == "__main__":
-    tb = TextBuffer()
+    tb = TextBuffer(text = u"开始test\ntextiter\nline3\nline4")
+    ir = tb.get_iter_at_offset(1)
+    ir2 = tb.get_iter_at_offset(17)
+    tb.delete(ir, ir2)
+    print tb.get_text()
