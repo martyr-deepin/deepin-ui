@@ -179,6 +179,8 @@ class Menu(Window):
                 self.menu_items.append(menu_item)
                 self.item_box.pack_start(menu_item.item_box, False, False)
                 
+        self.connect_after("show", self.adjust_menu_position)        
+                
     def draw_menu_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
         # Draw background.
@@ -189,10 +191,7 @@ class Menu(Window):
         # Draw left side.
         draw_hlinear(cr, x + 1, y + 1, 16 + self.padding_x + self.padding_x * 2, h - 2,
                      ui_theme.get_shadow_color("menuSide").get_color_info())
-        # cr.set_source_rgb(*color_hex_to_cairo("#FF0000"))
-        # cr.rectangle(x + 1, y + 1, 16 + self.padding_x + self.padding_x * 2, h - 2)
-        # cr.fill()
-                
+        
     def get_menu_item_at_coordinate(self, (x, y)):
         '''Get menu item at coordinate, return None if haven't any menu item at given coordinate.'''
         match_menu_item = None
@@ -261,34 +260,39 @@ class Menu(Window):
     def show(self, (x, y), (offset_x, offset_y)=(0, 0)):
         '''Show menu.'''
         # Init offset.
+        self.expect_x = x
+        self.expect_y = y
         self.offset_x = offset_x
         self.offset_y = offset_y
         
         # Show.
         self.show_all()
         
+    def adjust_menu_position(self, widget):
+        '''Realize menu.'''
         # Adjust coordinate.
         rect = self.get_allocation()
+        print (self, rect)
         (screen_width, screen_height) = get_screen_size(self)
         
         if self.x_align == ALIGN_START:
-            dx = x
+            dx = self.expect_x
         elif self.x_align == ALIGN_MIDDLE:
-            dx = x - rect.width / 2
+            dx = self.expect_x - rect.width / 2
         else:
-            dx = x - rect.width
+            dx = self.expect_x - rect.width
             
         if self.y_align == ALIGN_START:
-            dy = y
+            dy = self.expect_y
         elif self.y_align == ALIGN_MIDDLE:
-            dy = y - rect.height / 2
+            dy = self.expect_y - rect.height / 2
         else:
-            dy = y - rect.height
+            dy = self.expect_y - rect.height
 
-        if x + rect.width > screen_width:
-            dx = x - rect.width + offset_x
-        if y + rect.height > screen_height:
-            dy = y - rect.height + offset_y
+        if self.expect_x + rect.width > screen_width:
+            dx = self.expect_x - rect.width + self.offset_x
+        if self.expect_y + rect.height > screen_height:
+            dy = self.expect_y - rect.height + self.offset_y
             
         self.move(dx, dy)
             
