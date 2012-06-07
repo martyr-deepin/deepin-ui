@@ -272,7 +272,7 @@ class Menu(Window):
         '''Realize menu.'''
         # Adjust coordinate.
         rect = widget.get_allocation()
-        print (self, rect)
+        # print (self, rect)
         (screen_width, screen_height) = get_screen_size(self)
         
         if self.x_align == ALIGN_START:
@@ -392,11 +392,6 @@ class MenuItem(object):
         # Get item information.
         (item_dpixbuf, item_content, item_node) = self.item[0:3]
         
-        # Calcuate content offset.
-        self.content_offset = 0
-        if item_dpixbuf == None and self.have_icon:
-            self.content_offset = self.icon_width + self.item_padding_x
-            
         # Create button.
         self.item_box = gtk.Button()
         
@@ -477,9 +472,9 @@ class MenuItem(object):
             
         # Draw item content.
         draw_font(cr, item_content, self.font_size, font_color,
-                 rect.x + self.item_padding_x * 2 + self.icon_width + self.content_offset,
+                 rect.x + self.item_padding_x * 2 + self.icon_width,
                  rect.y,
-                 rect.width - self.item_padding_x * 3 - pixbuf_width - self.content_offset,
+                 rect.width,
                  rect.height,
                  ALIGN_START, ALIGN_MIDDLE
                  )
