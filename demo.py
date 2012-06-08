@@ -35,20 +35,14 @@ skin_config.init_skin(
     os.path.expanduser("~/.config/deepin-demo/skin_config.ini"),
     )
 
-# Load ui theme.
-ui_theme.load_theme()
-
 # Create application theme.
 app_theme = Theme(
     os.path.join(get_parent_dir(__file__), "app_theme"),
     os.path.expanduser("~/.config/deepin-demo/theme")
     )
 
-# Load app theme.
-app_theme.load_theme()
-
 # Set theme.
-skin_config.set_themes(ui_theme, app_theme)
+skin_config.load_themes(ui_theme, app_theme)
 
 # Load other modules.
 from dtk.ui.application import Application

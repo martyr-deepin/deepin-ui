@@ -349,8 +349,13 @@ class SkinConfig(gobject.GObject):
         # Remove temp config file.
         remove_file(config_filepath)    
         
-    def set_themes(self, ui_theme, app_theme):
+    def load_themes(self, ui_theme, app_theme):
         '''Set theme directories.'''
+        # Load theme.
+        ui_theme.load_theme()
+        app_theme.load_theme()
+        
+        # Init theme directories.
         self.ui_theme_dir = ui_theme.user_theme_dir
         self.app_theme_dir = app_theme.user_theme_dir
             
