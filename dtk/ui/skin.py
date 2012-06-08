@@ -1076,8 +1076,8 @@ class SkinEditArea(gtk.EventBox):
                     cr.rectangle(
                         x + self.padding_x + resize_x,
                         y + self.padding_y + resize_y,
-                        w - (x + self.padding_x + resize_x),
-                        h - (y + self.padding_y + resize_y),
+                        w,
+                        h
                         )
                     cr.clip()
                     
