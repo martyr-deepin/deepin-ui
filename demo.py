@@ -71,7 +71,6 @@ from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.button import CheckButton, RadioButton
-from dtk.ui.throbber import Throbber, MODE_SPINNING
 from dtk.ui.combo import ComboBox, ComboBoxItem
 from dtk.ui.spin import SpinBox
 from dtk.ui.textview import TextView
@@ -397,11 +396,6 @@ if __name__ == "__main__":
     button_box.pack_start(radio_button_1, False, False, 4)
     button_box.pack_start(radio_button_2, False, False, 4)
     tab_5_box.pack_start(button_box, False, False)
-    
-    throbber = Throbber(16, 16)
-    throbber.set_mode(MODE_SPINNING)
-    throbber.set_progress(.3)
-    button_box.pack_start(throbber, False, False)
     
     # Tree view.
     def tree_view_single_click_cb(widget, item):
