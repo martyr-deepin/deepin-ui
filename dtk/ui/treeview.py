@@ -43,7 +43,7 @@ class TreeView(gtk.DrawingArea):
         }
     
     def __init__(self, width=20, height = 30,
-                 font_size = 10, font_color="#000000", font_x_padding=5, font_width=120, font_height = 0,font_align=0,
+                 font_size = 10, font_x_padding=5, font_width=120, font_height = 0,font_align=0,
                  arrow_x_padding = 10,
                  normal_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png"), 
                  press_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png")):        
@@ -73,14 +73,13 @@ class TreeView(gtk.DrawingArea):
         self.press_pixbuf = press_pixbuf
         self.arrow_x_padding = arrow_x_padding
         # Draw move background. 
-        self.move_height = 0        
-        self.move_draw_bool = True                            
+        self.move_height = -1
+        self.move_draw_bool = False
         self.move_index_num = None
         # Draw press background.
-        self.press_height = 0
+        self.press_height = -1
         self.press_draw_bool = False
         # Draw font.
-        self.font_color = font_color
         self.font_x_padding = font_x_padding
         self.font_width = font_width
         self.font_height = font_height
@@ -204,29 +203,29 @@ class TreeView(gtk.DrawingArea):
                 cr,
                 x, y + self.draw_y_padding, w, self.height,
                 ui_theme.get_shadow_color("treeItemSelect").get_color_info())
-            # cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_shadow_color("treeItemSelect").get_color_info()))
-            # cr.rectangle(x, y + self.draw_y_padding, w, self.height)
-            # cr.fill()
         
         if self.move_draw_bool:
-            self.draw_y_padding = int(self.move_height) / self.height * self.height
-            draw_vlinear(
-                cr,
-                x, y + self.draw_y_padding, w, self.height,
-                ui_theme.get_shadow_color("treeItemHover").get_color_info())
-            # cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_shadow_color("treeItemHover").get_color_info()))
-            # cr.rectangle(x, y + self.draw_y_padding, w, self.height)
-            # cr.fill()
+            if int(self.press_height) / self.height * self.height != int(self.move_height) / self.height * self.height:
+                self.draw_y_padding = int(self.move_height) / self.height * self.height
+                draw_vlinear(
+                    cr,
+                    x, y + self.draw_y_padding, w, self.height,
+                    ui_theme.get_shadow_color("treeItemHover").get_color_info())
             
         if self.tree_list:    
             temp_height = 0
             # (cr, text, font_size, font_color, x, y, width, height, font_align
-            for draw_widget in self.tree_list:
+            for (widget_index, draw_widget) in enumerate(self.tree_list):
                 if draw_widget.text:
+                    index = int(self.press_height) / self.height
+                    if widget_index == index:
+                        font_color = ui_theme.get_color("treeItemSelectFont").get_color()
+                    else:
+                        font_color = ui_theme.get_color("treeItemNormalFont").get_color()
                     draw_font(cr, 
                               draw_widget.text,
                               self.font_size,
-                              self.font_color,
+                              font_color,
                               self.font_x_padding + draw_widget.width,
                               temp_height + self.height/2, 
                               self.font_width, self.font_height, self.font_align)                   
