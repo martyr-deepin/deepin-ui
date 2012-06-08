@@ -161,8 +161,9 @@ class ColorSelectDialog(Window):
         self.color_select_align.set_padding(10, 5, 8, 5)
         
         self.color_select_scrolled_window.add_child(self.color_select_view)
+        self.color_select_scrolled_window.set_size_request(-1, 60)
         self.color_select_align.add(self.color_select_scrolled_window)
-        self.color_right_box.pack_start(self.color_select_align)    
+        self.color_right_box.pack_start(self.color_select_align, True, True)    
         
         self.confirm_button = Button("确定")
         self.cancel_button = Button("取消")

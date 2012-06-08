@@ -29,91 +29,88 @@ import gobject
 
 class Button(gtk.Button):
     '''Button.'''
-    
-    def __init__(self, label="", width=69, height=22, padding_x=10, padding_y=3):
+	
+    def __init__(self, label, font_size=DEFAULT_FONT_SIZE):
         '''Init button.'''
-        # Init.
         gtk.Button.__init__(self)
-        self.label = label
+        self.font_size = font_size
+        self.min_width = 69
+        self.min_height = 22
+        self.padding_x = 15
+        self.padding_y = 4
+        self.clickable = True
         
-        # Init button size.
-        (font_width, font_height) = get_content_size(label, DEFAULT_FONT_SIZE)
-        self.set_size_request(max(width, font_width + 2 * padding_x), max(height, font_height + 2 * padding_y))
+        self.set_label(label)
         
-        # Handle signal.
         self.connect("expose-event", self.expose_button)
         
+    def set_label(self, label, font_size=DEFAULT_FONT_SIZE):
+        '''Set label.'''
+        self.label = label
+        (self.label_width, self.label_height) = get_content_size(label, self.font_size)
+        self.set_size_request(max(self.label_width + self.padding_x * 2, self.min_width),
+                              max(self.label_height + self.padding_y * 2, self.min_height))
+        
+        self.queue_draw()
+        
+    def set_clickable(self, clickable):
+        '''Set clickable.'''
+        self.clickable = clickable
+        
+        self.queue_draw()
+        
     def expose_button(self, widget, event):
-        '''Callback for button 'expose-event' event.'''
+        '''Expose button.'''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        top_left = ui_theme.get_pixbuf("button.png").get_pixbuf()
-        top_right = top_left.rotate_simple(90)
-        bottom_right = top_left.rotate_simple(180)
-        bottom_left = top_left.rotate_simple(270)
         
-        # Clip rectangle with four corner.
-        with cairo_state(cr):
-            cr.rectangle(x + 1, y, w - 2, 1)
-            cr.rectangle(x, y + 1, w, h - 2)
-            cr.rectangle(x + 1, y + h - 1, w - 2, 1)
-            cr.clip()
+        # Get color info.
+        if not self.clickable:
+            border_color = ui_theme.get_color("buttonBorderDisable").get_color()
+            background_color = ui_theme.get_shadow_color("buttonBackgroundDisable").get_color_info()
+        elif widget.state == gtk.STATE_NORMAL:
+            border_color = ui_theme.get_color("buttonBorderNormal").get_color()
+            background_color = ui_theme.get_shadow_color("buttonBackgroundNormal").get_color_info()
+        elif widget.state == gtk.STATE_PRELIGHT:
+            border_color = ui_theme.get_color("buttonBorderPrelight").get_color()
+            background_color = ui_theme.get_shadow_color("buttonBackgroundPrelight").get_color_info()
+        elif widget.state == gtk.STATE_ACTIVE:
+            border_color = ui_theme.get_color("buttonBorderActive").get_color()
+            background_color = ui_theme.get_shadow_color("buttonBackgroundActive").get_color_info()
             
-            # Draw background.
-            if widget.state == gtk.STATE_NORMAL:
-                background_color = ui_theme.get_shadow_color("buttonBackgroundNormal").get_color_info()
-                border_color = ui_theme.get_color("buttonBorderNormal").get_color()
-            elif widget.state == gtk.STATE_PRELIGHT:
-                background_color = ui_theme.get_shadow_color("buttonBackgroundPrelight").get_color_info()
-                border_color = ui_theme.get_color("buttonBorderPrelight").get_color()
-            elif widget.state == gtk.STATE_ACTIVE:
-                background_color = ui_theme.get_shadow_color("buttonBackgroundActive").get_color_info()
-                border_color = ui_theme.get_color("buttonBorderActive").get_color()
-            draw_vlinear(cr, x, y, w, h, background_color)    
-
-        # Draw button corner.
-        draw_pixbuf(cr, top_left, x, y)
-        draw_pixbuf(cr, top_right, x + w - 2, y)
-        draw_pixbuf(cr, bottom_right, x + w - 2, y + h - 2)
-        draw_pixbuf(cr, bottom_left, x, y + h - 2)
+        # Draw background.
+        draw_vlinear(
+            cr,
+            x + 1, y + 1, w - 2, h - 2,
+            background_color)
         
-        # Draw button corner mask.
-        (r, g, b) = color_hex_to_cairo(border_color)
-        cr.set_source_rgba(r, g, b, 0.4)
-        
-        # Draw top-left corner mask.
-        draw_line(cr, x + 1, y + 1, x + 2, y + 1)
-        draw_line(cr, x, y + 2, x + 2, y + 2)
-        
-        # Draw top-right corner mask.
-        draw_line(cr, x + w - 2, y + 1, x + w - 1, y + 1)
-        draw_line(cr, x + w - 2, y + 2, x + w, y + 2)
-        
-        # Draw bottom-left corner mask.
-        draw_line(cr, x + 1, y + h, x + 2, y + h)
-        draw_line(cr, x, y + h - 1, x + 2, y + h - 1)
-
-        # Draw bottom-right corner mask.
-        draw_line(cr, x + w - 2, y + h, x + w - 1, y + h)
-        draw_line(cr, x + w - 2, y + h - 1, x + w, y + h - 1)
-        
-        # Draw button border.
+        # Draw border.
         cr.set_source_rgb(*color_hex_to_cairo(border_color))
-        draw_line(cr, x + 2, y + 1, x + w - 2, y + 1)
-        draw_line(cr, x + 2, y + h, x + w - 2, y + h)
-        draw_line(cr, x + 1, y + 2, x + 1, y + h - 2)
-        draw_line(cr, x + w, y + 2, x + w, y + h - 2)
+        draw_line(cr, x + 2, y + 1, x + w - 1, y + 1) # top
+        draw_line(cr, x + 2, y + h, x + w - 1, y + h) # bottom
+        draw_line(cr, x + 1, y + 2, x + 1, y + h - 1) # left
+        draw_line(cr, x + w, y + 2, x + w, y + h - 1) # right
+        
+        # Draw four point.
+        top_left_point = ui_theme.get_pixbuf("button.png").get_pixbuf()
+        top_right_point = top_left_point.rotate_simple(270)
+        bottom_right_point = top_left_point.rotate_simple(180)
+        bottom_left_point = top_left_point.rotate_simple(90)
+        
+        draw_pixbuf(cr, top_left_point, x, y)
+        draw_pixbuf(cr, top_right_point, x + w - top_left_point.get_width(), y)
+        draw_pixbuf(cr, bottom_left_point, x, y + h - top_left_point.get_height())
+        draw_pixbuf(cr, bottom_right_point, x + w - top_left_point.get_width(), y + h - top_left_point.get_height())
         
         # Draw font.
-        if self.label != "":
-            draw_font(cr, self.label, DEFAULT_FONT_SIZE, 
-                      ui_theme.get_color("buttonFont").get_color(),
-                      x, y, w, h)
+        draw_font(cr, self.label, self.font_size,
+                  ui_theme.get_color("buttonFont").get_color(),
+                  x, y, w, h)
         
-        return True        
-
+        return True
+        
 gobject.type_register(Button)
 
 class ImageButton(gtk.Button):
