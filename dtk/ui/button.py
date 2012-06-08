@@ -70,15 +70,19 @@ class Button(gtk.Button):
         if not self.clickable:
             border_color = ui_theme.get_color("buttonBorderDisable").get_color()
             background_color = ui_theme.get_shadow_color("buttonBackgroundDisable").get_color_info()
-        elif widget.state == gtk.STATE_NORMAL:
-            border_color = ui_theme.get_color("buttonBorderNormal").get_color()
-            background_color = ui_theme.get_shadow_color("buttonBackgroundNormal").get_color_info()
-        elif widget.state == gtk.STATE_PRELIGHT:
-            border_color = ui_theme.get_color("buttonBorderPrelight").get_color()
-            background_color = ui_theme.get_shadow_color("buttonBackgroundPrelight").get_color_info()
-        elif widget.state == gtk.STATE_ACTIVE:
-            border_color = ui_theme.get_color("buttonBorderActive").get_color()
-            background_color = ui_theme.get_shadow_color("buttonBackgroundActive").get_color_info()
+            button_color = ui_theme.get_color("buttonDisableFont").get_color()
+        else:
+            button_color = ui_theme.get_color("buttonFont").get_color()
+            
+            if widget.state == gtk.STATE_NORMAL:
+                border_color = ui_theme.get_color("buttonBorderNormal").get_color()
+                background_color = ui_theme.get_shadow_color("buttonBackgroundNormal").get_color_info()
+            elif widget.state == gtk.STATE_PRELIGHT:
+                border_color = ui_theme.get_color("buttonBorderPrelight").get_color()
+                background_color = ui_theme.get_shadow_color("buttonBackgroundPrelight").get_color_info()
+            elif widget.state == gtk.STATE_ACTIVE:
+                border_color = ui_theme.get_color("buttonBorderActive").get_color()
+                background_color = ui_theme.get_shadow_color("buttonBackgroundActive").get_color_info()
             
         # Draw background.
         draw_vlinear(
@@ -105,9 +109,7 @@ class Button(gtk.Button):
         draw_pixbuf(cr, bottom_right_point, x + w - top_left_point.get_width(), y + h - top_left_point.get_height())
         
         # Draw font.
-        draw_font(cr, self.label, self.font_size,
-                  ui_theme.get_color("buttonFont").get_color(),
-                  x, y, w, h)
+        draw_font(cr, self.label, self.font_size, button_color, x, y, w, h)
         
         return True
         

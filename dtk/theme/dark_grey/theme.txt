@@ -15,6 +15,7 @@
  "buttonBorderActive" : "#e65757",
  "buttonBorderDisable" : "#333333",
  "buttonFont" : "#000000",
+ "buttonDisableFont" : "#000000",
  "entryText" : "#000000",
  "entrySelectText" : "#FFFFFF",
  "entryCursor" : "#333333",
