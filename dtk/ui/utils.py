@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_CENTER, DEFAULT_FONT, COLOR_NAME_DICT, BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED
+from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_CENTER, DEFAULT_FONT, COLOR_NAME_DICT, BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED, COLOR_SEQUENCE
 from contextlib import contextmanager 
 import cairo
 import gtk
@@ -681,7 +681,7 @@ def rgb2hsb(r_value, g_value, b_value):
 def find_similar_color(search_color):
     '''Find simliar color match search_color, detail look hsb(hsv).png in current directory.'''
     (search_h, search_s, search_b) = rgb2hsb(*color_hex_to_cairo(search_color))
-    hsb_colors = map(lambda (name, value): (name, rgb2hsb(*color_hex_to_cairo(value))), COLOR_NAME_DICT.iteritems())
+    hsb_colors = map(lambda name: (name, rgb2hsb(*color_hex_to_cairo(COLOR_NAME_DICT[name]))), COLOR_SEQUENCE)
     
     similar_color_name = None
     similar_color_value = None

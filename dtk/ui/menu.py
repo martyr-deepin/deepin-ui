@@ -121,6 +121,7 @@ def menu_grab_window_motion(widget, event):
                 
                 menu_item.item_box.queue_draw()
 
+# class Menu(Window):
 class Menu(Window):
     '''Menu.'''
 	
@@ -445,18 +446,10 @@ class MenuItem(object):
         font_color = ui_theme.get_color("menuFont").get_color()
         
         # Draw select effect.
-        if widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
+        if self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
             # Draw background.
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
                          ui_theme.get_shadow_color("menuItemSelect").get_color_info(),
-                         MENU_ITEM_RADIUS)
-            
-            # Set font color.
-            font_color = ui_theme.get_color("menuSelectFont").get_color()
-        elif self.submenu_active:
-            # Draw background.
-            draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                         ui_theme.get_shadow_color("menuItemActiveSubmenu").get_color_info(),
                          MENU_ITEM_RADIUS)
             
             # Set font color.

@@ -57,7 +57,7 @@
  },
  "shadow_colors" : {
      "menuSide" : [
-	    (0,     ("#9BC1D1", 1.0)),
+	    (0,     ("#FFD3B3", 1.0)),
 	    (1,     ("#FFF8F2", 0.0)),
      ],
      "linearBackground" : [
