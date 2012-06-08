@@ -26,10 +26,11 @@ from dtk.ui.skin_config import skin_config
 import os
 from dtk.ui.utils import get_parent_dir
 
-skin_config.load_skin(
+skin_config.init_skin(
     "01",
     os.path.join(get_parent_dir(__file__), "skin"),
-    os.path.expanduser("~/.config/deepin-demo/skin")
+    os.path.expanduser("~/.config/deepin-demo/skin"),
+    os.path.expanduser("~/.config/deepin-demo/skin_config.ini"),
     )
 ui_theme.load_theme()
 app_theme = Theme(

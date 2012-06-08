@@ -43,7 +43,6 @@ import math
 from skin_config import skin_config
 from label import Label
 import urllib
-import shutil
 
 def draw_skin_mask(cr, x, y, w, h):
     '''Draw skin mask.'''
@@ -88,7 +87,7 @@ class SkinWindow(Window):
     def change_skin(self, item):
         '''Change skin.'''
         # Load skin.
-        if skin_config.load_skin(os.path.basename(item.skin_dir)):
+        if skin_config.reload_skin(os.path.basename(item.skin_dir)):
             skin_config.apply_skin()
         
     def switch_preview_page(self):
@@ -238,7 +237,7 @@ class SkinPreviewPage(gtk.VBox):
                     self.switch_edit_page_callback,
                     self.pop_delete_skin_dialog
                     )], -1)
-        if skin_config.load_skin(os.path.basename(skin_dir)):
+        if skin_config.reload_skin(os.path.basename(skin_dir)):
             skin_config.apply_skin()
             
             self.highlight_skin()    
@@ -286,7 +285,7 @@ class SkinPreviewPage(gtk.VBox):
                     self.switch_edit_page_callback,
                     self.pop_delete_skin_dialog
                     )], -1)
-        if skin_config.load_skin(os.path.basename(skin_dir)):
+        if skin_config.reload_skin(os.path.basename(skin_dir)):
             skin_config.apply_skin()
             
             self.highlight_skin()    
@@ -320,7 +319,7 @@ class SkinPreviewPage(gtk.VBox):
             # Change to first theme if delete current theme.
             if item.skin_dir == skin_config.skin_dir:
                 item_index = max(self.preview_view.items.index(item) - 1, 0)
-                if skin_config.load_skin(os.path.basename(self.preview_view.items[item_index].skin_dir)):
+                if skin_config.reload_skin(os.path.basename(self.preview_view.items[item_index].skin_dir)):
                     skin_config.apply_skin()
                     self.highlight_skin()
                         

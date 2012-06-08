@@ -76,9 +76,36 @@ class SkinConfig(gobject.GObject):
                 
         return None       
         
-    def reload_skin(self):
+    def init_skin(self, skin_name, system_skin_dir, user_skin_dir, skin_config_file):
+        '''Init skin.'''
+        self.skin_config_file = skin_config_file
+        if os.path.exists(skin_config_file):
+            # Read skin name from config file.
+            skin_config = Config(skin_config_file)
+            skin_config.load()
+            
+            # Load skin.
+            self.load_skin(skin_config.get("skin", "skin_name"), system_skin_dir, user_skin_dir)
+        else:
+            # Create skin config if it not exists.
+            touch_file(self.skin_config_file)
+            
+            # Load alternative skin.
+            self.load_skin(skin_name, system_skin_dir, user_skin_dir)
+    
+    def save_skin_name(self):
+        '''Save skin name.'''
+        skin_config = Config(self.skin_config_file)
+        skin_config.load()
+        skin_config.set("skin", "skin_name", self.skin_name)
+        skin_config.write(self.skin_config_file)
+            
+    def reload_skin(self, skin_name=None):
         '''Reload skin.'''
-        return self.load_skin(self.skin_name)
+        if skin_name:
+            return self.load_skin(skin_name)
+        else:
+            return self.load_skin(self.skin_name)
         
     def load_skin(self, skin_name, system_skin_dir=None, user_skin_dir=None):
         '''Load skin, return True if load finish, otherwise return False.'''
@@ -124,6 +151,9 @@ class SkinConfig(gobject.GObject):
             # Generate background pixbuf.
             self.background_pixbuf = gtk.gdk.pixbuf_new_from_file(self.get_skin_file_path(self.image))
             
+            # Save skin name.
+            self.save_skin_name()
+
             return True
         except Exception, e:
             print "load_skin error: %s" % (e)
