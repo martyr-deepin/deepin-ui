@@ -36,7 +36,7 @@
      "frameLight" : ("#FFFFFF", 0.2),
      "frameLightDot" : ("#FFFFFF", 0.1),
 	 "scrollbarBackground" : ("#FFFFFF", 0.5),
-	 "menuMask" : ("#FFFFFF", 1.0),
+	 "menuMask" : ("#F7F2FF", 1.0),
 	 "progressbarFrame" : ("#EF12AB", 1.0),
 	 "checkButtonAcme" : ("#A1A1A1", 0.4),
 	 "checkButtonPoint" : ("#A1A1A1", 0.85),
@@ -58,7 +58,7 @@
  "shadow_colors" : {
      "menuSide" : [
 	    (0,     ("#9BC1D1", 1.0)),
-	    (1,     ("#FFFFFF", 0.0)),
+	    (1,     ("#F7F2FF", 0.0)),
      ],
      "linearBackground" : [
 	    (0,		("#EFEFEF", 0.6)),
