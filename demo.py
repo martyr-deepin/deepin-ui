@@ -59,7 +59,6 @@ from dtk.ui.menu import Menu
 from dtk.ui.treeview import TreeView, TreeViewItem
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
-from dtk.ui.paned import HPaned
 from dtk.ui.popup_window import PopupWindow
 from dtk.ui.tab_window import TabWindow
 from dtk.ui.color_selection import ColorSelectDialog
@@ -255,7 +254,8 @@ if __name__ == "__main__":
     # Add categorybar.
     # Note if you add list in categorybar make sure height is multiples of list length.
     # Otherwise last one item will heighter than Otherwise items.
-    category_box = HPaned(150)
+    # category_box = HPaned(150)
+    category_box = gtk.HPaned()
     body_box.add(category_box)
     categorybar = Categorybar([
             (app_theme.get_pixbuf("categorybar/word.png"), "测试分类", lambda : Tooltip("测试分类", 600, 400)),

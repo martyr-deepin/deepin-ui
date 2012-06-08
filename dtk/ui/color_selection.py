@@ -152,7 +152,7 @@ class ColorSelectDialog(Window):
         self.color_select_view.connect("button-press-item", lambda view, item, x, y: self.update_color_info(item.color, False))
         self.color_select_view.draw_mask = draw_blank_mask
         self.color_select_scrolled_window = ScrolledWindow()
-        self.color_select_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        # self.color_select_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         for color in self.DEFAULT_COLOR_LIST:
             self.color_select_view.add_items([ColorItem(color)])
             
