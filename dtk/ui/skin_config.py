@@ -97,8 +97,9 @@ class SkinConfig(gobject.GObject):
         '''Save skin name.'''
         skin_config = Config(self.skin_config_file)
         skin_config.load()
-        skin_config.set("skin", "skin_name", self.skin_name)
-        skin_config.write(self.skin_config_file)
+        if skin_config.get("skin", "skin_name") != self.skin_name:
+            skin_config.set("skin", "skin_name", self.skin_name)
+            skin_config.write(self.skin_config_file)
             
     def reload_skin(self, skin_name=None):
         '''Reload skin.'''
