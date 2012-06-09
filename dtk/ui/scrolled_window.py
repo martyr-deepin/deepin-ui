@@ -164,9 +164,14 @@ class ScrolledWindow(gtk.Bin):
 
     def calc_vbar_allocation(self):
         #print "self.vpos", self.vpos
-        self.vallocation = gdk.Rectangle(
-                self.allocation.width - self.bar_normal_width, int(self._vertical.bar_pos),
-                self.bar_normal_width, int(self._vertical.bar_len))
+        x = int(self.allocation.width - self.bar_normal_width)
+        y = int(self._vertical.bar_pos)
+        w = int(self.bar_normal_width)
+        h = int(self._vertical.bar_len)
+        if y == h == 0:
+            self.vallocation = gdk.Rectangle(0, 0, 0, 0)
+        else:
+            self.vallocation = gdk.Rectangle(x, y, w, h)
 
     def calc_hbar_length(self):
         self._horizaontal.virtual_len = self.allocation.width
@@ -192,9 +197,14 @@ class ScrolledWindow(gtk.Bin):
         #assert 0 <= int(self.hpos) <= self.allocation.width - self.hbar_length,\
         #        "self.hpos %f   self.allocation.width %f self.hbar_lengh %f" % (self.hpos, self.allocation.width,
         #                self.hbar_length)
-        self.hallocation = gdk.Rectangle(
-                int(self._horizaontal.bar_pos), self.allocation.height - self.bar_normal_width,
-                int(self._horizaontal.bar_len), self.bar_normal_width)
+        x = int(self._horizaontal.bar_pos)
+        y = int(self.allocation.height - self.bar_normal_width)
+        w = int(self._horizaontal.bar_len)
+        h = int(self.bar_normal_width)
+        if x == w == 0:
+            self.hallocation = gdk.Rectangle(0, 0, 0, 0)
+        else:
+            self.hallocation = gdk.Rectangle(x, y, w, h)
 
     def vadjustment_changed(self, adj):
         if self.get_realized():
