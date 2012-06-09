@@ -108,7 +108,6 @@ class Window(gtk.Window):
             
             cr.clip()
             
-            # draw_pixbuf(cr, pixbuf, x, y)
             skin_config.render_background(cr, self, x, y)
         
             # Draw mask.
@@ -148,7 +147,6 @@ class Window(gtk.Window):
             
             cr.clip()
             
-            # draw_pixbuf(cr, pixbuf, x, y, 0.5)
             skin_config.render_background(cr, self, x, y)
             
         # Propagate expose.

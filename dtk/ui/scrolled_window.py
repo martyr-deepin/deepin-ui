@@ -28,7 +28,7 @@ class ScrolledWindow(gtk.Bin):
         '''Init scrolled window.'''
         gtk.Bin.__init__(self)
         self.bar_min_length = 160
-        self.bar_width = 10
+        self.bar_width = 16
         self.set_can_focus(True)
         self.set_has_window(False)
         self.connect("motion_notify_event", self.on_bar_motion)
@@ -69,7 +69,7 @@ class ScrolledWindow(gtk.Bin):
         return False
         if e.window == self.vwindow:
             self.vwindow.shape_combine_region(gdk.region_rectangle(gdk.Rectangle(0, 0, 8, 100)), 8, 0)
-            self.vwindow.set_background(gdk.Color("gray"))
+            # self.vwindow.set_background(gdk.Color("gray"))
             self.vinside = False
             self.queue_draw()
             return True
@@ -217,6 +217,7 @@ class ScrolledWindow(gtk.Bin):
 
     def add_with_viewport(self, child):
         vp = gtk.Viewport()
+        vp.set_shadow_type(gtk.SHADOW_NONE)
         vp.add(child)
         vp.show()
         self.add(vp)

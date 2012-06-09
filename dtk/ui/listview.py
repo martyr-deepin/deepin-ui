@@ -362,10 +362,11 @@ class ListView(gtk.DrawingArea):
             
         # Draw background.
         with cairo_state(cr):
-            cr.translate(-viewport.allocation.x, -viewport.allocation.y)
+            scrolled_window = get_match_parent(self, "ScrolledWindow")
+            cr.translate(-scrolled_window.allocation.x, -scrolled_window.allocation.y)
             cr.rectangle(offset_x, offset_y, 
-                         viewport.allocation.x + viewport.allocation.width, 
-                         viewport.allocation.y + viewport.allocation.height)
+                         scrolled_window.allocation.x + scrolled_window.allocation.width, 
+                         scrolled_window.allocation.y + scrolled_window.allocation.height)
             cr.clip()
             
             (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
