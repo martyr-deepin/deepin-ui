@@ -43,11 +43,11 @@ class ScrolledWindow(gtk.Bin):
 
         class Record():
             def __init__(self):
-                self.bar_len = 0  #scrollbar length
-                self.last_pos = 0 #last mouse motion pointer (x or y)
-                self.last_time = 0 #last mouse motion timestamp
-                self.virtual_len = 0  #the virtual window height or width length
-                self.bar_pos = 0 #the scrollbar topcorner/leftcorner position
+                self.bar_len = 0     #scrollbar length
+                self.last_pos = 0    #last mouse motion pointer (x or y)
+                self.last_time = 0   #last mouse motion timestamp
+                self.virtual_len = 0 #the virtual window height or width length
+                self.bar_pos = 0     #the scrollbar topcorner/leftcorner position
 
         self._horizaontal = Record()
         self._vertical = Record()
@@ -74,6 +74,7 @@ class ScrolledWindow(gtk.Bin):
             self.queue_draw()
             return True
         return False
+    
     def on_enter(self, w, e):
         return False
         if e.window == self.vwindow:
@@ -349,12 +350,16 @@ class ScrolledWindow(gtk.Bin):
         gtk.Bin.do_realize(self)
         self.queue_resize()
 
-    def do_remove(self, child):
-        print "do_remove"
+    def do_remove(self, widget):
         self.vadjustment = None
         self.hadjustment = None
-        gtk.Container.remove(self, child)
+        
+        if self.child == widget:
+            widget.unparent()
+            self.child = None
 
+            if widget.flags() & gtk.VISIBLE and self.flags() & gtk.VISIBLE:
+                self.queue_resize()
 
     def do_map(self):
         gtk.Bin.do_map(self)  #must before self.xwindow.show(), didn't know the reason.
