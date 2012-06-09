@@ -28,7 +28,8 @@ class ScrolledWindow(gtk.Bin):
         '''Init scrolled window.'''
         gtk.Bin.__init__(self)
         self.bar_min_length = 160
-        self.bar_width = 16
+        self.bar_normal_width = 16
+        self.bar_min_width = 3
         self.set_can_focus(True)
         self.set_has_window(False)
         self.connect("motion_notify_event", self.on_bar_motion)
@@ -66,19 +67,21 @@ class ScrolledWindow(gtk.Bin):
         pass
 
     def on_leave(self, w, e):
-        return False
         if e.window == self.vwindow:
-            self.vwindow.shape_combine_region(gdk.region_rectangle(gdk.Rectangle(0, 0, 8, 100)), 8, 0)
-            # self.vwindow.set_background(gdk.Color("gray"))
+            self.vwindow.shape_combine_region(
+                gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_min_width, int(self._vertical.bar_len))), 
+                self.bar_normal_width - self.bar_min_width, 0) 
+            self.vwindow.set_background(gdk.Color("gray"))
             self.vinside = False
             self.queue_draw()
             return True
         return False
     
     def on_enter(self, w, e):
-        return False
         if e.window == self.vwindow:
-            self.vwindow.shape_combine_region(gdk.region_rectangle(gdk.Rectangle(0, 0, 20, 100)), 0, 0)
+            self.vwindow.shape_combine_region(
+                gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_normal_width, int(self._vertical.bar_len))), 
+                0, 0) 
             self.vwindow.set_background(gdk.Color("blue"))
             self.vinside = True
             self.queue_draw()
@@ -158,8 +161,8 @@ class ScrolledWindow(gtk.Bin):
     def calc_vbar_allocation(self):
         #print "self.vpos", self.vpos
         self.vallocation = gdk.Rectangle(
-                self.allocation.width - self.bar_width, int(self._vertical.bar_pos),
-                self.bar_width, int(self._vertical.bar_len))
+                self.allocation.width - self.bar_normal_width, int(self._vertical.bar_pos),
+                self.bar_normal_width, int(self._vertical.bar_len))
 
     def calc_hbar_length(self):
         self._horizaontal.virtual_len = self.allocation.width
@@ -186,8 +189,8 @@ class ScrolledWindow(gtk.Bin):
         #        "self.hpos %f   self.allocation.width %f self.hbar_lengh %f" % (self.hpos, self.allocation.width,
         #                self.hbar_length)
         self.hallocation = gdk.Rectangle(
-                int(self._horizaontal.bar_pos), self.allocation.height - self.bar_width,
-                int(self._horizaontal.bar_len), self.bar_width)
+                int(self._horizaontal.bar_pos), self.allocation.height - self.bar_normal_width,
+                int(self._horizaontal.bar_len), self.bar_normal_width)
 
     def vadjustment_changed(self, adj):
         if self.get_realized():
@@ -319,10 +322,6 @@ class ScrolledWindow(gtk.Bin):
                 )
         self.vwindow.set_user_data(self)
         self.vwindow.set_opacity(1)
-        #region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_width-3, int(self.vbar_length)))
-        #self.vwindow.shape_combine_region(region, -3, 0)
-        #self.vwindow.set_background(gdk.Color("gray"))
-
 
         self.hwindow = gtk.gdk.Window(self.binwindow,
                 x=self.hallocation.x,
@@ -341,10 +340,7 @@ class ScrolledWindow(gtk.Bin):
                     )
                 )
         self.hwindow.set_user_data(self)
-        #region = gdk.region_rectangle(gdk.Rectangle(0, 0, int(self.hbar_length), self.bar_width))
-        #self.hwindow.shape_combine_region(region, 0, -3)
-
-
+        
         if self.child:
             self.child.set_parent_window(self.binwindow)
 
