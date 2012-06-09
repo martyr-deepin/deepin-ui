@@ -45,6 +45,8 @@ class ScrolledWindow(gtk.Bin):
         self.hadjustment_changed_id = None
         self.vadjustment_value_changed_id = None
         self.vadjustment_changed_id = None
+        self.h_policy = gtk.POLICY_AUTOMATIC
+        self.v_policy = gtk.POLICY_AUTOMATIC
 
         class Record():
             def __init__(self):
@@ -168,10 +170,16 @@ class ScrolledWindow(gtk.Bin):
         y = int(self._vertical.bar_pos)
         w = int(self.bar_normal_width)
         h = int(self._vertical.bar_len)
-        if y == h == 0:
-            self.vallocation = gdk.Rectangle(0, 0, 0, 0)
-        else:
+        
+        if self.v_policy == gtk.POLICY_AUTOMATIC:
+            if y == h == 0:
+                self.vallocation = gdk.Rectangle(-1, -1, 1, 1)
+            else:
+                self.vallocation = gdk.Rectangle(x, y, w, h)
+        elif self.v_policy == gtk.POLICY_ALWAYS:
             self.vallocation = gdk.Rectangle(x, y, w, h)
+        elif self.v_policy == gtk.POLICY_NEVER:
+            self.vallocation = gdk.Rectangle(-1, -1, 1, 1)
 
     def calc_hbar_length(self):
         self._horizaontal.virtual_len = self.allocation.width
@@ -201,10 +209,16 @@ class ScrolledWindow(gtk.Bin):
         y = int(self.allocation.height - self.bar_normal_width)
         w = int(self._horizaontal.bar_len)
         h = int(self.bar_normal_width)
-        if x == w == 0:
-            self.hallocation = gdk.Rectangle(0, 0, 0, 0)
-        else:
+        
+        if self.h_policy == gtk.POLICY_AUTOMATIC:
+            if x == w == 0:
+                self.hallocation = gdk.Rectangle(-1, -1, 1, 1)
+            else:
+                self.hallocation = gdk.Rectangle(x, y, w, h)
+        elif self.h_policy == gtk.POLICY_ALWAYS:
             self.hallocation = gdk.Rectangle(x, y, w, h)
+        elif self.h_policy == gtk.POLICY_NEVER:
+            self.hallocation = gdk.Rectangle(-1, -1, 1, 1)
 
     def vadjustment_changed(self, adj):
         if self.get_realized():
@@ -412,5 +426,23 @@ class ScrolledWindow(gtk.Bin):
         # Save callback id for disconnect.
         self.vadjustment_value_changed_id = self.vadjustment.connect('value-changed', self.vadjustment_changed)
         self.vadjustment_changed_id = self.vadjustment.connect('changed', self.vadjustment_changed)
+        
+    def set_policy(self, h_policy, v_policy):
+        '''Set scrolledbar policy.'''
+        old_h_policy = self.h_policy
+        old_v_policy = self.v_policy
+        self.h_policy = h_policy
+        self.v_policy = v_policy
+        
+        if h_policy != old_h_policy:
+            self.hadjustment.emit("changed")
+
+        if v_policy != old_v_policy:
+            self.vadjustment.emit("changed")
+        
+    def get_policy(self):
+        '''Get policy.'''
+        return (self.h_policy, self.v_policy)
+        
 
 gobject.type_register(ScrolledWindow)
