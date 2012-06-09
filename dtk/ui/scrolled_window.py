@@ -3,7 +3,7 @@
 import gobject
 import gtk
 from gtk import gdk
-
+from utils import remove_callback_id
 
 def value2pos(value, height, upper):
     '''compute the scrollbar position by the adjustment value'''
@@ -41,6 +41,10 @@ class ScrolledWindow(gtk.Bin):
         self.hallocation = gdk.Rectangle()
         self.set_vadjustment(gtk.Adjustment())
         self.set_hadjustment(gtk.Adjustment())
+        self.hadjustment_value_changed_id = None
+        self.hadjustment_changed_id = None
+        self.vadjustment_value_changed_id = None
+        self.vadjustment_changed_id = None
 
         class Record():
             def __init__(self):
@@ -201,6 +205,7 @@ class ScrolledWindow(gtk.Bin):
             self.vwindow.move_resize(*self.vallocation)
             self.child.draw(self.allocation)
             self.queue_draw()
+            
     def hadjustment_changed(self, adj):
         if self.get_realized():
             upper = self.hadjustment.upper
@@ -208,7 +213,6 @@ class ScrolledWindow(gtk.Bin):
             self.calc_hbar_allocation()
             self.hwindow.move_resize(*self.hallocation)
             self.child.queue_draw()
-
 
     def add(self, child):
         self.child = child
@@ -349,7 +353,12 @@ class ScrolledWindow(gtk.Bin):
 
     def do_remove(self, widget):
         self.vadjustment = None
+        remove_callback_id(self.vadjustment_value_changed_id)
+        remove_callback_id(self.vadjustment_changed_id)
+        
         self.hadjustment = None
+        remove_callback_id(self.hadjustment_value_changed_id)
+        remove_callback_id(self.hadjustment_changed_id)
         
         if self.child == widget:
             widget.unparent()
@@ -376,17 +385,22 @@ class ScrolledWindow(gtk.Bin):
 
     def get_vadjustment(self):
         return self.vadjustment
+    
     def get_hadjustment(self):
         return self.hadjustment
+    
     def set_hadjustment(self, adj):
-        #? is python need disconnect?
         self.hadjustment = adj
-        self.hadjustment.connect('value-changed', self.hadjustment_changed)
-        self.hadjustment.connect('changed', self.hadjustment_changed)
+        
+        # Save callback id for disconnect.
+        self.hadjustment_value_changed_id = self.hadjustment.connect('value-changed', self.hadjustment_changed)
+        self.hadjustment_changed_id = self.hadjustment.connect('changed', self.hadjustment_changed)
+        
     def set_vadjustment(self, adj):
         self.vadjustment = adj
-        self.vadjustment.connect('value-changed', self.vadjustment_changed)
-#        self.vadjustment.connect('changed', self.vadjustment_changed)
-
+        
+        # Save callback id for disconnect.
+        self.vadjustment_value_changed_id = self.vadjustment.connect('value-changed', self.vadjustment_changed)
+        self.vadjustment_changed_id = self.vadjustment.connect('changed', self.vadjustment_changed)
 
 gobject.type_register(ScrolledWindow)
