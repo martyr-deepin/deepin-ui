@@ -24,7 +24,7 @@ from box import EventBox
 from constant import DEFAULT_FONT_SIZE, BUTTON_PRESS, BUTTON_NORMAL, BUTTON_HOVER
 from draw import draw_vlinear, draw_pixbuf, draw_font, expose_linear_background
 from theme import ui_theme
-from utils import get_content_size, widget_fix_cycle_destroy_bug, propagate_expose
+from utils import get_content_size, propagate_expose
 import gobject
 import gtk
 
@@ -106,7 +106,6 @@ class CategoryItem(gtk.Button):
             -1
             )
 
-        widget_fix_cycle_destroy_bug(self)
         self.connect("expose-event", self.expose_category_item)    
         self.connect("clicked", lambda w: self.wrap_category_item_clicked_action())
 
