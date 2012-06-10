@@ -456,8 +456,7 @@ class ScrolledWindow(gtk.Bin):
         self.queue_resize()
 
     def set_policy(self, h, v):
-        raise Warning("dtk's scrolledwindow didn't support this function,\
-                policy is always automatic!")
+        print "dtk's scrolledwindow didn't support this function, policy is always automatic!"
 
     def do_remove(self, child):
         self.vadjustment = None
