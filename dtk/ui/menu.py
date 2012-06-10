@@ -121,7 +121,6 @@ def menu_grab_window_motion(widget, event):
                 
                 menu_item.item_box.queue_draw()
 
-# class Menu(Window):
 class Menu(Window):
     '''Menu.'''
 	

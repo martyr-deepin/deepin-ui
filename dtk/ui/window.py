@@ -68,7 +68,7 @@ class Window(gtk.Window):
         
         # Handle signal.
         self.connect_after("expose-event", self.expose_window_background)
-        self.connect("configure-event", lambda w, e: self.queue_draw())
+        self.connect_after("size-allocate", lambda w, e: self.queue_draw())
         self.connect("motion-notify-event", self.motion_notify)
         self.connect("button-press-event", self.resize_window)
         self.connect("window-state-event", self.monitor_window_state)

@@ -59,10 +59,6 @@ class MplayerWindow(gtk.Window):
         
         # Init shadow window.
         if enable_shadow(self) and self.enable_shadow:    
-            # Have two reasons use WINDOW_POPUP here:
-            # 1. Make window shadow can move to negative position.
-            # 2. Make user can't close window through Alt+Space keystroke.
-            # self.window_shadow = gtk.Window(gtk.WINDOW_POPUP)
             self.window_shadow = gtk.Window(gtk.WINDOW_TOPLEVEL)
             self.window_shadow.add_events(gtk.gdk.ALL_EVENTS_MASK)
             self.window_shadow.set_decorated(False)
@@ -87,9 +83,6 @@ class MplayerWindow(gtk.Window):
         if enable_shadow(self) and self.enable_shadow:    
             (x, y) = self.get_position()
             (width, height) = self.get_size()
-            
-            print (x - self.shadow_padding, y - self.shadow_padding,
-                   width + self.shadow_padding * 2, height + self.shadow_padding * 2)
             
             self.window_shadow.get_window().move_resize(
                 x - self.shadow_padding, y - self.shadow_padding,
