@@ -26,7 +26,7 @@ from draw import draw_hlinear
 from keymap import get_keyevent_name
 from menu import Menu
 from theme import ui_theme
-from utils import propagate_expose, cairo_state, color_hex_to_cairo, get_content_size, is_double_click, is_right_button, is_left_button, alpha_color_hex_to_cairo, set_cursor, is_in_rect
+from utils import propagate_expose, cairo_state, color_hex_to_cairo, get_content_size, is_double_click, is_right_button, is_left_button, alpha_color_hex_to_cairo
 import gobject
 import gtk
 import pango

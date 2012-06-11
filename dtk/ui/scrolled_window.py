@@ -1,3 +1,25 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2011 ~ 2012 Deepin, Inc.
+#               2011 ~ 2012 Xia Bin
+# 
+# Author:     Xia Bin <xiabin@linuxdeepin.com>
+# Maintainer: Xia Bin <xiabin@linuxdeepin.com>
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import gobject
 import gtk
 from gtk import gdk
@@ -27,7 +49,7 @@ class ScrolledWindow(gtk.Bin):
         gtk.Bin.__init__(self)
         self.bar_min_length = 50  #scrollbar smallest height
 
-        self.bar_small_width = 5
+        self.bar_small_width = 7
         self.bar_width = 14  #normal scrollbar width
         self.bar_background = color_rgb_to_cairo((255, 0, 244))
 
