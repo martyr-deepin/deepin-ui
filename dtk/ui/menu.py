@@ -134,10 +134,11 @@ class Menu(Window):
                  padding_x=3, 
                  padding_y=3, 
                  item_padding_x=6, 
-                 item_padding_y=3):
+                 item_padding_y=3,
+                 shadow_visible=True):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
-        Window.__init__(self)
+        Window.__init__(self, shadow_visible=shadow_visible)
         self.draw_mask = self.draw_menu_mask
         global root_menus
         self.is_root_menu = is_root_menu
