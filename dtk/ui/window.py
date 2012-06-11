@@ -225,23 +225,6 @@ class Window(gtk.Window):
         '''Min window.'''
         self.iconify()
         
-    def toggle_visible(self):
-        '''Toggle visible.'''
-        print self.window.get_state()
-        print [gtk.gdk.WINDOW_STATE_WITHDRAWN,
-               gtk.gdk.WINDOW_STATE_ICONIFIED,
-               gtk.gdk.WINDOW_STATE_MAXIMIZED,
-               gtk.gdk.WINDOW_STATE_STICKY,
-               gtk.gdk.WINDOW_STATE_FULLSCREEN,
-               gtk.gdk.WINDOW_STATE_ABOVE,
-               gtk.gdk.WINDOW_STATE_BELOW,
-               ],
-        if self.window.get_state() == gtk.gdk.WINDOW_STATE_ICONIFIED:
-            self.window.deiconify()
-            self.window.present()
-        else:
-            self.window.iconify()
-        
     def toggle_max_window(self):
         '''Toggle window.'''
         window_state = self.window.get_state()

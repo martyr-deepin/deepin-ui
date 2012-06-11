@@ -277,14 +277,6 @@ Otherwise hide shadow.'''
         '''Min window.'''
         self.iconify()
         
-    def toggle_visible(self):
-        '''Toggle visible.'''
-        if self.window.get_state() == gtk.gdk.WINDOW_STATE_ICONIFIED:
-            self.window.deiconify()
-            self.window.present()
-        else:
-            self.window.iconify()
-        
     def toggle_max_window(self):
         '''Toggle window.'''
         window_state = self.window.get_state()
