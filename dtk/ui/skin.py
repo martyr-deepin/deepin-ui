@@ -138,9 +138,8 @@ class SkinPreviewPage(gtk.VBox):
         
         self.preview_align = gtk.Alignment()
         self.preview_align.set(0.5, 0.5, 1, 1)
-        self.preview_align.set_padding(0, 0, 10, 5)
+        self.preview_align.set_padding(0, 0, 10, 1)
         self.preview_scrolled_window = ScrolledWindow()
-        # self.preview_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         self.preview_scrolled_window.draw_mask = lambda cr, x, y, w, h: draw_mask(self.preview_scrolled_window, x, y, w, h, draw_skin_mask)
         self.preview_view = IconView()
         self.preview_view.draw_mask = lambda cr, x, y, w, h: draw_mask(self.preview_view, x, y, w, h, draw_skin_mask)
@@ -795,7 +794,6 @@ class SkinEditPage(gtk.VBox):
         self.color_select_view = IconView()
         self.color_select_view.draw_mask = lambda cr, x, y, w, h: draw_mask(self.color_select_view, x, y, w, h, draw_skin_mask)
         self.color_select_scrolled_window = ScrolledWindow()
-        # self.color_select_scrolled_window.set_scroll_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
         self.color_select_scrolled_window.add_child(self.color_select_view)
         self.color_select_align.add(self.color_select_scrolled_window)
         
