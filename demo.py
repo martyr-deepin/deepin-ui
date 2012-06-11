@@ -254,8 +254,7 @@ if __name__ == "__main__":
     # Add categorybar.
     # Note if you add list in categorybar make sure height is multiples of list length.
     # Otherwise last one item will heighter than Otherwise items.
-    # category_box = HPaned(150)
-    category_box = gtk.HPaned()
+    category_box = gtk.HBox()
     body_box.add(category_box)
     categorybar = Categorybar([
             (app_theme.get_pixbuf("categorybar/word.png"), "测试分类", lambda : Tooltip("测试分类", 600, 400)),
@@ -268,11 +267,11 @@ if __name__ == "__main__":
             (app_theme.get_pixbuf("categorybar/game.png"), "测试分类", None),
             (app_theme.get_pixbuf("categorybar/driver.png"), "测试分类", None),
             ])
-    category_box.add1(categorybar)
+    category_box.pack_start(categorybar, False, False)
     
     # Add scrolled window.
     scrolled_window = ScrolledWindow()
-    category_box.add2(scrolled_window)
+    category_box.pack_start(scrolled_window)
     
     items_length = 1000
 
