@@ -227,7 +227,7 @@ class Window(gtk.Window):
         
     def toggle_visible(self):
         '''Toggle visible.'''
-        if self.window.get_state() == gtk.gdk.WINDOW_STATE_WITHDRAWN:
+        if self.window.get_state() == gtk.gdk.WINDOW_STATE_ICONIFIED:
             self.window.deiconify()
             self.window.present()
         else:
