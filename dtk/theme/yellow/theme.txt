@@ -31,6 +31,7 @@
  "treeItemNormalFont" : "#000000",
  "treeItemSelectFont" : "#FFFFFF",
  "treeItemHoverFont" : "#000000",
+ "scrolledbar" : "#feffb3",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),

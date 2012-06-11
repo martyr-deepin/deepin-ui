@@ -23,7 +23,8 @@
 import gobject
 import gtk
 from gtk import gdk
-from utils import color_rgb_to_cairo, remove_callback_id
+from utils import remove_callback_id, color_hex_to_cairo
+from theme import ui_theme
 
 # the p_range is the virtual width/height, it's value is smaller than
 # the allocation.width/height when scrollbar's width/height smaller than
@@ -51,7 +52,7 @@ class ScrolledWindow(gtk.Bin):
 
         self.bar_small_width = 7
         self.bar_width = 14  #normal scrollbar width
-        self.bar_background = color_rgb_to_cairo((255, 0, 244))
+        self.bar_background = ui_theme.get_color("scrolledbar")
 
         class Record():
             def __init__(self):
@@ -95,13 +96,13 @@ class ScrolledWindow(gtk.Bin):
     def draw_vbar(self):
         #img = cairo.ImageSurface(cairo.FORMAT_ARGB32, 100, 100)
         cr = self.vwindow.cairo_create()
-        cr.set_source_rgb(*self.bar_background)
+        cr.set_source_rgb(*color_hex_to_cairo(self.bar_background.get_color()))
         cr.rectangle(0, 0, self.vallocation.width, self.vallocation.height)
         cr.fill()
 
     def draw_hbar(self):
         cr = self.hwindow.cairo_create()
-        cr.set_source_rgb(*self.bar_background)
+        cr.set_source_rgb(*color_hex_to_cairo(self.bar_background.get_color()))
         cr.rectangle(0, 0, self.hallocation.width, self.hallocation.height)
         cr.fill()
 
