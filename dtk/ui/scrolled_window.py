@@ -287,6 +287,7 @@ class ScrolledWindow(gtk.Bin):
 
     def add_with_viewport(self, child):
         vp = gtk.Viewport()
+        vp.set_shadow_type(gtk.SHADOW_NONE)
         vp.add(child)
         vp.show()
         self.add(vp)
