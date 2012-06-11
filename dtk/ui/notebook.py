@@ -25,6 +25,7 @@ from draw import draw_pixbuf, draw_font
 from theme import ui_theme
 from utils import get_content_size, propagate_expose
 import gtk
+from cache_pixbuf import CachePixbuf
 
 class Notebook(gtk.EventBox):
     '''Notebook.'''
@@ -55,6 +56,8 @@ class Notebook(gtk.EventBox):
         self.background_left_pixbuf = background_left_pixbuf
         self.background_middle_pixbuf = background_middle_pixbuf
         self.background_right_pixbuf = background_right_pixbuf
+        self.cache_bg_pixbuf = CachePixbuf()
+        self.cache_fg_pixbuf = CachePixbuf()
         
         # Calcuate tab width.
         (self.tab_width, self.tab_height) = self.calculate_tab_width()
@@ -91,18 +94,16 @@ class Notebook(gtk.EventBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         foreground_left_pixbuf = self.foreground_left_pixbuf.get_pixbuf()
-        foreground_middle_pixbuf = self.foreground_middle_pixbuf.get_pixbuf().scale_simple(
-            self.tab_width - foreground_left_pixbuf.get_width() * 2,
-            self.tab_height,
-            gtk.gdk.INTERP_BILINEAR
-            )
+        self.cache_fg_pixbuf.scale(self.foreground_middle_pixbuf.get_pixbuf(),
+                             self.tab_width - foreground_left_pixbuf.get_width() * 2,
+                             self.tab_height)
+        foreground_middle_pixbuf = self.cache_fg_pixbuf.get_cache()
         foreground_right_pixbuf = self.foreground_right_pixbuf.get_pixbuf()
         background_left_pixbuf = self.background_left_pixbuf.get_pixbuf()
-        background_middle_pixbuf = self.background_middle_pixbuf.get_pixbuf().scale_simple(
-            self.tab_width - background_left_pixbuf.get_width() * 2,
-            self.tab_height,
-            gtk.gdk.INTERP_BILINEAR
-            )
+        self.cache_bg_pixbuf.scale(self.background_middle_pixbuf.get_pixbuf(),
+                                   self.tab_width - background_left_pixbuf.get_width() * 2,
+                                   self.tab_height)
+        background_middle_pixbuf = self.cache_bg_pixbuf.get_cache()
         background_right_pixbuf = self.background_right_pixbuf.get_pixbuf()
         
         # Draw tab.

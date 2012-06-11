@@ -43,6 +43,7 @@ import math
 from skin_config import skin_config
 from label import Label
 import urllib
+from cache_pixbuf import CachePixbuf
 
 def draw_skin_mask(cr, x, y, w, h):
     '''Draw skin mask.'''
@@ -1005,6 +1006,8 @@ class SkinEditArea(gtk.EventBox):
         self.in_resize_area_flag = False
         self.lock_flag = True
         
+        self.cache_pixbuf = CachePixbuf()
+        
         self.connect("expose-event", self.expose_skin_edit_area)
         self.connect("button-press-event", self.button_press_skin_edit_area)
         self.connect("button-release-event", self.button_release_skin_edit_area)
@@ -1045,20 +1048,12 @@ class SkinEditArea(gtk.EventBox):
                 cr.fill()
                 
             # Draw background.
-            pixbuf = self.background_pixbuf.scale_simple(
-                self.resize_width,
-                self.resize_height,
-                gtk.gdk.INTERP_BILINEAR)
-            
-            if skin_config.vertical_mirror:
-                pixbuf = pixbuf.flip(True)
+            self.cache_pixbuf.scale(self.background_pixbuf, self.resize_width, self.resize_height,
+                                    skin_config.vertical_mirror, skin_config.horizontal_mirror)    
                 
-            if skin_config.horizontal_mirror:
-                pixbuf = pixbuf.flip(False)
-            
             draw_pixbuf(
                 cr, 
-                pixbuf,
+                self.cache_pixbuf.get_cache(),
                 x + self.padding_x + resize_x,
                 y + self.padding_y + resize_y)
             

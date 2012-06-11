@@ -26,6 +26,7 @@ from draw import draw_vlinear, draw_pixbuf, draw_line, draw_font
 from constant import DEFAULT_FONT_SIZE, ALIGN_START
 import gtk
 import gobject
+from cache_pixbuf import CachePixbuf
 
 class Button(gtk.Button):
     '''Button.'''
@@ -121,7 +122,8 @@ class ImageButton(gtk.Button):
     def __init__(self, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x=False, content=None):
         '''Init font button.'''
         gtk.Button.__init__(self)
-        draw_button(self, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x, content)
+        self.cache_pixbuf = CachePixbuf()
+        draw_button(self, self.cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x, content)
         
 gobject.type_register(ImageButton)
 
@@ -131,8 +133,10 @@ class ThemeButton(gtk.Button):
     def __init__(self):
         '''Init theme button.'''
         gtk.Button.__init__(self)
+        self.cache_pixbuf = CachePixbuf()
         draw_button(
             self, 
+            self.cache_pixbuf,
             ui_theme.get_pixbuf("button/window_theme_normal.png"),
             ui_theme.get_pixbuf("button/window_theme_hover.png"),
             ui_theme.get_pixbuf("button/window_theme_press.png"))
@@ -145,8 +149,10 @@ class MenuButton(gtk.Button):
     def __init__(self):
         '''Init menu button.'''
         gtk.Button.__init__(self)
+        self.cache_pixbuf = CachePixbuf()
         draw_button(
             self, 
+            self.cache_pixbuf,
             ui_theme.get_pixbuf("button/window_menu_normal.png"),
             ui_theme.get_pixbuf("button/window_menu_hover.png"),
             ui_theme.get_pixbuf("button/window_menu_press.png"))
@@ -159,8 +165,10 @@ class MinButton(gtk.Button):
     def __init__(self):
         '''Init min button.'''
         gtk.Button.__init__(self)
+        self.cache_pixbuf = CachePixbuf()
         draw_button(
             self, 
+            self.cache_pixbuf,
             ui_theme.get_pixbuf("button/window_min_normal.png"),
             ui_theme.get_pixbuf("button/window_min_hover.png"),
             ui_theme.get_pixbuf("button/window_min_press.png"))
@@ -173,8 +181,10 @@ class CloseButton(gtk.Button):
     def __init__(self):
         '''Init close button.'''
         gtk.Button.__init__(self)
+        self.cache_pixbuf = CachePixbuf()
         draw_button(
             self, 
+            self.cache_pixbuf,
             ui_theme.get_pixbuf("button/window_close_normal.png"),
             ui_theme.get_pixbuf("button/window_close_hover.png"),
             ui_theme.get_pixbuf("button/window_close_press.png"))
@@ -187,11 +197,12 @@ class MaxButton(gtk.Button):
     def __init__(self,sub_dir="button", max_path_prefix="window_max", unmax_path_prefix="window_unmax"):
         '''Init max button.'''
         gtk.Button.__init__(self)
-        draw_max_button(self, sub_dir, max_path_prefix, unmax_path_prefix)
+        self.cache_pixbuf = CachePixbuf()
+        draw_max_button(self, self.cache_pixbuf, sub_dir, max_path_prefix, unmax_path_prefix)
         
 gobject.type_register(MaxButton)
 
-def draw_button(widget, normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
+def draw_button(widget, cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
                 scale_x=False, button_label=None, font_size=DEFAULT_FONT_SIZE, 
                 label_dcolor=ui_theme.get_color("buttonDefaultFont")):
     '''Create button.'''
@@ -206,11 +217,13 @@ def draw_button(widget, normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
     # Expose button.
     widget.connect("expose-event", lambda w, e: expose_button(
             w, e,
+            cache_pixbuf,
             scale_x, False,
             normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
             button_label, font_size, label_dcolor))
         
 def expose_button(widget, event, 
+                  cache_pixbuf,
                   scale_x, scaleY,
                   normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
                   button_label, font_size, label_dcolor):
@@ -240,7 +253,8 @@ def expose_button(widget, event,
     # Draw button.
     pixbuf = image
     if pixbuf.get_width() != image_width or pixbuf.get_height() != image_height:
-        pixbuf = image.scale_simple(image_width, image_height, gtk.gdk.INTERP_BILINEAR)
+        cache_pixbuf.scale(image, image_width, image_height)
+        pixbuf = cache_pixbuf.get_cache()
     cr = widget.window.cairo_create()
     draw_pixbuf(cr, pixbuf, widget.allocation.x, widget.allocation.y)
     
@@ -255,7 +269,7 @@ def expose_button(widget, event,
     
     return True
 
-def draw_max_button(widget, sub_dir, max_path_prefix, unmax_path_prefix):
+def draw_max_button(widget, cache_pixbuf, sub_dir, max_path_prefix, unmax_path_prefix):
     '''Create max button.'''
     # Init request size.
     pixbuf = ui_theme.get_pixbuf("%s/%s_normal.png" % (sub_dir, unmax_path_prefix)).get_pixbuf()
@@ -263,9 +277,11 @@ def draw_max_button(widget, sub_dir, max_path_prefix, unmax_path_prefix):
     
     # Redraw.
     widget.connect("expose-event", lambda w, e: 
-                   expose_max_button(w, e, sub_dir, max_path_prefix, unmax_path_prefix))
+                   expose_max_button(w, e, 
+                                     cache_pixbuf,
+                                     sub_dir, max_path_prefix, unmax_path_prefix))
                 
-def expose_max_button(widget, event, sub_dir, max_path_prefix, unmax_path_prefix):
+def expose_max_button(widget, event, cache_pixbuf, sub_dir, max_path_prefix, unmax_path_prefix):
     '''Expose function to replace event box's image.'''
     # Get dynamic pixbuf.
     if window_is_max(widget):
@@ -292,7 +308,8 @@ def expose_max_button(widget, event, sub_dir, max_path_prefix, unmax_path_prefix
     # Draw button.
     pixbuf = image
     if pixbuf.get_width() != image_width or pixbuf.get_height() != image_height:
-        pixbuf = image.scale_simple(image_width, image_height, gtk.gdk.INTERP_BILINEAR)
+        cache_pixbuf.scale(image, image_width, image_height)
+        pixbuf = cache_pixbuf.get_cache()
     cr = widget.window.cairo_create()
     draw_pixbuf(cr, pixbuf, widget.allocation.x, widget.allocation.y)
 

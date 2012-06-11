@@ -29,6 +29,7 @@ from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from config import Config
 from constant import SHADE_SIZE, COLOR_SEQUENCE
 import tarfile
+from cache_pixbuf import CachePixbuf
 
 class SkinConfig(gobject.GObject):
     '''SkinConfig.'''
@@ -37,6 +38,7 @@ class SkinConfig(gobject.GObject):
         '''Init skin.'''
         # Init.
         gobject.GObject.__init__(self)
+        self.cache_pixbuf = CachePixbuf()
         
         self.theme_list = []
         self.window_list = []
@@ -262,21 +264,12 @@ class SkinConfig(gobject.GObject):
         background_y = int(self.y * self.scale_y)
         background_width = int(self.background_pixbuf.get_width() * self.scale_x)
         background_height = int(self.background_pixbuf.get_height() * self.scale_y)
-        pixbuf = self.background_pixbuf.scale_simple(
-                background_width,
-                background_height,
-                gtk.gdk.INTERP_BILINEAR
-                )
-        
-        if self.vertical_mirror:
-            pixbuf = pixbuf.flip(True)
-            
-        if self.horizontal_mirror:
-            pixbuf = pixbuf.flip(False)
-            
+        self.cache_pixbuf.scale(self.background_pixbuf, background_width, background_height,
+                                self.vertical_mirror, self.horizontal_mirror)
+                
         draw_pixbuf(
             cr,
-            pixbuf,
+            self.cache_pixbuf.get_cache(),
             x + background_x,
             y + background_y)
         

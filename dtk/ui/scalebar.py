@@ -25,6 +25,7 @@ from theme import ui_theme
 from utils import is_left_button
 import gobject
 import gtk
+from cache_pixbuf import CachePixbuf
 
 class HScalebar(gtk.HScale):
     '''Scalebar.'''
@@ -50,6 +51,8 @@ class HScalebar(gtk.HScale):
         self.right_fg_dpixbuf = right_fg_dpixbuf
         self.right_bg_dpixbuf = right_bg_dpixbuf
         self.point_dpixbuf = point_dpixbuf
+        self.cache_bg_pixbuf = CachePixbuf()
+        self.cache_fg_pixbuf = CachePixbuf()
         
         # Set size request.
         self.set_size_request(-1, self.point_dpixbuf.get_pixbuf().get_height())
@@ -86,15 +89,16 @@ class HScalebar(gtk.HScale):
         value = int((self.get_value() - lower) / total_length * w)
 
         # Draw background.
+        self.cache_bg_pixbuf.scale(middle_bg_pixbuf, w - side_width * 2, line_height)
         draw_pixbuf(cr, left_bg_pixbuf, x, line_y)
-        draw_pixbuf(cr, middle_bg_pixbuf.scale_simple(w - side_width * 2, line_height, gtk.gdk.INTERP_BILINEAR),
-                    x + side_width, line_y)
+        draw_pixbuf(cr, self.cache_bg_pixbuf.get_cache(), x + side_width, line_y)
         draw_pixbuf(cr, right_bg_pixbuf, x + w - side_width, line_y)
         
         # Draw foreground.
         if value > 0:
+            self.cache_fg_pixbuf.scale(middle_fg_pixbuf, value, line_height)
             draw_pixbuf(cr, left_fg_pixbuf, x, line_y)
-            draw_pixbuf(cr, middle_fg_pixbuf.scale_simple(value, line_height, gtk.gdk.INTERP_BILINEAR), x + side_width, line_y)
+            draw_pixbuf(cr, self.cache_fg_pixbuf.get_cache(), x + side_width, line_y)
             draw_pixbuf(cr, right_fg_pixbuf, x + value, line_y)
             
         # Draw drag point.
@@ -145,6 +149,8 @@ class VScalebar(gtk.VScale):
         self.bottom_fg_dpixbuf = bottom_fg_dpixbuf
         self.bottom_bg_dpixbuf = bottom_bg_dpixbuf
         self.point_dpixbuf = point_dpixbuf
+        self.cache_bg_pixbuf = CachePixbuf()
+        self.cache_fg_pixbuf = CachePixbuf()
         
         self.set_size_request(self.point_dpixbuf.get_pixbuf().get_height(), -1)
         
@@ -178,12 +184,14 @@ class VScalebar(gtk.VScale):
         point_y = h - int((self.get_value() - lower_value ) / total_length * h)
         value = int((self.get_value() - lower_value ) / total_length * h)
 
+        self.cache_bg_pixbuf.scale(middle_bg_pixbuf, line_width, h - side_height * 2 + point_height / 2)
         draw_pixbuf(cr, upper_bg_pixbuf, line_x, y - point_height / 2)
-        draw_pixbuf(cr, middle_bg_pixbuf.scale_simple(line_width, h - side_height * 2 + point_height / 2, gtk.gdk.INTERP_BILINEAR), line_x, y + side_height - point_height / 2)
+        draw_pixbuf(cr, self.cache_bg_pixbuf.get_cache(), line_x, y + side_height - point_height / 2)
         draw_pixbuf(cr, bottom_bg_pixbuf, line_x, y + h - side_height)
                 
         if value > 0:
-            draw_pixbuf(cr, middle_fg_pixbuf.scale_simple(line_width, value, gtk.gdk.INTERP_BILINEAR), line_x, y + point_y - side_height)
+            self.cache_fg_pixbuf.scale(middle_fg_pixbuf, line_width, value)
+            draw_pixbuf(cr, self.cache_fg_pixbuf.get_cache(), line_x, y + point_y - side_height)
         draw_pixbuf(cr, bottom_fg_pixbuf, line_x, y + h - side_height)
         
         if self.get_value() == upper_value:
