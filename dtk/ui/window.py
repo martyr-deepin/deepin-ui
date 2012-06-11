@@ -32,7 +32,7 @@ from skin_config import skin_config
 class Window(gtk.Window):
     '''Window.'''
 	
-    def __init__(self, enable_resize=False, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL):
+    def __init__(self, enable_resize=False, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL, shadow_visible=True):
         '''Init window.'''
         # Init.
         gtk.Window.__init__(self, window_type)
@@ -47,9 +47,10 @@ class Window(gtk.Window):
         self.shadow_is_visible = True
         self.cursor_type = None
         self.enable_resize = enable_resize
+        self.shadow_visible = shadow_visible
         
         # Shadow setup.
-        if enable_shadow(self):
+        if enable_shadow(self) and self.shadow_visible:
             self.shadow_padding = self.shadow_radius - self.frame_radius
             self.window_frame.connect("size-allocate", self.shape_window_frame)
             self.window_shadow.connect("expose-event", self.expose_window_shadow)
@@ -224,6 +225,14 @@ class Window(gtk.Window):
         '''Min window.'''
         self.iconify()
         
+    def toggle_visible(self):
+        '''Toggle visible.'''
+        if self.window.get_state() == gtk.gdk.WINDOW_STATE_WITHDRAWN:
+            self.window.deiconify()
+            self.window.present()
+        else:
+            self.window.iconify()
+        
     def toggle_max_window(self):
         '''Toggle window.'''
         window_state = self.window.get_state()
@@ -336,7 +345,7 @@ Otherwise hide shadow.'''
         
     def get_shadow_size(self):
         '''Get shadow size.'''
-        if enable_shadow(self):
+        if enable_shadow(self) and self.shadow_visible:
             window_state = self.window.get_state()
             if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:
                 return (0, 0)
@@ -344,7 +353,7 @@ Otherwise hide shadow.'''
                 return (self.shadow_padding, self.shadow_padding)
         else:
             return (0, 0)
-
+        
 gobject.type_register(Window)
     
 if __name__ == "__main__":

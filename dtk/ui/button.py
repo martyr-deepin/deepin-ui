@@ -22,7 +22,7 @@
 
 from utils import get_content_size, color_hex_to_cairo, propagate_expose, window_is_max, get_same_level_widgets
 from theme import ui_theme
-from draw import cairo_state, draw_vlinear, draw_pixbuf, draw_line, draw_font
+from draw import draw_vlinear, draw_pixbuf, draw_line, draw_font
 from constant import DEFAULT_FONT_SIZE, ALIGN_START
 import gtk
 import gobject
@@ -37,7 +37,7 @@ class Button(gtk.Button):
         self.min_width = 69
         self.min_height = 22
         self.padding_x = 15
-        self.padding_y = 4
+        self.padding_y = 3
         self.clickable = True
         
         self.set_label(label)

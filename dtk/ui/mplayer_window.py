@@ -50,15 +50,15 @@ class MplayerWindow(gtk.Window):
         # FIXME: Because mplayer don't allowed window redirect colormap to screen.
         # We build shadow window to emulate it, but shadow's visual effect 
         # is not good enough, so we disable shadow temporary for future fixed.
-        self.enable_shadow = False
+        self.shadow_visible = False
         
-        if enable_shadow(self) and self.enable_shadow:
+        if enable_shadow(self) and self.shadow_visible:
             self.shadow_padding = self.shadow_radius - self.frame_radius
         else:
             self.shadow_padding = 0
         
         # Init shadow window.
-        if enable_shadow(self) and self.enable_shadow:    
+        if enable_shadow(self) and self.shadow_visible:    
             self.window_shadow = gtk.Window(gtk.WINDOW_TOPLEVEL)
             self.window_shadow.add_events(gtk.gdk.ALL_EVENTS_MASK)
             self.window_shadow.set_decorated(False)
@@ -72,7 +72,7 @@ class MplayerWindow(gtk.Window):
         self.connect("window-state-event", self.monitor_window_state)
         self.connect("configure-event", self.adjust_window_shadow)
         
-        if enable_shadow(self) and self.enable_shadow:    
+        if enable_shadow(self) and self.shadow_visible:    
             self.window_shadow.connect("expose-event", self.expose_window_shadow)
             self.window_shadow.connect("size-allocate", self.shape_window_shadow)
             self.window_shadow.connect("button-press-event", self.resize_window)
@@ -80,7 +80,7 @@ class MplayerWindow(gtk.Window):
         
     def adjust_window_shadow(self, widget, event):
         '''Adjust window shadow position and size. '''
-        if enable_shadow(self) and self.enable_shadow:    
+        if enable_shadow(self) and self.shadow_visible:    
             (x, y) = self.get_position()
             (width, height) = self.get_size()
             
@@ -93,7 +93,7 @@ class MplayerWindow(gtk.Window):
         '''Show.'''
         self.show_all()
         
-        if enable_shadow(self) and self.enable_shadow:
+        if enable_shadow(self) and self.shadow_visible:
             self.window_shadow.show_all()
         
     def expose_window(self, widget, event):
@@ -183,7 +183,7 @@ class MplayerWindow(gtk.Window):
             # Redraw whole window.
             self.queue_draw()
             
-            if enable_shadow(self) and self.enable_shadow:
+            if enable_shadow(self) and self.shadow_visible:
                 self.window_shadow.queue_draw()
             
     def shape_window_shadow(self, widget, rect):
@@ -229,7 +229,7 @@ class MplayerWindow(gtk.Window):
             # Redraw whole window.
             self.queue_draw()
             
-            if enable_shadow(self) and self.enable_shadow:
+            if enable_shadow(self) and self.shadow_visible:
                 self.window_shadow.queue_draw()
             
     def expose_window_shadow(self, widget, event):
@@ -252,14 +252,14 @@ class MplayerWindow(gtk.Window):
         '''Hide shadow.'''
         self.shadow_is_visible = False
         
-        if enable_shadow(self) and self.enable_shadow:
+        if enable_shadow(self) and self.shadow_visible:
             self.window_shadow.hide_all()
         
     def show_shadow(self):
         '''Show shadow.'''
         self.shadow_is_visible = True
         
-        if enable_shadow(self) and self.enable_shadow:
+        if enable_shadow(self) and self.shadow_visible:
             self.window_shadow.show_all()
         
     def monitor_window_state(self, widget, event):
@@ -276,6 +276,14 @@ Otherwise hide shadow.'''
     def min_window(self):
         '''Min window.'''
         self.iconify()
+        
+    def toggle_visible(self):
+        '''Toggle visible.'''
+        if self.window.get_state() == gtk.gdk.WINDOW_STATE_WITHDRAWN:
+            self.window.deiconify()
+            self.window.present()
+        else:
+            self.window.iconify()
         
     def toggle_max_window(self):
         '''Toggle window.'''
