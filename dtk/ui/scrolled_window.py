@@ -27,7 +27,7 @@ class ScrolledWindow(gtk.Bin):
         gtk.Bin.__init__(self)
         self.bar_min_length = 50  #scrollbar smallest height
 
-        self.bar_small_width = 3
+        self.bar_small_width = 5
         self.bar_width = 14  #normal scrollbar width
         self.bar_background = color_rgb_to_cairo((255, 0, 244))
 
@@ -99,24 +99,43 @@ class ScrolledWindow(gtk.Bin):
 
 
     def make_bar_smaller(self, orientation):
+        (right_space, top_bootm_space) = (2, 3)
         if orientation == gtk.ORIENTATION_HORIZONTAL:
             region = gdk.region_rectangle(gdk.Rectangle(0, 0, int(self._horizaontal.bar_len), self.bar_small_width))
-            self.hwindow.shape_combine_region(region, 0, self.bar_width - self.bar_small_width -2)
+
+            if self.hallocation.x == 0:
+                self.hwindow.shape_combine_region(region, top_bootm_space, self.bar_width - self.bar_small_width -right_space)
+            else:
+                self.hwindow.shape_combine_region(region, -top_bootm_space, self.bar_width - self.bar_small_width -right_space)
         elif orientation == gtk.ORIENTATION_VERTICAL:
-            region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_small_width, int(self._vertical.bar_len)))
-            self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width-2, 0)
+            region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_small_width-2, int(self._vertical.bar_len)))
+
+            if self.vallocation.y == 0:
+                self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width, 3)
+            else:
+                self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width, -3)
         else:
             raise "make_bar_smaller's orientation must be gtk.ORIENTATION_VERTICAL or gtk.ORIENTATION_HORIZONTAL"
 
         return False
 
     def make_bar_bigger(self, orientation):
+        (right_space, top_bootm_space) = (2, 3)
+
         if orientation == gtk.ORIENTATION_HORIZONTAL:
-            region = gdk.region_rectangle(gdk.Rectangle(0, 0, int(self._horizaontal.bar_len), self.bar_width - 2))
-            self.hwindow.shape_combine_region(region, 0, 0)
+            region = gdk.region_rectangle(gdk.Rectangle(0, 0, int(self._horizaontal.bar_len), self.bar_width))
+
+            if self.hallocation.x == 0:
+                self.hwindow.shape_combine_region(region, top_bootm_space, -right_space)
+            else:
+                self.hwindow.shape_combine_region(region, -top_bootm_space, -right_space)
         elif orientation == gtk.ORIENTATION_VERTICAL:
-            region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_width - 2, int(self._vertical.bar_len)))
-            self.vwindow.shape_combine_region(region, 0, 0)
+            region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_width, int(self._vertical.bar_len)))
+
+            if self.vallocation.y == 0:
+                self.vwindow.shape_combine_region(region, -right_space, top_bootm_space)
+            else:
+                self.vwindow.shape_combine_region(region, -right_space, -top_bootm_space)
         else:
             raise "make_bar_bigger's orientation must be gtk.ORIENTATION_VERTICAL or gtk.ORIENTATION_HORIZONTAL"
 
