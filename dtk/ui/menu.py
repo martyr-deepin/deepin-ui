@@ -436,15 +436,15 @@ class MenuItem(object):
         '''Wrap menu action.'''
         item_node = self.item[2]
         if not isinstance(item_node, Menu):
+            # Hide menu.
+            menu_grab_window_focus_out()
+            
             # Execute callback.
             if item_node:
                 if len(self.item) > 3:
                     item_node(*self.item[3:])
                 else:
                     item_node()
-            
-            # Hide menu.
-            menu_grab_window_focus_out()
             
     def expose_menu_item(self, widget, event, item_dpixbuf, item_content):
         '''Expose menu item.'''
