@@ -272,28 +272,37 @@ class Menu(Window):
     def adjust_menu_position(self, widget):
         '''Realize menu.'''
         # Adjust coordinate.
-        rect = widget.get_allocation()
         # print (self, rect)
         (screen_width, screen_height) = get_screen_size(self)
         
+        menu_width = menu_height = 0
+        for menu_item in self.menu_items:
+            if menu_width == 0 and isinstance(menu_item.item_box, gtk.Button):
+                menu_width = menu_item.item_box_width
+            
+            menu_height += menu_item.item_box_height    
+        (shadow_x, shadow_y) = self.get_shadow_size()    
+        menu_width += (self.padding_x + shadow_x) * 2    
+        menu_height += (self.padding_y + shadow_y) * 2
+            
         if self.x_align == ALIGN_START:
             dx = self.expect_x
         elif self.x_align == ALIGN_MIDDLE:
-            dx = self.expect_x - rect.width / 2
+            dx = self.expect_x - menu_width / 2
         else:
-            dx = self.expect_x - rect.width
+            dx = self.expect_x - menu_width
             
         if self.y_align == ALIGN_START:
             dy = self.expect_y
         elif self.y_align == ALIGN_MIDDLE:
-            dy = self.expect_y - rect.height / 2
+            dy = self.expect_y - menu_height / 2
         else:
-            dy = self.expect_y - rect.height
+            dy = self.expect_y - menu_height
 
-        if self.expect_x + rect.width > screen_width:
-            dx = self.expect_x - rect.width + self.offset_x
-        if self.expect_y + rect.height > screen_height:
-            dy = self.expect_y - rect.height + self.offset_y
+        if self.expect_x + menu_width > screen_width:
+            dx = self.expect_x - menu_width + self.offset_x
+        if self.expect_y + menu_height > screen_height:
+            dy = self.expect_y - menu_height + self.offset_y
             
         self.move(dx, dy)
             
@@ -387,6 +396,7 @@ class MenuItem(object):
             ui_theme.get_shadow_color("hSeparator").get_color_info(),
             self.item_padding_x, 
             self.item_padding_y)
+        self.item_box_height = self.item_padding_y * 2 + 1
         
     def create_menu_item(self):
         '''Create menu item.'''
