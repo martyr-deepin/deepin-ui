@@ -23,6 +23,7 @@
 import gtk
 import gobject
 from utils import is_in_rect
+import cairo
 
 class Paned(gtk.Paned):
     def __init__(self):
@@ -30,6 +31,38 @@ class Paned(gtk.Paned):
         self.bheight = 60
         self.saved_position = -1
 
+        self.connect("size-allocate", self.shape_paned)
+        
+    def shape_paned(self, widget, rect):
+        '''Adjust shape.'''
+        print "#######33"
+        # if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
+        if True:
+            print "********"
+            x, y, w, h = rect.x, rect.y, rect.width, rect.height
+            bitmap = gtk.gdk.Pixmap(None, w, h, 1)
+            cr = bitmap.cairo_create()
+        
+            # Clear the bitmap
+            cr.set_source_rgb(0.0, 0.0, 0.0)
+            cr.set_operator(cairo.OPERATOR_CLEAR)
+            cr.paint()
+            
+            # Draw our shape into the bitmap using cairo.
+            cr.set_source_rgb(1.0, 1.0, 1.0)
+            cr.set_operator(cairo.OPERATOR_OVER)
+            
+            cr.rectangle(0, 0, 1, h)
+            cr.rectangle(0, (h - self.bheight) / 2, w, self.bheight)
+            # cr.rectangle(x + 1, y, w - 2, 1)
+            # cr.rectangle(x, y + 1, w, h - 2)
+            # cr.rectangle(x + 1, y + h - 1, w - 2, 1)
+            
+            cr.fill()
+            
+            # Shape with given mask.
+            widget.shape_combine_mask(bitmap, 0, 0)
+        
     def do_expose_event(self, e):
         #gtk.Paned.do_expose_event(self, e)
         self.draw_handle(e)

@@ -190,14 +190,14 @@
 	 ],
 	 "buttonBackgroundNormal" : [ 
 		(0, ("#fffff2",1)),
-        (1, ("#fffff2",1)),
+        (1, ("#ffffe6",1)),
      ],
      "buttonBackgroundPrelight" : [
         (0, ("#feffcc",1)),
-        (1, ("#feffcc",1)),
+        (1, ("#feffb3",1)),
      ],
      "buttonBackgroundActive" : [
-        (0, ("#e0e1ae",1)),
+        (0, ("#cecf8f",1)),
         (1, ("#e0e1ae",1)),
      ],
      "buttonBackgroundDisable" : [

@@ -171,8 +171,7 @@ class TreeView(gtk.DrawingArea):
             return (0, 0, viewport)
             
     def draw_mask(self, cr, x, y, w, h):
-        draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+        pass
             
     def tree_view_expose_event(self, widget, event):
         cr = widget.window.cairo_create()

@@ -140,11 +140,15 @@ class Tooltip(Window):
         
         # Draw background.
         draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                     ui_theme.get_shadow_color("tooltipBackground").get_color_info())
+                     [(0, ("#FFFFFF", 1)),
+                      (1, ("#FFFFFF", 1)),]
+                     # ui_theme.get_shadow_color("tooltipBackground").get_color_info()
+                     )
         
         # Draw font.
         draw_font(cr, self.text, self.text_size, 
-                  ui_theme.get_color(self.text_color).get_color(),
+                  # ui_theme.get_color(self.text_color).get_color(),
+                  "#000000",
                   rect.x, rect.y, rect.width, rect.height)
         
         # Propagate expose.
