@@ -284,7 +284,7 @@ class ScrolledWindow(gtk.Bin):
 
     def calc_hbar_length(self):
         self._horizaontal.virtual_len = self.allocation.width
-        if self.hadjustment.upper <= 1 or self._vertical.policy == gtk.POLICY_NEVER:
+        if self.hadjustment.upper <= 1 or self._horizaontal.policy == gtk.POLICY_NEVER:
             self._horizaontal.bar_len = 0
             return
 
