@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Xia Bin
-# 
+#
 # Author:     Xia Bin <xiabin@linuxdeepin.com>
 # Maintainer: Xia Bin <xiabin@linuxdeepin.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -68,6 +68,7 @@ class ScrolledWindow(gtk.Bin):
                 self.is_inside = False # is pointer in the scrollbar region?
                 self.in_motion = False # is user is draging scrollbar?
                 self.value_change_id = None
+                self.policy = gtk.POLICY_AUTOMATIC
 
         self._horizaontal = Record()
         self._vertical = Record()
@@ -261,7 +262,7 @@ class ScrolledWindow(gtk.Bin):
 
     def calc_vbar_length(self):
         self._vertical.virtual_len = self.allocation.height
-        if self.vadjustment.upper <= 1:
+        if self.vadjustment.upper <= 1 or self._vertical.policy == gtk.POLICY_NEVER:
             self._vertical.bar_len = 0
             return
 
@@ -283,7 +284,7 @@ class ScrolledWindow(gtk.Bin):
 
     def calc_hbar_length(self):
         self._horizaontal.virtual_len = self.allocation.width
-        if self.hadjustment.upper <= 1:
+        if self.hadjustment.upper <= 1 or self._vertical.policy == gtk.POLICY_NEVER:
             self._horizaontal.bar_len = 0
             return
 
@@ -344,7 +345,7 @@ class ScrolledWindow(gtk.Bin):
         gtk.Bin.do_add(self, child)
 
         child.set_scroll_adjustments(self.hadjustment, self.vadjustment)
-        
+
     def do_size_request(self, requsition):
         if self.child:
             #print "sel size_request", (requsition.width, requsition.height)
@@ -459,8 +460,8 @@ class ScrolledWindow(gtk.Bin):
         return
 
     def set_policy(self, h, v):
-        #raise Warning("dtk's scrolledwindow didn't support this function,\
-        #        policy is always automatic!")
+        self._horizaontal.policy = h
+        self._vertical.policy = v
         return
 
     def do_map(self):
