@@ -67,7 +67,7 @@ from dtk.ui.statusbar import Statusbar
 from dtk.ui.tooltip import Tooltip
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
-from dtk.ui.iconview import IconView, IconItem
+from dtk.ui.iconview import IconView, IconItem, IconViewBox
 from dtk.ui.button import CheckButton, RadioButton
 from dtk.ui.combo import ComboBox, ComboBoxItem
 from dtk.ui.spin import SpinBox
@@ -384,10 +384,16 @@ if __name__ == "__main__":
     icon_view_vframe = gtk.Alignment()
     icon_view_vframe.set(0, 0, 1, 1)
     icon_view_vframe.set_padding(0, 1, 0, 0)
-    icon_view_scrolled_window = ScrolledWindow()
-    icon_view = IconView()
-    icon_view_scrolled_window.add_child(icon_view)
-    icon_view_hframe.add(icon_view_scrolled_window)
+    
+    # icon_view_scrolled_window = ScrolledWindow()
+    # icon_view = IconView()
+    # icon_view_scrolled_window.add_child(icon_view)
+    # icon_view_hframe.add(icon_view_scrolled_window)
+    
+    icon_view_box = IconViewBox()
+    icon_view = icon_view_box.icon_view
+    icon_view_hframe.add(icon_view_box)
+    
     icon_view_vframe.add(icon_view_hframe)
     
     icon_items = map(lambda index: IconItem(

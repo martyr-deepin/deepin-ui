@@ -501,15 +501,15 @@ def color_rgb_to_cairo(color):
     """ 
     return (color[0] / 255.0, color[1] / 255.0, color[2] / 255.0) 
 
-def get_match_parent(widget, matchType):
+def get_match_parent(widget, matchTypes):
     '''Get parent widget match given type, otherwise return None.'''
     parent = widget.get_parent()
     if parent == None:
         return None
-    elif type(parent).__name__ == matchType:
+    elif type(parent).__name__ in matchTypes:
         return parent
     else:
-        return get_match_parent(parent, matchType)
+        return get_match_parent(parent, matchTypes)
         
 def widget_fix_cycle_destroy_bug(widget):
     '''Fix bug that PyGtk destroys cycle too early.'''

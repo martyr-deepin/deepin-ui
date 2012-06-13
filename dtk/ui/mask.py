@@ -70,7 +70,7 @@ def draw_scrolled_window_mask(widget, x, y, w, h, render_callback):
 def draw_icon_view_mask(widget, x, y, w, h, render_callback):
     '''Draw skin preview view mask.'''
     cr = widget.window.cairo_create()
-    viewport = get_match_parent(widget, "Viewport")
+    viewport = get_match_parent(widget, ["Viewport"])
     toplevel = widget.get_toplevel()
     (offset_x, offset_y) = viewport.translate_coordinates(toplevel, 0, 0)
     

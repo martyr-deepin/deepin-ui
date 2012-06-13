@@ -153,14 +153,13 @@ class TreeView(gtk.DrawingArea):
         else:
             self.move_height = temp_move_height
                                 
-    # print get_match_parent(self, "ScrolledWindow")    
     def get_offset_coordinate(self, widget):
         '''Get offset coordinate.'''
         # Init.
         rect = widget.allocation
 
         # Get coordinate.
-        viewport = get_match_parent(widget, "Viewport")
+        viewport = get_match_parent(widget, ["Viewport"])
         if viewport: 
             coordinate = widget.translate_coordinates(viewport, rect.x, rect.y)
             if len(coordinate) == 2:
@@ -186,7 +185,7 @@ class TreeView(gtk.DrawingArea):
         
         # Draw background.
         with cairo_state(cr):
-            scrolled_window = get_match_parent(self, "ScrolledWindow")
+            scrolled_window = get_match_parent(self, ["ScrolledWindow"])
             cr.translate(-scrolled_window.allocation.x, -scrolled_window.allocation.y)
             cr.rectangle(offset_x, offset_y, 
                          scrolled_window.allocation.x + scrolled_window.allocation.width, 

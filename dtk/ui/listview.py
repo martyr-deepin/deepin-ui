@@ -303,7 +303,7 @@ class ListView(gtk.DrawingArea):
         rect = widget.allocation
 
         # Get coordinate.
-        viewport = get_match_parent(widget, "Viewport")
+        viewport = get_match_parent(widget, ["Viewport"])
         if viewport: 
             coordinate = widget.translate_coordinates(viewport, rect.x, rect.y)
             if len(coordinate) == 2:
@@ -362,7 +362,7 @@ class ListView(gtk.DrawingArea):
             
         # Draw background.
         with cairo_state(cr):
-            scrolled_window = get_match_parent(self, "ScrolledWindow")
+            scrolled_window = get_match_parent(self, ["ScrolledWindow"])
             cr.translate(-scrolled_window.allocation.x, -scrolled_window.allocation.y)
             cr.rectangle(offset_x, offset_y, 
                          scrolled_window.allocation.x + scrolled_window.allocation.width, 
@@ -568,7 +568,7 @@ class ListView(gtk.DrawingArea):
                             break
                         
                     # Scroll viewport when cursor almost reach bound of viewport.
-                    vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                    vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                     if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
                         vadjust.set_value(min(vadjust.get_value() + self.item_height, 
                                               vadjust.get_upper() - vadjust.get_page_size()))
@@ -596,7 +596,7 @@ class ListView(gtk.DrawingArea):
                         self.select_rows = [hover_row]
                         
                     # Scroll viewport when cursor almost reach bound of viewport.
-                    vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                    vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                     if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
                         vadjust.set_value(min(vadjust.get_value() + self.item_height, 
                                               vadjust.get_upper() - vadjust.get_page_size()))
@@ -866,8 +866,8 @@ class ListView(gtk.DrawingArea):
         self.reset_cursor()
 
         # Hide hover row when cursor out of viewport area.
-        vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
-        hadjust = get_match_parent(self, "ScrolledWindow").get_hadjustment()
+        vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
+        hadjust = get_match_parent(self, ["ScrolledWindow"]).get_hadjustment()
         if not is_in_rect((event.x, event.y), 
                           (hadjust.get_value(), vadjust.get_value(), hadjust.get_page_size(), vadjust.get_page_size())):
             self.hover_row = None
@@ -937,7 +937,7 @@ class ListView(gtk.DrawingArea):
             self.select_rows = [0]
             
             # Scroll to top.
-            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             vadjust.set_value(vadjust.get_lower())
             
             # Redraw.
@@ -952,7 +952,7 @@ class ListView(gtk.DrawingArea):
             self.select_rows = [last_row]
             
             # Scroll to bottom.
-            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
             
             # Redraw.
@@ -962,7 +962,7 @@ class ListView(gtk.DrawingArea):
         '''Scroll page up.'''
         if self.select_rows == []:
             # Select row.
-            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             select_y = max(vadjust.get_value() - vadjust.get_page_size(), self.title_offset_y)
             select_row = int((select_y - self.title_offset_y) / self.item_height)
             
@@ -982,7 +982,7 @@ class ListView(gtk.DrawingArea):
         else:
             if self.start_select_row != None:
                 # Record offset before scroll.
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 scroll_offset_y = self.start_select_row * self.item_height + self.title_offset_y - vadjust.get_value()
                 
                 # Get select row.
@@ -1010,7 +1010,7 @@ class ListView(gtk.DrawingArea):
         '''Scroll page down.'''
         if self.select_rows == []:
             # Select row.
-            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             select_y = min(vadjust.get_value() + vadjust.get_page_size(),
                            vadjust.get_upper() - self.item_height)
             select_row = int((select_y - self.title_offset_y) / self.item_height)
@@ -1030,7 +1030,7 @@ class ListView(gtk.DrawingArea):
         else:
             if self.start_select_row != None:
                 # Record offset before scroll.
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 scroll_offset_y = self.start_select_row * self.item_height + self.title_offset_y - vadjust.get_value()
                 
                 # Get select row.
@@ -1069,7 +1069,7 @@ class ListView(gtk.DrawingArea):
                 
                 # Scroll viewport make sure preview row in visible area.
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 if offset_y > prev_row * self.item_height:
                     vadjust.set_value(max(vadjust.get_lower(), (prev_row - 1) * self.item_height + self.title_offset_y))
                 elif offset_y + vadjust.get_page_size() < prev_row * self.item_height + self.title_offset_y:
@@ -1085,7 +1085,7 @@ class ListView(gtk.DrawingArea):
                 
                 # Scroll viewport make sure preview row in visible area.
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 if offset_y > prev_row * self.item_height + self.title_offset_y:
                     vadjust.set_value(max(vadjust.get_lower(), (prev_row - 1) * self.item_height + self.title_offset_y))
                     
@@ -1108,7 +1108,7 @@ class ListView(gtk.DrawingArea):
                 
                 # Scroll viewport make sure next row in visible area.
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height + self.title_offset_y or offset_y > next_row * self.item_height + self.title_offset_y:
                     vadjust.set_value(max(vadjust.get_lower(),
                                           (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
@@ -1122,7 +1122,7 @@ class ListView(gtk.DrawingArea):
                 
                 # Scroll viewport make sure next row in visible area.
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 if offset_y + vadjust.get_page_size() < (next_row + 1) * self.item_height + self.title_offset_y:
                     vadjust.set_value(max(vadjust.get_lower(),
                                           (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
@@ -1142,7 +1142,7 @@ class ListView(gtk.DrawingArea):
                     self.select_rows = [prev_row] + self.select_rows
                     
                     (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-                    vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                    vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                     if offset_y > prev_row * self.item_height:
                         vadjust.set_value(max(vadjust.get_lower(), (prev_row - 1) * self.item_height + self.title_offset_y))
                     
@@ -1152,7 +1152,7 @@ class ListView(gtk.DrawingArea):
                 self.select_rows.remove(last_row)
                 
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 if offset_y > self.select_rows[-1] * self.item_height:
                     vadjust.set_value(max(vadjust.get_lower(), 
                                           (self.select_rows[-1] - 1) * self.item_height + self.title_offset_y))
@@ -1173,7 +1173,7 @@ class ListView(gtk.DrawingArea):
                     self.select_rows.append(next_row)
                     
                     (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-                    vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                    vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                     if offset_y + vadjust.get_page_size() < next_row * self.item_height + self.title_offset_y:
                         vadjust.set_value(max(vadjust.get_lower(), 
                                               (next_row + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
@@ -1184,7 +1184,7 @@ class ListView(gtk.DrawingArea):
                 self.select_rows.remove(first_row)
                 
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 if offset_y + vadjust.get_page_size() < (self.select_rows[0] + 1) * self.item_height + self.title_offset_y:
                     vadjust.set_value(max(vadjust.get_lower(), 
                                           (self.select_rows[0] + 1) * self.item_height + self.title_offset_y - vadjust.get_page_size()))
@@ -1200,12 +1200,12 @@ class ListView(gtk.DrawingArea):
         elif self.start_select_row != None:
             if self.start_select_row == self.select_rows[-1]:
                 self.select_rows = range(0, self.select_rows[-1] + 1)
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 vadjust.set_value(vadjust.get_lower())
                 self.queue_draw()
             elif self.start_select_row == self.select_rows[0]:
                 self.select_rows = range(0, self.select_rows[0] + 1)
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 vadjust.set_value(vadjust.get_lower())
                 self.queue_draw()
         else:
@@ -1218,12 +1218,12 @@ class ListView(gtk.DrawingArea):
         elif self.start_select_row != None:
             if self.start_select_row == self.select_rows[0]:
                 self.select_rows = range(self.select_rows[0], len(self.items))
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
                 self.queue_draw()
             elif self.start_select_row == self.select_rows[-1]:
                 self.select_rows = range(self.select_rows[-1], len(self.items))
-                vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+                vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                 vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
                 self.queue_draw()
         else:
@@ -1275,7 +1275,7 @@ class ListView(gtk.DrawingArea):
         '''Update vertical adjustment.'''
         list_height = self.title_offset_y + len(self.items) * self.item_height
         self.set_size_request(sum(self.cell_min_widths), list_height)            
-        scrolled_window = get_match_parent(self, "ScrolledWindow")
+        scrolled_window = get_match_parent(self, ["ScrolledWindow"])
         if scrolled_window != None:
             vadjust = scrolled_window.get_vadjustment()
             vadjust.set_upper(list_height)
@@ -1325,7 +1325,7 @@ class ListView(gtk.DrawingArea):
         else:
             # Scroll viewport make sure highlight row in visible area.
             (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-            vadjust = get_match_parent(self, "ScrolledWindow").get_vadjustment()
+            vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             highlight_index = self.highlight_item.get_index()
             if offset_y > highlight_index * self.item_height:
                 vadjust.set_value(highlight_index * self.item_height)            
