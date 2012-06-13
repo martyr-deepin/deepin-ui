@@ -800,12 +800,17 @@ def is_hex_color(string):
             else:
                 return True    
 
-def run_with_profile(func, sort='time', amount=20):  
-  import hotshot    
-  import hotshot.stats  
-  prof = hotshot.Profile("tmp_prof.txt", 1)    
-  prof.runcall(func)   
-  prof.close()    
-  print "----------------------parsing profile data---------------------"
-  p = hotshot.stats.load("tmp_prof.txt")   
-  p.sort_stats(sort).print_stats(amount)
+def run_with_profile(func, log_file, sort='time', amount=20):  
+    import hotshot    
+    import hotshot.stats  
+    
+    # Run hotshot.
+    filepath = os.path.expanduser(log_file)
+    prof = hotshot.Profile(filepath, 1)    
+    prof.runcall(func)
+    prof.close()    
+    
+    # Print log.
+    print "----------------------parsing profile data---------------------"
+    p = hotshot.stats.load(filepath)   
+    p.sort_stats(sort).print_stats(amount)
