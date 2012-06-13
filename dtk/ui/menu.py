@@ -24,7 +24,7 @@ from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MID
 from draw import draw_vlinear, draw_pixbuf, draw_font, draw_hlinear
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo
+from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, enable_shadow
 from window import Window
 import gtk
 import gobject
@@ -123,7 +123,7 @@ def menu_grab_window_motion(widget, event):
 
 class Menu(Window):
     '''Menu.'''
-	
+    
     def __init__(self, items, 
                  is_root_menu=False,
                  select_scale=False,
@@ -135,7 +135,8 @@ class Menu(Window):
                  padding_y=3, 
                  item_padding_x=6, 
                  item_padding_y=3,
-                 shadow_visible=True):
+                 shadow_visible=True,
+                 menu_min_width=130):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
         Window.__init__(self, shadow_visible=shadow_visible, window_type=gtk.WINDOW_POPUP)
@@ -154,6 +155,7 @@ class Menu(Window):
         self.padding_y = padding_y
         self.item_padding_x = item_padding_x
         self.item_padding_y = item_padding_y
+        self.menu_min_width = menu_min_width
         
         # Init menu window.
         self.set_opacity(opacity)
@@ -177,7 +179,8 @@ class Menu(Window):
                     item, font_size, self.select_scale, self.show_submenu, self.hide_submenu, self.get_root_menu, self.get_menu_items,
                     have_icon, icon_width, icon_height,
                     have_submenu, submenu_width, submenu_height,
-                    item_padding_x, item_padding_y)
+                    padding_x, padding_y,
+                    item_padding_x, item_padding_y, self.menu_min_width)
                 self.menu_items.append(menu_item)
                 self.item_box.pack_start(menu_item.item_box, False, False)
                 
@@ -363,12 +366,15 @@ class MenuItem(object):
                  get_menu_items_callback,
                  have_icon, icon_width, icon_height, 
                  have_submenu, submenu_width, submenu_height,
-                 item_padding_x, item_padding_y):
+                 menu_padding_x, menu_padding_y,
+                 item_padding_x, item_padding_y, min_width):
         '''Init menu item.'''
         # Init.
         self.item = item
         self.font_size = font_size
         self.select_scale = select_scale
+        self.menu_padding_x = menu_padding_x
+        self.menu_padding_y = menu_padding_y
         self.item_padding_x = item_padding_x
         self.item_padding_y = item_padding_y
         self.show_submenu_callback = show_submenu_callback
@@ -383,6 +389,8 @@ class MenuItem(object):
         self.submenu_height = submenu_height
         self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")        
         self.submenu_active = False
+        self.min_width = min_width
+        self.arrow_padding_x = 5
 
         # Create.
         if self.item:
@@ -429,7 +437,9 @@ class MenuItem(object):
             self.item_box_width = self.item_padding_x * 3 + self.icon_width + int(width)
 
             if self.have_submenu:
-                self.item_box_width += self.item_padding_x + self.submenu_width
+                self.item_box_width += self.item_padding_x + self.submenu_width + self.arrow_padding_x * 2
+                
+        self.item_box_width = max(self.item_box_width, self.min_width)        
                 
         self.item_box.set_size_request(self.item_box_width, self.item_box_height)        
         
@@ -486,7 +496,7 @@ class MenuItem(object):
         if isinstance(item_node, Menu):
             submenu_pixbuf = self.submenu_dpixbuf.get_pixbuf()
             draw_pixbuf(cr, submenu_pixbuf,
-                        rect.x + rect.width - self.item_padding_x - submenu_pixbuf.get_width(),
+                        rect.x + rect.width - self.item_padding_x - submenu_pixbuf.get_width() - self.arrow_padding_x,
                         rect.y + (rect.height - submenu_pixbuf.get_height()) / 2)
         
         # Propagate expose to children.
@@ -509,7 +519,8 @@ class MenuItem(object):
             (item_x, item_y) = get_widget_root_coordinate(self.item_box)
             self.show_submenu_callback(
                 item_node, 
-                (menu_window_x - menu_window.shadow_radius, item_y - widget.get_allocation().height))
+                (menu_window_x - menu_window.shadow_radius, 
+                 item_y - widget.get_allocation().height - menu_window.shadow_radius))
             
             self.submenu_active = True
         else:
