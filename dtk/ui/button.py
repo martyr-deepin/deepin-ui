@@ -93,10 +93,10 @@ class Button(gtk.Button):
         
         # Draw border.
         cr.set_source_rgb(*color_hex_to_cairo(border_color))
-        draw_line(cr, x + 2, y + 1, x + w - 1, y + 1) # top
-        draw_line(cr, x + 2, y + h, x + w - 1, y + h) # bottom
-        draw_line(cr, x + 1, y + 2, x + 1, y + h - 1) # left
-        draw_line(cr, x + w, y + 2, x + w, y + h - 1) # right
+        draw_line(cr, x + 2, y + 1, x + w - 2, y + 1) # top
+        draw_line(cr, x + 2, y + h, x + w - 2, y + h) # bottom
+        draw_line(cr, x + 1, y + 2, x + 1, y + h - 2) # left
+        draw_line(cr, x + w, y + 2, x + w, y + h - 2) # right
         
         # Draw four point.
         top_left_point = ui_theme.get_pixbuf("button.png").get_pixbuf()
