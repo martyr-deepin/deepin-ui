@@ -41,12 +41,10 @@ class Paned(gtk.Paned):
         handle = self.get_handle_window()
         cr = handle.cairo_create()
         cr.set_source_rgba(1, 0,0, 0.8)
-        #cr.paint()
         (width, height) = handle.get_size()
         cr.rectangle(0, 0, 1, height)
         cr.rectangle(0, (height-self.bheight)/2,  width, self.bheight)
         cr.fill()
-        pass
 
     def is_in_button(self, x, y):
         handle = self.get_handle_window()
@@ -66,7 +64,6 @@ class Paned(gtk.Paned):
         else:
             handle.set_cursor(self.cursor_type)
             print "...."
-
 
     def do_button_press_event(self, e):
         if self.is_in_button(e.x, e.y):
@@ -98,13 +95,9 @@ class VPaned(Paned):
         self.set_orientation(gtk.ORIENTATION_VERTICAL)
         self.cursor_type = gtk.gdk.Cursor(gtk.gdk.SB_V_DOUBLE_ARROW)
 
-
-
 gobject.type_register(Paned)
 gobject.type_register(HPaned)
 gobject.type_register(VPaned)
-
-
 
 if __name__ == '__main__':
     w = gtk.Window()
