@@ -73,7 +73,7 @@ from dtk.ui.combo import ComboBox, ComboBoxItem
 from dtk.ui.spin import SpinBox
 from dtk.ui.textview import TextView
 from dtk.ui.unique_service import UniqueService, is_exists
-from dtk.ui.newbrowser import WebView
+from dtk.ui.browser import WebView
 import sys
 import gtk
 import dbus
@@ -374,7 +374,6 @@ if __name__ == "__main__":
     application.window.add_move_event(statusbar)
     application.window.add_toggle_event(statusbar)
     
-    horizontal_frame = HorizontalFrame()
     web_view = WebView()
     web_scrolled_window = ScrolledWindow()
     web_scrolled_window.add(web_view)

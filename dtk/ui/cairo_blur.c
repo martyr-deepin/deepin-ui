@@ -1,5 +1,5 @@
 /* Copyright (C) 2011 Deepin, Inc.
- *                2011 Wang Yong
+ *               2011 Wang Yong
  *
  * Author:     Wang Yong <lazycat.manatee@gmail.com>
  * Maintainer: Wang Yong <lazycat.manatee@gmail.com>
@@ -21,6 +21,7 @@
 #include <string.h>
 #include <glib.h>
 #include <Python.h>
+#include "pygobject.h"
 #include <cairo/cairo.h>
 #include <pycairo/pycairo.h>
 #include <stdlib.h>
@@ -57,6 +58,9 @@ static inline void _pixel_plus (struct _pixel *adder_sum, const struct _pixel *a
 PyMODINIT_FUNC initdtk_cairo_blur(void) {
      PyObject *m;
 
+     /* This is necessary step for Python binding, otherwise got sefault error */
+     init_pygobject();
+     
      m = Py_InitModule("dtk_cairo_blur", cairo_blur_methods);
 
      if (!m) {
@@ -181,7 +185,6 @@ static void _apply_kernel (cairo_surface_t *surface, const int *kernel, int kern
 }
 
 static void blur_image_surface (cairo_surface_t *surface, double sigma) {
-     cairo_format_t format = cairo_image_surface_get_format (surface);
      int kernel_size;
      int *kernel = _calc_kernel (sigma, &kernel_size);
      _apply_kernel (surface, kernel, kernel_size);
