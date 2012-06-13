@@ -272,7 +272,6 @@ class Menu(Window):
     def adjust_menu_position(self, widget):
         '''Realize menu.'''
         # Adjust coordinate.
-        # print (self, rect)
         (screen_width, screen_height) = get_screen_size(self)
         
         menu_width = menu_height = 0
