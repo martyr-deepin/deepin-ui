@@ -81,9 +81,6 @@ class ScrolledWindow(gtk.Bin):
         #self.set_app_paintable(True)
         self.set_has_window(False)
 
-
-
-
     def do_expose_event(self, e):
         if e.window == self.vwindow:
             self.draw_vbar()

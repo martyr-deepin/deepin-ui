@@ -20,7 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from scrolled_window import ScrolledWindow
 import gtk
 import gobject
 from skin_config import skin_config
@@ -683,18 +682,3 @@ class IconItem(gobject.GObject):
         pass
         
 gobject.type_register(IconItem)
-
-class IconViewBox(ScrolledWindow):
-    '''Icon view box.'''
-	
-    def __init__(self):
-        '''Init icon view box.'''
-        ScrolledWindow.__init__(self)
-        self.icon_view = IconView()
-        self.icon_view_align = gtk.Alignment()
-        self.icon_view_align.set(0.5, 0.5, 1.0, 1.0)
-        
-        self.icon_view_align.add(self.icon_view)
-        self.add_child(self.icon_view_align)
-        
-gobject.type_register(IconViewBox)

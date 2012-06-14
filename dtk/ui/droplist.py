@@ -38,6 +38,8 @@ droplist_active_item = None
 root_droplists = []
 droplist_grab_window_press_id = None
 droplist_grab_window_motion_id = None
+droplist_grab_window_enter_notify_id = None
+droplist_grab_window_leave_notify_id = None
 
 def droplist_grab_window_focus_in():
     droplist_grab_window.grab_add()
@@ -69,6 +71,18 @@ def is_press_on_droplist_grab_window(window):
                 return True
             
     return False        
+
+def droplist_grab_window_enter_notify(widget, event):
+    if event and event.window:
+        event_widget = event.window.get_user_data()
+        if isinstance(event_widget, DroplistScrolledWindow):
+            event_widget.event(event)
+
+def droplist_grab_window_leave_notify(widget, event):
+    if event and event.window:
+        event_widget = event.window.get_user_data()
+        if isinstance(event_widget, DroplistScrolledWindow):
+            event_widget.event(event)
     
 def droplist_grab_window_button_press(widget, event):
     global droplist_grab_window_press_id
@@ -220,6 +234,8 @@ class Droplist(gtk.Window):
         global root_droplists
         global droplist_grab_window_press_id
         global droplist_grab_window_motion_id
+        global droplist_grab_window_enter_notify_id
+        global droplist_grab_window_leave_notify_id
         
         if self.is_root_droplist:
             droplist_grab_window_focus_out()
@@ -228,6 +244,8 @@ class Droplist(gtk.Window):
             droplist_grab_window_focus_in()
             droplist_grab_window_press_id = droplist_grab_window.connect("button-press-event", droplist_grab_window_button_press)
             droplist_grab_window_motion_id = droplist_grab_window.connect("motion-notify-event", droplist_grab_window_motion)
+            droplist_grab_window_enter_notify_id = droplist_grab_window.connect("enter-notify-event", droplist_grab_window_enter_notify)
+            droplist_grab_window_leave_notify_id = droplist_grab_window.connect("leave-notify-event", droplist_grab_window_leave_notify)
             
         if self.is_root_droplist and not self in root_droplists:
             root_droplists.append(self)
