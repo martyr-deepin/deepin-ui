@@ -21,36 +21,73 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE
+from utils import remove_from_list
 from draw import draw_vlinear, draw_font
 from theme import ui_theme
 from utils import get_content_size, propagate_expose
 from window import Window
 import gobject
 import gtk
-        
-class TooltipWindow(Window):
+
+tooltip_windows = []
+
+class TooltipWindow(gtk.Window):
     '''Tooltip window.'''
 	
-    def __init__(self):
-        '''Init window.'''
+    def __init__(self, widget, x, y):
+        '''Init tooltip window.'''
+        gtk.Window.__init__(self, gtk.WINDOW_POPUP)
+        self.x = x
+        self.y = y
+        self.monitor_window = widget.get_toplevel()
+        
+        # Remove any other tooltip window first.
+        global tooltip_windows
+        for tooltip_window in tooltip_windows:
+            tooltip_window.exit()
+            
+        # Add self into tooltip windows list.
+        tooltip_windows.append(self)
+        
+    def start_show(self):
+        '''Start show tooltip.'''
+        self.show_all()
+        
+    def start_hide(self):
+        '''Start hide tooltip.'''
+        self.hide_all()
+    
+    def exit(self):
+        '''Exit tooltip window.'''
+        global tooltip_windows
+        remove_from_list(tooltip_windows, self)
+        
+        self.destroy()    
         
 gobject.type_register(TooltipWindow)
 
+class TooltipText(TooltipWindow):
+    '''Text tooltip.'''
+	
+    def __init__(self, widget, x, y, text):
+        '''Init text tooltip.'''
+        TooltipWindow.__init__(self, widget, x, y)
+        self.text = text
+        self.tooltip_background = "#fffac6"
+        self.tooltip_frame = "#000000"
+        self.tooltip_text = "#242424"
+        
+gobject.type_register(TooltipText)
+
 class TooltipBox(TooltipWindow):
-    '''Tooltip box.'''
+    '''Text tooltip.'''
 	
-    def __init__(self):
-        '''Init tooltip box.'''
-
+    def __init__(self, widget, x, y, child):
+        '''Init text tooltip.'''
+        TooltipWindow.__init__(self, widget, x, y)
+        self.child = child
+        
 gobject.type_register(TooltipBox)
-
-class TooltipOSD(TooltipWindow):
-    '''OSD tooltip.'''
-	
-    def __init__(self):
-        '''Init osd tooltip.'''
-
-gobject.type_register(TooltipOSD)
 
 class Tooltip(Window):
     '''Tooltip.'''

@@ -93,7 +93,7 @@ class Titlebar(EventBox):
         self.button_box = gtk.HBox()
         self.button_align = gtk.Alignment()
         self.button_align.set(1.0, 0.0, 0.0, 0.0)
-        self.button_align.set_padding(4, 0, 0, 2)
+        self.button_align.set_padding(0, 0, 0, 0)
         self.button_align.add(self.button_box)
         self.h_layout_box.pack_start(self.button_align, False, False)
         
