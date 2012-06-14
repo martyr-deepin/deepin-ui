@@ -28,7 +28,7 @@ import gobject
 from collections import OrderedDict
 
 from draw import draw_pixbuf, draw_vlinear, draw_font
-from utils import (get_content_size, is_single_click, is_double_click, is_right_button, color_hex_to_cairo,
+from utils import (get_content_size, is_single_click, is_double_click, is_right_button, color_hex_to_cairo, get_window_shadow_size,
                    cairo_state, get_match_parent)
 from theme import ui_theme
 from skin_config import skin_config
@@ -191,7 +191,7 @@ class TreeView(gtk.DrawingArea):
                          scrolled_window.allocation.y + scrolled_window.allocation.height)
             cr.clip()
             
-            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
+            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
             skin_config.render_background(cr, self, offset_x + shadow_x, offset_y + shadow_y)
             
         # Draw mask.

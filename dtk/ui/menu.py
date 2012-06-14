@@ -24,7 +24,7 @@ from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MID
 from draw import draw_vlinear, draw_pixbuf, draw_font, draw_hlinear
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo
+from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size
 from window import Window
 import gtk
 import gobject
@@ -284,7 +284,7 @@ class Menu(Window):
                 menu_width = menu_item.item_box_width
             
             menu_height += menu_item.item_box_height    
-        (shadow_x, shadow_y) = self.get_shadow_size()    
+        (shadow_x, shadow_y) = get_window_shadow_size(self)
         menu_width += (self.padding_x + shadow_x) * 2    
         menu_height += (self.padding_y + shadow_y) * 2
             

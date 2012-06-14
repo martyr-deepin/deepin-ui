@@ -24,7 +24,7 @@ from skin_config import skin_config
 from constant import DEFAULT_FONT_SIZE
 from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state, draw_text
 from theme import ui_theme
-from utils import get_content_size
+from utils import get_content_size, get_window_shadow_size
 import gobject
 import gtk
 
@@ -141,7 +141,7 @@ class BackgroundBox(gtk.VBox):
             cr.rectangle(offset_x, offset_y, rect.width, rect.height)
             cr.clip()
             
-            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
+            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
             skin_config.render_background(cr, self, rect.x + shadow_x, rect.y + shadow_y)
             
         self.draw_mask(cr, rect.x, rect.y, rect.width, rect.height)    

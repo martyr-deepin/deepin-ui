@@ -799,6 +799,13 @@ def is_hex_color(string):
                 return False
             else:
                 return True    
+            
+def get_window_shadow_size(window):
+    '''Get window shadow size.'''
+    if "get_shadow_size" in dir(window):
+        return window.get_shadow_size()
+    else:
+        return (0, 0)
 
 def run_with_profile(func, log_file, sort='time', amount=20):  
     import hotshot    

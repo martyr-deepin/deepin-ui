@@ -25,7 +25,7 @@ import gtk
 import gobject
 from skin_config import skin_config
 from theme import ui_theme
-from utils import get_match_parent, cairo_state, get_event_coords, is_in_rect, is_left_button, is_double_click, is_single_click
+from utils import get_match_parent, cairo_state, get_event_coords, is_in_rect, is_left_button, is_double_click, is_single_click, get_window_shadow_size
 from draw import draw_pixbuf, draw_vlinear
 from keymap import get_keyevent_name
 
@@ -330,7 +330,7 @@ class IconView(gtk.DrawingArea):
                          scrolled_window.allocation.y + scrolled_window.allocation.height)
             cr.clip()
             
-            (shadow_x, shadow_y) = self.get_toplevel().get_shadow_size()
+            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
             skin_config.render_background(cr, self, offset_x + shadow_x, offset_y + shadow_y)
             
         # Draw mask.
