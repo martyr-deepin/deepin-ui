@@ -55,6 +55,7 @@ from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
 from dtk.ui.menu import Menu
+from dtk.ui.droplist import Droplist
 from dtk.ui.treeview import TreeView, TreeViewItem
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
@@ -217,11 +218,26 @@ if __name__ == "__main__":
     # Add navigatebar.
     tab_window_items = map(create_tab_window_item, ["Tab1", "Tab2", "Tab3", "Tab4", "Tab5"])
     
+    droplist = Droplist(
+        [(None, "测试测试测试1", None),
+         (None, "测试测试测试2", None),
+         (None, "测试测试测试3", None),
+         None,
+         (None, "测试测试测试", None),
+         None,
+         (None, "测试测试测试4", None),
+         (None, "测试测试测试5", None),
+         (None, "测试测试测试6", None),
+         ],
+        True
+        )
+    
     navigatebar = Navigatebar(
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
          (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : ColorSelectDialog().show_all()),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
-         (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
+         (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", lambda : droplist.show(
+                    (500, 200), (0, 0))),
          (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
          (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),

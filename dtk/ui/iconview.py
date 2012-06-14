@@ -378,7 +378,8 @@ class IconView(gtk.DrawingArea):
     def clear_focus_item(self):
         '''Clear focus item status.'''
         if self.focus_index != None:
-            self.emit("lost-focus-item", self.items[self.focus_index])
+            if 0 <= self.focus_index < len(self.items):
+                self.emit("lost-focus-item", self.items[self.focus_index])
             self.focus_index = None
                         
     def motion_icon_view(self, widget, event):
