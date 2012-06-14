@@ -265,7 +265,8 @@ class Droplist(gtk.Window):
             "Page_Down" : self.scroll_page_down,
             "Return" : self.press_select_item,
             "Up" : self.select_prev_item,
-            "Down" : self.select_next_item}
+            "Down" : self.select_next_item,
+            "Escape" : self.hide}
         
         self.select_first_item()
         self.grab_focus()
