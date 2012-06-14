@@ -24,7 +24,7 @@ from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MID
 from draw import draw_vlinear, draw_pixbuf, draw_font, draw_hlinear
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size
+from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size, get_match_parent
 import gtk
 import gobject
 from scrolled_window import ScrolledWindow
@@ -41,6 +41,7 @@ droplist_grab_window_release_id = None
 droplist_grab_window_motion_id = None
 droplist_grab_window_enter_notify_id = None
 droplist_grab_window_leave_notify_id = None
+droplist_grab_window_scroll_event_id = None
 
 def droplist_grab_window_focus_in():
     droplist_grab_window.grab_add()
@@ -84,6 +85,11 @@ def droplist_grab_window_leave_notify(widget, event):
         event_widget = event.window.get_user_data()
         if isinstance(event_widget, DroplistScrolledWindow):
             event_widget.event(event)
+            
+def droplist_grab_window_scroll_event(widget, event):
+    if event and event.window:
+        for droplist in root_droplists:
+            droplist.item_scrolled_window.event(event)
 
 def droplist_grab_window_button_release(widget, event):
     if event and event.window:
@@ -232,12 +238,20 @@ class Droplist(gtk.Window):
     def get_droplist_item_at_coordinate(self, (x, y)):
         '''Get droplist item at coordinate, return None if haven't any droplist item at given coordinate.'''
         match_droplist_item = None
-        for droplist_item in self.droplist_items:                
+        
+        item_heights = map(lambda item: item.item_box_height, self.droplist_items)
+        item_offsets = map(lambda (index, height): sum(item_heights[0:index]), enumerate(item_heights))
+        
+        vadjust = self.item_scrolled_window.get_vadjustment()
+        (scrolled_window_x, scrolled_window_y) = get_widget_root_coordinate(self.item_scrolled_window, WIDGET_POS_TOP_LEFT)
+        for (index, droplist_item) in enumerate(self.droplist_items):
             item_rect = droplist_item.item_box.get_allocation()
-            (item_x, item_y) = get_widget_root_coordinate(droplist_item.item_box, WIDGET_POS_TOP_LEFT)
-            if is_in_rect((x, y), (item_x, item_y, item_rect.width, item_rect.height)):
+            if is_in_rect((x, y), (scrolled_window_x, 
+                                   scrolled_window_y + item_offsets[index] - (vadjust.get_value() - vadjust.get_lower()),
+                                   item_rect.width, 
+                                   item_rect.height)):
                 match_droplist_item = droplist_item
-                break    
+                break
             
         return match_droplist_item
                 
@@ -249,6 +263,7 @@ class Droplist(gtk.Window):
         global droplist_grab_window_motion_id
         global droplist_grab_window_enter_notify_id
         global droplist_grab_window_leave_notify_id
+        global droplist_grab_window_scroll_event_id
         
         if self.is_root_droplist:
             droplist_grab_window_focus_out()
@@ -260,6 +275,7 @@ class Droplist(gtk.Window):
             droplist_grab_window_motion_id = droplist_grab_window.connect("motion-notify-event", droplist_grab_window_motion)
             droplist_grab_window_enter_notify_id = droplist_grab_window.connect("enter-notify-event", droplist_grab_window_enter_notify)
             droplist_grab_window_leave_notify_id = droplist_grab_window.connect("leave-notify-event", droplist_grab_window_leave_notify)
+            droplist_grab_window_scroll_event_id = droplist_grab_window.connect("scroll-event", droplist_grab_window_scroll_event)
             
         if self.is_root_droplist and not self in root_droplists:
             root_droplists.append(self)
