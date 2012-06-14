@@ -118,7 +118,7 @@ class TabBox(gtk.VBox):
         tab_title_width = sum(self.tab_title_widths)
         
         with cairo_disable_antialias(cr):
-            cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_unselect_bg_color, 0.5)))
+            cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_unselect_bg_color, 0.7)))
             cr.rectangle(rect.x + 1, rect.y + 1, tab_title_width, self.tab_height)
             cr.fill()
                 
@@ -157,7 +157,7 @@ class TabBox(gtk.VBox):
             with cairo_disable_antialias(cr):
                 if index == self.tab_index:
                     # Draw title select tab.
-                    cr.set_source_rgb(*color_hex_to_cairo(self.tab_select_bg_color))    
+                    cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_select_bg_color, 0.9)))    
                     cr.rectangle(rect.x + 1 + sum(self.tab_title_widths[0:index]),
                                  rect.y + 1,
                                  self.tab_title_widths[index],
@@ -193,7 +193,7 @@ class TabBox(gtk.VBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
-        cr.set_source_rgb(*color_hex_to_cairo(self.tab_select_bg_color))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_select_bg_color, 0.9)))
         cr.rectangle(rect.x, rect.y, rect.width, rect.height)
         cr.fill()
 
@@ -209,6 +209,9 @@ class TabWindow(Window):
                  window_height=472):
         '''Init tab window.'''
         Window.__init__(self)
+        self.set_modal(True)                                # grab focus to avoid build too many skin window
+        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
+        self.set_skip_taskbar_hint(True)                    # skip taskbar
         self.set_resizable(False)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
