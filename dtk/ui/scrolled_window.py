@@ -118,7 +118,6 @@ class ScrolledWindow(gtk.Bin):
         else:
             return False
 
-
     def make_bar_smaller(self, orientation):
         (right_space, top_bootm_space) = (2, 3)
         if orientation == gtk.ORIENTATION_HORIZONTAL:

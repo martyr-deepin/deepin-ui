@@ -90,6 +90,11 @@ def droplist_grab_window_button_release(widget, event):
         event_widget = event.window.get_user_data()
         if isinstance(event_widget, DroplistScrolledWindow):
             event_widget.event(event)
+        else:
+            # Make scrolledbar smaller if release out of scrolled_window area.
+            for droplist in root_droplists:
+                droplist.item_scrolled_window.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
+                droplist.item_scrolled_window.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
     
 def droplist_grab_window_button_press(widget, event):
     global droplist_grab_window_press_id
@@ -100,12 +105,12 @@ def droplist_grab_window_button_press(widget, event):
         event_widget = event.window.get_user_data()
         if is_press_on_droplist_grab_window(event.window):
             droplist_grab_window_focus_out()
+        elif isinstance(event_widget, DroplistScrolledWindow):
+            event_widget.event(event)
         elif isinstance(event_widget, Droplist):
             droplist_item = event_widget.get_droplist_item_at_coordinate(event.get_root_coords())
             if droplist_item:
                 droplist_item.item_box.event(event)
-        elif isinstance(event_widget, DroplistScrolledWindow):
-            event_widget.event(event)
         else:
             event_widget.event(event)
             droplist_grab_window_focus_out()
