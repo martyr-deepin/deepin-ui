@@ -363,14 +363,17 @@ class ScrolledWindow(gtk.Bin):
         if self.child:
             (allocation.x, allocation.y) = (0, 0)
             self.child.do_size_allocate(self.child, allocation)
+            self.update_scrollbar()
 
-            if self.get_realized():
-                self.calc_vbar_length()
-                self.calc_hbar_length()
-                self.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
-                self.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
-                self.vadjustment.emit('value-changed')
-                self.hadjustment.emit('value-changed')
+
+    def update_scrollbar(self, *arg, **argk):
+        if self.get_realized():
+            self.calc_vbar_length()
+            self.calc_hbar_length()
+            self.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
+            self.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
+            self.vadjustment.emit('value-changed')
+            self.hadjustment.emit('value-changed')
 
     def do_unrealize(self):
         #print "do_unrealize"
@@ -479,6 +482,10 @@ class ScrolledWindow(gtk.Bin):
         self.vwindow.hide()
         gtk.Bin.do_unmap(self)
 
+    def do_remove(self, child):
+        child.set_scroll_adjustments(None, None)
+        gtk.Bin.do_remove(self, child)
+
     def get_vadjustment(self):
         return self.vadjustment
 
@@ -489,12 +496,12 @@ class ScrolledWindow(gtk.Bin):
         self.hadjustment = adj
         remove_callback_id(self._horizaontal.value_change_id)
         self.hadj_callback_id = self.hadjustment.connect('value-changed', self.hadjustment_changed)
-        #self.hadjustment.connect('changed', self.hadjustment_changed)
+        self.hadjustment.connect('changed', self.update_scrollbar)
     def set_vadjustment(self, adj):
         self.vadjustment = adj
         remove_callback_id(self._vertical.value_change_id)
         self.vadj_callback_id = self.vadjustment.connect('value-changed', self.vadjustment_changed)
-        #self.vadjustment.connect('changed', self.vadjustment_changed)
+        self.vadjustment.connect('changed', self.update_scrollbar)
 
 
     def _test_calc(self):

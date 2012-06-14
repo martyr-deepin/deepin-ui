@@ -231,6 +231,7 @@ if __name__ == "__main__":
          ],
         True
         )
+    droplist.set_size_request(-1, 100)
     
     navigatebar = Navigatebar(
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
@@ -402,14 +403,9 @@ if __name__ == "__main__":
     icon_view_vframe.set(0, 0, 1, 1)
     icon_view_vframe.set_padding(0, 1, 0, 0)
     
-    icon_view_scrolled_window = ScrolledWindow()
-    icon_view = IconView()
-    icon_view_scrolled_window.add_child(icon_view)
-    icon_view_hframe.add(icon_view_scrolled_window)
-    
-    # icon_view_box = IconViewBox()
-    # icon_view = icon_view_box.icon_view
-    # icon_view_hframe.add(icon_view_box)
+    icon_view_box = IconViewBox()
+    icon_view = icon_view_box.icon_view
+    icon_view_hframe.add(icon_view_box)
     
     icon_view_vframe.add(icon_view_hframe)
     

@@ -27,6 +27,7 @@ from theme import ui_theme
 from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size
 import gtk
 import gobject
+from scrolled_window import ScrolledWindow
 
 droplist_grab_window = gtk.Window(gtk.WINDOW_POPUP)
 droplist_grab_window.move(0, 0)
@@ -82,6 +83,8 @@ def droplist_grab_window_button_press(widget, event):
             droplist_item = event_widget.get_droplist_item_at_coordinate(event.get_root_coords())
             if droplist_item:
                 droplist_item.item_box.event(event)
+        elif isinstance(event_widget, DroplistScrolledWindow):
+            event_widget.event(event)
         else:
             event_widget.event(event)
             droplist_grab_window_focus_out()
@@ -119,7 +122,18 @@ def droplist_grab_window_motion(widget, event):
                 droplist_item.item_box.event(enter_notify_event)
                 
                 droplist_item.item_box.queue_draw()
+        elif isinstance(event_widget, DroplistScrolledWindow):
+            event_widget.event(event)
 
+class DroplistScrolledWindow(ScrolledWindow):
+    '''Droplist scrolled window.'''
+	
+    def __init__(self):
+        '''Init droplist scrolled window.'''
+        ScrolledWindow.__init__(self)
+        
+gobject.type_register(DroplistScrolledWindow)
+                
 class Droplist(gtk.Window):
     '''Droplist.'''
     
@@ -141,6 +155,7 @@ class Droplist(gtk.Window):
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_decorated(False)
+        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         global root_droplists
         self.is_root_droplist = is_root_droplist
         self.select_scale = select_scale
@@ -168,7 +183,9 @@ class Droplist(gtk.Window):
         self.item_align = gtk.Alignment()
         self.item_align.set_padding(padding_y, padding_y, padding_x, padding_x)
         self.item_align.add(self.item_box)
-        self.add(self.item_align)
+        self.item_scrolled_window = DroplistScrolledWindow()
+        self.add(self.item_scrolled_window)
+        self.item_scrolled_window.add_child(self.item_align)
         self.droplist_items = []
         
         if items:
@@ -176,7 +193,7 @@ class Droplist(gtk.Window):
             
             for item in items:
                 droplist_item = DroplistItem(
-                    item, font_size, self.select_scale, self.show_subdroplist, self.hide_subdroplist, self.get_root_droplist, self.get_droplist_items,
+                    item, font_size, self.select_scale,
                     have_icon, icon_width, icon_height,
                     have_subdroplist, subdroplist_width, subdroplist_height,
                     padding_x, padding_y,
@@ -185,23 +202,6 @@ class Droplist(gtk.Window):
                 self.item_box.pack_start(droplist_item.item_box, False, False)
                 
         self.connect_after("show", self.adjust_droplist_position)        
-        self.connect("expose-event", self.expose_droplist)
-                
-    def expose_droplist(self, widget, event):
-        '''Draw mask.'''
-        # Init.
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        x, y, h, w = rect.x, rect.y, rect.width, rect.height
-
-        # Draw background.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("menuMask").get_color_info()))
-        cr.rectangle(x, y, w, h)    
-        cr.fill()
-        
-        # Draw left side.
-        draw_hlinear(cr, x + 1, y + 1, 16 + self.padding_x + self.padding_x * 2, h - 2,
-                     ui_theme.get_shadow_color("menuSide").get_color_info())
         
     def get_droplist_item_at_coordinate(self, (x, y)):
         '''Get droplist item at coordinate, return None if haven't any droplist item at given coordinate.'''
@@ -215,10 +215,6 @@ class Droplist(gtk.Window):
             
         return match_droplist_item
                 
-    def get_droplist_items(self):
-        '''Get droplist items.'''
-        return self.droplist_items
-    
     def init_droplist(self, widget):
         '''Realize droplist.'''
         global root_droplists
@@ -317,9 +313,6 @@ class Droplist(gtk.Window):
             
     def hide(self):
         '''Hide droplist.'''
-        # Hide subdroplist.
-        self.hide_subdroplist()
-        
         # Hide current droplist window.
         self.hide_all()
         
@@ -327,38 +320,6 @@ class Droplist(gtk.Window):
         self.subdroplist = None
         self.root_droplist = None
         
-    def show_subdroplist(self, subdroplist, coordinate):
-        '''Show subdroplist.'''
-        if self.subdroplist != subdroplist:
-            # Hide old subdroplist first.
-            self.hide_subdroplist()
-            
-            # Update attributes of new subdroplist.
-            self.subdroplist = subdroplist
-            self.subdroplist.root_droplist = self.get_root_droplist()
-            
-            # Show new subdroplist.
-            rect = self.get_allocation()
-            self.subdroplist.show(coordinate, (-rect.width + self.shadow_radius * 2, 0))
-                
-    def hide_subdroplist(self):
-        '''Hide subdroplist.'''
-        if self.subdroplist:
-            # Hide subdroplist.
-            self.subdroplist.hide()
-            self.subdroplist = None
-            
-            # Reset droplist items in subdroplist.
-            for droplist_item in self.droplist_items:
-                droplist_item.subdroplist_active = False
-            
-    def get_root_droplist(self):
-        '''Get root droplist.'''
-        if self.root_droplist:
-            return self.root_droplist
-        else:
-            return self
-            
 gobject.type_register(Droplist)
 
 class DroplistItem(object):
@@ -366,10 +327,6 @@ class DroplistItem(object):
     
     def __init__(self, item, font_size, 
                  select_scale,
-                 show_subdroplist_callback, 
-                 hide_subdroplist_callback,
-                 get_root_droplist_callback,
-                 get_droplist_items_callback,
                  have_icon, icon_width, icon_height, 
                  have_subdroplist, subdroplist_width, subdroplist_height,
                  droplist_padding_x, droplist_padding_y,
@@ -383,10 +340,6 @@ class DroplistItem(object):
         self.droplist_padding_y = droplist_padding_y
         self.item_padding_x = item_padding_x
         self.item_padding_y = item_padding_y
-        self.show_subdroplist_callback = show_subdroplist_callback
-        self.hide_subdroplist_callback = hide_subdroplist_callback
-        self.get_root_droplist_callback = get_root_droplist_callback
-        self.get_droplist_items_callback = get_droplist_items_callback
         self.have_icon = have_icon
         self.icon_width = icon_width
         self.icon_height = icon_height
@@ -425,7 +378,6 @@ class DroplistItem(object):
             "expose-event", 
             lambda w, e: self.expose_droplist_item(
                 w, e, item_dpixbuf, item_content))
-        self.item_box.connect("enter-notify-event", lambda w, e: self.enter_notify_droplist_item(w))
         
         # Wrap droplist aciton.
         self.item_box.connect("button-press-event", self.wrap_droplist_clicked_action)        
@@ -510,24 +462,3 @@ class DroplistItem(object):
     
         return True
 
-    def enter_notify_droplist_item(self, widget):
-        '''Callback for `enter-notify-event` signal.'''
-        # Reset all items in same droplist.
-        for droplist_item in self.get_droplist_items_callback():
-            if droplist_item != self and droplist_item.subdroplist_active:
-                droplist_item.subdroplist_active = False
-                droplist_item.item_box.queue_draw()
-        
-        (item_dpixbuf, item_content, item_node) = self.item[0:3]
-        if isinstance(item_node, Droplist):
-            droplist_window = self.item_box.get_toplevel()
-            (droplist_window_x, droplist_window_y) = get_widget_root_coordinate(droplist_window, WIDGET_POS_RIGHT_CENTER)
-            (item_x, item_y) = get_widget_root_coordinate(self.item_box)
-            self.show_subdroplist_callback(
-                item_node, 
-                (droplist_window_x - droplist_window.shadow_radius, 
-                 item_y - widget.get_allocation().height - droplist_window.shadow_radius))
-            
-            self.subdroplist_active = True
-        else:
-            self.hide_subdroplist_callback()
