@@ -325,20 +325,24 @@ class ToggleButton(gtk.ToggleButton):
                  inactive_normal_dpixbuf, active_normal_dpixbuf, 
                  inactive_hover_dpixbuf=None, active_hover_dpixbuf=None, 
                  inactive_press_dpixbuf=None, active_press_dpixbuf=None,
+                 inactive_disable_dpixbuf=None, active_disable_dpixbuf=None,
                  button_label=None, padding_x=0):
         '''Init font button.'''
         gtk.ToggleButton.__init__(self)
         font_size = DEFAULT_FONT_SIZE
         label_dcolor = ui_theme.get_color("buttonDefaultFont")
         self.button_press_flag = False
+        self.button_disable_flag = False
         
         self.inactive_pixbuf_group = (inactive_normal_dpixbuf,
                                       inactive_hover_dpixbuf,
-                                      inactive_press_dpixbuf)
+                                      inactive_press_dpixbuf,
+                                      inactive_disable_dpixbuf)
         
         self.active_pixbuf_group = (active_normal_dpixbuf,
                                     active_hover_dpixbuf,
-                                    active_press_dpixbuf)
+                                    active_press_dpixbuf,
+                                    active_disable_dpixbuf)
 
         # Init request size.
         label_width = 0
@@ -357,6 +361,14 @@ class ToggleButton(gtk.ToggleButton):
                 w, e,
                 button_label, padding_x, font_size, label_dcolor))
         
+    def set_disable(self, disable_flag):
+        '''Set disable.'''
+        self.button_disable_flag = disable_flag
+        
+    def get_disable(self):
+        '''Get disable.'''
+        return self.button_disable_flag
+        
     def button_press_cb(self, widget, event):    
         self.button_press_flag = True
         self.queue_draw()
@@ -369,13 +381,18 @@ class ToggleButton(gtk.ToggleButton):
                              button_label, padding_x, font_size, label_dcolor):
         '''Expose function to replace event box's image.'''
         # Init.
-        inactive_normal_dpixbuf, inactive_hover_dpixbuf, inactive_press_dpixbuf = self.inactive_pixbuf_group
-        active_normal_dpixbuf, active_hover_dpixbuf, active_press_dpixbuf = self.active_pixbuf_group
+        inactive_normal_dpixbuf, inactive_hover_dpixbuf, inactive_press_dpixbuf, inactive_disable_dpixbuf = self.inactive_pixbuf_group
+        active_normal_dpixbuf, active_hover_dpixbuf, active_press_dpixbuf, active_disable_dpixbuf = self.active_pixbuf_group
         rect = widget.allocation
         image = inactive_normal_dpixbuf.get_pixbuf()
         
         # Get pixbuf along with button's sate.
-        if widget.state == gtk.STATE_NORMAL:
+        if self.button_disable_flag:
+            if widget.get_active():
+                image = active_disable_dpixbuf.get_pixbuf()
+            else:
+                image = inactive_disable_dpixbuf.get_pixbuf()
+        elif widget.state == gtk.STATE_NORMAL:
             image = inactive_normal_dpixbuf.get_pixbuf()
         elif widget.state == gtk.STATE_PRELIGHT:
             if not inactive_hover_dpixbuf and not active_hover_dpixbuf:
@@ -393,7 +410,6 @@ class ToggleButton(gtk.ToggleButton):
                     image = inactive_hover_dpixbuf.get_pixbuf()
                 elif active_hover_dpixbuf:    
                     image = active_hover_dpixbuf.get_pixbuf()
-                    
         elif widget.state == gtk.STATE_ACTIVE:
             if inactive_press_dpixbuf and active_press_dpixbuf:
                 if self.button_press_flag:
@@ -494,6 +510,8 @@ class CheckButton(ToggleButton):
             ui_theme.get_pixbuf("button/check_button_active_hover.png"),
             ui_theme.get_pixbuf("button/check_button_inactive_press.png"),
             ui_theme.get_pixbuf("button/check_button_active_press.png"),
+            ui_theme.get_pixbuf("button/check_button_inactive_disable.png"),
+            ui_theme.get_pixbuf("button/check_button_active_disable.png"),
             label_text, padding_x
             )
         
@@ -512,6 +530,8 @@ class RadioButton(ToggleButton):
             ui_theme.get_pixbuf("button/radio_button_active_hover.png"),
             ui_theme.get_pixbuf("button/radio_button_inactive_press.png"),
             ui_theme.get_pixbuf("button/radio_button_active_press.png"),
+            ui_theme.get_pixbuf("button/radio_button_inactive_disable.png"),
+            ui_theme.get_pixbuf("button/radio_button_active_disable.png"),
             label_text,
             padding_x
             )
