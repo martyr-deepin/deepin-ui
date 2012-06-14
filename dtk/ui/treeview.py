@@ -28,7 +28,7 @@ import gobject
 from collections import OrderedDict
 
 from draw import draw_pixbuf, draw_vlinear, draw_font
-from utils import (get_content_size, is_single_click, is_double_click, is_right_button, color_hex_to_cairo, get_window_shadow_size,
+from utils import (get_content_size, is_single_click, is_double_click, is_right_button, get_window_shadow_size,
                    cairo_state, get_match_parent)
 from theme import ui_theme
 from skin_config import skin_config
