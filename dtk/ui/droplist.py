@@ -89,16 +89,22 @@ def droplist_grab_window_leave_notify(widget, event):
             event_widget.event(event)
             
 def droplist_grab_window_scroll_event(widget, event):
+    global root_droplists
+    
     if event and event.window:
         for droplist in root_droplists:
             droplist.item_scrolled_window.event(event)
             
 def droplist_grab_window_key_press(widget, event):
+    global root_droplists
+    
     if event and event.window:
         for droplist in root_droplists:
             droplist.event(event)
 
 def droplist_grab_window_button_release(widget, event):
+    global root_droplists
+    
     if event and event.window:
         event_widget = event.window.get_user_data()
         if isinstance(event_widget, DroplistScrolledWindow):
@@ -192,6 +198,7 @@ class Droplist(gtk.Window):
         '''Init droplist, item format: (item_icon, itemName, item_node).'''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
+        self.set_can_focus(True) # can focus to response key-press signal
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
@@ -258,13 +265,34 @@ class Droplist(gtk.Window):
             "Up" : self.select_prev_item,
             "Down" : self.select_next_item}
         
+        self.select_first_item()
+        self.grab_focus()
+        
+    def select_item(self, item):
+        '''Select item.'''
+        global droplist_active_item
+
+        if droplist_active_item:
+            droplist_active_item.set_state(gtk.STATE_NORMAL)
+            
+        item.item_box.set_state(gtk.STATE_PRELIGHT)
+        droplist_active_item = item.item_box
+        
     def select_first_item(self):
         '''Select first item.'''
-        pass
+        # Scroll to top.
+        vadjust = self.item_scrolled_window.get_vadjustment()
+        vadjust.set_value(vadjust.get_lower())
+            
+        self.select_item(self.droplist_items[0])
         
     def select_last_item(self):
         '''Select last item.'''
-        pass
+        # Scroll to bottom.
+        vadjust = self.item_scrolled_window.get_vadjustment()
+        vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+            
+        self.select_item(self.droplist_items[-1])
     
     def select_prev_item(self):
         '''Select preview item.'''
@@ -289,6 +317,7 @@ class Droplist(gtk.Window):
     def droplist_key_press(self, widget, event):
         '''Key press event.'''
         key_name = get_keyevent_name(event)
+        print key_name
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
 
@@ -334,6 +363,7 @@ class Droplist(gtk.Window):
         global droplist_grab_window_enter_notify_id
         global droplist_grab_window_leave_notify_id
         global droplist_grab_window_scroll_event_id
+        global droplist_grab_window_key_press_id
         
         if self.is_root_droplist:
             droplist_grab_window_focus_out()
@@ -346,6 +376,7 @@ class Droplist(gtk.Window):
             droplist_grab_window_enter_notify_id = droplist_grab_window.connect("enter-notify-event", droplist_grab_window_enter_notify)
             droplist_grab_window_leave_notify_id = droplist_grab_window.connect("leave-notify-event", droplist_grab_window_leave_notify)
             droplist_grab_window_scroll_event_id = droplist_grab_window.connect("scroll-event", droplist_grab_window_scroll_event)
+            droplist_grab_window_key_press_id = droplist_grab_window.connect("key-press-event", droplist_grab_window_key_press)
             
         if self.is_root_droplist and not self in root_droplists:
             root_droplists.append(self)
