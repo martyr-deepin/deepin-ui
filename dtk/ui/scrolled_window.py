@@ -177,6 +177,7 @@ class ScrolledWindow(gtk.Bin):
             return False
 
     def do_leave_notify_event(self, e):
+        print "*************"
         if e.window == self.hwindow :
             self._horizaontal.is_inside = False
             #if e.y < 0 and not self._horizaontal.in_motion:
@@ -265,7 +266,7 @@ class ScrolledWindow(gtk.Bin):
 
         ratio = float(self.vadjustment.page_size) / (self.vadjustment.upper-self.vadjustment.lower)
 
-        assert(self.vadjustment.upper >= self.vadjustment.page_size)
+        # assert(self.vadjustment.upper >= self.vadjustment.page_size)
         if ratio == 1:
             self._vertical.bar_len = 0
         else:
@@ -287,9 +288,9 @@ class ScrolledWindow(gtk.Bin):
 
 
         ratio = float(self.hadjustment.page_size) / (self.hadjustment.upper-self.hadjustment.lower)
-        assert(self.hadjustment.lower == 0)
+        # assert(self.hadjustment.lower == 0)
 
-        assert(self.hadjustment.upper >= self.hadjustment.page_size)
+        # assert(self.hadjustment.upper >= self.hadjustment.page_size)
         if ratio == 1:
             self._horizaontal.bar_len = 0
         else:
@@ -308,7 +309,7 @@ class ScrolledWindow(gtk.Bin):
 
     def vadjustment_changed(self, adj):
         if self.get_realized():
-            assert(self.vadjustment.value <= self.vadjustment.upper-self.vadjustment.page_size)
+            # assert(self.vadjustment.value <= self.vadjustment.upper-self.vadjustment.page_size)
             upper = self.vadjustment.upper
             self._vertical.bar_pos = value2pos(adj.value, self._vertical.virtual_len, upper)
             self.calc_vbar_allocation()
@@ -317,7 +318,7 @@ class ScrolledWindow(gtk.Bin):
 
     def hadjustment_changed(self, adj):
         if self.get_realized():
-            assert(self.hadjustment.value <= self.hadjustment.upper-self.hadjustment.page_size)
+            # assert(self.hadjustment.value <= self.hadjustment.upper-self.hadjustment.page_size)
             upper = self.hadjustment.upper
             self._horizaontal.bar_pos = value2pos(adj.value, self._horizaontal.virtual_len, upper)
             self.calc_hbar_allocation()
@@ -385,18 +386,18 @@ class ScrolledWindow(gtk.Bin):
         self.hwindow.destroy()
         self.hwindow = None
 
-        assert(self.get_realized() == True)
+        # assert(self.get_realized() == True)
         gtk.Bin.do_unrealize(self)
-        assert(self.get_realized() == False)
+        # assert(self.get_realized() == False)
 
 
     def do_realize(self):
         #print "self.get_parent_window():", self.get_parent_window()
         #print "do_realize", self.get_realized()
 
-        assert(self.get_realized() == False)
+        # assert(self.get_realized() == False)
         gtk.Bin.do_realize(self)
-        assert(self.get_realized() == True)
+        # assert(self.get_realized() == True)
 
         self.binwindow = gtk.gdk.Window(self.get_parent_window(),
                 x=self.allocation.x,

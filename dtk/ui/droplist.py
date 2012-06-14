@@ -37,6 +37,7 @@ droplist_active_item = None
 
 root_droplists = []
 droplist_grab_window_press_id = None
+droplist_grab_window_release_id = None
 droplist_grab_window_motion_id = None
 droplist_grab_window_enter_notify_id = None
 droplist_grab_window_leave_notify_id = None
@@ -83,6 +84,12 @@ def droplist_grab_window_leave_notify(widget, event):
         event_widget = event.window.get_user_data()
         if isinstance(event_widget, DroplistScrolledWindow):
             event_widget.event(event)
+
+def droplist_grab_window_button_release(widget, event):
+    if event and event.window:
+        event_widget = event.window.get_user_data()
+        if isinstance(event_widget, DroplistScrolledWindow):
+            event_widget.event(event)
     
 def droplist_grab_window_button_press(widget, event):
     global droplist_grab_window_press_id
@@ -114,7 +121,9 @@ def droplist_grab_window_motion(widget, event):
     
     if event and event.window:
         event_widget = event.window.get_user_data()
-        if isinstance(event_widget, Droplist):
+        if isinstance(event_widget, DroplistScrolledWindow):
+            event_widget.event(event)
+        elif isinstance(event_widget, Droplist):
             droplist_item = event_widget.get_droplist_item_at_coordinate(event.get_root_coords())
             if droplist_item and isinstance(droplist_item.item_box, gtk.Button):
                 if droplist_active_item:
@@ -136,9 +145,7 @@ def droplist_grab_window_motion(widget, event):
                 droplist_item.item_box.event(enter_notify_event)
                 
                 droplist_item.item_box.queue_draw()
-        elif isinstance(event_widget, DroplistScrolledWindow):
-            event_widget.event(event)
-
+                
 class DroplistScrolledWindow(ScrolledWindow):
     '''Droplist scrolled window.'''
 	
@@ -233,6 +240,7 @@ class Droplist(gtk.Window):
         '''Realize droplist.'''
         global root_droplists
         global droplist_grab_window_press_id
+        global droplist_grab_window_release_id
         global droplist_grab_window_motion_id
         global droplist_grab_window_enter_notify_id
         global droplist_grab_window_leave_notify_id
@@ -243,6 +251,7 @@ class Droplist(gtk.Window):
         if not gtk.gdk.pointer_is_grabbed():
             droplist_grab_window_focus_in()
             droplist_grab_window_press_id = droplist_grab_window.connect("button-press-event", droplist_grab_window_button_press)
+            droplist_grab_window_release_id = droplist_grab_window.connect("button-release-event", droplist_grab_window_button_release)
             droplist_grab_window_motion_id = droplist_grab_window.connect("motion-notify-event", droplist_grab_window_motion)
             droplist_grab_window_enter_notify_id = droplist_grab_window.connect("enter-notify-event", droplist_grab_window_enter_notify)
             droplist_grab_window_leave_notify_id = droplist_grab_window.connect("leave-notify-event", droplist_grab_window_leave_notify)
