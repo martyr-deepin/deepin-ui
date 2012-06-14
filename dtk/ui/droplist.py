@@ -426,7 +426,9 @@ class Droplist(gtk.Window):
     
     def press_select_item(self):
         '''Press select item.'''
-        pass
+        if len(self.droplist_items) > 0:
+            if 0 <= self.item_select_index < len(self.droplist_items):
+                self.droplist_items[self.item_select_index].wrap_droplist_clicked_action()
     
     def droplist_key_press(self, widget, event):
         '''Key press event.'''
@@ -643,7 +645,7 @@ class DroplistItem(object):
                 w, e, item_dpixbuf, item_content))
         
         # Wrap droplist aciton.
-        self.item_box.connect("button-press-event", self.wrap_droplist_clicked_action)        
+        self.item_box.connect("button-press-event", lambda w, e: self.wrap_droplist_clicked_action)        
         
         self.item_box.connect("realize", lambda w: self.realize_item_box(w, item_content))
         
@@ -664,7 +666,7 @@ class DroplistItem(object):
                 
         self.item_box.set_size_request(self.item_box_width, self.item_box_height)        
         
-    def wrap_droplist_clicked_action(self, button, event):
+    def wrap_droplist_clicked_action(self):
         '''Wrap droplist action.'''
         item_node = self.item[2]
         if not isinstance(item_node, Droplist):
