@@ -138,7 +138,7 @@ def droplist_grab_window_button_press(widget, event):
     remove_callback_id(droplist_grab_window_motion_id)        
         
     if droplist_active_item:
-        droplist_active_item.set_state(gtk.STATE_NORMAL)
+        droplist_active_item.item_box.set_state(gtk.STATE_NORMAL)
         
 def droplist_grab_window_motion(widget, event):
     global droplist_active_item
@@ -151,10 +151,10 @@ def droplist_grab_window_motion(widget, event):
             droplist_item = event_widget.get_droplist_item_at_coordinate(event.get_root_coords())
             if droplist_item and isinstance(droplist_item.item_box, gtk.Button):
                 if droplist_active_item:
-                    droplist_active_item.set_state(gtk.STATE_NORMAL)
+                    droplist_active_item.item_box.set_state(gtk.STATE_NORMAL)
                 
                 droplist_item.item_box.set_state(gtk.STATE_PRELIGHT)
-                droplist_active_item = droplist_item.item_box
+                droplist_active_item = droplist_item
                 
                 enter_notify_event = gtk.gdk.Event(gtk.gdk.ENTER_NOTIFY)
                 enter_notify_event.window = event.window
@@ -254,6 +254,7 @@ class Droplist(gtk.Window):
                 
         self.connect_after("show", self.adjust_droplist_position)        
         self.droplist_frame.connect("expose-event", self.expose_droplist_frame)
+        self.item_align.connect("expose-event", self.expose_item_align)
         self.connect("key-press-event", self.droplist_key_press)
         
         self.keymap = {
@@ -268,15 +269,33 @@ class Droplist(gtk.Window):
         self.select_first_item()
         self.grab_focus()
         
+    def expose_item_align(self, widget, event):
+        '''Expose item align.'''
+        # Init.
+        cr = widget.window.cairo_create()        
+        rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
+        # Draw background.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("menuMask").get_color_info()))
+        cr.rectangle(x, y, w, h)    
+        cr.fill()
+
+        # Draw left side.
+        vadjust = self.item_scrolled_window.get_vadjustment()
+        draw_hlinear(cr, x + 1, y + vadjust.get_value() + 1, 16 + self.padding_x + self.padding_x * 2, vadjust.get_page_size() - 2,
+                     ui_theme.get_shadow_color("menuSide").get_color_info())
+        
     def select_item(self, item):
         '''Select item.'''
-        global droplist_active_item
-
-        if droplist_active_item:
-            droplist_active_item.set_state(gtk.STATE_NORMAL)
+        if len(self.droplist_items) > 0 and item in self.droplist_items:
+            global droplist_active_item
             
-        item.item_box.set_state(gtk.STATE_PRELIGHT)
-        droplist_active_item = item.item_box
+            if droplist_active_item:
+                droplist_active_item.item_box.set_state(gtk.STATE_NORMAL)
+                
+            item.item_box.set_state(gtk.STATE_PRELIGHT)
+            droplist_active_item = item
         
     def select_first_item(self):
         '''Select first item.'''
@@ -296,11 +315,29 @@ class Droplist(gtk.Window):
     
     def select_prev_item(self):
         '''Select preview item.'''
-        pass
+        global droplist_active_item
+        
+        if droplist_active_item:
+            if droplist_active_item in self.droplist_items:
+                index = self.droplist_items.index(droplist_active_item)
+                if index > 0:
+                    index -= 1
+                    self.select_item(self.droplist_items[index])
+        else:
+            self.select_first_item()
     
     def select_next_item(self):
         '''Select next item.'''
-        pass
+        global droplist_active_item
+        
+        if droplist_active_item:
+            if droplist_active_item in self.droplist_items:
+                index = self.droplist_items.index(droplist_active_item)
+                if index < len(self.droplist_items) - 1:
+                    index += 1
+                    self.select_item(self.droplist_items[index])
+        else:
+            self.select_first_item()
     
     def scroll_page_up(self):
         '''Scroll page up.'''
