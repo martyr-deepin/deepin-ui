@@ -217,6 +217,7 @@ class Droplist(gtk.Window):
         self.item_padding_x = item_padding_x
         self.item_padding_y = item_padding_y
         self.droplist_min_width = droplist_min_width
+        self.item_select_index = 0
         
         # Init droplist window.
         self.set_opacity(opacity)
@@ -286,58 +287,134 @@ class Droplist(gtk.Window):
         draw_hlinear(cr, x + 1, y + vadjust.get_value() + 1, 16 + self.padding_x + self.padding_x * 2, vadjust.get_page_size() - 2,
                      ui_theme.get_shadow_color("menuSide").get_color_info())
         
-    def select_item(self, item):
+    def get_first_index(self):
+        '''Get first index.'''
+        item_indexs = filter(lambda (index, item): isinstance(item.item_box, gtk.Button), enumerate(self.droplist_items))        
+        if len(item_indexs) > 0:
+            return item_indexs[0][0]
+        else:
+            return None
+        
+    def get_last_index(self):
+        '''Get last index.'''
+        item_indexs = filter(lambda (index, item): isinstance(item.item_box, gtk.Button), enumerate(self.droplist_items))        
+        if len(item_indexs) > 0:
+            return item_indexs[-1][0]
+        else:
+            return None
+        
+    def get_prev_index(self):
+        '''Get preview index.'''
+        item_indexs = filter(lambda (index, item): isinstance(item.item_box, gtk.Button), enumerate(self.droplist_items))
+        if len(item_indexs) > 0:
+            index_list = map(lambda (index, item): index, item_indexs)
+            if self.item_select_index in index_list:
+                current_index = index_list.index(self.item_select_index)
+                if current_index > 0:
+                    return index_list[current_index - 1]
+                else:
+                    return self.item_select_index
+            else:
+                return None
+        else:
+            return None
+        
+    def get_next_index(self):
+        '''Get next index.'''
+        item_indexs = filter(lambda (index, item): isinstance(item.item_box, gtk.Button), enumerate(self.droplist_items))
+        if len(item_indexs) > 0:
+            index_list = map(lambda (index, item): index, item_indexs)
+            if self.item_select_index in index_list:
+                current_index = index_list.index(self.item_select_index)
+                if current_index < len(index_list) - 1:
+                    return index_list[current_index + 1]
+                else:
+                    return self.item_select_index
+            else:
+                return None
+        else:
+            return None
+        
+    def get_select_item_rect(self):
+        '''Get select item rect.'''
+        item_offset_y = sum(map(lambda item: item.item_box_height, self.droplist_items)[0:self.item_select_index])
+        item_rect = self.droplist_items[self.item_select_index].item_box.get_allocation()
+        return (0, item_offset_y, item_rect.width, item_rect.height)
+        
+    def active_select_item(self):
         '''Select item.'''
-        if len(self.droplist_items) > 0 and item in self.droplist_items:
-            global droplist_active_item
+        global droplist_active_item
             
-            if droplist_active_item:
-                droplist_active_item.item_box.set_state(gtk.STATE_NORMAL)
+        if droplist_active_item:
+            droplist_active_item.item_box.set_state(gtk.STATE_NORMAL)
                 
-            item.item_box.set_state(gtk.STATE_PRELIGHT)
-            droplist_active_item = item
+        item = self.droplist_items[self.item_select_index]
+        item.item_box.set_state(gtk.STATE_PRELIGHT)
+        droplist_active_item = item
         
     def select_first_item(self):
         '''Select first item.'''
-        # Scroll to top.
-        vadjust = self.item_scrolled_window.get_vadjustment()
-        vadjust.set_value(vadjust.get_lower())
-            
-        self.select_item(self.droplist_items[0])
+        if len(self.droplist_items) > 0:
+            first_index = self.get_first_index()
+            if first_index != None:
+                self.item_select_index = first_index
+                self.active_select_item()
         
+                # Scroll to top.
+                vadjust = self.item_scrolled_window.get_vadjustment()
+                vadjust.set_value(vadjust.get_lower())
+                
     def select_last_item(self):
         '''Select last item.'''
-        # Scroll to bottom.
-        vadjust = self.item_scrolled_window.get_vadjustment()
-        vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
-            
-        self.select_item(self.droplist_items[-1])
+        if len(self.droplist_items) > 0:
+            last_index = self.get_last_index()
+            if last_index != None:
+                self.item_select_index = last_index
+                self.active_select_item()
     
+                # Scroll to bottom.
+                vadjust = self.item_scrolled_window.get_vadjustment()
+                vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+                
     def select_prev_item(self):
         '''Select preview item.'''
-        global droplist_active_item
-        
-        if droplist_active_item:
-            if droplist_active_item in self.droplist_items:
-                index = self.droplist_items.index(droplist_active_item)
-                if index > 0:
-                    index -= 1
-                    self.select_item(self.droplist_items[index])
-        else:
-            self.select_first_item()
+        if len(self.droplist_items) > 0:
+            prev_index = self.get_prev_index()
+            if prev_index != None:
+                global droplist_active_item
+                
+                if droplist_active_item:
+                    if self.item_select_index > 0:
+                        self.item_select_index = prev_index
+                        self.active_select_item()
+                        
+                        # Make item in visible area.
+                        (item_x, item_y, item_width, item_height) = self.get_select_item_rect()
+                        vadjust = self.item_scrolled_window.get_vadjustment()
+                        if item_y < vadjust.get_value():
+                            vadjust.set_value(item_y)
+                else:
+                    self.select_first_item()
     
     def select_next_item(self):
         '''Select next item.'''
-        global droplist_active_item
-        
-        if droplist_active_item:
-            if droplist_active_item in self.droplist_items:
-                index = self.droplist_items.index(droplist_active_item)
-                if index < len(self.droplist_items) - 1:
-                    index += 1
-                    self.select_item(self.droplist_items[index])
-        else:
-            self.select_first_item()
+        if len(self.droplist_items) > 0:
+            next_index = self.get_next_index()
+            if next_index != None:
+                global droplist_active_item
+                
+                if droplist_active_item:
+                    if self.item_select_index < len(self.droplist_items) - 1:
+                        self.item_select_index = next_index
+                        self.active_select_item()
+                        
+                        # Make item in visible area.
+                        (item_x, item_y, item_width, item_height) = self.get_select_item_rect()
+                        vadjust = self.item_scrolled_window.get_vadjustment()
+                        if self.padding_y + item_y + item_height > vadjust.get_value() + vadjust.get_page_size():
+                            vadjust.set_value(self.padding_y * 2 + item_y + item_height - vadjust.get_page_size())
+                else:
+                    self.select_first_item()
     
     def scroll_page_up(self):
         '''Scroll page up.'''
@@ -390,7 +467,7 @@ class Droplist(gtk.Window):
                 break
             
         return match_droplist_item
-                
+    
     def init_droplist(self, widget):
         '''Realize droplist.'''
         global root_droplists
