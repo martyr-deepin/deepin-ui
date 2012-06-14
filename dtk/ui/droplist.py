@@ -22,9 +22,10 @@
 
 from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_TOP_LEFT
 from draw import draw_vlinear, draw_pixbuf, draw_font, draw_hlinear
+from keymap import get_keyevent_name
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size, get_match_parent
+from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size, get_match_parent, cairo_disable_antialias, color_hex_to_cairo
 import gtk
 import gobject
 from scrolled_window import ScrolledWindow
@@ -42,6 +43,7 @@ droplist_grab_window_motion_id = None
 droplist_grab_window_enter_notify_id = None
 droplist_grab_window_leave_notify_id = None
 droplist_grab_window_scroll_event_id = None
+droplist_grab_window_key_press_id = None
 
 def droplist_grab_window_focus_in():
     droplist_grab_window.grab_add()
@@ -90,6 +92,11 @@ def droplist_grab_window_scroll_event(widget, event):
     if event and event.window:
         for droplist in root_droplists:
             droplist.item_scrolled_window.event(event)
+            
+def droplist_grab_window_key_press(widget, event):
+    if event and event.window:
+        for droplist in root_droplists:
+            droplist.event(event)
 
 def droplist_grab_window_button_release(widget, event):
     if event and event.window:
@@ -210,13 +217,18 @@ class Droplist(gtk.Window):
         self.set_keep_above(True)
         self.connect_after("show", self.init_droplist)
         
+        self.droplist_frame = gtk.Alignment()
+        self.droplist_frame.set(0.5, 0.5, 1.0, 1.0)
+        self.droplist_frame.set_padding(1, 1, 1, 1)
+        
         # Add droplist item.
         self.item_box = gtk.VBox()
         self.item_align = gtk.Alignment()
         self.item_align.set_padding(padding_y, padding_y, padding_x, padding_x)
         self.item_align.add(self.item_box)
         self.item_scrolled_window = DroplistScrolledWindow()
-        self.add(self.item_scrolled_window)
+        self.add(self.droplist_frame)
+        self.droplist_frame.add(self.item_scrolled_window)
         self.item_scrolled_window.add_child(self.item_align)
         self.droplist_items = []
         
@@ -234,6 +246,64 @@ class Droplist(gtk.Window):
                 self.item_box.pack_start(droplist_item.item_box, False, False)
                 
         self.connect_after("show", self.adjust_droplist_position)        
+        self.droplist_frame.connect("expose-event", self.expose_droplist_frame)
+        self.connect("key-press-event", self.droplist_key_press)
+        
+        self.keymap = {
+            "Home" : self.select_first_item,
+            "End" : self.select_last_item,
+            "Page_Up" : self.scroll_page_up,
+            "Page_Down" : self.scroll_page_down,
+            "Return" : self.press_select_item,
+            "Up" : self.select_prev_item,
+            "Down" : self.select_next_item}
+        
+    def select_first_item(self):
+        '''Select first item.'''
+        pass
+        
+    def select_last_item(self):
+        '''Select last item.'''
+        pass
+    
+    def select_prev_item(self):
+        '''Select preview item.'''
+        pass
+    
+    def select_next_item(self):
+        '''Select next item.'''
+        pass
+    
+    def scroll_page_up(self):
+        '''Scroll page up.'''
+        pass
+    
+    def scroll_page_down(self):
+        '''Scroll page down.'''
+        pass
+    
+    def press_select_item(self):
+        '''Press select item.'''
+        pass
+    
+    def droplist_key_press(self, widget, event):
+        '''Key press event.'''
+        key_name = get_keyevent_name(event)
+        if self.keymap.has_key(key_name):
+            self.keymap[key_name]()
+
+        return True     
+        
+    def expose_droplist_frame(self, widget, event):
+        '''Expose droplist frame.'''
+        cr = widget.window.cairo_create()        
+        rect = widget.allocation
+
+        with cairo_disable_antialias(cr):
+            cr.set_line_width(1)
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("droplistFrame").get_color()))
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
         
     def get_droplist_item_at_coordinate(self, (x, y)):
         '''Get droplist item at coordinate, return None if haven't any droplist item at given coordinate.'''

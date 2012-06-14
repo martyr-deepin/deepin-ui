@@ -32,6 +32,7 @@
  "treeItemSelectFont" : "#FFFFFF",
  "treeItemHoverFont" : "#000000",
  "scrolledbar" : "#ff9999",
+ "droplistFrame" : "#ddc4c4",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),
