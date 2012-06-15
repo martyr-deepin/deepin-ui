@@ -193,7 +193,7 @@ class Droplist(gtk.Window):
     '''Droplist.'''
     
     __gsignals__ = {
-        "item-selected" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int,)),
+        "item-selected" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
     }
 
     def __init__(self, items, 
@@ -208,7 +208,7 @@ class Droplist(gtk.Window):
                  item_padding_y=3,
                  shadow_visible=True,
                  max_width=None):
-        '''Init droplist, item format: (item_icon, itemName, item_node).'''
+        '''Init droplist, item format: (item_content, item_value).'''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         self.set_can_focus(True) # can focus to response key-press signal
@@ -642,7 +642,7 @@ class DroplistItem(object):
     def create_droplist_item(self):
         '''Create droplist item.'''
         # Get item information.
-        (item_content, item_node) = self.item[0:2]
+        (item_content, item_value) = self.item[0:2]
         
         # Create button.
         self.item_box = gtk.Button()
@@ -674,20 +674,11 @@ class DroplistItem(object):
         
     def wrap_droplist_clicked_action(self):
         '''Wrap droplist action.'''
-        item_node = self.item[1]
-        if not isinstance(item_node, Droplist):
-            # Emit item-selected signal.
-            self.droplist.emit("item-selected", self, self.index)
+        # Emit item-selected signal.
+        self.droplist.emit("item-selected", self.item[0], self.item[1], self.index)
             
-            # Hide droplist.
-            droplist_grab_window_focus_out()
-            
-            # Execute callback.
-            if item_node:
-                if len(self.item) > 2:
-                    item_node(*self.item[2:])
-                else:
-                    item_node()
+        # Hide droplist.
+        droplist_grab_window_focus_out()
             
     def expose_droplist_item(self, widget, event, item_content):
         '''Expose droplist item.'''
