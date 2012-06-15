@@ -336,10 +336,12 @@ class Droplist(gtk.Window):
         else:
             return None
         
-    def get_select_item_rect(self):
+    def get_select_item_rect(self, item_index=None):
         '''Get select item rect.'''
-        item_offset_y = sum(map(lambda item: item.item_box_height, self.droplist_items)[0:self.item_select_index])
-        item_rect = self.droplist_items[self.item_select_index].item_box.get_allocation()
+        if item_index == None:
+            item_index = self.item_select_index
+        item_offset_y = sum(map(lambda item: item.item_box_height, self.droplist_items)[0:item_index])
+        item_rect = self.droplist_items[item_index].item_box.get_allocation()
         return (0, item_offset_y, item_rect.width, item_rect.height)
         
     def active_select_item(self):
@@ -419,11 +421,35 @@ class Droplist(gtk.Window):
     
     def scroll_page_up(self):
         '''Scroll page up.'''
-        pass
+        if len(self.droplist_items) > 0:
+            # Scroll page up.
+            vadjust = self.item_scrolled_window.get_vadjustment()
+            vadjust.set_value(max(vadjust.get_lower(), vadjust.get_value() - vadjust.get_page_size()))
+            
+            # Select nearest item.
+            item_infos = map(lambda (index, item): (index, self.get_select_item_rect(index)), enumerate(self.droplist_items))
+            for (index, (item_x, item_y, item_width, item_height)) in item_infos:
+                if item_y + self.padding_y > vadjust.get_value():
+                    self.item_select_index = index
+                    self.active_select_item()
+                    break
     
     def scroll_page_down(self):
         '''Scroll page down.'''
-        pass
+        if len(self.droplist_items) > 0:
+            # Scroll page up.
+            vadjust = self.item_scrolled_window.get_vadjustment()
+            vadjust.set_value(min(vadjust.get_upper() - vadjust.get_page_size(),
+                                  vadjust.get_value() + vadjust.get_page_size()))
+            
+            # Select nearest item.
+            item_infos = map(lambda (index, item): (index, self.get_select_item_rect(index)), enumerate(self.droplist_items))
+            item_infos.reverse()
+            for (index, (item_x, item_y, item_width, item_height)) in item_infos:
+                if item_y + item_height + self.padding_y < vadjust.get_value() + vadjust.get_page_size():
+                    self.item_select_index = index
+                    self.active_select_item()
+                    break
     
     def press_select_item(self):
         '''Press select item.'''
