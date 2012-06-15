@@ -88,6 +88,13 @@ class ComboBox(gtk.VBox):
                 self.select_index = item_index
                 self.label.set_text(item.item[0])
                 
+    def get_item_with_index(self, item_index):
+        '''Get item with index.'''
+        if 0 <= item_index < len(self.droplist_items):
+            return self.droplist_items[item_index]                
+        else:
+            return None
+                
     def update_select_content(self, droplist, item_content, item_value, item_index):
         '''Update select content.'''
         self.select_index = item_index
