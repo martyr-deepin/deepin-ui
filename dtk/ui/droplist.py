@@ -201,7 +201,8 @@ class Droplist(gtk.Window):
                  opacity=1.0, 
                  padding_x=3, 
                  padding_y=3, 
-                 item_padding_x=6, 
+                 item_padding_left=3, 
+                 item_padding_right=32,
                  item_padding_y=3,
                  shadow_visible=True,
                  droplist_min_width=130):
@@ -224,7 +225,8 @@ class Droplist(gtk.Window):
         self.offset_y = 0
         self.padding_x = padding_x
         self.padding_y = padding_y
-        self.item_padding_x = item_padding_x
+        self.item_padding_left = item_padding_left
+        self.item_padding_right = item_padding_right
         self.item_padding_y = item_padding_y
         self.droplist_min_width = droplist_min_width
         self.item_select_index = 0
@@ -251,15 +253,11 @@ class Droplist(gtk.Window):
         self.droplist_items = []
         
         if items:
-            (have_icon, icon_width, icon_height, have_subdroplist, subdroplist_width, subdroplist_height) = self.get_droplist_icon_info(items)
-            
             for item in items:
                 droplist_item = DroplistItem(
                     item, font_size, self.select_scale,
-                    have_icon, icon_width, icon_height,
-                    have_subdroplist, subdroplist_width, subdroplist_height,
                     padding_x, padding_y,
-                    item_padding_x, item_padding_y, self.droplist_min_width)
+                    item_padding_left, item_padding_right, item_padding_y, self.droplist_min_width)
                 self.droplist_items.append(droplist_item)
                 self.item_box.pack_start(droplist_item.item_box, False, False)
                 
@@ -535,31 +533,6 @@ class Droplist(gtk.Window):
         else:
             return []
                 
-    def get_droplist_icon_info(self, items):
-        '''Get droplist icon information.'''
-        have_icon = False
-        icon_width = 16
-        icon_height = 16
-        have_subdroplist = False
-        subdroplist_width = 0
-        subdroplist_height = 0
-        
-        for item in items:
-            if item:
-                (item_dpixbuf, item_content, item_node) = item[0:3]
-                if item_dpixbuf:
-                    have_icon = True
-                
-                if isinstance(item_node, Droplist):
-                    have_subdroplist = True
-                    subdroplist_width = self.subdroplist_dpixbuf.get_pixbuf().get_width()
-                    subdroplist_height = self.subdroplist_dpixbuf.get_pixbuf().get_height()
-                    
-                if have_icon and have_subdroplist:
-                    break
-                
-        return (have_icon, icon_width, icon_height, have_subdroplist, subdroplist_width, subdroplist_height)
-        
     def show(self, (x, y), (offset_x, offset_y)=(0, 0)):
         '''Show droplist.'''
         # Init offset.
@@ -623,10 +596,8 @@ class DroplistItem(object):
     
     def __init__(self, item, font_size, 
                  select_scale,
-                 have_icon, icon_width, icon_height, 
-                 have_subdroplist, subdroplist_width, subdroplist_height,
                  droplist_padding_x, droplist_padding_y,
-                 item_padding_x, item_padding_y, min_width):
+                 item_padding_left, item_padding_right, item_padding_y, min_width):
         '''Init droplist item.'''
         # Init.
         self.item = item
@@ -634,15 +605,9 @@ class DroplistItem(object):
         self.select_scale = select_scale
         self.droplist_padding_x = droplist_padding_x
         self.droplist_padding_y = droplist_padding_y
-        self.item_padding_x = item_padding_x
+        self.item_padding_left = item_padding_left
+        self.item_padding_right = item_padding_right
         self.item_padding_y = item_padding_y
-        self.have_icon = have_icon
-        self.icon_width = icon_width
-        self.icon_height = icon_height
-        self.have_subdroplist = have_subdroplist
-        self.subdroplist_width = subdroplist_width
-        self.subdroplist_height = subdroplist_height
-        self.subdroplist_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")        
         self.subdroplist_active = False
         self.min_width = min_width
         self.arrow_padding_x = 5
@@ -657,14 +622,14 @@ class DroplistItem(object):
         '''Create separator item.'''
         self.item_box = HSeparator(
             ui_theme.get_shadow_color("hSeparator").get_color_info(),
-            self.item_padding_x, 
+            self.item_padding_left, 
             self.item_padding_y)
         self.item_box_height = self.item_padding_y * 2 + 1
         
     def create_droplist_item(self):
         '''Create droplist item.'''
         # Get item information.
-        (item_dpixbuf, item_content, item_node) = self.item[0:3]
+        (item_content, item_node) = self.item[0:2]
         
         # Create button.
         self.item_box = gtk.Button()
@@ -673,7 +638,7 @@ class DroplistItem(object):
         self.item_box.connect(
             "expose-event", 
             lambda w, e: self.expose_droplist_item(
-                w, e, item_dpixbuf, item_content))
+                w, e, item_content))
         
         # Wrap droplist aciton.
         self.item_box.connect("button-press-event", lambda w, e: self.wrap_droplist_clicked_action)        
@@ -684,15 +649,12 @@ class DroplistItem(object):
         '''Realize item box.'''
         # Set button size.
         (width, height) = get_content_size(item_content, self.font_size)
-        self.item_box_height = self.item_padding_y * 2 + max(int(height), self.icon_height)
+        self.item_box_height = self.item_padding_y * 2 + int(height)
         if self.select_scale:
             self.item_box_width = widget.get_parent().get_parent().allocation.width
         else:
-            self.item_box_width = self.item_padding_x * 3 + self.icon_width + int(width)
+            self.item_box_width = self.item_padding_left + self.item_padding_right + int(width)
 
-            if self.have_subdroplist:
-                self.item_box_width += self.item_padding_x + self.subdroplist_width + self.arrow_padding_x * 2
-                
         self.item_box_width = max(self.item_box_width, self.min_width)        
                 
         self.item_box.set_size_request(self.item_box_width, self.item_box_height)        
@@ -711,7 +673,7 @@ class DroplistItem(object):
                 else:
                     item_node()
             
-    def expose_droplist_item(self, widget, event, item_dpixbuf, item_content):
+    def expose_droplist_item(self, widget, event, item_content):
         '''Expose droplist item.'''
         # Init.
         cr = widget.window.cairo_create()
@@ -728,30 +690,14 @@ class DroplistItem(object):
             # Set font color.
             font_color = ui_theme.get_color("menuSelectFont").get_color()
             
-        # Draw item icon.
-        pixbuf = None
-        pixbuf_width = 0
-        if item_dpixbuf:
-            pixbuf = item_dpixbuf.get_pixbuf()
-            pixbuf_width += pixbuf.get_width()
-            draw_pixbuf(cr, pixbuf, rect.x + self.item_padding_x, rect.y + (rect.height - pixbuf.get_height()) / 2)
-            
         # Draw item content.
         draw_font(cr, item_content, self.font_size, font_color,
-                 rect.x + self.item_padding_x * 2 + self.icon_width,
+                 rect.x + self.item_padding_left,
                  rect.y,
                  rect.width,
                  rect.height,
                  ALIGN_START, ALIGN_MIDDLE
                  )
-        
-        # Draw subdroplist arrow.
-        (item_dpixbuf, item_content, item_node) = self.item[0:3]
-        if isinstance(item_node, Droplist):
-            subdroplist_pixbuf = self.subdroplist_dpixbuf.get_pixbuf()
-            draw_pixbuf(cr, subdroplist_pixbuf,
-                        rect.x + rect.width - self.item_padding_x - subdroplist_pixbuf.get_width() - self.arrow_padding_x,
-                        rect.y + (rect.height - subdroplist_pixbuf.get_height()) / 2)
         
         # Propagate expose to children.
         propagate_expose(widget, event)

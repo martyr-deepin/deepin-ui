@@ -219,15 +219,15 @@ if __name__ == "__main__":
     tab_window_items = map(create_tab_window_item, ["Tab1", "Tab2", "Tab3", "Tab4", "Tab5"])
     
     droplist = Droplist(
-        [(None, "测试测试测试1", None),
-         (None, "测试测试测试2", None),
-         (None, "测试测试测试3", None),
+        [("测试测试测试1", None),
+         ("测试测试测试2", None),
+         ("测试测试测试3", None),
          None,
-         (None, "测试测试测试", None),
+         ("测试测试测试", None),
          None,
-         (None, "测试测试测试4", None),
-         (None, "测试测试测试5", None),
-         (None, "测试测试测试6", None),
+         ("测试测试测试4", None),
+         ("测试测试测试5", None),
+         ("测试测试测试6", None),
          ],
         True
         )
