@@ -49,7 +49,7 @@ from dtk.ui.application import Application
 from dtk.ui.button import ImageButton
 from dtk.ui.categorybar import Categorybar
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
-from dtk.ui.entry import TextEntry
+from dtk.ui.entry import TextEntry, ShortcutKeyEntry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
@@ -343,13 +343,17 @@ if __name__ == "__main__":
         )
     entry = TextEntry()
     entry.connect("action-active", print_entry_action)
-    entry.set_size(300, 24)
+    entry.set_size(150, 24)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容灰长灰长的长")
     entry_label.set_size_request(100, 30)
     entry_box = gtk.HBox(spacing=10)
     entry_box.pack_start(entry_label, False, False)
     entry_box.pack_start(entry, True, True)
+    
+    shortcust_entry = ShortcutKeyEntry("Ctrl + Alt + Q")
+    shortcust_entry.set_size(150, 24)
+    entry_box.pack_start(shortcust_entry, False, False)
     
     # Group 
     image_button_items = [

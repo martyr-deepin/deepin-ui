@@ -877,6 +877,159 @@ class TextEntry(gtk.VBox):
         
 gobject.type_register(TextEntry)
 
+class ShortcutKeyEntry(gtk.VBox):
+    '''Input entry.'''
+	
+    __gsignals__ = {
+        "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
+    }
+    
+    def __init__(self, content="",
+                 action_button=None,
+                 background_color = ui_theme.get_alpha_color("textEntryBackground"),
+                 acme_color = ui_theme.get_alpha_color("textEntryAcme"),
+                 point_color = ui_theme.get_alpha_color("textEntryPoint"),
+                 frame_point_color = ui_theme.get_alpha_color("textEntryFramePoint"),
+                 frame_color = ui_theme.get_alpha_color("textEntryFrame"),
+                 ):
+        '''Init input entry.'''
+        # Init.
+        gtk.VBox.__init__(self)
+        self.align = gtk.Alignment()
+        self.align.set(0.5, 0.5, 1.0, 1.0)
+        self.action_button = action_button
+        self.h_box = gtk.HBox()
+        self.entry = Entry(content)
+        self.background_color = background_color
+        self.acme_color = acme_color
+        self.point_color = point_color
+        self.frame_point_color = frame_point_color
+        self.frame_color = frame_color
+        
+        self.pack_start(self.align, False, False)
+        self.align.add(self.h_box)
+        self.h_box.pack_start(self.entry)
+        if action_button:
+            self.action_align = gtk.Alignment()
+            self.action_align.set(0.0, 0.5, 0, 0)
+            self.action_align.set_padding(0, 0, 0, self.entry.padding_x)
+            self.action_align.add(self.action_button)
+            
+            self.h_box.pack_start(self.action_align)
+            
+            self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
+
+        # Handle signal.
+        self.align.connect("expose-event", self.expose_text_entry)
+            
+    def emit_action_active_signal(self):
+        '''Emit action-active signal.'''
+        self.emit("action-active", self.get_text())                
+        
+    def expose_text_entry(self, widget, event):
+        '''Callback for `expose-event` signal.'''
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
+        # Draw background.
+        with cairo_state(cr):
+            cr.rectangle(x + 2, y, w - 4, 1)
+            cr.rectangle(x + 1, y + 1, w - 2, 1)
+            cr.rectangle(x, y + 2, w, h - 4)
+            cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+            cr.clip()
+            
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(self.background_color.get_color_info()))
+            cr.rectangle(x, y, w, h)
+            cr.fill()
+
+        # Draw background four acme points.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.acme_color.get_color_info()))
+        cr.rectangle(x, y, 1, 1)
+        cr.rectangle(x + w - 1, y, 1, 1)
+        cr.rectangle(x, y + h - 1, 1, 1)
+        cr.rectangle(x + w - 1, y + h - 1, 1, 1)
+        cr.fill()
+
+        # Draw background eight points.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.point_color.get_color_info()))
+        
+        cr.rectangle(x + 1, y, 1, 1)
+        cr.rectangle(x, y + 1, 1, 1)
+        
+        cr.rectangle(x + w - 2, y, 1, 1)
+        cr.rectangle(x + w - 1, y + 1, 1, 1)
+        
+        cr.rectangle(x, y + h - 2, 1, 1)
+        cr.rectangle(x + 1, y + h - 1, 1, 1)
+
+        cr.rectangle(x + w - 1, y + h - 2, 1, 1)
+        cr.rectangle(x + w - 2, y + h - 1, 1, 1)
+        
+        cr.fill()
+        
+        # Draw frame point.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.frame_point_color.get_color_info()))
+        
+        cr.rectangle(x + 1, y, 1, 1)
+        cr.rectangle(x, y + 1, 1, 1)
+        
+        cr.rectangle(x + w - 2, y, 1, 1)
+        cr.rectangle(x + w - 1, y + 1, 1, 1)
+        
+        cr.rectangle(x, y + h - 2, 1, 1)
+        cr.rectangle(x + 1, y + h - 1, 1, 1)
+
+        cr.rectangle(x + w - 1, y + h - 2, 1, 1)
+        cr.rectangle(x + w - 2, y + h - 1, 1, 1)
+        
+        cr.fill()
+        
+        # Draw frame.
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.frame_color.get_color_info()))
+        
+        cr.rectangle(x + 2, y, w - 4, 1)
+        cr.rectangle(x, y + 2, 1, h - 4)
+        cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+        cr.rectangle(x + w - 1, y + 2, 1, h - 4)
+        
+        cr.fill()
+        
+        propagate_expose(widget, event)
+        
+        return True
+    
+    def set_size(self, width, height):
+        '''Set size.'''
+        self.set_size_request(width, height)    
+        
+        action_button_width = 0
+        if self.action_button:
+            action_button_width = self.action_button.get_size_request()[-1] + self.entry.padding_x
+            
+        self.entry.set_size_request(width - 2 - action_button_width, height - 2)
+        
+    def set_editable(self, editable):
+        '''Set editable.'''
+        self.entry.set_editable(editable)
+        
+    def set_text(self, text):
+        '''Set text.'''
+        self.entry.set_text(text)
+        
+    def get_text(self):
+        '''Get text.'''
+        return self.entry.get_text()
+    
+    def focus_input(self):
+        '''Focus input.'''
+        self.entry.grab_focus()
+        
+gobject.type_register(ShortcutKeyEntry)
+
 if __name__ == "__main__":
     window = gtk.Window()
     window.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
