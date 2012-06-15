@@ -296,7 +296,7 @@ class Droplist(gtk.Window):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         # Draw background.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("menuMask").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("droplistMask").get_color_info()))
         cr.rectangle(x, y, w, h)    
         cr.fill()
         
@@ -560,14 +560,12 @@ class Droplist(gtk.Window):
         # Adjust coordinate.
         (screen_width, screen_height) = get_screen_size(self)
         
-        droplist_width = droplist_height = 0
+        droplist_width = 0
         for droplist_item in self.droplist_items:
             if droplist_width == 0 and isinstance(droplist_item.item_box, gtk.Button):
                 droplist_width = droplist_item.item_box_width
-            
-            droplist_height += droplist_item.item_box_height    
         droplist_width += self.padding_x * 2    
-        droplist_height += self.padding_y * 2
+        droplist_height = self.allocation.height
         
         if self.x_align == ALIGN_START:
             dx = self.expect_x

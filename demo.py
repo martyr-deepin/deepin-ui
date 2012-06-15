@@ -383,13 +383,14 @@ if __name__ == "__main__":
          ("测试测试测试5", None),
          ("测试测试测试6", None),
          ],
+        100
         )
     entry_box.pack_start(combo_box, False, False)    
     entry_box.pack_start(SpinBox(3000, 0, 5000, 100), False, False)
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
-    tab_5_box.pack_start(entry_frame, False, False)
+    tab_1_box.pack_start(entry_frame, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)

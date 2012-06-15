@@ -26,25 +26,28 @@ from label import Label
 from droplist import Droplist
 from theme import ui_theme
 from draw import draw_pixbuf
-from utils import propagate_expose, cairo_disable_antialias, color_hex_to_cairo, get_widget_root_coordinate, WIDGET_POS_BOTTOM_LEFT
+from utils import propagate_expose, cairo_disable_antialias, color_hex_to_cairo, get_widget_root_coordinate, WIDGET_POS_BOTTOM_LEFT, alpha_color_hex_to_cairo
 
 class ComboBox(gtk.VBox):
     '''Combo box.'''
 	
-    def __init__(self, items):
+    def __init__(self, items, droplist_height=None, select_index=0):
         '''Init combo box.'''
         # Init.
         gtk.VBox.__init__(self)
         self.items = items
+        self.droplist_height = droplist_height
         self.disable_flag = False
-        self.select_index = 0
+        self.select_index = select_index
         
         self.droplist = Droplist(self.items)
+        if self.droplist_height:
+            self.droplist.set_size_request(-1, self.droplist_height)
         self.width = self.droplist.get_droplist_width() 
         self.height = 22
         self.box = gtk.HBox()
         dropbutton_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()
-        self.label = Label(self.items[0][0], label_size=(self.width - dropbutton_width - 1, self.height - 2))
+        self.label = Label(self.items[select_index][0], label_size=(self.width - dropbutton_width - 1, self.height - 2))
         self.dropbutton = DropButton(
             (ui_theme.get_pixbuf("combo/dropbutton_normal.png"),
              ui_theme.get_pixbuf("combo/dropbutton_hover.png"),
@@ -63,10 +66,24 @@ class ComboBox(gtk.VBox):
         self.box.pack_start(self.dropbutton, False, False)
         
         self.align.connect("expose-event", self.expose_combobox_frame)
-        self.label.connect("button-release-event", self.click_drop_button)
-        self.dropbutton.connect("clicked", self.click_drop_button)
+        self.label.connect("button-press-event", self.click_drop_button)
+        self.dropbutton.connect("button-press-event", self.click_drop_button)
         self.droplist.connect("item-selected", self.update_select_content)
         
+    def set_select_item(self, item):
+        '''Set select item.'''
+        if item in self.droplist.droplist_items:
+            self.select_index = self.droplist.droplist_items.index(item)
+            self.label.set_text(item.item[0])
+            
+    def set_select_index(self, item_index):
+        '''Set select index.'''
+        if 0 <= item_index < len(self.droplist_items):
+            item = self.droplist.droplist_items[item_index]
+            if isinstance(item.item_box, gtk.Button):
+                self.select_index = item_index
+                self.label.set_text(item.item[0])
+                
     def update_select_content(self, droplist, item, index):
         '''Update select content.'''
         self.select_index = index
@@ -80,7 +97,7 @@ class ComboBox(gtk.VBox):
             (align_x, align_y) = get_widget_root_coordinate(self.align, WIDGET_POS_BOTTOM_LEFT)
             self.droplist.show(
                 (align_x - 1, align_y - 1),
-                (0, -self.height))
+                (0, -self.height + 1))
             
             self.droplist.item_select_index = self.select_index
             self.droplist.active_item()
@@ -111,7 +128,7 @@ class ComboBox(gtk.VBox):
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.stroke()
             
-            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("comboEntryBackground").get_color()))
+            cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
             cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
             cr.fill()
         

@@ -44,6 +44,7 @@
      "frameLightDot" : ("#FFFFFF", 0.1),
 	 "scrollbarBackground" : ("#FFFFFF", 0.5),
 	 "menuMask" : ("#F2F8FF", 1.0),
+	 "droplistMask" : ("#F2F8FF", 0.9),
 	 "progressbarFrame" : ("#EF12AB", 1.0),
 	 "checkButtonAcme" : ("#A1A1A1", 0.4),
 	 "checkButtonPoint" : ("#A1A1A1", 0.85),
