@@ -31,7 +31,7 @@ from utils import propagate_expose, cairo_disable_antialias, color_hex_to_cairo,
 class ComboBox(gtk.VBox):
     '''Combo box.'''
 	
-    def __init__(self, items, droplist_height=None, select_index=0):
+    def __init__(self, items, droplist_height=None, select_index=0, droplist_max_width=None):
         '''Init combo box.'''
         # Init.
         gtk.VBox.__init__(self)
@@ -40,7 +40,7 @@ class ComboBox(gtk.VBox):
         self.disable_flag = False
         self.select_index = select_index
         
-        self.droplist = Droplist(self.items)
+        self.droplist = Droplist(self.items, max_width=droplist_max_width)
         if self.droplist_height:
             self.droplist.set_size_request(-1, self.droplist_height)
         self.width = self.droplist.get_droplist_width() 
