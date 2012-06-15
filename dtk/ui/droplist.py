@@ -54,6 +54,13 @@ def droplist_grab_window_focus_in():
         None, None, gtk.gdk.CURRENT_TIME)
     
 def droplist_grab_window_focus_out():
+    global droplist_grab_window_press_id
+    global droplist_grab_window_release_id
+    global droplist_grab_window_motion_id
+    global droplist_grab_window_enter_notify_id
+    global droplist_grab_window_leave_notify_id
+    global droplist_grab_window_scroll_event_id
+    global droplist_grab_window_key_press_id
     global root_droplists
     
     for root_droplist in root_droplists:
@@ -64,6 +71,17 @@ def droplist_grab_window_focus_out():
     gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
     droplist_grab_window.grab_remove()
 
+    for callback_id in [
+        droplist_grab_window_press_id,
+        droplist_grab_window_release_id,
+        droplist_grab_window_motion_id,
+        droplist_grab_window_enter_notify_id,
+        droplist_grab_window_leave_notify_id,
+        droplist_grab_window_scroll_event_id,
+        droplist_grab_window_key_press_id
+        ]:
+        remove_callback_id(callback_id)
+        
 def is_press_on_droplist_grab_window(window):
     '''Is press on droplist grab window.'''
     for toplevel in gtk.window_list_toplevels():
@@ -116,8 +134,6 @@ def droplist_grab_window_button_release(widget, event):
                 droplist.item_scrolled_window.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
     
 def droplist_grab_window_button_press(widget, event):
-    global droplist_grab_window_press_id
-    global droplist_grab_window_motion_id    
     global droplist_active_item
     
     if event and event.window:
@@ -134,12 +150,6 @@ def droplist_grab_window_button_press(widget, event):
             event_widget.event(event)
             droplist_grab_window_focus_out()
     
-    remove_callback_id(droplist_grab_window_press_id)        
-    remove_callback_id(droplist_grab_window_motion_id)        
-        
-    if droplist_active_item:
-        droplist_active_item.item_box.set_state(gtk.STATE_NORMAL)
-        
 def droplist_grab_window_motion(widget, event):
     global droplist_active_item
     
@@ -282,11 +292,6 @@ class Droplist(gtk.Window):
         cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("menuMask").get_color_info()))
         cr.rectangle(x, y, w, h)    
         cr.fill()
-
-        # Draw left side.
-        vadjust = self.item_scrolled_window.get_vadjustment()
-        draw_hlinear(cr, x + 1, y + vadjust.get_value() + 1, 16 + self.padding_x + self.padding_x * 2, vadjust.get_page_size() - 2,
-                     ui_theme.get_shadow_color("menuSide").get_color_info())
         
     def get_first_index(self):
         '''Get first index.'''
@@ -460,7 +465,6 @@ class Droplist(gtk.Window):
     def droplist_key_press(self, widget, event):
         '''Key press event.'''
         key_name = get_keyevent_name(event)
-        print key_name
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
 
