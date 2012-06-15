@@ -207,7 +207,7 @@ class Droplist(gtk.Window):
                  item_padding_right=32,
                  item_padding_y=3,
                  shadow_visible=True,
-                 droplist_max_width=None):
+                 max_width=None):
         '''Init droplist, item format: (item_icon, itemName, item_node).'''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
@@ -229,7 +229,7 @@ class Droplist(gtk.Window):
         self.item_padding_left = item_padding_left
         self.item_padding_right = item_padding_right
         self.item_padding_y = item_padding_y
-        self.droplist_max_width = droplist_max_width
+        self.max_width = max_width
         self.item_select_index = 0
         
         # Init droplist window.
@@ -259,7 +259,7 @@ class Droplist(gtk.Window):
                     self,
                     index, item, font_size, 
                     padding_x, padding_y,
-                    item_padding_left, item_padding_right, item_padding_y, self.droplist_max_width)
+                    item_padding_left, item_padding_right, item_padding_y, self.max_width)
                 self.droplist_items.append(droplist_item)
                 self.item_box.pack_start(droplist_item.item_box, False, False)
                 
@@ -285,8 +285,8 @@ class Droplist(gtk.Window):
         '''Get droplist width.'''
         item_content_width = max(map(lambda item: get_content_size(item.item[0], self.font_size)[0], 
                                      filter(lambda item: isinstance(item.item_box, gtk.Button), self.droplist_items)))
-        if self.droplist_max_width != None:
-            return self.padding_x * 2 + min(self.droplist_max_width,
+        if self.max_width != None:
+            return self.padding_x * 2 + min(self.max_width,
                                             self.item_padding_left + self.item_padding_right + int(item_content_width))
         else:
             return self.padding_x * 2 + self.item_padding_left + self.item_padding_right + int(item_content_width)
@@ -401,6 +401,7 @@ class Droplist(gtk.Window):
         '''Select preview item.'''
         if len(self.droplist_items) > 0:
             prev_index = self.get_prev_index()
+            print prev_index
             if prev_index != None:
                 global droplist_active_item
                 
@@ -421,6 +422,7 @@ class Droplist(gtk.Window):
         '''Select next item.'''
         if len(self.droplist_items) > 0:
             next_index = self.get_next_index()
+            print next_index
             if next_index != None:
                 global droplist_active_item
                 
