@@ -75,6 +75,8 @@ class Entry(gtk.EventBox):
         self.grab_focus_flag = False
         self.editable_flag = True
         self.check_text = None
+        self.cursor_visible_flag = True
+        self.right_menu_visible_flag = True
         
         self.content = content
         self.cursor_index = len(self.content)
@@ -466,7 +468,8 @@ class Entry(gtk.EventBox):
         self.draw_entry_text(cr, rect)
         
         # Draw cursor.
-        self.draw_entry_cursor(cr, rect)
+        if self.cursor_visible_flag:
+            self.draw_entry_cursor(cr, rect)
         
         # Propagate expose.
         propagate_expose(widget, event)
@@ -584,9 +587,10 @@ class Entry(gtk.EventBox):
             self.select_all()
         # Show right menu when click right button.
         elif is_right_button(event):
-            (wx, wy) = self.window.get_root_origin()
-            (cx, cy, modifier) = self.window.get_pointer()
-            self.right_menu.show((cx + wx, cy + wy))
+            if self.right_menu_visible_flag:
+                (wx, wy) = self.window.get_root_origin()
+                (cx, cy, modifier) = self.window.get_pointer()
+                self.right_menu.show((cx + wx, cy + wy))
         # Change cursor when click left button.
         elif is_left_button(event):
             self.left_click_flag = True
