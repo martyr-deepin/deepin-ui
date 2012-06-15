@@ -54,8 +54,8 @@ from dtk.ui.frame import HorizontalFrame
 from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
-from dtk.ui.menu import Menu
 from dtk.ui.droplist import Droplist
+from dtk.ui.menu import Menu
 from dtk.ui.treeview import TreeView, TreeViewItem
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
@@ -71,7 +71,7 @@ from dtk.ui.volume_button import VolumeButton
 from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.paned import HPaned
 from dtk.ui.button import CheckButton, RadioButton
-from dtk.ui.combo import ComboBox, ComboBoxItem
+from dtk.ui.combo import ComboBox
 from dtk.ui.spin import SpinBox
 from dtk.ui.textview import TextView
 from dtk.ui.unique_service import UniqueService, is_exists
@@ -237,8 +237,7 @@ if __name__ == "__main__":
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
          (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : ColorSelectDialog().show_all()),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
-         (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", lambda : droplist.show(
-                    (500, 200), (0, 0))),
+         (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", lambda : droplist.show((500, 300))),
          (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
          (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),
@@ -373,18 +372,24 @@ if __name__ == "__main__":
     entry_box.pack_start(toggle_button_align)
     
     # combobox
-    combo_box = ComboBox(default_width=200) # args have (items=[], default_width=100)
-    combo_box.add_item(ComboBoxItem("播放列表"))
-    combo_box.add_item(ComboBoxItem("桌面歌词", app_theme.get_pixbuf("control/lyrics_press.png")))
-    combo_box.add_item(ComboBoxItem("音乐管理", app_theme.get_pixbuf("control/media_press.png")))
-    combo_box.insert_item(2, ComboBoxItem("网络音乐"))
-    combo_box.set_select_index(2) # or combo_box.set_select_label("网络音乐") , or set_select_item()
+    combo_box = ComboBox(
+        [("测试测试测试1", None),
+         ("测试测试测试2", None),
+         ("测试测试测试3", None),
+         None,
+         ("测试测试测试", None),
+         None,
+         ("测试测试测试4", None),
+         ("测试测试测试5", None),
+         ("测试测试测试6", None),
+         ],
+        )
     entry_box.pack_start(combo_box, False, False)    
     entry_box.pack_start(SpinBox(3000, 0, 5000, 100), False, False)
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
-    tab_1_box.pack_start(entry_frame, False, False)
+    tab_5_box.pack_start(entry_frame, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)

@@ -32,30 +32,39 @@ def get_key_name(keyval):
     else:
         return str(unichr(key_unicode))
     
-def get_key_event_modifiers(key_event):
+def get_key_event_modifiers(key_event, print_modifier=False):
     '''Get key event modifiers.'''
     modifiers = []
     
     # Add Ctrl modifier.
     if key_event.state & gdk.CONTROL_MASK:
-        modifiers.append("C")
+        if print_modifier:
+            modifiers.append("Ctrl")    
+        else:
+            modifiers.append("C")
         
     # Add Alt modifier.
     if key_event.state & gdk.MOD1_MASK:
-        modifiers.append("M")
+        if print_modifier:
+            modifiers.append("Alt")    
+        else:
+            modifiers.append("M")
         
     # Don't need add Shift modifier if keyval is upper character.
     if key_event.state & gdk.SHIFT_MASK and (len(get_key_name(key_event.keyval)) != 1 or not gdk.keyval_is_upper(key_event.keyval)):
-        modifiers.append("S")
+        if print_modifier:
+            modifiers.append("Shift")    
+        else:
+            modifiers.append("S")
         
     return modifiers
 
-def get_keyevent_name(key_event):
+def get_keyevent_name(key_event, print_modifier=False):
     '''Get key event name.'''
     if key_event.is_modifier:
         return ""
     else:
-        key_modifiers = get_key_event_modifiers(key_event)
+        key_modifiers = get_key_event_modifiers(key_event, print_modifier)
         key_name = get_key_name(key_event.keyval)
         
         if key_modifiers == []:

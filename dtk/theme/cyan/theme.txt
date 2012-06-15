@@ -33,6 +33,9 @@
  "treeItemHoverFont" : "#000000",
  "scrolledbar" : "#b3feff",
  "droplistFrame" : "#c4dddd",
+ "comboEntryFrame" : "#c4dddd",
+ "comboEntryDisableFrame" : "#e4e4e4",
+ "comboEntryBackground" : "#FFFFFF",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),

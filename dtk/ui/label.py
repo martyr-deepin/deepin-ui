@@ -34,12 +34,14 @@ class Label(gtk.EventBox):
                  text_color=ui_theme.get_color("labelText"),
                  text_size=DEFAULT_FONT_SIZE,
                  text_x_align=ALIGN_START,
-                 text_y_align=ALIGN_MIDDLE):
+                 text_y_align=ALIGN_MIDDLE,
+                 label_size=None):
         '''Init label.'''
         # Init.
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
+        self.label_size = label_size
         
         self.text = text
         self.text_size = text_size
@@ -47,9 +49,12 @@ class Label(gtk.EventBox):
         self.text_x_align = text_x_align
         self.text_y_align = text_y_align
         
+        if self.label_size == None:
+            self.set_size_request(*get_content_size(self.text, self.text_size))
+        else:
+            self.set_size_request(*self.label_size)        
+            
         self.connect("expose-event", self.expose_label)    
-
-        self.set_size_request(*get_content_size(self.text, self.text_size))
         
     def expose_label(self, widget, event):
         '''Expose label.'''
@@ -73,7 +78,11 @@ class Label(gtk.EventBox):
     def set_text(self, text):
         '''Set text.'''
         self.text = text
-        self.set_size_request(*get_content_size(self.text, self.text_size))        
+        
+        if self.label_size == None:
+            self.set_size_request(*get_content_size(self.text, self.text_size))
+        else:
+            self.set_size_request(*self.label_size)        
 
         self.queue_draw()
     

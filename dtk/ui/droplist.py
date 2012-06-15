@@ -21,11 +21,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_TOP_LEFT
-from draw import draw_vlinear, draw_pixbuf, draw_font
+from draw import draw_vlinear, draw_font
 from keymap import get_keyevent_name
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size, cairo_disable_antialias, color_hex_to_cairo
+from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, cairo_disable_antialias, color_hex_to_cairo
 import gtk
 import gobject
 from scrolled_window import ScrolledWindow
@@ -192,9 +192,11 @@ gobject.type_register(DroplistScrolledWindow)
 class Droplist(gtk.Window):
     '''Droplist.'''
     
+    __gsignals__ = {
+        "item-selected" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int,)),
+    }
+
     def __init__(self, items, 
-                 is_root_droplist=False,
-                 select_scale=False,
                  x_align=ALIGN_START,
                  y_align=ALIGN_START,
                  font_size=DEFAULT_FONT_SIZE, 
@@ -214,8 +216,7 @@ class Droplist(gtk.Window):
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         global root_droplists
-        self.is_root_droplist = is_root_droplist
-        self.select_scale = select_scale
+        self.font_size = font_size
         self.x_align = x_align
         self.y_align = y_align
         self.subdroplist_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
@@ -253,9 +254,10 @@ class Droplist(gtk.Window):
         self.droplist_items = []
         
         if items:
-            for item in items:
+            for (index, item) in enumerate(items):
                 droplist_item = DroplistItem(
-                    item, font_size, self.select_scale,
+                    self,
+                    index, item, font_size, 
                     padding_x, padding_y,
                     item_padding_left, item_padding_right, item_padding_y, self.droplist_min_width)
                 self.droplist_items.append(droplist_item)
@@ -278,6 +280,13 @@ class Droplist(gtk.Window):
         
         self.select_first_item()
         self.grab_focus()
+        
+    def get_droplist_width(self):
+        '''Get droplist width.'''
+        item_content_width = max(map(lambda item: get_content_size(item.item[0], self.font_size)[0], 
+                                     filter(lambda item: isinstance(item.item_box, gtk.Button), self.droplist_items)))
+        return self.padding_x * 2 + max(self.droplist_min_width,
+                                        self.item_padding_left + self.item_padding_right + int(item_content_width))
         
     def expose_item_align(self, widget, event):
         '''Expose item align.'''
@@ -347,14 +356,17 @@ class Droplist(gtk.Window):
         item_rect = self.droplist_items[item_index].item_box.get_allocation()
         return (0, item_offset_y, item_rect.width, item_rect.height)
         
-    def active_select_item(self):
+    def active_item(self, item_index=None):
         '''Select item.'''
         global droplist_active_item
+        
+        if item_index == None:
+            item_index = self.item_select_index
             
         if droplist_active_item:
             droplist_active_item.item_box.set_state(gtk.STATE_NORMAL)
                 
-        item = self.droplist_items[self.item_select_index]
+        item = self.droplist_items[item_index]
         item.item_box.set_state(gtk.STATE_PRELIGHT)
         droplist_active_item = item
         
@@ -364,7 +376,7 @@ class Droplist(gtk.Window):
             first_index = self.get_first_index()
             if first_index != None:
                 self.item_select_index = first_index
-                self.active_select_item()
+                self.active_item()
         
                 # Scroll to top.
                 vadjust = self.item_scrolled_window.get_vadjustment()
@@ -376,7 +388,7 @@ class Droplist(gtk.Window):
             last_index = self.get_last_index()
             if last_index != None:
                 self.item_select_index = last_index
-                self.active_select_item()
+                self.active_item()
     
                 # Scroll to bottom.
                 vadjust = self.item_scrolled_window.get_vadjustment()
@@ -392,7 +404,7 @@ class Droplist(gtk.Window):
                 if droplist_active_item:
                     if self.item_select_index > 0:
                         self.item_select_index = prev_index
-                        self.active_select_item()
+                        self.active_item()
                         
                         # Make item in visible area.
                         (item_x, item_y, item_width, item_height) = self.get_select_item_rect()
@@ -412,7 +424,7 @@ class Droplist(gtk.Window):
                 if droplist_active_item:
                     if self.item_select_index < len(self.droplist_items) - 1:
                         self.item_select_index = next_index
-                        self.active_select_item()
+                        self.active_item()
                         
                         # Make item in visible area.
                         (item_x, item_y, item_width, item_height) = self.get_select_item_rect()
@@ -434,7 +446,7 @@ class Droplist(gtk.Window):
             for (index, (item_x, item_y, item_width, item_height)) in item_infos:
                 if item_y + self.padding_y > vadjust.get_value():
                     self.item_select_index = index
-                    self.active_select_item()
+                    self.active_item()
                     break
     
     def scroll_page_down(self):
@@ -451,7 +463,7 @@ class Droplist(gtk.Window):
             for (index, (item_x, item_y, item_width, item_height)) in item_infos:
                 if item_y + item_height + self.padding_y < vadjust.get_value() + vadjust.get_page_size():
                     self.item_select_index = index
-                    self.active_select_item()
+                    self.active_item()
                     break
     
     def press_select_item(self):
@@ -510,8 +522,7 @@ class Droplist(gtk.Window):
         global droplist_grab_window_scroll_event_id
         global droplist_grab_window_key_press_id
         
-        if self.is_root_droplist:
-            droplist_grab_window_focus_out()
+        droplist_grab_window_focus_out()
         
         if not gtk.gdk.pointer_is_grabbed():
             droplist_grab_window_focus_in()
@@ -523,7 +534,7 @@ class Droplist(gtk.Window):
             droplist_grab_window_scroll_event_id = droplist_grab_window.connect("scroll-event", droplist_grab_window_scroll_event)
             droplist_grab_window_key_press_id = droplist_grab_window.connect("key-press-event", droplist_grab_window_key_press)
             
-        if self.is_root_droplist and not self in root_droplists:
+        if not self in root_droplists:
             root_droplists.append(self)
                             
     def get_subdroplists(self):
@@ -555,10 +566,9 @@ class Droplist(gtk.Window):
                 droplist_width = droplist_item.item_box_width
             
             droplist_height += droplist_item.item_box_height    
-        (shadow_x, shadow_y) = get_window_shadow_size(self)
-        droplist_width += (self.padding_x + shadow_x) * 2    
-        droplist_height += (self.padding_y + shadow_y) * 2
-            
+        droplist_width += self.padding_x * 2    
+        droplist_height += self.padding_y * 2
+        
         if self.x_align == ALIGN_START:
             dx = self.expect_x
         elif self.x_align == ALIGN_MIDDLE:
@@ -594,15 +604,15 @@ gobject.type_register(Droplist)
 class DroplistItem(object):
     '''Droplist item.'''
     
-    def __init__(self, item, font_size, 
-                 select_scale,
+    def __init__(self, droplist, index, item, font_size, 
                  droplist_padding_x, droplist_padding_y,
                  item_padding_left, item_padding_right, item_padding_y, min_width):
         '''Init droplist item.'''
         # Init.
+        self.droplist = droplist
+        self.index = index
         self.item = item
         self.font_size = font_size
-        self.select_scale = select_scale
         self.droplist_padding_x = droplist_padding_x
         self.droplist_padding_y = droplist_padding_y
         self.item_padding_left = item_padding_left
@@ -641,7 +651,7 @@ class DroplistItem(object):
                 w, e, item_content))
         
         # Wrap droplist aciton.
-        self.item_box.connect("button-press-event", lambda w, e: self.wrap_droplist_clicked_action)        
+        self.item_box.connect("button-press-event", lambda w, e: self.wrap_droplist_clicked_action())        
         
         self.item_box.connect("realize", lambda w: self.realize_item_box(w, item_content))
         
@@ -650,10 +660,7 @@ class DroplistItem(object):
         # Set button size.
         (width, height) = get_content_size(item_content, self.font_size)
         self.item_box_height = self.item_padding_y * 2 + int(height)
-        if self.select_scale:
-            self.item_box_width = widget.get_parent().get_parent().allocation.width
-        else:
-            self.item_box_width = self.item_padding_left + self.item_padding_right + int(width)
+        self.item_box_width = self.item_padding_left + self.item_padding_right + int(width)
 
         self.item_box_width = max(self.item_box_width, self.min_width)        
                 
@@ -661,15 +668,18 @@ class DroplistItem(object):
         
     def wrap_droplist_clicked_action(self):
         '''Wrap droplist action.'''
-        item_node = self.item[2]
+        item_node = self.item[1]
         if not isinstance(item_node, Droplist):
+            # Emit item-selected signal.
+            self.droplist.emit("item-selected", self, self.index)
+            
             # Hide droplist.
             droplist_grab_window_focus_out()
             
             # Execute callback.
             if item_node:
-                if len(self.item) > 3:
-                    item_node(*self.item[3:])
+                if len(self.item) > 2:
+                    item_node(*self.item[2:])
                 else:
                     item_node()
             
