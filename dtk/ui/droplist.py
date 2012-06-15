@@ -206,7 +206,8 @@ class Droplist(gtk.Window):
                  item_padding_left=3, 
                  item_padding_right=32,
                  item_padding_y=3,
-                 shadow_visible=True):
+                 shadow_visible=True,
+                 droplist_max_width=None):
         '''Init droplist, item format: (item_icon, itemName, item_node).'''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
@@ -228,6 +229,7 @@ class Droplist(gtk.Window):
         self.item_padding_left = item_padding_left
         self.item_padding_right = item_padding_right
         self.item_padding_y = item_padding_y
+        self.droplist_max_width = droplist_max_width
         self.item_select_index = 0
         
         # Init droplist window.
@@ -257,7 +259,7 @@ class Droplist(gtk.Window):
                     self,
                     index, item, font_size, 
                     padding_x, padding_y,
-                    item_padding_left, item_padding_right, item_padding_y)
+                    item_padding_left, item_padding_right, item_padding_y, self.droplist_max_width)
                 self.droplist_items.append(droplist_item)
                 self.item_box.pack_start(droplist_item.item_box, False, False)
                 
@@ -283,7 +285,11 @@ class Droplist(gtk.Window):
         '''Get droplist width.'''
         item_content_width = max(map(lambda item: get_content_size(item.item[0], self.font_size)[0], 
                                      filter(lambda item: isinstance(item.item_box, gtk.Button), self.droplist_items)))
-        return self.padding_x * 2 + self.item_padding_left + self.item_padding_right + int(item_content_width)
+        if self.droplist_max_width != None:
+            return self.padding_x * 2 + min(self.droplist_max_width,
+                                            self.item_padding_left + self.item_padding_right + int(item_content_width))
+        else:
+            return self.padding_x * 2 + self.item_padding_left + self.item_padding_right + int(item_content_width)
         
     def expose_item_align(self, widget, event):
         '''Expose item align.'''
@@ -601,7 +607,7 @@ class DroplistItem(object):
     
     def __init__(self, droplist, index, item, font_size, 
                  droplist_padding_x, droplist_padding_y,
-                 item_padding_left, item_padding_right, item_padding_y):
+                 item_padding_left, item_padding_right, item_padding_y, max_width):
         '''Init droplist item.'''
         # Init.
         self.droplist = droplist
@@ -614,6 +620,7 @@ class DroplistItem(object):
         self.item_padding_right = item_padding_right
         self.item_padding_y = item_padding_y
         self.subdroplist_active = False
+        self.max_width = max_width
         self.arrow_padding_x = 5
 
         # Create.
@@ -656,8 +663,11 @@ class DroplistItem(object):
         self.item_box_height = self.item_padding_y * 2 + int(height)
         self.item_box_width = self.item_padding_left + self.item_padding_right + int(width)
 
-        self.item_box_width = self.item_box_width        
-                
+        if self.max_width != None:
+            self.item_box_width = min(self.item_box_width, self.max_width)        
+        else:
+            self.item_box_width = self.item_box_width        
+            
         self.item_box.set_size_request(self.item_box_width, self.item_box_height)        
         
     def wrap_droplist_clicked_action(self):
