@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from keymap import get_keyevent_name
 import gtk
 import gobject
 from label import Label
@@ -39,6 +40,7 @@ class ComboBox(gtk.VBox):
         '''Init combo box.'''
         # Init.
         gtk.VBox.__init__(self)
+        self.set_can_focus(True)
         self.items = items
         self.droplist_height = droplist_height
         self.disable_flag = False
@@ -73,6 +75,58 @@ class ComboBox(gtk.VBox):
         self.label.connect("button-press-event", self.click_drop_button)
         self.dropbutton.connect("button-press-event", self.click_drop_button)
         self.droplist.connect("item-selected", self.update_select_content)
+        self.connect("key-press-event", self.key_press_combo)
+        
+        self.keymap = {
+            "Home" : self.select_first_item,
+            "End" : self.select_last_item,
+            "Up" : self.select_prev_item,
+            "Down" : self.select_next_item}
+        
+    def select_first_item(self):
+        '''Select first item.'''
+        if len(self.droplist.droplist_items) > 0:
+            first_index = self.droplist.get_first_index()
+            if first_index != None:
+                self.droplist.item_select_index = first_index
+                self.droplist.active_item()
+                self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
+    
+    def select_last_item(self):
+        '''Select last item.'''
+        if len(self.droplist.droplist_items) > 0:
+            last_index = self.droplist.get_last_index()
+            if last_index != None:
+                self.droplist.item_select_index = last_index
+                self.droplist.active_item()
+                self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
+    
+    def select_prev_item(self):
+        '''Select preview item.'''
+        if len(self.droplist.droplist_items) > 0:
+            prev_index = self.droplist.get_prev_index()
+            if prev_index != None:
+                self.droplist.item_select_index = prev_index
+                self.droplist.active_item()
+                self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
+    
+    def select_next_item(self):
+        '''Select next item.'''
+        if len(self.droplist.droplist_items) > 0:
+            next_index = self.droplist.get_next_index()
+            if next_index != None:
+                self.droplist.item_select_index = next_index
+                self.droplist.active_item()
+                self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
+        
+    def key_press_combo(self, widget, event):
+        '''Key press combo.'''
+        if not self.droplist.get_visible():
+            key_name = get_keyevent_name(event)
+            if self.keymap.has_key(key_name):
+                self.keymap[key_name]()
+            
+            return True     
         
     def set_select_item(self, item):
         '''Set select item.'''
@@ -104,6 +158,8 @@ class ComboBox(gtk.VBox):
         
     def click_drop_button(self, *args):
         '''Click drop button.'''
+        self.grab_focus()
+        
         if self.droplist.get_visible():
             self.droplist.hide()
         else:
