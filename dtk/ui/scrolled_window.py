@@ -174,7 +174,6 @@ class ScrolledWindow(gtk.Bin):
             return False
 
     def do_leave_notify_event(self, e):
-        print "*************"
         if e.window == self.hwindow :
             self._horizaontal.is_inside = False
             #if e.y < 0 and not self._horizaontal.in_motion:
