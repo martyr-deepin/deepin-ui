@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_TOP_LEFT
+from constant import DEFAULT_FONT_SIZE, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_TOP_LEFT
 from draw import draw_vlinear, draw_font
 from keymap import get_keyevent_name
 from line import HSeparator
