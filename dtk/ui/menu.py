@@ -141,6 +141,7 @@ class Menu(Window):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
         # Init.
         Window.__init__(self, shadow_visible=shadow_visible, window_type=gtk.WINDOW_POPUP)
+        self.set_can_focus(True) # can focus to response key-press signal
         self.draw_mask = self.draw_menu_mask
         global root_menus
         self.is_root_menu = is_root_menu
@@ -234,7 +235,7 @@ class Menu(Window):
             
         if self.is_root_menu and not self in root_menus:
             root_menus.append(self)
-                            
+            
     def get_submenus(self):
         '''Get submenus.'''
         if self.submenu:
