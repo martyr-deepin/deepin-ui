@@ -36,8 +36,8 @@ menu_grab_window.show()
 menu_active_item = None
 
 root_menus = []
-menu_grab_window_press_id = None
-menu_grab_window_motion_id = None
+menu_grab_window_button_press_id = None
+menu_grab_window_motion_notify_id = None
 
 def menu_grab_window_focus_in():
     menu_grab_window.grab_add()
@@ -48,8 +48,8 @@ def menu_grab_window_focus_in():
         None, None, gtk.gdk.CURRENT_TIME)
     
 def menu_grab_window_focus_out():
-    global menu_grab_window_press_id
-    global menu_grab_window_motion_id
+    global menu_grab_window_button_press_id
+    global menu_grab_window_motion_notify_id
     global root_menus
     
     for root_menu in root_menus:
@@ -60,8 +60,9 @@ def menu_grab_window_focus_out():
     gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
     menu_grab_window.grab_remove()
 
-    remove_callback_id(menu_grab_window_press_id)        
-    remove_callback_id(menu_grab_window_motion_id)        
+    for callback_id in [menu_grab_window_button_press_id,
+                        menu_grab_window_motion_notify_id]:
+        remove_callback_id(callback_id)
         
     if menu_active_item:
         menu_active_item.set_state(gtk.STATE_NORMAL)
@@ -93,7 +94,7 @@ def menu_grab_window_button_press(widget, event):
             event_widget.event(event)
             menu_grab_window_focus_out()
     
-def menu_grab_window_motion(widget, event):
+def menu_grab_window_motion_notify(widget, event):
     global menu_active_item
     
     if event and event.window:
@@ -216,8 +217,8 @@ class Menu(Window):
     def init_menu(self, widget):
         '''Realize menu.'''
         global root_menus
-        global menu_grab_window_press_id
-        global menu_grab_window_motion_id
+        global menu_grab_window_button_press_id
+        global menu_grab_window_motion_notify_id
         
         if self.is_root_menu:
             menu_grab_window_focus_out()
@@ -225,11 +226,11 @@ class Menu(Window):
         if not gtk.gdk.pointer_is_grabbed():
             menu_grab_window_focus_in()
             
-        if menu_grab_window_press_id == None:    
-            menu_grab_window_press_id = menu_grab_window.connect("button-press-event", menu_grab_window_button_press)
+        if menu_grab_window_button_press_id == None:    
+            menu_grab_window_button_press_id = menu_grab_window.connect("button-press-event", menu_grab_window_button_press)
             
-        if menu_grab_window_motion_id == None:    
-            menu_grab_window_motion_id = menu_grab_window.connect("motion-notify-event", menu_grab_window_motion)
+        if menu_grab_window_motion_notify_id == None:    
+            menu_grab_window_motion_notify_id = menu_grab_window.connect("motion-notify-event", menu_grab_window_motion_notify)
             
         if self.is_root_menu and not self in root_menus:
             root_menus.append(self)

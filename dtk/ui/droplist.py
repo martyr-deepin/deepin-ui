@@ -37,9 +37,9 @@ droplist_grab_window.show()
 droplist_active_item = None
 
 root_droplists = []
-droplist_grab_window_press_id = None
-droplist_grab_window_release_id = None
-droplist_grab_window_motion_id = None
+droplist_grab_window_button_press_id = None
+droplist_grab_window_button_release_id = None
+droplist_grab_window_motion_notify_id = None
 droplist_grab_window_enter_notify_id = None
 droplist_grab_window_leave_notify_id = None
 droplist_grab_window_scroll_event_id = None
@@ -54,9 +54,9 @@ def droplist_grab_window_focus_in():
         None, None, gtk.gdk.CURRENT_TIME)
     
 def droplist_grab_window_focus_out():
-    global droplist_grab_window_press_id
-    global droplist_grab_window_release_id
-    global droplist_grab_window_motion_id
+    global droplist_grab_window_button_press_id
+    global droplist_grab_window_button_release_id
+    global droplist_grab_window_motion_notify_id
     global droplist_grab_window_enter_notify_id
     global droplist_grab_window_leave_notify_id
     global droplist_grab_window_scroll_event_id
@@ -72,9 +72,9 @@ def droplist_grab_window_focus_out():
     droplist_grab_window.grab_remove()
 
     for callback_id in [
-        droplist_grab_window_press_id,
-        droplist_grab_window_release_id,
-        droplist_grab_window_motion_id,
+        droplist_grab_window_button_press_id,
+        droplist_grab_window_button_release_id,
+        droplist_grab_window_motion_notify_id,
         droplist_grab_window_enter_notify_id,
         droplist_grab_window_leave_notify_id,
         droplist_grab_window_scroll_event_id,
@@ -150,7 +150,7 @@ def droplist_grab_window_button_press(widget, event):
             event_widget.event(event)
             droplist_grab_window_focus_out()
     
-def droplist_grab_window_motion(widget, event):
+def droplist_grab_window_motion_notify(widget, event):
     global droplist_active_item
     
     if event and event.window:
@@ -524,9 +524,9 @@ class Droplist(gtk.Window):
     def init_droplist(self, widget):
         '''Realize droplist.'''
         global root_droplists
-        global droplist_grab_window_press_id
-        global droplist_grab_window_release_id
-        global droplist_grab_window_motion_id
+        global droplist_grab_window_button_press_id
+        global droplist_grab_window_button_release_id
+        global droplist_grab_window_motion_notify_id
         global droplist_grab_window_enter_notify_id
         global droplist_grab_window_leave_notify_id
         global droplist_grab_window_scroll_event_id
@@ -537,13 +537,13 @@ class Droplist(gtk.Window):
         if not gtk.gdk.pointer_is_grabbed():
             droplist_grab_window_focus_in()
         
-        if droplist_grab_window_press_id == None:    
-            droplist_grab_window_press_id = droplist_grab_window.connect("button-press-event", droplist_grab_window_button_press)
+        if droplist_grab_window_button_press_id == None:    
+            droplist_grab_window_button_press_id = droplist_grab_window.connect("button-press-event", droplist_grab_window_button_press)
             
-        if droplist_grab_window_release_id == None:    
-            droplist_grab_window_release_id = droplist_grab_window.connect("button-release-event", droplist_grab_window_button_release)
-        if droplist_grab_window_motion_id == None:    
-            droplist_grab_window_motion_id = droplist_grab_window.connect("motion-notify-event", droplist_grab_window_motion)
+        if droplist_grab_window_button_release_id == None:    
+            droplist_grab_window_button_release_id = droplist_grab_window.connect("button-release-event", droplist_grab_window_button_release)
+        if droplist_grab_window_motion_notify_id == None:    
+            droplist_grab_window_motion_notify_id = droplist_grab_window.connect("motion-notify-event", droplist_grab_window_motion_notify)
             
         if droplist_grab_window_enter_notify_id == None:    
             droplist_grab_window_enter_notify_id = droplist_grab_window.connect("enter-notify-event", droplist_grab_window_enter_notify)
