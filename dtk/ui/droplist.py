@@ -401,7 +401,6 @@ class Droplist(gtk.Window):
         '''Select preview item.'''
         if len(self.droplist_items) > 0:
             prev_index = self.get_prev_index()
-            print prev_index
             if prev_index != None:
                 global droplist_active_item
                 
@@ -422,7 +421,6 @@ class Droplist(gtk.Window):
         '''Select next item.'''
         if len(self.droplist_items) > 0:
             next_index = self.get_next_index()
-            print next_index
             if next_index != None:
                 global droplist_active_item
                 
@@ -538,12 +536,25 @@ class Droplist(gtk.Window):
         
         if not gtk.gdk.pointer_is_grabbed():
             droplist_grab_window_focus_in()
+        
+        if droplist_grab_window_press_id == None:    
             droplist_grab_window_press_id = droplist_grab_window.connect("button-press-event", droplist_grab_window_button_press)
+            
+        if droplist_grab_window_release_id == None:    
             droplist_grab_window_release_id = droplist_grab_window.connect("button-release-event", droplist_grab_window_button_release)
+        if droplist_grab_window_motion_id == None:    
             droplist_grab_window_motion_id = droplist_grab_window.connect("motion-notify-event", droplist_grab_window_motion)
+            
+        if droplist_grab_window_enter_notify_id == None:    
             droplist_grab_window_enter_notify_id = droplist_grab_window.connect("enter-notify-event", droplist_grab_window_enter_notify)
+
+        if droplist_grab_window_leave_notify_id == None:    
             droplist_grab_window_leave_notify_id = droplist_grab_window.connect("leave-notify-event", droplist_grab_window_leave_notify)
+
+        if droplist_grab_window_scroll_event_id == None:    
             droplist_grab_window_scroll_event_id = droplist_grab_window.connect("scroll-event", droplist_grab_window_scroll_event)
+            
+        if droplist_grab_window_key_press_id == None:    
             droplist_grab_window_key_press_id = droplist_grab_window.connect("key-press-event", droplist_grab_window_key_press)
             
         if not self in root_droplists:
