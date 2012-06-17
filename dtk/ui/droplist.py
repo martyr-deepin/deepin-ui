@@ -183,9 +183,9 @@ def droplist_grab_window_motion(widget, event):
 class DroplistScrolledWindow(ScrolledWindow):
     '''Droplist scrolled window.'''
 	
-    def __init__(self):
+    def __init__(self, right_space=2, top_bootm_space=3):
         '''Init droplist scrolled window.'''
-        ScrolledWindow.__init__(self)
+        ScrolledWindow.__init__(self, right_space, top_bootm_space)
         
 gobject.type_register(DroplistScrolledWindow)
                 
@@ -201,9 +201,9 @@ class Droplist(gtk.Window):
                  y_align=ALIGN_START,
                  font_size=DEFAULT_FONT_SIZE, 
                  opacity=1.0, 
-                 padding_x=3, 
-                 padding_y=3, 
-                 item_padding_left=3, 
+                 padding_x=0, 
+                 padding_y=0, 
+                 item_padding_left=6, 
                  item_padding_right=32,
                  item_padding_y=3,
                  shadow_visible=True,
@@ -247,7 +247,7 @@ class Droplist(gtk.Window):
         self.item_align = gtk.Alignment()
         self.item_align.set_padding(padding_y, padding_y, padding_x, padding_x)
         self.item_align.add(self.item_box)
-        self.item_scrolled_window = DroplistScrolledWindow()
+        self.item_scrolled_window = DroplistScrolledWindow(0, 0)
         self.add(self.droplist_frame)
         self.droplist_frame.add(self.item_scrolled_window)
         self.item_scrolled_window.add_child(self.item_align)
@@ -439,6 +439,13 @@ class Droplist(gtk.Window):
                 else:
                     self.select_first_item()
     
+    def scroll_page_to_select_item(self):
+        '''Scroll page to select item.'''
+        (item_x, item_y, item_width, item_height) = self.get_select_item_rect()
+        vadjust = self.item_scrolled_window.get_vadjustment()
+        vadjust.set_value(min(max(vadjust.get_lower(), item_y - self.padding_y * 2), 
+                              vadjust.get_upper() - vadjust.get_page_size()))
+                    
     def scroll_page_up(self):
         '''Scroll page up.'''
         if len(self.droplist_items) > 0:
@@ -691,8 +698,7 @@ class DroplistItem(object):
         if self.subdroplist_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
             # Draw background.
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                         ui_theme.get_shadow_color("menuItemSelect").get_color_info(),
-                         MENU_ITEM_RADIUS)
+                         ui_theme.get_shadow_color("menuItemSelect").get_color_info())
             
             # Set font color.
             font_color = ui_theme.get_color("menuSelectFont").get_color()

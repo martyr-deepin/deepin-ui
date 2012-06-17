@@ -36,6 +36,7 @@
  "comboEntryFrame" : "#c4d4dd",
  "comboEntryDisableFrame" : "#e4e4e4",
  "comboEntryBackground" : "#FFFFFF",
+ "comboEntrySelectBackground" : "#0086CC",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),

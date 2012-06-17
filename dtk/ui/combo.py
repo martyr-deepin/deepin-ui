@@ -45,15 +45,19 @@ class ComboBox(gtk.VBox):
         self.droplist_height = droplist_height
         self.disable_flag = False
         self.select_index = select_index
+        self.focus_flag = False
         
         self.droplist = Droplist(self.items, max_width=max_width)
         if self.droplist_height:
             self.droplist.set_size_request(-1, self.droplist_height)
         self.width = self.droplist.get_droplist_width() 
         self.height = 22
+        self.label_padding_left = 6
         self.box = gtk.HBox()
-        dropbutton_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()
-        self.label = Label(self.items[select_index][0], label_size=(self.width - dropbutton_width - 1, self.height - 2))
+        self.dropbutton_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()
+        self.label = Label(self.items[select_index][0], 
+                           label_size=(self.width - self.dropbutton_width - 1 - self.label_padding_left, self.height - 2))
+        self.label.text_color = ui_theme.get_color("menuFont")
         self.dropbutton = DropButton(
             (ui_theme.get_pixbuf("combo/dropbutton_normal.png"),
              ui_theme.get_pixbuf("combo/dropbutton_hover.png"),
@@ -64,7 +68,7 @@ class ComboBox(gtk.VBox):
                 
         self.align = gtk.Alignment()
         self.align.set(0.5, 0.5, 0.0, 0.0)
-        self.align.set_padding(1, 1, 1, 1)
+        self.align.set_padding(1, 1, 1 + self.label_padding_left, 1)
         
         self.pack_start(self.align, False, False)
         self.align.add(self.box)
@@ -76,12 +80,44 @@ class ComboBox(gtk.VBox):
         self.dropbutton.connect("button-press-event", self.click_drop_button)
         self.droplist.connect("item-selected", self.update_select_content)
         self.connect("key-press-event", self.key_press_combo)
+        self.connect("focus-in-event", self.focus_in_combo)
+        self.connect("focus-out-event", self.focus_out_combo)
         
         self.keymap = {
             "Home" : self.select_first_item,
             "End" : self.select_last_item,
             "Up" : self.select_prev_item,
             "Down" : self.select_next_item}
+        
+    def focus_in_combo(self, widget, event):
+        '''Focus in combo.'''
+        self.focus_flag = True
+        self.label.text_color = ui_theme.get_color("menuSelectFont")
+
+        self.queue_draw()
+        
+    def focus_out_combo(self, widget, event):
+        '''Focus out combo.'''
+        self.focus_flag = False        
+        self.label.text_color = ui_theme.get_color("menuFont")
+            
+        self.queue_draw()
+        
+    def click_drop_button(self, *args):
+        '''Click drop button.'''
+        if self.droplist.get_visible():
+            self.droplist.hide()
+        else:
+            (align_x, align_y) = get_widget_root_coordinate(self.align, WIDGET_POS_BOTTOM_LEFT)
+            self.droplist.show(
+                (align_x - 1, align_y - 1),
+                (0, -self.height + 1))
+            
+            self.droplist.item_select_index = self.select_index
+            self.droplist.active_item()
+            self.droplist.scroll_page_to_select_item()
+            
+        self.queue_draw()    
         
     def select_first_item(self):
         '''Select first item.'''
@@ -156,20 +192,9 @@ class ComboBox(gtk.VBox):
         
         self.emit("item-selected", item_content, item_value, item_index)
         
-    def click_drop_button(self, *args):
-        '''Click drop button.'''
         self.grab_focus()
         
-        if self.droplist.get_visible():
-            self.droplist.hide()
-        else:
-            (align_x, align_y) = get_widget_root_coordinate(self.align, WIDGET_POS_BOTTOM_LEFT)
-            self.droplist.show(
-                (align_x - 1, align_y - 1),
-                (0, -self.height + 1))
-            
-            self.droplist.item_select_index = self.select_index
-            self.droplist.active_item()
+        self.queue_draw()
         
     def set_disable(self, disable_flag):
         '''Disable.'''
@@ -197,9 +222,18 @@ class ComboBox(gtk.VBox):
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.stroke()
             
-            cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
-            cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
-            cr.fill()
+            if self.focus_flag:
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntrySelectBackground").get_color(), 0.9)))
+                cr.rectangle(rect.x, rect.y, rect.width - 1 - self.dropbutton_width, rect.height - 1)
+                cr.fill()
+                
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
+                cr.rectangle(rect.x + rect.width - 1 - self.dropbutton_width, rect.y, self.dropbutton_width, rect.height - 1)
+                cr.fill()
+            else:
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
+                cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
+                cr.fill()
         
         # Propagate expose to children.
         propagate_expose(widget, event)
