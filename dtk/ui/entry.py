@@ -92,14 +92,14 @@ class Entry(gtk.EventBox):
             "End" : self.move_to_end,
             "BackSpace" : self.backspace,
             "Delete" : self.delete,
-            "S-Left" : self.select_to_left,
-            "S-Right" : self.select_to_right,
-            "S-Home" : self.select_to_start,
-            "S-End" : self.select_to_end,
-            "C-a" : self.select_all,
-            "C-x" : self.cut_to_clipboard,
-            "C-c" : self.copy_to_clipboard,
-            "C-v" : self.paste_from_clipboard,
+            "Shift+Left" : self.select_to_left,
+            "Shift+Right" : self.select_to_right,
+            "Shift+Home" : self.select_to_start,
+            "Shift+End" : self.select_to_end,
+            "Ctrl+a" : self.select_all,
+            "Ctrl+x" : self.cut_to_clipboard,
+            "Ctrl+c" : self.copy_to_clipboard,
+            "Ctrl+v" : self.paste_from_clipboard,
             "Return" : self.press_return}
         
         # Add menu.
@@ -188,6 +188,10 @@ class Entry(gtk.EventBox):
         
     def key_press_entry(self, widget, event):
         '''Callback for `key-press-event` signal.'''
+        self.handle_key_press(widget, event)
+        
+    def handle_key_press(self, widget, event):
+        '''Handle key press.'''
         # Pass key to IMContext.
         input_method_filt = self.im.filter_keypress(event)
         if not input_method_filt:
@@ -644,6 +648,10 @@ class Entry(gtk.EventBox):
             
     def focus_out_entry(self, widget, event):
         '''Callback for `focus-out-event` signal.'''
+        self.handle_focus_out(widget, event)
+        
+    def handle_focus_out(self, widget, event):
+        '''Handle focus out.'''
         self.grab_focus_flag = False
         
         # Focus out IMContext.
@@ -891,6 +899,7 @@ class ShortcutKeyEntry(gtk.VBox):
 	
     __gsignals__ = {
         "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
+        "shortcut-key-change" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
     def __init__(self, content="",
@@ -931,13 +940,25 @@ class ShortcutKeyEntry(gtk.VBox):
         # Handle signal.
         self.align.connect("expose-event", self.expose_text_entry)
         
+        # Setup flags.
+        self.entry.cursor_visible_flag = False
+        self.entry.right_menu_visible_flag = False
+        self.entry.select_area_visible_flag = False
+        self.entry.editable_flag = False
+    
         # Overwrite entry's function.
         self.entry.handle_button_press = self.handle_button_press
+        self.entry.handle_focus_out = self.handle_focus_out
+        self.entry.handle_key_press = self.handle_key_press
+        
+        self.shortcut_key = content
+        self.shortcut_key_record = None
         
     def handle_button_press(self, widget, event):
         '''Button press entry.'''
         # Get input focus.
-        self.grab_focus()
+        self.entry.grab_focus()
+        self.shortcut_key_record = self.shortcut_key
         
         if is_left_button(event):
             self.entry.editable_flag = True
@@ -945,6 +966,45 @@ class ShortcutKeyEntry(gtk.VBox):
             self.entry.editable_flag = False
             
             self.entry.queue_draw()
+            
+    def handle_focus_out(self, widget, event):
+        '''Handle focus out.'''
+        if self.shortcut_key != None:
+            self.entry.editable_flag = True
+            self.entry.set_text(self.shortcut_key)
+            self.entry.editable_flag = False
+        
+        self.entry.grab_focus_flag = False
+        self.entry.im.focus_out()
+        self.entry.queue_draw()
+        
+        if self.shortcut_key != self.shortcut_key_record:
+            self.emit("shortcut-key-change", self.shortcut_key)
+            self.shortcut_key_record = None
+            
+    def handle_key_press(self, widget, event):
+        '''Handle key press.'''
+        keyname = get_keyevent_name(event)
+        if keyname != "":
+            if keyname == "BackSpace":
+                self.set_shortcut_key(None)
+            elif keyname != "":
+                self.set_shortcut_key(keyname)
+            
+    def set_shortcut_key(self, shortcut_key):
+        '''Set shortcut key.'''
+        self.shortcut_key = shortcut_key
+        
+        self.entry.editable_flag = True
+        if self.shortcut_key == None:
+            self.entry.set_text("禁用")
+        else:
+            self.entry.set_text(self.shortcut_key)
+        self.entry.editable_flag = False
+                
+    def get_shortcut_key(self):
+        '''Get shortcut key.'''
+        return self.shortcut_key
             
     def emit_action_active_signal(self):
         '''Emit action-active signal.'''
