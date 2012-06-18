@@ -253,7 +253,7 @@ class Menu(Window):
         
         for item in items:
             if item:
-                (item_icon_name, item_content, item_node) = item[0:3]
+                (item_icons, item_content, item_node) = item[0:3]
                 if isinstance(item_node, Menu):
                     have_submenu = True
                     
@@ -407,7 +407,7 @@ class MenuItem(object):
     def create_menu_item(self):
         '''Create menu item.'''
         # Get item information.
-        (item_icon_name, item_content, item_node) = self.item[0:3]
+        (item_icons, item_content, item_node) = self.item[0:3]
         
         # Create button.
         self.item_box = gtk.Button()
@@ -458,7 +458,7 @@ class MenuItem(object):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         font_color = ui_theme.get_color("menuFont").get_color()
-        (item_icon_name, item_content, item_node) = self.item[0:3]
+        (item_icons, item_content, item_node) = self.item[0:3]
         
         # Draw select effect.
         if self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
@@ -473,11 +473,15 @@ class MenuItem(object):
         # Draw item icon.
         pixbuf = None
         pixbuf_width = 0
-        if item_icon_name:
+        if item_icons:
+            (item_normal_dpixbuf, item_hover_dpixbuf) = item_icons
             if self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
-                pixbuf = ui_theme.get_pixbuf(item_icon_name + "_hover.png").get_pixbuf()
+                if item_hover_dpixbuf == None:
+                    pixbuf = item_normal_dpixbuf.get_pixbuf()
+                else:
+                    pixbuf = item_hover_dpixbuf.get_pixbuf()
             else:
-                pixbuf = ui_theme.get_pixbuf(item_icon_name + "_normal.png").get_pixbuf()
+                pixbuf = item_normal_dpixbuf.get_pixbuf()
             pixbuf_width += pixbuf.get_width()
             draw_pixbuf(cr, pixbuf, rect.x + self.item_padding_x, rect.y + (rect.height - pixbuf.get_height()) / 2)
             
@@ -513,7 +517,7 @@ class MenuItem(object):
                 menu_item.submenu_active = False
                 menu_item.item_box.queue_draw()
         
-        (item_icon_name, item_content, item_node) = self.item[0:3]
+        (item_icons, item_content, item_node) = self.item[0:3]
         if isinstance(item_node, Menu):
             menu_window = self.item_box.get_toplevel()
             (menu_window_x, menu_window_y) = get_widget_root_coordinate(menu_window, WIDGET_POS_RIGHT_CENTER)

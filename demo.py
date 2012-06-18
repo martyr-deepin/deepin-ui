@@ -198,14 +198,22 @@ if __name__ == "__main__":
          ])
     
     menu = Menu(
-        [("menu/item1", "测试测试测试1", lambda : PopupWindow(application.window)),
-         ("menu/item2", "测试测试测试2", sub_menu_a),
-         ("menu/item3", "测试测试测试3", sub_menu_b),
-         ("menu/item4", "测试测试测试", None),
-         ("menu/item5", "测试测试测试", None),
-         ("menu/item6", "测试测试测试4", None, (1, 2, 3)),
-         ("menu/item7", "测试测试测试5", None),
-         ("menu/item8", "测试测试测试6", None),
+        [((ui_theme.get_pixbuf("menu/item1_normal.png"), ui_theme.get_pixbuf("menu/item1_hover.png")),
+          "测试测试测试1", lambda : PopupWindow(application.window)),
+         ((ui_theme.get_pixbuf("menu/item2_normal.png"), ui_theme.get_pixbuf("menu/item2_hover.png")),
+          "测试测试测试2", sub_menu_a),
+         ((ui_theme.get_pixbuf("menu/item3_normal.png"), ui_theme.get_pixbuf("menu/item3_hover.png")),
+          "测试测试测试3", sub_menu_b),
+         ((ui_theme.get_pixbuf("menu/item4_normal.png"), ui_theme.get_pixbuf("menu/item4_hover.png")),
+          "测试测试测试", None),
+         ((ui_theme.get_pixbuf("menu/item5_normal.png"), ui_theme.get_pixbuf("menu/item5_hover.png")),
+          "测试测试测试", None),
+         ((ui_theme.get_pixbuf("menu/item6_normal.png"), ui_theme.get_pixbuf("menu/item6_hover.png")),
+          "测试测试测试4", None, (1, 2, 3)),
+         ((ui_theme.get_pixbuf("menu/item7_normal.png"), ui_theme.get_pixbuf("menu/item7_hover.png")),
+          "测试测试测试5", None),
+         ((ui_theme.get_pixbuf("menu/item8_normal.png"), ui_theme.get_pixbuf("menu/item8_hover.png")),
+          "测试测试测试6", None),
          ],
         True
         )
