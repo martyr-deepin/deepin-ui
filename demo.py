@@ -354,6 +354,8 @@ if __name__ == "__main__":
     shortcust_entry = ShortcutKeyEntry("Ctrl + Alt + Q")
     shortcust_entry.entry.cursor_visible_flag = False
     shortcust_entry.entry.right_menu_visible_flag = False
+    shortcust_entry.entry.select_area_visible_flag = False
+    shortcust_entry.entry.editable_flag = False
     shortcust_entry.set_size(150, 24)
     entry_box.pack_start(shortcust_entry, False, False)
     

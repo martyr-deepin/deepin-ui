@@ -77,6 +77,7 @@ class Entry(gtk.EventBox):
         self.check_text = None
         self.cursor_visible_flag = True
         self.right_menu_visible_flag = True
+        self.select_area_visible_flag = True
         
         self.content = content
         self.cursor_index = len(self.content)
@@ -480,7 +481,7 @@ class Entry(gtk.EventBox):
         '''Draw entry background.'''
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
-        if self.select_start_index != self.select_end_index:
+        if self.select_start_index != self.select_end_index and self.select_area_visible_flag:
             select_start_width = self.get_content_width(self.content[0:self.select_start_index])
             select_end_width = self.get_content_width(self.content[0:self.select_end_index])
             
@@ -510,7 +511,7 @@ class Entry(gtk.EventBox):
             layout = context.create_layout()
             layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
             
-            if self.select_start_index != self.select_end_index:
+            if self.select_start_index != self.select_end_index and self.select_area_visible_flag:
                 # Get string.
                 before_select_str = self.content[0:self.select_start_index]
                 select_str = self.content[self.select_start_index:self.select_end_index]
@@ -575,6 +576,10 @@ class Entry(gtk.EventBox):
     
     def button_press_entry(self, widget, event):
         '''Button press entry.'''
+        self.handle_button_press(widget, event)
+        
+    def handle_button_press(self, widget, event):
+        '''Handle button press.'''
         # Get input focus.
         self.grab_focus()
         
@@ -925,6 +930,21 @@ class ShortcutKeyEntry(gtk.VBox):
 
         # Handle signal.
         self.align.connect("expose-event", self.expose_text_entry)
+        
+        # Overwrite entry's function.
+        self.entry.handle_button_press = self.handle_button_press
+        
+    def handle_button_press(self, widget, event):
+        '''Button press entry.'''
+        # Get input focus.
+        self.grab_focus()
+        
+        if is_left_button(event):
+            self.entry.editable_flag = True
+            self.entry.set_text("请按下新的快捷键")
+            self.entry.editable_flag = False
+            
+            self.entry.queue_draw()
             
     def emit_action_active_signal(self):
         '''Emit action-active signal.'''
