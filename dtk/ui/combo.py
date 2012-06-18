@@ -34,6 +34,7 @@ class ComboBox(gtk.VBox):
 	
     __gsignals__ = {
         "item-selected" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
+        "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
     }
 
     def __init__(self, items, droplist_height=None, select_index=0, max_width=None):
@@ -79,7 +80,9 @@ class ComboBox(gtk.VBox):
         self.label.connect("button-press-event", self.click_drop_button)
         self.dropbutton.connect("button-press-event", self.click_drop_button)
         self.droplist.connect("item-selected", self.update_select_content)
+        self.droplist.connect("key-release", lambda dl, s, o, i: self.emit("key-release", s, o, i))
         self.connect("key-press-event", self.key_press_combo)
+        self.connect("key-release-event", self.key_release_combo)
         self.connect("focus-in-event", self.focus_in_combo)
         self.connect("focus-out-event", self.focus_out_combo)
         
@@ -183,6 +186,13 @@ class ComboBox(gtk.VBox):
         '''Get current item.'''
         return self.get_item_with_index(self.select_index)
                 
+    def key_release_combo(self, widget, event):
+        '''Handle key release.'''
+        self.emit("key-release", 
+                  self.items[self.select_index][0],
+                  self.items[self.select_index][1],
+                  self.select_index)    
+    
     def update_select_content(self, droplist, item_content, item_value, item_index):
         '''Update select content.'''
         self.select_index = item_index

@@ -36,7 +36,7 @@ class Titlebar(EventBox):
                  app_name=None,
                  title=None,
                  add_separator=False,
-                 height=26
+                 height=22
                  ):
         '''Init titlebar.'''
         # Init.
@@ -64,11 +64,11 @@ class Titlebar(EventBox):
         
         # Add icon.
         if icon_dpixbuf != None:
-            self.icon_box = ImageBox(icon_dpixbuf)
+            self.icon_image_box = ImageBox(icon_dpixbuf)
             self.icon_align = gtk.Alignment()
             self.icon_align.set(0.5, 0.5, 0.0, 0.0)
-            self.icon_align.set_padding(0, 0, 10, 10)
-            self.icon_align.add(self.icon_box)
+            self.icon_align.set_padding(0, 0, 0, 0)
+            self.icon_align.add(self.icon_image_box)
             self.left_box.pack_start(self.icon_align, False, False)
                     
         # Add app name.

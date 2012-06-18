@@ -44,6 +44,7 @@ droplist_grab_window_enter_notify_id = None
 droplist_grab_window_leave_notify_id = None
 droplist_grab_window_scroll_event_id = None
 droplist_grab_window_key_press_id = None
+droplist_grab_window_key_release_id = None
 
 def droplist_grab_window_focus_in():
     droplist_grab_window.grab_add()
@@ -61,6 +62,7 @@ def droplist_grab_window_focus_out():
     global droplist_grab_window_leave_notify_id
     global droplist_grab_window_scroll_event_id
     global droplist_grab_window_key_press_id
+    global droplist_grab_window_key_release_id
     global root_droplists
     
     for root_droplist in root_droplists:
@@ -78,7 +80,8 @@ def droplist_grab_window_focus_out():
         droplist_grab_window_enter_notify_id,
         droplist_grab_window_leave_notify_id,
         droplist_grab_window_scroll_event_id,
-        droplist_grab_window_key_press_id
+        droplist_grab_window_key_press_id,
+        droplist_grab_window_key_release_id
         ]:
         remove_callback_id(callback_id)
         
@@ -114,6 +117,13 @@ def droplist_grab_window_scroll_event(widget, event):
             droplist.item_scrolled_window.event(event)
             
 def droplist_grab_window_key_press(widget, event):
+    global root_droplists
+    
+    if event and event.window:
+        for droplist in root_droplists:
+            droplist.event(event)
+
+def droplist_grab_window_key_release(widget, event):
     global root_droplists
     
     if event and event.window:
@@ -194,6 +204,7 @@ class Droplist(gtk.Window):
     
     __gsignals__ = {
         "item-selected" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
+        "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
     }
 
     def __init__(self, items, 
@@ -211,6 +222,7 @@ class Droplist(gtk.Window):
         '''Init droplist, item format: (item_content, item_value).'''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
+        self.items = items
         self.set_can_focus(True) # can focus to response key-press signal
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_decorated(False)
@@ -266,6 +278,7 @@ class Droplist(gtk.Window):
         self.droplist_frame.connect("expose-event", self.expose_droplist_frame)
         self.item_align.connect("expose-event", self.expose_item_align)
         self.connect("key-press-event", self.droplist_key_press)
+        self.connect("key-release-event", self.droplist_key_release)
         
         self.keymap = {
             "Home" : self.select_first_item,
@@ -488,6 +501,13 @@ class Droplist(gtk.Window):
             self.keymap[key_name]()
 
         return True     
+    
+    def droplist_key_release(self, widget, event):
+        '''Key press event.'''
+        self.emit("key-release", 
+                  self.items[self.item_select_index][0],
+                  self.items[self.item_select_index][1],
+                  self.item_select_index)    
         
     def expose_droplist_frame(self, widget, event):
         '''Expose droplist frame.'''
@@ -530,6 +550,7 @@ class Droplist(gtk.Window):
         global droplist_grab_window_leave_notify_id
         global droplist_grab_window_scroll_event_id
         global droplist_grab_window_key_press_id
+        global droplist_grab_window_key_release_id
         
         droplist_grab_window_focus_out()
         
@@ -555,6 +576,9 @@ class Droplist(gtk.Window):
             
         if droplist_grab_window_key_press_id == None:    
             droplist_grab_window_key_press_id = droplist_grab_window.connect("key-press-event", droplist_grab_window_key_press)
+            
+        if droplist_grab_window_key_release_id == None:
+            droplist_grab_window_key_release_id = droplist_grab_window.connect("key-release-event", droplist_grab_window_key_release)
             
         if not self in root_droplists:
             root_droplists.append(self)
