@@ -61,7 +61,7 @@ from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.popup_window import PopupWindow
 from dtk.ui.tab_window import TabWindow
-from dtk.ui.color_selection import ColorSelectDialog
+from dtk.ui.color_selection import ColorButton
 from dtk.ui.scalebar import HScalebar, VScalebar
 from dtk.ui.scrolled_window import ScrolledWindow
 from dtk.ui.statusbar import Statusbar
@@ -241,7 +241,7 @@ if __name__ == "__main__":
     
     navigatebar = Navigatebar(
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : ColorSelectDialog().show_all()),
+         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
          (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", lambda : droplist.show((500, 300))),
          (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
@@ -360,6 +360,9 @@ if __name__ == "__main__":
     shortcust_entry = ShortcutKeyEntry("Ctrl+Alt+Q")
     shortcust_entry.set_size(150, 24)
     entry_box.pack_start(shortcust_entry, False, False)
+    
+    color_button = ColorButton()
+    entry_box.pack_start(color_button, False, False)
     
     # Group 
     image_button_items = [

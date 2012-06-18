@@ -32,6 +32,8 @@ from utils import gdkcolor_to_string, color_hex_to_cairo, propagate_expose, colo
 from label import Label
 from spin import SpinBox
 from entry import TextEntry
+from theme import ui_theme
+from draw import draw_vlinear, draw_line, draw_pixbuf
 
 class HSV(gtk.ColorSelection):
     '''HSV.'''
@@ -337,3 +339,111 @@ class ColorItem(gobject.GObject):
         pass
     
 gobject.type_register(ColorItem)
+
+class ColorButton(gtk.VBox):
+    '''Button.'''
+	
+    __gsignals__ = {
+        "color-select" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
+    }
+    
+    def __init__(self, color="#FF0000"):
+        '''Init button.'''
+        gtk.VBox.__init__(self)
+        self.button = gtk.Button()
+        self.color = color
+        self.width = 69
+        self.height = 22
+        self.color_area_width = 39
+        self.color_area_height = 14
+        self.clickable = True
+        
+        self.button.set_size_request(self.width, self.height)
+        self.pack_start(self.button, False, False)
+        
+        self.button.connect("expose-event", self.expose_button)
+        self.button.connect("button-press-event", self.popup_color_selection_dialog)
+        
+    def popup_color_selection_dialog(self, widget, event):
+        '''Popup color selection dialog.'''
+        ColorSelectDialog(self.select_color).show_all()
+        
+    def select_color(self, color):
+        '''Select color.'''
+        self.emit("color-select", color)
+        
+        self.set_color(color)
+        
+    def set_color(self, color):
+        '''Set color.'''
+        self.color = color
+        
+        self.queue_draw()
+        
+    def get_color(self):
+        '''Get color.'''
+        return self.color
+        
+    def set_clickable(self, clickable):
+        '''Set clickable.'''
+        self.clickable = clickable
+        
+        self.queue_draw()
+        
+    def expose_button(self, widget, event):
+        '''Expose button.'''
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, self.width, self.height
+        
+        # Get color info.
+        if not self.clickable:
+            border_color = ui_theme.get_color("buttonBorderDisable").get_color()
+            background_color = ui_theme.get_shadow_color("buttonBackgroundDisable").get_color_info()
+        else:
+            if widget.state == gtk.STATE_NORMAL:
+                border_color = ui_theme.get_color("buttonBorderNormal").get_color()
+                background_color = ui_theme.get_shadow_color("buttonBackgroundNormal").get_color_info()
+            elif widget.state == gtk.STATE_PRELIGHT:
+                border_color = ui_theme.get_color("buttonBorderPrelight").get_color()
+                background_color = ui_theme.get_shadow_color("buttonBackgroundPrelight").get_color_info()
+            elif widget.state == gtk.STATE_ACTIVE:
+                border_color = ui_theme.get_color("buttonBorderActive").get_color()
+                background_color = ui_theme.get_shadow_color("buttonBackgroundActive").get_color_info()
+            
+        # Draw background.
+        draw_vlinear(
+            cr,
+            x + 1, y + 1, w - 2, h - 2,
+            background_color)
+        
+        # Draw border.
+        cr.set_source_rgb(*color_hex_to_cairo(border_color))
+        draw_line(cr, x + 2, y + 1, x + w - 2, y + 1) # top
+        draw_line(cr, x + 2, y + h, x + w - 2, y + h) # bottom
+        draw_line(cr, x + 1, y + 2, x + 1, y + h - 2) # left
+        draw_line(cr, x + w, y + 2, x + w, y + h - 2) # right
+        
+        # Draw four point.
+        top_left_point = ui_theme.get_pixbuf("button.png").get_pixbuf()
+        top_right_point = top_left_point.rotate_simple(270)
+        bottom_right_point = top_left_point.rotate_simple(180)
+        bottom_left_point = top_left_point.rotate_simple(90)
+        
+        draw_pixbuf(cr, top_left_point, x, y)
+        draw_pixbuf(cr, top_right_point, x + w - top_left_point.get_width(), y)
+        draw_pixbuf(cr, bottom_left_point, x, y + h - top_left_point.get_height())
+        draw_pixbuf(cr, bottom_right_point, x + w - top_left_point.get_width(), y + h - top_left_point.get_height())
+        
+        # Draw color.
+        cr.set_source_rgb(*color_hex_to_cairo(self.color))
+        cr.rectangle(x + (w - self.color_area_width) / 2,
+                     y + (h - self.color_area_height) / 2,
+                     self.color_area_width,
+                     self.color_area_height)
+        cr.fill()
+        
+        return True
+        
+gobject.type_register(ColorButton)
