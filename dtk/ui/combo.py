@@ -172,7 +172,7 @@ class ComboBox(gtk.VBox):
             
     def set_select_index(self, item_index):
         '''Set select index.'''
-        if 0 <= item_index < len(self.droplist_items):
+        if 0 <= item_index < len(self.droplist.droplist_items):
             item = self.droplist.droplist_items[item_index]
             if isinstance(item.item_box, gtk.Button):
                 self.select_index = item_index
@@ -180,8 +180,8 @@ class ComboBox(gtk.VBox):
                 
     def get_item_with_index(self, item_index):
         '''Get item with index.'''
-        if 0 <= item_index < len(self.droplist_items):
-            return self.droplist_items[item_index]                
+        if 0 <= item_index < len(self.droplist.droplist_items):
+            return self.droplist.droplist_items[item_index]                
         else:
             return None
                 
