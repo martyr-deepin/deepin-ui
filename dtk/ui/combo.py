@@ -164,26 +164,24 @@ class ComboBox(gtk.VBox):
             
             return True     
         
-    def set_select_item(self, item):
-        '''Set select item.'''
-        if item in self.droplist.droplist_items:
-            self.select_index = self.droplist.droplist_items.index(item)
-            self.label.set_text(item.item[0])
-            
     def set_select_index(self, item_index):
         '''Set select index.'''
-        if 0 <= item_index < len(self.droplist.droplist_items):
-            item = self.droplist.droplist_items[item_index]
-            if isinstance(item.item_box, gtk.Button):
+        if 0 <= item_index < len(self.items):
+            item = self.items[item_index]
+            if item:
                 self.select_index = item_index
                 self.label.set_text(item.item[0])
                 
     def get_item_with_index(self, item_index):
         '''Get item with index.'''
-        if 0 <= item_index < len(self.droplist.droplist_items):
-            return self.droplist.droplist_items[item_index]                
+        if 0 <= item_index < len(self.items):
+            return self.items[item_index]                
         else:
             return None
+        
+    def get_current_item(self):
+        '''Get current item.'''
+        self.get_item_with_index(self.select_index)
                 
     def update_select_content(self, droplist, item_content, item_value, item_index):
         '''Update select content.'''
