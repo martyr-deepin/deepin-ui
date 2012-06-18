@@ -173,7 +173,7 @@ class Menu(Window):
         self.menu_items = []
         
         if items:
-            (have_icon, icon_width, icon_height, have_submenu, submenu_width, submenu_height) = self.get_menu_icon_info(items)
+            (icon_width, icon_height, have_submenu, submenu_width, submenu_height) = self.get_menu_icon_info(items)
             
             for item in items:
                 menu_item = MenuItem(
@@ -245,7 +245,6 @@ class Menu(Window):
                 
     def get_menu_icon_info(self, items):
         '''Get menu icon information.'''
-        have_icon = False
         have_submenu = False
         icon_width = 16
         icon_height = 16
@@ -254,17 +253,14 @@ class Menu(Window):
         
         for item in items:
             if item:
-                (item_dpixbuf, item_content, item_node) = item[0:3]
-                if item_dpixbuf:
-                    have_icon = True
-                
+                (item_icon_name, item_content, item_node) = item[0:3]
                 if isinstance(item_node, Menu):
                     have_submenu = True
                     
-                if have_icon and have_submenu:
+                if have_submenu:
                     break
                 
-        return (have_icon, icon_width, icon_height, have_submenu, submenu_width, submenu_height)
+        return (icon_width, icon_height, have_submenu, submenu_width, submenu_height)
         
     def show(self, (x, y), (offset_x, offset_y)=(0, 0)):
         '''Show menu.'''
@@ -517,7 +513,7 @@ class MenuItem(object):
                 menu_item.submenu_active = False
                 menu_item.item_box.queue_draw()
         
-        (item_dpixbuf, item_content, item_node) = self.item[0:3]
+        (item_icon_name, item_content, item_node) = self.item[0:3]
         if isinstance(item_node, Menu):
             menu_window = self.item_box.get_toplevel()
             (menu_window_x, menu_window_y) = get_widget_root_coordinate(menu_window, WIDGET_POS_RIGHT_CENTER)
