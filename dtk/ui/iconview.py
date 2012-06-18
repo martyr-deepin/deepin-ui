@@ -42,10 +42,12 @@ class IconView(gtk.DrawingArea):
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
     }
 
-    def __init__(self):
+    def __init__(self, padding_x=0, padding_y=0):
         '''Init icon view.'''
         # Init.
         gtk.DrawingArea.__init__(self)
+        self.padding_x = padding_x
+        self.padding_y = padding_y
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
@@ -133,7 +135,7 @@ class IconView(gtk.DrawingArea):
             else:
                 item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
                 scrolled_window = get_match_parent(self, ["ScrolledWindow", "IconViewBox"])
-                columns = int(scrolled_window.allocation.width / item_width)
+                columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
                 
                 if self.focus_index - columns >= 0:
                     self.emit("lost-focus-item", self.items[self.focus_index])
@@ -142,8 +144,10 @@ class IconView(gtk.DrawingArea):
     
                 # Scroll to item.
                 row = int(self.focus_index / columns)
-                if vadjust.get_value() > row * item_height:
-                    vadjust.set_value(vadjust.get_lower() + row * item_height)
+                if vadjust.get_value() - self.padding_y > row * item_height:
+                    vadjust.set_value(vadjust.get_lower() + row * item_height + self.padding_y)
+                elif vadjust.get_value() - self.padding_y == row * item_height:
+                    vadjust.set_value(vadjust.get_lower())
                 
     def select_down_item(self):
         '''Select next row.'''
@@ -158,7 +162,7 @@ class IconView(gtk.DrawingArea):
             else:
                 item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
                 scrolled_window = get_match_parent(self, ["ScrolledWindow", "IconViewBox"])
-                columns = int(scrolled_window.allocation.width / item_width)
+                columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
                 
                 if self.focus_index + columns <= len(self.items) - 1:
                     self.emit("lost-focus-item", self.items[self.focus_index])
@@ -167,8 +171,10 @@ class IconView(gtk.DrawingArea):
     
                 # Scroll to item.
                 row = int(self.focus_index / columns)    
-                if vadjust.get_value() + vadjust.get_page_size() < (row + 1) * item_height:
-                    vadjust.set_value(vadjust.get_lower() + (row + 1) * item_height - vadjust.get_page_size()) 
+                if vadjust.get_value() + vadjust.get_page_size() - self.padding_y < (row + 1) * item_height:
+                    vadjust.set_value(vadjust.get_lower() + (row + 1) * item_height - vadjust.get_page_size() + self.padding_y) 
+                elif vadjust.get_value() + vadjust.get_page_size() - self.padding_y == (row + 1) * item_height:
+                    vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
                 
     def select_left_item(self):
         '''Select preview column.'''
@@ -183,7 +189,7 @@ class IconView(gtk.DrawingArea):
             else:
                 item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
                 scrolled_window = get_match_parent(self, ["ScrolledWindow", "IconViewBox"])
-                columns = int(scrolled_window.allocation.width / item_width)
+                columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
                 row = int(self.focus_index / columns)
                 min_index = row * columns
                 
@@ -205,7 +211,7 @@ class IconView(gtk.DrawingArea):
             else:
                 item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
                 scrolled_window = get_match_parent(self, ["ScrolledWindow", "IconViewBox"])
-                columns = int(scrolled_window.allocation.width / item_width)
+                columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
                 row = int(self.focus_index / columns)
                 max_index = min((row + 1) * columns - 1, len(self.items) - 1)
                 
@@ -227,12 +233,12 @@ class IconView(gtk.DrawingArea):
             else:
                 item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
                 scrolled_window = get_match_parent(self, ["ScrolledWindow", "IconViewBox"])
-                columns = int(scrolled_window.allocation.width / item_width)
+                columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
                 column = int(self.focus_index % columns)
                 if (vadjust.get_value() - vadjust.get_lower()) % item_height == 0:
-                    row = int((vadjust.get_value() - vadjust.get_lower()) / item_height) - 1
+                    row = int((vadjust.get_value() - vadjust.get_lower() - self.padding_y) / item_height) - 1
                 else:
-                    row = int((vadjust.get_value() - vadjust.get_lower()) / item_height)
+                    row = int((vadjust.get_value() - vadjust.get_lower() - self.padding_y) / item_height)
                 if row * columns + column >= 0:    
                     self.emit("lost-focus-item", self.items[self.focus_index])
                     self.focus_index = row * columns + column    
@@ -242,7 +248,7 @@ class IconView(gtk.DrawingArea):
                     self.focus_index = column
                     self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
                     
-                vadjust.set_value(max(0, vadjust.get_value() - vadjust.get_page_size()))
+                vadjust.set_value(max(0, vadjust.get_value() - vadjust.get_page_size() + self.padding_y))
                 
     def scroll_page_down(self):
         '''Scroll iconview down.'''
@@ -257,12 +263,12 @@ class IconView(gtk.DrawingArea):
             else:
                 item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
                 scrolled_window = get_match_parent(self, ["ScrolledWindow", "IconViewBox"])
-                columns = int(scrolled_window.allocation.width / item_width)
+                columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
                 column = int(self.focus_index % columns)
                 if (vadjust.get_value() - vadjust.get_lower() + vadjust.get_page_size()) % item_height == 0:
-                    row = int((vadjust.get_value() - vadjust.get_lower() + vadjust.get_page_size()) / item_height) - 1
+                    row = int((vadjust.get_value() - vadjust.get_lower() + vadjust.get_page_size() - self.padding_y) / item_height) - 1
                 else:
-                    row = int((vadjust.get_value() - vadjust.get_lower() + vadjust.get_page_size()) / item_height)
+                    row = int((vadjust.get_value() - vadjust.get_lower() + vadjust.get_page_size() - self.padding_y) / item_height)
                 if row * columns + column <= len(self.items) - 1:
                     self.emit("lost-focus-item", self.items[self.focus_index])
                     self.focus_index = row * columns + column
@@ -273,7 +279,7 @@ class IconView(gtk.DrawingArea):
                     self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
                     
                 vadjust.set_value(min(vadjust.get_upper() - vadjust.get_page_size(),
-                                      vadjust.get_value() + vadjust.get_page_size()))
+                                      vadjust.get_value() + vadjust.get_page_size() - self.padding_y))
             
     def add_items(self, items, insert_pos=None):
         '''Add items.'''
@@ -347,14 +353,14 @@ class IconView(gtk.DrawingArea):
                 # Draw item.
                 item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
                 scrolled_window = get_match_parent(self, ["ScrolledWindow", "IconViewBox"])
-                columns = int(scrolled_window.allocation.width / item_width)
+                columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
                     
                 # Get viewport index.
-                start_y = offset_y
+                start_y = offset_y - self.padding_y
                 start_row = max(int(start_y / item_height), 0)
                 start_index = start_row * columns
                 
-                end_y = offset_y + viewport.allocation.height
+                end_y = offset_y - self.padding_y + viewport.allocation.height
                 if end_y % item_height == 0:
                     end_row = end_y / item_height - 1
                 else:
@@ -364,8 +370,8 @@ class IconView(gtk.DrawingArea):
                 for (index, item) in enumerate(self.items[start_index:end_index]):
                     row = int((start_index + index) / columns)
                     column = (start_index + index) % columns
-                    render_x = rect.x + column * item_width
-                    render_y = rect.y + row * item_height
+                    render_x = rect.x + self.padding_x + column * item_width
+                    render_y = rect.y + self.padding_y + row * item_height
                     
                     with cairo_state(cr):
                         # Don't allow draw out of item area.
@@ -392,7 +398,7 @@ class IconView(gtk.DrawingArea):
                 self.clear_focus_item()
                 self.focus_index = item_index
                 
-                self.emit("motion-notify-item", self.items[self.focus_index], offset_x, offset_y)
+                self.emit("motion-notify-item", self.items[self.focus_index], offset_x - self.padding_x, offset_y - self.padding_y)
                     
     def icon_view_get_event_index(self, event):
         '''Get index at event.'''
@@ -400,7 +406,7 @@ class IconView(gtk.DrawingArea):
             (event_x, event_y) = get_event_coords(event)
             item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
             scrolled_window = get_match_parent(self, ["ScrolledWindow", "IconViewBox"])
-            columns = int(scrolled_window.allocation.width / item_width)
+            columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
             if len(self.items) % columns == 0:
                 rows = int(len(self.items) / columns)
             else:
@@ -440,7 +446,7 @@ class IconView(gtk.DrawingArea):
             
             if index_info:
                 (row_index, column_index, item_index, offset_x, offset_y) = index_info
-                self.emit("button-press-item", self.items[item_index], offset_x, offset_y)
+                self.emit("button-press-item", self.items[item_index], offset_x - self.padding_x, offset_y - self.padding_y)
                 
                 if is_double_click(event):
                     if index_info:
@@ -477,12 +483,12 @@ class IconView(gtk.DrawingArea):
             if index_info:
                 (row_index, column_index, item_index, offset_x, offset_y) = index_info
                 
-                self.emit("button-release-item", self.items[item_index], offset_x, offset_y)
+                self.emit("button-release-item", self.items[item_index], offset_x - self.padding_x, offset_y - self.padding_y)
                 
                 if self.double_click_item == item_index:
-                    self.emit("double-click-item", self.items[self.double_click_item], offset_x, offset_y)
+                    self.emit("double-click-item", self.items[self.double_click_item], offset_x - self.padding_x, offset_y - self.padding_y)
                 elif self.single_click_item == item_index:
-                    self.emit("single-click-item", self.items[self.single_click_item], offset_x, offset_y)
+                    self.emit("single-click-item", self.items[self.single_click_item], offset_x - self.padding_x, offset_y - self.padding_y)
             
             self.double_click_item = None
             self.single_click_item = None
@@ -518,13 +524,13 @@ class IconView(gtk.DrawingArea):
             # Get viewport index.
             item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
             scrolled_window = get_match_parent(self, ["ScrolledWindow", "IconViewBox"])
-            columns = int(scrolled_window.allocation.width / item_width)
+            columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
                 
-            start_y = offset_y
+            start_y = offset_y - self.padding_y
             start_row = max(int(start_y / item_height), 0)
             start_index = start_row * columns
             
-            end_y = offset_y + viewport.allocation.height
+            end_y = offset_y - self.padding_y + viewport.allocation.height
             if end_y % item_height == 0:
                 end_row = end_y / item_height - 1
             else:
@@ -569,17 +575,19 @@ class IconView(gtk.DrawingArea):
         
         if len(self.items) > 0:
             item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
-            columns = int(scrolled_window.allocation.width / item_width)
+            columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
             if columns > 0:
                 if len(self.items) % columns == 0:
                     view_height = int(len(self.items) / columns) * item_height
                 else:
                     view_height = (int(len(self.items) / columns) + 1) * item_height
                     
-                self.set_size_request(columns * item_width, view_height)
+                self.set_size_request(columns * item_width + self.padding_x * 2,
+                                      view_height + self.padding_y * 2)
                 if scrolled_window != None:
                     vadjust = scrolled_window.get_vadjustment()
-                    vadjust.set_upper(max(view_height, scrolled_window.allocation.height))
+                    vadjust.set_upper(max(view_height + self.padding_y * 2, 
+                                          scrolled_window.allocation.height))
         else:
             self.set_size_request(scrolled_window.allocation.width, 
                                   scrolled_window.allocation.height)
