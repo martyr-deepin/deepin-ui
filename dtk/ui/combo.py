@@ -181,7 +181,7 @@ class ComboBox(gtk.VBox):
         
     def get_current_item(self):
         '''Get current item.'''
-        self.get_item_with_index(self.select_index)
+        return self.get_item_with_index(self.select_index)
                 
     def update_select_content(self, droplist, item_content, item_value, item_index):
         '''Update select content.'''
