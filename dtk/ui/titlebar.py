@@ -36,7 +36,7 @@ class Titlebar(EventBox):
                  app_name=None,
                  title=None,
                  add_separator=False,
-                 height=25
+                 height=26
                  ):
         '''Init titlebar.'''
         # Init.

@@ -106,9 +106,8 @@ class ConfirmDialog(Window):
         
 gobject.type_register(ConfirmDialog)
 
-
 class InputDialog(Window):
-    '''Confir dialog.'''
+    '''Input dialog.'''
 	
     def __init__(self, 
                  title, 
@@ -238,6 +237,23 @@ class SaveFileDialog(gtk.FileChooserDialog):
         self.destroy()
         
 gobject.type_register(SaveFileDialog)
+
+class DialogButtonBox(gtk.VBox):
+    '''Dialog button box.'''
+	
+    def __init__(self, buttons):
+        '''Init dialog button box.'''
+        gtk.VBox.__init__(self)
+        self.button_align = gtk.Alignment()
+        self.button_align.set(0.5, 0.5, 1, 1)
+        self.button_align.set_padding(5, 7, 0, 10)
+        self.button_box = gtk.HBox()
+        
+        for button in buttons:
+            self.button_box.pack_start(button, False, False, 4)
+            
+        self.button_align.add(self.button_box)    
+        self.pack_start(self.button_align, False, False)
 
 if __name__ == '__main__':
     dialog = ConfirmDialog("确认对话框", "你确定吗？", 200, 100)
