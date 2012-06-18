@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from label import Label
 from box import EventBox, ImageBox, TextBox
 from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
 from draw import draw_line
@@ -67,7 +68,7 @@ class Titlebar(EventBox):
             self.icon_image_box = ImageBox(icon_dpixbuf)
             self.icon_align = gtk.Alignment()
             self.icon_align.set(0.5, 0.5, 0.0, 0.0)
-            self.icon_align.set_padding(0, 0, 0, 0)
+            self.icon_align.set_padding(4, 2, 6, 3)
             self.icon_align.add(self.icon_image_box)
             self.left_box.pack_start(self.icon_align, False, False)
                     
@@ -82,10 +83,10 @@ class Titlebar(EventBox):
         
         # Add title.
         if title != None:
-            self.title_box = TextBox(title)
+            self.title_box = Label(title)
             self.title_align = gtk.Alignment()
             self.title_align.set(0.5, 0.5, 0.0, 0.0)
-            self.title_align.set_padding(0, 0, 0, 0)
+            self.title_align.set_padding(0, 0, 30, 30)
             self.title_align.add(self.title_box)
             self.left_box.pack_start(self.title_align, True, True)
             

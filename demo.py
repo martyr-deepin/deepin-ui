@@ -156,9 +156,9 @@ if __name__ == "__main__":
     # Add titlebar.
     application.add_titlebar(
         ["theme", "menu", "max", "min", "close"], 
-        ui_theme.get_pixbuf("title.png"), 
+        ui_theme.get_pixbuf("logo.png"), 
         "深度图形库",
-        "/home/andy/deepin-ui/demo.py")
+        "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py")
     
     # Draw application background.
     button = gtk.Button()
