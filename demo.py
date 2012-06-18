@@ -166,48 +166,46 @@ if __name__ == "__main__":
     
     # Init menu callback.
     sub_menu_a = Menu(
-        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单A1", None),
+        [(None, "子菜单A1", None),
          None,
-         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单A2", None),
-         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单A3", None),
+         (None, "子菜单A2", None),
+         (None, "子菜单A3", None),
          ])
     sub_menu_e = Menu(
-        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单E1", None),
-         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单E2", None),
+        [(None, "子菜单E1", None),
+         (None, "子菜单E2", None),
          None,
-         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单E3", None),
+         (None, "子菜单E3", None),
          ])
     sub_menu_d = Menu(
-        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单D1", None),
-         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单D2", None),
+        [(None, "子菜单D1", None),
+         (None, "子菜单D2", None),
          None,
-         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单D3", sub_menu_e),
+         (None, "子菜单D3", sub_menu_e),
          ])
     sub_menu_c = Menu(
-        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单C1", None),
-         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单C2", None),
+        [(None, "子菜单C1", None),
+         (None, "子菜单C2", None),
          None,
-         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单C3", sub_menu_d),
+         (None, "子菜单C3", sub_menu_d),
          ])
     sub_menu_b = Menu(
-        [(ui_theme.get_pixbuf("menu/menuItem1.png"), "子菜单B1", None),
+        [(None, "子菜单B1", None),
          None,
-         (ui_theme.get_pixbuf("menu/menuItem2.png"), "子菜单B2", None),
+         (None, "子菜单B2", None),
          None,
-         (ui_theme.get_pixbuf("menu/menuItem3.png"), "子菜单B3", sub_menu_c),
+         (None, "子菜单B3", sub_menu_c),
          ])
     
     menu = Menu(
-        [(None, "测试测试测试1", lambda : PopupWindow(application.window)),
-         (None, "测试测试测试2", sub_menu_a),
-         (None, "测试测试测试3", sub_menu_b),
-         None,
-         (ui_theme.get_pixbuf("menu/menuItem3.png"), "测试测试测试", None),
-         (None, "测试测试测试", None),
-         None,
-         (None, "测试测试测试4", None, (1, 2, 3)),
-         (None, "测试测试测试5", None),
-         (None, "测试测试测试6", None),
+        [("menu/item1", "测试测试测试1", lambda : PopupWindow(application.window)),
+         ("menu/item2", "测试测试测试2", sub_menu_a),
+         ("menu/item3", "测试测试测试3", sub_menu_b),
+         ("menu/item4", "测试测试测试", None),
+         ("menu/item5", "测试测试测试", None),
+         ("menu/item6", "测试测试测试4", None, (1, 2, 3)),
+         ("menu/item7", "测试测试测试5", None),
+         ("menu/item8", "测试测试测试6", None),
          ],
         True
         )

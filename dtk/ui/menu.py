@@ -148,7 +148,6 @@ class Menu(Window):
         self.select_scale = select_scale
         self.x_align = x_align
         self.y_align = y_align
-        self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
         self.submenu = None
         self.root_menu = None
         self.offset_x = 0       # use for handle extreme situaiton, such as, menu show at side of screen
@@ -178,8 +177,9 @@ class Menu(Window):
             
             for item in items:
                 menu_item = MenuItem(
-                    item, font_size, self.select_scale, self.show_submenu, self.hide_submenu, self.get_root_menu, self.get_menu_items,
-                    have_icon, icon_width, icon_height,
+                    item, font_size, self.select_scale, self.show_submenu, self.hide_submenu, 
+                    self.get_root_menu, self.get_menu_items,
+                    icon_width, icon_height,
                     have_submenu, submenu_width, submenu_height,
                     padding_x, padding_y,
                     item_padding_x, item_padding_y, self.menu_min_width)
@@ -246,11 +246,11 @@ class Menu(Window):
     def get_menu_icon_info(self, items):
         '''Get menu icon information.'''
         have_icon = False
+        have_submenu = False
         icon_width = 16
         icon_height = 16
-        have_submenu = False
-        submenu_width = 0
-        submenu_height = 0
+        submenu_width = 16
+        submenu_height = 15
         
         for item in items:
             if item:
@@ -260,8 +260,6 @@ class Menu(Window):
                 
                 if isinstance(item_node, Menu):
                     have_submenu = True
-                    submenu_width = self.submenu_dpixbuf.get_pixbuf().get_width()
-                    submenu_height = self.submenu_dpixbuf.get_pixbuf().get_height()
                     
                 if have_icon and have_submenu:
                     break
@@ -370,7 +368,7 @@ class MenuItem(object):
                  hide_submenu_callback,
                  get_root_menu_callback,
                  get_menu_items_callback,
-                 have_icon, icon_width, icon_height, 
+                 icon_width, icon_height, 
                  have_submenu, submenu_width, submenu_height,
                  menu_padding_x, menu_padding_y,
                  item_padding_x, item_padding_y, min_width):
@@ -387,13 +385,11 @@ class MenuItem(object):
         self.hide_submenu_callback = hide_submenu_callback
         self.get_root_menu_callback = get_root_menu_callback
         self.get_menu_items_callback = get_menu_items_callback
-        self.have_icon = have_icon
         self.icon_width = icon_width
         self.icon_height = icon_height
         self.have_submenu = have_submenu
         self.submenu_width = submenu_width
         self.submenu_height = submenu_height
-        self.submenu_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")        
         self.submenu_active = False
         self.min_width = min_width
         self.arrow_padding_x = 5
@@ -415,16 +411,13 @@ class MenuItem(object):
     def create_menu_item(self):
         '''Create menu item.'''
         # Get item information.
-        (item_dpixbuf, item_content, item_node) = self.item[0:3]
+        (item_icon_name, item_content, item_node) = self.item[0:3]
         
         # Create button.
         self.item_box = gtk.Button()
         
         # Expose button.
-        self.item_box.connect(
-            "expose-event", 
-            lambda w, e: self.expose_menu_item(
-                w, e, item_dpixbuf, item_content))
+        self.item_box.connect("expose-event", self.expose_menu_item)
         self.item_box.connect("enter-notify-event", lambda w, e: self.enter_notify_menu_item(w))
         
         # Wrap menu aciton.
@@ -463,12 +456,13 @@ class MenuItem(object):
                 else:
                     item_node()
             
-    def expose_menu_item(self, widget, event, item_dpixbuf, item_content):
+    def expose_menu_item(self, widget, event):
         '''Expose menu item.'''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
         font_color = ui_theme.get_color("menuFont").get_color()
+        (item_icon_name, item_content, item_node) = self.item[0:3]
         
         # Draw select effect.
         if self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
@@ -483,8 +477,11 @@ class MenuItem(object):
         # Draw item icon.
         pixbuf = None
         pixbuf_width = 0
-        if item_dpixbuf:
-            pixbuf = item_dpixbuf.get_pixbuf()
+        if item_icon_name:
+            if self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
+                pixbuf = ui_theme.get_pixbuf(item_icon_name + "_hover.png").get_pixbuf()
+            else:
+                pixbuf = ui_theme.get_pixbuf(item_icon_name + "_normal.png").get_pixbuf()
             pixbuf_width += pixbuf.get_width()
             draw_pixbuf(cr, pixbuf, rect.x + self.item_padding_x, rect.y + (rect.height - pixbuf.get_height()) / 2)
             
@@ -498,9 +495,11 @@ class MenuItem(object):
                  )
         
         # Draw submenu arrow.
-        (item_dpixbuf, item_content, item_node) = self.item[0:3]
         if isinstance(item_node, Menu):
-            submenu_pixbuf = self.submenu_dpixbuf.get_pixbuf()
+            if self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
+                submenu_pixbuf = ui_theme.get_pixbuf("menu/arrow_hover.png").get_pixbuf()
+            else:
+                submenu_pixbuf = ui_theme.get_pixbuf("menu/arrow_normal.png").get_pixbuf()
             draw_pixbuf(cr, submenu_pixbuf,
                         rect.x + rect.width - self.item_padding_x - submenu_pixbuf.get_width() - self.arrow_padding_x,
                         rect.y + (rect.height - submenu_pixbuf.get_height()) / 2)

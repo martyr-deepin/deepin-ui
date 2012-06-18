@@ -219,7 +219,6 @@ class Droplist(gtk.Window):
         self.font_size = font_size
         self.x_align = x_align
         self.y_align = y_align
-        self.subdroplist_dpixbuf = ui_theme.get_pixbuf("menu/subMenu.png")
         self.subdroplist = None
         self.root_droplist = None
         self.offset_x = 0       # use for handle extreme situaiton, such as, droplist show at side of screen
