@@ -25,7 +25,7 @@ import gobject
 
 from theme import ui_theme
 from utils import (cairo_state , alpha_color_hex_to_cairo,
-                   propagate_expose, is_float)
+                   propagate_expose, is_float, remove_callback_id)
 
 from button import ImageButton
 from entry import Entry
@@ -34,6 +34,7 @@ from entry import Entry
 class SpinBox(gtk.VBox):
     __gsignals__ = {
         "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT,)),
+        "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT,)),
         }
     
     def __init__(self, value=0, lower=0, upper=100, step=10, default_width=55):
@@ -134,12 +135,16 @@ class SpinBox(gtk.VBox):
         
         self.decrease_value_id = gtk.timeout_add(self.update_delay, self.decrease_value)
         
+    def handle_key_release(self, widget, event):
+        '''Handle key release.'''
+        self.stop_update_value()
+        
+        self.emit("key-release", self.current_value)
+        
     def stop_update_value(self):
         '''Stop update value.'''
         for timeout_id in [self.increase_value_id, self.decrease_value_id]:
-            if timeout_id:
-                gobject.source_remove(timeout_id)
-                timeout_id = None
+            remove_callback_id(timeout_id)
         
     def increase_value(self):    
         new_value = self.current_value + self.step_value
@@ -263,7 +268,7 @@ class SpinBox(gtk.VBox):
             )
         if callback:
             button.connect("button-press-event", callback)
-            button.connect("button-release-event", lambda w, e: self.stop_update_value())
+            button.connect("button-release-event", self.handle_key_release)
         return button
 
 gobject.type_register(SpinBox)    
