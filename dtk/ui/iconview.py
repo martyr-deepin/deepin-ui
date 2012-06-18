@@ -607,8 +607,8 @@ class IconItem(gobject.GObject):
         '''Init item icon.'''
         gobject.GObject.__init__(self)
         self.pixbuf = pixbuf
-        self.padding_x = 24
-        self.padding_y = 24
+        self.padding_x = 21
+        self.padding_y = 21
         self.hover_flag = False
         self.highlight_flag = False
         

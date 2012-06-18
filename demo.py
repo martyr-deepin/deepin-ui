@@ -423,7 +423,7 @@ if __name__ == "__main__":
     icon_view_vframe.set_padding(0, 1, 0, 0)
     
     icon_view_scrolled_window = ScrolledWindow()
-    icon_view = IconView(100, 100)
+    icon_view = IconView(10, 10)
     # icon_view = IconView()
     icon_view_scrolled_window.add_child(icon_view)
     icon_view_hframe.add(icon_view_scrolled_window)
