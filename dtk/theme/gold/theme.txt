@@ -31,7 +31,7 @@
  "treeItemNormalFont" : "#000000",
  "treeItemSelectFont" : "#FFFFFF",
  "treeItemHoverFont" : "#000000",
- "scrolledbar" : "#ffe899",
+ "scrolledbar" : "#bf9126",
  "droplistFrame" : "#ddd7c4",
  "comboEntryFrame" : "#ddd7c4",
  "comboEntryDisableFrame" : "#e4e4e4",
