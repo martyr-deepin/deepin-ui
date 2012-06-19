@@ -45,6 +45,7 @@ class ConfirmDialog(Window):
         self.set_modal(True)                                # grab focus to avoid build too many skin window
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
         self.set_skip_taskbar_hint(True)                    # skip taskbar
+        self.set_resizable(False)
         self.default_width = default_width
         self.default_height = default_height
         self.set_default_size(self.default_width, self.default_height)
@@ -122,6 +123,7 @@ class InputDialog(Window):
         self.set_modal(True)                                # grab focus to avoid build too many skin window
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
         self.set_skip_taskbar_hint(True)                    # skip taskbar
+        self.set_resizable(False)
         self.default_width = default_width
         self.default_height = default_height
         self.set_default_size(self.default_width, self.default_height)

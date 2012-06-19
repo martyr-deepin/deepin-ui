@@ -74,6 +74,7 @@ class ColorSelectDialog(Window):
         self.set_modal(True)                                # grab focus to avoid build too many skin window
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
         self.set_skip_taskbar_hint(True)                    # skip taskbar
+        self.set_resizable(False)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
         
