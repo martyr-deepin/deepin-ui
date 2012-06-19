@@ -35,8 +35,7 @@ class Label(gtk.EventBox):
                  text_size=DEFAULT_FONT_SIZE,
                  text_x_align=ALIGN_START,
                  label_size=None,
-                 gaussian_radious=None, gaussian_color=None,
-                 border_radious=None, border_color=None, 
+                 enable_gaussian=False,
                  ):
         '''Init label.'''
         # Init.
@@ -44,10 +43,7 @@ class Label(gtk.EventBox):
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.label_size = label_size
-        self.gaussian_color = gaussian_color
-        self.gaussian_radious = gaussian_radious
-        self.border_color = border_color
-        self.border_radious = border_radious
+        self.enable_gaussian = enable_gaussian
         
         self.text = text
         self.text_size = text_size
@@ -71,10 +67,6 @@ class Label(gtk.EventBox):
                   self.text_size,
                   self.text_color.get_color(),
                   alignment=self.text_x_align, 
-                  gaussian_radious=self.gaussian_radious, 
-                  gaussian_color=self.gaussian_color,
-                  border_radious=self.border_radious, 
-                  border_color=self.border_color, 
                   )
         
         propagate_expose(widget, event)
