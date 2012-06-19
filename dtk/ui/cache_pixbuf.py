@@ -31,10 +31,10 @@ class CachePixbuf(object):
         self.cache_pixbuf = None
         self.scale_width = None
         self.scale_height = None
-        self.vertical_mirror = None
-        self.horizontal_mirror = None
+        self.vertical_mirror = False
+        self.horizontal_mirror = False
         
-    def scale(self, pixbuf, scale_width, scale_height, vertical_mirror=None, horizontal_mirror=None):
+    def scale(self, pixbuf, scale_width, scale_height, vertical_mirror=False, horizontal_mirror=False):
         '''Scale and return new pixbuf.'''
         if self.pixbuf != pixbuf or self.scale_width != scale_width or self.scale_height != scale_height:
             self.pixbuf = pixbuf
