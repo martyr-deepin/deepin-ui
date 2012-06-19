@@ -439,6 +439,14 @@ class ColorButton(gtk.VBox):
         draw_pixbuf(cr, bottom_left_point, x, y + h - top_left_point.get_height())
         draw_pixbuf(cr, bottom_right_point, x + w - top_left_point.get_width(), y + h - top_left_point.get_height())
         
+        # Draw color frame.
+        cr.set_source_rgb(*color_hex_to_cairo("#c0c0c0"))
+        cr.rectangle(x + (w - self.color_area_width) / 2,
+                     y + (h - self.color_area_height) / 2,
+                     self.color_area_width,
+                     self.color_area_height)
+        cr.stroke()
+        
         # Draw color.
         cr.set_source_rgb(*color_hex_to_cairo(self.color))
         cr.rectangle(x + (w - self.color_area_width) / 2,
