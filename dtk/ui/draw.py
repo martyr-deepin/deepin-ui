@@ -227,51 +227,77 @@ def draw_window_rectangle(cr, sx, sy, ex, ey, r):
         cr.arc(sx + r, ey - r, r, pi / 2, pi) # bottom-left
         cr.stroke()
         
-def draw_font(cr, text, font_size, font_color, x, y, width, height, 
-              x_align=ALIGN_MIDDLE, y_align=ALIGN_MIDDLE):
-    '''Draw font.'''
+def draw_string(cr, markup, x, y, w, h, text_size, text_color, 
+                border_radious=None, border_color=None, 
+                guassian_radious=None, guassian_color=None,
+                text_font=DEFAULT_FONT, alignment=pango.ALIGN_LEFT):
+    '''Draw font'''
     # Create pangocairo context.
     context = pangocairo.CairoContext(cr)
     
     # Set layout.
     layout = context.create_layout()
-    layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, font_size)))
-
-    layout.set_text(text)
+    layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
+    layout.set_markup(markup)
+    layout.set_alignment(alignment)
+    layout.set_single_paragraph_mode(True)
+    layout.set_ellipsize(pango.ELLIPSIZE_END)
+    layout.set_width(w * pango.SCALE)
     (text_width, text_height) = layout.get_pixel_size()
-    if text_width > width:
-        layout.set_text("...")
-        (suspension_point_width, suspension_point_height) = layout.get_pixel_size()
-        
-        layout.set_text(text)
-        (render_text_offset_x, render_text_offset_y) = layout.xy_to_index((width - suspension_point_width) * pango.SCALE, 0)
-        
-        layout.set_text(text[0:render_text_offset_x] + "...")    
-    
-    # Get text size.
-    (render_text_width, render_text_height) = layout.get_pixel_size()
-    
-    # Set text coordinate.
-    if x_align == ALIGN_START:
-        text_x = x
-    elif x_align == ALIGN_END:
-        text_x = x + width - render_text_width
-    else:
-        text_x = x + (width - render_text_width) / 2
-        
-    if y_align == ALIGN_START:
-        text_y = y
-    elif y_align == ALIGN_END:
-        text_y = y + height - render_text_height
-    else:
-        text_y = y + (height - render_text_height) / 2
-        
-    cr.move_to(text_x, text_y)
     
     # Draw text.
-    cr.set_source_rgb(*color_hex_to_cairo(font_color))
+    cr.move_to(x, y + (h - text_height) / 2)
+    cr.set_source_rgb(*color_hex_to_cairo(text_color))
     context.update_layout(layout)
     context.show_layout(layout)
+        
+def draw_font(cr, text, font_size, font_color, x, y, width, height, 
+              x_align=ALIGN_MIDDLE, y_align=ALIGN_MIDDLE):
+    '''Draw font.'''
+    draw_string(cr, text, x, y, width, height, font_size, font_color) 
+    
+    # # Create pangocairo context.
+    # context = pangocairo.CairoContext(cr)
+    
+    # # Set layout.
+    # layout = context.create_layout()
+    # layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, font_size)))
+
+    # layout.set_text(text)
+    # (text_width, text_height) = layout.get_pixel_size()
+    # if text_width > width:
+    #     layout.set_text("...")
+    #     (suspension_point_width, suspension_point_height) = layout.get_pixel_size()
+        
+    #     layout.set_text(text)
+    #     (render_text_offset_x, render_text_offset_y) = layout.xy_to_index((width - suspension_point_width) * pango.SCALE, 0)
+        
+    #     layout.set_text(text[0:render_text_offset_x] + "...")    
+    
+    # # Get text size.
+    # (render_text_width, render_text_height) = layout.get_pixel_size()
+    
+    # # Set text coordinate.
+    # if x_align == ALIGN_START:
+    #     text_x = x
+    # elif x_align == ALIGN_END:
+    #     text_x = x + width - render_text_width
+    # else:
+    #     text_x = x + (width - render_text_width) / 2
+        
+    # if y_align == ALIGN_START:
+    #     text_y = y
+    # elif y_align == ALIGN_END:
+    #     text_y = y + height - render_text_height
+    # else:
+    #     text_y = y + (height - render_text_height) / 2
+        
+    # cr.move_to(text_x, text_y)
+    
+    # # Draw text.
+    # cr.set_source_rgb(*color_hex_to_cairo(font_color))
+    # context.update_layout(layout)
+    # context.show_layout(layout)
 
 def draw_line(cr, sx, sy, ex, ey, line_width=1, antialias_status=cairo.ANTIALIAS_NONE):
     '''Draw line.'''
