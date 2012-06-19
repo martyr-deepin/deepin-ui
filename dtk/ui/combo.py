@@ -26,7 +26,7 @@ import gobject
 from label import Label
 from droplist import Droplist
 from theme import ui_theme
-from draw import draw_pixbuf
+from button import DisableButton
 from utils import propagate_expose, cairo_disable_antialias, color_hex_to_cairo, get_widget_root_coordinate, WIDGET_POS_BOTTOM_LEFT, alpha_color_hex_to_cairo
 
 class ComboBox(gtk.VBox):
@@ -59,7 +59,7 @@ class ComboBox(gtk.VBox):
         self.label = Label(self.items[select_index][0], 
                            label_size=(self.width - self.dropbutton_width - 1 - self.label_padding_left, self.height - 2))
         self.label.text_color = ui_theme.get_color("menuFont")
-        self.dropbutton = DropButton(
+        self.dropbutton = DisableButton(
             (ui_theme.get_pixbuf("combo/dropbutton_normal.png"),
              ui_theme.get_pixbuf("combo/dropbutton_hover.png"),
              ui_theme.get_pixbuf("combo/dropbutton_press.png"),
@@ -249,38 +249,3 @@ class ComboBox(gtk.VBox):
         return True
     
 gobject.type_register(ComboBox)    
-
-class DropButton(gtk.Button):
-    '''Drop button.'''
-	
-    def __init__(self, dpixbufs, get_disable):
-        '''Init drop button.'''
-        gtk.Button.__init__(self)
-        pixbuf = dpixbufs[0].get_pixbuf()
-        self.set_size_request(pixbuf.get_width(), pixbuf.get_height())
-        
-        self.connect("expose-event", lambda w, e: self.expose_drop_button(w, e, dpixbufs, get_disable))
-        
-    def expose_drop_button(self, widget, event, dpixbufs, get_disable):
-        '''Expose drop button.'''
-        # Init.
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        (normal_dpixbuf, hover_dpixbuf, press_dpixbuf, disable_dpixbuf) = dpixbufs
-        
-        # Draw.
-        if get_disable():
-            pixbuf = disable_dpixbuf.get_pixbuf()
-        elif widget.state == gtk.STATE_NORMAL:
-            pixbuf = normal_dpixbuf.get_pixbuf()
-        elif widget.state == gtk.STATE_PRELIGHT:
-            pixbuf = hover_dpixbuf.get_pixbuf()
-        elif widget.state == gtk.STATE_ACTIVE:
-            pixbuf = press_dpixbuf.get_pixbuf()
-        
-        draw_pixbuf(cr, pixbuf, rect.x, rect.y)    
-        
-        # Propagate expose to children.
-        propagate_expose(widget, event)
-        
-        return True

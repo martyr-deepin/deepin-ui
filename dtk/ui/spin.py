@@ -24,10 +24,11 @@ import gtk
 import gobject
 
 from theme import ui_theme
-from utils import (cairo_state , alpha_color_hex_to_cairo,
+from utils import (alpha_color_hex_to_cairo, cairo_disable_antialias,
+                   color_hex_to_cairo,
                    propagate_expose, is_float, remove_callback_id)
 
-from button import ImageButton
+from button import DisableButton
 from entry import Entry
 
 
@@ -46,9 +47,12 @@ class SpinBox(gtk.VBox):
         self.update_delay = 100 # milliseconds
         self.increase_value_id = None
         self.decrease_value_id = None
+        self.disable_flag = False
         
         # Init.
         self.default_width = default_width
+        self.default_height = 22
+        self.arrow_button_width = 19
         self.background_color = ui_theme.get_alpha_color("textEntryBackground")
         self.acme_color = ui_theme.get_alpha_color("textEntryAcme")
         self.point_color = ui_theme.get_alpha_color("textEntryPoint")
@@ -66,13 +70,12 @@ class SpinBox(gtk.VBox):
         
         self.main_align = gtk.Alignment()
         self.main_align.set(0.5, 0.5, 0, 0)
-        self.main_align.set_padding(1, 1, 1, 1)
         hbox = gtk.HBox()
         hbox.pack_start(self.value_entry, False, False)        
         hbox.pack_start(button_box, False, False)
         hbox_align = gtk.Alignment()
         hbox_align.set(0.5, 0.5, 1.0, 1.0)
-        hbox_align.set_padding(0, 0, 2, 0)
+        hbox_align.set_padding(0, 1, 0, 0)
         hbox_align.add(hbox)
         self.main_align.add(hbox_align)
         self.pack_start(self.main_align, False, False)
@@ -80,6 +83,16 @@ class SpinBox(gtk.VBox):
         # Signals.
         self.connect("size-allocate", self.size_change_cb)
         self.main_align.connect("expose-event", self.expose_spin_bg)
+        
+    def set_disable(self, disable_flag):
+        '''Disable.'''
+        self.disable_flag = disable_flag
+        
+        self.queue_draw()
+        
+    def get_disable(self):
+        '''Get disable flag.'''
+        return self.disable_flag
         
     def get_value(self):    
         return self.current_value
@@ -111,13 +124,11 @@ class SpinBox(gtk.VBox):
         self.set_step = value
         
     def size_change_cb(self, widget, rect):    
-        height = 18
         if rect.width > self.default_width:
             self.default_width = rect.width
             
-        label_width = self.default_width - 16
-        self.set_size_request(self.default_width, height)
-        self.value_entry.set_size_request(label_width, height)
+        self.set_size_request(self.default_width, self.default_height)
+        self.value_entry.set_size_request(self.default_width - self.arrow_button_width, self.default_height - 2)
         
     def press_increase_button(self, widget, event):
         '''Press increase arrow.'''
@@ -191,80 +202,28 @@ class SpinBox(gtk.VBox):
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
-        # Draw background.
-        with cairo_state(cr):
-            cr.rectangle(x + 2, y, w - 4, 1)
-            cr.rectangle(x + 1, y + 1, w - 2, 1)
-            cr.rectangle(x, y + 2, w, h - 4)
-            cr.rectangle(x + 2, y + h - 1, w - 4, 1)
-            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
-            cr.clip()
-            
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(self.background_color.get_color_info()))
-            cr.rectangle(x, y, w, h)
-            cr.fill()
-
-        # Draw background four acme points.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.acme_color.get_color_info()))
-        cr.rectangle(x, y, 1, 1)
-        cr.rectangle(x + w - 1, y, 1, 1)
-        cr.rectangle(x, y + h - 1, 1, 1)
-        cr.rectangle(x + w - 1, y + h - 1, 1, 1)
-        cr.fill()
-
-        # Draw background eight points.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.point_color.get_color_info()))
-        
-        cr.rectangle(x + 1, y, 1, 1)
-        cr.rectangle(x, y + 1, 1, 1)
-        
-        cr.rectangle(x + w - 2, y, 1, 1)
-        cr.rectangle(x + w - 1, y + 1, 1, 1)
-        
-        cr.rectangle(x, y + h - 2, 1, 1)
-        cr.rectangle(x + 1, y + h - 1, 1, 1)
-
-        cr.rectangle(x + w - 1, y + h - 2, 1, 1)
-        cr.rectangle(x + w - 2, y + h - 1, 1, 1)
-        
-        cr.fill()
-        
-        # Draw frame point.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.frame_point_color.get_color_info()))
-        
-        cr.rectangle(x + 1, y, 1, 1)
-        cr.rectangle(x, y + 1, 1, 1)
-        
-        cr.rectangle(x + w - 2, y, 1, 1)
-        cr.rectangle(x + w - 1, y + 1, 1, 1)
-        
-        cr.rectangle(x, y + h - 2, 1, 1)
-        cr.rectangle(x + 1, y + h - 1, 1, 1)
-
-        cr.rectangle(x + w - 1, y + h - 2, 1, 1)
-        cr.rectangle(x + w - 2, y + h - 1, 1, 1)
-        
-        cr.fill()
-        
         # Draw frame.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.frame_color.get_color_info()))
-        
-        cr.rectangle(x + 2, y, w - 4, 1)
-        cr.rectangle(x, y + 2, 1, h - 4)
-        cr.rectangle(x + 2, y + h - 1, w - 4, 1)
-        cr.rectangle(x + w - 1, y + 2, 1, h - 4)
-        
-        cr.fill()
+        with cairo_disable_antialias(cr):
+            cr.set_line_width(1)
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("comboEntryFrame").get_color()))
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.stroke()
+            
+            cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
+            cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
+            cr.fill()
         
         propagate_expose(widget, event)
         
         return False
         
     def create_simple_button(self, name, callback=None):    
-        button = ImageButton(
-            ui_theme.get_pixbuf("spin/%s_normal.png" % name),
-            ui_theme.get_pixbuf("spin/%s_hover.png" % name),
-            ui_theme.get_pixbuf("spin/%s_press.png" % name)
+        button = DisableButton(
+            (ui_theme.get_pixbuf("spin/spin_arrow_%s_normal.png" % name),
+             ui_theme.get_pixbuf("spin/spin_arrow_%s_hover.png" % name),
+             ui_theme.get_pixbuf("spin/spin_arrow_%s_press.png" % name),
+             ui_theme.get_pixbuf("spin/spin_arrow_%s_disable.png" % name)),
+            self.get_disable
             )
         if callback:
             button.connect("button-press-event", callback)
