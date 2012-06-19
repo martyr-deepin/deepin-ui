@@ -68,11 +68,11 @@ COLOR_NAME_DICT = {
         "gold" : "#FFC600",
         "yellow" : "#FCFF00",
         "green_yellow" : "#C0FF00",
-        "chartreuse" : "#00FF60",
+        "chartreuse" : "#00FF00",
         "cyan" : "#00FDFF",
         "dodger_blue" : "#00A8FF",
-        "blue" : "#0006FF",
-        "dark_purple" : "#8400FF",
+        "blue" : "#006AFF",
+        "dark_purple" : "#6A00FF",
         "purple" : "#BA00FF",
         "deep_pink" : "#FF00B4"
         }
