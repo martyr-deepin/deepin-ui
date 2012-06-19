@@ -35,6 +35,7 @@ droplist_grab_window.move(0, 0)
 droplist_grab_window.set_default_size(0, 0)
 droplist_grab_window.show()
 droplist_active_item = None
+droplist_grab_window_press_flag = False
 
 root_droplists = []
 droplist_grab_window_button_press_id = None
@@ -132,6 +133,9 @@ def droplist_grab_window_key_release(widget, event):
 
 def droplist_grab_window_button_release(widget, event):
     global root_droplists
+    global droplist_grab_window_press_flag
+
+    droplist_grab_window_press_flag = False
     
     if event and event.window:
         event_widget = event.window.get_user_data()
@@ -145,6 +149,9 @@ def droplist_grab_window_button_release(widget, event):
     
 def droplist_grab_window_button_press(widget, event):
     global droplist_active_item
+    global droplist_grab_window_press_flag
+
+    droplist_grab_window_press_flag = True
     
     if event and event.window:
         event_widget = event.window.get_user_data()
@@ -162,33 +169,61 @@ def droplist_grab_window_button_press(widget, event):
     
 def droplist_grab_window_motion_notify(widget, event):
     global droplist_active_item
+    global droplist_grab_window_press_flag
     
     if event and event.window:
         event_widget = event.window.get_user_data()
         if isinstance(event_widget, DroplistScrolledWindow):
             event_widget.event(event)
         elif isinstance(event_widget, Droplist):
-            droplist_item = event_widget.get_droplist_item_at_coordinate(event.get_root_coords())
-            if droplist_item and isinstance(droplist_item.item_box, gtk.Button):
-                if droplist_active_item:
-                    droplist_active_item.item_box.set_state(gtk.STATE_NORMAL)
-                
-                droplist_item.item_box.set_state(gtk.STATE_PRELIGHT)
-                droplist_active_item = droplist_item
-                
-                enter_notify_event = gtk.gdk.Event(gtk.gdk.ENTER_NOTIFY)
-                enter_notify_event.window = event.window
-                enter_notify_event.time = event.time
-                enter_notify_event.send_event = True
-                enter_notify_event.x_root = event.x_root
-                enter_notify_event.y_root = event.y_root
-                enter_notify_event.x = event.x
-                enter_notify_event.y = event.y
-                enter_notify_event.state = event.state
-                
-                droplist_item.item_box.event(enter_notify_event)
-                
-                droplist_item.item_box.queue_draw()
+            for droplist in root_droplists:
+                motion_notify_event = gtk.gdk.Event(gtk.gdk.MOTION_NOTIFY)
+                motion_notify_event.window = droplist.item_scrolled_window.vwindow
+                motion_notify_event.send_event = True
+                motion_notify_event.time = event.time
+                motion_notify_event.x = event.x
+                motion_notify_event.y = event.y
+                motion_notify_event.x_root = event.x_root
+                motion_notify_event.y_root = event.y_root
+                motion_notify_event.state = event.state
+                    
+                droplist.item_scrolled_window.event(motion_notify_event)
+            
+            if not droplist_grab_window_press_flag:
+                droplist_item = event_widget.get_droplist_item_at_coordinate(event.get_root_coords())
+                if droplist_item and isinstance(droplist_item.item_box, gtk.Button):
+                    if droplist_active_item:
+                        droplist_active_item.item_box.set_state(gtk.STATE_NORMAL)
+                    
+                    droplist_item.item_box.set_state(gtk.STATE_PRELIGHT)
+                    droplist_active_item = droplist_item
+                    
+                    enter_notify_event = gtk.gdk.Event(gtk.gdk.ENTER_NOTIFY)
+                    enter_notify_event.window = event.window
+                    enter_notify_event.time = event.time
+                    enter_notify_event.send_event = True
+                    enter_notify_event.x_root = event.x_root
+                    enter_notify_event.y_root = event.y_root
+                    enter_notify_event.x = event.x
+                    enter_notify_event.y = event.y
+                    enter_notify_event.state = event.state
+                    
+                    droplist_item.item_box.event(enter_notify_event)
+                    
+                    droplist_item.item_box.queue_draw()
+        else:
+            for droplist in root_droplists:
+                motion_notify_event = gtk.gdk.Event(gtk.gdk.MOTION_NOTIFY)
+                motion_notify_event.window = droplist.item_scrolled_window.vwindow
+                motion_notify_event.send_event = True
+                motion_notify_event.time = event.time
+                motion_notify_event.x = event.x
+                motion_notify_event.y = event.y
+                motion_notify_event.x_root = event.x_root
+                motion_notify_event.y_root = event.y_root
+                motion_notify_event.state = event.state
+                    
+                droplist.item_scrolled_window.event(motion_notify_event)
                 
 class DroplistScrolledWindow(ScrolledWindow):
     '''Droplist scrolled window.'''

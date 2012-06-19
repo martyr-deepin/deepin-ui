@@ -25,6 +25,7 @@ import gtk
 from gtk import gdk
 from utils import remove_callback_id, color_hex_to_cairo
 from theme import ui_theme
+import time
 
 # the p_range is the virtual width/height, it's value is smaller than
 # the allocation.width/height when scrollbar's width/height smaller than
