@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gtk
+import pango
 
 MENU_ITEM_RADIUS = 2            # menu item radius
 DEFAULT_WINDOW_WIDTH = 890      # default window width
@@ -49,9 +50,9 @@ WIDGET_POS_CENTER = 8
 
 DEFAULT_FONT = "文泉驿微米黑"
 
-ALIGN_START = 0
-ALIGN_END = 1
-ALIGN_MIDDLE = 2
+ALIGN_START = pango.ALIGN_LEFT
+ALIGN_END = pango.ALIGN_CENTER
+ALIGN_MIDDLE = pango.ALIGN_RIGHT
 
 BUTTON_NORMAL = 0
 BUTTON_PRESS = 1

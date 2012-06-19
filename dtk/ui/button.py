@@ -22,8 +22,9 @@
 
 from utils import get_content_size, color_hex_to_cairo, propagate_expose, window_is_max, get_same_level_widgets, widget_fix_cycle_destroy_bug
 from theme import ui_theme
-from draw import draw_vlinear, draw_pixbuf, draw_line, draw_font
+from draw import draw_vlinear, draw_pixbuf, draw_line, draw_text
 from constant import DEFAULT_FONT_SIZE, ALIGN_START
+import pango
 import gtk
 import gobject
 from cache_pixbuf import CachePixbuf
@@ -110,7 +111,8 @@ class Button(gtk.Button):
         draw_pixbuf(cr, bottom_right_point, x + w - top_left_point.get_width(), y + h - top_left_point.get_height())
         
         # Draw font.
-        draw_font(cr, self.label, self.font_size, button_color, x, y, w, h)
+        draw_text(cr, self.label, x, y, w, h, self.font_size, button_color,
+                    alignment=pango.ALIGN_CENTER)
         
         return True
         
@@ -260,9 +262,12 @@ def expose_button(widget, event,
     
     # Draw font.
     if button_label:
-        draw_font(cr, button_label, font_size, 
-                  label_dcolor.get_color(),
-                  rect.x, rect.y, rect.width, rect.height)
+        draw_text(cr, button_label, 
+                    rect.x, rect.y, rect.width, rect.height,
+                    font_size, 
+                    label_dcolor.get_color(),
+                    alignment=pango.ALIGN_CENTER
+                    )
 
     # Propagate expose to children.
     propagate_expose(widget, event)
@@ -428,13 +433,15 @@ class ToggleButton(gtk.ToggleButton):
         
         # Draw font.
         if button_label:
-            draw_font(cr, button_label, font_size, 
-                      label_dcolor.get_color(),
-                      rect.x + image.get_width() + padding_x * 2,
-                      rect.y, 
-                      rect.width - image.get_width() - padding_x * 2,
-                      rect.height,
-                      ALIGN_START)
+            draw_text(cr, button_label, 
+                        rect.x + image.get_width() + padding_x * 2,
+                        rect.y, 
+                        rect.width - image.get_width() - padding_x * 2,
+                        rect.height,
+                        font_size, 
+                        label_dcolor.get_color(),
+                        alignment=pango.ALIGN_CENTER                        
+                        )
     
         # Propagate expose to children.
         propagate_expose(widget, event)

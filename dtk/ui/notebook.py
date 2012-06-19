@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE
-from draw import draw_pixbuf, draw_font
+from draw import draw_pixbuf, draw_text
 from theme import ui_theme
 from utils import get_content_size, propagate_expose
 import gtk
@@ -145,24 +145,26 @@ class Notebook(gtk.EventBox):
                             rect.x + index * self.tab_width + (self.tab_width - tab_render_width) / 2,
                             rect.y + (self.tab_height - item_icon.get_pixbuf().get_height()) / 2)
                 
-                draw_font(cr,
-                          item_content,
-                          DEFAULT_FONT_SIZE,
-                          ui_theme.get_color("notebookFont").get_color(),
-                          rect.x + index * self.tab_width + (self.tab_width - tab_render_width) / 2 + self.icon_width + self.padding_middle,
-                          rect.y + (self.tab_height - content_height) / 2,
-                          content_width, 
-                          content_height
-                          )
+                draw_text(cr,
+                            item_content,
+                            rect.x + index * self.tab_width + (self.tab_width - tab_render_width) / 2 + self.icon_width + self.padding_middle,
+                            rect.y + (self.tab_height - content_height) / 2,
+                            content_width, 
+                            content_height,
+                            DEFAULT_FONT_SIZE,
+                            ui_theme.get_color("notebookFont").get_color(),
+                            )
             else:
                 tab_render_width = content_width
-                draw_font(cr,
-                          item_content,
-                          DEFAULT_FONT_SIZE,
-                          ui_theme.get_color("notebookFont").get_color(),
-                          rect.x + index * self.tab_width + (self.tab_width - tab_render_width) / 2 + self.icon_width + self.padding_middle,
-                          rect.y + (self.tab_height - content_height) / 2,
-                          )
+                draw_text(cr,
+                            item_content,
+                            rect.x + index * self.tab_width + (self.tab_width - tab_render_width) / 2 + self.icon_width + self.padding_middle,
+                            rect.y + (self.tab_height - content_height) / 2,
+                            content_width,
+                            content_height,
+                            DEFAULT_FONT_SIZE,
+                            ui_theme.get_color("notebookFont").get_color(),
+                            )
         
         propagate_expose(widget, event)
         

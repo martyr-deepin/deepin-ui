@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import pango
 from skin_config import skin_config
 from constant import DEFAULT_FONT_SIZE
 from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state, draw_text
@@ -101,9 +102,13 @@ class TextBox(gtk.EventBox):
         
         # Draw text.
         draw_text(cr, 
-                  rect.x, rect.y, rect.width, rect.height,
                   self.text, 
-                  self.text_style.get_style())
+                  rect.x, rect.y, rect.width, rect.height,
+                  text_color="#FFFFFF",
+                  alignment=pango.ALIGN_CENTER,
+                  gaussian_radious=4, gaussian_color="#000000",
+                  border_radious=1, border_color="#000000", 
+                  )
         
         # Propagate expose.
         propagate_expose(widget, event)

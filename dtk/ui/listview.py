@@ -22,7 +22,7 @@
 
 from constant import DEFAULT_FONT_SIZE, ALIGN_END, ALIGN_START
 from contextlib import contextmanager 
-from draw import draw_pixbuf, draw_vlinear, draw_font
+from draw import draw_pixbuf, draw_vlinear, draw_text
 from keymap import get_keyevent_name, has_ctrl_mask, has_shift_mask
 from theme import ui_theme
 from utils import map_value, mix_list_max, get_content_size, unzip, last_index, set_cursor, get_match_parent, cairo_state, get_event_coords, is_left_button, is_right_button, is_double_click, is_single_click, is_in_rect, get_disperse_index, get_window_shadow_size
@@ -466,9 +466,10 @@ class ListView(gtk.DrawingArea):
                                  ui_theme.get_shadow_color("listviewHeaderSplit").get_color_info())
                 
                 # Draw title.
-                draw_font(cr, self.titles[column], DEFAULT_FONT_SIZE, 
-                          ui_theme.get_color("listItemText").get_color(),
-                          cell_offset_x, offset_y, cell_widths[column], self.title_height)    
+                draw_text(cr, self.titles[column], 
+                            cell_offset_x, offset_y, cell_widths[column], self.title_height,
+                            DEFAULT_FONT_SIZE, 
+                            ui_theme.get_color("listItemText").get_color(),)    
                 
                 # Draw sort icon.
                 if self.title_sort_column == column:
@@ -1415,9 +1416,11 @@ class ListItem(gobject.GObject):
     
 def render_text(cr, rect, content, align=ALIGN_START, font_size=DEFAULT_FONT_SIZE):
     '''Render text.'''
-    draw_font(cr, content, font_size, 
-              ui_theme.get_color("listItemText").get_color(), 
-              rect.x, rect.y, rect.width, rect.height, align)
+    draw_text(cr, content, 
+                rect.x, rect.y, rect.width, rect.height,
+                font_size, 
+                ui_theme.get_color("listItemText").get_color(), 
+                alignment=align)
     
 def render_image(cr, rect, image_path, x, y):
     '''Render image.'''

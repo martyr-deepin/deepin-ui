@@ -24,7 +24,7 @@ import gtk
 import gobject
 from window import Window
 from box import EventBox
-from draw import draw_font
+from draw import draw_text
 from utils import container_remove_all, get_content_size, color_hex_to_cairo, alpha_color_hex_to_cairo, cairo_disable_antialias, is_in_rect
 from button import Button
 from constant import DEFAULT_FONT_SIZE
@@ -172,11 +172,12 @@ class TabBox(gtk.VBox):
                                  self.tab_height)
                     cr.stroke()
                     
-            draw_font(cr, title, DEFAULT_FONT_SIZE, "#000000", 
-                      rect.x + sum(self.tab_title_widths[0:index]) + self.tab_padding_x,
-                      rect.y + self.tab_padding_y,
-                      self.tab_title_widths[index] - self.tab_padding_x * 2,
-                      self.tab_height - self.tab_padding_y * 2) 
+            draw_text(cr, title, 
+                        rect.x + sum(self.tab_title_widths[0:index]) + self.tab_padding_x,
+                        rect.y + self.tab_padding_y,
+                        self.tab_title_widths[index] - self.tab_padding_x * 2,
+                        self.tab_height - self.tab_padding_y * 2,
+                        )
     
     def expose_tab_content_align(self, widget, event):
         '''Expose tab content box.'''

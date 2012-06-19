@@ -22,7 +22,7 @@
 
 from constant import DEFAULT_FONT_SIZE
 from utils import remove_from_list
-from draw import draw_vlinear, draw_font
+from draw import draw_vlinear, draw_text
 from theme import ui_theme
 from utils import get_content_size, propagate_expose
 from window import Window
@@ -183,10 +183,9 @@ class Tooltip(Window):
                      )
         
         # Draw font.
-        draw_font(cr, self.text, self.text_size, 
-                  # ui_theme.get_color(self.text_color).get_color(),
-                  "#000000",
-                  rect.x, rect.y, rect.width, rect.height)
+        draw_text(cr, self.text, rect.x, rect.y, rect.width, rect.height,
+                    self.text_size, 
+                    ui_theme.get_color(self.text_color).get_color())
         
         # Propagate expose.
         propagate_expose(widget, event)

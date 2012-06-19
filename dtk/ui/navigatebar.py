@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from box import EventBox
+import pango
 from constant import DEFAULT_FONT_SIZE
 from draw import draw_line, draw_pixbuf, draw_text
 from theme import ui_theme
@@ -156,10 +157,16 @@ class NavItem(object):
         
         # Draw font.
         draw_text(cr, 
-                  rect.x, rect.y + nav_item_pixbuf.get_height() - 4, 
-                  rect.width, rect.height - nav_item_pixbuf.get_height(),
-                  self.content, 
-                  ui_theme.get_text_style("default").get_style())
+                     self.content, 
+                     rect.x, 
+                     rect.y + nav_item_pixbuf.get_height() - 4, 
+                     rect.width, 
+                     rect.height - nav_item_pixbuf.get_height(),
+                     text_color="#FFFFFF",
+                     alignment=pango.ALIGN_CENTER,
+                     gaussian_radious=4, gaussian_color="#000000",
+                     border_radious=1, border_color="#000000", 
+                     )
         
         # Propagate expose to children.
         propagate_expose(widget, event)

@@ -272,7 +272,7 @@ def get_content_size(text, size):
         context = pangocairo.CairoContext(cr)
         layout = context.create_layout()
         layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, size)))
-        layout.set_text(text)
+        layout.set_markup(text)
         
         return layout.get_pixel_size()
     else:

@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
                  
 from constant import DEFAULT_FONT_SIZE, ALIGN_START, ALIGN_MIDDLE
-from draw import draw_font
+from draw import draw_text
 from theme import ui_theme
 from utils import propagate_expose, get_content_size
 import gtk
@@ -34,7 +34,6 @@ class Label(gtk.EventBox):
                  text_color=ui_theme.get_color("labelText"),
                  text_size=DEFAULT_FONT_SIZE,
                  text_x_align=ALIGN_START,
-                 text_y_align=ALIGN_MIDDLE,
                  label_size=None):
         '''Init label.'''
         # Init.
@@ -47,7 +46,6 @@ class Label(gtk.EventBox):
         self.text_size = text_size
         self.text_color = text_color
         self.text_x_align = text_x_align
-        self.text_y_align = text_y_align
         
         if self.label_size == None:
             self.set_size_request(*get_content_size(self.text, self.text_size))
@@ -61,11 +59,12 @@ class Label(gtk.EventBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
-        draw_font(cr, self.text, self.text_size,
-                  self.text_color.get_color(),
-                  rect.x, rect.y, rect.width, rect.height,
-                  self.text_x_align, 
-                  self.text_y_align)
+        draw_text(cr, self.text, 
+                    rect.x, rect.y, rect.width, rect.height,
+                    self.text_size,
+                    self.text_color.get_color(),
+                    alignment=self.text_x_align, 
+                    )
         
         propagate_expose(widget, event)
         

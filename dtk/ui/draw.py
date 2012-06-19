@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import ALIGN_MIDDLE, ALIGN_START, ALIGN_END, DEFAULT_FONT
+from constant import ALIGN_MIDDLE, ALIGN_START, ALIGN_END, DEFAULT_FONT, DEFAULT_FONT_SIZE
 from math import pi
 from utils import cairo_state, cairo_disable_antialias, color_hex_to_cairo, add_color_stop_rgba, propagate_expose, get_content_size, alpha_color_hex_to_cairo
 import cairo
@@ -227,11 +227,43 @@ def draw_window_rectangle(cr, sx, sy, ex, ey, r):
         cr.arc(sx + r, ey - r, r, pi / 2, pi) # bottom-left
         cr.stroke()
         
-def draw_string(cr, markup, x, y, w, h, text_size, text_color, 
-                border_radious=None, border_color=None, 
-                guassian_radious=None, guassian_color=None,
+def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#000000", 
+              text_font=DEFAULT_FONT, alignment=pango.ALIGN_LEFT,
+              gaussian_radious=None, gaussian_color=None,
+              border_radious=None, border_color=None, 
+              ):
+    if None in [border_radious, border_color, gaussian_radious, gaussian_color]:
+        render_text(cr, markup, x, y, w, h, text_size, text_color, text_font, alignment)
+    else:
+        # Get text size.
+        (text_width, text_height) = get_content_size(markup, text_size)
+        width = max(text_width + gaussian_radious * 2, w)
+        height = max(text_height + gaussian_radious * 2, h)
+        
+        # Create text cairo context.
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+        text_cr = cairo.Context(surface)
+        
+        # Draw gaussian light.
+        text_cr.save()
+        render_text(text_cr, markup, 0, 0, width, height, text_size, gaussian_color, alignment=alignment)
+        dtk_cairo_blur.gaussian_blur(surface, gaussian_radious)
+        text_cr.restore()
+        
+        # Draw gaussian border.
+        render_text(text_cr, markup, 0, 0, width, height, text_size, border_color, alignment=alignment)
+        dtk_cairo_blur.gaussian_blur(surface, border_radious)
+        
+        # Draw font.
+        render_text(text_cr, markup, 0, 0, width, height, text_size, text_color, alignment=alignment)
+        
+        # Render gaussian text to target cairo context.
+        cr.set_source_surface(surface, x, y)
+        cr.paint()
+    
+def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#000000", 
                 text_font=DEFAULT_FONT, alignment=pango.ALIGN_LEFT):
-    '''Draw font'''
+    '''Draw string.'''
     # Create pangocairo context.
     context = pangocairo.CairoContext(cr)
     
@@ -251,54 +283,6 @@ def draw_string(cr, markup, x, y, w, h, text_size, text_color,
     context.update_layout(layout)
     context.show_layout(layout)
         
-def draw_font(cr, text, font_size, font_color, x, y, width, height, 
-              x_align=ALIGN_MIDDLE, y_align=ALIGN_MIDDLE):
-    '''Draw font.'''
-    draw_string(cr, text, x, y, width, height, font_size, font_color) 
-    
-    # # Create pangocairo context.
-    # context = pangocairo.CairoContext(cr)
-    
-    # # Set layout.
-    # layout = context.create_layout()
-    # layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, font_size)))
-
-    # layout.set_text(text)
-    # (text_width, text_height) = layout.get_pixel_size()
-    # if text_width > width:
-    #     layout.set_text("...")
-    #     (suspension_point_width, suspension_point_height) = layout.get_pixel_size()
-        
-    #     layout.set_text(text)
-    #     (render_text_offset_x, render_text_offset_y) = layout.xy_to_index((width - suspension_point_width) * pango.SCALE, 0)
-        
-    #     layout.set_text(text[0:render_text_offset_x] + "...")    
-    
-    # # Get text size.
-    # (render_text_width, render_text_height) = layout.get_pixel_size()
-    
-    # # Set text coordinate.
-    # if x_align == ALIGN_START:
-    #     text_x = x
-    # elif x_align == ALIGN_END:
-    #     text_x = x + width - render_text_width
-    # else:
-    #     text_x = x + (width - render_text_width) / 2
-        
-    # if y_align == ALIGN_START:
-    #     text_y = y
-    # elif y_align == ALIGN_END:
-    #     text_y = y + height - render_text_height
-    # else:
-    #     text_y = y + (height - render_text_height) / 2
-        
-    # cr.move_to(text_x, text_y)
-    
-    # # Draw text.
-    # cr.set_source_rgb(*color_hex_to_cairo(font_color))
-    # context.update_layout(layout)
-    # context.show_layout(layout)
-
 def draw_line(cr, sx, sy, ex, ey, line_width=1, antialias_status=cairo.ANTIALIAS_NONE):
     '''Draw line.'''
     # Save antialias.
@@ -427,51 +411,6 @@ def draw_radial_round(cr, x, y, r, color_infos):
     cr.arc(x, y, r, 0, 2 * math.pi)
     cr.set_source(radial)
     cr.fill()
-
-def draw_text(cr, rx, ry, rw, rh, text, text_style):
-    '''Draw text.'''
-    (text_color, gaussian_color, border_color, font_size, gaussian_radious, border_radious) = text_style
-    
-    # Get text size.
-    (text_width, text_height) = get_content_size(text, font_size)
-    width = max(text_width + gaussian_radious * 2, rw)
-    height = max(text_height + gaussian_radious * 2, rh)
-    
-    # Create text cairo context.
-    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
-    text_cr = cairo.Context(surface)
-    
-    # Draw gaussian light.
-    text_cr.save()
-    draw_font(text_cr, text, font_size, gaussian_color, 0, 0, width, height)
-    dtk_cairo_blur.gaussian_blur(surface, gaussian_radious)
-    text_cr.restore()
-
-    # Draw gaussian border.
-    draw_font(text_cr, text, font_size, border_color, 0, 0, width, height)
-    dtk_cairo_blur.gaussian_blur(surface, border_radious)
-    
-    # Draw font.
-    draw_font(text_cr, text, font_size, text_color, 0, 0, width, height)
-    
-    # Render gaussian text to target cairo context.
-    cr.set_source_surface(surface, rx, ry)
-    cr.paint()
-
-def draw_test():
-    '''docs'''
-    width = 1366
-    height = 768
-
-    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height);
-    cr = cairo.Context(surface)
-    
-    gdkcr = gtk.gdk.CairoContext(cr)
-    draw_pixbuf(gdkcr, get_desktop_pixbuf())
-
-    dtk_cairo_blur.gaussian_blur(surface, 5)
-    
-    surface.write_to_png("test.png")
 
 def draw_blank_mask(cr, x, y, w, h):
     '''Draw blank mask.'''

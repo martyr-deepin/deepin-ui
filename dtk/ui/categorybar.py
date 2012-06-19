@@ -22,7 +22,7 @@
 
 from box import EventBox
 from constant import DEFAULT_FONT_SIZE, BUTTON_PRESS, BUTTON_NORMAL, BUTTON_HOVER
-from draw import draw_vlinear, draw_pixbuf, draw_font, expose_linear_background
+from draw import draw_vlinear, draw_pixbuf, draw_text, expose_linear_background
 from theme import ui_theme
 from utils import get_content_size, propagate_expose
 import gobject
@@ -157,13 +157,14 @@ class CategoryItem(gtk.Button):
             )
         
         # Draw font.
-        draw_font(cr, self.content, self.font_size, 
-                 font_color,
-                 rect.x + self.padding_left + self.font_offset,
-                 rect.y,
-                 rect.width - self.padding_left - self.font_offset - self.padding_right,
-                 rect.height
-                 )
+        draw_text(cr, self.content, 
+                    rect.x + self.padding_left + self.font_offset,
+                    rect.y,
+                    rect.width - self.padding_left - self.font_offset - self.padding_right,
+                    rect.height,
+                    self.font_size, 
+                    font_color,
+                    )
         
         # Propagate expose to children.
         propagate_expose(widget, event)

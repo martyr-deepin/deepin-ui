@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_TOP_LEFT
-from draw import draw_vlinear, draw_font
+from draw import draw_vlinear, draw_text
 from keymap import get_keyevent_name
 from line import HSeparator
 from theme import ui_theme
@@ -773,13 +773,13 @@ class DroplistItem(object):
             font_color = ui_theme.get_color("menuSelectFont").get_color()
             
         # Draw item content.
-        draw_font(cr, item_content, self.font_size, font_color,
-                 rect.x + self.item_padding_left,
-                 rect.y,
-                 rect.width,
-                 rect.height,
-                 ALIGN_START, ALIGN_MIDDLE
-                 )
+        draw_text(cr, item_content, 
+                    rect.x + self.item_padding_left,
+                    rect.y,
+                    rect.width,
+                    rect.height,
+                    self.font_size, font_color,
+                    )
         
         # Propagate expose to children.
         propagate_expose(widget, event)

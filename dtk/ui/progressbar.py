@@ -24,7 +24,7 @@ import gtk
 import gobject
 import cairo
 from utils import alpha_color_hex_to_cairo, cairo_state, propagate_expose
-from draw import draw_round_rectangle, draw_vlinear, draw_font, draw_radial_round
+from draw import draw_round_rectangle, draw_vlinear, draw_text, draw_radial_round
 from theme import ui_theme
 
 class ProgressBar(gtk.Button):
@@ -65,7 +65,9 @@ class ProgressBar(gtk.Button):
                      1)
         
         # Draw font.
-        draw_font(cr, str(self.progress) + "%", rect.height - 4, "#000000", rect.x, rect.y, rect.width, rect.height)
+        draw_text(cr, str(self.progress) + "%", 
+                    rect.x, rect.y, rect.width, rect.height, 
+                    rect.height - 4, "#000000")
         
         # Draw light.
         light_radius = rect.height * 4

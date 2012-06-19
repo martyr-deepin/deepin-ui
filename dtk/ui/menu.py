@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_TOP_LEFT
-from draw import draw_vlinear, draw_pixbuf, draw_font, draw_hlinear
+from draw import draw_vlinear, draw_pixbuf, draw_text, draw_hlinear
 from line import HSeparator
 from theme import ui_theme
 from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size
@@ -486,13 +486,13 @@ class MenuItem(object):
             draw_pixbuf(cr, pixbuf, rect.x + self.item_padding_x, rect.y + (rect.height - pixbuf.get_height()) / 2)
             
         # Draw item content.
-        draw_font(cr, item_content, self.font_size, font_color,
-                 rect.x + self.item_padding_x * 2 + self.icon_width,
-                 rect.y,
-                 rect.width,
-                 rect.height,
-                 ALIGN_START, ALIGN_MIDDLE
-                 )
+        draw_text(cr, item_content, 
+                    rect.x + self.item_padding_x * 2 + self.icon_width,
+                    rect.y,
+                    rect.width,
+                    rect.height,
+                    self.font_size, font_color,
+                    )
         
         # Draw submenu arrow.
         if isinstance(item_node, Menu):
