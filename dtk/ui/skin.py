@@ -101,30 +101,10 @@ class SkinWindow(Window):
         '''Switch edit page.'''
         # Switch to edit page.
         container_remove_all(self.body_box)
-        edit_page = SkinEditPage(self.app_frame_pixbuf)
+        edit_page = SkinEditPage(self.app_frame_pixbuf, self.switch_preview_page)
         self.body_box.add(edit_page)
         
-        edit_page.connect("click-save", lambda page: self.click_save_button())
-        edit_page.connect("click-cancel", lambda page: self.click_cancel_button())
-        
         self.show_all()
-        
-    def click_save_button(self):
-        '''Click save button..'''
-        # Save skin.
-        skin_config.save_skin()
-        
-        # Switch to preview page.
-        self.switch_preview_page()        
-        
-    def click_cancel_button(self):
-        '''Click cancel button.'''
-        # Reload skin from config file.
-        if skin_config.reload_skin():
-            skin_config.apply_skin()
-        
-        # Switch to preview page.
-        self.switch_preview_page()        
         
 gobject.type_register(SkinWindow)
 
@@ -698,14 +678,10 @@ gobject.type_register(SkinAddIcon)
 class SkinEditPage(gtk.VBox):
     '''Init skin edit page.'''
 	
-    __gsignals__ = {
-        "click-save" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        "click-cancel" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-    }
-    
-    def __init__(self, app_frame_pixbuf):
+    def __init__(self, app_frame_pixbuf, switch_preview_page):
         '''Init skin edit page.'''
         gtk.VBox.__init__(self)
+        self.switch_preview_page = switch_preview_page
         self.edit_area_align = gtk.Alignment()
         self.edit_area_align.set(0.5, 0.5, 1, 1)
         self.edit_area_align.set_padding(5, 0, 30, 30)
@@ -779,8 +755,8 @@ class SkinEditPage(gtk.VBox):
         self.action_right_box.pack_start(self.export_button)
         
         self.export_button.connect("clicked", self.export_skin)
-        self.v_split_button.connect("clicked", lambda w: skin_config.vertical_mirror_background())
-        self.h_split_button.connect("clicked", lambda w: skin_config.horizontal_mirror_background())
+        self.v_split_button.connect("clicked", lambda w: self.click_vertical_mirror_button())
+        self.h_split_button.connect("clicked", lambda w: self.click_horizontal_mirror_button())
         
         self.color_label_align = gtk.Alignment()
         self.color_label_align.set(0.0, 0.5, 0, 0)
@@ -805,11 +781,9 @@ class SkinEditPage(gtk.VBox):
         self.button_align.set(1, 0.5, 0, 0)
         self.button_align.set_padding(10, 10, 0, 20)
         self.button_box = gtk.HBox()
-        self.save_button = Button("保存")
-        self.cancel_button = Button("取消")
+        self.back_button = Button("返回")
         self.button_align.add(self.button_box)
-        self.button_box.pack_start(self.save_button, False, False, 10)
-        self.button_box.pack_start(self.cancel_button)
+        self.button_box.pack_start(self.back_button)
         
         self.pack_start(self.edit_area_align, False, False)
         self.pack_start(self.action_align, False, False)
@@ -817,20 +791,30 @@ class SkinEditPage(gtk.VBox):
         self.pack_start(self.color_select_align, True, True)
         self.pack_start(self.button_align, False, False)
         
-        self.save_button.connect("clicked", lambda w: self.emit("click-save"))
-        self.cancel_button.connect("clicked", lambda w: self.emit("click-cancel"))
+        self.back_button.connect("clicked", lambda w: self.switch_preview_page())
         
         self.highlight_color_icon(skin_config.theme_name)
         
         self.color_select_view.connect("button-press-item", self.change_skin_theme)
+        
+    def click_vertical_mirror_button(self):
+        '''Click vertical mirror button.'''
+        skin_config.vertical_mirror_background()        
+        skin_config.save_skin()
+        
+    def click_horizontal_mirror_button(self):
+        '''Click horizontal mirror button.'''
+        skin_config.horizontal_mirror_background()
+        skin_config.save_skin()
         
     def change_skin_theme(self, view, item, x, y):
         '''Change skin theme.'''
         # Highlight theme icon.
         self.highlight_color_icon(item.color)
         
-        # Change theme.
+        # Change and save theme.
         skin_config.change_theme(item.color)
+        skin_config.save_skin()
         
     def highlight_color_icon(self, color):
         '''Highlight color icon.'''
@@ -1241,6 +1225,7 @@ class SkinEditArea(gtk.EventBox):
         
         # Apply skin.
         skin_config.apply_skin()
+        skin_config.save_skin()
     
     def leave_notify_skin_edit_area(self, widget, event):
         '''Callback for `leave-notify-event` signal.'''
@@ -1527,8 +1512,9 @@ class SkinEditArea(gtk.EventBox):
         # Update skin config.
         self.update_skin_config()
         
-        # Apply skin.
+        # Apply and save skin.
         skin_config.apply_skin()
+        skin_config.save_skin()
         
     def update_lock_status(self, toggle_button):
         '''Update lock status.'''
