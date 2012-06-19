@@ -22,7 +22,7 @@
 
 from constant import ALIGN_MIDDLE, ALIGN_START, ALIGN_END, DEFAULT_FONT, DEFAULT_FONT_SIZE
 from math import pi
-from utils import cairo_state, cairo_disable_antialias, color_hex_to_cairo, add_color_stop_rgba, propagate_expose, get_content_size, alpha_color_hex_to_cairo
+from utils import cairo_state, cairo_disable_antialias, color_hex_to_cairo, add_color_stop_rgba, propagate_expose, get_content_size, alpha_color_hex_to_cairo, layout_set_markup
 import cairo
 import dtk_cairo_blur    
 import gtk
@@ -232,9 +232,9 @@ def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#
               gaussian_radious=None, gaussian_color=None,
               border_radious=None, border_color=None, 
               ):
-    if None in [border_radious, border_color, gaussian_radious, gaussian_color]:
+    if border_radious == None and border_color == None and gaussian_radious == None and gaussian_color == None:
         render_text(cr, markup, x, y, w, h, text_size, text_color, text_font, alignment)
-    else:
+    elif (border_radious != None and border_color != None) or (gaussian_radious != None and gaussian_color != None):
         # Get text size.
         (text_width, text_height) = get_content_size(markup, text_size)
         width = max(text_width + gaussian_radious * 2, w)
@@ -245,14 +245,16 @@ def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#
         text_cr = cairo.Context(surface)
         
         # Draw gaussian light.
-        text_cr.save()
-        render_text(text_cr, markup, 0, 0, width, height, text_size, gaussian_color, alignment=alignment)
-        dtk_cairo_blur.gaussian_blur(surface, gaussian_radious)
-        text_cr.restore()
+        if gaussian_radious != None and gaussian_color != None:
+            text_cr.save()
+            render_text(text_cr, markup, 0, 0, width, height, text_size, gaussian_color, alignment=alignment)
+            dtk_cairo_blur.gaussian_blur(surface, gaussian_radious)
+            text_cr.restore()
         
         # Draw gaussian border.
-        render_text(text_cr, markup, 0, 0, width, height, text_size, border_color, alignment=alignment)
-        dtk_cairo_blur.gaussian_blur(surface, border_radious)
+        if border_radious != None and border_color != None:
+            render_text(text_cr, markup, 0, 0, width, height, text_size, border_color, alignment=alignment)
+            dtk_cairo_blur.gaussian_blur(surface, border_radious)
         
         # Draw font.
         render_text(text_cr, markup, 0, 0, width, height, text_size, text_color, alignment=alignment)
@@ -270,7 +272,7 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
     # Set layout.
     layout = context.create_layout()
     layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
-    layout.set_markup(markup)
+    layout_set_markup(layout, markup)
     layout.set_alignment(alignment)
     layout.set_single_paragraph_mode(True)
     layout.set_ellipsize(pango.ELLIPSIZE_END)

@@ -272,7 +272,7 @@ def get_content_size(text, size):
         context = pangocairo.CairoContext(cr)
         layout = context.create_layout()
         layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, size)))
-        layout.set_markup(text)
+        layout_set_markup(layout, text)
         
         return layout.get_pixel_size()
     else:
@@ -817,3 +817,7 @@ def run_with_profile(func, log_file, sort='time', amount=20):
     print "----------------------parsing profile data---------------------"
     p = hotshot.stats.load(filepath)   
     p.sort_stats(sort).print_stats(amount)
+
+def layout_set_markup(layout, markup):
+    '''Set layout markup.'''
+    layout.set_markup(markup.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))

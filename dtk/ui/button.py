@@ -440,7 +440,7 @@ class ToggleButton(gtk.ToggleButton):
                         rect.height,
                         font_size, 
                         label_dcolor.get_color(),
-                        alignment=pango.ALIGN_CENTER                        
+                        alignment=pango.ALIGN_LEFT
                         )
     
         # Propagate expose to children.
