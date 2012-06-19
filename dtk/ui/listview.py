@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, ALIGN_END, ALIGN_START
+import pango
 from contextlib import contextmanager 
 from draw import draw_pixbuf, draw_vlinear, draw_text
 from keymap import get_keyevent_name, has_ctrl_mask, has_shift_mask
@@ -467,9 +468,10 @@ class ListView(gtk.DrawingArea):
                 
                 # Draw title.
                 draw_text(cr, self.titles[column], 
-                            cell_offset_x, offset_y, cell_widths[column], self.title_height,
-                            DEFAULT_FONT_SIZE, 
-                            ui_theme.get_color("listItemText").get_color(),)    
+                          cell_offset_x, offset_y, cell_widths[column], self.title_height,
+                          DEFAULT_FONT_SIZE, 
+                          ui_theme.get_color("listItemText").get_color(),
+                          alignment=pango.ALIGN_CENTER)    
                 
                 # Draw sort icon.
                 if self.title_sort_column == column:
