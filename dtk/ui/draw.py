@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import ALIGN_MIDDLE, ALIGN_START, ALIGN_END, DEFAULT_FONT, DEFAULT_FONT_SIZE
+from constant import DEFAULT_FONT, DEFAULT_FONT_SIZE
 from math import pi
 from utils import cairo_state, cairo_disable_antialias, color_hex_to_cairo, add_color_stop_rgba, propagate_expose, get_content_size, alpha_color_hex_to_cairo, layout_set_markup
 import cairo

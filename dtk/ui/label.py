@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
                  
-from constant import DEFAULT_FONT_SIZE, ALIGN_START, ALIGN_MIDDLE
+from constant import DEFAULT_FONT_SIZE, ALIGN_START
 from draw import draw_text
 from theme import ui_theme
 from utils import propagate_expose, get_content_size
@@ -34,13 +34,20 @@ class Label(gtk.EventBox):
                  text_color=ui_theme.get_color("labelText"),
                  text_size=DEFAULT_FONT_SIZE,
                  text_x_align=ALIGN_START,
-                 label_size=None):
+                 label_size=None,
+                 gaussian_radious=None, gaussian_color=None,
+                 border_radious=None, border_color=None, 
+                 ):
         '''Init label.'''
         # Init.
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.label_size = label_size
+        self.gaussian_color = gaussian_color
+        self.gaussian_radious = gaussian_radious
+        self.border_color = border_color
+        self.border_radious = border_radious
         
         self.text = text
         self.text_size = text_size
@@ -60,11 +67,15 @@ class Label(gtk.EventBox):
         rect = widget.allocation
         
         draw_text(cr, self.text, 
-                    rect.x, rect.y, rect.width, rect.height,
-                    self.text_size,
-                    self.text_color.get_color(),
-                    alignment=self.text_x_align, 
-                    )
+                  rect.x, rect.y, rect.width, rect.height,
+                  self.text_size,
+                  self.text_color.get_color(),
+                  alignment=self.text_x_align, 
+                  gaussian_radious=self.gaussian_radious, 
+                  gaussian_color=self.gaussian_color,
+                  border_radious=self.border_radious, 
+                  border_color=self.border_color, 
+                  )
         
         propagate_expose(widget, event)
         
