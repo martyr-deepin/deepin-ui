@@ -1231,6 +1231,8 @@ class SkinEditArea(gtk.EventBox):
         '''Callback for `leave-notify-event` signal.'''
         if not self.button_press_flag:
             self.in_resize_area_flag = False        
+            
+            set_cursor(self, None)
         
             self.queue_draw()
         
@@ -1293,8 +1295,11 @@ class SkinEditArea(gtk.EventBox):
         ex, ey = event.x, event.y
         resize_x = self.padding_x + self.shadow_padding + self.resize_x
         resize_y = self.padding_y + self.shadow_padding + self.resize_y
+        edit_area_rect = self.get_allocation()
         
-        if is_in_rect((ex, ey), 
+        if not is_in_rect((ex, ey), (0, 0, edit_area_rect.width, edit_area_rect.height)):
+            return self.POSITION_OUTSIDE
+        elif is_in_rect((ex, ey), 
                       (resize_x - self.resize_pointer_size / 2,
                        resize_y - self.resize_pointer_size / 2,
                        self.resize_pointer_size,
