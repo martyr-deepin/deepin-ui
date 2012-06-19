@@ -28,7 +28,7 @@ from scrolled_window import ScrolledWindow
 from iconview import IconView
 from titlebar import Titlebar
 from button import Button
-from utils import gdkcolor_to_string, color_hex_to_cairo, propagate_expose, color_hex_to_rgb, color_rgb_to_hex, is_hex_color
+from utils import gdkcolor_to_string, color_hex_to_cairo, propagate_expose, color_hex_to_rgb, color_rgb_to_hex, is_hex_color, place_center
 from label import Label
 from spin import SpinBox
 from entry import TextEntry
@@ -366,7 +366,9 @@ class ColorButton(gtk.VBox):
         
     def popup_color_selection_dialog(self, widget, event):
         '''Popup color selection dialog.'''
-        ColorSelectDialog(self.select_color).show_all()
+        dialog = ColorSelectDialog(self.select_color)
+        dialog.show_all()
+        place_center(self.get_toplevel(), dialog)
         
     def select_color(self, color):
         '''Select color.'''
