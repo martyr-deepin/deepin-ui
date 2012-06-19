@@ -821,3 +821,36 @@ def run_with_profile(func, log_file, sort='time', amount=20):
 def layout_set_markup(layout, markup):
     '''Set layout markup.'''
     layout.set_markup(markup.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+
+def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height):
+    '''Get optimum pixbuf from file.'''
+    pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
+    pixbuf_width, pixbuf_height = pixbuf.get_width(), pixbuf.get_height()
+    if pixbuf_width >= expect_width and pixbuf_height >= expect_height:
+        if pixbuf_width / pixbuf_height == expect_width / expect_height:
+            scale_width, scale_height = expect_width, expect_height
+        elif pixbuf_width / pixbuf_height > expect_width / expect_height:
+            scale_height = expect_height
+            scale_width = int(pixbuf_width * expect_height / pixbuf_height)
+        else:
+            scale_width = expect_width
+            scale_height = int(pixbuf_height * expect_width / pixbuf_width)
+            
+        return pixbuf.scale_simple(
+            scale_width, 
+            scale_height, 
+            gtk.gdk.INTERP_BILINEAR).subpixbuf(0, 0, expect_width, expect_height)
+    elif pixbuf_width >= expect_width:
+        return pixbuf.scale_simple(
+            expect_width,
+            expect_width * pixbuf_height / pixbuf_width,
+            gtk.gdk.INTERP_BILINEAR
+            )
+    elif pixbuf_height >= expect_height:
+        return pixbuf.scale_simple(
+            expect_height * pixbuf_width / pixbuf_height,
+            expect_height,
+            gtk.gdk.INTERP_BILINEAR
+            )
+    else:
+        return pixbuf
