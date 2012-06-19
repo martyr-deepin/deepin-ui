@@ -480,12 +480,8 @@ def color_hex_to_cairo(color):
     @param color: The color to convert. 
     @return: A color in cairo format. 
     """ 
-    if color[0] == '#': 
-        color = color[1:] 
-    (r, g, b) = (int(color[:2], 16), 
-                 int(color[2:4], 16),  
-                 int(color[4:], 16)) 
-    return color_rgb_to_cairo((r, g, b)) 
+    gdk_color = gtk.gdk.color_parse(color)
+    return (gdk_color.red / 65535.0, gdk_color.green / 65535.0, gdk_color.blue / 65535.0)
 
 def color_rgb_to_hex(rgb_color):
     '''Convert (r, g, b) to hex color.'''
