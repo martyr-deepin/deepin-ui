@@ -61,7 +61,7 @@ def get_keyevent_name(key_event):
         if key_modifiers == []:
             return key_name
         else:
-            return "+".join(key_modifiers) + "+" + key_name
+            return " + ".join(key_modifiers) + " + " + key_name
 
 def has_ctrl_mask(key_event):
     '''Whether has ctrl mask in key event.'''

@@ -107,11 +107,11 @@ class ListView(gtk.DrawingArea):
             "Up" : self.select_prev_item,
             "Down" : self.select_next_item,
             "Delete" : self.delete_select_items,
-            "Shift+Up" : self.select_to_prev_item,
-            "Shift+Down" : self.select_to_next_item,
-            "Shift+Home" : self.select_to_first_item,
-            "Shift+End" : self.select_to_last_item,
-            "Ctrl+a" : self.select_all_items,
+            "Shift + Up" : self.select_to_prev_item,
+            "Shift + Down" : self.select_to_next_item,
+            "Shift + Home" : self.select_to_first_item,
+            "Shift + End" : self.select_to_last_item,
+            "Ctrl + a" : self.select_all_items,
             }
         
     def set_expand_column(self, column):
