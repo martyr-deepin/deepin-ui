@@ -839,18 +839,29 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height):
         return pixbuf.scale_simple(
             scale_width, 
             scale_height, 
-            gtk.gdk.INTERP_BILINEAR).subpixbuf(0, 0, expect_width, expect_height)
+            gtk.gdk.INTERP_BILINEAR).subpixbuf((scale_width - expect_width) / 2, 
+                                               (scale_height - expect_height) / 2, 
+                                               expect_width, 
+                                               expect_height)
     elif pixbuf_width >= expect_width:
+        scale_width = expect_width
+        scale_height = expect_width * pixbuf_height / pixbuf_width
         return pixbuf.scale_simple(
-            expect_width,
-            expect_width * pixbuf_height / pixbuf_width,
-            gtk.gdk.INTERP_BILINEAR
-            )
+            scale_width,
+            scale_height,
+            gtk.gdk.INTERP_BILINEAR).subpixbuf((scale_width - expect_width) / 2, 
+                                               (scale_height - expect_height) / 2, 
+                                               expect_width, 
+                                               expect_height)
     elif pixbuf_height >= expect_height:
+        scale_width = expect_height * pixbuf_width / pixbuf_height
+        scale_height = expect_height
         return pixbuf.scale_simple(
-            expect_height * pixbuf_width / pixbuf_height,
-            expect_height,
-            gtk.gdk.INTERP_BILINEAR
-            )
+            scale_width,
+            scale_height,
+            gtk.gdk.INTERP_BILINEAR).subpixbuf((scale_width - expect_width) / 2, 
+                                               (scale_height - expect_height) / 2, 
+                                               expect_width, 
+                                               expect_height)
     else:
         return pixbuf
