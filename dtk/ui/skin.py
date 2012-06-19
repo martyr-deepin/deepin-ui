@@ -32,7 +32,7 @@ from config import Config
 from window import Window
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from mask import draw_mask
-from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file, scroll_to_bottom, place_center, get_pixbuf_support_foramts, find_similar_color
+from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file, scroll_to_bottom, place_center, get_pixbuf_support_foramts, find_similar_color, get_optimum_pixbuf_from_file
 from constant import SHADE_SIZE, COLOR_SEQUENCE
 from titlebar import Titlebar
 from iconview import IconView
@@ -348,7 +348,7 @@ class SkinPreviewIcon(gobject.GObject):
         self.delete_button_status = self.BUTTON_HIDE
         self.edit_button_status = self.BUTTON_HIDE
         
-        self.create_preview_pixbuf(self.background_path)
+        self.pixbuf = get_optimum_pixbuf_from_file(self.background_path, self.width, self.height, False)
         
         # Load skin config information.
         self.config = Config(os.path.join(self.skin_dir, "config.ini"))
@@ -382,39 +382,6 @@ class SkinPreviewIcon(gobject.GObject):
         '''Is editable.'''
         return self.config.getboolean("action", "editable")    
         
-    def create_preview_pixbuf(self, background_path):
-        '''Create preview pixbuf.'''
-        background_pixbuf = gtk.gdk.pixbuf_new_from_file(background_path)        
-        background_width, background_height = background_pixbuf.get_width(), background_pixbuf.get_height()
-        if background_width >= self.width and background_height >= self.height:
-            if background_width / background_height == self.width / self.height:
-                scale_width, scale_height = self.width, self.height
-            elif background_width / background_height > self.width / self.height:
-                scale_height = self.height
-                scale_width = int(background_width * self.height / background_height)
-            else:
-                scale_width = self.width
-                scale_height = int(background_height * self.width / background_width)
-                
-            self.pixbuf = background_pixbuf.scale_simple(
-                scale_width, 
-                scale_height, 
-                gtk.gdk.INTERP_BILINEAR).subpixbuf(0, 0, self.width, self.height)
-        elif background_width >= self.width:
-            self.pixbuf = background_pixbuf.scale_simple(
-                self.width,
-                self.width * background_height / background_width,
-                gtk.gdk.INTERP_BILINEAR
-                )
-        elif background_height >= self.height:
-            self.pixbuf = background_pixbuf.scale_simple(
-                self.height * background_width / background_height,
-                self.height,
-                gtk.gdk.INTERP_BILINEAR
-                )
-        else:
-            self.pixbuf = background_pixbuf
-            
     def emit_redraw_request(self):
         '''Emit redraw-request signal.'''
         self.emit("redraw-request")

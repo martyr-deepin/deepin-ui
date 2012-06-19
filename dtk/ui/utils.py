@@ -822,7 +822,7 @@ def layout_set_markup(layout, markup):
     '''Set layout markup.'''
     layout.set_markup(markup.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
-def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height):
+def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_middle_area=True):
     '''Get optimum pixbuf from file.'''
     pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
     pixbuf_width, pixbuf_height = pixbuf.get_width(), pixbuf.get_height()
@@ -836,31 +836,54 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height):
             scale_width = expect_width
             scale_height = int(pixbuf_height * expect_width / pixbuf_width)
             
+        if cut_middle_area:
+            subpixbuf_x = (scale_width - expect_width) / 2
+            subpixbuf_y = (scale_height - expect_height) / 2
+        else:
+            subpixbuf_x = 0
+            subpixbuf_y = 0
+            
         return pixbuf.scale_simple(
             scale_width, 
             scale_height, 
-            gtk.gdk.INTERP_BILINEAR).subpixbuf((scale_width - expect_width) / 2, 
-                                               (scale_height - expect_height) / 2, 
+            gtk.gdk.INTERP_BILINEAR).subpixbuf(subpixbuf_x,
+                                               subpixbuf_y,
                                                expect_width, 
                                                expect_height)
     elif pixbuf_width >= expect_width:
         scale_width = expect_width
         scale_height = expect_width * pixbuf_height / pixbuf_width
+        
+        if cut_middle_area:
+            subpixbuf_x = (scale_width - expect_width) / 2
+            subpixbuf_y = (scale_height - expect_height) / 2
+        else:
+            subpixbuf_x = 0
+            subpixbuf_y = 0
+            
         return pixbuf.scale_simple(
             scale_width,
             scale_height,
-            gtk.gdk.INTERP_BILINEAR).subpixbuf((scale_width - expect_width) / 2, 
-                                               (scale_height - expect_height) / 2, 
+            gtk.gdk.INTERP_BILINEAR).subpixbuf(subpixbuf_x,
+                                               subpixbuf_y,
                                                expect_width, 
                                                expect_height)
     elif pixbuf_height >= expect_height:
         scale_width = expect_height * pixbuf_width / pixbuf_height
         scale_height = expect_height
+        
+        if cut_middle_area:
+            subpixbuf_x = (scale_width - expect_width) / 2
+            subpixbuf_y = (scale_height - expect_height) / 2
+        else:
+            subpixbuf_x = 0
+            subpixbuf_y = 0
+        
         return pixbuf.scale_simple(
             scale_width,
             scale_height,
-            gtk.gdk.INTERP_BILINEAR).subpixbuf((scale_width - expect_width) / 2, 
-                                               (scale_height - expect_height) / 2, 
+            gtk.gdk.INTERP_BILINEAR).subpixbuf(subpixbuf_x,
+                                               subpixbuf_y,
                                                expect_width, 
                                                expect_height)
     else:
