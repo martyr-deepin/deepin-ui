@@ -34,7 +34,7 @@ class Label(gtk.EventBox):
                  text_color=ui_theme.get_color("labelText"),
                  text_size=DEFAULT_FONT_SIZE,
                  text_x_align=ALIGN_START,
-                 label_size=None,
+                 label_width=None,
                  enable_gaussian=False,
                  ):
         '''Init label.'''
@@ -42,18 +42,26 @@ class Label(gtk.EventBox):
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
-        self.label_size = label_size
+        self.label_width = label_width
         self.enable_gaussian = enable_gaussian
         
         self.text = text
         self.text_size = text_size
         self.text_color = text_color
+        if self.enable_gaussian:
+            self.gaussian_radious=2
+            self.gaussian_color="#000000"
+            self.border_radious=1
+            self.border_color="#000000"
+        else:
+            self.gaussian_radious=None
+            self.gaussian_color=None
+            self.border_radious=None
+            self.border_color=None
+            
         self.text_x_align = text_x_align
         
-        if self.label_size == None:
-            self.set_size_request(*get_content_size(self.text, self.text_size))
-        else:
-            self.set_size_request(*self.label_size)        
+        self.update_size()
             
         self.connect("expose-event", self.expose_label)    
         
@@ -64,26 +72,18 @@ class Label(gtk.EventBox):
         
         if self.enable_gaussian:
             label_color = "#FFFFFF"
-            gaussian_radious=4
-            gaussian_color="#000000"
-            border_radious=1
-            border_color="#000000"
         else:
             label_color = self.text_color.get_color()
-            gaussian_radious=None
-            gaussian_color=None
-            border_radious=None
-            border_color=None
             
         draw_text(cr, self.text, 
                   rect.x, rect.y, rect.width, rect.height,
                   self.text_size,
                   label_color,
                   alignment=self.text_x_align, 
-                  gaussian_radious=gaussian_radious,
-                  gaussian_color=gaussian_color,
-                  border_radious=border_radious,
-                  border_color=border_color
+                  gaussian_radious=self.gaussian_radious,
+                  gaussian_color=self.gaussian_color,
+                  border_radious=self.border_radious,
+                  border_color=self.border_color
                   )
         
         propagate_expose(widget, event)
@@ -98,11 +98,21 @@ class Label(gtk.EventBox):
         '''Set text.'''
         self.text = text
         
-        if self.label_size == None:
-            self.set_size_request(*get_content_size(self.text, self.text_size))
-        else:
-            self.set_size_request(*self.label_size)        
+        self.update_size()
 
         self.queue_draw()
     
+    def update_size(self):
+        '''Update size.'''
+        if self.label_width == None:
+            (label_width, label_height) = get_content_size(self.text, self.text_size)
+        else:
+            (label_width, label_height) = get_content_size(self.text, self.text_size)
+            label_width = self.label_width
+            
+        if self.enable_gaussian:
+            label_width += self.gaussian_radious * 2
+            label_height += self.gaussian_radious * 2
+            
+        self.set_size_request(label_width, label_height)
         

@@ -21,7 +21,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from label import Label
-from box import EventBox, ImageBox, TextBox
+import pango
+from box import EventBox, ImageBox
 from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
 from draw import draw_line
 from utils import window_is_max
@@ -37,7 +38,7 @@ class Titlebar(EventBox):
                  app_name=None,
                  title=None,
                  add_separator=False,
-                 height=22
+                 height=26
                  ):
         '''Init titlebar.'''
         # Init.
@@ -74,7 +75,7 @@ class Titlebar(EventBox):
                     
         # Add app name.
         if app_name != None:
-            self.app_name_box = TextBox(app_name)
+            self.app_name_box = Label(app_name, enable_gaussian=True)
             self.app_name_align = gtk.Alignment()
             self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
             self.app_name_align.set_padding(0, 0, 0, 0)
@@ -83,7 +84,7 @@ class Titlebar(EventBox):
         
         # Add title.
         if title != None:
-            self.title_box = Label(title, enable_gaussian=True)
+            self.title_box = Label(title, enable_gaussian=True, text_x_align=pango.ALIGN_CENTER)
             self.title_align = gtk.Alignment()
             self.title_align.set(0.5, 0.5, 0.0, 0.0)
             self.title_align.set_padding(0, 0, 30, 30)

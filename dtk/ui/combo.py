@@ -57,7 +57,7 @@ class ComboBox(gtk.VBox):
         self.box = gtk.HBox()
         self.dropbutton_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()
         self.label = Label(self.items[select_index][0], 
-                           label_size=(self.width - self.dropbutton_width - 1 - self.label_padding_left, self.height - 2))
+                           label_width=self.width - self.dropbutton_width - 1 - self.label_padding_left)
         self.label.text_color = ui_theme.get_color("menuFont")
         self.dropbutton = DisableButton(
             (ui_theme.get_pixbuf("combo/dropbutton_normal.png"),

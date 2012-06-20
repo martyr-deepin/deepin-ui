@@ -157,16 +157,16 @@ class NavItem(object):
         
         # Draw font.
         draw_text(cr, 
-                     self.content, 
-                     rect.x, 
-                     rect.y + nav_item_pixbuf.get_height() - 4, 
-                     rect.width, 
-                     rect.height - nav_item_pixbuf.get_height(),
-                     text_color="#FFFFFF",
-                     alignment=pango.ALIGN_CENTER,
-                     gaussian_radious=4, gaussian_color="#000000",
-                     border_radious=1, border_color="#000000", 
-                     )
+                  self.content, 
+                  rect.x, 
+                  rect.y + nav_item_pixbuf.get_height() - 3, 
+                  rect.width, 
+                  rect.height - nav_item_pixbuf.get_height(),
+                  text_color="#FFFFFF",
+                  alignment=pango.ALIGN_CENTER,
+                  gaussian_radious=2, gaussian_color="#000000",
+                  border_radious=1, border_color="#000000", 
+                  )
         
         # Propagate expose to children.
         propagate_expose(widget, event)

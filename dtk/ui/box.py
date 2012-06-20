@@ -71,52 +71,6 @@ class ImageBox(gtk.EventBox):
     
 gobject.type_register(ImageBox)
 
-class TextBox(gtk.EventBox):
-    '''Box just contain text.'''
-	
-    def __init__(self, text, text_style=ui_theme.get_text_style("titlebar")):
-        '''Init text box.'''
-        # Init.
-        gtk.EventBox.__init__(self)
-        self.set_visible_window(False)
-        self.text = text
-        self.text_style = text_style
-        
-        # Request size.
-        (font_width, font_height) = get_content_size(text, DEFAULT_FONT_SIZE)
-        self.set_size_request(font_width, font_height)
-        
-        # Connect expose signal.
-        self.connect("expose-event", self.expose_text_box)
-        
-    def change_text(self, text):
-        '''Change text.'''
-        self.text = text
-        self.queue_draw()
-        
-    def expose_text_box(self, widget, event):
-        '''Expose text box.'''
-        # Init.
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        
-        # Draw text.
-        draw_text(cr, 
-                  self.text, 
-                  rect.x, rect.y, rect.width, rect.height,
-                  text_color="#FFFFFF",
-                  alignment=pango.ALIGN_CENTER,
-                  gaussian_radious=4, gaussian_color="#000000",
-                  border_radious=1, border_color="#000000", 
-                  )
-        
-        # Propagate expose.
-        propagate_expose(widget, event)
-    
-        return True
-    
-gobject.type_register(TextBox)
-
 class BackgroundBox(gtk.VBox):
     '''Box to expande background.'''
 	
