@@ -53,7 +53,7 @@ gobject.type_register(DialogButtonBox)
 class DialogBox(Window):
     '''Dialog box.'''
 	
-    def __init__(self, title, default_width, default_height):
+    def __init__(self, title, default_width=None, default_height=None):
         '''Dialog box.'''
         Window.__init__(self)
         self.set_modal(True)                                # grab focus to avoid build too many skin window
@@ -62,8 +62,9 @@ class DialogBox(Window):
         self.set_resizable(False)
         self.default_width = default_width
         self.default_height = default_height
-        self.set_default_size(self.default_width, self.default_height)
-        self.set_geometry_hints(None, self.default_width, self.default_height, -1, -1, -1, -1, -1, -1, -1, -1)
+        if self.default_width != None and self.default_height != None:
+            self.set_default_size(self.default_width, self.default_height)
+            self.set_geometry_hints(None, self.default_width, self.default_height, -1, -1, -1, -1, -1, -1, -1, -1)
 
         self.titlebar = Titlebar(
             ["close"],
@@ -77,7 +78,8 @@ class DialogBox(Window):
         self.window_frame.pack_start(self.titlebar, False, False)
         self.window_frame.pack_start(self.body_box, True, True)
         self.window_frame.pack_start(self.button_box, False, False)
-        
+
+        self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
         self.connect("destroy", lambda w: self.destroy())
         
 gobject.type_register(DialogBox)
@@ -106,7 +108,6 @@ class ConfirmDialog(DialogBox):
         self.confirm_button = Button("确认")
         self.cancel_button = Button("取消")
         
-        self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
         
@@ -157,10 +158,8 @@ class InputDialog(DialogBox):
         self.confirm_button = Button("确认")
         self.cancel_button = Button("取消")
         
-        self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
-        self.connect("destroy", lambda w: self.destroy())
         
         self.entry_align.add(self.entry)
         self.body_box.pack_start(self.entry_align, True, True)

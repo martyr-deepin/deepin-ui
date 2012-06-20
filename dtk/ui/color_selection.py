@@ -34,6 +34,7 @@ from spin import SpinBox
 from entry import TextEntry
 from theme import ui_theme
 from draw import draw_vlinear, draw_line, draw_pixbuf
+from dialog import DialogBox
 
 class HSV(gtk.ColorSelection):
     '''HSV.'''
@@ -63,23 +64,16 @@ class HSV(gtk.ColorSelection):
     
 gobject.type_register(HSV)
 
-class ColorSelectDialog(Window):
+class ColorSelectDialog(DialogBox):
     '''Color select dialog.'''
     
     DEFAULT_COLOR_LIST = ["#000000", "#808080", "#E20417", "#F29300", "#FFEC00", "#95BE0D", "#008F35", "#00968F", "#FFFFFF", "#C0C0C0", "#E2004E", "#E2007A", "#920A7E", "#162883", "#0069B2", "#009DE0"]
 	
     def __init__(self, confirm_callback=None, cancel_callback=None):
         '''Init color select dialog.'''
-        Window.__init__(self)
-        self.set_modal(True)                                # grab focus to avoid build too many skin window
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
-        self.set_skip_taskbar_hint(True)                    # skip taskbar
-        self.set_resizable(False)
+        DialogBox.__init__(self, "颜色选择")
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
-        
-        self.titlebar = Titlebar(["close"], None, None, "颜色选择")
-        self.add_move_event(self.titlebar)
         
         self.color_box = gtk.HBox()
         self.color_align = gtk.Alignment()
@@ -152,6 +146,7 @@ class ColorSelectDialog(Window):
         self.color_info_box.pack_start(self.color_rgb_box, False, False, 5)
         
         self.color_select_view = IconView()
+        self.color_select_view.set_size_request(250, 60)
         self.color_select_view.connect("button-press-item", lambda view, item, x, y: self.update_color_info(item.color, False))
         self.color_select_view.draw_mask = draw_blank_mask
         self.color_select_scrolled_window = ScrolledWindow()
@@ -170,23 +165,11 @@ class ColorSelectDialog(Window):
         self.confirm_button = Button("确定")
         self.cancel_button = Button("取消")
         
-        self.button_align = gtk.Alignment()
-        self.button_align.set(1.0, 0.5, 0, 0)
-        self.button_align.set_padding(10, 10, 5, 10)
-        self.button_box = gtk.HBox()
-        
-        self.button_align.add(self.button_box)        
-        self.button_box.pack_start(self.confirm_button, False, False, 5)
-        self.button_box.pack_start(self.cancel_button, False, False, 5)
-        
-        self.window_frame.pack_start(self.titlebar, False, False)
-        self.window_frame.pack_start(self.color_align, False, False)
-        self.window_frame.pack_start(self.button_align, False, False)
-        
-        self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
-        self.connect("destroy", lambda w: self.destroy())
+        
+        self.button_box.add_buttons([self.confirm_button, self.cancel_button])
+        self.body_box.pack_start(self.color_align, True, True)
         
         self.update_color_info(self.color_string)
         
