@@ -327,6 +327,7 @@ if __name__ == "__main__":
     list_view.set_expand_column(0)
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
+    list_view.connect("double-click-item", lambda listview, item, i, x, y: list_view.set_highlight(item))
     
     # list_view.connect("button-press-item", print_button_press)
     # list_view.connect("double-click-item", print_double_click)
