@@ -116,3 +116,5 @@ class Label(gtk.EventBox):
             
         self.set_size_request(label_width, label_height)
         
+        print (label_width, label_height)
+        
