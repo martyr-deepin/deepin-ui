@@ -115,6 +115,3 @@ class Label(gtk.EventBox):
             label_height += self.gaussian_radious * 2
             
         self.set_size_request(label_width, label_height)
-        
-        print (label_width, label_height)
-        
