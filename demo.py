@@ -243,7 +243,7 @@ if __name__ == "__main__":
         [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
          (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
-         (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", lambda : droplist.show((500, 300))),
+         (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
          (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
          (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
          (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),

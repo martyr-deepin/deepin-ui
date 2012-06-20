@@ -22,7 +22,7 @@
 
 from constant import DEFAULT_FONT, DEFAULT_FONT_SIZE
 from math import pi
-from utils import cairo_state, cairo_disable_antialias, color_hex_to_cairo, add_color_stop_rgba, propagate_expose, get_content_size, alpha_color_hex_to_cairo, layout_set_markup
+from utils import cairo_state, cairo_disable_antialias, color_hex_to_cairo, add_color_stop_rgba, propagate_expose, alpha_color_hex_to_cairo, layout_set_markup
 import cairo
 import dtk_cairo_blur    
 import gtk

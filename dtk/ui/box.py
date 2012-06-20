@@ -20,12 +20,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pango
 from skin_config import skin_config
-from constant import DEFAULT_FONT_SIZE
-from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state, draw_text
+from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state
 from theme import ui_theme
-from utils import get_content_size, get_window_shadow_size
+from utils import get_window_shadow_size
 import gobject
 import gtk
 

@@ -20,14 +20,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from skin_config import skin_config
 import gtk
 import gobject
 from window import Window
 from titlebar import Titlebar
 from label import Label
+from utils import container_remove_all
 from button import Button
 from entry import TextEntry
 from constant import ALIGN_MIDDLE
+from draw import draw_vlinear, draw_blank_mask
+from mask import draw_mask
+from theme import ui_theme
+
+DIALOG_MASK_SINGLE_PAGE = 0
+DIALOG_MASK_MULTIPLE_PAGE = 1
 
 class DialogButtonBox(gtk.HBox):
     '''Dialog button box.'''
@@ -43,8 +51,9 @@ class DialogButtonBox(gtk.HBox):
         self.button_align.add(self.button_box)    
         self.pack_start(self.button_align, True, True)
 
-    def add_buttons(self, buttons):
+    def set_buttons(self, buttons):
         '''Add buttons.'''
+        container_remove_all(self.button_box)
         for button in buttons:
             self.button_box.pack_start(button, False, False, 4)
             
@@ -53,7 +62,7 @@ gobject.type_register(DialogButtonBox)
 class DialogBox(Window):
     '''Dialog box.'''
 	
-    def __init__(self, title, default_width=None, default_height=None):
+    def __init__(self, title, default_width=None, default_height=None, mask_type=None):
         '''Dialog box.'''
         Window.__init__(self)
         self.set_modal(True)                                # grab focus to avoid build too many skin window
@@ -62,6 +71,7 @@ class DialogBox(Window):
         self.set_resizable(False)
         self.default_width = default_width
         self.default_height = default_height
+        self.mask_type = mask_type
         if self.default_width != None and self.default_height != None:
             self.set_default_size(self.default_width, self.default_height)
             self.set_geometry_hints(None, self.default_width, self.default_height, -1, -1, -1, -1, -1, -1, -1, -1)
@@ -73,14 +83,47 @@ class DialogBox(Window):
             title)
         self.add_move_event(self.titlebar)
         self.body_box = gtk.VBox()
-        self.button_box = DialogButtonBox()
+        self.right_button_box = DialogButtonBox()
         
         self.window_frame.pack_start(self.titlebar, False, False)
         self.window_frame.pack_start(self.body_box, True, True)
-        self.window_frame.pack_start(self.button_box, False, False)
+        self.window_frame.pack_start(self.right_button_box, False, False)
 
         self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
         self.connect("destroy", lambda w: self.destroy())
+        
+        self.draw_mask = self.get_mask_func(self)
+        
+    def get_mask_func(self, widget):
+        '''Get mask function.'''
+        if self.mask_type == DIALOG_MASK_SINGLE_PAGE:
+            return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, self.draw_mask_single_page)
+        elif self.mask_type == DIALOG_MASK_MULTIPLE_PAGE:
+            return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, self.draw_mask_multiple_page)
+        else:
+            return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, draw_blank_mask)
+        
+    def draw_mask_single_page(self, cr, x, y, w, h):
+        '''Draw make for single page type.'''
+        titlebar_height = self.titlebar.get_allocation().height
+        draw_vlinear(
+            cr, x, y + titlebar_height, w, h - titlebar_height,
+            ui_theme.get_shadow_color("skinWindowBackground").get_color_info())
+
+    def draw_mask_multiple_page(self, cr, x, y, w, h):
+        '''Draw make for multiple page type.'''
+        titlebar_height = self.titlebar.get_allocation().height
+        button_box_height = self.right_button_box.get_allocation().height
+        dominant_color = skin_config.dominant_color
+        
+        draw_vlinear(
+            cr, x, y + titlebar_height, w, h - titlebar_height,
+            ui_theme.get_shadow_color("dialogMaskSinglePage").get_color_info())
+        
+        draw_vlinear(
+            cr, x, y + h - button_box_height, w, button_box_height,
+            [(0, (dominant_color, 1.0)),
+             (1, (dominant_color, 1.0))])
         
 gobject.type_register(DialogBox)
 
@@ -96,7 +139,7 @@ class ConfirmDialog(DialogBox):
                  cancel_callback=None):
         '''Init confirm dialog.'''
         # Init.
-        DialogBox.__init__(self, title, default_width, default_height)
+        DialogBox.__init__(self, title, default_width, default_height, DIALOG_MASK_SINGLE_PAGE)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
         
@@ -115,7 +158,7 @@ class ConfirmDialog(DialogBox):
         self.body_box.pack_start(self.label_align, True, True)
         self.label_align.add(self.label)
         
-        self.button_box.add_buttons([self.confirm_button, self.cancel_button])
+        self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
     def click_confirm_button(self):
         '''Click confirm button.'''
@@ -145,7 +188,7 @@ class InputDialog(DialogBox):
                  cancel_callback=None):
         '''Init confirm dialog.'''
         # Init.
-        DialogBox.__init__(self, title, default_width, default_height)
+        DialogBox.__init__(self, title, default_width, default_height, DIALOG_MASK_SINGLE_PAGE)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
         
@@ -164,7 +207,7 @@ class InputDialog(DialogBox):
         self.entry_align.add(self.entry)
         self.body_box.pack_start(self.entry_align, True, True)
         
-        self.button_box.add_buttons([self.confirm_button, self.cancel_button])
+        self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
     def click_confirm_button(self):
         '''Click confirm button.'''

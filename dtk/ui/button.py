@@ -23,7 +23,7 @@
 from utils import get_content_size, color_hex_to_cairo, propagate_expose, window_is_max, get_same_level_widgets, widget_fix_cycle_destroy_bug
 from theme import ui_theme
 from draw import draw_vlinear, draw_pixbuf, draw_line, draw_text
-from constant import DEFAULT_FONT_SIZE, ALIGN_START
+from constant import DEFAULT_FONT_SIZE
 import pango
 import gtk
 import gobject

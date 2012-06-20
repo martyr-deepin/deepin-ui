@@ -146,7 +146,7 @@ class Application(object):
         '''Theme button callback.'''
         skin_window = SkinWindow(self.skin_preview_pixbuf)
         skin_window.show_all()
-        place_center(self.window, skin_window)
+        skin_window.connect("show", lambda w: place_center(self.window, w))
 
         return False
 

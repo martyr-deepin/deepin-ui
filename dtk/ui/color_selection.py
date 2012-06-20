@@ -22,11 +22,8 @@
 
 import gtk
 import gobject
-from draw import draw_blank_mask
-from window import Window
 from scrolled_window import ScrolledWindow
 from iconview import IconView
-from titlebar import Titlebar
 from button import Button
 from utils import gdkcolor_to_string, color_hex_to_cairo, propagate_expose, color_hex_to_rgb, color_rgb_to_hex, is_hex_color, place_center
 from label import Label
@@ -34,7 +31,7 @@ from spin import SpinBox
 from entry import TextEntry
 from theme import ui_theme
 from draw import draw_vlinear, draw_line, draw_pixbuf
-from dialog import DialogBox
+from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
 
 class HSV(gtk.ColorSelection):
     '''HSV.'''
@@ -71,7 +68,7 @@ class ColorSelectDialog(DialogBox):
 	
     def __init__(self, confirm_callback=None, cancel_callback=None):
         '''Init color select dialog.'''
-        DialogBox.__init__(self, "颜色选择")
+        DialogBox.__init__(self, "颜色选择", mask_type=DIALOG_MASK_SINGLE_PAGE)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
         
@@ -148,7 +145,7 @@ class ColorSelectDialog(DialogBox):
         self.color_select_view = IconView()
         self.color_select_view.set_size_request(250, 60)
         self.color_select_view.connect("button-press-item", lambda view, item, x, y: self.update_color_info(item.color, False))
-        self.color_select_view.draw_mask = draw_blank_mask
+        self.color_select_view.draw_mask = self.get_mask_func(self.color_select_view)
         self.color_select_scrolled_window = ScrolledWindow()
         for color in self.DEFAULT_COLOR_LIST:
             self.color_select_view.add_items([ColorItem(color)])
@@ -168,7 +165,7 @@ class ColorSelectDialog(DialogBox):
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
         
-        self.button_box.add_buttons([self.confirm_button, self.cancel_button])
+        self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         self.body_box.pack_start(self.color_align, True, True)
         
         self.update_color_info(self.color_string)

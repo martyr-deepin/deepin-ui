@@ -29,12 +29,9 @@ import os
 import gtk
 import gobject
 from config import Config
-from window import Window
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
-from mask import draw_mask
 from utils import is_in_rect, set_cursor, color_hex_to_cairo, cairo_state, container_remove_all, cairo_disable_antialias, remove_directory, end_with_suffixs, create_directory, touch_file, scroll_to_bottom, place_center, get_pixbuf_support_foramts, find_similar_color, get_optimum_pixbuf_from_file
 from constant import SHADE_SIZE, COLOR_SEQUENCE
-from titlebar import Titlebar
 from iconview import IconView
 from scrolled_window import ScrolledWindow
 from button import Button, ImageButton, ToggleButton, ActionButton
@@ -44,44 +41,21 @@ from skin_config import skin_config
 from label import Label
 import urllib
 from cache_pixbuf import CachePixbuf
+from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
 
-def draw_skin_mask(cr, x, y, w, h):
-    '''Draw skin mask.'''
-    draw_vlinear(cr, x, y, w, h,
-                 ui_theme.get_shadow_color("skinWindowBackground").get_color_info())
-    
-class SkinWindow(Window):
+class SkinWindow(DialogBox):
     '''SkinWindow.'''
 	
     def __init__(self, app_frame_pixbuf, preview_width=450, preview_height=500):
         '''Init skin.'''
-        Window.__init__(self)
+        DialogBox.__init__(self, "选择皮肤", preview_width, preview_height, mask_type=DIALOG_MASK_SINGLE_PAGE)
         self.app_frame_pixbuf = app_frame_pixbuf
-        self.set_modal(True)                                # grab focus to avoid build too many skin window
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
-        self.set_skip_taskbar_hint(True)                    # skip taskbar
-        self.set_position(gtk.WIN_POS_CENTER)
-        self.draw_mask = lambda cr, x, y, w, h: draw_mask(self, x, y, w, h, draw_skin_mask)
-        self.main_box = gtk.VBox()
-        self.titlebar = Titlebar(
-            ["close"],
-            None,
-            None,
-            "选择皮肤")
         
-        self.window_frame.add(self.main_box)
-        self.set_size_request(preview_width, preview_height)
-        self.set_resizable(False)
-        
-        self.preview_page = SkinPreviewPage(self.change_skin, self.switch_edit_page)
-        
-        self.main_box.pack_start(self.titlebar, False, False)
-        self.body_box = gtk.VBox()
-        self.main_box.pack_start(self.body_box, True, True)
-        
-        self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
-        
-        self.add_move_event(self.titlebar)
+        self.preview_page = SkinPreviewPage(self, self.change_skin, self.switch_edit_page)
+
+        self.close_button = Button("关闭")
+        self.close_button.connect("clicked", lambda w: w.get_toplevel().destroy())
+        self.right_button_box.set_buttons([self.close_button])
         
         self.switch_preview_page()
         
@@ -97,11 +71,17 @@ class SkinWindow(Window):
         self.body_box.add(self.preview_page)
         self.preview_page.highlight_skin()
         
+        self.close_button = Button("关闭")
+        self.close_button.connect("clicked", lambda w: w.get_toplevel().destroy())
+        self.right_button_box.set_buttons([self.close_button])
+        
+        self.show_all()
+        
     def switch_edit_page(self):
         '''Switch edit page.'''
         # Switch to edit page.
         container_remove_all(self.body_box)
-        edit_page = SkinEditPage(self.app_frame_pixbuf, self.switch_preview_page)
+        edit_page = SkinEditPage(self, self.app_frame_pixbuf, self.switch_preview_page)
         self.body_box.add(edit_page)
         
         self.show_all()
@@ -111,9 +91,10 @@ gobject.type_register(SkinWindow)
 class SkinPreviewPage(gtk.VBox):
     '''Skin preview.'''
 	
-    def __init__(self, change_skin_callback, switch_edit_page_callback):
+    def __init__(self, dialog, change_skin_callback, switch_edit_page_callback):
         '''Init skin preview.'''
         gtk.VBox.__init__(self)
+        self.dialog = dialog
         self.change_skin_callback = change_skin_callback
         self.switch_edit_page_callback = switch_edit_page_callback
         
@@ -121,21 +102,13 @@ class SkinPreviewPage(gtk.VBox):
         self.preview_align.set(0.5, 0.5, 1, 1)
         self.preview_align.set_padding(0, 0, 10, 1)
         self.preview_scrolled_window = ScrolledWindow()
-        self.preview_scrolled_window.draw_mask = lambda cr, x, y, w, h: draw_mask(self.preview_scrolled_window, x, y, w, h, draw_skin_mask)
+        self.preview_scrolled_window.draw_mask = self.dialog.get_mask_func(self.preview_scrolled_window)
         self.preview_view = IconView()
-        self.preview_view.draw_mask = lambda cr, x, y, w, h: draw_mask(self.preview_view, x, y, w, h, draw_skin_mask)
+        self.preview_view.draw_mask = self.dialog.get_mask_func(self.preview_view)
         
         self.preview_align.add(self.preview_scrolled_window)
         self.preview_scrolled_window.add_child(self.preview_view)
         self.pack_start(self.preview_align, True, True)
-        
-        self.button_align = gtk.Alignment()
-        self.button_align.set(1, 0.5, 0, 0)
-        self.button_align.set_padding(10, 10, 0, 20)
-        self.close_button = Button("关闭")
-        self.close_button.connect("clicked", lambda w: w.get_toplevel().destroy())
-        self.button_align.add(self.close_button)
-        self.pack_start(self.button_align, False, False)
         
         support_foramts = get_pixbuf_support_foramts()
         for skin_dir in [skin_config.system_skin_dir, skin_config.user_skin_dir]:
@@ -643,9 +616,10 @@ gobject.type_register(SkinAddIcon)
 class SkinEditPage(gtk.VBox):
     '''Init skin edit page.'''
 	
-    def __init__(self, app_frame_pixbuf, switch_preview_page):
+    def __init__(self, dialog, app_frame_pixbuf, switch_preview_page):
         '''Init skin edit page.'''
         gtk.VBox.__init__(self)
+        self.dialog = dialog
         self.switch_preview_page = switch_preview_page
         self.edit_area_align = gtk.Alignment()
         self.edit_area_align.set(0.5, 0.5, 1, 1)
@@ -734,7 +708,7 @@ class SkinEditPage(gtk.VBox):
         self.color_select_align.set(0.5, 0.5, 1, 1)
         self.color_select_align.set_padding(0, 0, 32, 32)
         self.color_select_view = IconView()
-        self.color_select_view.draw_mask = lambda cr, x, y, w, h: draw_mask(self.color_select_view, x, y, w, h, draw_skin_mask)
+        self.color_select_view.draw_mask = self.dialog.get_mask_func(self.color_select_view)
         self.color_select_scrolled_window = ScrolledWindow()
         self.color_select_scrolled_window.add_child(self.color_select_view)
         self.color_select_align.add(self.color_select_scrolled_window)
@@ -742,21 +716,14 @@ class SkinEditPage(gtk.VBox):
         for color in COLOR_SEQUENCE:
             self.color_select_view.add_items([ColorIconItem(color)])
         
-        self.button_align = gtk.Alignment()
-        self.button_align.set(1, 0.5, 0, 0)
-        self.button_align.set_padding(10, 10, 0, 20)
-        self.button_box = gtk.HBox()
         self.back_button = Button("返回")
-        self.button_align.add(self.button_box)
-        self.button_box.pack_start(self.back_button)
+        self.back_button.connect("clicked", lambda w: self.switch_preview_page())
+        self.dialog.right_button_box.set_buttons([self.back_button])
         
         self.pack_start(self.edit_area_align, False, False)
         self.pack_start(self.action_align, False, False)
         self.pack_start(self.color_label_align, True, True)
         self.pack_start(self.color_select_align, True, True)
-        self.pack_start(self.button_align, False, False)
-        
-        self.back_button.connect("clicked", lambda w: self.switch_preview_page())
         
         self.highlight_color_icon(skin_config.theme_name)
         

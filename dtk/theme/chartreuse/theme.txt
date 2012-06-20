@@ -182,6 +182,10 @@
 		(0.95,	("#EF0000", 0.5)),
 		(1,		("#EF0000", 0.0)),
 	 ],
+	 "dialogMaskSinglePage" : [
+	    (0,     ("#FFFFFF", 0.85)),
+	    (1,     ("#FFFFFF", 0.85)),
+	 ],
      "skinWindowBackground" : [
 	    (0,		("#FFFFFF", 0.3)),
 		(0.05,	("#FFFFFF", 0.8)),
