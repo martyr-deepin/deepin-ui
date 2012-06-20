@@ -62,11 +62,28 @@ class Label(gtk.EventBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
+        if self.enable_gaussian:
+            label_color = "#FFFFFF"
+            gaussian_radious=4
+            gaussian_color="#000000"
+            border_radious=1
+            border_color="#000000"
+        else:
+            label_color = self.text_color.get_color()
+            gaussian_radious=None
+            gaussian_color=None
+            border_radious=None
+            border_color=None
+            
         draw_text(cr, self.text, 
                   rect.x, rect.y, rect.width, rect.height,
                   self.text_size,
-                  self.text_color.get_color(),
+                  label_color,
                   alignment=self.text_x_align, 
+                  gaussian_radious=gaussian_radious,
+                  gaussian_color=gaussian_color,
+                  border_radious=border_radious,
+                  border_color=border_color
                   )
         
         propagate_expose(widget, event)

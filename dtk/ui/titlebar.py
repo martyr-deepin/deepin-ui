@@ -83,7 +83,7 @@ class Titlebar(EventBox):
         
         # Add title.
         if title != None:
-            self.title_box = Label(title)
+            self.title_box = Label(title, enable_gaussian=True)
             self.title_align = gtk.Alignment()
             self.title_align.set(0.5, 0.5, 0.0, 0.0)
             self.title_align.set_padding(0, 0, 30, 30)
