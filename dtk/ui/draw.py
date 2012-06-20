@@ -242,17 +242,17 @@ def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#
         # Draw gaussian light.
         if gaussian_radious != None and gaussian_color != None:
             text_cr.save()
-            render_text(text_cr, markup, 0, 0, w, h, text_size, gaussian_color, alignment=alignment)
+            render_text(text_cr, markup, gaussian_radious, gaussian_radious, w - gaussian_radious * 2, h - gaussian_radious * 2, text_size, gaussian_color, alignment=alignment)
             dtk_cairo_blur.gaussian_blur(surface, gaussian_radious)
             text_cr.restore()
         
         # Draw gaussian border.
         if border_radious != None and border_color != None:
-            render_text(text_cr, markup, 0, 0, w, h, text_size, border_color, alignment=alignment)
+            render_text(text_cr, markup, gaussian_radious, gaussian_radious, w - gaussian_radious * 2, h - gaussian_radious * 2, text_size, border_color, alignment=alignment)
             dtk_cairo_blur.gaussian_blur(surface, border_radious)
         
         # Draw font.
-        render_text(text_cr, markup, 0, 0, w, h, text_size, text_color, alignment=alignment)
+        render_text(text_cr, markup, gaussian_radious, gaussian_radious, w - gaussian_radious * 2, h - gaussian_radious * 2, text_size, text_color, alignment=alignment)
         
         # Render gaussian text to target cairo context.
         cr.set_source_surface(surface, x, y)
