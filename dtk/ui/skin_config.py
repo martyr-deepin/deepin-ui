@@ -69,6 +69,25 @@ class SkinConfig(gobject.GObject):
         else:
             return None
         
+    def is_skin_exist(self, skin_name, system_skin_dir, user_skin_dir):
+        '''Is skin exist in skin directories.'''
+        for skin_dir in [system_skin_dir, user_skin_dir]:
+            if os.path.exists(skin_dir):
+                if skin_name in os.listdir(os.path.expanduser(skin_dir)):
+                    return True
+                
+        return False        
+    
+    def get_default_skin(self, system_skin_dir, user_skin_dir):
+        '''Get default skin.'''
+        for skin_dir in [system_skin_dir, user_skin_dir]:
+            if os.path.exists(skin_dir):
+                skin_list = os.listdir(os.path.expanduser(skin_dir))
+                if len(skin_list) > 0:
+                    return skin_list[0]
+                
+        return None        
+        
     def get_skin_dir(self):
         '''Get skin dir.'''
         for skin_dir in [self.system_skin_dir, self.user_skin_dir]:
@@ -87,14 +106,21 @@ class SkinConfig(gobject.GObject):
             skin_config.load()
             
             # Load skin.
-            self.load_skin(skin_config.get("skin", "skin_name"), system_skin_dir, user_skin_dir)
+            init_skin_name = skin_config.get("skin", "skin_name")
         else:
             # Create skin config if it not exists.
             touch_file(self.skin_config_file)
             
-            # Load alternative skin.
-            self.load_skin(skin_name, system_skin_dir, user_skin_dir)
-    
+            init_skin_name = skin_name
+            
+        if self.is_skin_exist(init_skin_name, system_skin_dir, user_skin_dir):
+            self.load_skin(init_skin_name, system_skin_dir, user_skin_dir)
+        else:
+            # Try load default skin if user's select skin not exists.
+            default_skin_name = self.get_default_skin(system_skin_dir, user_skin_dir)
+            assert(default_skin_name != None)
+            self.load_skin(default_skin_name, system_skin_dir, user_skin_dir)
+        
     def save_skin_name(self):
         '''Save skin name.'''
         skin_config = Config(self.skin_config_file)
