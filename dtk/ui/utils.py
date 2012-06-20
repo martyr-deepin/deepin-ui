@@ -827,14 +827,14 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
     pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
     pixbuf_width, pixbuf_height = pixbuf.get_width(), pixbuf.get_height()
     if pixbuf_width >= expect_width and pixbuf_height >= expect_height:
-        if pixbuf_width / pixbuf_height == expect_width / expect_height:
+        if float(pixbuf_width) / pixbuf_height == float(expect_width) / expect_height:
             scale_width, scale_height = expect_width, expect_height
-        elif pixbuf_width / pixbuf_height > expect_width / expect_height:
+        elif float(pixbuf_width) / pixbuf_height > float(expect_width) / expect_height:
             scale_height = expect_height
-            scale_width = int(pixbuf_width * expect_height / pixbuf_height)
+            scale_width = int(float(pixbuf_width) * expect_height / pixbuf_height)
         else:
             scale_width = expect_width
-            scale_height = int(pixbuf_height * expect_width / pixbuf_width)
+            scale_height = int(float(pixbuf_height) * expect_width / pixbuf_width)
             
         if cut_middle_area:
             subpixbuf_x = (scale_width - expect_width) / 2
@@ -852,7 +852,7 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
                                                expect_height)
     elif pixbuf_width >= expect_width:
         scale_width = expect_width
-        scale_height = expect_width * pixbuf_height / pixbuf_width
+        scale_height = int(float(expect_width) * pixbuf_height / pixbuf_width)
         
         if cut_middle_area:
             subpixbuf_x = (scale_width - expect_width) / 2
@@ -869,7 +869,7 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
                                                expect_width, 
                                                expect_height)
     elif pixbuf_height >= expect_height:
-        scale_width = expect_height * pixbuf_width / pixbuf_height
+        scale_width = int(float(expect_height) * pixbuf_width / pixbuf_height)
         scale_height = expect_height
         
         if cut_middle_area:
