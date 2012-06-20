@@ -9,6 +9,7 @@
  "buttonDefaultFont" : "#000000",
  "tooltipText" : "#FFFFFF",
  "listItemText" : "#000000",
+ "listItemSelectText" : "#ffffff",
  "titlebar" : "#000000",
  "buttonBorderNormal" : "#9ab34d",
  "buttonBorderPrelight" : "#9ab34d",

@@ -433,7 +433,9 @@ class ListView(gtk.DrawingArea):
                             cr.clip()
                             
                             # Render cell.
-                            render(cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
+                            render(cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height),
+                                   row in self.select_rows,
+                                   item == self.highlight_item)
             
         # Draw titles.
         if self.titles:
@@ -1383,22 +1385,22 @@ class ListItem(gobject.GObject):
         self.length_padding_y = 5
         (self.length_width, self.length_height) = get_content_size(self.length, DEFAULT_FONT_SIZE)
         
-    def render_title(self, cr, rect):
+    def render_title(self, cr, rect, in_select, in_highlight):
         '''Render title.'''
         rect.x += self.title_padding_x
         rect.width -= self.title_padding_x * 2
-        render_text(cr, rect, self.title)
+        render_text(cr, rect, self.title, in_select, in_highlight)
     
-    def render_artist(self, cr, rect):
+    def render_artist(self, cr, rect, in_select, in_highlight):
         '''Render artist.'''
         rect.x += self.artist_padding_x
         rect.width -= self.title_padding_x * 2
-        render_text(cr, rect, self.artist)
+        render_text(cr, rect, self.artist, in_select, in_highlight)
     
-    def render_length(self, cr, rect):
+    def render_length(self, cr, rect, in_select, in_highlight):
         '''Render length.'''
         rect.width -= self.length_padding_x * 2
-        render_text(cr, rect, self.length, ALIGN_END)
+        render_text(cr, rect, self.length, in_select, in_highlight, align=ALIGN_END)
         
     def get_column_sizes(self):
         '''Get sizes.'''
@@ -1416,13 +1418,17 @@ class ListItem(gobject.GObject):
                 self.render_artist,
                 self.render_length]
     
-def render_text(cr, rect, content, align=ALIGN_START, font_size=DEFAULT_FONT_SIZE):
+def render_text(cr, rect, content, in_select, in_highlight, align=ALIGN_START, font_size=DEFAULT_FONT_SIZE):
     '''Render text.'''
+    if in_select or in_highlight:
+        color = ui_theme.get_color("listItemSelectText").get_color()
+    else:
+        color = ui_theme.get_color("listItemText").get_color()
     draw_text(cr, content, 
-                rect.x, rect.y, rect.width, rect.height,
-                font_size, 
-                ui_theme.get_color("listItemText").get_color(), 
-                alignment=align)
+              rect.x, rect.y, rect.width, rect.height,
+              font_size, 
+              color,
+              alignment=align)
     
 def render_image(cr, rect, image_path, x, y):
     '''Render image.'''
