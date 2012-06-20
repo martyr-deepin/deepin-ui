@@ -779,7 +779,7 @@ class TextEntry(gtk.VBox):
             self.action_align.set_padding(0, 0, 0, self.entry.padding_x)
             self.action_align.add(self.action_button)
             
-            self.h_box.pack_start(self.action_align)
+            self.h_box.pack_start(self.action_align, False, False)
             
             self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
 
@@ -932,7 +932,7 @@ class InputEntry(gtk.VBox):
             self.action_align.set_padding(0, 0, 0, self.entry.padding_x)
             self.action_align.add(self.action_button)
             
-            self.h_box.pack_start(self.action_align)
+            self.h_box.pack_start(self.action_align, False, False)
             
             self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
 
