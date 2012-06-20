@@ -434,7 +434,7 @@ class ListView(gtk.DrawingArea):
                             
                             # Render cell.
                             render(cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height),
-                                   row in self.select_rows,
+                                   (start_index + row) in self.select_rows,
                                    item == self.highlight_item)
             
         # Draw titles.
