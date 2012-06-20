@@ -29,18 +29,32 @@ from button import Button
 from entry import TextEntry
 from constant import ALIGN_MIDDLE
 
-class ConfirmDialog(Window):
-    '''Confir dialog.'''
+class DialogButtonBox(gtk.HBox):
+    '''Dialog button box.'''
 	
-    def __init__(self, 
-                 title, 
-                 message, 
-                 default_width,
-                 default_height,
-                 confirm_callback=None, 
-                 cancel_callback=None):
-        '''Init confirm dialog.'''
-        # Init.
+    def __init__(self):
+        '''Init dialog button box.'''
+        gtk.HBox.__init__(self)
+        self.button_align = gtk.Alignment()
+        self.button_align.set(1.0, 1.0, 0, 0)
+        self.button_align.set_padding(5, 9, 0, 7)
+        self.button_box = gtk.HBox()
+        
+        self.button_align.add(self.button_box)    
+        self.pack_start(self.button_align, True, True)
+
+    def add_buttons(self, buttons):
+        '''Add buttons.'''
+        for button in buttons:
+            self.button_box.pack_start(button, False, False, 4)
+            
+gobject.type_register(DialogButtonBox)
+
+class DialogBox(Window):
+    '''Dialog box.'''
+	
+    def __init__(self, title, default_width, default_height):
+        '''Dialog box.'''
         Window.__init__(self)
         self.set_modal(True)                                # grab focus to avoid build too many skin window
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
@@ -50,24 +64,44 @@ class ConfirmDialog(Window):
         self.default_height = default_height
         self.set_default_size(self.default_width, self.default_height)
         self.set_geometry_hints(None, self.default_width, self.default_height, -1, -1, -1, -1, -1, -1, -1, -1)
-        self.confirm_callback = confirm_callback
-        self.cancel_callback = cancel_callback
-        
+
         self.titlebar = Titlebar(
             ["close"],
             None,
             None,
             title)
+        self.add_move_event(self.titlebar)
+        self.body_box = gtk.VBox()
+        self.button_box = DialogButtonBox()
+        
+        self.window_frame.pack_start(self.titlebar, False, False)
+        self.window_frame.pack_start(self.body_box, True, True)
+        self.window_frame.pack_start(self.button_box, False, False)
+        
+        self.connect("destroy", lambda w: self.destroy())
+        
+gobject.type_register(DialogBox)
+
+class ConfirmDialog(DialogBox):
+    '''Confir dialog.'''
+	
+    def __init__(self, 
+                 title, 
+                 message, 
+                 default_width=330,
+                 default_height=145,
+                 confirm_callback=None, 
+                 cancel_callback=None):
+        '''Init confirm dialog.'''
+        # Init.
+        DialogBox.__init__(self, title, default_width, default_height)
+        self.confirm_callback = confirm_callback
+        self.cancel_callback = cancel_callback
         
         self.label_align = gtk.Alignment()
-        self.label_align.set(0.5, 0.5, 1, 1)
+        self.label_align.set(0.5, 0.5, 0, 0)
         self.label_align.set_padding(0, 0, 10, 10)
-        self.label = Label(message, text_x_align=ALIGN_MIDDLE)
-        
-        self.button_align = gtk.Alignment()
-        self.button_align.set(1.0, 0.5, 0, 0)
-        self.button_align.set_padding(10, 10, 5, 5)
-        self.button_box = gtk.HBox()
+        self.label = Label(message, text_x_align=ALIGN_MIDDLE, text_size=11)
         
         self.confirm_button = Button("确认")
         self.cancel_button = Button("取消")
@@ -75,21 +109,12 @@ class ConfirmDialog(Window):
         self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
-        self.connect("destroy", lambda w: self.destroy())
         
         # Connect widgets.
-        self.window_frame.pack_start(self.titlebar, False, False)
-        self.window_frame.pack_start(self.label_align, True, True)
-        self.window_frame.pack_start(self.button_align, False, False)
-        
+        self.body_box.pack_start(self.label_align, True, True)
         self.label_align.add(self.label)
         
-        self.button_align.add(self.button_box)        
-        self.button_box.pack_start(self.confirm_button, False, False, 5)
-        self.button_box.pack_start(self.cancel_button, False, False, 5)
-        
-        # Add move action.
-        self.add_move_event(self.titlebar)
+        self.button_box.add_buttons([self.confirm_button, self.cancel_button])
         
     def click_confirm_button(self):
         '''Click confirm button.'''
@@ -240,22 +265,6 @@ class SaveFileDialog(gtk.FileChooserDialog):
         
 gobject.type_register(SaveFileDialog)
 
-class DialogButtonBox(gtk.VBox):
-    '''Dialog button box.'''
-	
-    def __init__(self, buttons):
-        '''Init dialog button box.'''
-        gtk.VBox.__init__(self)
-        self.button_align = gtk.Alignment()
-        self.button_align.set(0.5, 0.5, 1, 1)
-        self.button_align.set_padding(5, 7, 0, 10)
-        self.button_box = gtk.HBox()
-        
-        for button in buttons:
-            self.button_box.pack_start(button, False, False, 4)
-            
-        self.button_align.add(self.button_box)    
-        self.pack_start(self.button_align, False, False)
 
 if __name__ == '__main__':
     dialog = ConfirmDialog("确认对话框", "你确定吗？", 200, 100)

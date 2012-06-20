@@ -25,6 +25,7 @@ import gobject
 import cairo
 from theme import ui_theme
 from utils import remove_callback_id
+from skin_config import skin_config
 
 class Panel(gtk.Window):
     '''Panel.'''
@@ -33,6 +34,7 @@ class Panel(gtk.Window):
         '''Init panel.'''
         # Init.
         gtk.Window.__init__(self, window_type)
+        skin_config.wrap_skin_window(self)
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)        
