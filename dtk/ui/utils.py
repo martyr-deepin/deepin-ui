@@ -181,22 +181,24 @@ def propagate_expose(widget, event):
         
 def move_window(widget, event, window):
     '''Move window.'''
-    window.begin_move_drag(
-        event.button, 
-        int(event.x_root), 
-        int(event.y_root), 
-        event.time)
+    if is_left_button(event):
+        window.begin_move_drag(
+            event.button, 
+            int(event.x_root), 
+            int(event.y_root), 
+            event.time)
     
     return False
     
 def resize_window(widget, event, window, edge):
     '''Resize window.'''
-    window.begin_resize_drag(
-        edge,
-        event.button,
-        int(event.x_root),
-        int(event.y_root),
-        event.time)
+    if is_left_button(event):
+        window.begin_resize_drag(
+            edge,
+            event.button,
+            int(event.x_root),
+            int(event.y_root),
+            event.time)
         
     return False
 
