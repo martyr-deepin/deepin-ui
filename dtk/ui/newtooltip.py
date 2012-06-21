@@ -177,9 +177,6 @@ class TooltipWindow(gtk.Window):
 
     @staticmethod
     def attach_widget(widget, content=None):
-        widget.set_has_tooltip(True)
-        widget.set_tooltip_window(_tooltip)
-
         if callable(content):
             widget.set_data('__tooltip_callback', content)
         else:
