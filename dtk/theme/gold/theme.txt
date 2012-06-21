@@ -66,6 +66,21 @@
 	 "windowShadowCorner" : ("#000000", 0.1),
  },
  "shadow_colors" : {
+     "maskMultiplePage" : [
+       (0, ("#FFFFFF", 0.5)),
+       (0, ("#FFFFFF", 0.5))
+     ],
+     "maskSinglePageBottom" : [
+       (0, ("#FFFFFF", 0.9)),
+       (0, ("#FFFFFF", 0.9))
+	 ],
+     "maskSinglePageTop" : [
+        (0, ("#FFFFFF", 0)),
+        (0.5, ("#FFFFFF", 0.7)),
+        (0.6, ("#FFFFFF", 0.8)),
+        (0.7, ("#FFFFFF", 0.85)),
+        (1, ("#FFFFFF", 0.9)),
+      ], 				 
      "menuSide" : [
 	    (0,     ("#FFEEB3", 1.0)),
 	    (1,     ("#FFFCF2", 0.0)),

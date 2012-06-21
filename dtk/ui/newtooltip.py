@@ -221,9 +221,12 @@ class TooltipWindow(gtk.Window):
             _tooltip.show()
 
         def remove_id(widget, e):
+            if e and e.mode != gdk.CROSSING_NORMAL:
+                return False
             t_id =  widget.get_data("__tooltip_timeoutid")
             if t_id:
                 gobject.source_remove(t_id)
+            return False
 
         def handle_tooltip(widget, e):
             if _tooltip.widget != widget:
@@ -240,7 +243,7 @@ class TooltipWindow(gtk.Window):
         widget.add_events(gdk.POINTER_MOTION_HINT_MASK|gdk.POINTER_MOTION_MASK|gdk.LEAVE_NOTIFY_MASK)
         ids = []
         ids.append(widget.connect('motion-notify-event', handle_tooltip))
-        ids.append(widget.connect('leave-notify-event', remove_id))
+        # ids.append(widget.connect('leave-notify-event', remove_id))
         return ids
 
     @staticmethod

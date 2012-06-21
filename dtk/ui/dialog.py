@@ -108,24 +108,17 @@ class DialogBox(Window):
         
     def draw_mask_single_page(self, cr, x, y, w, h):
         '''Draw make for single page type.'''
-        titlebar_height = self.titlebar.get_allocation().height
-        # draw_vlinear(
-        #     cr, x, y + titlebar_height, w, h - titlebar_height,
-        #     ui_theme.get_shadow_color("skinWindowBackground").get_color_info())
+        top_height = 70
         
         draw_vlinear(
-            cr, x, y, w, 70,
-            [(0, ("#FFFFFF", 0)),
-             (0.5, ("#FFFFFF", 0.7)),
-             (0.6, ("#FFFFFF", 0.8)),
-             (0.7, ("#FFFFFF", 0.85)),
-             (1, ("#FFFFFF", 0.9)),
-              ])
+            cr, x, y, w, top_height,
+            ui_theme.get_shadow_color("maskSinglePageTop").get_color_info(),
+            )
         
         draw_vlinear(
-            cr, x, y + 70, w, h - 70,
-            [(0, ("#FFFFFF", 0.9)),
-             (1, ("#FFFFFF", 0.9))])
+            cr, x, y + top_height, w, h - top_height,
+            ui_theme.get_shadow_color("maskSinglePageBottom").get_color_info(),
+            )
 
     def draw_mask_multiple_page(self, cr, x, y, w, h):
         '''Draw make for multiple page type.'''
@@ -135,8 +128,7 @@ class DialogBox(Window):
         
         draw_vlinear(
             cr, x, y + titlebar_height, w, h - titlebar_height,
-            [(0, ("#FFFFFF", 0.9)),
-             (1, ("#FFFFFF", 0.9))]
+            ui_theme.get_shadow_color("maskSinglePageBottom").get_color_info(),
             )
         
         draw_vlinear(
@@ -146,8 +138,8 @@ class DialogBox(Window):
 
         draw_vlinear(
             cr, x, y + h - button_box_height, w, button_box_height,
-            [(0, ("#FFFFFF", 0.5)),
-             (1, ("#FFFFFF", 0.5))])
+            ui_theme.get_shadow_color("maskMultiplePage").get_color_info(),
+            )
 
     def draw_mask_tab_page(self, cr, x, y, w, h):
         '''Draw make for tab page type.'''
@@ -161,8 +153,8 @@ class DialogBox(Window):
 
         draw_vlinear(
             cr, x, y + h - button_box_height, w, button_box_height,
-            [(0, ("#FFFFFF", 0.5)),
-             (1, ("#FFFFFF", 0.5))])
+            ui_theme.get_shadow_color("maskMultiplePage").get_color_info(),
+            )
         
 gobject.type_register(DialogBox)
 
