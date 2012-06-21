@@ -42,6 +42,32 @@ from label import Label
 import urllib
 from cache_pixbuf import CachePixbuf
 from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE, DIALOG_MASK_MULTIPLE_PAGE
+import threading as td
+from threads import post_gui
+
+class LoadSkinThread(td.Thread):
+    '''Load skin thread.'''
+	
+    def __init__(self, skin_dirs, add_skin_icon, add_add_icon):
+        '''Init load skin thread.'''
+        td.Thread.__init__(self)
+        self.setDaemon(True) # make thread exit when main program exit
+        
+        self.skin_dirs = skin_dirs
+        self.add_skin_icon = add_skin_icon
+        self.add_add_icon = add_add_icon
+        
+    def run(self):
+        '''Run.'''
+        support_foramts = get_pixbuf_support_foramts()
+        for skin_dir in self.skin_dirs:
+            for root, dirs, files in os.walk(skin_dir):
+                dirs.sort()         # sort directory with alpha order
+                for filename in files:
+                    if end_with_suffixs(filename, support_foramts):
+                        self.add_skin_icon(root, filename)
+
+        self.add_add_icon()                
 
 class SkinWindow(DialogBox):
     '''SkinWindow.'''
@@ -111,20 +137,23 @@ class SkinPreviewPage(gtk.VBox):
         self.preview_scrolled_window.add_child(self.preview_view)
         self.pack_start(self.preview_align, True, True)
         
-        support_foramts = get_pixbuf_support_foramts()
-        for skin_dir in [skin_config.system_skin_dir, skin_config.user_skin_dir]:
-            for root, dirs, files in os.walk(skin_dir):
-                dirs.sort()         # sort directory with alpha order
-                for filename in files:
-                    if end_with_suffixs(filename, support_foramts):
-                        self.preview_view.add_items([SkinPreviewIcon(
-                                    root, 
-                                    filename, 
-                                    self.change_skin_callback, 
-                                    self.switch_edit_page_callback,
-                                    self.pop_delete_skin_dialog)])
+        LoadSkinThread([skin_config.system_skin_dir, skin_config.user_skin_dir],
+                       self.add_skin_icon,
+                       self.add_add_icon).start()
+        # support_foramts = get_pixbuf_support_foramts()
+        # for skin_dir in [skin_config.system_skin_dir, skin_config.user_skin_dir]:
+        #     for root, dirs, files in os.walk(skin_dir):
+        #         dirs.sort()         # sort directory with alpha order
+        #         for filename in files:
+        #             if end_with_suffixs(filename, support_foramts):
+        #                 self.preview_view.add_items([SkinPreviewIcon(
+        #                             root, 
+        #                             filename, 
+        #                             self.change_skin_callback, 
+        #                             self.switch_edit_page_callback,
+        #                             self.pop_delete_skin_dialog)])
                     
-        self.preview_view.add_items([SkinAddIcon(self.create_skin_from_file)])
+        # self.preview_view.add_items([SkinAddIcon(self.create_skin_from_file)])
         
         # Add drag image support.
         self.drag_dest_set(
@@ -135,6 +164,21 @@ class SkinPreviewPage(gtk.VBox):
             gtk.gdk.ACTION_COPY)
 
         self.connect("drag-data-received", self.drag_skin_file)
+        
+    @post_gui    
+    def add_skin_icon(self, root, filename):
+        '''Add skin icon.'''
+        self.preview_view.add_items([SkinPreviewIcon(
+                    root, 
+                    filename, 
+                    self.change_skin_callback, 
+                    self.switch_edit_page_callback,
+                    self.pop_delete_skin_dialog)])
+        
+    @post_gui
+    def add_add_icon(self):
+        '''Add add icon.'''
+        self.preview_view.add_items([SkinAddIcon(self.create_skin_from_file)])
         
     def drag_skin_file(self, widget, drag_context, x, y, selection_data, info, timestamp):
         '''Drag skin file.'''
