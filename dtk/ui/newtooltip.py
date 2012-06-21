@@ -1,24 +1,4 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
-# Copyright (C) 2011 ~ 2012 Deepin, Inc.
-#               2011 ~ 2012 Xia Bin
-# 
-# Author:     Xia Bin <xiabin@linuxdeepin.com>
-# Maintainer: Xia Bin <xiabin@linuxdeepin.com>
-# 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#!/usr/bin/env python
 
 import gtk
 from gtk import gdk
@@ -52,44 +32,46 @@ class TooltipWindow(gtk.Window):
         self.add(self.alignment)
 
     def generate_child(self):
+        _tooltip.widget = _tooltip.tmpwidget
         if _tooltip.widget == _tooltip.prewidget and self.alignment.child:
             return
 
         callback = _tooltip.widget.get_data('__tooltip_callback')
         if callback != None:
+            _tooltip.value = True
             child = callback()
             if child == self.alignment.child:
                 return
 
-            if self.alignment.child:
-                self.alignment.remove(self.alignment.child)
-            child.show_all()
-            self.alignment.add(child)
         else:
-            if self.alignment.child:
-                self.alignment.child.hide()
-                self.alignment.remove(self.alignment.child)
-            self.text = self.widget.get_tooltip_text()
+            self.text = self.widget.get_data('__tooltip_text')
+            if not self.text:
+                self.text = "if you don't use tooltip...."
+
             child = gtk.Label(self.text)
-            self.alignment.add(child)
-            _tooltip.widget = child
+
+        if self.alignment.child:
+            self.alignment.child.hide()
+            self.alignment.remove(self.alignment.child)
+        self.alignment.add(child)
+        self.alignment.show_all()
+        self.queue_resize()
 
     def do_show(self):
-        _tooltip.widget = _tooltip.tmpwidget
         self.generate_child()
 
         allocation = gtk.gdk.Rectangle(0, 0, *self.alignment.child.size_request())
         allocation.width += self.padding_l + self.padding_r
         allocation.height += self.padding_t + self.padding_b
-        self.allocation = allocation
         self.size_allocate(allocation)
 
 
-        self.child.show_all()
         gtk.Window.do_show(self)
         geo = self.window.get_geometry()
-        self.swindow.move_resize(geo[0]+self.offset_x, geo[1]+self.offset_y, geo[2], geo[3])
-        print "do_show_ge", self.window.get_geometry()
+
+        #self.swindow.move_resize(geo[0]+self.offset_x, geo[1]+self.offset_y, allocation.width, allocation.height)
+        self.swindow.move_resize(geo[0]+self.offset_x, geo[1]+self.offset_y, allocation.width, allocation.height)
+        self.swindow.get_geometry() #must do this to query the allocation from X11 server.
         self.window.raise_()
 
         self.animation.init(1)
@@ -135,7 +117,7 @@ class TooltipWindow(gtk.Window):
 
         if not self.is_need_shadow:
             return True
-        print self.allocation
+        #print self.allocation
 
         (x, y, width, height) = (0, 0, self.allocation.width, self.allocation.height)
         (o_x, o_y) = (self.offset_x, self.offset_y)
@@ -184,18 +166,46 @@ class TooltipWindow(gtk.Window):
         cr.set_source(hradial)
         cr.rectangle(width-o_x, o_y, width, height-2*o_y)
         cr.fill()
+    def set_value(self, v):
+        print "set_value"
+        _tooltip.value = True
+
+    @staticmethod
+    def set_text(widget, text):
+        widget.set_data("__tooltip_text", text)
+    @staticmethod
+    def set_callback(widget, cb):
+        widget.set_data("__tooltip_callback", cb)
 
 
     @staticmethod
-    def attach_widget(widget, generator=None):
+    def attach_widget(widget, content=None):
         widget.set_has_tooltip(True)
         widget.set_tooltip_window(_tooltip)
-        widget.set_data('__tooltip_callback', generator)
+        if callable(content):
+            widget.set_data('__tooltip_callback', content)
+        else:
+            widget.set_data('__tooltip_text', content)
+
         def callback(w, x, y, k, t):
             _tooltip.tmpwidget = w
             if w != _tooltip.prewidget:
                 _tooltip.prewidget = _tooltip.widget
-            return True
+            return _tooltip.value
+
+        def hide_tooltip(w, e):
+            if _tooltip.value and _tooltip.get_visible():
+                _tooltip.value = False
+                _tooltip.hide()
+                gobject.timeout_add(1000, lambda : _tooltip.set_value(True))
+
+
+        _tooltip.top = None
+        if _tooltip.top != w.get_toplevel():
+            _tooltip.top = w.get_toplevel()
+        _tooltip.top.connect('motion-notify-event', hide_tooltip)
+
+        widget.add_events(gdk.POINTER_MOTION_HINT_MASK|gdk.POINTER_MOTION_MASK)
         return widget.connect('query_tooltip', callback)
 
     @staticmethod
@@ -219,6 +229,7 @@ _tooltip.widget = None
 #used to deduce the times of create widgets
 _tooltip.tmpwidget = None
 _tooltip.prewidget = None
+_tooltip.value = True
 
 
 
@@ -232,7 +243,7 @@ if __name__ == "__main__":
 
     def custom_tooltip_cb():
         box = gtk.VBox()
-        box.set_size_request(800, 400)
+        #box.set_size_request(800, 400)
         b = gtk.Button("abcdsdf")
         l = gtk.Label("huhuhuhuhuhulabellooooooooooooooooooooooooooooooooooooooooooooA")
         b.connect('destroy', show_d)
@@ -249,14 +260,15 @@ if __name__ == "__main__":
     #custom tooltip
     ################################################################
     TooltipWindow.attach_widget(l, custom_tooltip_cb)
+    #TooltipWindow.set_callback(b, custom_tooltip_cb)
     ################################################################
     #TooltipWindow.attach_widget(l)
 
 
     b = gtk.Button("button1")
     ################################################################
-    b.set_tooltip_text("huhu button")
-    TooltipWindow.attach_widget(b)
+    #TooltipWindow.set_text(b, "huhu button")
+    TooltipWindow.attach_widget(b, "tooltiiiiiiiiiiiiiiiiiipppp")
     ###############################################################
 
 
