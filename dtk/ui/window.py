@@ -264,12 +264,19 @@ class Window(gtk.Window):
             if edge != None:
                 resize_window(widget, event, self, edge)
                 
+    def is_disable_window_maximized(self):
+        '''Disable window maximized.'''
+        return False                
+                
     def monitor_window_state(self, widget, event):
         '''Monitor window state, add shadow when window at maximized or fullscreen status.
 Otherwise hide shadow.'''
         window_state = self.window.get_state()
         if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:
             self.hide_shadow()
+            
+            if self.is_disable_window_maximized():
+                self.unmaximize()
         else:
             self.show_shadow()
         

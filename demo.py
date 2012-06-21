@@ -160,9 +160,6 @@ if __name__ == "__main__":
         "深度图形库",
         "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py")
     
-    # Double click to toggle window.
-    application.window.add_toggle_event(application.titlebar.drag_box)
-    
     # Draw application background.
     button = gtk.Button()
     button.set_size_request(200,300)

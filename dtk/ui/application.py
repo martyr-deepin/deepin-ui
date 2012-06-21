@@ -81,11 +81,12 @@ class Application(object):
             self.titlebar.max_button.connect("clicked", lambda w: self.window.toggle_max_window())
         if "close" in button_mask:
             self.titlebar.close_button.connect("clicked", self.close_callback)
+        self.window.add_toggle_event(self.titlebar.drag_box)
         self.window.add_move_event(self.titlebar.drag_box)
 
         # Show titlebar.
         self.show_titlebar()
-
+        
     def close_window(self, widget):
         '''Close window.'''
         self.window.close_window()
