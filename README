@@ -1,8 +1,11 @@
 Deepin UI Toolkit for Linux Deepin.
 
+WARNING: for Ubuntu base system, please install python-gtk2_2.24.0-3deepin1_amd64.deb and python-glade2_2.24.0-3deepin1_amd64.deb first, otherwise, you will got memory leak (this is bug of python-gtk).
+
 * Install:
   sudo apt-get install git
-  sudo apt-get install python-setuptools python-gtk2-dev python-cairo-dev && sudo python setup.py install
+  sudo apt-get install python-setuptools python-gtk2-dev python-cairo-dev libwebkitgtk-dev python-imaging && sudo python setup.py install
   
 * Use:
   python ./deepin-ui/demo.py
+
