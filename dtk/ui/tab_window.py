@@ -22,14 +22,13 @@
 
 import gtk
 import gobject
-from window import Window
 from box import EventBox
 from draw import draw_text
 from utils import container_remove_all, get_content_size, color_hex_to_cairo, alpha_color_hex_to_cairo, cairo_disable_antialias, is_in_rect
 from button import Button
 from constant import DEFAULT_FONT_SIZE
 from scrolled_window import ScrolledWindow
-from titlebar import Titlebar
+from dialog import DialogBox, DIALOG_MASK_TAB_PAGE
 
 class TabBox(gtk.VBox):
     '''Tab box.'''
@@ -200,7 +199,7 @@ class TabBox(gtk.VBox):
 
 gobject.type_register(TabBox)               
 
-class TabWindow(Window):
+class TabWindow(DialogBox):
     '''Tab window.'''
 	
     def __init__(self, title, items, 
@@ -209,11 +208,7 @@ class TabWindow(Window):
                  window_width=458,
                  window_height=472):
         '''Init tab window.'''
-        Window.__init__(self)
-        self.set_modal(True)                                # grab focus to avoid build too many skin window
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # keeep above
-        self.set_skip_taskbar_hint(True)                    # skip taskbar
-        self.set_resizable(False)
+        DialogBox.__init__(self, title, window_width, window_height, mask_type=DIALOG_MASK_TAB_PAGE)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
         
@@ -221,12 +216,6 @@ class TabWindow(Window):
         self.window_align.set(0.0, 0.0, 1.0, 1.0)
         self.window_align.set_padding(0, 0, 2, 2)
         self.window_box = gtk.VBox()
-        
-        self.titlebar = Titlebar(
-            ["close"],
-            None,
-            None,
-            title)
         
         self.tab_window_width = window_width
         self.tab_window_height = window_height
@@ -237,32 +226,18 @@ class TabWindow(Window):
         self.tab_align.set_padding(8, 0, 0, 0)
         self.tab_align.add(self.tab_box)
         
-        self.button_align = gtk.Alignment()
-        self.button_align.set(1.0, 0.5, 0, 0)
-        self.button_align.set_padding(10, 10, 5, 5)
-        self.button_box = gtk.HBox()
-        
         self.confirm_button = Button("确认")
         self.cancel_button = Button("取消")
         
-        self.button_align.add(self.button_box)        
-        self.button_box.pack_start(self.confirm_button, False, False, 5)
-        self.button_box.pack_start(self.cancel_button, False, False, 5)
-        
-        self.window_box.pack_start(self.titlebar, False, False)
         self.window_box.pack_start(self.tab_align, True, True)
-        self.window_box.pack_start(self.button_align, False, False)
         self.window_align.add(self.window_box)
-        self.window_frame.add(self.window_align)
         
-        self.add_move_event(self.titlebar)
-        
-        self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
         self.connect("destroy", lambda w: self.destroy())
         
-        self.set_size_request(self.tab_window_width, self.tab_window_height)
+        self.body_box.pack_start(self.window_align, True, True)
+        self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
     def click_confirm_button(self):
         '''Click confirm button.'''

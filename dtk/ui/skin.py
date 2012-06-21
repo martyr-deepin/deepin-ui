@@ -41,7 +41,7 @@ from skin_config import skin_config
 from label import Label
 import urllib
 from cache_pixbuf import CachePixbuf
-from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
+from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE, DIALOG_MASK_MULTIPLE_PAGE
 
 class SkinWindow(DialogBox):
     '''SkinWindow.'''
@@ -49,6 +49,7 @@ class SkinWindow(DialogBox):
     def __init__(self, app_frame_pixbuf, preview_width=450, preview_height=500):
         '''Init skin.'''
         DialogBox.__init__(self, "选择皮肤", preview_width, preview_height, mask_type=DIALOG_MASK_SINGLE_PAGE)
+        # DialogBox.__init__(self, "选择皮肤", preview_width, preview_height, mask_type=DIALOG_MASK_MULTIPLE_PAGE)
         self.app_frame_pixbuf = app_frame_pixbuf
         
         self.preview_page = SkinPreviewPage(self, self.change_skin, self.switch_edit_page)

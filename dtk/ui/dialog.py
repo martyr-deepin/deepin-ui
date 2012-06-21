@@ -36,6 +36,7 @@ from theme import ui_theme
 
 DIALOG_MASK_SINGLE_PAGE = 0
 DIALOG_MASK_MULTIPLE_PAGE = 1
+DIALOG_MASK_TAB_PAGE = 2
 
 class DialogButtonBox(gtk.HBox):
     '''Dialog button box.'''
@@ -100,6 +101,8 @@ class DialogBox(Window):
             return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, self.draw_mask_single_page)
         elif self.mask_type == DIALOG_MASK_MULTIPLE_PAGE:
             return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, self.draw_mask_multiple_page)
+        elif self.mask_type == DIALOG_MASK_TAB_PAGE:
+            return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, self.draw_mask_tab_page)
         else:
             return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, draw_blank_mask)
         
@@ -118,12 +121,34 @@ class DialogBox(Window):
         
         draw_vlinear(
             cr, x, y + titlebar_height, w, h - titlebar_height,
-            ui_theme.get_shadow_color("dialogMaskSinglePage").get_color_info())
+            [(0, ("#FFFFFF", 0.9)),
+             (1, ("#FFFFFF", 0.9))]
+            )
         
         draw_vlinear(
             cr, x, y + h - button_box_height, w, button_box_height,
             [(0, (dominant_color, 1.0)),
              (1, (dominant_color, 1.0))])
+
+        draw_vlinear(
+            cr, x, y + h - button_box_height, w, button_box_height,
+            [(0, ("#FFFFFF", 0.5)),
+             (1, ("#FFFFFF", 0.5))])
+
+    def draw_mask_tab_page(self, cr, x, y, w, h):
+        '''Draw make for tab page type.'''
+        button_box_height = self.right_button_box.get_allocation().height
+        dominant_color = skin_config.dominant_color
+        
+        draw_vlinear(
+            cr, x, y + h - button_box_height, w, button_box_height,
+            [(0, (dominant_color, 1.0)),
+             (1, (dominant_color, 1.0))])
+
+        draw_vlinear(
+            cr, x, y + h - button_box_height, w, button_box_height,
+            [(0, ("#FFFFFF", 0.5)),
+             (1, ("#FFFFFF", 0.5))])
         
 gobject.type_register(DialogBox)
 
