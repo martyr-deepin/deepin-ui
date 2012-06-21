@@ -357,15 +357,17 @@ class ScrolledWindow(gtk.Bin):
         if self.child:
             (allocation.x, allocation.y) = (0, 0)
             self.child.do_size_allocate(self.child, allocation)
+            
             self.update_scrollbar()
-
+            
+            if self.get_realized():
+                self.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
+                self.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
 
     def update_scrollbar(self, *arg, **argk):
         if self.get_realized():
             self.calc_vbar_length()
             self.calc_hbar_length()
-            self.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
-            self.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
             self.vadjustment.emit('value-changed')
             self.hadjustment.emit('value-changed')
 
