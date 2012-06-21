@@ -57,6 +57,8 @@ def get_keyevent_name(key_event):
     else:
         key_modifiers = get_key_event_modifiers(key_event)
         key_name = get_key_name(key_event.keyval)
+        if key_name == " ":
+            key_name = "Space"
         
         if key_modifiers == []:
             return key_name

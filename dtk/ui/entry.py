@@ -1062,7 +1062,7 @@ class ShortcutKeyEntry(gtk.VBox):
         
         if is_left_button(event):
             self.entry.editable_flag = True
-            self.entry.set_text("请按下新的快捷键")
+            self.set_text("请按下新的快捷键")
             self.entry.editable_flag = False
             
             self.entry.queue_draw()
@@ -1071,7 +1071,7 @@ class ShortcutKeyEntry(gtk.VBox):
         '''Handle focus out.'''
         if self.shortcut_key != None:
             self.entry.editable_flag = True
-            self.entry.set_text(self.shortcut_key)
+            self.set_text(self.shortcut_key)
             self.entry.editable_flag = False
         
         self.entry.grab_focus_flag = False
@@ -1097,9 +1097,9 @@ class ShortcutKeyEntry(gtk.VBox):
         
         self.entry.editable_flag = True
         if self.shortcut_key == None:
-            self.entry.set_text("禁用")
+            self.set_text("禁用")
         else:
-            self.entry.set_text(self.shortcut_key)
+            self.set_text(self.shortcut_key)
         self.entry.editable_flag = False
                 
     def get_shortcut_key(self):
