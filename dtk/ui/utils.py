@@ -681,10 +681,13 @@ def find_similar_color(search_color):
     (search_h, search_s, search_b) = rgb2hsb(*color_hex_to_cairo(search_color))
     hsb_colors = map(lambda name: (name, rgb2hsb(*color_hex_to_cairo(COLOR_NAME_DICT[name]))), SIMILAR_COLOR_SEQUENCE)
     
+    # Debug.
+    # print (search_h, search_s, search_b)
+    
     similar_color_name = None
     similar_color_value = None
-    # Return black color if brightness (height) < 0.3
-    if search_b < 0.3:
+    # Return black color if brightness (height) < 0.35
+    if search_b < 0.35:
         similar_color_name = BLACK_COLOR_MAPPED
     # Return white color if saturation (radius) < 0.05
     elif search_s < 0.05:
