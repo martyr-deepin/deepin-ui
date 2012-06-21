@@ -107,10 +107,10 @@ class TreeView(gtk.DrawingArea):
         self.press_height = event.y
         index_len = len(self.tree_list)
         index = int(self.press_height / self.height)
-        self.highlight_index = index
         
         if index_len > index:
             if is_single_click(event):
+                self.highlight_index = index
                 self.press_draw_bool = True
             
                 if self.tree_list[index].child_items:        

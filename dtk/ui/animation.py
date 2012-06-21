@@ -1,24 +1,4 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
-# Copyright (C) 2011 ~ 2012 Deepin, Inc.
-#               2011 ~ 2012 Xia Bin
-# 
-# Author:     Xia Bin <xiabin@linuxdeepin.com>
-# Maintainer: Xia Bin <xiabin@linuxdeepin.com>
-# 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#!/usr/bin/python2
 import gobject
 import copy
 
@@ -110,9 +90,13 @@ class Animation:
 
     def stop(self):
         if self.animation_id:
+            print "stop"
             gobject.source_remove(self.animation_id)
+        if self.start_id:
+            gobject.source_remove(self.start_id)
+
         for o in self.other_concurent:
-            o.start()
+            o.stop()
 
     def compute(self):
         if self.time >= self.duration+self.delay:
@@ -178,5 +162,6 @@ if __name__ == "__main__":
     win.add(box)
     win.show_all()
     win.connect('destroy', gtk.main_quit)
+    win.connect_after('show', lambda w: ani3.start())
 
     gtk.main()

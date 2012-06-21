@@ -32,13 +32,12 @@ class TooltipWindow(gtk.Window):
         self.add(self.alignment)
 
     def generate_child(self):
-        _tooltip.widget = _tooltip.tmpwidget
         if _tooltip.widget == _tooltip.prewidget and self.alignment.child:
             return
+        _tooltip.widget = _tooltip.tmpwidget
 
         callback = _tooltip.widget.get_data('__tooltip_callback')
         if callback != None:
-            _tooltip.value = True
             child = callback()
             if child == self.alignment.child:
                 return
@@ -57,29 +56,21 @@ class TooltipWindow(gtk.Window):
         self.alignment.show_all()
         self.queue_resize()
 
-    def do_show(self):
-        self.generate_child()
-
         allocation = gtk.gdk.Rectangle(0, 0, *self.alignment.child.size_request())
         allocation.width += self.padding_l + self.padding_r
         allocation.height += self.padding_t + self.padding_b
         self.size_allocate(allocation)
 
 
+
+    def do_show(self):
         gtk.Window.do_show(self)
         geo = self.window.get_geometry()
 
-        #self.swindow.move_resize(geo[0]+self.offset_x, geo[1]+self.offset_y, allocation.width, allocation.height)
-        self.swindow.move_resize(geo[0]+self.offset_x, geo[1]+self.offset_y, allocation.width, allocation.height)
+        self.swindow.move_resize(geo[0]+self.offset_x, geo[1]+self.offset_y, self.allocation.width, self.allocation.height)
         self.swindow.get_geometry() #must do this to query the allocation from X11 server.
         self.window.raise_()
 
-        self.animation.init(1)
-        self.animation.start_after(self.hide_delay)
-
-    def do_hide(self):
-        gtk.Window.do_hide(self)
-        self.animation.stop()
 
     def do_realize(self):
         gtk.Window.do_realize(self)
@@ -100,11 +91,15 @@ class TooltipWindow(gtk.Window):
                 lambda *args: 1 - LinerInterpolator(*args))
 
     def do_map(self):
+
         gtk.Window.do_map(self)
         self.swindow.show()
+        self.animation.init(1)
+        self.animation.start_after(self.hide_delay)
     def do_unmap(self):
         gtk.Window.do_unmap(self)
         self.swindow.hide()
+        self.animation.stop()
 
     def do_expose_event(self, e):
         if self.alignment.child:
@@ -166,13 +161,11 @@ class TooltipWindow(gtk.Window):
         cr.set_source(hradial)
         cr.rectangle(width-o_x, o_y, width, height-2*o_y)
         cr.fill()
-    def set_value(self, v):
-        print "set_value"
-        _tooltip.value = True
 
     @staticmethod
     def set_text(widget, text):
         widget.set_data("__tooltip_text", text)
+
     @staticmethod
     def set_callback(widget, cb):
         widget.set_data("__tooltip_callback", cb)
@@ -182,36 +175,80 @@ class TooltipWindow(gtk.Window):
     def attach_widget(widget, content=None):
         widget.set_has_tooltip(True)
         widget.set_tooltip_window(_tooltip)
+
         if callable(content):
             widget.set_data('__tooltip_callback', content)
         else:
             widget.set_data('__tooltip_text', content)
 
-        def callback(w, x, y, k, t):
-            _tooltip.tmpwidget = w
-            if w != _tooltip.prewidget:
-                _tooltip.prewidget = _tooltip.widget
-            return _tooltip.value
+        def show_tooltip(x, y):
+            _tooltip.generate_child()
 
-        def hide_tooltip(w, e):
-            if _tooltip.value and _tooltip.get_visible():
-                _tooltip.value = False
-                _tooltip.hide()
-                gobject.timeout_add(1000, lambda : _tooltip.set_value(True))
+            #----------------------------------------------
+            (p_w, p_h) = (10, 10)  #TODO: pointer size ?
+            (w, h) = _tooltip.get_root_window().get_size()
+            (t_w, t_h) = _tooltip.size_request()
 
+            if x + p_w + t_w > w:
+                POS_H =  0 #left
+            else:
+                POS_H =  1 #right
 
-        _tooltip.top = None
-        if _tooltip.top != w.get_toplevel():
-            _tooltip.top = w.get_toplevel()
-        _tooltip.top.connect('motion-notify-event', hide_tooltip)
+            if y + p_h + t_h > h:
+                POS_V = 2 #top
+            else:
+                POS_V = 4 #bttom
+            p = POS_H + POS_V
+            ######################################
+            #            LEFT(0)        RIGHT(1) #
+            #------------------------------------#
+            #TOP(2)         2             3      #
+            #------------------------------------#
+            #BOTTOM(4)      4             5      #
+            ######################################
+            if p == 2:
+                _tooltip.move(x - t_w, y - t_h)
+            elif p == 3:
+                _tooltip.move(x, y - t_h)
+            elif p == 4:
+                _tooltip.move(x - t_w, y)
+            elif p == 5:
+                _tooltip.move(x + p_w, y + p_h)
+            else:
+                assert False, "This should appaer!!!!!!"
+            #------------------------------------------
 
-        widget.add_events(gdk.POINTER_MOTION_HINT_MASK|gdk.POINTER_MOTION_MASK)
-        return widget.connect('query_tooltip', callback)
+            _tooltip.show()
+
+        def remove_id(widget, e):
+            t_id =  widget.get_data("__tooltip_timeoutid")
+            if t_id:
+                gobject.source_remove(t_id)
+
+        def handle_tooltip(widget, e):
+            if _tooltip.widget != widget:
+                _tooltip.prewidget = widget
+            _tooltip.tmpwidget = widget
+
+            remove_id(widget, None)
+            _tooltip.hide()
+
+            (x, y) = (int(e.x_root), int(e.y_root))
+            t_id = gobject.timeout_add(2000, lambda : show_tooltip(x, y))
+            widget.set_data("__tooltip_timeoutid", t_id)
+
+        widget.add_events(gdk.POINTER_MOTION_HINT_MASK|gdk.POINTER_MOTION_MASK|gdk.LEAVE_NOTIFY_MASK)
+        ids = []
+        ids.append(widget.connect('motion-notify-event', handle_tooltip))
+        ids.append(widget.connect('leave-notify-event', remove_id))
+        return ids
 
     @staticmethod
-    def deattach_widget(widget, signal_id):
-        gobject.source_remove(signal_id)
+    def deattach_widget(widget, ids):
+        for i in ids:
+            gobject.source_remove(i)
         widget.set_data('__tooltip_callback', None)
+        widget.set_data('__tooltip_text', None)
         if _tooltip.tmpwidget == widget:
             _tooltip.tmpwidget = None
         if _tooltip.widget == widget:
@@ -229,7 +266,6 @@ _tooltip.widget = None
 #used to deduce the times of create widgets
 _tooltip.tmpwidget = None
 _tooltip.prewidget = None
-_tooltip.value = True
 
 
 
@@ -256,7 +292,7 @@ if __name__ == "__main__":
     w.set_size_request(500, 500)
     box = gtk.VBox()
 
-    l = gtk.Label("label1")
+    l = gtk.Button("label1")
     #custom tooltip
     ################################################################
     TooltipWindow.attach_widget(l, custom_tooltip_cb)
