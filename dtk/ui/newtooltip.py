@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
+from utils import propagate_expose
 import gtk
 from gtk import gdk
 import gobject
 from animation import Animation, LinerInterpolator
 import cairo
+from label import Label
 
 _tooltip = None
 class TooltipWindow(gtk.Window):
-    def __init__(self):
+    def __init__(self, show_delay=2000, hide_delay=3000):
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
 
         #offset_x and offset_y has'nt support differnt value
@@ -17,7 +19,8 @@ class TooltipWindow(gtk.Window):
 
         self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color("yellow"))
         self.is_need_shadow = True
-        self.hide_delay = 3000
+        self.show_delay = show_delay
+        self.hide_delay = hide_delay
 
         self.padding_t = 5
         self.padding_b = 5
@@ -47,7 +50,7 @@ class TooltipWindow(gtk.Window):
             if not self.text:
                 self.text = "if you don't use tooltip...."
 
-            child = gtk.Label(self.text)
+            child = Label(self.text)
 
         if self.alignment.child:
             self.alignment.child.hide()
@@ -65,10 +68,12 @@ class TooltipWindow(gtk.Window):
 
     def do_show(self):
         gtk.Window.do_show(self)
-        geo = self.window.get_geometry()
 
+        geo = self.window.get_geometry()
         self.swindow.move_resize(geo[0]+self.offset_x, geo[1]+self.offset_y, self.allocation.width, self.allocation.height)
         self.swindow.get_geometry() #must do this to query the allocation from X11 server.
+        self.swindow.show()
+
         self.window.raise_()
 
 
@@ -93,7 +98,6 @@ class TooltipWindow(gtk.Window):
     def do_map(self):
 
         gtk.Window.do_map(self)
-        self.swindow.show()
         self.animation.init(1)
         self.animation.start_after(self.hide_delay)
     def do_unmap(self):
@@ -102,66 +106,66 @@ class TooltipWindow(gtk.Window):
         self.animation.stop()
 
     def do_expose_event(self, e):
-        if self.alignment.child:
-            self.alignment.child.do_expose_event(self.alignment.child, e)
-
         cr = self.swindow.cairo_create()
         cr.set_source_rgba(1, 1, 1, 0)
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
 
-        if not self.is_need_shadow:
-            return True
-        #print self.allocation
+        if self.is_need_shadow:
+            #print self.allocation
+            
+            (x, y, width, height) = (0, 0, self.allocation.width, self.allocation.height)
+            (o_x, o_y) = (self.offset_x, self.offset_y)
+            
+            
+            #right-bottom corner
+            radial = cairo.RadialGradient(width - o_x, height-o_y, 1,  width -o_x, height-o_y, o_x)
+            radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
+            radial.add_color_stop_rgba(0.6, 0,0,0, 0.1)
+            radial.add_color_stop_rgba(1, 0,0,0, 0)
+            cr.set_source(radial)
+            cr.rectangle(width-o_x, height-o_y, o_x, o_y)
+            cr.fill()
+            
+            #left-bottom corner
+            radial = cairo.RadialGradient(o_x, height-o_y, 1,  o_x, height-o_y, o_x)
+            radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
+            radial.add_color_stop_rgba(0.6, 0,0,0, 0.1)
+            radial.add_color_stop_rgba(1, 0,0,0, 0)
+            cr.set_source(radial)
+            cr.rectangle(0, height-o_y, o_x, o_y)
+            cr.fill()
+            
+            #left-top corner
+            radial = cairo.RadialGradient(width-o_x, o_y, 1, width-o_x, o_y, o_x)
+            radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
+            radial.add_color_stop_rgba(0.6, 0,0,0, 0.1)
+            radial.add_color_stop_rgba(1, 0,0,0, 0)
+            cr.set_source(radial)
+            cr.rectangle(width-o_x, 0, o_x, o_y)
+            cr.fill()
+            
+            
+            vradial = cairo.LinearGradient(0, height-o_y, 0, height)
+            vradial.add_color_stop_rgba(0.0, 0,0,0, .5)
+            vradial.add_color_stop_rgba(0.4, 0,0,0, 0.25)
+            vradial.add_color_stop_rgba(1, 0,0,0, 0.0)
+            cr.set_source(vradial)
+            cr.rectangle(o_x, height-o_x, width-2*o_x, height)
+            cr.fill()
+            
+            hradial = cairo.LinearGradient(width-o_x, 0, width, 0)
+            hradial.add_color_stop_rgba(0.0, 0,0,0, .5)
+            hradial.add_color_stop_rgba(0.4, 0,0,0, 0.25)
+            hradial.add_color_stop_rgba(1, 0,0,0, 0.0)
+            cr.set_source(hradial)
+            cr.rectangle(width-o_x, o_y, width, height-2*o_y)
+            cr.fill()
 
-        (x, y, width, height) = (0, 0, self.allocation.width, self.allocation.height)
-        (o_x, o_y) = (self.offset_x, self.offset_y)
-
-
-        #right-bottom corner
-        radial = cairo.RadialGradient(width - o_x, height-o_y, 1,  width -o_x, height-o_y, o_x)
-        radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
-        radial.add_color_stop_rgba(0.6, 0,0,0, 0.1)
-        radial.add_color_stop_rgba(1, 0,0,0, 0)
-        cr.set_source(radial)
-        cr.rectangle(width-o_x, height-o_y, o_x, o_y)
-        cr.fill()
-
-        #left-bottom corner
-        radial = cairo.RadialGradient(o_x, height-o_y, 1,  o_x, height-o_y, o_x)
-        radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
-        radial.add_color_stop_rgba(0.6, 0,0,0, 0.1)
-        radial.add_color_stop_rgba(1, 0,0,0, 0)
-        cr.set_source(radial)
-        cr.rectangle(0, height-o_y, o_x, o_y)
-        cr.fill()
-
-        #left-top corner
-        radial = cairo.RadialGradient(width-o_x, o_y, 1, width-o_x, o_y, o_x)
-        radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
-        radial.add_color_stop_rgba(0.6, 0,0,0, 0.1)
-        radial.add_color_stop_rgba(1, 0,0,0, 0)
-        cr.set_source(radial)
-        cr.rectangle(width-o_x, 0, o_x, o_y)
-        cr.fill()
-
-
-        vradial = cairo.LinearGradient(0, height-o_y, 0, height)
-        vradial.add_color_stop_rgba(0.0, 0,0,0, .5)
-        vradial.add_color_stop_rgba(0.4, 0,0,0, 0.25)
-        vradial.add_color_stop_rgba(1, 0,0,0, 0.0)
-        cr.set_source(vradial)
-        cr.rectangle(o_x, height-o_x, width-2*o_x, height)
-        cr.fill()
-
-        hradial = cairo.LinearGradient(width-o_x, 0, width, 0)
-        hradial.add_color_stop_rgba(0.0, 0,0,0, .5)
-        hradial.add_color_stop_rgba(0.4, 0,0,0, 0.25)
-        hradial.add_color_stop_rgba(1, 0,0,0, 0.0)
-        cr.set_source(hradial)
-        cr.rectangle(width-o_x, o_y, width, height-2*o_y)
-        cr.fill()
-
+        propagate_expose(self, e)
+        
+        return True
+        
     @staticmethod
     def set_text(widget, text):
         widget.set_data("__tooltip_text", text)
@@ -221,7 +225,7 @@ class TooltipWindow(gtk.Window):
             _tooltip.show()
 
         def remove_id(widget, e):
-            if e and e.mode != gdk.CROSSING_NORMAL:
+            if e and  (e.x_root, e.y_root) == _tooltip.pos_info:
                 return False
             t_id =  widget.get_data("__tooltip_timeoutid")
             if t_id:
@@ -236,14 +240,14 @@ class TooltipWindow(gtk.Window):
             remove_id(widget, None)
             _tooltip.hide()
 
-            (x, y) = (int(e.x_root), int(e.y_root))
-            t_id = gobject.timeout_add(2000, lambda : show_tooltip(x, y))
+            _tooltip.pos_info = (int(e.x_root), int(e.y_root))
+            t_id = gobject.timeout_add(_tooltip.show_delay, lambda : show_tooltip(*_tooltip.pos_info))
             widget.set_data("__tooltip_timeoutid", t_id)
 
         widget.add_events(gdk.POINTER_MOTION_HINT_MASK|gdk.POINTER_MOTION_MASK|gdk.LEAVE_NOTIFY_MASK)
         ids = []
         ids.append(widget.connect('motion-notify-event', handle_tooltip))
-        # ids.append(widget.connect('leave-notify-event', remove_id))
+        ids.append(widget.connect('leave-notify-event', remove_id))
         return ids
 
     @staticmethod
@@ -269,6 +273,7 @@ _tooltip.widget = None
 #used to deduce the times of create widgets
 _tooltip.tmpwidget = None
 _tooltip.prewidget = None
+_tooltip.pos_info = None
 
 
 
@@ -276,6 +281,8 @@ _tooltip.prewidget = None
 
 
 if __name__ == "__main__":
+    import pseudo_skin
+    
     def show_d(w):
         print "destroy......", w
         return False

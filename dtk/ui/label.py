@@ -31,7 +31,7 @@ class Label(gtk.EventBox):
 	
     def __init__(self, 
                  text, 
-                 text_color=ui_theme.get_color("labelText"),
+                 text_color=None,
                  text_size=DEFAULT_FONT_SIZE,
                  text_x_align=ALIGN_START,
                  label_width=None,
@@ -47,7 +47,11 @@ class Label(gtk.EventBox):
         
         self.text = text
         self.text_size = text_size
-        self.text_color = text_color
+        if text_color == None:
+            self.text_color = ui_theme.get_color("labelText")
+        else:
+            self.text_color = text_color
+            
         if self.enable_gaussian:
             self.gaussian_radious=2
             self.gaussian_color="#000000"

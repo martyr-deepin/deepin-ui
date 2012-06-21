@@ -22,11 +22,11 @@
 
 from constant import EDGE_DICT
 from draw import draw_window_shadow, draw_window_frame
-from theme import ui_theme
 from utils import cairo_state, propagate_expose, set_cursor, resize_window, get_event_root_coords, enable_shadow, alpha_color_hex_to_cairo, is_double_click, move_window
 import cairo
 import gobject
 import gtk
+from theme import ui_theme
 from skin_config import skin_config
 
 class Window(gtk.Window):
@@ -356,6 +356,8 @@ Otherwise hide shadow.'''
 gobject.type_register(Window)
     
 if __name__ == "__main__":
+    import pseudo_skin
+    
     window = Window()
     window.connect("destroy", lambda w: gtk.main_quit())
     window.set_size_request(500, 500)
