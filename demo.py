@@ -65,7 +65,6 @@ from dtk.ui.color_selection import ColorButton
 from dtk.ui.scalebar import HScalebar, VScalebar
 from dtk.ui.scrolled_window import ScrolledWindow
 from dtk.ui.statusbar import Statusbar
-from dtk.ui.tooltip import Tooltip
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.iconview import IconView, IconItem
@@ -296,7 +295,7 @@ if __name__ == "__main__":
     category_box = HPaned()
     body_box.add(category_box)
     categorybar = Categorybar([
-            (app_theme.get_pixbuf("categorybar/word.png"), "测试分类", lambda : Tooltip("测试分类", 600, 400)),
+            (app_theme.get_pixbuf("categorybar/word.png"), "测试分类", None),
             (app_theme.get_pixbuf("categorybar/win.png"), "测试分类", None),
             (app_theme.get_pixbuf("categorybar/web.png"), "测试分类", None),
             (app_theme.get_pixbuf("categorybar/professional.png"), "测试分类", None),

@@ -1,195 +1,338 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
-# Copyright (C) 2011 ~ 2012 Deepin, Inc.
-#               2011 ~ 2012 Wang Yong
-# 
-# Author:     Hailong Qiu <qiuhailong@linuxdeepin.com>
-# Maintainer: Hailong Qiu <qiuhailong@linuxdeepin.com>
-# 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-from constant import DEFAULT_FONT_SIZE
-from utils import remove_from_list
-from draw import draw_vlinear, draw_text
-from theme import ui_theme
-from utils import get_content_size, propagate_expose
-from window import Window
-import gobject
+from utils import propagate_expose, color_hex_to_cairo, cairo_disable_antialias
 import gtk
+from gtk import gdk
+import gobject
+from animation import Animation, LinerInterpolator
+import cairo
+from label import Label
 
-tooltip_windows = []
-
+_tooltip = None
 class TooltipWindow(gtk.Window):
-    '''Tooltip window.'''
-	
-    def __init__(self, widget, x, y):
-        '''Init tooltip window.'''
+    def __init__(self, show_delay=1000, hide_delay=3000):
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
-        self.x = x
-        self.y = y
-        self.monitor_window = widget.get_toplevel()
-        
-        # Remove any other tooltip window first.
-        global tooltip_windows
-        for tooltip_window in tooltip_windows:
-            tooltip_window.exit()
-            
-        # Add self into tooltip windows list.
-        tooltip_windows.append(self)
-        
-    def start_show(self):
-        '''Start show tooltip.'''
-        self.show_all()
-        
-    def start_hide(self):
-        '''Start hide tooltip.'''
-        self.hide_all()
-    
-    def exit(self):
-        '''Exit tooltip window.'''
-        global tooltip_windows
-        remove_from_list(tooltip_windows, self)
-        
-        self.destroy()    
-        
-gobject.type_register(TooltipWindow)
 
-class TooltipText(TooltipWindow):
-    '''Text tooltip.'''
-	
-    def __init__(self, widget, x, y, text):
-        '''Init text tooltip.'''
-        TooltipWindow.__init__(self, widget, x, y)
-        self.text = text
-        self.tooltip_background = "#fffac6"
-        self.tooltip_frame = "#000000"
-        self.tooltip_text = "#242424"
-        
-gobject.type_register(TooltipText)
+        #offset_x and offset_y has'nt support differnt value
+        self.offset_x = 5
+        self.offset_y = 5
 
-class TooltipBox(TooltipWindow):
-    '''Text tooltip.'''
-	
-    def __init__(self, widget, x, y, child):
-        '''Init text tooltip.'''
-        TooltipWindow.__init__(self, widget, x, y)
-        self.child = child
-        
-gobject.type_register(TooltipBox)
+        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFCA"))
+        self.is_need_shadow = True
+        self.show_delay = show_delay
+        self.hide_delay = hide_delay
 
-class Tooltip(Window):
-    '''Tooltip.'''
-    
-    def __init__ (self, text, x, y, text_size=DEFAULT_FONT_SIZE, text_color="tooltipText",
-                  paddingX=10, paddingY=10):
-        '''Init tooltip.'''
-        # Init.
-        Window.__init__(self)
-        self.text = text
-        self.text_size = text_size
-        self.text_color = text_color
-        self.opacity = 0.0
-        self.animation_delay = 50 # milliseconds
-        self.animation_ticker = 0
-        self.animation_start_times = 5 
-        self.animation_stay_times = 40 
-        self.animation_end_times = 47
-        (font_width, font_height) = get_content_size(text, text_size)
-        
-        # Init Window.
-        self.set_opacity(self.opacity)
-        self.set_modal(True)
-        self.set_size_request(
-            font_width + paddingX * 2, 
-            font_height + paddingY * 2)
-        self.move(x, y)
-        
-        # Init signal.
-        self.connect("focus-out-event", lambda w,e: self.exit())
-        
-        self.tooltip_box = gtk.VBox()
-        self.window_frame.add(self.tooltip_box)
-        self.tooltip_box.connect("expose-event", self.expose_tooltip) 
-        
-        # Add time show tooltip.
-        self.animation_id = gtk.timeout_add(self.animation_delay, self.start_animation)
-        
-        # Show.
-        self.show_all()
-        
-    def start_animation(self):
-        '''Start animation.'''
-        # Increase opacity.
-        if self.animation_ticker < self.animation_start_times:
-            self.opacity = (1.0 / self.animation_start_times) * self.animation_ticker
-        # Wait some time.
-        elif self.animation_ticker < self.animation_stay_times:
-            self.opacity = 1
-        # Decrease opacity.
-        else:
-            self.opacity = 1.0 / (self.animation_end_times - self.animation_stay_times) * (self.animation_end_times - self.animation_ticker)
-            
-        # Update animation ticker.
-        self.animation_ticker += 1
-        
-        # Exit when reach end times.
-        if self.animation_ticker == self.animation_end_times:
-            self.exit()
-        # Otherw update window opacity.
-        else:
-            self.set_opacity(self.opacity)
-            
-        return True
-    
-    def exit(self):
-        '''Exit.'''
-        # Make sure animation callback is remove.
-        gobject.source_remove(self.animation_id)
-        
-        # Destroy window.
-        self.destroy()
-        
-    def hide_tooltip(self):
-        '''Hide.'''
-        # Make sure animation callback is remove.
-        gobject.source_remove(self.animation_id)
-        
-        # Destroy window.
-        self.hide_all()
+        self.padding_t = 5
+        self.padding_b = 5
+        self.padding_l = 5
+        self.padding_r = 5
+        ##########################################################
 
-    def expose_tooltip(self, widget, event):
-        '''Expose tooltip.'''
-        # Init.
-        cr = widget.window.cairo_create()
+        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
+        self.alignment = gtk.Alignment()
+        self.alignment.set(0.5, 0.5, 1, 1)
+        self.alignment.set_padding(self.padding_t, self.padding_l, self.padding_b, self.padding_r)
+        self.set_redraw_on_allocate(True)
+        self.add(self.alignment)
+        
+        self.alignment.connect("expose-event", self.expose_tooltip_label)
+        
+    def expose_tooltip_label(self, widget, event):
+        '''Expose tooltip label.'''
         rect = widget.allocation
+        cr = widget.window.cairo_create()
         
-        # Draw background.
-        draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                     [(0, ("#FFFFFF", 1)),
-                      (1, ("#FFFFFF", 1)),]
-                     # ui_theme.get_shadow_color("tooltipBackground").get_color_info()
-                     )
+        with cairo_disable_antialias(cr):
+            cr.set_line_width(1)
+            cr.set_source_rgba(*color_hex_to_cairo("#AFAF9D"))
+            cr.rectangle(rect.x + 1, rect.y + 1, rect.width - 1, rect.height - 1)
+            cr.stroke()
         
-        # Draw font.
-        draw_text(cr, self.text, rect.x, rect.y, rect.width, rect.height,
-                    self.text_size, 
-                    ui_theme.get_color(self.text_color).get_color())
-        
-        # Propagate expose.
         propagate_expose(widget, event)
         
         return True
+
+    def generate_child(self):
+        if _tooltip.widget == _tooltip.prewidget and self.alignment.child:
+            return
+        _tooltip.widget = _tooltip.tmpwidget
+
+        callback = _tooltip.widget.get_data('__tooltip_callback')
+        if callback != None:
+            child = callback()
+            if child == self.alignment.child:
+                return
+
+        else:
+            self.text = self.widget.get_data('__tooltip_text')
+            if not self.text:
+                self.text = "if you don't use tooltip...."
+
+            child = Label(self.text)
+
+        if self.alignment.child:
+            self.alignment.child.hide()
+            self.alignment.remove(self.alignment.child)
+        self.alignment.add(child)
+        self.alignment.show_all()
+        self.queue_resize()
+
+        allocation = gtk.gdk.Rectangle(0, 0, *self.alignment.child.size_request())
+        allocation.width += self.padding_l + self.padding_r
+        allocation.height += self.padding_t + self.padding_b
+        self.size_allocate(allocation)
+
+
+
+    def do_show(self):
+        gtk.Window.do_show(self)
+
+        geo = self.window.get_geometry()
+        self.swindow.move_resize(geo[0]+self.offset_x, geo[1]+self.offset_y, self.allocation.width, self.allocation.height)
+        self.swindow.get_geometry() #must do this to query the allocation from X11 server.
+        self.swindow.show()
+
+        self.window.raise_()
+
+
+    def do_realize(self):
+        gtk.Window.do_realize(self)
+        self.swindow = gtk.gdk.Window(self.get_parent_window(),
+                x=self.allocation.x,
+                y=self.allocation.y,
+                width=self.allocation.width+30,
+                height=self.allocation.height+30,
+                window_type=gtk.gdk.WINDOW_TEMP,
+                wclass=gtk.gdk.INPUT_OUTPUT,
+                event_mask=(self.get_events()| gdk.EXPOSURE_MASK | gdk.VISIBILITY_NOTIFY_MASK),
+                visual=self.get_visual(),
+                colormap=self.get_colormap(),
+                )
+        self.swindow.set_user_data(self)
+
+        self.animation = Animation([self.window, self.swindow], gdk.Window.set_opacity, 1000, [0, 1],
+                lambda *args: 1 - LinerInterpolator(*args))
+
+    def do_map(self):
+
+        gtk.Window.do_map(self)
+        self.animation.init(1)
+        self.animation.start_after(self.hide_delay)
+    def do_unmap(self):
+        gtk.Window.do_unmap(self)
+        self.swindow.hide()
+        self.animation.stop()
+
+    def do_expose_event(self, e):
+        cr = self.swindow.cairo_create()
+        cr.set_source_rgba(1, 1, 1, 0)
+        cr.set_operator(cairo.OPERATOR_SOURCE)
+        cr.paint()
+
+        if self.is_need_shadow:
+            #print self.allocation
+            
+            (x, y, width, height) = (0, 0, self.allocation.width, self.allocation.height)
+            (o_x, o_y) = (self.offset_x, self.offset_y)
+            
+            
+            #right-bottom corner
+            radial = cairo.RadialGradient(width - o_x, height-o_y, 1,  width -o_x, height-o_y, o_x)
+            radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
+            radial.add_color_stop_rgba(0.6, 0,0,0, 0.1)
+            radial.add_color_stop_rgba(1, 0,0,0, 0)
+            cr.set_source(radial)
+            cr.rectangle(width-o_x, height-o_y, o_x, o_y)
+            cr.fill()
+            
+            #left-bottom corner
+            radial = cairo.RadialGradient(o_x, height-o_y, 1,  o_x, height-o_y, o_x)
+            radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
+            radial.add_color_stop_rgba(0.6, 0,0,0, 0.1)
+            radial.add_color_stop_rgba(1, 0,0,0, 0)
+            cr.set_source(radial)
+            cr.rectangle(0, height-o_y, o_x, o_y)
+            cr.fill()
+            
+            #left-top corner
+            radial = cairo.RadialGradient(width-o_x, o_y, 1, width-o_x, o_y, o_x)
+            radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
+            radial.add_color_stop_rgba(0.6, 0,0,0, 0.1)
+            radial.add_color_stop_rgba(1, 0,0,0, 0)
+            cr.set_source(radial)
+            cr.rectangle(width-o_x, 0, o_x, o_y)
+            cr.fill()
+            
+            
+            vradial = cairo.LinearGradient(0, height-o_y, 0, height)
+            vradial.add_color_stop_rgba(0.0, 0,0,0, .5)
+            vradial.add_color_stop_rgba(0.4, 0,0,0, 0.25)
+            vradial.add_color_stop_rgba(1, 0,0,0, 0.0)
+            cr.set_source(vradial)
+            cr.rectangle(o_x, height-o_x, width-2*o_x, height)
+            cr.fill()
+            
+            hradial = cairo.LinearGradient(width-o_x, 0, width, 0)
+            hradial.add_color_stop_rgba(0.0, 0,0,0, .5)
+            hradial.add_color_stop_rgba(0.4, 0,0,0, 0.25)
+            hradial.add_color_stop_rgba(1, 0,0,0, 0.0)
+            cr.set_source(hradial)
+            cr.rectangle(width-o_x, o_y, width, height-2*o_y)
+            cr.fill()
+
+        propagate_expose(self, e)
+        
+        return True
+        
+    @staticmethod
+    def set_text(widget, text):
+        widget.set_data("__tooltip_text", text)
+
+    @staticmethod
+    def set_callback(widget, cb):
+        widget.set_data("__tooltip_callback", cb)
+
+
+    @staticmethod
+    def attach_widget(widget, content=None):
+        if callable(content):
+            widget.set_data('__tooltip_callback', content)
+        else:
+            widget.set_data('__tooltip_text', content)
+
+        def show_tooltip(x, y):
+            _tooltip.generate_child()
+
+            #----------------------------------------------
+            (p_w, p_h) = (10, 10)  #TODO: pointer size ?
+            (w, h) = _tooltip.get_root_window().get_size()
+            (t_w, t_h) = _tooltip.size_request()
+
+            if x + p_w + t_w > w:
+                POS_H =  0 #left
+            else:
+                POS_H =  1 #right
+
+            if y + p_h + t_h > h:
+                POS_V = 2 #top
+            else:
+                POS_V = 4 #bttom
+            p = POS_H + POS_V
+            ######################################
+            #            LEFT(0)        RIGHT(1) #
+            #------------------------------------#
+            #TOP(2)         2             3      #
+            #------------------------------------#
+            #BOTTOM(4)      4             5      #
+            ######################################
+            if p == 2:
+                _tooltip.move(x - t_w, y - t_h)
+            elif p == 3:
+                _tooltip.move(x, y - t_h)
+            elif p == 4:
+                _tooltip.move(x - t_w, y)
+            elif p == 5:
+                _tooltip.move(x + p_w, y + p_h)
+            else:
+                assert False, "This should appaer!!!!!!"
+            #------------------------------------------
+
+            _tooltip.show()
+
+        def remove_id(widget, e):
+            if e and  (e.x_root, e.y_root) == _tooltip.pos_info:
+                return False
+            t_id =  widget.get_data("__tooltip_timeoutid")
+            if t_id:
+                gobject.source_remove(t_id)
+            return False
+
+        def handle_tooltip(widget, e):
+            if _tooltip.widget != widget:
+                _tooltip.prewidget = widget
+            _tooltip.tmpwidget = widget
+
+            remove_id(widget, None)
+            _tooltip.hide()
+
+            _tooltip.pos_info = (int(e.x_root), int(e.y_root))
+            t_id = gobject.timeout_add(_tooltip.show_delay, lambda : show_tooltip(*_tooltip.pos_info))
+            widget.set_data("__tooltip_timeoutid", t_id)
+
+        widget.add_events(gdk.POINTER_MOTION_HINT_MASK|gdk.POINTER_MOTION_MASK|gdk.LEAVE_NOTIFY_MASK)
+        ids = []
+        ids.append(widget.connect('motion-notify-event', handle_tooltip))
+        ids.append(widget.connect('leave-notify-event', remove_id))
+        return ids
+
+    @staticmethod
+    def deattach_widget(widget, ids):
+        for i in ids:
+            gobject.source_remove(i)
+        widget.set_data('__tooltip_callback', None)
+        widget.set_data('__tooltip_text', None)
+        if _tooltip.tmpwidget == widget:
+            _tooltip.tmpwidget = None
+        if _tooltip.widget == widget:
+            _tooltip.widget = None
+        if _tooltip.prewidget == widget:
+            _tooltip.prewidget = None
+
+
+gobject.type_register(TooltipWindow)
+
+_tooltip = TooltipWindow()
+
+#used to fetch the widget's tooltip text
+_tooltip.widget = None
+#used to deduce the times of create widgets
+_tooltip.tmpwidget = None
+_tooltip.prewidget = None
+_tooltip.pos_info = None
+
+if __name__ == "__main__":
+    import pseudo_skin
     
-gobject.type_register(Tooltip)
+    def show_d(w):
+        print "destroy......", w
+        return False
+
+    def custom_tooltip_cb():
+        box = gtk.VBox()
+        #box.set_size_request(800, 400)
+        b = gtk.Button("abcdsdf")
+        l = gtk.Label("huhuhuhuhuhulabellooooooooooooooooooooooooooooooooooooooooooooA")
+        b.connect('destroy', show_d)
+        l.connect('destroy', show_d)
+        box.add(b)
+        box.add(l)
+        return box
+
+    w = gtk.Window()
+    w.set_size_request(500, 500)
+    box = gtk.VBox()
+
+    l = gtk.Button("label1")
+    #custom tooltip
+    ################################################################
+    TooltipWindow.attach_widget(l, custom_tooltip_cb)
+    #TooltipWindow.set_callback(b, custom_tooltip_cb)
+    ################################################################
+    #TooltipWindow.attach_widget(l)
+
+
+    b = gtk.Button("button1")
+    ################################################################
+    #TooltipWindow.set_text(b, "huhu button")
+    TooltipWindow.attach_widget(b, "Hello, Linux Deepiner!")
+    ###############################################################
+
+
+    box.pack_start(l)
+    box.pack_start(b)
+
+    w.add(box)
+    w.connect('destroy', gtk.main_quit)
+    w.show_all()
+    gtk.main()
+
