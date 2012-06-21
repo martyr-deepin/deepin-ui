@@ -20,10 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from utils import get_content_size, color_hex_to_cairo, propagate_expose, window_is_max, get_same_level_widgets, widget_fix_cycle_destroy_bug
+from utils import get_content_size, color_hex_to_cairo, propagate_expose, window_is_max, get_same_level_widgets, widget_fix_cycle_destroy_bug, run_command, set_clickable_cursor
 from theme import ui_theme
+from box import EventBox
 from draw import draw_vlinear, draw_pixbuf, draw_line, draw_text
 from constant import DEFAULT_FONT_SIZE
+from label import Label
 import pango
 import gtk
 import gobject
@@ -593,3 +595,18 @@ class DisableButton(gtk.Button):
         return True
     
 gobject.type_register(DisableButton)
+
+class LinkButton(gtk.EventBox):
+    '''Link button.'''
+	
+    def __init__(self, text, link, enable_gaussian=True):
+        '''Init link button.'''
+        gtk.EventBox.__init__(self)
+        self.set_visible_window(False)
+        
+        self.label = Label(text, enable_gaussian=enable_gaussian)
+        self.add(self.label)
+        
+        self.connect("button-press-event", lambda w, e: run_command("xdg-open %s" % link))
+
+gobject.type_register(LinkButton)

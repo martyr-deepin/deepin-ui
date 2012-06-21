@@ -46,7 +46,7 @@ skin_config.load_themes(ui_theme, app_theme)
 
 # Load other modules.
 from dtk.ui.application import Application
-from dtk.ui.button import ImageButton
+from dtk.ui.button import ImageButton, LinkButton
 from dtk.ui.categorybar import Categorybar
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
 from dtk.ui.entry import TextEntry, ShortcutKeyEntry
@@ -370,6 +370,9 @@ if __name__ == "__main__":
     
     color_button = ColorButton()
     entry_box.pack_start(color_button, False, False)
+    
+    link_button = LinkButton("首页", "http://www.linuxdeepin.com")
+    entry_box.pack_start(link_button, False, False)
     
     # Group 
     image_button_items = [
