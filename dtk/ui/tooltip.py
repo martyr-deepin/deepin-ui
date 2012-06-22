@@ -44,7 +44,7 @@ class TooltipWindow(gtk.Window):
         
         with cairo_disable_antialias(cr):
             cr.set_line_width(1)
-            cr.set_source_rgba(*color_hex_to_cairo("#AFAF9D"))
+            cr.set_source_rgba(*color_hex_to_cairo("#E7E77C"))
             cr.rectangle(rect.x + 1, rect.y + 1, rect.width - 1, rect.height - 1)
             cr.stroke()
         
