@@ -353,9 +353,8 @@ class ColorButton(gtk.VBox):
         
     def select_color(self, color):
         '''Select color.'''
-        self.emit("color-select", color)
-        
         self.set_color(color)
+        self.emit("color-select", color)
         
     def set_color(self, color):
         '''Set color.'''
