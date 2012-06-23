@@ -140,20 +140,6 @@ class SkinPreviewPage(gtk.VBox):
         LoadSkinThread([skin_config.system_skin_dir, skin_config.user_skin_dir],
                        self.add_skin_icon,
                        self.add_add_icon).start()
-        # support_foramts = get_pixbuf_support_foramts()
-        # for skin_dir in [skin_config.system_skin_dir, skin_config.user_skin_dir]:
-        #     for root, dirs, files in os.walk(skin_dir):
-        #         dirs.sort()         # sort directory with alpha order
-        #         for filename in files:
-        #             if end_with_suffixs(filename, support_foramts):
-        #                 self.preview_view.add_items([SkinPreviewIcon(
-        #                             root, 
-        #                             filename, 
-        #                             self.change_skin_callback, 
-        #                             self.switch_edit_page_callback,
-        #                             self.pop_delete_skin_dialog)])
-                    
-        # self.preview_view.add_items([SkinAddIcon(self.create_skin_from_file)])
         
         # Add drag image support.
         self.drag_dest_set(

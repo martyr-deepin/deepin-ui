@@ -23,7 +23,7 @@
 from window import Window
 from scrolled_window import ScrolledWindow
 from iconview import IconView
-from utils import cairo_state, get_match_parent
+from utils import cairo_state, get_match_parent, get_window_shadow_size
 
 def draw_mask(widget, x, y, w, h, render_callback):
     '''Draw mask.'''
@@ -73,6 +73,7 @@ def draw_icon_view_mask(widget, x, y, w, h, render_callback):
     viewport = get_match_parent(widget, ["Viewport"])
     toplevel = widget.get_toplevel()
     (offset_x, offset_y) = viewport.translate_coordinates(toplevel, 0, 0)
+    (shadow_x, shadow_y) = get_window_shadow_size(toplevel)
     
     with cairo_state(cr):
         cr.rectangle(x, y, w, h)
@@ -80,7 +81,7 @@ def draw_icon_view_mask(widget, x, y, w, h, render_callback):
         
         render_callback(
             cr, 
-            x - offset_x, 
-            y - offset_y,
+            x - offset_x + shadow_x, 
+            y - offset_y + shadow_y,
             toplevel.allocation.width,
             toplevel.allocation.height)
