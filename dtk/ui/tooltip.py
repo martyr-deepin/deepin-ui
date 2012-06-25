@@ -117,7 +117,8 @@ def update_tooltip(display):
 
     (widget, tx, ty) = find_at_coords(window, x, y)
     if widget == None:
-        print "nop"
+        pass
+        # print "nop"
     if not widget \
             or tx < 0 or tx >= widget.allocation.width \
             or ty < 0 or ty >= widget.allocation.height:
@@ -556,9 +557,9 @@ def tooltip_handler(event):
     gtk.main_do_event(event)
     import time
     if event.type == gdk.MOTION_NOTIFY:
-        print "leave", time.time()
+        # print "leave", time.time()
         update_tooltip(display)
     elif event.type == gdk.LEAVE_NOTIFY:
-        print "leave", time.time()
+        # print "leave", time.time()
         hide_tooltip()
 gdk.event_handler_set(tooltip_handler)
