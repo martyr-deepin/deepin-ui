@@ -53,7 +53,6 @@ from dtk.ui.entry import TextEntry, ShortcutKeyEntry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
-from dtk.ui.tooltip import TooltipWindow
 from dtk.ui.listview import ListItem, ListView
 from dtk.ui.droplist import Droplist
 from dtk.ui.menu import Menu
@@ -159,12 +158,6 @@ if __name__ == "__main__":
         ui_theme.get_pixbuf("logo.png"), 
         "深度图形库",
         "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py")
-    
-    TooltipWindow.attach_widget(application.titlebar.max_button, "最大化窗口")
-    TooltipWindow.attach_widget(application.titlebar.min_button, "最小化窗口")
-    TooltipWindow.attach_widget(application.titlebar.close_button, "关闭窗口")
-    TooltipWindow.attach_widget(application.titlebar.menu_button, "下拉列表")
-    TooltipWindow.attach_widget(application.titlebar.theme_button, "更换皮肤, 好心情!")
     
     # Draw application background.
     button = gtk.Button()
