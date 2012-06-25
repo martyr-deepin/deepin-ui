@@ -106,6 +106,7 @@ def find_at_coords(gdkwindow, window_x, window_y):
 
 
 #TODO: reduce the time!!!!
+show_id = 0
 def update_tooltip(display):
     if TooltipInfo.enable_count == 0:
         return
@@ -128,6 +129,18 @@ def update_tooltip(display):
 
     TooltipInfo.tmpwidget = widget
     (rx, ry) = window.get_origin()
+
+    global show_id
+    if TooltipInfo.pos_info != (int(rx+x), int(ry+y)) and show_id != 0:
+        gobject.source_remove(show_id)
+        hide_tooltip()
+        show_id = 0
+
+    if show_id == 0:
+        TooltipInfo.pos_info = (int(rx+x), int(ry+y))
+        show_id = gobject.timeout_add(TooltipInfo.winfo.show_delay, lambda : show_tooltip(*TooltipInfo.pos_info))
+
+    return
 
     if TooltipInfo.pos_info == (int(rx+x), int(ry+y)):
         duration = (time.time() - TooltipInfo.stamp) * 1000
@@ -370,6 +383,11 @@ def init_widget(widget):
     TooltipInfo.enable_count += 1
     w_info = WidgetInfo()
     WidgetInfo.set_info(widget, w_info)
+    if widget.get_has_window():
+        widget.add_events(gdk.POINTER_MOTION_MASK|gdk.POINTER_MOTION_HINT_MASK)
+    else:
+        widget.connect('realize',
+                lambda w: w.window.set_events(w.window.get_events() | gdk.POINTER_MOTION_HINT_MASK | gdk.POINTER_MOTION_MASK))
     if not display:
         init_tooltip(widget)
     return w_info
@@ -377,7 +395,7 @@ def init_tooltip(win):
     global display
     if not display:
         display = win.get_display()
-        gobject.timeout_add(100, lambda : update_tooltip(display))
+        #gobject.timeout_add(100, lambda : update_tooltip(display))
         #win.connect('focus-out-event', lambda w, e: hide_tooltip(True))
         win.connect('leave-notify-event', lambda w, e: hide_tooltip(True))
 
@@ -398,7 +416,7 @@ class WidgetInfo(object):
         return widget.set_data(WidgetInfo.__DATA_NAME, info)
 
     def __init__(self):
-        object.__setattr__(self, "show_delay", 600)
+        object.__setattr__(self, "show_delay", 1000)
         object.__setattr__(self, "hide_delay", 3000)
         object.__setattr__(self, "hide_duration", 1000)
         object.__setattr__(self, "text", None)
@@ -529,3 +547,12 @@ def disable_all(value):
     else:
         if count < 0:
             TooltipInfo.enable_count = -count
+
+
+def tooltip_handler(event):
+    gtk.main_do_event(event)
+    if event.type == gdk.MOTION_NOTIFY:
+        update_tooltip(display)
+    elif event.type == gdk.LEAVE_NOTIFY:
+        hide_tooltip()
+gdk.event_handler_set(tooltip_handler)
