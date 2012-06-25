@@ -95,6 +95,7 @@ def find_at_coords(gdkwindow, window_x, window_y):
     if WidgetInfo.get_info(widget):
         return (widget, cl.x, cl.y)
 
+
     p = widget.get_parent()
     while p:
         if WidgetInfo.get_info(p):
@@ -106,7 +107,6 @@ def find_at_coords(gdkwindow, window_x, window_y):
 
 
 #TODO: reduce the time!!!!
-show_id = 0
 def update_tooltip(display):
     if TooltipInfo.enable_count == 0:
         return
@@ -116,6 +116,8 @@ def update_tooltip(display):
         return True
 
     (widget, tx, ty) = find_at_coords(window, x, y)
+    if widget == None:
+        print "nop"
     if not widget \
             or tx < 0 or tx >= widget.allocation.width \
             or ty < 0 or ty >= widget.allocation.height:
@@ -130,15 +132,12 @@ def update_tooltip(display):
     TooltipInfo.tmpwidget = widget
     (rx, ry) = window.get_origin()
 
-    global show_id
-    if TooltipInfo.pos_info != (int(rx+x), int(ry+y)) and show_id != 0:
-        gobject.source_remove(show_id)
+    if TooltipInfo.pos_info != (int(rx+x), int(ry+y)) and TooltipInfo.show_id != 0:
         hide_tooltip()
-        show_id = 0
 
-    if show_id == 0:
+    if TooltipInfo.show_id == 0:
         TooltipInfo.pos_info = (int(rx+x), int(ry+y))
-        show_id = gobject.timeout_add(TooltipInfo.winfo.show_delay, lambda : show_tooltip(*TooltipInfo.pos_info))
+        TooltipInfo.show_id = gobject.timeout_add(TooltipInfo.winfo.show_delay, lambda : show_tooltip(*TooltipInfo.pos_info))
 
     return
 
@@ -171,6 +170,7 @@ class TooltipInfo:
     #displays = []
     stamp = 0
     enable_count = 0
+    show_id = 0
 
 def generate_tooltip_content():
     """ generate child widget and update the TooltipInfo"""
@@ -209,12 +209,15 @@ def generate_tooltip_content():
     TooltipInfo.window.modify_bg(gtk.STATE_NORMAL, winfo.background)
     TooltipInfo.need_update = False
 
-def hide_tooltip(force=False):
-    if TooltipInfo.on_showing == True or force:
-        TooltipInfo.window.hide()
-        TooltipInfo.on_showing = False
+def hide_tooltip():
+    TooltipInfo.window.hide()
+    TooltipInfo.on_showing = False
+    if TooltipInfo.show_id != 0:
+        gobject.source_remove(TooltipInfo.show_id)
+        TooltipInfo.show_id = 0
+    if TooltipInfo.window.get_realized():
         TooltipInfo.window.animation.stop()
-        return False
+    return False
 
 def show_tooltip(x, y):
     if TooltipInfo.enable_count == 0 or not TooltipInfo.winfo.enable:
@@ -397,7 +400,7 @@ def init_tooltip(win):
         display = win.get_display()
         #gobject.timeout_add(100, lambda : update_tooltip(display))
         #win.connect('focus-out-event', lambda w, e: hide_tooltip(True))
-        win.connect('leave-notify-event', lambda w, e: hide_tooltip(True))
+        win.connect('leave-notify-event', lambda w, e: hide_tooltip())
 
 
 
@@ -551,8 +554,11 @@ def disable_all(value):
 
 def tooltip_handler(event):
     gtk.main_do_event(event)
+    import time
     if event.type == gdk.MOTION_NOTIFY:
+        print "leave", time.time()
         update_tooltip(display)
     elif event.type == gdk.LEAVE_NOTIFY:
+        print "leave", time.time()
         hide_tooltip()
 gdk.event_handler_set(tooltip_handler)
