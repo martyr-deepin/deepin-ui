@@ -23,6 +23,7 @@
 import gtk
 import gobject
 import cairo
+import pango
 from utils import alpha_color_hex_to_cairo, cairo_state, propagate_expose
 from draw import draw_round_rectangle, draw_vlinear, draw_text, draw_radial_round
 from theme import ui_theme
@@ -66,8 +67,9 @@ class ProgressBar(gtk.Button):
         
         # Draw font.
         draw_text(cr, str(self.progress) + "%", 
-                    rect.x, rect.y, rect.width, rect.height, 
-                    rect.height - 4, "#000000")
+                  rect.x, rect.y, rect.width, rect.height, 
+                  rect.height - 5, "#000000",
+                  alignment=pango.ALIGN_CENTER)
         
         # Draw light.
         light_radius = rect.height * 4
@@ -98,9 +100,11 @@ class ProgressBar(gtk.Button):
 gobject.type_register(ProgressBar)
 
 if __name__ == "__main__":
+    import pseudo_skin
+    
     window = gtk.Window()    
     progressbar = ProgressBar()
-    progressbar.set_size_request(200, 16)
+    progressbar.set_size_request(200, 14)
     progressbar_align = gtk.Alignment()
     progressbar_align.set(0.5, 0.5, 0.0, 0.0)
     progressbar_align.add(progressbar)
