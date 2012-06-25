@@ -24,7 +24,9 @@ from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MID
 from draw import draw_vlinear, draw_pixbuf, draw_text, draw_hlinear
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size
+from utils import (is_in_rect, get_content_size, propagate_expose, 
+                   get_widget_root_coordinate, get_screen_size, 
+                   remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size)
 from window import Window
 import gtk
 import gobject

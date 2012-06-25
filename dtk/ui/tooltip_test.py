@@ -4,8 +4,6 @@ import tooltip as TT
 import pseudo_skin
 pseudo_skin
 from color_selection import ColorButton
-from utils import run_with_profile
-
 
 def customTooltip_cb():
     box = gtk.VBox()

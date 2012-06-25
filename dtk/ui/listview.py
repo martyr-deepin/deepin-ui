@@ -26,7 +26,11 @@ from contextlib import contextmanager
 from draw import draw_pixbuf, draw_vlinear, draw_text
 from keymap import get_keyevent_name, has_ctrl_mask, has_shift_mask
 from theme import ui_theme
-from utils import map_value, mix_list_max, get_content_size, unzip, last_index, set_cursor, get_match_parent, cairo_state, get_event_coords, is_left_button, is_right_button, is_double_click, is_single_click, is_in_rect, get_disperse_index, get_window_shadow_size
+from utils import (map_value, mix_list_max, get_content_size, 
+                   unzip, last_index, set_cursor, get_match_parent, 
+                   cairo_state, get_event_coords, is_left_button, 
+                   is_right_button, is_double_click, is_single_click, 
+                   is_in_rect, get_disperse_index, get_window_shadow_size)
 from skin_config import skin_config
 import copy
 import gobject

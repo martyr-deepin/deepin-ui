@@ -27,7 +27,9 @@ from label import Label
 from droplist import Droplist
 from theme import ui_theme
 from button import DisableButton
-from utils import propagate_expose, cairo_disable_antialias, color_hex_to_cairo, get_widget_root_coordinate, WIDGET_POS_BOTTOM_LEFT, alpha_color_hex_to_cairo
+from utils import (propagate_expose, cairo_disable_antialias, 
+                   color_hex_to_cairo, get_widget_root_coordinate, 
+                   WIDGET_POS_BOTTOM_LEFT, alpha_color_hex_to_cairo)
 
 class ComboBox(gtk.VBox):
     '''Combo box.'''

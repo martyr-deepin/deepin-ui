@@ -25,7 +25,8 @@ import gobject
 from scrolled_window import ScrolledWindow
 from iconview import IconView
 from button import Button
-from utils import gdkcolor_to_string, color_hex_to_cairo, propagate_expose, color_hex_to_rgb, color_rgb_to_hex, is_hex_color, place_center
+from utils import (gdkcolor_to_string, color_hex_to_cairo, propagate_expose, 
+                   color_hex_to_rgb, color_rgb_to_hex, is_hex_color, place_center)
 from label import Label
 from spin import SpinBox
 from entry import TextEntry

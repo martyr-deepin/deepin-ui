@@ -20,7 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, WIDGET_POS_CENTER, DEFAULT_FONT, COLOR_NAME_DICT, BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED, SIMILAR_COLOR_SEQUENCE
+from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, 
+                      WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, 
+                      WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, 
+                      WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, 
+                      WIDGET_POS_CENTER, DEFAULT_FONT, COLOR_NAME_DICT, 
+                      BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED, SIMILAR_COLOR_SEQUENCE)
 from contextlib import contextmanager 
 import cairo
 import gtk

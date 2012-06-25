@@ -25,7 +25,10 @@ from draw import draw_vlinear, draw_text
 from keymap import get_keyevent_name
 from line import HSeparator
 from theme import ui_theme
-from utils import is_in_rect, get_content_size, propagate_expose, get_widget_root_coordinate, get_screen_size, remove_callback_id, alpha_color_hex_to_cairo, cairo_disable_antialias, color_hex_to_cairo
+from utils import (is_in_rect, get_content_size, propagate_expose, 
+                   get_widget_root_coordinate, get_screen_size, 
+                   remove_callback_id, alpha_color_hex_to_cairo, 
+                   cairo_disable_antialias, color_hex_to_cairo)
 import gtk
 import gobject
 from scrolled_window import ScrolledWindow

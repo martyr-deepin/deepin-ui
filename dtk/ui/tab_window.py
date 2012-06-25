@@ -24,7 +24,10 @@ import gtk
 import gobject
 from box import EventBox
 from draw import draw_text
-from utils import container_remove_all, get_content_size, color_hex_to_cairo, alpha_color_hex_to_cairo, cairo_disable_antialias, is_in_rect, cairo_state, get_window_shadow_size
+from utils import (container_remove_all, get_content_size, 
+                   color_hex_to_cairo, alpha_color_hex_to_cairo, 
+                   cairo_disable_antialias, is_in_rect, cairo_state, 
+                   get_window_shadow_size)
 from button import Button
 from constant import DEFAULT_FONT_SIZE
 from scrolled_window import ScrolledWindow
