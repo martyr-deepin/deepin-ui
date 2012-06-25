@@ -33,6 +33,8 @@ skin_config.init_skin(
     os.path.join(get_parent_dir(__file__, 3), "skin"),
     os.path.expanduser("~/.config/deepin-demo/skin"),
     os.path.expanduser("~/.config/deepin-demo/skin_config.ini"),
+    "deepin-media-player",
+    "1.0"
     )
 
 # Create application theme.
