@@ -6,136 +6,288 @@ from gtk import gdk
 import gobject
 from animation import Animation, LinerInterpolator
 import cairo
+import time
 from label import Label
 
-_tooltip = None
-class TooltipWindow(gtk.Window):
-    def __init__(self, show_delay=1000, hide_delay=3000):
-        gtk.Window.__init__(self, gtk.WINDOW_POPUP)
 
-        #offset_x and offset_y has'nt support differnt value
-        self.offset_x = 5
-        self.offset_y = 5
+#!!!!!!!!!!!!!!!!maybe you want to goto to the line of *388* !!!!!!!!!!!!!!!!!!#
 
-        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFFFCA"))
-        self.is_need_shadow = True
-        self.show_delay = show_delay
-        self.hide_delay = hide_delay
+class ChildLocation:
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+        self.child = None
+        self.container = None
 
-        self.padding_t = 5
-        self.padding_b = 5
-        self.padding_l = 5
-        self.padding_r = 5
-        ##########################################################
+def window_to_alloc(widget, x, y):
+    if widget.get_has_window() and widget.parent:
+        (wx, wy) = widget.window.get_position()
+        x += wx - widget.allocation.x
+        y += wy - widget.allocation.y
+    else:
+        x -= widget.allocation.x
+        y -= widget.allocation.y
+    return (x, y)
 
-        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
-        self.alignment = gtk.Alignment()
-        self.alignment.set(0.5, 0.5, 1, 1)
-        self.alignment.set_padding(self.padding_t, self.padding_l, self.padding_b, self.padding_r)
-        self.set_redraw_on_allocate(True)
-        self.add(self.alignment)
-        
-        self.alignment.connect("expose-event", self.expose_tooltip_label)
-        
-    def expose_tooltip_label(self, widget, event):
-        '''Expose tooltip label.'''
-        rect = widget.allocation
-        cr = widget.window.cairo_create()
-        
-        with cairo_disable_antialias(cr):
-            cr.set_line_width(1)
-            cr.set_source_rgba(*color_hex_to_cairo("#E7E77C"))
-            cr.rectangle(rect.x + 1, rect.y + 1, rect.width - 1, rect.height - 1)
-            cr.stroke()
-        
-        propagate_expose(widget, event)
-        
+def child_location_foreach(widget, cl): #cl = child_location
+    if not widget.is_drawable():
+        assert(False)
+        return
+    if not cl.child :
+        (x, y) = cl.container.translate_coordinates(widget, int(cl.x), int(cl.y))
+        if x >= 0 and x < widget.allocation.width and \
+            y >=0 and y < widget.allocation.height:
+                if isinstance(widget, gtk.Container):
+                    tmp = ChildLocation()
+                    (tmp.x, tmp.y, tmp.container) = (x, y, widget)
+                    widget.forall(child_location_foreach, tmp)
+                    if tmp.child:
+                        cl.child = tmp.child
+                    else:
+                        cl.child = widget
+                else:
+                    cl.child = widget
+
+def coords_to_parent(window, x, y):
+    if window.get_window_type() == gdk.WINDOW_OFFSCREEN:
+        (px, py) = (-1, -1)
+        window.emit("to-embedder", window, x, y, px, py)
+        return (px, py)
+    else:
+        p = window.get_position()
+        return (x + p[0], y + p[1])
+
+def find_at_coords(gdkwindow, window_x, window_y):
+    cl = ChildLocation()
+
+    widget = gdkwindow.get_user_data()
+    if widget == None:
+        return (None, cl.x, cl.y)
+
+    cl.x = window_x
+    cl.y = window_y
+
+    while gdkwindow and gdkwindow != widget.window:
+        (cl.x, cl.y) = coords_to_parent(gdkwindow, cl.x, cl.y)
+        gdkwindow = gdkwindow.get_effective_parent()
+
+    if not gdkwindow:
+        return (None, cl.x, cl.y)
+
+    (cl.x, cl.y) = window_to_alloc(widget, cl.x, cl.y)
+
+    #find child
+    if isinstance(widget, gtk.Container):
+        cl.container = widget
+        cl.child = None
+        tmp_widget = widget
+
+        widget.forall(child_location_foreach, cl)
+
+        if cl.child and WidgetInfo.get_info(cl.child):
+            widget = cl.child
+        elif cl.container and WidgetInfo.get_info(cl.container):
+            widget = cl.container
+
+        (cl.x, cl.y) = tmp_widget.translate_coordinates(widget, int(cl.x), int(cl.y))
+
+
+    if WidgetInfo.get_info(widget):
+        return (widget, cl.x, cl.y)
+
+    p = widget.get_parent()
+    while p:
+        if WidgetInfo.get_info(p):
+            return (p, cl.x, cl.y)
+        else:
+            p = p.get_parent()
+
+    return (None, cl.x, cl.y)
+
+
+#TODO: reduce the time!!!!
+def update_tooltip(display):
+    if TooltipInfo.enable_count == 0:
+        return
+    try :
+        (window, x, y) = display.get_window_at_pointer()
+    except:
         return True
 
-    def generate_child(self):
-        if _tooltip.widget == _tooltip.prewidget and self.alignment.child:
-            return
-        _tooltip.widget = _tooltip.tmpwidget
+    (widget, tx, ty) = find_at_coords(window, x, y)
+    if not widget \
+            or tx < 0 or tx >= widget.allocation.width \
+            or ty < 0 or ty >= widget.allocation.height:
+        hide_tooltip()
+        return True
 
-        callback = _tooltip.widget.get_data('__tooltip_callback')
-        if callback != None:
-            child = callback()
-            if child == self.alignment.child:
-                return
+    if TooltipInfo.widget != widget:
+        TooltipInfo.prewidget = widget
+        TooltipInfo.winfo = WidgetInfo.get_info(widget)
+        TooltipInfo.show_delay = TooltipInfo.winfo.show_delay
 
-        else:
-            self.text = self.widget.get_data('__tooltip_text')
-            if not self.text:
-                self.text = "if you don't use tooltip...."
+    TooltipInfo.tmpwidget = widget
+    (rx, ry) = window.get_origin()
 
-            child = Label(self.text)
+    if TooltipInfo.pos_info == (int(rx+x), int(ry+y)):
+        duration = (time.time() - TooltipInfo.stamp) * 1000
+        if duration > TooltipInfo.winfo.show_delay and not TooltipInfo.on_showing \
+                and TooltipInfo.stamp != 0 :
+            show_tooltip(*TooltipInfo.pos_info)
+    else:
+        TooltipInfo.pos_info = (int(rx+x), int(ry+y))
+        hide_tooltip()
+        TooltipInfo.stamp = time.time()
 
-        if self.alignment.child:
-            self.alignment.child.hide()
-            self.alignment.remove(self.alignment.child)
-        self.alignment.add(child)
-        self.alignment.show_all()
-        self.queue_resize()
-
-        allocation = gtk.gdk.Rectangle(0, 0, *self.alignment.child.size_request())
-        allocation.width += self.padding_l + self.padding_r
-        allocation.height += self.padding_t + self.padding_b
-        self.size_allocate(allocation)
+    return True
 
 
 
-    def do_show(self):
-        gtk.Window.do_show(self)
+class TooltipInfo:
+    widget = None
+    tmpwidget = None
+    prewidget = None
+    pos_info = None
+    window = None
+    alignment = None
+    winfo = None
+    offset_x = 5
+    offset_y = 5
+    on_showing = False
+    need_update = True
+    #displays = []
+    stamp = 0
+    enable_count = 0
 
-        geo = self.window.get_geometry()
-        self.swindow.move_resize(geo[0]+self.offset_x, geo[1]+self.offset_y, self.allocation.width, self.allocation.height)
-        self.swindow.get_geometry() #must do this to query the allocation from X11 server.
-        self.swindow.show()
+def generate_tooltip_content():
+    """ generate child widget and update the TooltipInfo"""
+    if TooltipInfo.widget == TooltipInfo.prewidget and TooltipInfo.alignment.child and not TooltipInfo.need_update:
+        return
 
-        self.window.raise_()
+    TooltipInfo.widget = TooltipInfo.tmpwidget
+
+    TooltipInfo.winfo = WidgetInfo.get_info(TooltipInfo.widget)
+    winfo = TooltipInfo.winfo
+
+    pre_child = TooltipInfo.alignment.child
+
+    if pre_child and winfo == WidgetInfo.get_info(pre_child) and not TooltipInfo.need_update:
+        return
+
+    if winfo.custom:
+        child = winfo.custom(*winfo.custom_args, **winfo.custom_kargs)
+    elif winfo.text:
+        child = Label(winfo.text, *winfo.text_args, **winfo.text_kargs)
+    else:
+        raise Warning, "tooltip enable's widget must has text or custom property"
+
+    if pre_child:
+        TooltipInfo.alignment.remove(pre_child)
+        pre_child.destroy()
+
+    TooltipInfo.alignment.set_padding(winfo.padding_t, winfo.padding_l, winfo.padding_b, winfo.padding_r)
+    TooltipInfo.alignment.add(child)
+    TooltipInfo.alignment.show_all()
+
+    allocation = gtk.gdk.Rectangle(0, 0, *TooltipInfo.alignment.child.size_request())
+    allocation.width += winfo.padding_l + winfo.padding_r
+    allocation.height += winfo.padding_t + winfo.padding_b
+    TooltipInfo.window.size_allocate(allocation)
+    TooltipInfo.window.modify_bg(gtk.STATE_NORMAL, winfo.background)
+    TooltipInfo.need_update = False
+
+def hide_tooltip(force=False):
+    if TooltipInfo.on_showing == True or force:
+        TooltipInfo.window.hide()
+        TooltipInfo.on_showing = False
+        TooltipInfo.window.animation.stop()
+        return False
+
+def show_tooltip(x, y):
+    if TooltipInfo.enable_count == 0 or not TooltipInfo.winfo.enable:
+        return
+    generate_tooltip_content()
+
+    #What will happen if the content widget is very big?
+    #----------------------------------------------
+    (p_w, p_h) = (10, 10)  #TODO: pointer size ?
+    (w, h) = TooltipInfo.window.get_root_window().get_size()
+    (t_w, t_h) = TooltipInfo.window.size_request()
+
+    if x + p_w + t_w > w:
+        POS_H =  0 #left
+    else:
+        POS_H =  1 #right
+
+    if y + p_h + t_h > h:
+        POS_V = 2 #top
+    else:
+        POS_V = 4 #bttom
+
+    p = POS_H + POS_V
+    ######################################
+    #            LEFT(0)        RIGHT(1) #
+    #------------------------------------#
+    #TOP(2)         2             3      #
+    #------------------------------------#
+    #BOTTOM(4)      4             5      #
+    ######################################
+    if p == 2:
+        TooltipInfo.window.move(x - t_w, y - t_h)
+    elif p == 3:
+        TooltipInfo.window.move(x, y - t_h)
+    elif p == 4:
+        TooltipInfo.window.move(x - t_w, y)
+    elif p == 5:
+        TooltipInfo.window.move(x + p_w, y + p_h)
+    else:
+        assert False, "This shouldn't appaer!!!!!!"
+    #------------------------------------------
+
+    TooltipInfo.window.show()
+    TooltipInfo.on_showing = True
 
 
-    def do_realize(self):
-        gtk.Window.do_realize(self)
-        self.swindow = gtk.gdk.Window(self.get_parent_window(),
-                x=self.allocation.x,
-                y=self.allocation.y,
-                width=self.allocation.width+30,
-                height=self.allocation.height+30,
+
+
+def __init_window():
+    def on_realize(win):
+        win.swindow = gtk.gdk.Window(win.get_parent_window(),
+                width=0, height=0,
                 window_type=gtk.gdk.WINDOW_TEMP,
                 wclass=gtk.gdk.INPUT_OUTPUT,
-                event_mask=(self.get_events()| gdk.EXPOSURE_MASK | gdk.VISIBILITY_NOTIFY_MASK),
-                visual=self.get_visual(),
-                colormap=self.get_colormap(),
+                event_mask=(win.get_events() | gdk.EXPOSURE_MASK),
+                visual=win.get_visual(),
+                colormap=win.get_colormap(),
                 )
-        self.swindow.set_user_data(self)
+        win.swindow.set_user_data(win)
 
-        self.animation = Animation([self.window, self.swindow], gdk.Window.set_opacity, 1000, [0, 1],
+        #TODO: set duration dynamicly
+        win.animation = Animation([win.window, win.swindow], gdk.Window.set_opacity, 1000, [0, 1],
                 lambda *args: 1 - LinerInterpolator(*args))
 
-    def do_map(self):
+    def on_map(win):
+        winfo = TooltipInfo.winfo
+        win.animation.init(1)
+        win.animation.start_after(winfo.hide_delay)
+        geo = win.window.get_geometry()
+        win.swindow.move_resize(geo[0]+TooltipInfo.offset_x, geo[1]+TooltipInfo.offset_y,
+                win.allocation.width, win.allocation.height)
 
-        gtk.Window.do_map(self)
-        self.animation.init(1)
-        self.animation.start_after(self.hide_delay)
-    def do_unmap(self):
-        gtk.Window.do_unmap(self)
-        self.swindow.hide()
-        self.animation.stop()
+        win.swindow.show()
 
-    def do_expose_event(self, e):
-        cr = self.swindow.cairo_create()
+    def on_expose_event(win, e):
+        cr = win.swindow.cairo_create()
         cr.set_source_rgba(1, 1, 1, 0)
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
+        winfo = TooltipInfo.winfo
+        if winfo.has_shadow:
 
-        if self.is_need_shadow:
-            #print self.allocation
-            
-            (x, y, width, height) = (0, 0, self.allocation.width, self.allocation.height)
-            (o_x, o_y) = (self.offset_x, self.offset_y)
-            
-            
+            (x, y, width, height) = (0, 0, win.allocation.width, win.allocation.height)
+            (o_x, o_y) = (5, 5)
+
+
             #right-bottom corner
             radial = cairo.RadialGradient(width - o_x, height-o_y, 1,  width -o_x, height-o_y, o_x)
             radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
@@ -144,7 +296,7 @@ class TooltipWindow(gtk.Window):
             cr.set_source(radial)
             cr.rectangle(width-o_x, height-o_y, o_x, o_y)
             cr.fill()
-            
+
             #left-bottom corner
             radial = cairo.RadialGradient(o_x, height-o_y, 1,  o_x, height-o_y, o_x)
             radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
@@ -153,7 +305,7 @@ class TooltipWindow(gtk.Window):
             cr.set_source(radial)
             cr.rectangle(0, height-o_y, o_x, o_y)
             cr.fill()
-            
+
             #left-top corner
             radial = cairo.RadialGradient(width-o_x, o_y, 1, width-o_x, o_y, o_x)
             radial.add_color_stop_rgba(0.0, 0,0,0, 0.3)
@@ -162,8 +314,8 @@ class TooltipWindow(gtk.Window):
             cr.set_source(radial)
             cr.rectangle(width-o_x, 0, o_x, o_y)
             cr.fill()
-            
-            
+
+
             vradial = cairo.LinearGradient(0, height-o_y, 0, height)
             vradial.add_color_stop_rgba(0.0, 0,0,0, .5)
             vradial.add_color_stop_rgba(0.4, 0,0,0, 0.25)
@@ -171,7 +323,7 @@ class TooltipWindow(gtk.Window):
             cr.set_source(vradial)
             cr.rectangle(o_x, height-o_x, width-2*o_x, height)
             cr.fill()
-            
+
             hradial = cairo.LinearGradient(width-o_x, 0, width, 0)
             hradial.add_color_stop_rgba(0.0, 0,0,0, .5)
             hradial.add_color_stop_rgba(0.4, 0,0,0, 0.25)
@@ -180,159 +332,200 @@ class TooltipWindow(gtk.Window):
             cr.rectangle(width-o_x, o_y, width, height-2*o_y)
             cr.fill()
 
-        propagate_expose(self, e)
-        
+        gtk.Alignment.do_expose_event(TooltipInfo.alignment, e)
+        propagate_expose(win, e)
         return True
-        
-    @staticmethod
-    def set_text(widget, text):
-        widget.set_data("__tooltip_text", text)
+
+    def on_unmap(win):
+        win.swindow.hide()
+
+    def on_expose_alignment(widget, event):
+        '''Expose tooltip label.'''
+        rect = widget.allocation
+        cr = widget.window.cairo_create()
+
+        with cairo_disable_antialias(cr):
+            cr.set_line_width(1)
+            cr.set_source_rgba(*color_hex_to_cairo("#E7E77C"))
+            cr.rectangle(rect.x + 1, rect.y + 1, rect.width - 1, rect.height - 1)
+            cr.stroke()
+        return True
+
+    TooltipInfo.window = gtk.Window(gtk.WINDOW_POPUP)
+    TooltipInfo.window.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
+    TooltipInfo.alignment = gtk.Alignment()
+    TooltipInfo.window.add(TooltipInfo.alignment)
+    TooltipInfo.window.connect('realize', on_realize)
+    TooltipInfo.window.connect('map', on_map)
+    TooltipInfo.window.connect('unmap', on_unmap)
+    TooltipInfo.window.connect('expose-event', on_expose_event)
+    TooltipInfo.alignment.connect('expose-event', on_expose_alignment)
+__init_window()
+
+
+#TODO:detect display?
+#FIXME:
+display = None
+def init_widget(widget):
+    TooltipInfo.enable_count += 1
+    w_info = WidgetInfo()
+    WidgetInfo.set_info(widget, w_info)
+    if not display:
+        init_tooltip(widget)
+    return w_info
+def init_tooltip(win):
+    global display
+    if not display:
+        display = win.get_display()
+        gobject.timeout_add(100, lambda : update_tooltip(display))
+        #win.connect('focus-out-event', lambda w, e: hide_tooltip(True))
+        win.connect('leave-notify-event', lambda w, e: hide_tooltip(True))
+
+
+
+#
+#the Interface of dtk Tooltip, the core is the WidgetInfo's attribute
+#
+
+class WidgetInfo(object):
+    __DATA_NAME = "_deepin_tooltip_info"
 
     @staticmethod
-    def set_callback(widget, cb):
-        widget.set_data("__tooltip_callback", cb)
-
-
+    def get_info(widget):
+        return widget.get_data(WidgetInfo.__DATA_NAME)
     @staticmethod
-    def attach_widget(widget, content=None):
-        if callable(content):
-            widget.set_data('__tooltip_callback', content)
+    def set_info(widget, info):
+        return widget.set_data(WidgetInfo.__DATA_NAME, info)
+
+    def __init__(self):
+        object.__setattr__(self, "show_delay", 600)
+        object.__setattr__(self, "hide_delay", 3000)
+        object.__setattr__(self, "hide_duration", 1000)
+        object.__setattr__(self, "text", None)
+        object.__setattr__(self, "text_args", None)
+        object.__setattr__(self, "text_kargs", None)
+        object.__setattr__(self, "custom", None)
+        object.__setattr__(self, "custom_args", None)
+        object.__setattr__(self, "custom_kargs", None)
+        object.__setattr__(self, "background", gtk.gdk.Color("yellow"))
+        object.__setattr__(self, "padding_t", 5)
+        object.__setattr__(self, "padding_b", 5)
+        object.__setattr__(self, "padding_l", 5)
+        object.__setattr__(self, "padding_r", 5)
+        object.__setattr__(self, "has_shadow", True)
+        object.__setattr__(self, "enable", False) #don't modify the "enable" init value
+
+    def __setattr__(self, key, value):
+        if hasattr(self, key):
+            object.__setattr__(self, key, value)
         else:
-            widget.set_data('__tooltip_text', content)
+            raise Warning, "Tooltip didn't support the \"%s\" property" % key
+        TooltipInfo.need_update = True
+        if key == "text" or key == "custom":
+            self.enable = True
 
-        def show_tooltip(x, y):
-            _tooltip.generate_child()
+all_method = {}
+def chainmethod(func):
+    all_method[func.__name__] = func
+    def wrap(*args, **kargs):
+        return func(*args, **kargs)
+    wrap.__dict__ = all_method
+    return wrap
 
-            #----------------------------------------------
-            (p_w, p_h) = (10, 10)  #TODO: pointer size ?
-            (w, h) = _tooltip.get_root_window().get_size()
-            (t_w, t_h) = _tooltip.size_request()
+#
+#you can write yourself wrap function use "set_value" or direct modify the WidgetInfo's attribute
+#
+@chainmethod
+def set_value(widgets, kv):
+    if not isinstance(widgets, list):
+        widgets = [widgets]
+    for w in widgets:
+        w_info = WidgetInfo.get_info(w)
+        if not w_info:
+            w_info = init_widget(w)
+        for k in kv:
+            setattr(w_info, k, kv[k])
+    return set_value
 
-            if x + p_w + t_w > w:
-                POS_H =  0 #left
-            else:
-                POS_H =  1 #right
+#------------------the default wrap function ---------------------------------------
+@chainmethod
+def text(widget, content, *args, **kargs):
+    set_value(widget, {
+        "text": content,
+        "text_args":args,
+        "text_kargs":kargs
+        })
+    return text
 
-            if y + p_h + t_h > h:
-                POS_V = 2 #top
-            else:
-                POS_V = 4 #bttom
-            p = POS_H + POS_V
-            ######################################
-            #            LEFT(0)        RIGHT(1) #
-            #------------------------------------#
-            #TOP(2)         2             3      #
-            #------------------------------------#
-            #BOTTOM(4)      4             5      #
-            ######################################
-            if p == 2:
-                _tooltip.move(x - t_w, y - t_h)
-            elif p == 3:
-                _tooltip.move(x, y - t_h)
-            elif p == 4:
-                _tooltip.move(x - t_w, y)
-            elif p == 5:
-                _tooltip.move(x + p_w, y + p_h)
-            else:
-                assert False, "This should appaer!!!!!!"
-            #------------------------------------------
+@chainmethod
+def custom(widget, cb, *args, **kargs):
+    set_value(widget, {
+            "custom" : cb,
+            "custom_args" : args,
+            "custom_kargs" : kargs
+            })
+    return custom
 
-            _tooltip.show()
+@chainmethod
+def show_delay(widget, delay):
+    delay = max(250, delay)
+    set_value(widget, {"show_delay": delay})
+    return show_delay
 
-        def remove_id(widget, e):
-            if e and  (e.x_root, e.y_root) == _tooltip.pos_info:
-                return False
-            t_id =  widget.get_data("__tooltip_timeoutid")
-            if t_id:
-                gobject.source_remove(t_id)
-            return False
+@chainmethod
+def hide_delay(widget, delay):
+    set_value(widget, {"hide_delay": delay})
+    return hide_delay
 
-        def handle_tooltip(widget, e):
-            if _tooltip.widget != widget:
-                _tooltip.prewidget = widget
-            _tooltip.tmpwidget = widget
+@chainmethod
+def hide_duration(widget, delay):
+    set_value(widget, {"hide_duration": delay})
+    return hide_duration
 
-            remove_id(widget, None)
-            _tooltip.hide()
+@chainmethod
+def background(widget, color):
+    set_value(widget, {"background": color})
+    return background
 
-            _tooltip.pos_info = (int(e.x_root), int(e.y_root))
-            t_id = gobject.timeout_add(_tooltip.show_delay, lambda : show_tooltip(*_tooltip.pos_info))
-            widget.set_data("__tooltip_timeoutid", t_id)
+@chainmethod
+def padding(widget, t, l, b, r):
+    kv = {}
+    if t >= 0:
+        kv["padding_t"] = int(t)
+    if b >= 0:
+        kv["padding_b"] = int(b)
+    if l >= 0:
+        kv["padding_l"] = int(l)
+    if r >= 0:
+        kv["padding_r"] = int(r)
 
-        widget.add_events(gdk.POINTER_MOTION_HINT_MASK|gdk.POINTER_MOTION_MASK|gdk.LEAVE_NOTIFY_MASK)
-        ids = []
-        ids.append(widget.connect('motion-notify-event', handle_tooltip))
-        ids.append(widget.connect('leave-notify-event', remove_id))
-        return ids
+    set_value(widget, kv)
+    return padding
 
-    @staticmethod
-    def deattach_widget(widget, ids):
-        for i in ids:
-            gobject.source_remove(i)
-        widget.set_data('__tooltip_callback', None)
-        widget.set_data('__tooltip_text', None)
-        if _tooltip.tmpwidget == widget:
-            _tooltip.tmpwidget = None
-        if _tooltip.widget == widget:
-            _tooltip.widget = None
-        if _tooltip.prewidget == widget:
-            _tooltip.prewidget = None
+@chainmethod
+def has_shadow(widget, need):
+    set_value(widget, {"has_shadow": need})
+    return has_shadow
 
+@chainmethod
+def disable(widget, value):
+    winfo = WidgetInfo.get_info(widget)
+    if value:
+        if winfo.enable :
+            winfo.enable = False
+            TooltipInfo.enable_count -= 1
+    else:
+        if not winfo.enable :
+            winfo.enable = True
+            TooltipInfo.enable_count += 1
+    return disable
 
-gobject.type_register(TooltipWindow)
-
-_tooltip = TooltipWindow()
-
-#used to fetch the widget's tooltip text
-_tooltip.widget = None
-#used to deduce the times of create widgets
-_tooltip.tmpwidget = None
-_tooltip.prewidget = None
-_tooltip.pos_info = None
-
-if __name__ == "__main__":
-    import pseudo_skin
-    
-    def show_d(w):
-        print "destroy......", w
-        return False
-
-    def custom_tooltip_cb():
-        box = gtk.VBox()
-        #box.set_size_request(800, 400)
-        b = gtk.Button("abcdsdf")
-        l = gtk.Label("huhuhuhuhuhulabellooooooooooooooooooooooooooooooooooooooooooooA")
-        b.connect('destroy', show_d)
-        l.connect('destroy', show_d)
-        box.add(b)
-        box.add(l)
-        return box
-
-    w = gtk.Window()
-    w.set_size_request(500, 500)
-    box = gtk.VBox()
-
-    l = gtk.Button("label1")
-    #custom tooltip
-    ################################################################
-    TooltipWindow.attach_widget(l, custom_tooltip_cb)
-    #TooltipWindow.set_callback(b, custom_tooltip_cb)
-    ################################################################
-    #TooltipWindow.attach_widget(l)
-
-
-    b = gtk.Button("button1")
-    ################################################################
-    #TooltipWindow.set_text(b, "huhu button")
-    TooltipWindow.attach_widget(b, "Hello, Linux Deepiner!")
-    ###############################################################
-
-
-    box.pack_start(l)
-    box.pack_start(b)
-
-    w.add(box)
-    w.connect('destroy', gtk.main_quit)
-    w.show_all()
-    gtk.main()
-
+#------------------------this is global effect function---------------------
+def disable_all(value):
+    count = TooltipInfo.enable_count
+    if value:
+        if count > 0:
+            TooltipInfo.enable_count = -count
+    else:
+        if count < 0:
+            TooltipInfo.enable_count = -count
