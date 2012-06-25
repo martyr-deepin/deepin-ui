@@ -21,6 +21,8 @@
  "entrySelectText" : "#FFFFFF",
  "entryCursor" : "#333333",
  "labelText" : "#000000",
+ "labelSelectText" : "#FFFFFF",
+ "labelSelectBackground" : "#4D78B3",
  "comboBoxText" : "#000000",
  "radioButtonFrame" : "#B5B5B5",
  "checkButtonFrame" : "#A1A1A1",
@@ -37,7 +39,7 @@
  "comboEntryFrame" : "#c4cedd",
  "comboEntryDisableFrame" : "#e4e4e4",
  "comboEntryBackground" : "#FFFFFF",
- "comboEntrySelectBackground" : ""#4D78B3",
+ "comboEntrySelectBackground" : "#4D78B3",
  },	
  "alpha_colors" : {
      "frame" : ("#000000", 0.5),

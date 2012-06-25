@@ -351,7 +351,7 @@ if __name__ == "__main__":
     entry.connect("action-active", print_entry_action)
     entry.set_size(150, 24)
     entry_label = Label("标签测试， 内容非常长")
-    entry_label.set_text("标签的内容灰长灰长的长")
+    entry_label.set_text("标签的内容")
     entry_label.set_size_request(100, 30)
     entry_box = gtk.HBox(spacing=10)
     entry_box.pack_start(entry_label, False, False)

@@ -825,7 +825,10 @@ def run_with_profile(func, log_file, sort='time', amount=20):
 
 def layout_set_markup(layout, markup):
     '''Set layout markup.'''
-    layout.set_markup(markup.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+    if "&" in markup or "<" in markup or ">" in markup:
+        layout.set_markup(markup.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+    else:
+        layout.set_markup(markup)
 
 def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_middle_area=True):
     '''Get optimum pixbuf from file.'''
