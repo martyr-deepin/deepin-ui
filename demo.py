@@ -31,14 +31,16 @@ import os
 skin_config.init_skin(
     "01",
     os.path.join(get_parent_dir(__file__), "skin"),
-    os.path.expanduser("~/.config/deepin-demo/skin"),
-    os.path.expanduser("~/.config/deepin-demo/skin_config.ini"),
+    os.path.expanduser("~/.config/deepin-ui-demo/skin"),
+    os.path.expanduser("~/.config/deepin-ui-demo/skin_config.ini"),
+    "deepin-ui-demo",
+    "1.0"
     )
 
 # Create application theme.
 app_theme = Theme(
     os.path.join(get_parent_dir(__file__), "app_theme"),
-    os.path.expanduser("~/.config/deepin-demo/theme")
+    os.path.expanduser("~/.config/deepin-ui-demo/theme")
     )
 
 # Set theme.

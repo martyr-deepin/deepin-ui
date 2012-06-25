@@ -300,13 +300,14 @@ def remove_file(path):
         
 def remove_directory(path):
     """equivalent to command `rm -rf path`"""
-    for i in os.listdir(path):
-        full_path = os.path.join(path, i)
-        if os.path.isdir(full_path):
-            remove_directory(full_path)
-        else:
-            os.remove(full_path)
-    os.rmdir(path)        
+    if os.path.exists(path):
+        for i in os.listdir(path):
+            full_path = os.path.join(path, i)
+            if os.path.isdir(full_path):
+                remove_directory(full_path)
+            else:
+                os.remove(full_path)
+        os.rmdir(path)        
 
 def touch_file(filepath):
     '''Touch file.'''

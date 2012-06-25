@@ -97,7 +97,8 @@ class SkinConfig(gobject.GObject):
                 
         return None       
         
-    def init_skin(self, skin_name, system_skin_dir, user_skin_dir, skin_config_file):
+    def init_skin(self, skin_name, system_skin_dir, user_skin_dir, skin_config_file,
+                  app_given_id, app_given_version):
         '''Init skin.'''
         self.skin_config_file = skin_config_file
         if os.path.exists(skin_config_file):
@@ -120,6 +121,9 @@ class SkinConfig(gobject.GObject):
             default_skin_name = self.get_default_skin(system_skin_dir, user_skin_dir)
             assert(default_skin_name != None)
             self.load_skin(default_skin_name, system_skin_dir, user_skin_dir)
+            
+        self.app_given_id = app_given_id
+        self.app_given_version = app_given_version
         
     def save_skin_name(self):
         '''Save skin name.'''

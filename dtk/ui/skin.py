@@ -46,7 +46,7 @@ from skin_config import skin_config
 from label import Label
 import urllib
 from cache_pixbuf import CachePixbuf
-from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE, DIALOG_MASK_MULTIPLE_PAGE
+from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
 import threading as td
 from threads import post_gui
 
@@ -80,7 +80,6 @@ class SkinWindow(DialogBox):
     def __init__(self, app_frame_pixbuf, preview_width=450, preview_height=500):
         '''Init skin.'''
         DialogBox.__init__(self, "选择皮肤", preview_width, preview_height, mask_type=DIALOG_MASK_SINGLE_PAGE)
-        # DialogBox.__init__(self, "选择皮肤", preview_width, preview_height, mask_type=DIALOG_MASK_MULTIPLE_PAGE)
         self.app_frame_pixbuf = app_frame_pixbuf
         
         self.preview_page = SkinPreviewPage(self, self.change_skin, self.switch_edit_page)
@@ -193,8 +192,8 @@ class SkinPreviewPage(gtk.VBox):
         similar_color = find_similar_color(dominant_color)[0]
         default_config = [
             ("theme", [("theme_name", similar_color)]),
-            ("application", [("app_id", "demo"),
-                             ("app_version", "0.1")]),
+            ("application", [("app_id", skin_config.app_given_id),
+                             ("app_version", skin_config.app_given_version)]),
             ("background", [("image", skin_image_file),
                             ("x", "0"),
                             ("y", "0"),
@@ -249,24 +248,35 @@ class SkinPreviewPage(gtk.VBox):
         # Get skin image file.
         config = Config(os.path.join(skin_dir, "config.ini"))
         config.load()
-        skin_image_file = config.get("background", "image")
 
         # Move theme files to given directory if theme is not in default theme list.
         skin_theme_name = config.get("theme", "theme_name")
         if not skin_theme_name in COLOR_SEQUENCE:
-            # Remove same theme from given directories.
-            remove_directory(os.path.join(skin_config.ui_theme_dir, skin_theme_name))
-            remove_directory(os.path.join(skin_config.app_theme_dir, skin_theme_name))
-            
-            # Move new theme files to given directories.
-            shutil.move(os.path.join(skin_dir, "ui_theme", skin_theme_name), skin_config.ui_theme_dir)
-            shutil.move(os.path.join(skin_dir, "app_theme", skin_theme_name), skin_config.app_theme_dir)
-            
-            # Remove temp theme directories under skin directory.
-            remove_directory(os.path.join(skin_dir, "ui_theme"))        
-            remove_directory(os.path.join(skin_dir, "app_theme"))        
+            # Check version when package have special theme that not include in standard themes.
+            app_id = config.get("application", "app_id")
+            app_version = config.get("application", "app_version")
+            if app_id == skin_config.app_given_id and app_version == skin_config.app_given_version:
+                # Remove same theme from given directories.
+                remove_directory(os.path.join(skin_config.ui_theme_dir, skin_theme_name))
+                remove_directory(os.path.join(skin_config.app_theme_dir, skin_theme_name))
+                
+                # Move new theme files to given directories.
+                shutil.move(os.path.join(skin_dir, "ui_theme", skin_theme_name), skin_config.ui_theme_dir)
+                shutil.move(os.path.join(skin_dir, "app_theme", skin_theme_name), skin_config.app_theme_dir)
+                
+                # Remove temp theme directories under skin directory.
+                remove_directory(os.path.join(skin_dir, "ui_theme"))        
+                remove_directory(os.path.join(skin_dir, "app_theme"))        
+            else:
+                # Remove skin directory if version mismatch.
+                remove_directory(skin_dir)
+                
+                ConfirmDialog("主题版本不匹配",
+                              "导入主题版本和当前应用版本不一致!").show_all()
+                return 
         
         # Apply new skin.
+        skin_image_file = config.get("background", "image")
         self.preview_view.add_items([SkinPreviewIcon(
                     skin_dir,
                     skin_image_file,
