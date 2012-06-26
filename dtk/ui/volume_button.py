@@ -26,6 +26,7 @@ from draw import draw_pixbuf
 from theme import ui_theme
 import gtk
 import gobject
+from cache_pixbuf import CachePixbuf
 
 '''
 100 / 500 = 0.2
@@ -64,8 +65,9 @@ class VolumeButton(gtk.EventBox):
                  volume_left_show_value = [(1, 33),(34, 66),(67, 100)],
                  scroll_bool = False,
                  press_emit_bool = False,
-                 bg_color = ui_theme.get_alpha_color("volumebutton_bg"),
-                 fg_color = ui_theme.get_alpha_color("volumebutton_fg"),
+                 #=============================================================
+                 bg_pixbuf = ui_theme.get_pixbuf("volumebutton/bg.png"),
+                 fg_pixbuf = ui_theme.get_pixbuf("volumebutton/fg.png"),
                  #=============================================================
                  zero_volume_normal_pixbuf = ui_theme.get_pixbuf("volumebutton/zero_normal.png"),
                  zero_volume_hover_pixbuf = ui_theme.get_pixbuf("volumebutton/zero_hover.png"),
@@ -94,8 +96,10 @@ class VolumeButton(gtk.EventBox):
         if volume_x < max_volume_normal_pixbuf.get_pixbuf().get_width() + 10:
             volume_x = max_volume_normal_pixbuf.get_pixbuf().get_width() + 10
         '''Init pixbuf.'''
-        self.__bg_color               = bg_color
-        self.__fg_color               = fg_color
+        self.__bg_pixbuf = bg_pixbuf
+        self.__fg_pixbuf = fg_pixbuf
+        self.__bg_cache_pixbuf = CachePixbuf()
+        self.__fg_cache_pixbuf = CachePixbuf()
         # zero volume pixbuf.
         self.__zero_volume_normal_pixbuf  = zero_volume_normal_pixbuf
         self.__zero_volume_hover_pixbuf   = zero_volume_hover_pixbuf
@@ -440,16 +444,21 @@ class VolumeButton(gtk.EventBox):
         cr.set_line_width(self.__line_width)
         x, y, w, h = widget.allocation
     
+        fg_height_average = (self.__point_volume_pixbuf.get_pixbuf().get_height() - self.__fg_pixbuf.get_pixbuf().get_height()) / 2
+        bg_height_average = (self.__point_volume_pixbuf.get_pixbuf().get_height() - self.__bg_pixbuf.get_pixbuf().get_height()) / 2
         point_width_average      = self.__point_volume_pixbuf.get_pixbuf().get_width() / 2 
         ##################################################
         # Draw bg.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(self.__bg_color.get_color_info()))
-        cr.move_to(x + self.__bg_x + self.__bg_padding_x,
-                   y + self.__bg_y + point_width_average)
-        cr.line_to(x + self.__bg_x + self.__bg_padding_x + self.__volume_width,
-                   y + self.__bg_y + point_width_average)
-        cr.stroke()
-        ##################################################
+        if self.__volume_width > 0:
+            self.__bg_cache_pixbuf.scale(self.__bg_pixbuf.get_pixbuf(), 
+                                         self.__volume_width,
+                                         self.__bg_pixbuf.get_pixbuf().get_height(),
+                                         )
+            draw_pixbuf(
+                cr,
+                self.__bg_cache_pixbuf.get_cache(),
+                x + self.__bg_x + self.__bg_padding_x,
+                y + self.__bg_y + bg_height_average)
         
         temp_fg_padding_x = self.__point_padding_x - (self.__fg_x + self.__fg_padding_x) 
         
@@ -461,12 +470,16 @@ class VolumeButton(gtk.EventBox):
         self.__current_value = temp_fg_padding_x * (float(self.__volume_max_value) / self.__volume_width)
         
         # Draw fg. 
-        cr.set_source_rgba(*alpha_color_hex_to_cairo((self.__fg_color.get_color_info())))
-        cr.move_to(x + self.__fg_x + self.__fg_padding_x,
-                   y + self.__fg_y + point_width_average)
-        cr.line_to(x + self.__fg_x + self.__fg_padding_x + temp_fg_padding_x,
-                   y + self.__fg_y + point_width_average)
-        cr.stroke()        
+        if temp_fg_padding_x > 0:
+            self.__fg_cache_pixbuf.scale(self.__fg_pixbuf.get_pixbuf(), 
+                                         temp_fg_padding_x,
+                                         self.__fg_pixbuf.get_pixbuf().get_height(),
+                                         )
+            draw_pixbuf(
+                cr,
+                self.__fg_cache_pixbuf.get_cache(),
+                x + self.__fg_x + self.__fg_padding_x,
+                y + self.__fg_y + fg_height_average)
         #################################################
         # Draw point.                        
         temp_point_padding_x     = (self.__point_x + self.__point_padding_x - point_width_average)
