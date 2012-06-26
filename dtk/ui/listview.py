@@ -550,12 +550,8 @@ class ListView(gtk.DrawingArea):
                     vadjust = scrolled_window.get_vadjustment()
                     if (0 <= event_x <= scrolled_window.allocation.width
                         and vadjust.get_value() <= event_y <= vadjust.get_value() + vadjust.get_page_size()):
-                        print "*****"
                         hover_row = min(max(int((event_y - self.title_offset_y) / self.item_height), 0),
                                         len(self.items))
-                        
-                        # Set drag cursor.
-                        set_cursor(self, gtk.gdk.DOUBLE_ARROW)
                         
                         # Filt items around drag item.
                         filter_items = self.before_drag_items + [self.drag_item] + self.after_drag_items
@@ -598,10 +594,6 @@ class ListView(gtk.DrawingArea):
                         self.queue_draw()
                     else:
                         print "Out of area."
-                        
-                        # Set drag cursor.
-                        set_cursor(self, gtk.gdk.FLEUR)
-                        set_cursor(self.get_toplevel(), gtk.gdk.FLEUR)
             else:
                 # Get hover row.
                 hover_row = self.get_event_row(event)
@@ -884,8 +876,9 @@ class ListView(gtk.DrawingArea):
         # Reset.
         self.title_select_column = None
         self.title_adjust_column = None
-        self.reset_cursor()
-
+        if not self.left_button_press:
+            self.reset_cursor()
+        
         # Hide hover row when cursor out of viewport area.
         vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
         hadjust = get_match_parent(self, ["ScrolledWindow"]).get_hadjustment()

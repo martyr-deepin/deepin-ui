@@ -111,11 +111,19 @@ def get_entry_text(entry):
 
 def set_cursor(widget, cursor_type=None):
     '''Set cursor.'''
-    print "Change cursor: %s, %s" % (widget, cursor_type)
     if cursor_type == None:
         widget.window.set_cursor(None)
     else:
         widget.window.set_cursor(gtk.gdk.Cursor(cursor_type))
+    
+    return False
+
+def set_gdk_cursor(gdk_window, cursor_type=None):
+    '''Set cursor.'''
+    if cursor_type == None:
+        gdk_window.set_cursor(None)
+    else:
+        gdk_window.set_cursor(gtk.gdk.Cursor(cursor_type))
     
     return False
 
