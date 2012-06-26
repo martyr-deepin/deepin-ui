@@ -23,7 +23,7 @@
 import gobject
 import gtk
 from gtk import gdk
-from utils import remove_callback_id, color_hex_to_cairo
+from utils import remove_signal_id, color_hex_to_cairo
 from theme import ui_theme
 
 # the p_range is the virtual width/height, it's value is smaller than
@@ -55,6 +55,11 @@ class ScrolledWindow(gtk.Bin):
         self.right_space = right_space
         self.top_bootm_space = top_bootm_space
 
+        self.h_value_change_id = None
+        self.h_change_id = None
+        self.v_value_change_id = None
+        self.v_change_id = None
+
         class Record():
             def __init__(self):
                 self.bar_len = 0  #scrollbar length
@@ -68,7 +73,6 @@ class ScrolledWindow(gtk.Bin):
                 self.bar_pos = 0 #the scrollbar topcorner/leftcorner position
                 self.is_inside = False # is pointer in the scrollbar region?
                 self.in_motion = False # is user is draging scrollbar?
-                self.value_change_id = None
                 self.policy = gtk.POLICY_AUTOMATIC
 
         self._horizaontal = Record()
@@ -81,7 +85,7 @@ class ScrolledWindow(gtk.Bin):
         self.set_hadjustment(gtk.Adjustment())
         #self.set_app_paintable(True)
         self.set_has_window(False)
-
+        
     def do_expose_event(self, e):
         if e.window == self.vwindow:
             self.draw_vbar()
@@ -489,16 +493,24 @@ class ScrolledWindow(gtk.Bin):
         return self.hadjustment
 
     def set_hadjustment(self, adj):
+        remove_signal_id(self.h_value_change_id)
+        remove_signal_id(self.h_change_id)
+        
         self.hadjustment = adj
-        remove_callback_id(self._horizaontal.value_change_id)
-        self.hadj_callback_id = self.hadjustment.connect('value-changed', self.hadjustment_changed)
-        self.hadjustment.connect('changed', self.update_scrollbar)
+        h_value_change_handler_id = self.hadjustment.connect('value-changed', self.hadjustment_changed)
+        h_change_handler_id = self.hadjustment.connect('changed', self.update_scrollbar)
+        self.h_value_change_id = (self.hadjustment, h_value_change_handler_id)
+        self.h_change_id = (self.hadjustment, h_change_handler_id)
+        
     def set_vadjustment(self, adj):
+        remove_signal_id(self.v_value_change_id)
+        remove_signal_id(self.v_change_id)
+        
         self.vadjustment = adj
-        remove_callback_id(self._vertical.value_change_id)
-        self.vadj_callback_id = self.vadjustment.connect('value-changed', self.vadjustment_changed)
-        self.vadjustment.connect('changed', self.update_scrollbar)
-
+        v_value_change_handler_id = self.vadjustment.connect('value-changed', self.vadjustment_changed)
+        v_change_handler_id = self.vadjustment.connect('changed', self.update_scrollbar)
+        self.v_value_change_id = (self.vadjustment, v_value_change_handler_id)
+        self.v_change_id = (self.vadjustment, v_change_handler_id)
 
     def _test_calc(self):
         for i in xrange(0, int(self.vadjustment.upper-self.vadjustment.page_size), 30):

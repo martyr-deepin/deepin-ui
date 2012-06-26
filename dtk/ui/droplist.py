@@ -27,7 +27,7 @@ from line import HSeparator
 from theme import ui_theme
 from utils import (is_in_rect, get_content_size, propagate_expose, 
                    get_widget_root_coordinate, get_screen_size, 
-                   remove_callback_id, alpha_color_hex_to_cairo, 
+                   alpha_color_hex_to_cairo, 
                    cairo_disable_antialias, color_hex_to_cairo)
 import gtk
 import gobject
@@ -41,14 +41,6 @@ droplist_active_item = None
 droplist_grab_window_press_flag = False
 
 root_droplists = []
-droplist_grab_window_button_press_id = None
-droplist_grab_window_button_release_id = None
-droplist_grab_window_motion_notify_id = None
-droplist_grab_window_enter_notify_id = None
-droplist_grab_window_leave_notify_id = None
-droplist_grab_window_scroll_event_id = None
-droplist_grab_window_key_press_id = None
-droplist_grab_window_key_release_id = None
 
 def droplist_grab_window_focus_in():
     droplist_grab_window.grab_add()
@@ -59,14 +51,6 @@ def droplist_grab_window_focus_in():
         None, None, gtk.gdk.CURRENT_TIME)
     
 def droplist_grab_window_focus_out():
-    global droplist_grab_window_button_press_id
-    global droplist_grab_window_button_release_id
-    global droplist_grab_window_motion_notify_id
-    global droplist_grab_window_enter_notify_id
-    global droplist_grab_window_leave_notify_id
-    global droplist_grab_window_scroll_event_id
-    global droplist_grab_window_key_press_id
-    global droplist_grab_window_key_release_id
     global root_droplists
     
     for root_droplist in root_droplists:
@@ -77,18 +61,6 @@ def droplist_grab_window_focus_out():
     gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
     droplist_grab_window.grab_remove()
 
-    for callback_id in [
-        droplist_grab_window_button_press_id,
-        droplist_grab_window_button_release_id,
-        droplist_grab_window_motion_notify_id,
-        droplist_grab_window_enter_notify_id,
-        droplist_grab_window_leave_notify_id,
-        droplist_grab_window_scroll_event_id,
-        droplist_grab_window_key_press_id,
-        droplist_grab_window_key_release_id
-        ]:
-        remove_callback_id(callback_id)
-        
 def is_press_on_droplist_grab_window(window):
     '''Is press on droplist grab window.'''
     for toplevel in gtk.window_list_toplevels():
@@ -228,6 +200,15 @@ def droplist_grab_window_motion_notify(widget, event):
                     
                 droplist.item_scrolled_window.event(motion_notify_event)
                 
+droplist_grab_window.connect("button-press-event", droplist_grab_window_button_press)
+droplist_grab_window.connect("button-release-event", droplist_grab_window_button_release)
+droplist_grab_window.connect("motion-notify-event", droplist_grab_window_motion_notify)
+droplist_grab_window.connect("enter-notify-event", droplist_grab_window_enter_notify)
+droplist_grab_window.connect("leave-notify-event", droplist_grab_window_leave_notify)
+droplist_grab_window.connect("scroll-event", droplist_grab_window_scroll_event)
+droplist_grab_window.connect("key-press-event", droplist_grab_window_key_press)
+droplist_grab_window.connect("key-release-event", droplist_grab_window_key_release)
+            
 class DroplistScrolledWindow(ScrolledWindow):
     '''Droplist scrolled window.'''
 	
@@ -581,43 +562,11 @@ class Droplist(gtk.Window):
     def init_droplist(self, widget):
         '''Realize droplist.'''
         global root_droplists
-        global droplist_grab_window_button_press_id
-        global droplist_grab_window_button_release_id
-        global droplist_grab_window_motion_notify_id
-        global droplist_grab_window_enter_notify_id
-        global droplist_grab_window_leave_notify_id
-        global droplist_grab_window_scroll_event_id
-        global droplist_grab_window_key_press_id
-        global droplist_grab_window_key_release_id
-        
         droplist_grab_window_focus_out()
         
         if not gtk.gdk.pointer_is_grabbed():
             droplist_grab_window_focus_in()
         
-        if droplist_grab_window_button_press_id == None:    
-            droplist_grab_window_button_press_id = droplist_grab_window.connect("button-press-event", droplist_grab_window_button_press)
-            
-        if droplist_grab_window_button_release_id == None:    
-            droplist_grab_window_button_release_id = droplist_grab_window.connect("button-release-event", droplist_grab_window_button_release)
-        if droplist_grab_window_motion_notify_id == None:    
-            droplist_grab_window_motion_notify_id = droplist_grab_window.connect("motion-notify-event", droplist_grab_window_motion_notify)
-            
-        if droplist_grab_window_enter_notify_id == None:    
-            droplist_grab_window_enter_notify_id = droplist_grab_window.connect("enter-notify-event", droplist_grab_window_enter_notify)
-
-        if droplist_grab_window_leave_notify_id == None:    
-            droplist_grab_window_leave_notify_id = droplist_grab_window.connect("leave-notify-event", droplist_grab_window_leave_notify)
-
-        if droplist_grab_window_scroll_event_id == None:    
-            droplist_grab_window_scroll_event_id = droplist_grab_window.connect("scroll-event", droplist_grab_window_scroll_event)
-            
-        if droplist_grab_window_key_press_id == None:    
-            droplist_grab_window_key_press_id = droplist_grab_window.connect("key-press-event", droplist_grab_window_key_press)
-            
-        if droplist_grab_window_key_release_id == None:
-            droplist_grab_window_key_release_id = droplist_grab_window.connect("key-release-event", droplist_grab_window_key_release)
-            
         if not self in root_droplists:
             root_droplists.append(self)
                             

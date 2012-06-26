@@ -643,7 +643,7 @@ def exec_time():
     else:  
         print "time: %f" % (time.time() - start_time)
 
-def remove_callback_id(callback_id):
+def remove_timeout_id(callback_id):
     '''Remove callback id.'''
     print "Start: %s" % (callback_id)
     
@@ -658,7 +658,8 @@ def remove_signal_id(signal_data):
     '''Remove signal.'''
     if signal_data:
         (signal_object, signal_handler_id) = signal_data
-        signal_object.disconnect(signal_handler_id)
+        if signal_object.handler_is_connected(signal_handler_id):
+            signal_object.disconnect(signal_handler_id)
         signal_data = None
 
 def print_callback_args(*args):

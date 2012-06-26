@@ -24,9 +24,9 @@ from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MID
 from draw import draw_vlinear, draw_pixbuf, draw_text, draw_hlinear
 from line import HSeparator
 from theme import ui_theme
-from utils import (is_in_rect, get_content_size, propagate_expose, 
+from utils import (is_in_rect, get_content_size, propagate_expose,
                    get_widget_root_coordinate, get_screen_size, 
-                   remove_callback_id, alpha_color_hex_to_cairo, get_window_shadow_size)
+                   alpha_color_hex_to_cairo, get_window_shadow_size)
 from window import Window
 import gtk
 import gobject
@@ -38,8 +38,6 @@ menu_grab_window.show()
 menu_active_item = None
 
 root_menus = []
-menu_grab_window_button_press_id = None
-menu_grab_window_motion_notify_id = None
 
 def menu_grab_window_focus_in():
     menu_grab_window.grab_add()
@@ -50,8 +48,6 @@ def menu_grab_window_focus_in():
         None, None, gtk.gdk.CURRENT_TIME)
     
 def menu_grab_window_focus_out():
-    global menu_grab_window_button_press_id
-    global menu_grab_window_motion_notify_id
     global root_menus
     
     for root_menu in root_menus:
@@ -61,11 +57,7 @@ def menu_grab_window_focus_out():
     
     gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
     menu_grab_window.grab_remove()
-
-    for callback_id in [menu_grab_window_button_press_id,
-                        menu_grab_window_motion_notify_id]:
-        remove_callback_id(callback_id)
-        
+    
     if menu_active_item:
         menu_active_item.set_state(gtk.STATE_NORMAL)
         
@@ -123,6 +115,9 @@ def menu_grab_window_motion_notify(widget, event):
                 menu_item.item_box.event(enter_notify_event)
                 
                 menu_item.item_box.queue_draw()
+
+menu_grab_window.connect("button-press-event", menu_grab_window_button_press)
+menu_grab_window.connect("motion-notify-event", menu_grab_window_motion_notify)
 
 class Menu(Window):
     '''Menu.'''
@@ -220,20 +215,12 @@ class Menu(Window):
     def init_menu(self, widget):
         '''Realize menu.'''
         global root_menus
-        global menu_grab_window_button_press_id
-        global menu_grab_window_motion_notify_id
         
         if self.is_root_menu:
             menu_grab_window_focus_out()
         
         if not gtk.gdk.pointer_is_grabbed():
             menu_grab_window_focus_in()
-            
-        if menu_grab_window_button_press_id == None:    
-            menu_grab_window_button_press_id = menu_grab_window.connect("button-press-event", menu_grab_window_button_press)
-            
-        if menu_grab_window_motion_notify_id == None:    
-            menu_grab_window_motion_notify_id = menu_grab_window.connect("motion-notify-event", menu_grab_window_motion_notify)
             
         if self.is_root_menu and not self in root_menus:
             root_menus.append(self)

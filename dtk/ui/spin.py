@@ -26,7 +26,7 @@ import gobject
 from theme import ui_theme
 from utils import (alpha_color_hex_to_cairo, cairo_disable_antialias,
                    color_hex_to_cairo,
-                   propagate_expose, is_float, remove_callback_id)
+                   propagate_expose, is_float, remove_timeout_id)
 
 from button import DisableButton
 from entry import Entry
@@ -155,7 +155,7 @@ class SpinBox(gtk.VBox):
     def stop_update_value(self):
         '''Stop update value.'''
         for timeout_id in [self.increase_value_id, self.decrease_value_id]:
-            remove_callback_id(timeout_id)
+            remove_timeout_id(timeout_id)
         
     def increase_value(self):    
         new_value = self.current_value + self.step_value
