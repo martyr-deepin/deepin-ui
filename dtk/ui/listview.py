@@ -546,51 +546,62 @@ class ListView(gtk.DrawingArea):
                 if self.enable_drag:
                     # Get hover row.
                     (event_x, event_y) = get_event_coords(event)
-                    hover_row = min(max(int((event_y - self.title_offset_y) / self.item_height), 0),
-                                    len(self.items))
-                    
-                    # Set drag cursor.
-                    set_cursor(self, gtk.gdk.DOUBLE_ARROW)
-                    
-                    # Filt items around drag item.
-                    filter_items = self.before_drag_items + [self.drag_item] + self.after_drag_items
-                    
-                    before_items = []
-                    for item in self.items[0:hover_row]:
-                        if not item in filter_items:
-                            before_items.append(item)
+                    scrolled_window = get_match_parent(self, ["ScrolledWindow"])
+                    vadjust = scrolled_window.get_vadjustment()
+                    if (0 <= event_x <= scrolled_window.allocation.width
+                        and vadjust.get_value() <= event_y <= vadjust.get_value() + vadjust.get_page_size()):
+                        print "*****"
+                        hover_row = min(max(int((event_y - self.title_offset_y) / self.item_height), 0),
+                                        len(self.items))
                         
-                    after_items = []
-                    for item in self.items[hover_row::]:
-                        if not item in filter_items:
-                            after_items.append(item)
-                                
-                    # Update items order.
-                    self.items = before_items + self.before_drag_items + [self.drag_item] + self.after_drag_items + after_items
-                    
-                    # Update select rows.
-                    self.select_rows = range(len(before_items), len(self.items) - len(after_items))
-                    
-                    # Update select start row.
-                    for row in self.select_rows:
-                        if self.items[row] == self.start_select_item:
-                            self.start_select_row = row
-                            break
+                        # Set drag cursor.
+                        set_cursor(self, gtk.gdk.DOUBLE_ARROW)
                         
-                    # Scroll viewport when cursor almost reach bound of viewport.
-                    vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
-                    if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
-                        vadjust.set_value(min(vadjust.get_value() + self.item_height, 
-                                              vadjust.get_upper() - vadjust.get_page_size()))
-                    elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
-                        vadjust.set_value(max(vadjust.get_value() - self.item_height, 
-                                              vadjust.get_lower()))
-                    
-                    # Update item index.
-                    self.update_item_index()    
-                    
-                    # Redraw.
-                    self.queue_draw()
+                        # Filt items around drag item.
+                        filter_items = self.before_drag_items + [self.drag_item] + self.after_drag_items
+                        
+                        before_items = []
+                        for item in self.items[0:hover_row]:
+                            if not item in filter_items:
+                                before_items.append(item)
+                            
+                        after_items = []
+                        for item in self.items[hover_row::]:
+                            if not item in filter_items:
+                                after_items.append(item)
+                                    
+                        # Update items order.
+                        self.items = before_items + self.before_drag_items + [self.drag_item] + self.after_drag_items + after_items
+                        
+                        # Update select rows.
+                        self.select_rows = range(len(before_items), len(self.items) - len(after_items))
+                        
+                        # Update select start row.
+                        for row in self.select_rows:
+                            if self.items[row] == self.start_select_item:
+                                self.start_select_row = row
+                                break
+                            
+                        # Scroll viewport when cursor almost reach bound of viewport.
+                        vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
+                        if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
+                            vadjust.set_value(min(vadjust.get_value() + self.item_height, 
+                                                  vadjust.get_upper() - vadjust.get_page_size()))
+                        elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
+                            vadjust.set_value(max(vadjust.get_value() - self.item_height, 
+                                                  vadjust.get_lower()))
+                        
+                        # Update item index.
+                        self.update_item_index()    
+                        
+                        # Redraw.
+                        self.queue_draw()
+                    else:
+                        print "Out of area."
+                        
+                        # Set drag cursor.
+                        set_cursor(self, gtk.gdk.FLEUR)
+                        set_cursor(self.get_toplevel(), gtk.gdk.FLEUR)
             else:
                 # Get hover row.
                 hover_row = self.get_event_row(event)

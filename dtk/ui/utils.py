@@ -111,6 +111,7 @@ def get_entry_text(entry):
 
 def set_cursor(widget, cursor_type=None):
     '''Set cursor.'''
+    print "Change cursor: %s, %s" % (widget, cursor_type)
     if cursor_type == None:
         widget.window.set_cursor(None)
     else:

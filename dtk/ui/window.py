@@ -257,8 +257,13 @@ class Window(gtk.Window):
     def motion_notify(self, widget, event):
         '''Callback for motion-notify event.'''
         if self.enable_resize and self.shadow_is_visible:
-            self.cursor_type = self.get_cursor_type(event)
-            set_cursor(self, self.cursor_type)
+            cursor_type = self.get_cursor_type(event)
+            if cursor_type != None:
+                set_cursor(self, self.cursor_type)
+            elif self.cursor_type != None:
+                set_cursor(self, None)
+                
+            self.cursor_type = cursor_type
             
     def resize_window(self, widget, event):
         '''Resize window.'''

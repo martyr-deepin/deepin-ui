@@ -31,7 +31,6 @@ def window_to_alloc(widget, x, y):
 
 def child_location_foreach(widget, cl): #cl = child_location
     if not widget.is_drawable():
-        # assert(False)
         return
     if not cl.child :
         (x, y) = cl.container.translate_coordinates(widget, int(cl.x), int(cl.y))
