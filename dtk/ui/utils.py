@@ -109,21 +109,19 @@ def get_entry_text(entry):
     '''Get entry text.'''
     return entry.get_text().split(" ")[0]
 
-def set_cursor(widget, cursor_type=None):
+def set_cursor(cursor_widget, cursor_type=None):
     '''Set cursor.'''
-    if cursor_type == None:
-        widget.window.set_cursor(None)
+    if isinstance(cursor_widget, gtk.Widget):
+        cursor_window = cursor_widget.window
+    elif isinstance(cursor_widget, gtk.gdk.Window):
+        cursor_window = cursor_widget
     else:
-        widget.window.set_cursor(gtk.gdk.Cursor(cursor_type))
-    
-    return False
-
-def set_gdk_cursor(gdk_window, cursor_type=None):
-    '''Set cursor.'''
+        print "set_cursor: impossible!"
+        
     if cursor_type == None:
-        gdk_window.set_cursor(None)
+        cursor_window.set_cursor(None)
     else:
-        gdk_window.set_cursor(gtk.gdk.Cursor(cursor_type))
+        cursor_window.set_cursor(gtk.gdk.Cursor(cursor_type))
     
     return False
 
