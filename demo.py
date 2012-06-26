@@ -56,6 +56,7 @@ from dtk.ui.frame import HorizontalFrame
 from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
+from dtk.ui.osd_tooltip import OSDTooltip
 from dtk.ui.droplist import Droplist
 from dtk.ui.menu import Menu
 from dtk.ui.treeview import TreeView, TreeViewItem
@@ -295,9 +296,10 @@ if __name__ == "__main__":
     # Note if you add list in categorybar make sure height is multiples of list length.
     # Otherwise last one item will heighter than Otherwise items.
     category_box = HPaned()
+    osd_tooltip = OSDTooltip(category_box, "OSD Tooltip")
     body_box.add(category_box)
     categorybar = Categorybar([
-            (app_theme.get_pixbuf("categorybar/word.png"), "测试分类", None),
+            (app_theme.get_pixbuf("categorybar/word.png"), "测试分类", lambda : osd_tooltip.show()),
             (app_theme.get_pixbuf("categorybar/win.png"), "测试分类", None),
             (app_theme.get_pixbuf("categorybar/web.png"), "测试分类", None),
             (app_theme.get_pixbuf("categorybar/professional.png"), "测试分类", None),

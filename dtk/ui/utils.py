@@ -645,9 +645,21 @@ def exec_time():
 
 def remove_callback_id(callback_id):
     '''Remove callback id.'''
+    print "Start: %s" % (callback_id)
+    
     if callback_id:
-        gobject.source_remove(callback_id)
+        print "remove: %s" % (callback_id)
+        print gobject.source_remove(callback_id)
         callback_id = None
+        
+    print "End: %s" % (callback_id)
+    
+def remove_signal_id(signal_data):
+    '''Remove signal.'''
+    if signal_data:
+        (signal_object, signal_handler_id) = signal_data
+        signal_object.disconnect(signal_handler_id)
+        signal_data = None
 
 def print_callback_args(*args):
     '''Print callback arguments.'''
@@ -909,3 +921,7 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
                                                expect_height)
     else:
         return pixbuf
+
+def unique_print(text):
+    '''Unique print.'''
+    print "%s: %s" % (time.time(), text)
