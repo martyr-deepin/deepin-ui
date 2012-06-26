@@ -544,40 +544,13 @@ class ListView(gtk.DrawingArea):
         if self.left_button_press:
             if self.start_drag:
                 if self.enable_drag:
+                    # Set drag cursor.
+                    self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.display_get_default(), 
+                                                          ui_theme.get_pixbuf("icon.png").get_pixbuf(),
+                                                          0, 0))
+                    
                     # Get hover row.
-                    (event_x, event_y) = get_event_coords(event)
-                    scrolled_window = get_match_parent(self, ["ScrolledWindow"])
-                    vadjust = scrolled_window.get_vadjustment()
-                    if (0 <= event_x <= scrolled_window.allocation.width
-                        and vadjust.get_value() <= event_y <= vadjust.get_value() + vadjust.get_page_size()):
-                        hover_row = min(max(int((event_y - self.title_offset_y) / self.item_height), 0),
-                                        len(self.items))
-                        
-                        # Filt items around drag item.
-                        filter_items = self.before_drag_items + [self.drag_item] + self.after_drag_items
-                        
-                        before_items = []
-                        for item in self.items[0:hover_row]:
-                            if not item in filter_items:
-                                before_items.append(item)
-                            
-                        after_items = []
-                        for item in self.items[hover_row::]:
-                            if not item in filter_items:
-                                after_items.append(item)
-                                    
-                        # Update items order.
-                        self.items = before_items + self.before_drag_items + [self.drag_item] + self.after_drag_items + after_items
-                        
-                        # Update select rows.
-                        self.select_rows = range(len(before_items), len(self.items) - len(after_items))
-                        
-                        # Update select start row.
-                        for row in self.select_rows:
-                            if self.items[row] == self.start_select_item:
-                                self.start_select_row = row
-                                break
-                            
+                    if self.is_in_visible_area(event):
                         # Scroll viewport when cursor almost reach bound of viewport.
                         vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
                         if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
@@ -586,12 +559,6 @@ class ListView(gtk.DrawingArea):
                         elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
                             vadjust.set_value(max(vadjust.get_value() - self.item_height, 
                                                   vadjust.get_lower()))
-                        
-                        # Update item index.
-                        self.update_item_index()    
-                        
-                        # Redraw.
-                        self.queue_draw()
                     else:
                         print "Out of area."
             else:
@@ -858,19 +825,69 @@ class ListView(gtk.DrawingArea):
             elif self.single_click_row == release_row:
                 self.emit_item_event("single-click-item", event)
                     
+            if self.start_drag and self.is_in_visible_area(event):
+                self.drag_select_items_at_cursor(event)
+            
+            self.reset_cursor()    
             self.double_click_row = None
             self.single_click_row = None
+            self.start_drag = False
             
             # Disable select rows when press_in_select_rows valid after button release.
             if self.press_in_select_rows:
-                self.start_drag = False
                 self.start_select_row = self.press_in_select_rows
                 self.select_rows = [self.press_in_select_rows]
                 
                 self.press_in_select_rows = None
                 
                 self.queue_draw()
+                
+    def is_in_visible_area(self, event):
+        '''Is in visible area.'''
+        (event_x, event_y) = get_event_coords(event)
+        scrolled_window = get_match_parent(self, ["ScrolledWindow"])
+        vadjust = scrolled_window.get_vadjustment()
+        return (0 <= event_x <= scrolled_window.allocation.width
+                and vadjust.get_value() <= event_y <= vadjust.get_value() + vadjust.get_page_size())
+    
+    def drag_select_items_at_cursor(self, event):
+        '''Drag select items at cursor position.'''
+        (event_x, event_y) = get_event_coords(event)
+        hover_row = min(max(int((event_y - self.title_offset_y) / self.item_height), 0),
+                        len(self.items))
+        
+        # Filt items around drag item.
+        filter_items = self.before_drag_items + [self.drag_item] + self.after_drag_items
+        
+        before_items = []
+        for item in self.items[0:hover_row]:
+            if not item in filter_items:
+                before_items.append(item)
             
+        after_items = []
+        for item in self.items[hover_row::]:
+            if not item in filter_items:
+                after_items.append(item)
+                    
+        # Update items order.
+        self.items = before_items + self.before_drag_items + [self.drag_item] + self.after_drag_items + after_items
+        
+        # Update select rows.
+        self.select_rows = range(len(before_items), len(self.items) - len(after_items))
+        
+        # Update select start row.
+        for row in self.select_rows:
+            if self.items[row] == self.start_select_item:
+                self.start_select_row = row
+                break
+            
+        
+        # Update item index.
+        self.update_item_index()    
+        
+        # Redraw.
+        self.queue_draw()
+                
     def leave_list_view(self, widget, event):
         '''leave-notify-event signal handler.'''
         # Reset.
