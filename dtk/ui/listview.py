@@ -26,7 +26,7 @@ from contextlib import contextmanager
 from draw import draw_pixbuf, draw_vlinear, draw_text
 from keymap import get_keyevent_name, has_ctrl_mask, has_shift_mask
 from theme import ui_theme
-from utils import (map_value, mix_list_max, get_content_size, 
+from utils import (map_value, mix_list_max, get_content_size, color_hex_to_cairo,
                    unzip, last_index, set_cursor, get_match_parent, 
                    cairo_state, get_event_coords, is_left_button, 
                    is_right_button, is_double_click, is_single_click, 
@@ -85,6 +85,7 @@ class ListView(gtk.DrawingArea):
         self.start_select_row = None
         self.press_in_select_rows = None
         self.expand_column = None
+        self.drag_reference_row = None
         
         # Signal.
         self.connect("realize", self.realize_list_view)
@@ -493,6 +494,12 @@ class ListView(gtk.DrawingArea):
 
         # Draw shadow mask.
         self.draw_shadow_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
+        
+        # Draw drag reference row.
+        if self.drag_reference_row:
+            cr.set_source_rgb(*color_hex_to_cairo("#666666"))
+            cr.rectangle(rect.x, rect.y + self.drag_reference_row * self.item_height + self.title_offset_y, rect.width, 3)
+            cr.fill()
             
         return False
     
@@ -559,8 +566,17 @@ class ListView(gtk.DrawingArea):
                         elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
                             vadjust.set_value(max(vadjust.get_value() - self.item_height, 
                                                   vadjust.get_lower()))
+                            
+                        # Get drag reference row.
+                        self.drag_reference_row = self.get_event_row(event)    
+                        
+                        self.queue_draw()
                     else:
                         print "Out of area."
+                        
+                        self.drag_reference_row = None
+
+                        self.queue_draw()
             else:
                 # Get hover row.
                 hover_row = self.get_event_row(event)
@@ -770,6 +786,7 @@ class ListView(gtk.DrawingArea):
             elif len(self.items) > 0:
                 self.release_item(event)
                     
+            self.drag_reference_row = None
             self.title_adjust_column = None
             self.queue_draw()
         
