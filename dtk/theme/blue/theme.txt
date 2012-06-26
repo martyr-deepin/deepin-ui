@@ -42,6 +42,8 @@
  "comboEntrySelectBackground" : "#4D78B3",
  },	
  "alpha_colors" : {
+	 "volumebutton_bg" :("#abadaa", 1.0),
+	 "volumebutton_fg" :("#98e219", 1.0),
      "frame" : ("#000000", 0.5),
      "frameDot" : ("#000000", 0.2),
      "frameLight" : ("#FFFFFF", 0.2),

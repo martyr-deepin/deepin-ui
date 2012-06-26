@@ -338,8 +338,8 @@ if __name__ == "__main__":
     scrolled_window.add_child(list_view)
     
     # Add volume button.
-    volume_button = VolumeButton(100, 0, 100, 2)
-    volume_frame = HorizontalFrame(10, 0, 0, 0, 0)
+    volume_button = VolumeButton(100, 50)
+    volume_frame = gtk.VBox()
     volume_frame.add(volume_button)
     tab_1_box.pack_start(volume_frame, False, False)
     

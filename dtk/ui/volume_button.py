@@ -21,13 +21,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Deein ui.
-from dtk.ui.utils import alpha_color_hex_to_cairo
-# from dtk.ui.utils import propagate_expose
-from dtk.ui.draw import draw_pixbuf
-
-from skin import app_theme
-
+from utils import alpha_color_hex_to_cairo
+from draw import draw_pixbuf
+from theme import ui_theme
 import gtk
 import gobject
 
@@ -68,30 +64,30 @@ class VolumeButton(gtk.EventBox):
                  volume_left_show_value = [(1, 33),(34, 66),(67, 100)],
                  scroll_bool = False,
                  press_emit_bool = False,
-                 bg_color = app_theme.get_alpha_color("volumebutton_bg"),
-                 fg_color = app_theme.get_alpha_color("volumebutton_fg"),
+                 bg_color = ui_theme.get_alpha_color("volumebutton_bg"),
+                 fg_color = ui_theme.get_alpha_color("volumebutton_fg"),
                  #=============================================================
-                 zero_volume_normal_pixbuf = app_theme.get_pixbuf("zero_normal.png"),
-                 zero_volume_hover_pixbuf = app_theme.get_pixbuf("zero_hover.png"),
-                 zero_volume_press_pixbuf = app_theme.get_pixbuf("zero_press.png"),
+                 zero_volume_normal_pixbuf = ui_theme.get_pixbuf("volumebutton/zero_normal.png"),
+                 zero_volume_hover_pixbuf = ui_theme.get_pixbuf("volumebutton/zero_hover.png"),
+                 zero_volume_press_pixbuf = ui_theme.get_pixbuf("volumebutton/zero_press.png"),
                  #=============================================================
-                 min_volume_normal_pixbuf   = app_theme.get_pixbuf("lower_normal.png"),
-                 min_volume_hover_pixbuf    = app_theme.get_pixbuf("lower_hover.png"),
-                 min_volume_press_pixbuf    = app_theme.get_pixbuf("lower_press.png"),
+                 min_volume_normal_pixbuf   = ui_theme.get_pixbuf("volumebutton/lower_normal.png"),
+                 min_volume_hover_pixbuf    = ui_theme.get_pixbuf("volumebutton/lower_hover.png"),
+                 min_volume_press_pixbuf    = ui_theme.get_pixbuf("volumebutton/lower_press.png"),
                  #=============================================================
-                 mid_volume_normal_pixbuf   = app_theme.get_pixbuf("middle_normal.png"),
-                 mid_volume_hover_pixbuf    = app_theme.get_pixbuf("middle_hover.png"),
-                 mid_volume_press_pixbuf    = app_theme.get_pixbuf("middle_press.png"),
+                 mid_volume_normal_pixbuf   = ui_theme.get_pixbuf("volumebutton/middle_normal.png"),
+                 mid_volume_hover_pixbuf    = ui_theme.get_pixbuf("volumebutton/middle_hover.png"),
+                 mid_volume_press_pixbuf    = ui_theme.get_pixbuf("volumebutton/middle_press.png"),
                  #=============================================================
-                 max_volume_normal_pixbuf = app_theme.get_pixbuf("high_normal.png"),
-                 max_volume_hover_pixbuf  = app_theme.get_pixbuf("high_hover.png"),
-                 max_volume_press_pixbuf  = app_theme.get_pixbuf("high_press.png"),
+                 max_volume_normal_pixbuf = ui_theme.get_pixbuf("volumebutton/high_normal.png"),
+                 max_volume_hover_pixbuf  = ui_theme.get_pixbuf("volumebutton/high_hover.png"),
+                 max_volume_press_pixbuf  = ui_theme.get_pixbuf("volumebutton/high_press.png"),
                  #=============================================================
-                 mute_volume_normal_pixbuf  = app_theme.get_pixbuf("mute_normal.png"),
-                 mute_volume_hover_pixbuf   = app_theme.get_pixbuf("mute_hover.png"),
-                 mute_volume_press_pixbuf   = app_theme.get_pixbuf("mute_press.png"),
+                 mute_volume_normal_pixbuf  = ui_theme.get_pixbuf("volumebutton/mute_normal.png"),
+                 mute_volume_hover_pixbuf   = ui_theme.get_pixbuf("volumebutton/mute_hover.png"),
+                 mute_volume_press_pixbuf   = ui_theme.get_pixbuf("volumebutton/mute_press.png"),
                  #=============================================================
-                 point_volume_pixbuf = app_theme.get_pixbuf("point_normal.png")
+                 point_volume_pixbuf = ui_theme.get_pixbuf("volumebutton/point_normal.png")
                  ):        
         gtk.EventBox.__init__(self)
         ###########################
