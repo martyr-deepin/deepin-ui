@@ -61,7 +61,7 @@ class VolumeButton(gtk.EventBox):
                  volume_x         = 0,
                  volume_y         = 15,
                  line_width       = 3,
-                 volume_left_right_padding_x = 3,
+                 volume_left_right_padding_x = 5,
                  volume_left_show_value = [(1, 33),(34, 66),(67, 100)],
                  scroll_bool = False,
                  press_emit_bool = False,
