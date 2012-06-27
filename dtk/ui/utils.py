@@ -885,7 +885,7 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
         
         if cut_middle_area:
             subpixbuf_x = (scale_width - expect_width) / 2
-            subpixbuf_y = (scale_height - expect_height) / 2
+            subpixbuf_y = max((scale_height - expect_height) / 2, 0)
         else:
             subpixbuf_x = 0
             subpixbuf_y = 0
@@ -896,13 +896,13 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
             gtk.gdk.INTERP_BILINEAR).subpixbuf(subpixbuf_x,
                                                subpixbuf_y,
                                                expect_width, 
-                                               expect_height)
+                                               min(expect_height, scale_height))
     elif pixbuf_height >= expect_height:
         scale_width = int(float(expect_height) * pixbuf_width / pixbuf_height)
         scale_height = expect_height
         
         if cut_middle_area:
-            subpixbuf_x = (scale_width - expect_width) / 2
+            subpixbuf_x = max((scale_width - expect_width) / 2, 0)
             subpixbuf_y = (scale_height - expect_height) / 2
         else:
             subpixbuf_x = 0
@@ -913,7 +913,7 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
             scale_height,
             gtk.gdk.INTERP_BILINEAR).subpixbuf(subpixbuf_x,
                                                subpixbuf_y,
-                                               expect_width, 
+                                               min(expect_width, scale_width), 
                                                expect_height)
     else:
         return pixbuf
