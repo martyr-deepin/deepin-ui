@@ -25,7 +25,8 @@ from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT,
                       WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, 
                       WIDGET_POS_LEFT_CENTER, WIDGET_POS_RIGHT_CENTER, 
                       WIDGET_POS_CENTER, DEFAULT_FONT, COLOR_NAME_DICT, 
-                      BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED, SIMILAR_COLOR_SEQUENCE)
+                      BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED, SIMILAR_COLOR_SEQUENCE,
+                      DEFAULT_FONT_SIZE)
 from contextlib import contextmanager 
 import cairo
 import gtk
@@ -278,7 +279,7 @@ def scroll_to_bottom(scrolled_window):
     vadjust = scrolled_window.get_vadjustment()
     vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
 
-def get_content_size(text, size):
+def get_content_size(text, size=DEFAULT_FONT_SIZE):
     '''Get size of text, in pixel.'''
     if text:
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0) # don't need give size

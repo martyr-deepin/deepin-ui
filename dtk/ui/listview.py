@@ -20,7 +20,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import tempfile
 from constant import DEFAULT_FONT_SIZE, ALIGN_END, ALIGN_START
+import os
+import subprocess
 import pango
 from contextlib import contextmanager 
 from draw import draw_pixbuf, draw_vlinear, draw_text, draw_hlinear
@@ -28,7 +31,7 @@ from keymap import get_keyevent_name, has_ctrl_mask, has_shift_mask
 from theme import ui_theme
 from utils import (map_value, mix_list_max, get_content_size, color_hex_to_cairo,
                    unzip, last_index, set_cursor, get_match_parent, 
-                   alpha_color_hex_to_cairo, cairo_disable_antialias,
+                   cairo_disable_antialias, remove_file,
                    cairo_state, get_event_coords, is_left_button, 
                    is_right_button, is_double_click, is_single_click, 
                    is_in_rect, get_disperse_index, get_window_shadow_size)
@@ -91,6 +94,7 @@ class ListView(gtk.DrawingArea):
         self.press_in_select_rows = None
         self.expand_column = None
         self.drag_reference_row = None
+        self.drag_preview_pixbuf = None
         
         # Signal.
         self.connect("realize", self.realize_list_view)
@@ -491,8 +495,6 @@ class ListView(gtk.DrawingArea):
                     draw_pixbuf(cr, 
                                 ui_theme.get_pixbuf("listview/split.png").get_pixbuf(),
                                 cell_offset_x - 1, offset_y)
-                    # draw_vlinear(cr, cell_offset_x, offset_y, 1, self.title_height,
-                    #              ui_theme.get_shadow_color("listviewHeaderSplit").get_color_info())
                 
                 # Draw title.
                 draw_text(cr, self.titles[column], 
@@ -566,15 +568,28 @@ class ListView(gtk.DrawingArea):
                     
         # Redraw after motion.
         self.queue_draw()
-            
+        
     def hover_item(self, event):
         '''Hover item.'''
         if self.left_button_press:
             if self.start_drag:
                 if self.enable_drag:
                     # Set drag cursor.
+                    if self.drag_preview_pixbuf == None:
+                        temp_filepath = tempfile.mktemp()
+                        subprocess.Popen(
+                            ["python", 
+                             os.path.join(os.path.dirname(__file__), "listview_preview_pixbuf.py"),
+                             str(len(self.select_rows)),
+                             str([(0, ("#40408c", 1)),
+                                  (1, ("#0093F9", 1))]),
+                             "#FFFFFF",
+                             temp_filepath]).wait()
+                        self.drag_preview_pixbuf = gtk.gdk.pixbuf_new_from_file(temp_filepath)
+                        remove_file(temp_filepath)
+
                     self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.display_get_default(), 
-                                                          ui_theme.get_pixbuf("icon.png").get_pixbuf(),
+                                                          self.drag_preview_pixbuf,
                                                           0, 0))
                     
                     # Get hover row.
@@ -810,6 +825,7 @@ class ListView(gtk.DrawingArea):
                 self.release_item(event)
                     
             self.drag_reference_row = None
+            self.drag_preview_pixbuf = None
             self.title_adjust_column = None
             self.queue_draw()
         
