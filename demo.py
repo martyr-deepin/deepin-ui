@@ -296,10 +296,10 @@ if __name__ == "__main__":
     # Note if you add list in categorybar make sure height is multiples of list length.
     # Otherwise last one item will heighter than Otherwise items.
     category_box = HPaned()
-    osd_tooltip = OSDTooltip(category_box, "OSD Tooltip", offset_x=200, offset_y=-200)
+    osd_tooltip = OSDTooltip(category_box, offset_x=200, offset_y=-200)
     body_box.add(category_box)
     categorybar = Categorybar([
-            (app_theme.get_pixbuf("categorybar/word.png"), "测试分类", lambda : osd_tooltip.show()),
+            (app_theme.get_pixbuf("categorybar/word.png"), "测试分类", lambda : osd_tooltip.show("OSD tooltip lonoooooooo")),
             (app_theme.get_pixbuf("categorybar/win.png"), "测试分类", None),
             (app_theme.get_pixbuf("categorybar/web.png"), "测试分类", None),
             (app_theme.get_pixbuf("categorybar/professional.png"), "测试分类", None),

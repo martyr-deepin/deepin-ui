@@ -22,7 +22,7 @@
 
 from draw import draw_text
 from utils import (get_widget_root_coordinate, WIDGET_POS_TOP_LEFT, 
-                   remove_signal_id, remove_timeout_id)
+                   remove_signal_id, remove_timeout_id, get_content_size)
 import cairo
 import gtk
 import gobject
@@ -32,15 +32,15 @@ from animation import Animation
 class OSDTooltip(gtk.Window):
     '''OSD tooltip.'''
 	
-    def __init__(self, monitor_widget, text, text_size=18, offset_x=0, offset_y=0,
+    def __init__(self, monitor_widget, text_size=18, window_type=gtk.WINDOW_TOPLEVEL, offset_x=0, offset_y=0,
                  text_color=ui_theme.get_color("osdTooltipText"), 
                  border_color=ui_theme.get_color("osdTooltipBorder"), 
                  border_radious=1):
         '''Init osd tooltip.'''
         # Init.
-        gtk.Window.__init__(self)
+        gtk.Window.__init__(self, window_type)
         self.monitor_widget = monitor_widget
-        self.text = text
+        self.text = ""
         self.text_size = text_size
         self.offset_x = offset_x
         self.offset_y = offset_y
@@ -70,11 +70,17 @@ class OSDTooltip(gtk.Window):
         # Connect signal.
         self.connect("expose-event", self.expose_osd_tooltip)
         self.connect("realize", self.realize_osd_tooltip)
+        self.connect("show", self.show_osd_tooltip)
         
     def realize_osd_tooltip(self, widget):
         '''Realize osd tooltip.'''
         # Make all event passthrough osd tooltip.
         self.window.input_shape_combine_region(gtk.gdk.Region(), 0, 0) 
+        
+    def show_osd_tooltip(self, widget):
+        '''Show osd tooltip.'''
+        self.move(self.tooltip_x, self.tooltip_y)
+        self.resize(self.tooltip_width, self.tooltip_height)
         
     def expose_osd_tooltip(self, widget, event):
         '''Expose osd tooltip.'''
@@ -97,11 +103,19 @@ class OSDTooltip(gtk.Window):
         
         return True
         
-    def show(self):
+    def show(self, text):
         '''Show.'''
+        print "show"
+        # Update text.
+        self.text = text
+        
+        # Get tooltip size.
+        (self.tooltip_width, self.tooltip_height) = get_content_size(self.text, self.text_size + self.border_radious * 2)
+        
         # Move tooltip to given position.
         (monitor_x, monitor_y) = get_widget_root_coordinate(self.monitor_widget, WIDGET_POS_TOP_LEFT)
-        self.move(monitor_x + self.offset_x, monitor_y + self.offset_y)
+        self.tooltip_x = monitor_x + self.offset_x
+        self.tooltip_y = monitor_y + self.offset_y
         
         # Monitor configure-event signal.
         self.monitor_window = self.monitor_widget.get_toplevel()
