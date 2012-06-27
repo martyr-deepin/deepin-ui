@@ -341,7 +341,9 @@ if __name__ == "__main__":
     
     # Add volume button.
     volume_button = VolumeButton(100, 50)
-    volume_frame = gtk.VBox()
+    volume_frame = gtk.Alignment()
+    volume_frame.set(0.0, 0.5, 0, 0)
+    volume_frame.set_padding(0, 0, 10, 0)
     volume_frame.add(volume_button)
     tab_1_box.pack_start(volume_frame, False, False)
     

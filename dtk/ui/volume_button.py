@@ -123,7 +123,6 @@ class VolumeButton(gtk.EventBox):
         # point volume pixbuf.
         self.__point_volume_pixbuf    = point_volume_pixbuf        
         '''Init Set VolumeButton attr.'''
-        self.set_size_request(volume_width, 30)
         self.set_visible_window(False)
         '''Init value.'''
         self.__press_emit_bool  = press_emit_bool
@@ -153,7 +152,6 @@ class VolumeButton(gtk.EventBox):
         self.__fg_y         = self.__volume_right_y
         self.__fg_padding_x = self.__volume_right_x
         # point value.
-        self.__point_x         = 0
         self.__point_y         = self.__volume_right_y
         self.__point_padding_x = self.__volume_right_x
         
@@ -169,6 +167,7 @@ class VolumeButton(gtk.EventBox):
         if scroll_bool:
             self.connect("scroll-event",     self.__scroll_mouse_set_point)
             
+        self.set_size_request(volume_width + self.__volume_left_x + self.__volume_right_x + self.__mute_volume_normal_pixbuf.get_pixbuf().get_width(), 30)
             
     def set_press_emit_bool(self, emit_bool):
         self.__press_emit_bool = emit_bool
@@ -204,7 +203,6 @@ class VolumeButton(gtk.EventBox):
         temp_y = int(event.y)
         
         temp_min_x = self.__bg_x + self.__bg_padding_x - self.__point_volume_pixbuf.get_pixbuf().get_width()/2
-        temp_max_x = self.__bg_x + self.__bg_padding_x + self.__volume_width + self.__point_volume_pixbuf.get_pixbuf().get_width()/2                
         if self.__volume_left_x <= temp_x <= temp_min_x  and ( self.__volume_left_y <=temp_y < (self.__volume_left_y + self.__mute_volume_hover_pixbuf.get_pixbuf().get_height())):
             if self.temp_mute_bool and not self.__mute_bool:
                 # Set mute state.
@@ -226,7 +224,6 @@ class VolumeButton(gtk.EventBox):
         temp_x = int(event.x)
         temp_y = int(event.y)
         temp_min_x = self.__bg_x + self.__bg_padding_x - self.__point_volume_pixbuf.get_pixbuf().get_width()/2
-        temp_max_x = self.__bg_x + self.__bg_padding_x + self.__volume_width + self.__point_volume_pixbuf.get_pixbuf().get_width()/2        
         
         if (self.__volume_left_x <= temp_x <= temp_min_x) and ( self.__volume_left_y <=temp_y < (self.__volume_left_y + self.__mute_volume_hover_pixbuf.get_pixbuf().get_height())):
             self.__mouse_state = MOUSE_VOLUME_STATE_HOVER
@@ -246,8 +243,8 @@ class VolumeButton(gtk.EventBox):
             
     def volume_other_set_value(self, volume_type):    
         point_width_average      = self.__point_volume_pixbuf.get_pixbuf().get_width() / 2 
-        temp_min = (self.__point_x + self.__point_padding_x - point_width_average)
-        temp_max = (self.__point_x + self.__point_padding_x + self.__volume_width - point_width_average)
+        temp_min = (self.__point_padding_x - point_width_average)
+        temp_max = (self.__point_padding_x + self.__volume_width - point_width_average)
         
         self.__mute_bool = False
         
@@ -482,10 +479,10 @@ class VolumeButton(gtk.EventBox):
                 y + self.__fg_y + fg_height_average)
         #################################################
         # Draw point.                        
-        temp_point_padding_x     = (self.__point_x + self.__point_padding_x - point_width_average)
+        temp_point_padding_x     = (self.__point_padding_x - point_width_average)
 
-        temp_min = (self.__point_x + self.__volume_right_x - point_width_average)
-        temp_max = (self.__point_x + self.__volume_right_x + self.__volume_width - point_width_average)
+        temp_min = (self.__volume_right_x - point_width_average)
+        temp_max = (self.__volume_right_x + self.__volume_width - point_width_average)
         if temp_point_padding_x < temp_min:
             temp_point_padding_x = temp_min
         if temp_point_padding_x > temp_max:    
