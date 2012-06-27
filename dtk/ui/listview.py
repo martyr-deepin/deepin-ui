@@ -53,11 +53,15 @@ class ListView(gtk.DrawingArea):
         "right-press-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int, int, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)),
     }
 
-    def __init__(self, sorts=[]):
+    def __init__(self, 
+                 sorts=[], 
+                 drag_data=None # (targets, actions, button_masks)
+                 ):
         '''Init list view.'''
         # Init.
         gtk.DrawingArea.__init__(self)
         self.sorts = sorts
+        self.drag_data = None
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
@@ -97,6 +101,11 @@ class ListView(gtk.DrawingArea):
         self.connect("leave-notify-event", self.leave_list_view)
         self.connect("key-press-event", self.key_press_list_view)
         self.connect("key-release-event", self.key_release_list_view)
+        
+        # Unset drag source if drag data is not None.
+        if self.drag_data:
+            # We will manually start drags, details look function `hover-item`.
+            self.drag_source_unset()
         
         # Redraw.
         self.redraw_request_list = []
@@ -572,7 +581,9 @@ class ListView(gtk.DrawingArea):
                         
                         self.queue_draw()
                     else:
-                        print "Out of area."
+                        # Begin drag is drag_data is not None.
+                        if self.drag_data:
+                            self.drag_begin(*self.drag_data)
                         
                         self.drag_reference_row = None
 
