@@ -1484,8 +1484,9 @@ class SkinEditArea(gtk.EventBox):
         # Update skin config.
         self.update_skin_config()
         
-        # Apply skin.
+        # Apply and save skin.
         skin_config.apply_skin()
+        skin_config.save_skin()
         
     def click_auto_resize_button(self):
         '''Click auto resize button.'''

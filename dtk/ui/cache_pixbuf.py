@@ -37,19 +37,32 @@ class CachePixbuf(object):
     def scale(self, pixbuf, scale_width, scale_height, vertical_mirror=False, horizontal_mirror=False):
         '''Scale and return new pixbuf.'''
         if self.pixbuf != pixbuf or self.scale_width != scale_width or self.scale_height != scale_height:
-            self.pixbuf = pixbuf
+            # Record init value.
+            self.pixbuf = pixbuf # pixbuf always is same as create from file
             self.scale_width = scale_width
             self.scale_height = scale_height
+            
+            # Scale size.
             self.cache_pixbuf = pixbuf.scale_simple(scale_width, scale_height, gtk.gdk.INTERP_BILINEAR)
             
+            # If vertical_mirror default is True, vertical mirror *original* pixbuf first.
+            if self.vertical_mirror:
+                self.cache_pixbuf = self.cache_pixbuf.flip(True)
+                
+            # If horizontal_mirror default is True, horizontal mirror *original* pixbuf first.
+            if self.horizontal_mirror:
+                self.cache_pixbuf = self.cache_pixbuf.flip(False)
+                
+        # If vertical_mirror changed, vertical mirror *self* first
         if self.vertical_mirror != vertical_mirror:
             self.vertical_mirror = vertical_mirror
             self.cache_pixbuf = self.cache_pixbuf.flip(True)
             
+        # If horizontal_mirror changed, horizontal mirror *self* first
         if self.horizontal_mirror != horizontal_mirror:
             self.horizontal_mirror = horizontal_mirror
             self.cache_pixbuf = self.cache_pixbuf.flip(False)
-        
+            
     def get_cache(self):
         '''Get cache.'''
         return self.cache_pixbuf
