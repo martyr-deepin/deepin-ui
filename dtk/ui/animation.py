@@ -10,7 +10,9 @@ def RandomInterpolator(base, offset, *args):
 
 
 class Animation:
-    def __init__(self, widgets, property, duration, ranges, interpolator=LinerInterpolator):
+    def __init__(self, widgets, property, duration, ranges, interpolator=LinerInterpolator,
+                 stop_callback=None):
+        self.stop_callback = stop_callback
         self.delay = 50
         try:
             widgets[0]
@@ -97,9 +99,16 @@ class Animation:
 
         for o in self.other_concurent:
             o.stop()
+            
+        # Stop callback.
+        if self.stop_callback:
+            self.stop_callback()
 
     def compute(self):
         if self.time >= self.duration+self.delay:
+            # Stop callback.
+            if self.stop_callback:
+                self.stop_callback()
             return False
 
         values = []

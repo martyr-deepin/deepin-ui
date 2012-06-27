@@ -645,15 +645,10 @@ def exec_time():
 
 def remove_timeout_id(callback_id):
     '''Remove callback id.'''
-    print "Start: %s" % (callback_id)
-    
     if callback_id:
-        print "remove: %s" % (callback_id)
-        print gobject.source_remove(callback_id)
+        gobject.source_remove(callback_id)
         callback_id = None
         
-    print "End: %s" % (callback_id)
-    
 def remove_signal_id(signal_data):
     '''Remove signal.'''
     if signal_data:

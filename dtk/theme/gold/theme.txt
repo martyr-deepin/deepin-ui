@@ -20,6 +20,8 @@
  "entryText" : "#000000",
  "entrySelectText" : "#FFFFFF",
  "entryCursor" : "#333333",
+ "osdTooltipText" : "#FFFF00",
+ "osdTooltipBorder" : "#000000",
  "labelText" : "#000000",
  "labelSelectText" : "#FFFFFF",
  "labelSelectBackground" : "#CC9E00",
