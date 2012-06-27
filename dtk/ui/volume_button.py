@@ -52,7 +52,7 @@ VOLUME_LEFT   = "left"
 
 class VolumeButton(gtk.EventBox):
     __gsignals__ = {
-        "get-value-event":(gobject.SIGNAL_RUN_LAST,
+        "state-changed":(gobject.SIGNAL_RUN_LAST,
                            gobject.TYPE_NONE,(gobject.TYPE_INT,gobject.TYPE_INT,))
         }
     def __init__(self,
@@ -218,7 +218,7 @@ class VolumeButton(gtk.EventBox):
                 self.queue_draw()
             
         if self.__press_emit_bool:
-            self.emit("get-value-event", self.__current_value, self.__volume_state)        
+            self.emit("state-changed", self.__current_value, self.__volume_state)        
         
         self.queue_draw()    
         
@@ -270,7 +270,7 @@ class VolumeButton(gtk.EventBox):
         self.__draw_volume_left(widget, event)               # 3: draw state pixbuf.        
         
         if not self.__press_emit_bool:
-            self.emit("get-value-event", self.__current_value, self.__volume_state)
+            self.emit("state-changed", self.__current_value, self.__volume_state)
         # propagate_expose(widget, event)
         return True
 
@@ -526,7 +526,7 @@ if __name__ == "__main__":
     volume_button = VolumeButton(100,220)
     volume_button.value = 100
     # volume_button = VolumeButton()
-    volume_button.connect("get-value-event", get_volume_value)
+    volume_button.connect("state-changed", get_volume_value)
     set_value_button = gtk.Button("设置音量的值")
     set_value_button.connect("clicked", set_value_button_clicked)
     main_vbox.pack_start(volume_button, True, True)
