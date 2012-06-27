@@ -93,8 +93,8 @@ class VolumeButton(gtk.EventBox):
                  ):        
         gtk.EventBox.__init__(self)
         ###########################
-        if volume_x < max_volume_normal_pixbuf.get_pixbuf().get_width() + 10:
-            volume_x = max_volume_normal_pixbuf.get_pixbuf().get_width() + 10
+        if volume_x < max_volume_normal_pixbuf.get_pixbuf().get_width():
+            volume_x = max_volume_normal_pixbuf.get_pixbuf().get_width()
         '''Init pixbuf.'''
         self.__bg_pixbuf = bg_pixbuf
         self.__fg_pixbuf = fg_pixbuf
@@ -472,7 +472,7 @@ class VolumeButton(gtk.EventBox):
         # Draw fg. 
         if temp_fg_padding_x > 0:
             self.__fg_cache_pixbuf.scale(self.__fg_pixbuf.get_pixbuf(), 
-                                         temp_fg_padding_x,
+                                         int(temp_fg_padding_x),
                                          self.__fg_pixbuf.get_pixbuf().get_height(),
                                          )
             draw_pixbuf(
