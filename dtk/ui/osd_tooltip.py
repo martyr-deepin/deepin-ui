@@ -105,7 +105,10 @@ class OSDTooltip(gtk.Window):
         
     def show(self, text):
         '''Show.'''
-        print "show"
+        # Remove callback.
+        remove_signal_id(self.configure_event_callback_id)
+        remove_timeout_id(self.start_hide_callback_id)
+        
         # Update text.
         self.text = text
         
@@ -142,6 +145,7 @@ class OSDTooltip(gtk.Window):
     
     def hide_immediately(self):
         '''Hide immediately.'''
+        # Remove callback.
         remove_signal_id(self.configure_event_callback_id)
         remove_timeout_id(self.start_hide_callback_id)
         
