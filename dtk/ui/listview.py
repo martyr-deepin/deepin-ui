@@ -23,11 +23,12 @@
 from constant import DEFAULT_FONT_SIZE, ALIGN_END, ALIGN_START
 import pango
 from contextlib import contextmanager 
-from draw import draw_pixbuf, draw_vlinear, draw_text
+from draw import draw_pixbuf, draw_vlinear, draw_text, draw_hlinear
 from keymap import get_keyevent_name, has_ctrl_mask, has_shift_mask
 from theme import ui_theme
 from utils import (map_value, mix_list_max, get_content_size, color_hex_to_cairo,
                    unzip, last_index, set_cursor, get_match_parent, 
+                   alpha_color_hex_to_cairo, cairo_disable_antialias,
                    cairo_state, get_event_coords, is_left_button, 
                    is_right_button, is_double_click, is_single_click, 
                    is_in_rect, get_disperse_index, get_window_shadow_size)
@@ -451,8 +452,16 @@ class ListView(gtk.DrawingArea):
                                    (start_index + row) in self.select_rows,
                                    item == self.highlight_item)
             
+                    
         # Draw titles.
         if self.titles:
+            # Draw title line.
+            with cairo_disable_antialias(cr):
+                draw_hlinear(cr, rect.x, offset_y, rect.width, 1,
+                             ui_theme.get_shadow_color("listviewHeaderLine").get_color_info())
+                draw_hlinear(cr, rect.x, offset_y + self.title_height - 1, rect.width, 1,
+                             ui_theme.get_shadow_color("listviewHeaderLine").get_color_info())
+            
             for (column, width) in enumerate(cell_widths):
                 # Get offset x coordinate.
                 cell_offset_x = sum(cell_widths[0:column])
@@ -474,13 +483,16 @@ class ListView(gtk.DrawingArea):
                         shadow_color = "listviewHeaderSelect"
                 else:
                     shadow_color = "listviewHeader"
-                draw_vlinear(cr, cell_offset_x, offset_y, cell_width, self.title_height,
+                draw_vlinear(cr, cell_offset_x, offset_y + 1, cell_width, self.title_height - 2,
                              ui_theme.get_shadow_color(shadow_color).get_color_info())
                 
                 # Draw title split line.
                 if cell_offset_x != 0:
-                    draw_vlinear(cr, cell_offset_x, offset_y, 1, self.title_height,
-                                 ui_theme.get_shadow_color("listviewHeaderSplit").get_color_info())
+                    draw_pixbuf(cr, 
+                                ui_theme.get_pixbuf("listview/split.png").get_pixbuf(),
+                                cell_offset_x - 1, offset_y)
+                    # draw_vlinear(cr, cell_offset_x, offset_y, 1, self.title_height,
+                    #              ui_theme.get_shadow_color("listviewHeaderSplit").get_color_info())
                 
                 # Draw title.
                 draw_text(cr, self.titles[column], 
