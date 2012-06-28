@@ -35,7 +35,7 @@ def render_pixbuf(widget, event, input_args, pixbuf_width, pixbuf_height):
     pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, pixbuf_width, pixbuf_height)                                           
 
     # Draw background.
-    draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, eval(vlinear_color))
+    draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, eval(vlinear_color), 2)
     
     # Draw text.
     draw_text(cr, select_num, rect.x, rect.y, rect.width, rect.height, text_color=text_color,
@@ -55,8 +55,8 @@ if __name__ == "__main__":
     (select_num, vlinear_color, text_color, filepath) = input_args
     
     # Init.
-    num_padding_x = 10
-    num_padding_y = 3
+    num_padding_x = 8
+    num_padding_y = 1
     (num_width, num_height) = get_content_size(select_num)        
     pixbuf_width = num_width + num_padding_x * 2
     pixbuf_height = num_height + num_padding_y * 2
