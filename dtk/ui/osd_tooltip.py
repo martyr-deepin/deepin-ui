@@ -23,6 +23,7 @@
 from draw import draw_text
 from utils import (get_widget_root_coordinate, WIDGET_POS_TOP_LEFT, 
                    remove_signal_id, remove_timeout_id, get_content_size)
+from constant import DEFAULT_FONT
 import cairo
 import gtk
 import gobject
@@ -32,7 +33,8 @@ from animation import Animation
 class OSDTooltip(gtk.Window):
     '''OSD tooltip.'''
 	
-    def __init__(self, monitor_widget, text_size=18, window_type=gtk.WINDOW_TOPLEVEL, offset_x=0, offset_y=0,
+    def __init__(self, monitor_widget, text_font=DEFAULT_FONT, text_size=18, 
+                 window_type=gtk.WINDOW_TOPLEVEL, offset_x=0, offset_y=0,
                  text_color=ui_theme.get_color("osdTooltipText"), 
                  border_color=ui_theme.get_color("osdTooltipBorder"), 
                  border_radious=1):
@@ -42,7 +44,7 @@ class OSDTooltip(gtk.Window):
         self.monitor_widget = monitor_widget
         self.text = ""
         self.text_size = text_size
-        self.text_font = DEFAULT_FONT
+        self.text_font = text_font
         self.offset_x = offset_x
         self.offset_y = offset_y
         self.text_color = text_color
