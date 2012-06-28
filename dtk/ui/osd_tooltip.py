@@ -42,6 +42,7 @@ class OSDTooltip(gtk.Window):
         self.monitor_widget = monitor_widget
         self.text = ""
         self.text_size = text_size
+        self.text_font = DEFAULT_FONT
         self.offset_x = offset_x
         self.offset_y = offset_y
         self.text_color = text_color
@@ -146,7 +147,7 @@ class OSDTooltip(gtk.Window):
             lambda : Animation(self, "opacity", self.hide_time, [1, 0],
                            stop_callback=self.hide_immediately).start())
         
-        self.queue_draw()
+        self.queue_draw()       # make sure redraw
     
     def hide_immediately(self):
         '''Hide immediately.'''
@@ -174,5 +175,12 @@ class OSDTooltip(gtk.Window):
             self.monitor_window_height = monitor_window_height
             
             self.hide_immediately()
+            
+    def change_style(self, text_font, text_size):
+        '''Change style.'''
+        self.text_font = text_font
+        self.text_size = text_size
+        
+        self.queue_draw()
         
 gobject.type_register(OSDTooltip)

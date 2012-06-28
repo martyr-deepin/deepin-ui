@@ -297,7 +297,7 @@ class Menu(Window):
             dy = self.expect_y - menu_height + self.offset_y
             
         self.move(dx, dy)
-            
+        
     def hide(self):
         '''Hide menu.'''
         # Hide submenu.
