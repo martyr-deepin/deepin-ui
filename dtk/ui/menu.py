@@ -182,6 +182,13 @@ class Menu(Window):
                 self.item_box.pack_start(menu_item.item_box, False, False)
                 
         self.connect("show", self.init_menu)
+        self.connect("realize", self.fix_background_flickr)
+        
+    def fix_background_flickr(self, widget):
+        '''Fix background flickr when menu show.'''
+        # FIXME: this is dirty way that i don't know how to fix it,
+        # top-left screen corner snapshot will show in menu before menu show.
+        self.move(-1000000, -1000000)
                 
     def draw_menu_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
