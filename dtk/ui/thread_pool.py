@@ -32,10 +32,10 @@ class MissionThreadPool(td.Thread):
     '''Mission thread pool'''
 	
     def __init__(self, 
-                 missions,
-                 concurrent_thread_num=5,
-                 clean_delay=0, # milliseconds
-                 clean_callback=None):
+                 missions,                # mission threads
+                 concurrent_thread_num=5, # max concurrent thread number
+                 clean_delay=0,           # clean delay (milliseconds)
+                 clean_callback=None):    # clean callback
         '''Init thread pool.'''
         # Init thread.
         td.Thread.__init__(self)
