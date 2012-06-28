@@ -145,6 +145,8 @@ class OSDTooltip(gtk.Window):
             self.start_hide_delay, 
             lambda : Animation(self, "opacity", self.hide_time, [1, 0],
                            stop_callback=self.hide_immediately).start())
+        
+        self.queue_draw()
     
     def hide_immediately(self):
         '''Hide immediately.'''
