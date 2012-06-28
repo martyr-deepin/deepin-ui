@@ -145,12 +145,12 @@
 		(1,		("#999999", 0.0)),
 	 ],
 	 "listviewHeaderSelect" : [
-		(0,		("#FFFFFF", 0.9)),
-		(1,		("#FFFFFF", 0.7)),
+		(0,		("#f2f2f2", 1)),
+		(1,		("#cccccc", 1)),
 	 ],
 	 "listviewHeaderPress" : [
-		(0,		("#DDDDDD", 0.9)),
-		(1,		("#DDDDDD", 0.7)),
+		(0,		("#cccccc", 1)),
+		(1,		("#f2f2f2", 1)),
 	 ],
 	 "radioButtonLight" : [
 	    (0,		("#000000", 0)),
