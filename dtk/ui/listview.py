@@ -480,13 +480,16 @@ class ListView(gtk.DrawingArea):
                 # Draw title column background.
                 if self.title_select_column == column:
                     if self.left_button_press:
-                        shadow_color = "listviewHeaderPress"
+                        header_pixbuf = ui_theme.get_pixbuf("listview/header_press.png").get_pixbuf()
                     else:
-                        shadow_color = "listviewHeaderSelect"
+                        header_pixbuf = ui_theme.get_pixbuf("listview/header_hover.png").get_pixbuf()
                 else:
-                    shadow_color = "listviewHeader"
-                draw_vlinear(cr, cell_offset_x, offset_y, cell_width, self.title_height,
-                             ui_theme.get_shadow_color(shadow_color).get_color_info())
+                    header_pixbuf = ui_theme.get_pixbuf("listview/header_normal.png").get_pixbuf()
+                self.title_cache_pixbufs[column].scale(
+                    header_pixbuf, cell_width, self.title_height)    
+                draw_pixbuf(cr,
+                            self.title_cache_pixbufs[column].get_cache(),
+                            cell_offset_x, offset_y)
                 
                 # Draw title split line.
                 if cell_offset_x != 0:

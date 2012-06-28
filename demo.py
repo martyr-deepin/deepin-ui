@@ -497,5 +497,5 @@ if __name__ == "__main__":
     tab_5_box.pack_start(sw, True, True)
     
     # Run.
-    # application.run()
-    run_with_profile(application.run, "~/test.txt")
+    application.run()
+    # run_with_profile(application.run, "~/test.txt")
