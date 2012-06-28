@@ -279,14 +279,14 @@ def scroll_to_bottom(scrolled_window):
     vadjust = scrolled_window.get_vadjustment()
     vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
 
-def get_content_size(text, size=DEFAULT_FONT_SIZE):
+def get_content_size(text, text_size=DEFAULT_FONT_SIZE, text_font=DEFAULT_FONT):
     '''Get size of text, in pixel.'''
     if text:
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0) # don't need give size
         cr = cairo.Context(surface)
         context = pangocairo.CairoContext(cr)
         layout = context.create_layout()
-        layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, size)))
+        layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
         layout_set_markup(layout, text)
         
         return layout.get_pixel_size()

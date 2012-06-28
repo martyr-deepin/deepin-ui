@@ -60,6 +60,7 @@ class OSDTooltip(gtk.Window):
         
         # Init callback id.
         self.configure_event_callback_id = None
+        self.destroy_callback_id = None
         self.start_hide_callback_id = None
         
         # Init window.
@@ -90,6 +91,10 @@ class OSDTooltip(gtk.Window):
         
     def expose_osd_tooltip(self, widget, event):
         '''Expose osd tooltip.'''
+        # Update window size.
+        self.move(self.tooltip_x, self.tooltip_y)
+        self.resize(self.tooltip_width, self.tooltip_height)
+        
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -113,13 +118,17 @@ class OSDTooltip(gtk.Window):
         '''Show.'''
         # Remove callback.
         remove_signal_id(self.configure_event_callback_id)
+        remove_signal_id(self.destroy_callback_id)
         remove_timeout_id(self.start_hide_callback_id)
         
         # Update text.
         self.text = text
         
         # Get tooltip size.
-        (self.tooltip_width, self.tooltip_height) = get_content_size(self.text, self.text_size + self.border_radious * 2)
+        (self.tooltip_width, self.tooltip_height) = get_content_size(
+            self.text, 
+            self.text_size + self.border_radious * 2,
+            self.text_font)
         
         # Move tooltip to given position.
         (monitor_x, monitor_y) = get_widget_root_coordinate(self.monitor_widget, WIDGET_POS_TOP_LEFT)
@@ -128,8 +137,10 @@ class OSDTooltip(gtk.Window):
         
         # Monitor configure-event signal.
         self.monitor_window = self.monitor_widget.get_toplevel()
-        handler_id = self.monitor_window.connect("configure-event", self.handle_configure_event)
-        self.configure_event_callback_id = (self.monitor_window, handler_id)
+        configure_event_handler_id = self.monitor_window.connect("configure-event", self.handle_configure_event)
+        self.configure_event_callback_id = (self.monitor_window, configure_event_handler_id)
+        destroy_handler_id = self.monitor_window.connect("destroy", lambda w: self.hide_immediately())
+        self.destroy_callback_id = (self.monitor_window, destroy_handler_id)
         
         # Save monitor window position.
         rect = self.monitor_window.allocation
@@ -155,6 +166,7 @@ class OSDTooltip(gtk.Window):
         '''Hide immediately.'''
         # Remove callback.
         remove_signal_id(self.configure_event_callback_id)
+        remove_signal_id(self.destroy_callback_id)
         remove_timeout_id(self.start_hide_callback_id)
         
         self.hide_all()
