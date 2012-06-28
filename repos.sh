@@ -44,7 +44,7 @@ case "$1" in
         sudo python setup.py build
         ;;
     "install"  )
-        sudo python setup.py install
+        rm -rf `find . -name .#*` | sudo python setup.py install
         ;;
     * ) 
         echo "Help"
