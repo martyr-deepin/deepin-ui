@@ -34,13 +34,13 @@ class OSDTooltip(gtk.Window):
     '''OSD tooltip.'''
 	
     def __init__(self, monitor_widget, text_font=DEFAULT_FONT, text_size=18, 
-                 window_type=gtk.WINDOW_TOPLEVEL, offset_x=0, offset_y=0,
+                 offset_x=0, offset_y=0,
                  text_color=ui_theme.get_color("osdTooltipText"), 
                  border_color=ui_theme.get_color("osdTooltipBorder"), 
                  border_radious=1):
         '''Init osd tooltip.'''
         # Init.
-        gtk.Window.__init__(self, window_type)
+        gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         self.monitor_widget = monitor_widget
         self.text = ""
         self.text_size = text_size
@@ -62,6 +62,7 @@ class OSDTooltip(gtk.Window):
         self.configure_event_callback_id = None
         self.destroy_callback_id = None
         self.start_hide_callback_id = None
+        self.focus_out_callback_id = None
         
         # Init window.
         self.set_decorated(False)
@@ -116,9 +117,10 @@ class OSDTooltip(gtk.Window):
         
     def show(self, text):
         '''Show.'''
-        # Remove callback.
+        # Remove callback.j
         remove_signal_id(self.configure_event_callback_id)
         remove_signal_id(self.destroy_callback_id)
+        remove_signal_id(self.focus_out_callback_id)
         remove_timeout_id(self.start_hide_callback_id)
         
         # Update text.
@@ -143,6 +145,8 @@ class OSDTooltip(gtk.Window):
         self.configure_event_callback_id = (self.monitor_window, configure_event_handler_id)
         destroy_handler_id = self.monitor_window.connect("destroy", lambda w: self.hide_immediately())
         self.destroy_callback_id = (self.monitor_window, destroy_handler_id)
+        focus_out_handler_id = self.monitor_window.connect("focus-out-event", lambda w, e: self.hide_immediately())
+        self.focus_out_callback_id = (self.monitor_window, focus_out_handler_id)
         
         # Save monitor window position.
         rect = self.monitor_window.allocation
@@ -163,12 +167,17 @@ class OSDTooltip(gtk.Window):
                            stop_callback=self.hide_immediately).start())
         
         self.queue_draw()       # make sure redraw
+        
+    def test(self, widget, event):
+        '''docs'''
+        print "state change"
     
     def hide_immediately(self):
         '''Hide immediately.'''
         # Remove callback.
         remove_signal_id(self.configure_event_callback_id)
         remove_signal_id(self.destroy_callback_id)
+        remove_signal_id(self.focus_out_callback_id)
         remove_timeout_id(self.start_hide_callback_id)
         
         self.hide_all()

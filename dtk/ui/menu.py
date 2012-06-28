@@ -128,7 +128,6 @@ class Menu(Window):
                  x_align=ALIGN_START,
                  y_align=ALIGN_START,
                  font_size=DEFAULT_FONT_SIZE, 
-                 opacity=1.0, 
                  padding_x=3, 
                  padding_y=3, 
                  item_padding_x=6, 
@@ -136,11 +135,12 @@ class Menu(Window):
                  shadow_visible=True,
                  menu_min_width=130):
         '''Init menu, item format: (item_icon, itemName, item_node).'''
+        global root_menus
+        
         # Init.
         Window.__init__(self, shadow_visible=shadow_visible, window_type=gtk.WINDOW_POPUP)
         self.set_can_focus(True) # can focus to response key-press signal
         self.draw_mask = self.draw_menu_mask
-        global root_menus
         self.is_root_menu = is_root_menu
         self.select_scale = select_scale
         self.x_align = x_align
@@ -156,10 +156,8 @@ class Menu(Window):
         self.menu_min_width = menu_min_width
         
         # Init menu window.
-        self.set_opacity(opacity)
         self.set_skip_taskbar_hint(True)
         self.set_keep_above(True)
-        self.connect_after("show", self.init_menu)
         
         # Add menu item.
         self.item_box = gtk.VBox()
@@ -183,7 +181,7 @@ class Menu(Window):
                 self.menu_items.append(menu_item)
                 self.item_box.pack_start(menu_item.item_box, False, False)
                 
-        self.connect("show", self.adjust_menu_position)        
+        self.connect("show", self.init_menu)
                 
     def draw_menu_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
@@ -225,6 +223,8 @@ class Menu(Window):
         if self.is_root_menu and not self in root_menus:
             root_menus.append(self)
             
+        self.adjust_menu_position()    
+            
     def get_submenus(self):
         '''Get submenus.'''
         if self.submenu:
@@ -262,7 +262,7 @@ class Menu(Window):
         # Show.
         self.show_all()
         
-    def adjust_menu_position(self, widget):
+    def adjust_menu_position(self):
         '''Realize menu.'''
         # Adjust coordinate.
         (screen_width, screen_height) = get_screen_size(self)
