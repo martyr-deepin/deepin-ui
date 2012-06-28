@@ -20,18 +20,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from cache_pixbuf import CachePixbuf
 import tempfile
 from constant import DEFAULT_FONT_SIZE, ALIGN_END, ALIGN_START
 import os
 import subprocess
 import pango
 from contextlib import contextmanager 
-from draw import draw_pixbuf, draw_vlinear, draw_text, draw_hlinear
+from draw import draw_pixbuf, draw_vlinear, draw_text
 from keymap import get_keyevent_name, has_ctrl_mask, has_shift_mask
 from theme import ui_theme
 from utils import (map_value, mix_list_max, get_content_size, color_hex_to_cairo,
                    unzip, last_index, set_cursor, get_match_parent, 
-                   cairo_disable_antialias, remove_file,
+                   remove_file,
                    cairo_state, get_event_coords, is_left_button, 
                    is_right_button, is_double_click, is_single_click, 
                    is_in_rect, get_disperse_index, get_window_shadow_size)
@@ -181,6 +182,10 @@ class ListView(gtk.DrawingArea):
         self.cell_widths = mix_list_max(self.cell_widths, title_widths)
         self.cell_min_widths = mix_list_max(self.cell_min_widths, title_widths)
         self.cell_min_heights = mix_list_max(self.cell_min_heights, title_heights)
+        
+        self.title_cache_pixbufs = []
+        for title in self.titles:
+            self.title_cache_pixbufs.append(CachePixbuf())
         
     def get_title_sizes(self):
         '''Get title sizes.'''
@@ -459,13 +464,6 @@ class ListView(gtk.DrawingArea):
                     
         # Draw titles.
         if self.titles:
-            # Draw title line.
-            with cairo_disable_antialias(cr):
-                draw_hlinear(cr, rect.x, offset_y, rect.width, 1,
-                             ui_theme.get_shadow_color("listviewHeaderLine").get_color_info())
-                draw_hlinear(cr, rect.x, offset_y + self.title_height - 1, rect.width, 1,
-                             ui_theme.get_shadow_color("listviewHeaderLine").get_color_info())
-            
             for (column, width) in enumerate(cell_widths):
                 # Get offset x coordinate.
                 cell_offset_x = sum(cell_widths[0:column])
@@ -487,7 +485,7 @@ class ListView(gtk.DrawingArea):
                         shadow_color = "listviewHeaderSelect"
                 else:
                     shadow_color = "listviewHeader"
-                draw_vlinear(cr, cell_offset_x, offset_y + 1, cell_width, self.title_height - 2,
+                draw_vlinear(cr, cell_offset_x, offset_y, cell_width, self.title_height,
                              ui_theme.get_shadow_color(shadow_color).get_color_info())
                 
                 # Draw title split line.
