@@ -183,7 +183,7 @@ class Menu(Window):
                 self.menu_items.append(menu_item)
                 self.item_box.pack_start(menu_item.item_box, False, False)
                 
-        self.connect_after("show", self.adjust_menu_position)        
+        self.connect("show", self.adjust_menu_position)        
                 
     def draw_menu_mask(self, cr, x, y, w, h):
         '''Draw mask.'''

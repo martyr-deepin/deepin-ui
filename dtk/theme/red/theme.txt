@@ -132,8 +132,8 @@
 		(1, ("#333333", 0.8)),
 	 ],
 	 "listviewHeader" : [
-		(0,		("#e5e5e5", 1)),
-		(1,		("#fafafa", 1)),
+		(0,		("#fafafa", 1)),
+		(1,		("#e5e5e5", 1)),
 	 ],
 	 "listviewHeaderLine" : [
 		(0,		("#e1e1e1", 1)),

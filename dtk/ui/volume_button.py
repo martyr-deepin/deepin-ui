@@ -21,7 +21,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from utils import alpha_color_hex_to_cairo
 from draw import draw_pixbuf
 from theme import ui_theme
 import gtk
