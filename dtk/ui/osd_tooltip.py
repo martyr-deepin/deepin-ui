@@ -125,10 +125,12 @@ class OSDTooltip(gtk.Window):
         self.text = text
         
         # Get tooltip size.
-        (self.tooltip_width, self.tooltip_height) = get_content_size(
+        (tooltip_width, tooltip_height) = get_content_size(
             self.text, 
             self.text_size + self.border_radious * 2,
             self.text_font)
+        self.tooltip_width = tooltip_width * 2
+        self.tooltip_height = tooltip_height
         
         # Move tooltip to given position.
         (monitor_x, monitor_y) = get_widget_root_coordinate(self.monitor_widget, WIDGET_POS_TOP_LEFT)
