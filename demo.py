@@ -68,7 +68,7 @@ from dtk.ui.color_selection import ColorButton
 from dtk.ui.scalebar import HScalebar, VScalebar
 from dtk.ui.scrolled_window import ScrolledWindow
 from dtk.ui.statusbar import Statusbar
-from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
+from dtk.ui.utils import container_remove_all, get_widget_root_coordinate, run_with_profile
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.paned import HPaned
@@ -497,4 +497,5 @@ if __name__ == "__main__":
     tab_5_box.pack_start(sw, True, True)
     
     # Run.
-    application.run()
+    # application.run()
+    run_with_profile(application.run, "~/test.txt")
