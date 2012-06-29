@@ -208,7 +208,7 @@ class ScrolledWindow(gtk.Bin):
     def do_motion_notify_event(self, e):
         if not (e.window == self.hwindow or e.window == self.vwindow): return False
 
-        if e.window == self.hwindow and e.state == gtk.gdk.BUTTON1_MASK:
+        if e.window == self.hwindow and (e.state & gtk.gdk.BUTTON1_MASK) == gtk.gdk.BUTTON1_MASK:
             self.make_bar_bigger(gtk.ORIENTATION_HORIZONTAL)
             if self._horizaontal.last_time == 0:
                 self._horizaontal.last_time = e.time
@@ -234,7 +234,7 @@ class ScrolledWindow(gtk.Bin):
             self._horizaontal.in_motion = True
             return True
 
-        elif e.window == self.vwindow and e.state == gtk.gdk.BUTTON1_MASK:
+        elif e.window == self.vwindow and (e.state & gtk.gdk.BUTTON1_MASK) == gtk.gdk.BUTTON1_MASK:
             self.make_bar_bigger(gtk.ORIENTATION_VERTICAL)
             if self._vertical.last_time == 0:
                 self._vertical.last_time = e.time
