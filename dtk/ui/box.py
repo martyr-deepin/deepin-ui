@@ -83,7 +83,9 @@ class BackgroundBox(gtk.VBox):
     def draw_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
         draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+                     [(0, ("#FF0000", 1)),
+                      (1, ("#FF0000", 1))]
+                     )
         
     def expose_background_box(self, widget, event):
         '''Expose background box.'''
@@ -94,12 +96,11 @@ class BackgroundBox(gtk.VBox):
         (offset_x, offset_y) = coordinate
         
         with cairo_state(cr):
-            cr.translate(-offset_x, -offset_y)
-            cr.rectangle(offset_x, offset_y, rect.width, rect.height)
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.clip()
             
-            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
-            skin_config.render_background(cr, self, rect.x + shadow_x, rect.y + shadow_y)
+            (shadow_x, shadow_y) = get_window_shadow_size(toplevel)
+            skin_config.render_background(cr, widget, shadow_x, shadow_y)
             
         self.draw_mask(cr, rect.x, rect.y, rect.width, rect.height)    
 

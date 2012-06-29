@@ -76,7 +76,7 @@ class ColorSelectDialog(DialogBox):
         self.color_box = gtk.HBox()
         self.color_align = gtk.Alignment()
         self.color_align.set(0.5, 0.5, 0.0, 0.0)
-        self.color_align.set_padding(10, 0, 10, 10)
+        self.color_align.set_padding(10, 0, 8, 8)
         self.color_align.add(self.color_box)
         self.color_hsv = HSV()
         self.color_string = self.color_hsv.get_color_string()

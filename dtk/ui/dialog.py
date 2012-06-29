@@ -85,7 +85,8 @@ gobject.type_register(DialogRightButtonBox)
 class DialogBox(Window):
     '''Dialog box.'''
 	
-    def __init__(self, title, default_width=None, default_height=None, mask_type=None):
+    def __init__(self, title, default_width=None, default_height=None, mask_type=None, 
+                 close_callback=None):
         '''Dialog box.'''
         Window.__init__(self)
         self.set_modal(True)                                # grab focus to avoid build too many skin window
@@ -98,6 +99,8 @@ class DialogBox(Window):
         if self.default_width != None and self.default_height != None:
             self.set_default_size(self.default_width, self.default_height)
             self.set_geometry_hints(None, self.default_width, self.default_height, -1, -1, -1, -1, -1, -1, -1, -1)
+        self.padding_left = 2
+        self.padding_right = 2
 
         self.titlebar = Titlebar(
             ["close"],
@@ -106,6 +109,10 @@ class DialogBox(Window):
             title)
         self.add_move_event(self.titlebar)
         self.body_box = gtk.VBox()
+        self.body_align = gtk.Alignment()
+        self.body_align.set(0.5, 0.5, 1, 1)
+        self.body_align.set_padding(0, 0, self.padding_left, self.padding_right)
+        self.body_align.add(self.body_box)
         self.button_box = gtk.HBox()
         self.left_button_box = DialogLeftButtonBox()
         self.right_button_box = DialogRightButtonBox()
@@ -114,24 +121,48 @@ class DialogBox(Window):
         self.button_box.pack_start(self.right_button_box, True, True)
         
         self.window_frame.pack_start(self.titlebar, False, False)
-        self.window_frame.pack_start(self.body_box, True, True)
+        self.window_frame.pack_start(self.body_align, True, True)
         self.window_frame.pack_start(self.button_box, False, False)
 
-        self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
-        self.connect("destroy", lambda w: self.destroy())
+        if close_callback:
+            self.titlebar.close_button.connect("clicked", lambda w: close_callback())
+            self.connect("destroy", lambda w: close_callback())
+        else:
+            self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
+            self.connect("destroy", lambda w: self.destroy())
         
-        self.draw_mask = self.get_mask_func(self)
+        self.draw_mask = self.get_mask_func(self, 1, 1, 0, 1)
         
-    def get_mask_func(self, widget):
+    def get_mask_func(self, widget, padding_left=0, padding_right=0, padding_top=0, padding_bottom=0):
         '''Get mask function.'''
         if self.mask_type == DIALOG_MASK_SINGLE_PAGE:
-            return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, self.draw_mask_single_page)
+            return lambda cr, x, y, w, h: draw_mask(
+                widget, x + padding_left, 
+                y + padding_top, 
+                w - padding_left - padding_right, 
+                h - padding_top - padding_bottom,
+                self.draw_mask_single_page)
         elif self.mask_type == DIALOG_MASK_MULTIPLE_PAGE:
-            return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, self.draw_mask_multiple_page)
+            return lambda cr, x, y, w, h: draw_mask(
+                widget, x + padding_left, 
+                y + padding_top, 
+                w - padding_left - padding_right, 
+                h - padding_top - padding_bottom,
+                self.draw_mask_multiple_page)
         elif self.mask_type == DIALOG_MASK_TAB_PAGE:
-            return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, self.draw_mask_tab_page)
+            return lambda cr, x, y, w, h: draw_mask(
+                widget, x + padding_left, 
+                y + padding_top, 
+                w - padding_left - padding_right, 
+                h - padding_top - padding_bottom,
+                self.draw_mask_tab_page)
         else:
-            return lambda cr, x, y, w, h: draw_mask(widget, x, y, w, h, draw_blank_mask)
+            return lambda cr, x, y, w, h: draw_mask(
+                widget, x + padding_left, 
+                y + padding_top, 
+                w - padding_left - padding_right, 
+                h - padding_top - padding_bottom,
+                draw_blank_mask)
         
     def draw_mask_single_page(self, cr, x, y, w, h):
         '''Draw make for single page type.'''
@@ -168,11 +199,6 @@ class DialogBox(Window):
             ui_theme.get_shadow_color("maskMultiplePage").get_color_info(),
             )
 
-        draw_vlinear(
-            cr, x, y + h - button_box_height, w, button_box_height,
-            [(0, (dominant_color, 1.0)),
-             (1, (dominant_color, 1.0))])
-        
     def draw_mask_tab_page(self, cr, x, y, w, h):
         '''Draw make for tab page type.'''
         button_box_height = self.right_button_box.get_allocation().height
@@ -208,7 +234,7 @@ class ConfirmDialog(DialogBox):
         
         self.label_align = gtk.Alignment()
         self.label_align.set(0.5, 0.5, 0, 0)
-        self.label_align.set_padding(0, 0, 10, 10)
+        self.label_align.set_padding(0, 0, 8, 8)
         self.label = Label(message, text_x_align=ALIGN_MIDDLE, text_size=11)
         
         self.confirm_button = Button("确认")
@@ -257,7 +283,7 @@ class InputDialog(DialogBox):
         
         self.entry_align = gtk.Alignment()
         self.entry_align.set(0.5, 0.5, 0, 0)
-        self.entry_align.set_padding(0, 0, 10, 10)
+        self.entry_align.set_padding(0, 0, 8, 8)
         self.entry = TextEntry(init_text)
         self.entry.set_size(default_width - 20, 25)
         

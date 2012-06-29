@@ -669,7 +669,7 @@ class SkinEditPage(gtk.VBox):
         self.switch_preview_page = switch_preview_page
         self.edit_area_align = gtk.Alignment()
         self.edit_area_align.set(0.5, 0.5, 1, 1)
-        self.edit_area_align.set_padding(5, 0, 30, 30)
+        self.edit_area_align.set_padding(5, 0, 28, 28)
         self.edit_area = SkinEditArea(app_frame_pixbuf)        
         self.edit_area_align.add(self.edit_area)
         
@@ -752,7 +752,7 @@ class SkinEditPage(gtk.VBox):
         
         self.color_select_align = gtk.Alignment()
         self.color_select_align.set(0.5, 0.5, 1, 1)
-        self.color_select_align.set_padding(0, 0, 32, 32)
+        self.color_select_align.set_padding(0, 0, 30, 30)
         self.color_select_view = IconView()
         self.color_select_view.draw_mask = self.dialog.get_mask_func(self.color_select_view)
         self.color_select_scrolled_window = ScrolledWindow()

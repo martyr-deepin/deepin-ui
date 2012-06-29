@@ -77,15 +77,15 @@
        (0, ("#FFFFFF", 0.5))
      ],
      "maskSinglePageBottom" : [
-       (0, ("#FFFFFF", 0.9)),
-       (0, ("#FFFFFF", 0.9))
+       (0, ("#FFFFFF", 0.95)),
+       (0, ("#FFFFFF", 0.95))
 	 ],
      "maskSinglePageTop" : [
         (0, ("#FFFFFF", 0)),
         (0.5, ("#FFFFFF", 0.7)),
         (0.6, ("#FFFFFF", 0.8)),
         (0.7, ("#FFFFFF", 0.85)),
-        (1, ("#FFFFFF", 0.9)),
+        (1, ("#FFFFFF", 0.95)),
       ], 				 
      "menuSide" : [
 	    (0,     ("#FFB3B3", 1.0)),

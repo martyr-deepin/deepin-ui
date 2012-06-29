@@ -45,13 +45,9 @@ class TabBox(gtk.VBox):
         self.tab_padding_x = 19
         self.tab_padding_y = 9
         self.tab_select_bg_color = "#FFFFFF"
-        # self.tab_select_bg_color = "#FF0000"
         self.tab_select_frame_color = "#D6D6D6"
-        # self.tab_select_frame_color = "#00FF00"
         self.tab_unselect_bg_color = "#EDEDED"
-        # self.tab_unselect_bg_color = "#FF00FF"
         self.tab_unselect_frame_color = "#D8D8D8"
-        # self.tab_unselect_frame_color = "#0000FF"
         
         self.tab_title_box = EventBox()
         self.tab_title_box.set_size_request(-1, self.tab_height)
@@ -61,7 +57,7 @@ class TabBox(gtk.VBox):
         self.tab_title_align.add(self.tab_title_box)
         self.tab_content_align = gtk.Alignment()
         self.tab_content_align.set(0.0, 0.0, 1.0, 1.0)
-        self.tab_content_align.set_padding(0, 1, 1, 1)
+        self.tab_content_align.set_padding(0, 1, 0, 0)
         self.tab_content_scrolled_window = ScrolledWindow()
         self.tab_content_align.add(self.tab_content_scrolled_window)
         self.tab_content_box = gtk.VBox()
@@ -172,18 +168,37 @@ class TabBox(gtk.VBox):
                 if index == self.tab_index:
                     # Draw title select tab.
                     cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_select_bg_color, 0.93)))    
-                    cr.rectangle(rect.x + 1 + sum(self.tab_title_widths[0:index]),
-                                 rect.y + 1,
-                                 self.tab_title_widths[index],
-                                 self.tab_height)
+                    if index == 0:
+                        cr.rectangle(rect.x + sum(self.tab_title_widths[0:index]),
+                                     rect.y + 1,
+                                     self.tab_title_widths[index] + 1,
+                                     self.tab_height)
+                    else:
+                        cr.rectangle(rect.x + 1 + sum(self.tab_title_widths[0:index]),
+                                     rect.y + 1,
+                                     self.tab_title_widths[index],
+                                     self.tab_height)
                     cr.fill()
                     
+                    if index == 0:
+                        cr.rectangle(rect.x,
+                                     rect.y,
+                                     rect.width,
+                                     self.tab_height)
+                        cr.clip()
+                        
                     cr.set_line_width(1)
                     cr.set_source_rgb(*color_hex_to_cairo(self.tab_select_frame_color))    
-                    cr.rectangle(rect.x + 1 + sum(self.tab_title_widths[0:index]),
-                                 rect.y + 1,
-                                 self.tab_title_widths[index] + 1,
-                                 self.tab_height)
+                    if index == 0:
+                        cr.rectangle(rect.x + sum(self.tab_title_widths[0:index]),
+                                     rect.y + 1,
+                                     self.tab_title_widths[index] + 2,
+                                     self.tab_height)
+                    else:
+                        cr.rectangle(rect.x + 1 + sum(self.tab_title_widths[0:index]),
+                                     rect.y + 1,
+                                     self.tab_title_widths[index] + 1,
+                                     self.tab_height)
                     cr.stroke()
                     
             draw_text(cr, title, 
@@ -241,9 +256,6 @@ class TabWindow(DialogBox):
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
         
-        self.window_align = gtk.Alignment()
-        self.window_align.set(0.0, 0.0, 1.0, 1.0)
-        self.window_align.set_padding(0, 0, 2, 2)
         self.window_box = gtk.VBox()
         
         self.tab_window_width = window_width
@@ -259,13 +271,12 @@ class TabWindow(DialogBox):
         self.cancel_button = Button("取消")
         
         self.window_box.pack_start(self.tab_align, True, True)
-        self.window_align.add(self.window_box)
         
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
         self.connect("destroy", lambda w: self.destroy())
         
-        self.body_box.pack_start(self.window_align, True, True)
+        self.body_box.pack_start(self.window_box, True, True)
         self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
     def click_confirm_button(self):
