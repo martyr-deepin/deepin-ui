@@ -38,14 +38,36 @@ DIALOG_MASK_SINGLE_PAGE = 0
 DIALOG_MASK_MULTIPLE_PAGE = 1
 DIALOG_MASK_TAB_PAGE = 2
 
-class DialogButtonBox(gtk.HBox):
+class DialogLeftButtonBox(gtk.HBox):
     '''Dialog button box.'''
 	
     def __init__(self):
         '''Init dialog button box.'''
         gtk.HBox.__init__(self)
         self.button_align = gtk.Alignment()
-        self.button_align.set(1.0, 1.0, 0, 0)
+        self.button_align.set(0.0, 0.5, 0, 0)
+        self.button_align.set_padding(5, 9, 7, 0)
+        self.button_box = gtk.HBox()
+        
+        self.button_align.add(self.button_box)    
+        self.pack_start(self.button_align, True, True)
+
+    def set_buttons(self, buttons):
+        '''Add buttons.'''
+        container_remove_all(self.button_box)
+        for button in buttons:
+            self.button_box.pack_start(button, False, False, 4)
+            
+gobject.type_register(DialogLeftButtonBox)
+
+class DialogRightButtonBox(gtk.HBox):
+    '''Dialog button box.'''
+	
+    def __init__(self):
+        '''Init dialog button box.'''
+        gtk.HBox.__init__(self)
+        self.button_align = gtk.Alignment()
+        self.button_align.set(1.0, 0.5, 0, 0)
         self.button_align.set_padding(5, 9, 0, 7)
         self.button_box = gtk.HBox()
         
@@ -58,7 +80,7 @@ class DialogButtonBox(gtk.HBox):
         for button in buttons:
             self.button_box.pack_start(button, False, False, 4)
             
-gobject.type_register(DialogButtonBox)
+gobject.type_register(DialogRightButtonBox)
 
 class DialogBox(Window):
     '''Dialog box.'''
@@ -84,11 +106,16 @@ class DialogBox(Window):
             title)
         self.add_move_event(self.titlebar)
         self.body_box = gtk.VBox()
-        self.right_button_box = DialogButtonBox()
+        self.button_box = gtk.HBox()
+        self.left_button_box = DialogLeftButtonBox()
+        self.right_button_box = DialogRightButtonBox()
+
+        self.button_box.pack_start(self.left_button_box, True, True)
+        self.button_box.pack_start(self.right_button_box, True, True)
         
         self.window_frame.pack_start(self.titlebar, False, False)
         self.window_frame.pack_start(self.body_box, True, True)
-        self.window_frame.pack_start(self.right_button_box, False, False)
+        self.window_frame.pack_start(self.button_box, False, False)
 
         self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
         self.connect("destroy", lambda w: self.destroy())
@@ -141,6 +168,11 @@ class DialogBox(Window):
             ui_theme.get_shadow_color("maskMultiplePage").get_color_info(),
             )
 
+        draw_vlinear(
+            cr, x, y + h - button_box_height, w, button_box_height,
+            [(0, (dominant_color, 1.0)),
+             (1, (dominant_color, 1.0))])
+        
     def draw_mask_tab_page(self, cr, x, y, w, h):
         '''Draw make for tab page type.'''
         button_box_height = self.right_button_box.get_allocation().height
