@@ -48,7 +48,11 @@ WIDGET_POS_LEFT_CENTER = 6
 WIDGET_POS_RIGHT_CENTER = 7
 WIDGET_POS_CENTER = 8
 
-DEFAULT_FONT = "文泉驿微米黑"
+font_test_window = gtk.Window(gtk.WINDOW_POPUP)
+font_test_window.set_default_size(0, 0)
+font_test_window.move(-1000000, -1000000)
+DEFAULT_FONT = ' '.join(str(font_test_window.get_pango_context().get_font_description()).split(" ")[0:-1])
+font_test_window.destroy()
 
 ALIGN_START = pango.ALIGN_LEFT
 ALIGN_END = pango.ALIGN_CENTER
