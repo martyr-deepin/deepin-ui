@@ -48,8 +48,7 @@ MOUSE_VOLUME_STATE_NORMAL = -1
 VOLUME_RIGHT = "right"
 VOLUME_LEFT   = "left"
 
-
-class VolumeButton(gtk.EventBox):
+class VolumeButton(gtk.Button):
     __gsignals__ = {
         "volume-state-changed":(gobject.SIGNAL_RUN_LAST,
                            gobject.TYPE_NONE,(gobject.TYPE_INT,gobject.TYPE_INT,))
@@ -90,7 +89,7 @@ class VolumeButton(gtk.EventBox):
                  #=============================================================
                  point_volume_pixbuf = ui_theme.get_pixbuf("volumebutton/point_normal.png")
                  ):        
-        gtk.EventBox.__init__(self)
+        gtk.Button.__init__(self)
         ###########################
         if volume_x < max_volume_normal_pixbuf.get_pixbuf().get_width():
             volume_x = max_volume_normal_pixbuf.get_pixbuf().get_width()
@@ -122,7 +121,6 @@ class VolumeButton(gtk.EventBox):
         # point volume pixbuf.
         self.__point_volume_pixbuf    = point_volume_pixbuf        
         '''Init Set VolumeButton attr.'''
-        self.set_visible_window(False)
         '''Init value.'''
         self.__press_emit_bool  = press_emit_bool
         self.__line_width       = line_width

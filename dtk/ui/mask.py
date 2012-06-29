@@ -23,6 +23,7 @@
 from window import Window
 from scrolled_window import ScrolledWindow
 from iconview import IconView
+from listview import ListView
 from utils import cairo_state, get_match_parent, get_window_shadow_size
 
 def draw_mask(widget, x, y, w, h, render_callback):
@@ -33,6 +34,8 @@ def draw_mask(widget, x, y, w, h, render_callback):
         draw_scrolled_window_mask(widget, x, y, w, h, render_callback)
     elif isinstance(widget, IconView):
         draw_icon_view_mask(widget, x, y, w, h, render_callback)
+    elif isinstance(widget, ListView):
+        draw_list_view_mask(widget, x, y, w, h, render_callback)
     else:
         print "draw_mask: unsupport widget: %s" % (widget)
 
@@ -68,6 +71,25 @@ def draw_scrolled_window_mask(widget, x, y, w, h, render_callback):
             toplevel.allocation.height)
 
 def draw_icon_view_mask(widget, x, y, w, h, render_callback):
+    '''Draw skin preview view mask.'''
+    cr = widget.window.cairo_create()
+    viewport = get_match_parent(widget, ["Viewport"])
+    toplevel = widget.get_toplevel()
+    (offset_x, offset_y) = viewport.translate_coordinates(toplevel, 0, 0)
+    (shadow_x, shadow_y) = get_window_shadow_size(toplevel)
+    
+    with cairo_state(cr):
+        cr.rectangle(x, y, w, h)
+        cr.clip()
+        
+        render_callback(
+            cr, 
+            x - offset_x + shadow_x, 
+            y - offset_y + shadow_y,
+            toplevel.allocation.width,
+            toplevel.allocation.height)
+
+def draw_list_view_mask(widget, x, y, w, h, render_callback):
     '''Draw skin preview view mask.'''
     cr = widget.window.cairo_create()
     viewport = get_match_parent(widget, ["Viewport"])
