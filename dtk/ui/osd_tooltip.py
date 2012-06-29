@@ -82,8 +82,12 @@ class OSDTooltip(gtk.Window):
         # Make all event passthrough osd tooltip.
         self.window.input_shape_combine_region(gtk.gdk.Region(), 0, 0) 
         
+        # Avoid osd tooltip (popup window) show at (0, 0) first. 
+        self.move(-1000000, -1000000)
+        
         # Never draw background.
         self.window.set_back_pixmap(None, False)
+        self.window.set_override_redirect(False)
         
     def show_osd_tooltip(self, widget):
         '''Show osd tooltip.'''

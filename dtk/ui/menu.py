@@ -182,13 +182,16 @@ class Menu(Window):
                 self.item_box.pack_start(menu_item.item_box, False, False)
                 
         self.connect("show", self.init_menu)
-        self.connect("realize", self.fix_background_flickr)
+        self.connect("realize", self.realize_menu)
         
-    def fix_background_flickr(self, widget):
-        '''Fix background flickr when menu show.'''
-        # FIXME: this is dirty way that i don't know how to fix it,
-        # top-left screen corner snapshot will show in menu before menu show.
+    def realize_menu(self, widget):
+        '''Realize menu.'''
+        # Avoid menu (popup window) show at (0, 0) first. 
         self.move(-1000000, -1000000)
+        
+        # Never draw background.
+        self.window.set_back_pixmap(None, False)
+        self.window.set_override_redirect(False)
                 
     def draw_menu_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
