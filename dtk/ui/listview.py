@@ -96,6 +96,7 @@ class ListView(gtk.DrawingArea):
         self.expand_column = None
         self.drag_reference_row = None
         self.drag_preview_pixbuf = None
+        self.drag_line_pixbuf = CachePixbuf()
         
         # Signal.
         self.connect("realize", self.realize_list_view)
@@ -521,6 +522,15 @@ class ListView(gtk.DrawingArea):
         
         # Draw drag reference row.
         if self.drag_reference_row:
+            # self.drag_line_pixbuf.scale(
+            #     ui_theme.get_pixbuf("listview/drag_line.png").get_pixbuf(),
+            #     rect.width,
+            #     ui_theme.get_pixbuf("listview/drag_line.png").get_pixbuf().get_height())
+            # draw_pixbuf(cr,
+            #             self.drag_line_pixbuf.get_cache(),
+            #             rect.x,
+            #             rect.y + self.drag_reference_row * self.item_height + self.title_offset_y)
+            
             cr.set_source_rgb(*color_hex_to_cairo("#666666"))
             cr.rectangle(rect.x, rect.y + self.drag_reference_row * self.item_height + self.title_offset_y, rect.width, 3)
             cr.fill()
