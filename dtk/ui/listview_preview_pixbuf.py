@@ -25,23 +25,25 @@ from draw import draw_vlinear, draw_text
 import gtk
 import pango
 import sys
+import cairo
 
-def render_pixbuf(widget, event, input_args, pixbuf_width, pixbuf_height):
+def render_pixbuf(widget, event, input_args):
     '''Render pixbuf.'''
     # Init.
     (select_num, vlinear_color, text_color, filepath) = input_args
     cr = widget.window.cairo_create()
     rect = widget.allocation
-    pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, pixbuf_width, pixbuf_height)                                           
+    pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, rect.width, rect.height)                                           
 
     # Draw background.
-    draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, eval(vlinear_color), 2)
+    cr.set_operator(cairo.OPERATOR_OVER)
+    draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, eval(vlinear_color))
     
     # Draw text.
     draw_text(cr, select_num, rect.x, rect.y, rect.width, rect.height, text_color=text_color,
               alignment=pango.ALIGN_CENTER)
     
-    # Save pixbuf to png file.
+    # Render pixbuf from drawing area.
     pixbuf.get_from_drawable(
         widget.window, widget.get_colormap(), 0, 0, 0, 0, 
         pixbuf_width, pixbuf_height).save(filepath, "png")
@@ -61,18 +63,14 @@ if __name__ == "__main__":
     pixbuf_width = num_width + num_padding_x * 2
     pixbuf_height = num_height + num_padding_y * 2
 
-    # Draw on drawing area.
-    drawing_area = gtk.DrawingArea()
-    drawing_area.set_size_request(pixbuf_width, pixbuf_height)
-    drawing_area.connect(
-        "expose-event", 
-        lambda w, e: render_pixbuf(w, e, input_args, pixbuf_width, pixbuf_height))
-
     # Create window.
     window = gtk.Window(gtk.WINDOW_POPUP) 
+    window.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
     window.move(-pixbuf_width, -pixbuf_height) # move out of screen
     window.set_default_size(pixbuf_width, pixbuf_height)
-    window.add(drawing_area)
+    window.connect(
+        "expose-event", 
+        lambda w, e: render_pixbuf(w, e, input_args))
     
     window.show_all()
     
