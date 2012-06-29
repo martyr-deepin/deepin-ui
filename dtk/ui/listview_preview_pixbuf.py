@@ -33,7 +33,7 @@ def render_pixbuf(widget, event, input_args):
     (select_num, vlinear_color, text_color, filepath) = input_args
     cr = widget.window.cairo_create()
     rect = widget.allocation
-    pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, rect.width, rect.height)                                           
+    num_pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, rect.width, rect.height)                                           
 
     # Draw background.
     cr.set_operator(cairo.OPERATOR_OVER)
@@ -44,9 +44,9 @@ def render_pixbuf(widget, event, input_args):
               alignment=pango.ALIGN_CENTER)
     
     # Render pixbuf from drawing area.
-    pixbuf.get_from_drawable(
+    num_pixbuf.get_from_drawable(
         widget.window, widget.get_colormap(), 0, 0, 0, 0, 
-        pixbuf_width, pixbuf_height).save(filepath, "png")
+        rect.width, rect.height).save(filepath, "png")
     
     # Exit after generate png file.
     gtk.main_quit()

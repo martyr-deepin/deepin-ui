@@ -586,7 +586,14 @@ class ListView(gtk.DrawingArea):
                                   (1, ("#0093F9", 1))]),
                              "#FFFFFF",
                              temp_filepath]).wait()
-                        self.drag_preview_pixbuf = gtk.gdk.pixbuf_new_from_file(temp_filepath)
+                        drag_num_pixbuf = gtk.gdk.pixbuf_new_from_file(temp_filepath)
+                        drag_icon_pixbuf = ui_theme.get_pixbuf("listview/drag_preview.png").get_pixbuf()
+                        drag_num_pixbuf.copy_area(
+                            0, 0, drag_num_pixbuf.get_width(), drag_num_pixbuf.get_height(),
+                            drag_icon_pixbuf, 
+                            (drag_icon_pixbuf.get_width() - drag_num_pixbuf.get_width()) / 2,
+                            drag_icon_pixbuf.get_height() - drag_num_pixbuf.get_height())
+                        self.drag_preview_pixbuf = drag_icon_pixbuf
                         remove_file(temp_filepath)
 
                     self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.display_get_default(), 
