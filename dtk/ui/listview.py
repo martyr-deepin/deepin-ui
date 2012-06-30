@@ -60,7 +60,9 @@ class ListView(gtk.DrawingArea):
 
     def __init__(self, 
                  sorts=[], 
-                 drag_data=None # (targets, actions, button_masks)
+                 drag_data=None, # (targets, actions, button_masks)
+                 enable_multiple_select=True,
+                 enable_drag_drop=True,
                  ):
         '''Init list view.'''
         # Init.
@@ -80,7 +82,7 @@ class ListView(gtk.DrawingArea):
         self.single_click_row = None
         self.double_click_row = None
         self.start_select_item = None
-        self.enable_drag = True
+        self.enable_drag_drop = enable_drag_drop
         self.start_drag = False
         self.drag_item = None
         self.highlight_item = None
@@ -97,6 +99,7 @@ class ListView(gtk.DrawingArea):
         self.drag_reference_row = None
         self.drag_preview_pixbuf = None
         self.drag_line_pixbuf = CachePixbuf()
+        self.enable_multiple_select = enable_multiple_select
         
         # Signal.
         self.connect("realize", self.realize_list_view)
@@ -584,7 +587,7 @@ class ListView(gtk.DrawingArea):
         '''Hover item.'''
         if self.left_button_press:
             if self.start_drag:
-                if self.enable_drag:
+                if self.enable_drag_drop:
                     # Set drag cursor.
                     if self.drag_preview_pixbuf == None:
                         temp_filepath = tempfile.mktemp()
@@ -634,29 +637,30 @@ class ListView(gtk.DrawingArea):
 
                         self.queue_draw()
             else:
-                # Get hover row.
-                hover_row = self.get_event_row(event)
-                
-                # Highlight drag area.
-                if hover_row != None and self.start_select_row != None:
-                    # Update select area.
-                    if hover_row > self.start_select_row:
-                        self.select_rows = range(self.start_select_row, hover_row + 1)
-                    elif hover_row < self.start_select_row:
-                        self.select_rows = range(hover_row, self.start_select_row + 1)
-                    else:
-                        self.select_rows = [hover_row]
-                        
-                    # Scroll viewport when cursor almost reach bound of viewport.
-                    vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
-                    if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
-                        vadjust.set_value(min(vadjust.get_value() + self.item_height, 
-                                              vadjust.get_upper() - vadjust.get_page_size()))
-                    elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
-                        vadjust.set_value(max(vadjust.get_value() - self.item_height, 
-                                              vadjust.get_lower()))
-                        
-                    self.queue_draw()
+                if self.enable_multiple_select:
+                    # Get hover row.
+                    hover_row = self.get_event_row(event)
+                    
+                    # Highlight drag area.
+                    if hover_row != None and self.start_select_row != None:
+                        # Update select area.
+                        if hover_row > self.start_select_row:
+                            self.select_rows = range(self.start_select_row, hover_row + 1)
+                        elif hover_row < self.start_select_row:
+                            self.select_rows = range(hover_row, self.start_select_row + 1)
+                        else:
+                            self.select_rows = [hover_row]
+                            
+                        # Scroll viewport when cursor almost reach bound of viewport.
+                        vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
+                        if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
+                            vadjust.set_value(min(vadjust.get_value() + self.item_height, 
+                                                  vadjust.get_upper() - vadjust.get_page_size()))
+                        elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
+                            vadjust.set_value(max(vadjust.get_value() - self.item_height, 
+                                                  vadjust.get_lower()))
+                            
+                        self.queue_draw()
         else:
             # Rest cursor and title select column.
             self.title_select_column = None
@@ -739,7 +743,7 @@ class ListView(gtk.DrawingArea):
                         self.select_rows.append(click_row)
                     self.select_rows = sorted(self.select_rows)
                 else:
-                    if self.enable_drag and click_row in self.select_rows and len(self.select_rows) != len(self.items):
+                    if self.enable_drag_drop and click_row in self.select_rows and len(self.select_rows) != len(self.items):
                         self.start_drag = True
                         
                         if self.start_select_row:
