@@ -370,9 +370,6 @@ if __name__ == "__main__":
     color_button = ColorButton()
     entry_box.pack_start(color_button, False, False)
     
-    link_button = LinkButton("首页", "http://www.linuxdeepin.com")
-    entry_box.pack_start(link_button, False, False)
-    
     # Group 
     image_button_items = [
         (app_theme.get_pixbuf("toolbar/%s_normal.png" % name),
@@ -419,6 +416,9 @@ if __name__ == "__main__":
     tab_1_box.pack_start(statusbar, False)
     application.window.add_move_event(statusbar)
     application.window.add_toggle_event(statusbar)
+    
+    link_button = LinkButton("加入我们", "http://www.linuxdeepin.com/joinus/job")
+    statusbar.status_item_box.pack_start(link_button)
     
     web_view = WebView()
     web_scrolled_window = ScrolledWindow()
