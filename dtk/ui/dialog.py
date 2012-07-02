@@ -88,9 +88,12 @@ class DialogBox(Window):
     def __init__(self, title, default_width=None, default_height=None, mask_type=None, 
                  close_callback=None,
                  modal=True,
-                 window_hint=gtk.gdk.WINDOW_TYPE_HINT_DIALOG):
+                 window_hint=gtk.gdk.WINDOW_TYPE_HINT_DIALOG,
+                 window_pos=None):
         '''Dialog box.'''
         Window.__init__(self)
+        if window_pos:
+            self.set_position(window_pos)
         self.set_modal(modal)                                # grab focus to avoid build too many skin window
         if window_hint:
             self.set_type_hint(window_hint)
