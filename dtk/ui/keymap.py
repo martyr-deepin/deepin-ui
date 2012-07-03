@@ -83,7 +83,6 @@ def parse_keyevent_name(keyevent_name):
         keyval = int(gdk.keyval_from_name(keys[-1]))
         modifier_mask = 0
         
-        print (gdk.CONTROL_MASK, gdk.SUPER_MASK, gdk.HYPER_MASK, gdk.MOD1_MASK)
         for modifier in keys[0:-1]:
             if modifier == "Ctrl":
                 modifier_mask = modifier_mask | gdk.CONTROL_MASK
@@ -95,6 +94,10 @@ def parse_keyevent_name(keyevent_name):
                 modifier_mask = modifier_mask | gdk.MOD1_MASK
             elif modifier == "Shift":
                 modifier_mask = modifier_mask | gdk.SHIFT_MASK
+                
+        if gdk.keyval_is_upper(keyval):
+            keyval = gdk.keyval_to_lower(keyval)
+            modifier_mask = modifier_mask | gdk.SHIFT_MASK
         
     return (keyval, modifier_mask)
 

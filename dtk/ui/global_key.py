@@ -111,7 +111,8 @@ if __name__ == "__main__":
     def t(*args, **kwargs):
         print 'Called!'
     manager = GlobalKey()
-    manager.bind('Ctrl + Alt + Shift + s', t)
+    # manager.bind('Ctrl + Alt + Shift + s', t)
+    manager.bind('Ctrl + Alt + S', t)
     manager.start()
 
     gtk.main()
