@@ -52,7 +52,6 @@ class Paned(gtk.Paned):
             return False
 
     def do_enter_notify_event(self, e):
-        print e
         handle = self.get_handle_window()
         (width, height) = handle.get_size()
         if self.is_in_button(e.x, e.y):

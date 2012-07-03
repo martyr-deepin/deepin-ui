@@ -39,7 +39,7 @@ class Categorybar(EventBox):
         self.connect(
             "expose-event",
             lambda w, e:
-                expose_linear_background(w, e, ui_theme.get_shadow_color("categorybarBackground").get_color_info()))
+                expose_linear_background(w, e, ui_theme.get_shadow_color("categorybar_background").get_color_info()))
         
         # Init category box.
         self.category_item_box = gtk.VBox()
@@ -121,7 +121,7 @@ class CategoryItem(gtk.Button):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         select_index = self.get_index()
-        font_color = ui_theme.get_color("categoryItem").get_color()
+        font_color = ui_theme.get_color("category_item").get_color()
         
         # Draw background.
         if widget.state == gtk.STATE_NORMAL:
@@ -139,14 +139,14 @@ class CategoryItem(gtk.Button):
             
         if select_status == BUTTON_PRESS:
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                        ui_theme.get_shadow_color("categoryItemPress").get_color_info())
+                        ui_theme.get_shadow_color("category_item_press").get_color_info())
     
-            font_color = ui_theme.get_color("categorySelectItem").get_color()
+            font_color = ui_theme.get_color("category_select_item").get_color()
         elif select_status == BUTTON_HOVER:
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                        ui_theme.get_shadow_color("categoryItemHover").get_color_info())
+                        ui_theme.get_shadow_color("category_item_hover").get_color_info())
             
-            font_color = ui_theme.get_color("categorySelectItem").get_color()
+            font_color = ui_theme.get_color("category_select_item").get_color()
             
         # Draw navigate item.
         category_item_pixbuf = self.icon_dpixbuf.get_pixbuf()

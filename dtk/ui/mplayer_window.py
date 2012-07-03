@@ -127,11 +127,11 @@ class MplayerWindow(gtk.Window):
             
         # Draw window frame.
         draw_window_frame(cr, x, y, w, h,
-                          ui_theme.get_alpha_color("windowFrameOutside1"),
-                          ui_theme.get_alpha_color("windowFrameOutside2"),
-                          ui_theme.get_alpha_color("windowFrameOutside3"),
-                          ui_theme.get_alpha_color("windowFrameInside1"),
-                          ui_theme.get_alpha_color("windowFrameInside2"),
+                          ui_theme.get_alpha_color("window_frame_outside_1"),
+                          ui_theme.get_alpha_color("window_frame_outside_2"),
+                          ui_theme.get_alpha_color("window_frame_outside_3"),
+                          ui_theme.get_alpha_color("window_frame_inside_1"),
+                          ui_theme.get_alpha_color("window_frame_inside_2"),
                           )
         
         # Propagate expose.
@@ -248,7 +248,7 @@ class MplayerWindow(gtk.Window):
             cr.paint()
         
             # Draw window shadow.
-            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding, ui_theme.get_shadow_color("windowShadow"))
+            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding, ui_theme.get_shadow_color("window_shadow"))
     
     def hide_shadow(self):
         '''Hide shadow.'''

@@ -330,7 +330,7 @@ class Droplist(gtk.Window):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         # Draw background.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("droplistMask").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("droplist_mask").get_color_info()))
         cr.rectangle(x, y, w, h)    
         cr.fill()
         
@@ -535,7 +535,7 @@ class Droplist(gtk.Window):
 
         with cairo_disable_antialias(cr):
             cr.set_line_width(1)
-            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("droplistFrame").get_color()))
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("droplist_frame").get_color()))
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.fill()
         
@@ -662,7 +662,7 @@ class DroplistItem(object):
     def create_separator_item(self):
         '''Create separator item.'''
         self.item_box = HSeparator(
-            ui_theme.get_shadow_color("hSeparator").get_color_info(),
+            ui_theme.get_shadow_color("h_separator").get_color_info(),
             self.item_padding_left, 
             self.item_padding_y)
         self.item_box_height = self.item_padding_y * 2 + 1
@@ -713,16 +713,16 @@ class DroplistItem(object):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        font_color = ui_theme.get_color("menuFont").get_color()
+        font_color = ui_theme.get_color("menu_font").get_color()
         
         # Draw select effect.
         if self.subdroplist_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
             # Draw background.
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                         ui_theme.get_shadow_color("menuItemSelect").get_color_info())
+                         ui_theme.get_shadow_color("menu_item_select").get_color_info())
             
             # Set font color.
-            font_color = ui_theme.get_color("menuSelectFont").get_color()
+            font_color = ui_theme.get_color("menu_select_font").get_color()
             
         # Draw item content.
         draw_text(cr, item_content, 

@@ -196,13 +196,13 @@ class Menu(Window):
     def draw_menu_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
         # Draw background.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("menuMask").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("menu_mask").get_color_info()))
         cr.rectangle(x, y, w, h)    
         cr.fill()
         
         # Draw left side.
         draw_hlinear(cr, x + 1, y + 1, 16 + self.padding_x + self.padding_x * 2, h - 2,
-                     ui_theme.get_shadow_color("menuSide").get_color_info())
+                     ui_theme.get_shadow_color("menu_side").get_color_info())
         
     def get_menu_item_at_coordinate(self, (x, y)):
         '''Get menu item at coordinate, return None if haven't any menu item at given coordinate.'''
@@ -398,7 +398,7 @@ class MenuItem(object):
     def create_separator_item(self):
         '''Create separator item.'''
         self.item_box = HSeparator(
-            ui_theme.get_shadow_color("hSeparator").get_color_info(),
+            ui_theme.get_shadow_color("h_separator").get_color_info(),
             self.item_padding_x, 
             self.item_padding_y)
         self.item_box_height = self.item_padding_y * 2 + 1
@@ -456,18 +456,18 @@ class MenuItem(object):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        font_color = ui_theme.get_color("menuFont").get_color()
+        font_color = ui_theme.get_color("menu_font").get_color()
         (item_icons, item_content, item_node) = self.item[0:3]
         
         # Draw select effect.
         if self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
             # Draw background.
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                         ui_theme.get_shadow_color("menuItemSelect").get_color_info(),
+                         ui_theme.get_shadow_color("menu_item_select").get_color_info(),
                          MENU_ITEM_RADIUS)
             
             # Set font color.
-            font_color = ui_theme.get_color("menuSelectFont").get_color()
+            font_color = ui_theme.get_color("menu_select_font").get_color()
             
         # Draw item icon.
         pixbuf = None

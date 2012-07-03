@@ -59,7 +59,7 @@ class ComboBox(gtk.VBox):
         self.dropbutton_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()
         self.label = Label(self.items[select_index][0], 
                            label_width=self.width - self.dropbutton_width - 1 - self.label_padding_left)
-        self.label.text_color = ui_theme.get_color("menuFont")
+        self.label.text_color = ui_theme.get_color("menu_font")
         self.dropbutton = DisableButton(
             (ui_theme.get_pixbuf("combo/dropbutton_normal.png"),
              ui_theme.get_pixbuf("combo/dropbutton_hover.png"),
@@ -95,14 +95,14 @@ class ComboBox(gtk.VBox):
     def focus_in_combo(self, widget, event):
         '''Focus in combo.'''
         self.focus_flag = True
-        self.label.text_color = ui_theme.get_color("menuSelectFont")
+        self.label.text_color = ui_theme.get_color("menu_select_font")
 
         self.queue_draw()
         
     def focus_out_combo(self, widget, event):
         '''Focus out combo.'''
         self.focus_flag = False        
-        self.label.text_color = ui_theme.get_color("menuFont")
+        self.label.text_color = ui_theme.get_color("menu_font")
             
         self.queue_draw()
         
@@ -219,22 +219,22 @@ class ComboBox(gtk.VBox):
         with cairo_disable_antialias(cr):
             cr.set_line_width(1)
             if self.get_sensitive():
-                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("comboEntryFrame").get_color()))
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("combo_entry_frame").get_color()))
             else:
-                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disableFrame").get_color()))
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disable_frame").get_color()))
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.stroke()
             
             if self.focus_flag:
-                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntrySelectBackground").get_color(), 0.9)))
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_select_background").get_color(), 0.9)))
                 cr.rectangle(rect.x, rect.y, rect.width - 1 - self.dropbutton_width, rect.height - 1)
                 cr.fill()
                 
-                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
                 cr.rectangle(rect.x + rect.width - 1 - self.dropbutton_width, rect.y, self.dropbutton_width, rect.height - 1)
                 cr.fill()
             else:
-                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
                 cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
                 cr.fill()
         

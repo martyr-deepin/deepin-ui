@@ -382,18 +382,18 @@ class ColorButton(gtk.VBox):
         
         # Get color info.
         if not self.clickable:
-            border_color = ui_theme.get_color("buttonBorderDisable").get_color()
-            background_color = ui_theme.get_shadow_color("buttonBackgroundDisable").get_color_info()
+            border_color = ui_theme.get_color("button_border_disable").get_color()
+            background_color = ui_theme.get_shadow_color("button_background_disable").get_color_info()
         else:
             if widget.state == gtk.STATE_NORMAL:
-                border_color = ui_theme.get_color("buttonBorderNormal").get_color()
-                background_color = ui_theme.get_shadow_color("buttonBackgroundNormal").get_color_info()
+                border_color = ui_theme.get_color("button_border_normal").get_color()
+                background_color = ui_theme.get_shadow_color("button_background_normal").get_color_info()
             elif widget.state == gtk.STATE_PRELIGHT:
-                border_color = ui_theme.get_color("buttonBorderPrelight").get_color()
-                background_color = ui_theme.get_shadow_color("buttonBackgroundPrelight").get_color_info()
+                border_color = ui_theme.get_color("button_border_prelight").get_color()
+                background_color = ui_theme.get_shadow_color("button_background_prelight").get_color_info()
             elif widget.state == gtk.STATE_ACTIVE:
-                border_color = ui_theme.get_color("buttonBorderActive").get_color()
-                background_color = ui_theme.get_shadow_color("buttonBackgroundActive").get_color_info()
+                border_color = ui_theme.get_color("button_border_active").get_color()
+                background_color = ui_theme.get_shadow_color("button_background_active").get_color_info()
             
         # Draw background.
         draw_vlinear(

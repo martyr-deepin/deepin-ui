@@ -119,7 +119,7 @@ class Window(gtk.Window):
             
         # Draw corner shadow.
         with cairo_state(cr):
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("windowShadowCorner").get_color_info()))
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("window_shadow_corner").get_color_info()))
             
             cr.rectangle(x, y + 1, 1, 1) # top-left
             cr.rectangle(x + 1, y, 1, 1)
@@ -171,7 +171,7 @@ class Window(gtk.Window):
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             
             # Draw window shadow.
-            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding, ui_theme.get_shadow_color("windowShadow"))
+            draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding, ui_theme.get_shadow_color("window_shadow"))
     
     def expose_window_frame(self, widget, event):
         '''Expose window frame.'''
@@ -181,11 +181,11 @@ class Window(gtk.Window):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         draw_window_frame(cr, x, y, w, h,
-                          ui_theme.get_alpha_color("windowFrameOutside1"),
-                          ui_theme.get_alpha_color("windowFrameOutside2"),
-                          ui_theme.get_alpha_color("windowFrameOutside3"),
-                          ui_theme.get_alpha_color("windowFrameInside1"),
-                          ui_theme.get_alpha_color("windowFrameInside2"),
+                          ui_theme.get_alpha_color("window_frame_outside_1"),
+                          ui_theme.get_alpha_color("window_frame_outside_2"),
+                          ui_theme.get_alpha_color("window_frame_outside_3"),
+                          ui_theme.get_alpha_color("window_frame_inside_1"),
+                          ui_theme.get_alpha_color("window_frame_inside_2"),
                           )
 
     def shape_window_frame(self, widget, rect):

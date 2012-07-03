@@ -152,7 +152,7 @@ class Notebook(gtk.EventBox):
                             content_width, 
                             content_height,
                             DEFAULT_FONT_SIZE,
-                            ui_theme.get_color("notebookFont").get_color(),
+                            ui_theme.get_color("notebook_font").get_color(),
                             )
             else:
                 tab_render_width = content_width
@@ -163,7 +163,7 @@ class Notebook(gtk.EventBox):
                             content_width,
                             content_height,
                             DEFAULT_FONT_SIZE,
-                            ui_theme.get_color("notebookFont").get_color(),
+                            ui_theme.get_color("notebook_font").get_color(),
                             )
         
         propagate_expose(widget, event)

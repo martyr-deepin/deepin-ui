@@ -351,20 +351,20 @@ class ListView(gtk.DrawingArea):
     def draw_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
         draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("linearBackground").get_color_info()
+                     ui_theme.get_shadow_color("linear_background").get_color_info()
                      )
         
     def draw_item_hover(self, cr, x, y, w, h):
         '''Draw hover.'''
-        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listviewHover").get_color_info())
+        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_hover").get_color_info())
         
     def draw_item_select(self, cr, x, y, w, h):
         '''Draw select.'''
-        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listviewSelect").get_color_info())
+        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_select").get_color_info())
 
     def draw_item_highlight(self, cr, x, y, w, h):
         '''Draw highlight.'''
-        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listviewHighlight").get_color_info())
+        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_highlight").get_color_info())
         
     def realize_list_view(self, widget):
         '''Realize list view.'''
@@ -505,7 +505,7 @@ class ListView(gtk.DrawingArea):
                 draw_text(cr, self.titles[column], 
                           cell_offset_x, offset_y, cell_widths[column], self.title_height,
                           DEFAULT_FONT_SIZE, 
-                          ui_theme.get_color("listItemText").get_color(),
+                          ui_theme.get_color("list_item_text").get_color(),
                           alignment=pango.ALIGN_CENTER)    
                 
                 # Draw sort icon.
@@ -1515,9 +1515,9 @@ class ListItem(gobject.GObject):
 def render_text(cr, rect, content, in_select, in_highlight, align=ALIGN_START, font_size=DEFAULT_FONT_SIZE):
     '''Render text.'''
     if in_select or in_highlight:
-        color = ui_theme.get_color("listItemSelectText").get_color()
+        color = ui_theme.get_color("list_item_select_text").get_color()
     else:
-        color = ui_theme.get_color("listItemText").get_color()
+        color = ui_theme.get_color("list_item_text").get_color()
     draw_text(cr, content, 
               rect.x, rect.y, rect.width, rect.height,
               font_size, 

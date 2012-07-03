@@ -51,9 +51,9 @@ class Entry(gtk.EventBox):
     def __init__(self, content="", 
                  padding_x=5, 
                  padding_y=2,
-                 text_color=ui_theme.get_color("entryText"),
-                 text_select_color=ui_theme.get_color("entrySelectText"),
-                 background_select_color=ui_theme.get_shadow_color("entrySelectBackground"),
+                 text_color=ui_theme.get_color("entry_text"),
+                 text_select_color=ui_theme.get_color("entry_select_text"),
+                 background_select_color=ui_theme.get_shadow_color("entry_select_background"),
                  font_size=DEFAULT_FONT_SIZE, 
                  ):
         '''Init entry.'''
@@ -531,7 +531,7 @@ class Entry(gtk.EventBox):
                            draw_y + (draw_height - text_height) / 2)
                 
                 # Draw text.
-                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disableText").get_color()))
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disable_text").get_color()))
                 context.update_layout(layout)
                 context.show_layout(layout)
             elif self.select_start_index != self.select_end_index and self.select_area_visible_flag:
@@ -589,7 +589,7 @@ class Entry(gtk.EventBox):
             padding_y = (h - (get_content_size("Height", self.font_size)[-1])) / 2
             
             # Draw cursor.
-            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entryCursor").get_color()))
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entry_cursor").get_color()))
             cr.rectangle(x + self.padding_x + left_str_width - self.offset_x,
                          y + padding_y,
                          1, 
@@ -769,11 +769,11 @@ class TextEntry(gtk.VBox):
     
     def __init__(self, content="",
                  action_button=None,
-                 background_color = ui_theme.get_alpha_color("textEntryBackground"),
-                 acme_color = ui_theme.get_alpha_color("textEntryAcme"),
-                 point_color = ui_theme.get_alpha_color("textEntryPoint"),
-                 frame_point_color = ui_theme.get_alpha_color("textEntryFramePoint"),
-                 frame_color = ui_theme.get_alpha_color("textEntryFrame"),
+                 background_color = ui_theme.get_alpha_color("text_entry_background"),
+                 acme_color = ui_theme.get_alpha_color("text_entry_acme"),
+                 point_color = ui_theme.get_alpha_color("text_entry_point"),
+                 frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point"),
+                 frame_color = ui_theme.get_alpha_color("text_entry_frame"),
                  ):
         '''Init input entry.'''
         # Init.
@@ -926,11 +926,11 @@ class InputEntry(gtk.VBox):
     
     def __init__(self, content="",
                  action_button=None,
-                 background_color = ui_theme.get_alpha_color("textEntryBackground"),
-                 acme_color = ui_theme.get_alpha_color("textEntryAcme"),
-                 point_color = ui_theme.get_alpha_color("textEntryPoint"),
-                 frame_point_color = ui_theme.get_alpha_color("textEntryFramePoint"),
-                 frame_color = ui_theme.get_alpha_color("textEntryFrame"),
+                 background_color = ui_theme.get_alpha_color("text_entry_background"),
+                 acme_color = ui_theme.get_alpha_color("text_entry_acme"),
+                 point_color = ui_theme.get_alpha_color("text_entry_point"),
+                 frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point"),
+                 frame_color = ui_theme.get_alpha_color("text_entry_frame"),
                  ):
         '''Init input entry.'''
         # Init.
@@ -980,11 +980,11 @@ class InputEntry(gtk.VBox):
         # Draw frame.
         with cairo_disable_antialias(cr):
             cr.set_line_width(1)
-            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("comboEntryFrame").get_color()))
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("combo_entry_frame").get_color()))
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.stroke()
             
-            cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
+            cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
             cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
             cr.fill()
         
@@ -1030,11 +1030,11 @@ class ShortcutKeyEntry(gtk.VBox):
     
     def __init__(self, content="",
                  action_button=None,
-                 background_color = ui_theme.get_alpha_color("textEntryBackground"),
-                 acme_color = ui_theme.get_alpha_color("textEntryAcme"),
-                 point_color = ui_theme.get_alpha_color("textEntryPoint"),
-                 frame_point_color = ui_theme.get_alpha_color("textEntryFramePoint"),
-                 frame_color = ui_theme.get_alpha_color("textEntryFrame"),
+                 background_color = ui_theme.get_alpha_color("text_entry_background"),
+                 acme_color = ui_theme.get_alpha_color("text_entry_acme"),
+                 point_color = ui_theme.get_alpha_color("text_entry_point"),
+                 frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point"),
+                 frame_color = ui_theme.get_alpha_color("text_entry_frame"),
                  ):
         '''Init input entry.'''
         # Init.
@@ -1150,11 +1150,11 @@ class ShortcutKeyEntry(gtk.VBox):
         # Draw frame.
         with cairo_disable_antialias(cr):
             cr.set_line_width(1)
-            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("comboEntryFrame").get_color()))
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("combo_entry_frame").get_color()))
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.stroke()
             
-            cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
+            cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
             cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
             cr.fill()
         

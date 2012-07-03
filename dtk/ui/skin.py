@@ -746,7 +746,7 @@ class SkinEditPage(gtk.VBox):
         self.color_label_align = gtk.Alignment()
         self.color_label_align.set(0.0, 0.5, 0, 0)
         self.color_label_align.set_padding(0, 0, 20, 0)
-        self.color_label = Label("配色选择", ui_theme.get_color("skinTitle"), 11)
+        self.color_label = Label("配色选择", ui_theme.get_color("skin_title"), 11)
         self.color_label.set_size_request(100, 30)
         self.color_label_align.add(self.color_label)
         

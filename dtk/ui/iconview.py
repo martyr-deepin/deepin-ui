@@ -314,7 +314,7 @@ class IconView(gtk.DrawingArea):
     def draw_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
         draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("linearBackground").get_color_info())
+                     ui_theme.get_shadow_color("linear_background").get_color_info())
         
     def expose_icon_view(self, widget, event):
         '''Expose list view.'''

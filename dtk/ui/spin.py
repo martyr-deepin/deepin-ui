@@ -52,11 +52,11 @@ class SpinBox(gtk.VBox):
         self.default_width = default_width
         self.default_height = 22
         self.arrow_button_width = 19
-        self.background_color = ui_theme.get_alpha_color("textEntryBackground")
-        self.acme_color = ui_theme.get_alpha_color("textEntryAcme")
-        self.point_color = ui_theme.get_alpha_color("textEntryPoint")
-        self.frame_point_color = ui_theme.get_alpha_color("textEntryFramePoint")
-        self.frame_color = ui_theme.get_alpha_color("textEntryFrame")
+        self.background_color = ui_theme.get_alpha_color("text_entry_background")
+        self.acme_color = ui_theme.get_alpha_color("text_entry_acme")
+        self.point_color = ui_theme.get_alpha_color("text_entry_point")
+        self.frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point")
+        self.frame_color = ui_theme.get_alpha_color("text_entry_frame")
         
         # Widget.
         arrow_up_button = self.create_simple_button("up", self.press_increase_button)
@@ -199,16 +199,16 @@ class SpinBox(gtk.VBox):
         with cairo_disable_antialias(cr):
             cr.set_line_width(1)
             if widget.state == gtk.STATE_INSENSITIVE:
-                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disableFrame").get_color()))
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disable_frame").get_color()))
             else:
-                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("comboEntryFrame").get_color()))
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("combo_entry_frame").get_color()))
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.stroke()
             
             if widget.state == gtk.STATE_INSENSITIVE:
-                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("disableBackground").get_color(), 0.9)))
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("disable_background").get_color(), 0.9)))
             else:
-                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
             cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
             cr.fill()
         

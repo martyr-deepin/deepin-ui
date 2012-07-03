@@ -8,275 +8,170 @@
  "tooltip_frame" : "#E7E77C",
  "color_item_hover" : "#333333",
  "color_item_highlight" : "#FF0000",
- "disableFrame" : "#cccccc",
- "disableBackground" : "#f7f7f7",
- "disableText" : "#a6a6a6",
- "recommend" : "#FF0000",
- "windowMask" : "#FFFFFF",
- "menuFont" : "#000000",
- "menuSelectFont" : "#FFFFFF",
- "navigateItem" : "#FFFFFF",
- "categoryItem" : "#333333",
- "categorySelectItem" : "#FFFFFF",
- "buttonDefaultFont" : "#000000",
- "tooltipText" : "#FFFFFF",
- "listItemText" : "#000000",
- "listItemSelectText" : "#ffffff",
+ "disable_frame" : "#cccccc",
+ "disable_background" : "#f7f7f7",
+ "disable_text" : "#a6a6a6",
+ "menu_font" : "#000000",
+ "menu_select_font" : "#FFFFFF",
+ "category_item" : "#333333",
+ "category_select_item" : "#FFFFFF",
+ "button_default_font" : "#000000",
+ "list_item_text" : "#000000",
+ "list_item_select_text" : "#ffffff",
  "titlebar" : "#000000",
- "buttonBorderNormal" : "#4d90b3",
- "buttonBorderPrelight" : "#4d90b3",
- "buttonBorderActive" : "#4d90b3",
- "buttonBorderDisable" : "#aecfe1",
- "buttonFont" : "#172830",
- "buttonDisableFont" : "#808080",
- "entryText" : "#000000",
- "entrySelectText" : "#FFFFFF",
- "entryCursor" : "#333333",
- "osdTooltipText" : "#77b0e5",
- "osdTooltipBorder" : "#000000",
- "labelText" : "#000000",
- "labelSelectText" : "#FFFFFF",
- "labelSelectBackground" : "#0086CC",
- "comboBoxText" : "#000000",
- "radioButtonFrame" : "#B5B5B5",
- "checkButtonFrame" : "#A1A1A1",
- "checkButtonBackground" : "#F7F7F7",
- "notebookFont" : "#000000",
- "editablelistFont" : "#000000",
- "editablelistFontSelect" : "#FFFFFF",
- "skinTitle" : "#000000",
- "treeItemNormalFont" : "#000000",
- "treeItemSelectFont" : "#FFFFFF",
- "treeItemHoverFont" : "#000000",
+ "button_border_normal" : "#4d90b3",
+ "button_border_prelight" : "#4d90b3",
+ "button_border_active" : "#4d90b3",
+ "button_border_disable" : "#aecfe1",
+ "button_font" : "#172830",
+ "entry_text" : "#000000",
+ "entry_select_text" : "#FFFFFF",
+ "entry_cursor" : "#333333",
+ "osd_tooltip_text" : "#77b0e5",
+ "osd_tooltip_border" : "#000000",
+ "label_text" : "#000000",
+ "label_select_text" : "#FFFFFF",
+ "label_select_background" : "#0086CC",
+ "notebook_font" : "#000000",
+ "skin_title" : "#000000",
+ "tree_item_normal_font" : "#000000",
+ "tree_item_select_font" : "#FFFFFF",
  "scrolledbar" : "#5ebceb",
- "droplistFrame" : "#c4d4dd",
- "comboEntryFrame" : "#c4d4dd",
- "comboEntryDisableFrame" : "#e4e4e4",
- "comboEntryBackground" : "#FFFFFF",
- "comboEntrySelectBackground" : "#0086CC",
+ "droplist_frame" : "#c4d4dd",
+ "combo_entry_frame" : "#c4d4dd",
+ "combo_entry_background" : "#FFFFFF",
+ "combo_entry_select_background" : "#0086CC",
  },	
  "alpha_colors" : {
 	 "volumebutton_bg" :("#abadaa", 1.0),
 	 "volumebutton_fg" :("#98e219", 1.0),
      "frame" : ("#000000", 0.5),
-     "frameDot" : ("#000000", 0.2),
-     "frameLight" : ("#FFFFFF", 0.2),
-     "frameLightDot" : ("#FFFFFF", 0.1),
-	 "scrollbarBackground" : ("#FFFFFF", 0.5),
-	 "menuMask" : ("#F2FBFF", 1.0),
-	 "droplistMask" : ("#F2FBFF", 0.9),
-	 "progressbarFrame" : ("#EF12AB", 1.0),
-	 "checkButtonAcme" : ("#A1A1A1", 0.4),
-	 "checkButtonPoint" : ("#A1A1A1", 0.85),
-	 "checkButtonInsidePoint" : ("#000000", 0.2),
-	 "textEntryBackground" : ("#FFFFFF", 0.7),
-	 "textEntryAcme" : ("#FFFFFF", 0.05),
-	 "textEntryPoint" : ("#FFFFFF", 0.5),
-	 "textEntryFramePoint" : ("#FFFFFF", 0.45),
-	 "textEntryFrame" : ("#FFFFFF", 0.7),
-	 "scrollebarBackground" : ("#FFFFFF", 0.5),
-	 "scrollebarForeground" : ("#42ADD5", 0.9),
-	 "windowFrameOutside1" : ("#000000", 0.4),
-	 "windowFrameOutside2" : ("#000000", 0.4),
-	 "windowFrameOutside3" : ("#000000", 0.45),
-	 "windowFrameInside1" : ("#FFFFFF", 0.2),
-	 "windowFrameInside2" : ("#FFFFFF", 0.6),
-	 "windowShadowCorner" : ("#000000", 0.1),
+	 "menu_mask" : ("#F2FBFF", 1.0),
+	 "droplist_mask" : ("#F2FBFF", 0.9),
+	 "progressbar_frame" : ("#EF12AB", 1.0),
+	 "text_entry_background" : ("#FFFFFF", 0.7),
+	 "text_entry_acme" : ("#FFFFFF", 0.05),
+	 "text_entry_point" : ("#FFFFFF", 0.5),
+	 "text_entry_frame_point" : ("#FFFFFF", 0.45),
+	 "text_entry_frame" : ("#FFFFFF", 0.7),
+	 "window_frame_outside_1" : ("#000000", 0.4),
+	 "window_frame_outside_2" : ("#000000", 0.4),
+	 "window_frame_outside_3" : ("#000000", 0.45),
+	 "window_frame_inside_1" : ("#FFFFFF", 0.2),
+	 "window_frame_inside_2" : ("#FFFFFF", 0.6),
+	 "window_shadow_corner" : ("#000000", 0.1),
  },
  "shadow_colors" : {
-     "maskMultiplePage" : [
+     "mask_multiple_page" : [
        (0, ("#FFFFFF", 0.5)),
        (0, ("#FFFFFF", 0.5))
      ],
-     "maskSinglePageBottom" : [
+     "mask_single_page_bottom" : [
        (0, ("#FFFFFF", 0.95)),
        (0, ("#FFFFFF", 0.95))
 	 ],
-     "maskSinglePageTop" : [
+     "mask_single_page_top" : [
         (0, ("#FFFFFF", 0)),
         (0.5, ("#FFFFFF", 0.7)),
         (0.6, ("#FFFFFF", 0.8)),
         (0.7, ("#FFFFFF", 0.85)),
         (1, ("#FFFFFF", 0.95)),
       ], 				 
-     "menuSide" : [
+     "menu_side" : [
 	    (0,     ("#B3E5FF", 1.0)),
 	    (1,     ("#F2FBFF", 0.0)),
      ],
-     "linearBackground" : [
+     "linear_background" : [
 	    (0,		("#EFEFEF", 0.6)),
 		(0.05,	("#EFEFEF", 0.75)),
 		(0.95,	("#EFEFEF", 0.75)),
 		(1,		("#EFEFEF", 0.6)),
 	 ],
-	 "categoryItemPress" : [
+	 "category_item_press" : [
 		(0, ("#53ABDE", 0.8)),
 		(1, ("#53ABDE", 0.5)),
 	 ],
-	 "categoryItemHover" : [
+	 "category_item_hover" : [
 	    (0, ("#A3D4F3", 0.8)),
 		(1, ("#A3D4F3", 0.5)),
 	 ],
-	 "categorybarBackground" : [
+	 "categorybar_background" : [
 	    (0,		("#FFFFFF", 0.6)),
 		(0.05,	("#FFFFFF", 0.95)),
 		(0.95,	("#FFFFFF", 0.95)),
 		(1,		("#FFFFFF", 0.6)),
 	 ],
-	 "treeItemSelect" : [
+	 "tree_item_select" : [
 	    (0, ("#5ebceb", 1.0)),
 	    (1, ("#5ebceb", 1.0)),
 	 ],
-	 "treeItemHover" : [
+	 "tree_item_hover" : [
 	    (0, ("#b2e6ff", 1.0)),
 	    (1, ("#b2e6ff", 1.0)),
 	 ],
-	 "menuItemSelect" : [
+	 "menu_item_select" : [
 		(0, ("#0086CC", 1.0)),
 		(1, ("#0086CC", 1.0)),
 	 ],
-	 "menuItemActiveSubmenu" : [
-		(0, ("#888888", 0.5)),
-		(1, ("#AAAAAA", 0.5)),
-	 ],
-	 "tooltipBackground" : [
-		(0, ("#333333", 0.9)),
-		(1, ("#333333", 0.8)),
-	 ],
-	 "listviewHeader" : [
-		(0,		("#fafafa", 1)),
-		(1,		("#e5e5e5", 1)),
-	 ],
-	 "listviewHeaderLine" : [
-		(0,		("#e1e1e1", 1)),
-		(1,		("#e1e1e1", 1)),
-	 ],
-	 "listviewHeaderSplit" : [
-		(0,		("#999999", 0.0)),
-		(0.5,	("#999999", 0.9)),
-		(1,		("#999999", 0.0)),
-	 ],
-	 "listviewHeaderSelect" : [
-		(0,		("#e5f6ff", 1)),
-		(1,		("#f8e5ff", 1)),
-	 ],
-	 "listviewHeaderPress" : [
-		(0,		("#f8e5ff", 1)),
-		(1,		("#e5f6ff", 1)),
-	 ],
-	 "radioButtonLight" : [
-	    (0,		("#000000", 0)),
-	    (1,		("#000000", 1)),
-	 ],
-	 "checkButtonLight" : [
-	    (0,		("#949494", 0)),
-	    (1,		("#949494", 1)),
-	 ],
-	 "radioButtonDot" : [
-	    (0,		("#666666", 1)),
-	    (1,		("#AAAAAA", 0.5)),
-	 ],
-	 "hSeparator" : [
+	 "h_separator" : [
 		(0,		("#777777", 0)),
 		(0.5,	("#000000", 0.5)),
 		(1,		("#777777", 0))
 	 ],
-	 "progressbarForeground" : [
+	 "progressbar_foreground" : [
 		(0, ("#EF12AB", 0.7)),
 		(0.5, ("#EF12AB", 0.9)),
 		(1, ("#EF12AB", 0.7)),
 	 ],
-	 "progressbarBackground" : [
+	 "progressbar_background" : [
 		(0, ("#E3A4D0", 0.7)),
 		(0.5, ("#E3A4D0", 0.9)),
 		(1, ("#E3A4D0", 0.7)),
 	 ],
-	 "progressbarLight" : [
+	 "progressbar_light" : [
 		(0, ("#FFFFFF", 0)),
 		(0.5, ("#FFFFFF", 0.5)),
 		(1, ("#FFFFFF", 1)),
 	 ],
-	 "windowShadow" : [
+	 "window_shadow" : [
 		(0, ("#000000", 0)),
 		(0.66, ("#000000", 0.2)),
 		(1, ("#000000", 0.33)),
 	 ],
-	 "listviewSelect" : [
+	 "listview_select" : [
 		(0, ("#1a97d9", 1.0)),
 		(1, ("#1a97d9", 1.0)),
 	 ],
-	 "listviewHover" : [
+	 "listview_hover" : [
 		(0, ("#b2e6ff", 1.0)),
 		(1, ("#b2e6ff", 1.0)),
 	 ],
-	 "listviewHighlight" : [
+	 "listview_highlight" : [
 		(0, ("#5ebceb", 1.0)),
 		(1, ("#5ebceb", 1.0)),
 	 ],
-     "viewportBackground" : [
-	    (0,		("#EF0000", 0.0)),
-		(0.05,	("#EF0000", 0.5)),
-		(0.95,	("#EF0000", 0.5)),
-		(1,		("#EF0000", 0.0)),
-	 ],
-	 "dialogMaskSinglePage" : [
-	    (0,     ("#FFFFFF", 0.85)),
-	    (1,     ("#FFFFFF", 0.85)),
-	 ],
-     "skinWindowBackground" : [
-	    (0,		("#FFFFFF", 0.3)),
-		(0.05,	("#FFFFFF", 0.8)),
-		(0.5,	("#FFFFFF", 0.8)),
-		(0.95,	("#FFFFFF", 0.8)),
-		(1,		("#FFFFFF", 0.9)),
-	 ],
-	 "buttonAngle" : [
-	    (1,("#b18ecf",0.4)),
-	 ],
-	 "buttonBorder" : [
+	 "button_border" : [
 	    (1, ("#b18ecf", 1)),
 	 ],
-	 "buttonBackgroundNormal" : [ 
+	 "button_background_normal" : [ 
 		(0, ("#f2fbff",1)),
         (1, ("#e6f6ff",1)),
      ],
-     "buttonBackgroundPrelight" : [
+     "button_background_prelight" : [
         (0, ("#cceeff",1)),
         (1, ("#b3e5ff",1)),
      ],
-     "buttonBackgroundActive" : [
+     "button_background_active" : [
         (0, ("#8fb9cf",1)),
         (1, ("#aecfe1",1)),
      ],
-     "buttonBackgroundDisable" : [
+     "button_background_disable" : [
         (0, ("#f2fbff",1)),
         (1, ("#f2fbff",1)),
      ],
-	 "entryBackground" : [
-		(0,		("#B8B8B8", 1)),
-		(1,		("#B8B8B8", 1)),
-     ],
-	 "entrySelectBackground" : [
+	 "entry_select_background" : [
 		(0,		("#42ADD5", 1)),
 		(1,		("#42ADD5", 1)),
      ],
-	 "panedSeparator" : [
-		(0,		("#666666", 0.5)),
-		(0.2,	("#666666", 0.8)),
-		(0.5,	("#666666", 1)),
-		(0.8,	("#666666", 0.8)),
-		(1,		("#666666", 0.5)),
-	 ],
-	 "panedSeparatorHover" : [
-		(0,		("#FFFFFF", 0)),
-		(0.2,	("#3271E0", 0.5)),
-		(0.5,	("#3271E0", 1)),
-		(0.8,	("#3271E0", 0.5)),
-		(1,		("#FFFFFF", 0)),
-	 ],
- },
- "text_styles" : {
-     "default" : ("#FFFFFF", "#000000", "#000000", 11, 4, 1),
-     "titlebar" : ("#FFFFFF", "#000000", "#000000", 11, 2, 1),
  },
 }

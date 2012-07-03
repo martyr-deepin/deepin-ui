@@ -65,21 +65,21 @@ class Button(gtk.Button):
         
         # Get color info.
         if widget.state == gtk.STATE_NORMAL:
-            text_color = ui_theme.get_color("buttonFont").get_color()
-            border_color = ui_theme.get_color("buttonBorderNormal").get_color()
-            background_color = ui_theme.get_shadow_color("buttonBackgroundNormal").get_color_info()
+            text_color = ui_theme.get_color("button_font").get_color()
+            border_color = ui_theme.get_color("button_border_normal").get_color()
+            background_color = ui_theme.get_shadow_color("button_background_normal").get_color_info()
         elif widget.state == gtk.STATE_PRELIGHT:
-            text_color = ui_theme.get_color("buttonFont").get_color()
-            border_color = ui_theme.get_color("buttonBorderPrelight").get_color()
-            background_color = ui_theme.get_shadow_color("buttonBackgroundPrelight").get_color_info()
+            text_color = ui_theme.get_color("button_font").get_color()
+            border_color = ui_theme.get_color("button_border_prelight").get_color()
+            background_color = ui_theme.get_shadow_color("button_background_prelight").get_color_info()
         elif widget.state == gtk.STATE_ACTIVE:
-            text_color = ui_theme.get_color("buttonFont").get_color()
-            border_color = ui_theme.get_color("buttonBorderActive").get_color()
-            background_color = ui_theme.get_shadow_color("buttonBackgroundActive").get_color_info()
+            text_color = ui_theme.get_color("button_font").get_color()
+            border_color = ui_theme.get_color("button_border_active").get_color()
+            background_color = ui_theme.get_shadow_color("button_background_active").get_color_info()
         elif widget.state == gtk.STATE_INSENSITIVE:
-            text_color = ui_theme.get_color("disableText").get_color()
-            border_color = ui_theme.get_color("disableFrame").get_color()
-            disable_background_color = ui_theme.get_color("disableBackground").get_color()
+            text_color = ui_theme.get_color("disable_text").get_color()
+            border_color = ui_theme.get_color("disable_frame").get_color()
+            disable_background_color = ui_theme.get_color("disable_background").get_color()
             background_color = [(0, (disable_background_color, 1.0)),
                                 (1, (disable_background_color, 1.0))]
             
@@ -206,7 +206,7 @@ gobject.type_register(MaxButton)
 
 def draw_button(widget, cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
                 scale_x=False, button_label=None, font_size=DEFAULT_FONT_SIZE, 
-                label_dcolor=ui_theme.get_color("buttonDefaultFont")):
+                label_dcolor=ui_theme.get_color("button_default_font")):
     '''Create button.'''
     # Init request size.
     if scale_x:
@@ -335,7 +335,7 @@ class ToggleButton(gtk.ToggleButton):
         '''Init font button.'''
         gtk.ToggleButton.__init__(self)
         font_size = DEFAULT_FONT_SIZE
-        label_dcolor = ui_theme.get_color("buttonDefaultFont")
+        label_dcolor = ui_theme.get_color("button_default_font")
         self.button_press_flag = False
         
         self.inactive_pixbuf_group = (inactive_normal_dpixbuf,
@@ -424,7 +424,7 @@ class ToggleButton(gtk.ToggleButton):
         
         # Draw font.
         if widget.state == gtk.STATE_INSENSITIVE:
-            label_color = ui_theme.get_color("disableText").get_color()
+            label_color = ui_theme.get_color("disable_text").get_color()
         else:
             label_color = label_dcolor.get_color()
         if button_label:

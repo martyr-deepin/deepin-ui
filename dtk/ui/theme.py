@@ -160,21 +160,6 @@ class DynamicPixbuf(object):
         '''Get pixbuf.'''
         return self.pixbuf
 
-class DynamicTextStyle(object):
-    '''Dynamic text style.'''
-	
-    def __init__(self, text_style):
-        '''Init dynamic text style.'''
-        self.update(text_style)
-
-    def update(self, text_style):
-        '''Update text style.'''
-        self.text_style = text_style
-                
-    def get_style(self):
-        '''Get text style.'''
-        return self.text_style
-    
 class Theme(object):
     '''Theme.'''
     
@@ -189,7 +174,6 @@ class Theme(object):
         self.color_dict = {}
         self.alpha_color_dict = {}
         self.shadow_color_dict = {}
-        self.text_style_dict = {}
         
         # Create directory if necessarily.
         for theme_dir in [self.system_theme_dir, self.user_theme_dir]:
@@ -213,10 +197,6 @@ class Theme(object):
         # Init dynamic shadow colors.
         for (color_name, color_info) in theme_info["shadow_colors"].items():
             self.shadow_color_dict[color_name] = DynamicShadowColor(color_info)
-            
-        # Scan text styles.
-        for (text_style_name, text_style) in theme_info["text_styles"].items():
-            self.text_style_dict[text_style_name] = DynamicTextStyle(text_style)
             
         # Add in theme list of skin_config.
         skin_config.add_theme(self)
@@ -243,10 +223,6 @@ class Theme(object):
             
         return self.pixbuf_dict[path]
 
-    def get_text_style(self, style_name):
-        '''Get text style.'''
-        return self.text_style_dict[style_name]
-    
     def get_color(self, color_name):
         '''Get dynamic color.'''
         return self.color_dict[color_name]
@@ -288,10 +264,6 @@ class Theme(object):
         # Update shadow colors.
         for (color_name, color_info) in theme_info["shadow_colors"].items():
             self.shadow_color_dict[color_name].update(color_info)
-            
-        # Update text style.
-        for (text_style_name, text_style) in theme_info["text_styles"].items():
-            self.text_style_dict[text_style_name].update(text_style)
             
 # Init.
 ui_theme = Theme(os.path.join(get_parent_dir(__file__, 2), "theme"),

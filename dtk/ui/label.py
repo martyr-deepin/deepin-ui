@@ -57,11 +57,11 @@ class Label(gtk.EventBox):
         self.text = text
         self.text_size = text_size
         if text_color == None:
-            self.text_color = ui_theme.get_color("labelText")
+            self.text_color = ui_theme.get_color("label_text")
         else:
             self.text_color = text_color
-        self.text_select_color = ui_theme.get_color("labelSelectText")    
-        self.text_select_background = ui_theme.get_color("labelSelectBackground")    
+        self.text_select_color = ui_theme.get_color("label_select_text")    
+        self.text_select_background = ui_theme.get_color("label_select_background")    
             
         if self.enable_gaussian:
             self.gaussian_radious=2
@@ -215,7 +215,7 @@ class Label(gtk.EventBox):
             draw_text(cr, self.text, 
                       rect.x, rect.y, rect.width, rect.height,
                       self.text_size,
-                      ui_theme.get_color("disableText").get_color(),
+                      ui_theme.get_color("disable_text").get_color(),
                       alignment=self.text_x_align, 
                       gaussian_radious=self.gaussian_radious,
                       gaussian_color=self.gaussian_color,

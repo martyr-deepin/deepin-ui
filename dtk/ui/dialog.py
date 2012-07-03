@@ -176,12 +176,12 @@ class DialogBox(Window):
         
         draw_vlinear(
             cr, x, y, w, top_height,
-            ui_theme.get_shadow_color("maskSinglePageTop").get_color_info(),
+            ui_theme.get_shadow_color("mask_single_page_top").get_color_info(),
             )
         
         draw_vlinear(
             cr, x, y + top_height, w, h - top_height,
-            ui_theme.get_shadow_color("maskSinglePageBottom").get_color_info(),
+            ui_theme.get_shadow_color("mask_single_page_bottom").get_color_info(),
             )
 
     def draw_mask_multiple_page(self, cr, x, y, w, h):
@@ -192,7 +192,7 @@ class DialogBox(Window):
         
         draw_vlinear(
             cr, x, y + titlebar_height, w, h - titlebar_height,
-            ui_theme.get_shadow_color("maskSinglePageBottom").get_color_info(),
+            ui_theme.get_shadow_color("mask_single_page_bottom").get_color_info(),
             )
         
         draw_vlinear(
@@ -202,7 +202,7 @@ class DialogBox(Window):
 
         draw_vlinear(
             cr, x, y + h - button_box_height, w, button_box_height,
-            ui_theme.get_shadow_color("maskMultiplePage").get_color_info(),
+            ui_theme.get_shadow_color("mask_multiple_page").get_color_info(),
             )
 
     def draw_mask_tab_page(self, cr, x, y, w, h):
@@ -217,7 +217,7 @@ class DialogBox(Window):
 
         draw_vlinear(
             cr, x, y + h - button_box_height, w, button_box_height,
-            ui_theme.get_shadow_color("maskMultiplePage").get_color_info(),
+            ui_theme.get_shadow_color("mask_multiple_page").get_color_info(),
             )
         
 gobject.type_register(DialogBox)

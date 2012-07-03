@@ -204,7 +204,7 @@ class TreeView(gtk.DrawingArea):
             draw_vlinear(
                 cr,
                 x, y + self.draw_y_padding, w, self.height,
-                ui_theme.get_shadow_color("treeItemSelect").get_color_info())
+                ui_theme.get_shadow_color("tree_item_select").get_color_info())
         
         if self.move_draw_bool:
             if int(self.press_height) / self.height * self.height != int(self.move_height) / self.height * self.height:
@@ -212,7 +212,7 @@ class TreeView(gtk.DrawingArea):
                 draw_vlinear(
                     cr,
                     x, y + self.draw_y_padding, w, self.height,
-                    ui_theme.get_shadow_color("treeItemHover").get_color_info())
+                    ui_theme.get_shadow_color("tree_item_hover").get_color_info())
             
         if self.tree_list:    
             temp_height = 0
@@ -221,9 +221,9 @@ class TreeView(gtk.DrawingArea):
                 if draw_widget.text:
                     index = int(self.press_height) / self.height
                     if widget_index == index:
-                        font_color = ui_theme.get_color("treeItemSelectFont").get_color()
+                        font_color = ui_theme.get_color("tree_item_select_font").get_color()
                     else:
-                        font_color = ui_theme.get_color("treeItemNormalFont").get_color()
+                        font_color = ui_theme.get_color("tree_item_normal_font").get_color()
                     draw_text(cr, draw_widget.text, 
                                 self.font_x_padding + draw_widget.width,
                                 temp_height + self.height/2, 

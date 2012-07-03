@@ -50,19 +50,19 @@ class ProgressBar(gtk.Button):
         rect = widget.allocation
         
         # Draw frame.
-        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("progressbarFrame").get_color_info()))
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("progressbar_frame").get_color_info()))
         cr.set_operator(cairo.OPERATOR_OVER)
         draw_round_rectangle(cr, rect.x, rect.y, rect.width, rect.height, 1)
         cr.stroke()
         
         # Draw background.
         draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                     ui_theme.get_shadow_color("progressbarBackground").get_color_info(), 
+                     ui_theme.get_shadow_color("progressbar_background").get_color_info(), 
                      1)
     
         # Draw foreground.
         draw_vlinear(cr, rect.x, rect.y, rect.width * self.progress / 100.0, rect.height, 
-                     ui_theme.get_shadow_color("progressbarForeground").get_color_info(), 
+                     ui_theme.get_shadow_color("progressbar_foreground").get_color_info(), 
                      1)
         
         # Draw font.
@@ -78,7 +78,7 @@ class ProgressBar(gtk.Button):
             cr.rectangle(rect.x, rect.y, rect.width * self.progress / 100.0, rect.height)
             cr.clip()
             draw_radial_round(cr, rect.x + light_offset_x - light_radius, rect.y - light_radius / 2, light_radius, 
-                              ui_theme.get_shadow_color("progressbarLight").get_color_info())
+                              ui_theme.get_shadow_color("progressbar_light").get_color_info())
                
         # Propagate expose.
         propagate_expose(widget, event)
