@@ -272,11 +272,11 @@ class ColorItem(gobject.GObject):
         cr.fill()
         
         if self.hover_flag:
-            cr.set_source_rgb(*color_hex_to_cairo("#333333"))
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("color_item_hover").get_color()))
             cr.rectangle(draw_x, draw_y, self.width, self.height)
             cr.stroke()
         elif self.highlight_flag:
-            cr.set_source_rgb(*color_hex_to_cairo("#FF0000"))
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("color_item_highlight").get_color()))
             cr.rectangle(draw_x, draw_y, self.width, self.height)
             cr.stroke()
             

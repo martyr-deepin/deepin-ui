@@ -75,7 +75,7 @@ from dtk.ui.paned import HPaned
 from dtk.ui.button import CheckButton, RadioButton
 from dtk.ui.combo import ComboBox
 from dtk.ui.spin import SpinBox
-from dtk.ui.textview import TextView
+# from dtk.ui.textview import TextView
 from dtk.ui.unique_service import UniqueService, is_exists
 from dtk.ui.browser import WebView
 import sys
@@ -502,12 +502,12 @@ if __name__ == "__main__":
     beijing_node = tree_view.add_item(None, TreeViewItem("深度 Linux"))    
     tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
     
-    text_view = TextView("this is line one\nline break is awesome\nblahblahlooooooooooooooooooooooooooooooooooooooooooooooooooooooooog")
-    sw = ScrolledWindow()
-    text_viewport = gtk.Viewport()
-    text_viewport.add(text_view)
-    sw.add(text_viewport)
-    tab_5_box.pack_start(sw, True, True)
+    # text_view = TextView("this is line one\nline break is awesome\nblahblahlooooooooooooooooooooooooooooooooooooooooooooooooooooooooog")
+    # sw = ScrolledWindow()
+    # text_viewport = gtk.Viewport()
+    # text_viewport.add(text_view)
+    # sw.add(text_viewport)
+    # tab_5_box.pack_start(sw, True, True)
     
     # Run.
     application.run()

@@ -1,4 +1,13 @@
 {"colors" : {
+ "skin_edit_area_preview" : "#CCCCCC",
+ "tab_select_bg" : "#FFFFFF",
+ "tab_select_frame" : "#D6D6D6",
+ "tab_unselect_bg" : "#EDEDED",
+ "tab_unselect_frame" : "#D8D8D8",
+ "tooltip_background" : "#FFFACC",
+ "tooltip_frame" : "#E7E77C",
+ "color_item_hover" : "#333333",
+ "color_item_highlight" : "#FF0000",
  "disableFrame" : "#cccccc",
  "disableBackground" : "#f7f7f7",
  "disableText" : "#a6a6a6",

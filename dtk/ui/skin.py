@@ -1157,7 +1157,7 @@ class SkinEditArea(gtk.EventBox):
             
             # Draw preview frame.
             with cairo_disable_antialias(cr):
-                cr.set_source_rgb(*color_hex_to_cairo("#CCCCCC"))
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("skin_edit_area_preview").get_color()))
                 cr.rectangle(x, y, w, h)
                 cr.stroke()
             

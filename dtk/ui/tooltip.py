@@ -8,7 +8,7 @@ from animation import Animation, LinerInterpolator
 import cairo
 import time
 from label import Label
-
+from theme import ui_theme
 
 #!!!!!!!!!!!!!!!!maybe you want to goto to the line of *388* !!!!!!!!!!!!!!!!!!#
 
@@ -362,7 +362,7 @@ def __init_window():
 
         with cairo_disable_antialias(cr):
             cr.set_line_width(1)
-            cr.set_source_rgba(*color_hex_to_cairo("#E7E77C"))
+            cr.set_source_rgba(*color_hex_to_cairo(ui_theme.get_color("tooltip_frame").get_color()))
             cr.rectangle(rect.x + 1, rect.y + 1, rect.width - 1, rect.height - 1)
             cr.stroke()
         return True
@@ -428,7 +428,7 @@ class WidgetInfo(object):
         object.__setattr__(self, "custom", None)
         object.__setattr__(self, "custom_args", None)
         object.__setattr__(self, "custom_kargs", None)
-        object.__setattr__(self, "background", gtk.gdk.Color("#FFFACC"))
+        object.__setattr__(self, "background", gtk.gdk.Color(ui_theme.get_color("tooltip_background").get_color()))
         object.__setattr__(self, "padding_t", 5)
         object.__setattr__(self, "padding_b", 5)
         object.__setattr__(self, "padding_l", 5)
