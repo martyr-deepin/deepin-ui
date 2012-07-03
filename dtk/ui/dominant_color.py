@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PIL import Image
+from constant import SHADE_SIZE
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from utils import propagate_expose, color_hex_to_cairo, find_similar_color
 import gtk
@@ -28,7 +29,6 @@ import scipy
 import scipy.cluster
 import scipy.misc
 import urllib
-from constant import SHADE_SIZE
 
 def get_dominant_color(image_path):
     # print 'reading image'

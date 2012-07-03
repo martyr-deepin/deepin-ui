@@ -20,12 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from utils import get_content_size
 from draw import draw_vlinear, draw_text
+from utils import get_content_size
+import cairo
 import gtk
 import pango
 import sys
-import cairo
 
 def render_pixbuf(widget, event, input_args):
     '''Render pixbuf.'''

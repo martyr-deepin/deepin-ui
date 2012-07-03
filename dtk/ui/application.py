@@ -21,13 +21,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from mplayer_window import MplayerWindow
-from threads import post_gui
-from titlebar import Titlebar
-from window import Window
-from utils import container_remove_all, place_center
-import gtk
 from skin import SkinWindow
 from skin_config import skin_config
+from threads import post_gui
+from titlebar import Titlebar
+from utils import container_remove_all, place_center
+from window import Window
+import gtk
 
 class Application(object):
     '''Application.'''

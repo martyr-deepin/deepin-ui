@@ -22,8 +22,8 @@
 
 from box import EventBox
 from draw import draw_line
-import gtk
 import gobject
+import gtk
 
 class Statusbar(EventBox):
     '''Statusbar.'''

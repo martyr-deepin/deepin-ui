@@ -20,9 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
                  
-from keymap import get_keyevent_name
 from constant import DEFAULT_FONT_SIZE, ALIGN_START, DEFAULT_FONT
 from draw import draw_text, draw_hlinear
+from keymap import get_keyevent_name
 from theme import ui_theme
 from utils import propagate_expose, get_content_size, is_double_click, is_left_button
 import gtk

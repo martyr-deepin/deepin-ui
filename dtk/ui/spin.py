@@ -20,16 +20,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
-import gobject
-
+from button import DisableButton
+from entry import Entry
 from theme import ui_theme
+import gobject
+import gtk
 from utils import (alpha_color_hex_to_cairo, cairo_disable_antialias,
                    color_hex_to_cairo,
                    propagate_expose, is_float, remove_timeout_id)
-
-from button import DisableButton
-from entry import Entry
 
 
 class SpinBox(gtk.VBox):

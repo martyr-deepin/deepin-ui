@@ -20,13 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
-import gobject
-import cairo
-import pango
-from utils import alpha_color_hex_to_cairo, cairo_state, propagate_expose
 from draw import draw_round_rectangle, draw_vlinear, draw_text, draw_radial_round
 from theme import ui_theme
+from utils import alpha_color_hex_to_cairo, cairo_state, propagate_expose
+import cairo
+import gobject
+import gtk
+import pango
 
 class ProgressBar(gtk.Button):
     '''Progress bar.'''

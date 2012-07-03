@@ -24,14 +24,14 @@ from constant import DEFAULT_FONT_SIZE, ALIGN_START, ALIGN_MIDDLE, WIDGET_POS_TO
 from draw import draw_vlinear, draw_text
 from keymap import get_keyevent_name
 from line import HSeparator
+from scrolled_window import ScrolledWindow
 from theme import ui_theme
+import gobject
+import gtk
 from utils import (is_in_rect, get_content_size, propagate_expose, 
                    get_widget_root_coordinate, get_screen_size, 
                    alpha_color_hex_to_cairo, 
                    cairo_disable_antialias, color_hex_to_cairo)
-import gtk
-import gobject
-from scrolled_window import ScrolledWindow
 
 droplist_grab_window = gtk.Window(gtk.WINDOW_POPUP)
 droplist_grab_window.move(0, 0)

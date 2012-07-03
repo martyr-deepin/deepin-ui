@@ -20,19 +20,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
-import gobject
-from scrolled_window import ScrolledWindow
-from iconview import IconView
 from button import Button
+from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
+from draw import draw_vlinear, draw_line, draw_pixbuf
+from entry import TextEntry
+from iconview import IconView
+from label import Label
+from scrolled_window import ScrolledWindow
+from spin import SpinBox
+from theme import ui_theme
+import gobject
+import gtk
 from utils import (gdkcolor_to_string, color_hex_to_cairo, propagate_expose, 
                    color_hex_to_rgb, color_rgb_to_hex, is_hex_color, place_center)
-from label import Label
-from spin import SpinBox
-from entry import TextEntry
-from theme import ui_theme
-from draw import draw_vlinear, draw_line, draw_pixbuf
-from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
 
 class HSV(gtk.ColorSelection):
     '''HSV.'''

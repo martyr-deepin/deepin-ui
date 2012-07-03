@@ -20,11 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from window import Window
-from scrolled_window import ScrolledWindow
 from iconview import IconView
 from listview import ListView
+from scrolled_window import ScrolledWindow
 from utils import cairo_state, get_match_parent, get_window_shadow_size
+from window import Window
 
 def draw_mask(widget, x, y, w, h, render_callback):
     '''Draw mask.'''

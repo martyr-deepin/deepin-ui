@@ -20,10 +20,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import gtk
 from skin_config import skin_config
 from utils import eval_file, get_parent_dir, create_directory
+import gtk
+import os
 
 class DynamicTreeView(object):
     '''Dynamic tree view.'''

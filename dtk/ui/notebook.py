@@ -20,12 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from cache_pixbuf import CachePixbuf
 from constant import DEFAULT_FONT_SIZE
 from draw import draw_pixbuf, draw_text
 from theme import ui_theme
 from utils import get_content_size, propagate_expose
 import gtk
-from cache_pixbuf import CachePixbuf
 
 class Notebook(gtk.EventBox):
     '''Notebook.'''

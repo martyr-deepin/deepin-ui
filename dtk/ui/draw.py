@@ -22,15 +22,15 @@
 
 from constant import DEFAULT_FONT, DEFAULT_FONT_SIZE
 from math import pi
-from utils import (cairo_state, cairo_disable_antialias, color_hex_to_cairo, 
-                   add_color_stop_rgba, propagate_expose, 
-                   alpha_color_hex_to_cairo, layout_set_markup)
 import cairo
 import dtk_cairo_blur    
 import gtk
 import math
 import pango
 import pangocairo
+from utils import (cairo_state, cairo_disable_antialias, color_hex_to_cairo, 
+                   add_color_stop_rgba, propagate_expose, 
+                   alpha_color_hex_to_cairo, layout_set_markup)
 
 def draw_radial_ring(cr, x, y, outer_radius, inner_radius, color_infos):
     '''Draw radial ring.'''

@@ -1,9 +1,8 @@
-import gtk
-from gtk import gdk
-import tooltip as TT
-import pseudo_skin
-pseudo_skin
 from color_selection import ColorButton
+from gtk import gdk
+import gtk
+import pseudo_skin
+import tooltip as TT
 
 def customTooltip_cb():
     box = gtk.VBox()

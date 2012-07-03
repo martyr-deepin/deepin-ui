@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-import gtk
-import gobject
 from utils import is_in_rect
+import gobject
+import gtk
 
 class Paned(gtk.Paned):
     def __init__(self):

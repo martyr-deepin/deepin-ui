@@ -20,9 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from timeline import Timeline, CURVE_SINE
 import gobject
 import gtk
-from timeline import Timeline, CURVE_SINE
 
 class Slider(gtk.Viewport):
     active_widget = None

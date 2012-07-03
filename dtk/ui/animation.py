@@ -1,6 +1,6 @@
 #!/usr/bin/python2
-import gobject
 import copy
+import gobject
 
 def LinerInterpolator(factor, lower, upper):
     return factor * (upper - lower)

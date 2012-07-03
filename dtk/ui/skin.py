@@ -20,35 +20,35 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from button import Button, ImageButton, ToggleButton, ActionButton
+from cache_pixbuf import CachePixbuf
+from config import Config
+from constant import SHADE_SIZE, COLOR_SEQUENCE
+from dialog import ConfirmDialog, OpenFileDialog, SaveFileDialog
+from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
+from dominant_color import get_dominant_color
+from draw import draw_pixbuf, draw_vlinear, draw_hlinear
+from iconview import IconView
+from label import Label
+from scrolled_window import ScrolledWindow
+from skin_config import skin_config
+from theme import ui_theme
+from threads import post_gui
+import gobject
+import gtk
+import math
+import os
 import shutil
 import tarfile
-from dominant_color import get_dominant_color
-from dialog import ConfirmDialog, OpenFileDialog, SaveFileDialog
+import threading as td
+import urllib
 import uuid
-import os
-import gtk
-import gobject
-from config import Config
-from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from utils import (is_in_rect, set_cursor, 
                    color_hex_to_cairo, cairo_state, container_remove_all, 
                    cairo_disable_antialias, remove_directory, end_with_suffixs, 
                    create_directory, touch_file, scroll_to_bottom, 
                    place_center, get_pixbuf_support_foramts, find_similar_color, 
                    get_optimum_pixbuf_from_file)
-from constant import SHADE_SIZE, COLOR_SEQUENCE
-from iconview import IconView
-from scrolled_window import ScrolledWindow
-from button import Button, ImageButton, ToggleButton, ActionButton
-from theme import ui_theme
-import math
-from skin_config import skin_config
-from label import Label
-import urllib
-from cache_pixbuf import CachePixbuf
-from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
-import threading as td
-from threads import post_gui
 
 class LoadSkinThread(td.Thread):
     '''Load skin thread.'''

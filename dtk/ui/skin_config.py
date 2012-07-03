@@ -20,16 +20,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import uuid
-import gtk
-import gobject
-import os
-from utils import color_hex_to_cairo, remove_file, touch_file, create_directory
-from draw import draw_pixbuf, draw_vlinear, draw_hlinear
+from cache_pixbuf import CachePixbuf
 from config import Config
 from constant import SHADE_SIZE, COLOR_SEQUENCE
+from draw import draw_pixbuf, draw_vlinear, draw_hlinear
+from utils import color_hex_to_cairo, remove_file, touch_file, create_directory
+import gobject
+import gtk
+import os
 import tarfile
-from cache_pixbuf import CachePixbuf
+import uuid
 
 class SkinConfig(gobject.GObject):
     '''SkinConfig.'''

@@ -24,12 +24,12 @@ from constant import DEFAULT_FONT_SIZE, MENU_ITEM_RADIUS, ALIGN_START, ALIGN_MID
 from draw import draw_vlinear, draw_pixbuf, draw_text, draw_hlinear
 from line import HSeparator
 from theme import ui_theme
+from window import Window
+import gobject
+import gtk
 from utils import (is_in_rect, get_content_size, propagate_expose,
                    get_widget_root_coordinate, get_screen_size, 
                    alpha_color_hex_to_cairo, get_window_shadow_size)
-from window import Window
-import gtk
-import gobject
 
 menu_grab_window = gtk.Window(gtk.WINDOW_POPUP)
 menu_grab_window.move(0, 0)

@@ -24,8 +24,8 @@ from scrolled_window import ScrolledWindow
 from titlebar import Titlebar
 from utils import move_window
 from window import Window
-import gtk
 import gobject
+import gtk
 
 class PopupWindow(Window):
     '''PopupWindow.'''

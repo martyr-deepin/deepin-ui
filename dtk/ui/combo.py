@@ -20,13 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from keymap import get_keyevent_name
-import gtk
-import gobject
-from label import Label
-from droplist import Droplist
-from theme import ui_theme
 from button import DisableButton
+from droplist import Droplist
+from keymap import get_keyevent_name
+from label import Label
+from theme import ui_theme
+import gobject
+import gtk
 from utils import (propagate_expose, cairo_disable_antialias, 
                    color_hex_to_cairo, get_widget_root_coordinate, 
                    WIDGET_POS_BOTTOM_LEFT, alpha_color_hex_to_cairo)

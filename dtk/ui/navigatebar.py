@@ -21,13 +21,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from box import EventBox
-import pango
 from constant import DEFAULT_FONT_SIZE
 from draw import draw_line, draw_pixbuf, draw_text
 from theme import ui_theme
 from utils import widget_fix_cycle_destroy_bug, propagate_expose
-import gtk
 import gobject
+import gtk
+import pango
 
 class Navigatebar(EventBox):
     '''Navigatebar.'''

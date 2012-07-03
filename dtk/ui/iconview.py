@@ -20,15 +20,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
-import gobject
+from draw import draw_pixbuf, draw_vlinear
+from keymap import get_keyevent_name
 from skin_config import skin_config
 from theme import ui_theme
+import gobject
+import gtk
 from utils import (get_match_parent, cairo_state, get_event_coords, 
                    is_in_rect, is_left_button, is_double_click, 
                    is_single_click, get_window_shadow_size)
-from draw import draw_pixbuf, draw_vlinear
-from keymap import get_keyevent_name
 
 class IconView(gtk.DrawingArea):
     '''Icon view.'''

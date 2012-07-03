@@ -20,14 +20,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from label import Label
-import pango
 from box import EventBox, ImageBox
 from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
 from draw import draw_line
+from label import Label
 from utils import window_is_max
-import gtk
 import gobject
+import gtk
+import pango
 
 class Titlebar(EventBox):
     '''Title bar.'''    

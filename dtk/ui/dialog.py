@@ -20,19 +20,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from skin_config import skin_config
-import gtk
-import gobject
-from window import Window
-from titlebar import Titlebar
-from label import Label
-from utils import container_remove_all
 from button import Button
-from entry import TextEntry
 from constant import ALIGN_MIDDLE
 from draw import draw_vlinear, draw_blank_mask
+from entry import TextEntry
+from label import Label
 from mask import draw_mask
+from skin_config import skin_config
 from theme import ui_theme
+from titlebar import Titlebar
+from utils import container_remove_all
+from window import Window
+import gobject
+import gtk
 
 DIALOG_MASK_SINGLE_PAGE = 0
 DIALOG_MASK_MULTIPLE_PAGE = 1

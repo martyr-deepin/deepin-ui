@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-from utils import propagate_expose, color_hex_to_cairo, cairo_disable_antialias
-import gtk
-from gtk import gdk
-import gobject
 from animation import Animation, LinerInterpolator
-import cairo
-import time
+from gtk import gdk
 from label import Label
 from theme import ui_theme
+from utils import propagate_expose, color_hex_to_cairo, cairo_disable_antialias
+import cairo
+import gobject
+import gtk
+import time
 
 #!!!!!!!!!!!!!!!!maybe you want to goto to the line of *388* !!!!!!!!!!!!!!!!!!#
 

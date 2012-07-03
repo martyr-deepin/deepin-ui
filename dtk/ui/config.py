@@ -20,9 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gobject    
-from collections import OrderedDict
 from ConfigParser import RawConfigParser as ConfigParser
+from collections import OrderedDict
+import gobject    
 
 class Config(gobject.GObject):
     __gsignals__ = {

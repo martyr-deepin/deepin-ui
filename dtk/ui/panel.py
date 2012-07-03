@@ -20,12 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
-import gobject
-import cairo
+from skin_config import skin_config
 from theme import ui_theme
 from utils import remove_timeout_id
-from skin_config import skin_config
+import cairo
+import gobject
+import gtk
 
 class Panel(gtk.Window):
     '''Panel.'''

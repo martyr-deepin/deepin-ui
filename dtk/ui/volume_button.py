@@ -21,11 +21,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from cache_pixbuf import CachePixbuf
 from draw import draw_pixbuf
 from theme import ui_theme
-import gtk
 import gobject
-from cache_pixbuf import CachePixbuf
+import gtk
 
 '''
 100 / 500 = 0.2

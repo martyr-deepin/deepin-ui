@@ -48,40 +48,37 @@ skin_config.load_themes(ui_theme, app_theme)
 
 # Load other modules.
 from dtk.ui.application import Application
+from dtk.ui.browser import WebView
+from dtk.ui.button import CheckButton, RadioButton
 from dtk.ui.button import ImageButton, LinkButton, Button
 from dtk.ui.categorybar import Categorybar
+from dtk.ui.color_selection import ColorButton
+from dtk.ui.combo import ComboBox
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
-from dtk.ui.entry import TextEntry, ShortcutKeyEntry, InputEntry
+from dtk.ui.droplist import Droplist
+from dtk.ui.entry import ShortcutKeyEntry, InputEntry
 from dtk.ui.frame import HorizontalFrame
-from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
+from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.label import Label
 from dtk.ui.listview import ListItem, ListView
-from dtk.ui.osd_tooltip import OSDTooltip
-from dtk.ui.droplist import Droplist
 from dtk.ui.menu import Menu
-from dtk.ui.treeview import TreeView, TreeViewItem
 from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
-from dtk.ui.popup_window import PopupWindow
-from dtk.ui.tab_window import TabWindow
-from dtk.ui.color_selection import ColorButton
-from dtk.ui.scalebar import VScalebar
-from dtk.ui.scrolled_window import ScrolledWindow
-from dtk.ui.statusbar import Statusbar
-from dtk.ui.utils import container_remove_all, get_widget_root_coordinate, run_with_profile
-from dtk.ui.volume_button import VolumeButton
-from dtk.ui.iconview import IconView, IconItem
+from dtk.ui.osd_tooltip import OSDTooltip
 from dtk.ui.paned import HPaned
-from dtk.ui.button import CheckButton, RadioButton
-from dtk.ui.combo import ComboBox
+from dtk.ui.popup_window import PopupWindow
+from dtk.ui.scrolled_window import ScrolledWindow
 from dtk.ui.spin import SpinBox
-# from dtk.ui.textview import TextView
+from dtk.ui.statusbar import Statusbar
+from dtk.ui.tab_window import TabWindow
+from dtk.ui.treeview import TreeView, TreeViewItem
 from dtk.ui.unique_service import UniqueService, is_exists
-from dtk.ui.browser import WebView
-import sys
-import gtk
+from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
+from dtk.ui.volume_button import VolumeButton
 import dbus
 import dbus.service
+import gtk
+import sys
 import time
 
 def print_button_press(list_view, list_item, column, offset_x, offset_y):
@@ -344,7 +341,6 @@ if __name__ == "__main__":
         )
     # entry = TextEntry("Linux Deepin")
     entry = InputEntry("Linux Deepin")
-    entry.set_sensitive(False)
     entry.connect("action-active", print_entry_action)
     entry.set_size(150, 24)
     entry_label = Label("标签测试， 内容非常长")
@@ -355,12 +351,10 @@ if __name__ == "__main__":
     entry_box.pack_start(entry, True, True)
     
     shortcust_entry = ShortcutKeyEntry("Ctrl + Alt + Q")
-    shortcust_entry.set_sensitive(False)
     shortcust_entry.set_size(150, 24)
     entry_box.pack_start(shortcust_entry, False, False)
     
     test_button = Button("测试")
-    # test_button.set_sensitive(False)
     entry_box.pack_start(test_button, False, False)
     
     color_button = ColorButton()
@@ -380,10 +374,8 @@ if __name__ == "__main__":
          ],
         100
         )
-    combo_box.set_sensitive(False)
     entry_box.pack_start(combo_box, False, False)    
     spin_box = SpinBox(3000, 0, 5000, 100)
-    spin_box.set_sensitive(False)
     entry_box.pack_start(spin_box, False, False)
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
@@ -434,9 +426,6 @@ if __name__ == "__main__":
     button_box.pack_start(radio_button_1, False, False, 4)
     button_box.pack_start(radio_button_2, False, False, 4)
     tab_5_box.pack_start(button_box, False, False)
-    
-    radio_button_1.set_sensitive(False)
-    check_button.set_sensitive(False)
     
     # Tree view.
     def tree_view_single_click_cb(widget, item):

@@ -20,15 +20,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from animation import Animation
+from constant import DEFAULT_FONT
 from draw import draw_text
+from theme import ui_theme
+import cairo
+import gobject
+import gtk
 from utils import (get_widget_root_coordinate, WIDGET_POS_TOP_LEFT, 
                    remove_signal_id, remove_timeout_id, get_content_size)
-from constant import DEFAULT_FONT
-import cairo
-import gtk
-import gobject
-from theme import ui_theme
-from animation import Animation
 
 class OSDTooltip(gtk.Window):
     '''OSD tooltip.'''

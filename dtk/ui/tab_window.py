@@ -20,20 +20,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
-import gobject
 from box import EventBox
+from button import Button
+from constant import DEFAULT_FONT_SIZE
+from dialog import DialogBox, DIALOG_MASK_TAB_PAGE
 from draw import draw_text
+from scrolled_window import ScrolledWindow
+from skin_config import skin_config
+from theme import ui_theme
+import gobject
+import gtk
 from utils import (container_remove_all, get_content_size, 
                    color_hex_to_cairo, alpha_color_hex_to_cairo, 
                    cairo_disable_antialias, is_in_rect, cairo_state, 
                    get_window_shadow_size)
-from button import Button
-from constant import DEFAULT_FONT_SIZE
-from scrolled_window import ScrolledWindow
-from dialog import DialogBox, DIALOG_MASK_TAB_PAGE
-from skin_config import skin_config
-from theme import ui_theme
 
 class TabBox(gtk.VBox):
     '''Tab box.'''

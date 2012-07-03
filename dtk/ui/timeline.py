@@ -20,8 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import math
 import gobject
+import math
 
 CURVE_LINEAR = lambda x: x
 CURVE_SINE = lambda x: math.sin(math.pi / 2 * x)

@@ -23,17 +23,15 @@
 # from dtk.ui.skin_config import skin_config
 # from dtk.ui.theme import Theme, ui_theme
 
-import gtk
-import gobject
-import pango
 from collections import OrderedDict
-
 from draw import draw_pixbuf, draw_vlinear, draw_text
+from skin_config import skin_config
+from theme import ui_theme
+import gobject
+import gtk
+import pango
 from utils import (get_content_size, is_single_click, is_double_click, is_right_button, get_window_shadow_size,
                    cairo_state, get_match_parent)
-from theme import ui_theme
-from skin_config import skin_config
-
 
 # (cr, text, font_size, font_color, x, y, width, height, font_align
 class TreeView(gtk.DrawingArea):

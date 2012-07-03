@@ -20,11 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from Xlib import X
+from Xlib.display import Display
+from keymap import parse_keyevent_name
 import gtk
 import threading
-from keymap import parse_keyevent_name
-from Xlib.display import Display
-from Xlib import X
 
 class GlobalKey(threading.Thread):
 

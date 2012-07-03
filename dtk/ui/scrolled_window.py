@@ -20,11 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from gtk import gdk
+from theme import ui_theme
+from utils import remove_signal_id, color_hex_to_cairo
 import gobject
 import gtk
-from gtk import gdk
-from utils import remove_signal_id, color_hex_to_cairo
-from theme import ui_theme
 
 # the p_range is the virtual width/height, it's value is smaller than
 # the allocation.width/height when scrollbar's width/height smaller than

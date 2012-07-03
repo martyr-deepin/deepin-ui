@@ -22,14 +22,14 @@
 
 from constant import EDGE_DICT
 from draw import draw_window_shadow, draw_window_frame
-from utils import (cairo_state, propagate_expose, resize_window, 
-                   set_cursor, get_event_root_coords, enable_shadow, 
-                   is_double_click, move_window)
+from skin_config import skin_config
 from theme import ui_theme
 import cairo
 import gobject
 import gtk
-from skin_config import skin_config
+from utils import (cairo_state, propagate_expose, resize_window, 
+                   set_cursor, get_event_root_coords, enable_shadow, 
+                   is_double_click, move_window)
 
 class MplayerWindow(gtk.Window):
     '''Window for mplayer or any software that can't running when window redirect colormap from screen.'''

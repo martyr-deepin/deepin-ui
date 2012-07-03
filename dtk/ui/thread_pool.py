@@ -21,12 +21,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from contextlib import contextmanager 
+from threading import Lock
+import Queue as Q
+import gtk
 import os
 import threading as td
 import time
-import gtk
-from threading import Lock
-import Queue as Q
 
 class MissionThreadPool(td.Thread):
     '''Mission thread pool'''
