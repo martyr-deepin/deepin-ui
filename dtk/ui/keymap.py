@@ -40,6 +40,14 @@ def get_key_event_modifiers(key_event):
     if key_event.state & gdk.CONTROL_MASK:
         modifiers.append("Ctrl")    
         
+    # Add Super modifiers.
+    if key_event.state & gdk.SUPER_MASK:
+        modifiers.append("Super")
+        
+    # Add Hyper modifiers.
+    if key_event.state & gdk.HYPER_MASK:
+        modifiers.append("Hyper")
+        
     # Add Alt modifier.
     if key_event.state & gdk.MOD1_MASK:
         modifiers.append("Alt")    
@@ -64,6 +72,31 @@ def get_keyevent_name(key_event):
             return key_name
         else:
             return " + ".join(key_modifiers) + " + " + key_name
+        
+def parse_keyevent_name(keyevent_name):
+    '''Parse keyevent name.'''
+    keys = keyevent_name.split(" + ")
+    if len(keys) == 1:
+        keyval = int(gdk.keyval_from_name(keys[0]))
+        modifier_mask = 0
+    else:
+        keyval = int(gdk.keyval_from_name(keys[-1]))
+        modifier_mask = 0
+        
+        print (gdk.CONTROL_MASK, gdk.SUPER_MASK, gdk.HYPER_MASK, gdk.MOD1_MASK)
+        for modifier in keys[0:-1]:
+            if modifier == "Ctrl":
+                modifier_mask = modifier_mask | gdk.CONTROL_MASK
+            elif modifier == "Super":
+                modifier_mask = modifier_mask | gdk.SUPER_MASK
+            elif modifier == "Hyper":
+                modifier_mask = modifier_mask | gdk.HYPER_MASK
+            elif modifier == "Alt":
+                modifier_mask = modifier_mask | gdk.MOD1_MASK
+            elif modifier == "Shift":
+                modifier_mask = modifier_mask | gdk.SHIFT_MASK
+        
+    return (keyval, modifier_mask)
 
 def has_ctrl_mask(key_event):
     '''Whether has ctrl mask in key event.'''
