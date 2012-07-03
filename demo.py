@@ -366,26 +366,6 @@ if __name__ == "__main__":
     color_button = ColorButton()
     entry_box.pack_start(color_button, False, False)
     
-    # Group 
-    image_button_items = [
-        (app_theme.get_pixbuf("toolbar/%s_normal.png" % name),
-         app_theme.get_pixbuf("toolbar/%s_hover.png" % name),
-         app_theme.get_pixbuf("toolbar/%s_press.png" % name),
-         None) for name in ["search", "list", "add", "sort", "delete"]
-        ]
-        
-    toggle_button_items = [
-        (app_theme.get_pixbuf("control/%s_normal.png" % name),
-         app_theme.get_pixbuf("control/%s_press.png" % name),
-         None, None, None) for name in ["lyrics", "media", "playlist", "musicbox"]
-        ]
-    
-    toggle_button_align = gtk.Alignment()
-    toggle_button_align.set(0.5, 0.5, 0, 0)
-    toggle_button_align.add(ToggleButtonGroup(toggle_button_items))
-    entry_box.pack_start(ImageButtonGroup(image_button_items))
-    entry_box.pack_start(toggle_button_align)
-    
     # combobox
     combo_box = ComboBox(
         [("测试测试测试1", 1),
