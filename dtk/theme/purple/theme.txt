@@ -1,4 +1,7 @@
 {"colors" : {
+ "disableFrame" : "#cccccc",
+ "disableBackground" : "#f7f7f7",
+ "disableText" : "#a6a6a6",
  "recommend" : "#FF0000",
  "windowMask" : "#FFFFFF",
  "menuFont" : "#000000",

@@ -47,7 +47,6 @@ class SpinBox(gtk.VBox):
         self.update_delay = 100 # milliseconds
         self.increase_value_id = None
         self.decrease_value_id = None
-        self.disable_flag = False
         
         # Init.
         self.default_width = default_width
@@ -84,16 +83,10 @@ class SpinBox(gtk.VBox):
         self.connect("size-allocate", self.size_change_cb)
         self.main_align.connect("expose-event", self.expose_spin_bg)
         
-    def set_disable(self, disable_flag):
-        '''Disable.'''
-        self.disable_flag = disable_flag
-        
-        self.queue_draw()
-        
-    def get_disable(self):
-        '''Get disable flag.'''
-        return self.disable_flag
-        
+    def set_sensitive(self, sensitive):
+        super(SpinBox, self).set_sensitive(sensitive)
+        self.value_entry.set_sensitive(sensitive)
+            
     def get_value(self):    
         return self.current_value
     
@@ -205,11 +198,17 @@ class SpinBox(gtk.VBox):
         # Draw frame.
         with cairo_disable_antialias(cr):
             cr.set_line_width(1)
-            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("comboEntryFrame").get_color()))
+            if widget.state == gtk.STATE_INSENSITIVE:
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disableFrame").get_color()))
+            else:
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("comboEntryFrame").get_color()))
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.stroke()
             
-            cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
+            if widget.state == gtk.STATE_INSENSITIVE:
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("disableBackground").get_color(), 0.9)))
+            else:
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("comboEntryBackground").get_color(), 0.9)))
             cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
             cr.fill()
         
@@ -223,7 +222,6 @@ class SpinBox(gtk.VBox):
              ui_theme.get_pixbuf("spin/spin_arrow_%s_hover.png" % name),
              ui_theme.get_pixbuf("spin/spin_arrow_%s_press.png" % name),
              ui_theme.get_pixbuf("spin/spin_arrow_%s_disable.png" % name)),
-            self.get_disable
             )
         if callback:
             button.connect("button-press-event", callback)

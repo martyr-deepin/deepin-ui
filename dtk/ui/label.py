@@ -210,8 +210,19 @@ class Label(gtk.EventBox):
             label_color = "#FFFFFF"
         else:
             label_color = self.text_color.get_color()
-    
-        if self.select_start_index == self.select_end_index:    
+
+        if not self.get_sensitive():    
+            draw_text(cr, self.text, 
+                      rect.x, rect.y, rect.width, rect.height,
+                      self.text_size,
+                      ui_theme.get_color("disableText").get_color(),
+                      alignment=self.text_x_align, 
+                      gaussian_radious=self.gaussian_radious,
+                      gaussian_color=self.gaussian_color,
+                      border_radious=self.border_radious,
+                      border_color=self.border_color
+                      )
+        elif self.select_start_index == self.select_end_index:    
             draw_text(cr, self.text, 
                       rect.x, rect.y, rect.width, rect.height,
                       self.text_size,

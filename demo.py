@@ -48,10 +48,10 @@ skin_config.load_themes(ui_theme, app_theme)
 
 # Load other modules.
 from dtk.ui.application import Application
-from dtk.ui.button import ImageButton, LinkButton
+from dtk.ui.button import ImageButton, LinkButton, Button
 from dtk.ui.categorybar import Categorybar
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
-from dtk.ui.entry import TextEntry, ShortcutKeyEntry
+from dtk.ui.entry import TextEntry, ShortcutKeyEntry, InputEntry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.group import ImageButtonGroup, ToggleButtonGroup
 from dtk.ui.label import Label
@@ -353,7 +353,9 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("entry/search_hover.png"),
         app_theme.get_pixbuf("entry/search_press.png"),
         )
-    entry = TextEntry()
+    # entry = TextEntry("Linux Deepin")
+    entry = InputEntry("Linux Deepin")
+    entry.set_sensitive(False)
     entry.connect("action-active", print_entry_action)
     entry.set_size(150, 24)
     entry_label = Label("标签测试， 内容非常长")
@@ -364,8 +366,13 @@ if __name__ == "__main__":
     entry_box.pack_start(entry, True, True)
     
     shortcust_entry = ShortcutKeyEntry("Ctrl + Alt + Q")
+    shortcust_entry.set_sensitive(False)
     shortcust_entry.set_size(150, 24)
     entry_box.pack_start(shortcust_entry, False, False)
+    
+    test_button = Button("测试")
+    # test_button.set_sensitive(False)
+    entry_box.pack_start(test_button, False, False)
     
     color_button = ColorButton()
     entry_box.pack_start(color_button, False, False)
@@ -404,8 +411,11 @@ if __name__ == "__main__":
          ],
         100
         )
+    combo_box.set_sensitive(False)
     entry_box.pack_start(combo_box, False, False)    
-    entry_box.pack_start(SpinBox(3000, 0, 5000, 100), False, False)
+    spin_box = SpinBox(3000, 0, 5000, 100)
+    spin_box.set_sensitive(False)
+    entry_box.pack_start(spin_box, False, False)
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
@@ -455,6 +465,9 @@ if __name__ == "__main__":
     button_box.pack_start(radio_button_1, False, False, 4)
     button_box.pack_start(radio_button_2, False, False, 4)
     tab_5_box.pack_start(button_box, False, False)
+    
+    radio_button_1.set_sensitive(False)
+    check_button.set_sensitive(False)
     
     # Tree view.
     def tree_view_single_click_cb(widget, item):

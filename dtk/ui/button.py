@@ -26,7 +26,6 @@ from theme import ui_theme
 from draw import draw_vlinear, draw_pixbuf, draw_line, draw_text
 from constant import DEFAULT_FONT_SIZE
 from label import Label
-from box import EventBox
 import pango
 import gtk
 import gobject
@@ -43,7 +42,6 @@ class Button(gtk.Button):
         self.min_height = 22
         self.padding_x = 15
         self.padding_y = 3
-        self.clickable = True
         
         self.set_label(label)
         
@@ -58,12 +56,6 @@ class Button(gtk.Button):
         
         self.queue_draw()
         
-    def set_clickable(self, clickable):
-        '''Set clickable.'''
-        self.clickable = clickable
-        
-        self.queue_draw()
-        
     def expose_button(self, widget, event):
         '''Expose button.'''
         # Init.
@@ -72,22 +64,24 @@ class Button(gtk.Button):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         # Get color info.
-        if not self.clickable:
-            border_color = ui_theme.get_color("buttonBorderDisable").get_color()
-            background_color = ui_theme.get_shadow_color("buttonBackgroundDisable").get_color_info()
-            button_color = ui_theme.get_color("buttonDisableFont").get_color()
-        else:
-            button_color = ui_theme.get_color("buttonFont").get_color()
-            
-            if widget.state == gtk.STATE_NORMAL:
-                border_color = ui_theme.get_color("buttonBorderNormal").get_color()
-                background_color = ui_theme.get_shadow_color("buttonBackgroundNormal").get_color_info()
-            elif widget.state == gtk.STATE_PRELIGHT:
-                border_color = ui_theme.get_color("buttonBorderPrelight").get_color()
-                background_color = ui_theme.get_shadow_color("buttonBackgroundPrelight").get_color_info()
-            elif widget.state == gtk.STATE_ACTIVE:
-                border_color = ui_theme.get_color("buttonBorderActive").get_color()
-                background_color = ui_theme.get_shadow_color("buttonBackgroundActive").get_color_info()
+        if widget.state == gtk.STATE_NORMAL:
+            text_color = ui_theme.get_color("buttonFont").get_color()
+            border_color = ui_theme.get_color("buttonBorderNormal").get_color()
+            background_color = ui_theme.get_shadow_color("buttonBackgroundNormal").get_color_info()
+        elif widget.state == gtk.STATE_PRELIGHT:
+            text_color = ui_theme.get_color("buttonFont").get_color()
+            border_color = ui_theme.get_color("buttonBorderPrelight").get_color()
+            background_color = ui_theme.get_shadow_color("buttonBackgroundPrelight").get_color_info()
+        elif widget.state == gtk.STATE_ACTIVE:
+            text_color = ui_theme.get_color("buttonFont").get_color()
+            border_color = ui_theme.get_color("buttonBorderActive").get_color()
+            background_color = ui_theme.get_shadow_color("buttonBackgroundActive").get_color_info()
+        elif widget.state == gtk.STATE_INSENSITIVE:
+            text_color = ui_theme.get_color("disableText").get_color()
+            border_color = ui_theme.get_color("disableFrame").get_color()
+            disable_background_color = ui_theme.get_color("disableBackground").get_color()
+            background_color = [(0, (disable_background_color, 1.0)),
+                                (1, (disable_background_color, 1.0))]
             
         # Draw background.
         draw_vlinear(
@@ -103,7 +97,10 @@ class Button(gtk.Button):
         draw_line(cr, x + w, y + 2, x + w, y + h - 2) # right
         
         # Draw four point.
-        top_left_point = ui_theme.get_pixbuf("button.png").get_pixbuf()
+        if widget.state == gtk.STATE_INSENSITIVE:
+            top_left_point = ui_theme.get_pixbuf("button/disable_corner.png").get_pixbuf()
+        else:
+            top_left_point = ui_theme.get_pixbuf("button/corner.png").get_pixbuf()
         top_right_point = top_left_point.rotate_simple(270)
         bottom_right_point = top_left_point.rotate_simple(180)
         bottom_left_point = top_left_point.rotate_simple(90)
@@ -114,7 +111,7 @@ class Button(gtk.Button):
         draw_pixbuf(cr, bottom_right_point, x + w - top_left_point.get_width(), y + h - top_left_point.get_height())
         
         # Draw font.
-        draw_text(cr, self.label, x, y, w, h, self.font_size, button_color,
+        draw_text(cr, self.label, x, y, w, h, self.font_size, text_color,
                     alignment=pango.ALIGN_CENTER)
         
         return True
@@ -340,7 +337,6 @@ class ToggleButton(gtk.ToggleButton):
         font_size = DEFAULT_FONT_SIZE
         label_dcolor = ui_theme.get_color("buttonDefaultFont")
         self.button_press_flag = False
-        self.button_disable_flag = False
         
         self.inactive_pixbuf_group = (inactive_normal_dpixbuf,
                                       inactive_hover_dpixbuf,
@@ -369,14 +365,6 @@ class ToggleButton(gtk.ToggleButton):
                 w, e,
                 button_label, padding_x, font_size, label_dcolor))
         
-    def set_disable(self, disable_flag):
-        '''Set disable.'''
-        self.button_disable_flag = disable_flag
-        
-    def get_disable(self):
-        '''Get disable.'''
-        return self.button_disable_flag
-        
     def button_press_cb(self, widget, event):    
         self.button_press_flag = True
         self.queue_draw()
@@ -395,7 +383,7 @@ class ToggleButton(gtk.ToggleButton):
         image = inactive_normal_dpixbuf.get_pixbuf()
         
         # Get pixbuf along with button's sate.
-        if self.button_disable_flag:
+        if widget.state == gtk.STATE_INSENSITIVE:
             if widget.get_active():
                 image = active_disable_dpixbuf.get_pixbuf()
             else:
@@ -435,6 +423,10 @@ class ToggleButton(gtk.ToggleButton):
         draw_pixbuf(cr, image, rect.x + padding_x, rect.y)
         
         # Draw font.
+        if widget.state == gtk.STATE_INSENSITIVE:
+            label_color = ui_theme.get_color("disableText").get_color()
+        else:
+            label_color = label_dcolor.get_color()
         if button_label:
             draw_text(cr, button_label, 
                         rect.x + image.get_width() + padding_x * 2,
@@ -442,7 +434,7 @@ class ToggleButton(gtk.ToggleButton):
                         rect.width - image.get_width() - padding_x * 2,
                         rect.height,
                         font_size, 
-                        label_dcolor.get_color(),
+                        label_color,
                         alignment=pango.ALIGN_LEFT
                         )
     
@@ -562,16 +554,16 @@ gobject.type_register(RadioButton)
 class DisableButton(gtk.Button):
     '''Drop button.'''
 	
-    def __init__(self, dpixbufs, get_disable):
+    def __init__(self, dpixbufs):
         '''Init drop button.'''
         gtk.Button.__init__(self)
         pixbuf = dpixbufs[0].get_pixbuf()
         self.set_size_request(pixbuf.get_width(), pixbuf.get_height())
         
         widget_fix_cycle_destroy_bug(self)
-        self.connect("expose-event", lambda w, e: self.expose_drop_button(w, e, dpixbufs, get_disable))
+        self.connect("expose-event", lambda w, e: self.expose_drop_button(w, e, dpixbufs))
         
-    def expose_drop_button(self, widget, event, dpixbufs, get_disable):
+    def expose_drop_button(self, widget, event, dpixbufs):
         '''Expose drop button.'''
         # Init.
         cr = widget.window.cairo_create()
@@ -579,7 +571,7 @@ class DisableButton(gtk.Button):
         (normal_dpixbuf, hover_dpixbuf, press_dpixbuf, disable_dpixbuf) = dpixbufs
         
         # Draw.
-        if get_disable():
+        if widget.state == gtk.STATE_INSENSITIVE:
             pixbuf = disable_dpixbuf.get_pixbuf()
         elif widget.state == gtk.STATE_NORMAL:
             pixbuf = normal_dpixbuf.get_pixbuf()

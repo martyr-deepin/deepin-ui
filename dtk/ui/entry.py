@@ -468,15 +468,16 @@ class Entry(gtk.EventBox):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-
+        
         # Draw background.
-        self.draw_entry_background(cr, rect)
+        if self.get_sensitive():
+            self.draw_entry_background(cr, rect)
         
         # Draw text.
         self.draw_entry_text(cr, rect)
         
         # Draw cursor.
-        if self.cursor_visible_flag:
+        if self.cursor_visible_flag and self.get_sensitive():
             self.draw_entry_cursor(cr, rect)
         
         # Propagate expose.
@@ -518,7 +519,22 @@ class Entry(gtk.EventBox):
             layout = context.create_layout()
             layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
             
-            if self.select_start_index != self.select_end_index and self.select_area_visible_flag:
+            if not self.get_sensitive():
+                # Set text.
+                layout.set_text(self.content)
+                
+                # Get text size.
+                (text_width, text_height) = layout.get_pixel_size()
+                
+                # Move text.
+                cr.move_to(draw_x - self.offset_x, 
+                           draw_y + (draw_height - text_height) / 2)
+                
+                # Draw text.
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disableText").get_color()))
+                context.update_layout(layout)
+                context.show_layout(layout)
+            elif self.select_start_index != self.select_end_index and self.select_area_visible_flag:
                 # Get string.
                 before_select_str = self.content[0:self.select_start_index]
                 select_str = self.content[self.select_start_index:self.select_end_index]
@@ -788,6 +804,10 @@ class TextEntry(gtk.VBox):
 
         # Handle signal.
         self.align.connect("expose-event", self.expose_text_entry)
+        
+    def set_sensitive(self, sensitive):
+        super(TextEntry, self).set_sensitive(sensitive)
+        self.entry.set_sensitive(sensitive)
             
     def emit_action_active_signal(self):
         '''Emit action-active signal.'''
@@ -942,6 +962,10 @@ class InputEntry(gtk.VBox):
         # Handle signal.
         self.align.connect("expose-event", self.expose_text_entry)
             
+    def set_sensitive(self, sensitive):
+        super(InputEntry, self).set_sensitive(sensitive)
+        self.entry.set_sensitive(sensitive)
+            
     def emit_action_active_signal(self):
         '''Emit action-active signal.'''
         self.emit("action-active", self.get_text())                
@@ -1055,6 +1079,10 @@ class ShortcutKeyEntry(gtk.VBox):
         
         self.shortcut_key = content
         self.shortcut_key_record = None
+        
+    def set_sensitive(self, sensitive):
+        super(ShortcutKeyEntry, self).set_sensitive(sensitive)
+        self.entry.set_sensitive(sensitive)
         
     def handle_button_press(self, widget, event):
         '''Button press entry.'''

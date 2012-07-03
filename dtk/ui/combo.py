@@ -46,7 +46,6 @@ class ComboBox(gtk.VBox):
         self.set_can_focus(True)
         self.items = items
         self.droplist_height = droplist_height
-        self.disable_flag = False
         self.select_index = select_index
         self.focus_flag = False
         
@@ -66,7 +65,6 @@ class ComboBox(gtk.VBox):
              ui_theme.get_pixbuf("combo/dropbutton_hover.png"),
              ui_theme.get_pixbuf("combo/dropbutton_press.png"),
              ui_theme.get_pixbuf("combo/dropbutton_disable.png")),
-            self.get_disable
             )
                 
         self.align = gtk.Alignment()
@@ -206,16 +204,11 @@ class ComboBox(gtk.VBox):
         
         self.queue_draw()
         
-    def set_disable(self, disable_flag):
-        '''Disable.'''
-        self.disable_flag = disable_flag
-        
-        self.queue_draw()
-        
-    def get_disable(self):
-        '''Get disable flag.'''
-        return self.disable_flag
-        
+    def set_sensitive(self, sensitive):
+        super(ComboBox, self).set_sensitive(sensitive)
+        self.label.set_sensitive(sensitive)
+        self.dropbutton.set_sensitive(sensitive)
+            
     def expose_combobox_frame(self, widget, event):
         '''Expose combo box frame.'''
         # Init.
@@ -225,10 +218,10 @@ class ComboBox(gtk.VBox):
         # Draw frame.
         with cairo_disable_antialias(cr):
             cr.set_line_width(1)
-            if self.get_disable():
-                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("comboEntryDisableFrame").get_color()))
-            else:
+            if self.get_sensitive():
                 cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("comboEntryFrame").get_color()))
+            else:
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disableFrame").get_color()))
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.stroke()
             
