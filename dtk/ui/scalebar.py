@@ -31,13 +31,13 @@ class HScalebar(gtk.HScale):
     '''Scalebar.'''
 	
     def __init__(self,
-                 left_fg_dpixbuf=ui_theme.get_pixbuf("hscalebar/left_fg.png"),
-                 left_bg_dpixbuf=ui_theme.get_pixbuf("hscalebar/left_bg.png"),
-                 middle_fg_dpixbuf=ui_theme.get_pixbuf("hscalebar/middle_fg.png"),
-                 middle_bg_dpixbuf=ui_theme.get_pixbuf("hscalebar/middle_bg.png"),
-                 right_fg_dpixbuf=ui_theme.get_pixbuf("hscalebar/right_fg.png"),
-                 right_bg_dpixbuf=ui_theme.get_pixbuf("hscalebar/right_bg.png"),
-                 point_dpixbuf=ui_theme.get_pixbuf("hscalebar/point.png"),
+                 left_fg_dpixbuf,
+                 left_bg_dpixbuf,
+                 middle_fg_dpixbuf,
+                 middle_bg_dpixbuf,
+                 right_fg_dpixbuf,
+                 right_bg_dpixbuf,
+                 point_dpixbuf
                  ):
         '''Init scalebar.'''
         # Init.
@@ -127,13 +127,13 @@ class VScalebar(gtk.VScale):
     '''Vscalebar.'''
     
     def __init__(self,
-                 upper_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_fg.png"),
-                 upper_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/upper_bg.png"),
-                 middle_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/middle_fg.png"),
-                 middle_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/middle_bg.png"),
-                 bottom_fg_dpixbuf=ui_theme.get_pixbuf("vscalebar/bottom_fg.png"),
-                 bottom_bg_dpixbuf=ui_theme.get_pixbuf("vscalebar/bottom_bg.png"),
-                 point_dpixbuf=ui_theme.get_pixbuf("vscalebar/point.png"),
+                 upper_fg_dpixbuf,
+                 upper_bg_dpixbuf,
+                 middle_fg_dpixbuf,
+                 middle_bg_dpixbuf,
+                 bottom_fg_dpixbuf,
+                 bottom_bg_dpixbuf,
+                 point_dpixbuf,
                  ):
         
         gtk.VScale.__init__(self)

@@ -65,7 +65,7 @@ from dtk.ui.notebook import Notebook
 from dtk.ui.popup_window import PopupWindow
 from dtk.ui.tab_window import TabWindow
 from dtk.ui.color_selection import ColorButton
-from dtk.ui.scalebar import HScalebar, VScalebar
+from dtk.ui.scalebar import VScalebar
 from dtk.ui.scrolled_window import ScrolledWindow
 from dtk.ui.statusbar import Statusbar
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate, run_with_profile
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
     
     # Set application icon.
-    application.set_icon(ui_theme.get_pixbuf("icon.ico"))
+    application.set_icon(app_theme.get_pixbuf("icon.ico"))
     
     # Set application preview pixbuf.
     application.set_skin_preview(app_theme.get_pixbuf("frame.png"))
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     # Add titlebar.
     application.add_titlebar(
         ["theme", "menu", "max", "min", "close"], 
-        ui_theme.get_pixbuf("logo.png"), 
+        app_theme.get_pixbuf("logo.png"), 
         "深度图形库",
         "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py")
     
@@ -200,21 +200,21 @@ if __name__ == "__main__":
          ])
     
     menu = Menu(
-        [((ui_theme.get_pixbuf("menu/item1_normal.png"), ui_theme.get_pixbuf("menu/item1_hover.png")),
+        [(None,
           "测试测试测试1", lambda : PopupWindow(application.window)),
-         ((ui_theme.get_pixbuf("menu/item2_normal.png"), ui_theme.get_pixbuf("menu/item2_hover.png")),
+         (None,
           "测试测试测试2", sub_menu_a),
-         ((ui_theme.get_pixbuf("menu/item3_normal.png"), ui_theme.get_pixbuf("menu/item3_hover.png")),
+         (None,
           "测试测试测试3", sub_menu_b),
-         ((ui_theme.get_pixbuf("menu/item4_normal.png"), ui_theme.get_pixbuf("menu/item4_hover.png")),
+         (None,
           "测试测试测试", None),
-         ((ui_theme.get_pixbuf("menu/item5_normal.png"), ui_theme.get_pixbuf("menu/item5_hover.png")),
+         (None,
           "测试测试测试", None),
-         ((ui_theme.get_pixbuf("menu/item6_normal.png"), ui_theme.get_pixbuf("menu/item6_hover.png")),
+         (None,
           "测试测试测试4", None, (1, 2, 3)),
-         ((ui_theme.get_pixbuf("menu/item7_normal.png"), ui_theme.get_pixbuf("menu/item7_hover.png")),
+         (None,
           "测试测试测试5", None),
-         ((ui_theme.get_pixbuf("menu/item8_normal.png"), ui_theme.get_pixbuf("menu/item8_hover.png")),
+         (None,
           "测试测试测试6", None),
          ],
         True
@@ -242,14 +242,14 @@ if __name__ == "__main__":
     droplist.set_size_request(-1, 100)
     
     navigatebar = Navigatebar(
-        [(ui_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
-         (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),
-         (ui_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航8", None),
+        [(app_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
+         (app_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
+         (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
+         (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
+         (app_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
+         (app_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
+         (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),
+         (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航8", None),
          ])
     application.main_box.pack_start(navigatebar, False)
     application.window.add_move_event(navigatebar)
@@ -262,10 +262,10 @@ if __name__ == "__main__":
     tab_5_box = gtk.VBox()
     
     notebook = Notebook(
-        [(ui_theme.get_pixbuf("music.png"), "分类列表", lambda : switch_tab(notebook_box, tab_1_box)),
-         (ui_theme.get_pixbuf("web.png"), "网络浏览器", lambda : switch_tab(notebook_box, tab_2_box)),
-         (ui_theme.get_pixbuf("music.png"), "专辑封面", lambda : switch_tab(notebook_box, tab_4_box)),
-         (ui_theme.get_pixbuf("music.png"), "自定义控件", lambda : switch_tab(notebook_box, tab_5_box)),
+        [(app_theme.get_pixbuf("music.png"), "分类列表", lambda : switch_tab(notebook_box, tab_1_box)),
+         (app_theme.get_pixbuf("web.png"), "网络浏览器", lambda : switch_tab(notebook_box, tab_2_box)),
+         (app_theme.get_pixbuf("music.png"), "专辑封面", lambda : switch_tab(notebook_box, tab_4_box)),
+         (app_theme.get_pixbuf("music.png"), "自定义控件", lambda : switch_tab(notebook_box, tab_5_box)),
          ])
     notebook_frame = HorizontalFrame(20)
     notebook_frame.add(notebook)
@@ -280,17 +280,6 @@ if __name__ == "__main__":
     horizontal_frame = HorizontalFrame()
     horizontal_frame.add(body_box)
     tab_1_box.pack_start(horizontal_frame, True, True)
-    
-    # Add scalebar.
-    scalebar = HScalebar()
-    scalebar_frame = HorizontalFrame()
-    scalebar_frame.add(scalebar)
-    tab_1_box.pack_start(scalebar_frame, False, False)
-    
-    vscalebar = VScalebar()
-    vscale_box = gtk.HBox()
-    vscale_box.pack_start(vscalebar, False, False)
-    body_box.pack_start(vscale_box, False, False)
     
     # Add categorybar.
     # Note if you add list in categorybar make sure height is multiples of list length.

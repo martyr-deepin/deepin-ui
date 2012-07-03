@@ -409,7 +409,7 @@ class ColorButton(gtk.VBox):
         draw_line(cr, x + w, y + 2, x + w, y + h - 2) # right
         
         # Draw four point.
-        top_left_point = ui_theme.get_pixbuf("button.png").get_pixbuf()
+        top_left_point = ui_theme.get_pixbuf("button/corner.png").get_pixbuf()
         top_right_point = top_left_point.rotate_simple(270)
         bottom_right_point = top_left_point.rotate_simple(180)
         bottom_left_point = top_left_point.rotate_simple(90)
