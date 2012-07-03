@@ -428,7 +428,7 @@ class WidgetInfo(object):
         object.__setattr__(self, "custom", None)
         object.__setattr__(self, "custom_args", None)
         object.__setattr__(self, "custom_kargs", None)
-        object.__setattr__(self, "background", gtk.gdk.Color("yellow"))
+        object.__setattr__(self, "background", gtk.gdk.Color("#FFFACC"))
         object.__setattr__(self, "padding_t", 5)
         object.__setattr__(self, "padding_b", 5)
         object.__setattr__(self, "padding_l", 5)
