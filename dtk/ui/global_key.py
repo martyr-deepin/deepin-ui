@@ -42,11 +42,18 @@ class GlobalKey(threading.Thread):
         for mod in gdk_modifiers:
             self.known_modifiers_mask |= mod
 
-    def add_keybinding(self, binding_string, action):
+    def bind(self, binding_string, action):
         keyval, modifiers = parse_keyevent_name(binding_string)
         keycode = gtk.gdk.keymap_get_default().get_entries_for_keyval(keyval)[0][0]
         self._binding_map[(keycode, modifiers)] = action
         self.regrab()
+        
+    def unbind(self, binding_string):
+        keyval, modifiers = parse_keyevent_name(binding_string)
+        keycode = gtk.gdk.keymap_get_default().get_entries_for_keyval(keyval)[0][0]
+        if self._binding_map.has_key((keycode, modifiers)):
+            del self._binding_map[(keycode, modifiers)]
+            self.regrab()
 
     def grab(self):
         for (keycode, modifiers) in self._binding_map.keys():
@@ -65,11 +72,6 @@ class GlobalKey(threading.Thread):
     def regrab(self):
         self.ungrab()
         self.grab()
-
-    def wrap_action(self, action):
-        gtk.gdk.threads_enter()
-        action()
-        gtk.gdk.threads_leave()
 
     def run(self):
         self.running = True
@@ -92,7 +94,7 @@ class GlobalKey(threading.Thread):
                 wait_for_release = False
                 action = self._upcoming_action[2]
                 del self._upcoming_action
-                self.wrap_action(action)
+                action()
                 self.display.allow_events(X.AsyncKeyboard, event.time)
 
             else:
@@ -109,7 +111,7 @@ if __name__ == "__main__":
     def t(*args, **kwargs):
         print 'Called!'
     manager = GlobalKey()
-    manager.add_keybinding('Ctrl + Alt + Shift + s', t)
+    manager.bind('Ctrl + Alt + Shift + s', t)
     manager.start()
 
     gtk.main()
