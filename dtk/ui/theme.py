@@ -241,6 +241,7 @@ class Theme(object):
     
     def change_theme(self, new_theme_name):
         '''Change ui_theme.'''
+        print new_theme_name
         # Update ticker.
         self.ticker += 1
         
