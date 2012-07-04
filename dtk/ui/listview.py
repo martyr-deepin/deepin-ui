@@ -525,9 +525,13 @@ class ListView(gtk.DrawingArea):
         
         # Draw drag reference row.
         if self.drag_reference_row:
-            cr.set_source_rgb(*color_hex_to_cairo("#666666"))
-            cr.rectangle(rect.x, rect.y + self.drag_reference_row * self.item_height + self.title_offset_y, rect.width, 3)
-            cr.fill()
+            drag_pixbuf = ui_theme.get_pixbuf("listview/drag_line.png").get_pixbuf()
+            self.drag_line_pixbuf.scale(drag_pixbuf, rect.width, drag_pixbuf.get_height())
+            draw_pixbuf(
+                cr,
+                self.drag_line_pixbuf.get_cache(),
+                rect.x,
+                rect.y + self.drag_reference_row * self.item_height + self.title_offset_y)
             
         return False
     
