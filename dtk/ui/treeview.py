@@ -47,7 +47,9 @@ class TreeView(gtk.DrawingArea):
                  font_align=pango.ALIGN_LEFT,
                  arrow_x_padding = 10, 
                  normal_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png"), 
-                 press_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png")):        
+                 press_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png"),
+                 normal_hover_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right_hover.png"), 
+                 press_hover_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down_hover.png")):        
         gtk.DrawingArea.__init__(self)
         self.root = Tree()
         self.tree_list = []
@@ -72,6 +74,8 @@ class TreeView(gtk.DrawingArea):
         # Draw icon.
         self.normal_pixbuf = normal_pixbuf
         self.press_pixbuf = press_pixbuf
+        self.normal_hover_pixbuf = normal_hover_pixbuf
+        self.press_hover_pixbuf = press_hover_pixbuf
         self.arrow_x_padding = arrow_x_padding
         # Draw move background. 
         self.move_height = -1
@@ -233,13 +237,22 @@ class TreeView(gtk.DrawingArea):
                               )    
                     
                 font_w, font_h = get_content_size(draw_widget.text, self.font_size)    
+                index = int(self.press_height) / self.height
                 if draw_widget.tree_view_item.get_has_arrow():
                     if not draw_widget.show_child_items_bool:
-                        draw_pixbuf(cr, self.normal_pixbuf.get_pixbuf(), 
+                        if widget_index == index:
+                            pixbuf = self.normal_hover_pixbuf.get_pixbuf()
+                        else:
+                            pixbuf = self.normal_pixbuf.get_pixbuf()
+                        draw_pixbuf(cr, pixbuf,
                                     font_w + self.font_x_padding + draw_widget.width + self.arrow_x_padding, 
                                     temp_height + (self.height - self.normal_pixbuf.get_pixbuf().get_height()) / 2)
                     else:
-                        draw_pixbuf(cr, self.press_pixbuf.get_pixbuf(), 
+                        if widget_index == index:
+                            pixbuf = self.press_hover_pixbuf.get_pixbuf()
+                        else:
+                            pixbuf = self.press_pixbuf.get_pixbuf()
+                        draw_pixbuf(cr, pixbuf,
                                     font_w + self.font_x_padding + draw_widget.width + self.arrow_x_padding, 
                                     temp_height + (self.height - self.normal_pixbuf.get_pixbuf().get_height()) / 2)
                     
