@@ -207,7 +207,10 @@ def generate_tooltip_content():
     allocation.height += winfo.padding_t + winfo.padding_b
     TooltipInfo.window.size_allocate(allocation)
     TooltipInfo.window.modify_bg(gtk.STATE_NORMAL, winfo.background)
-    TooltipInfo.need_update = False
+    if winfo.always_update:
+        TooltipInfo.need_update = True
+    else:
+        TooltipInfo.need_update = False
 
 def hide_tooltip():
     TooltipInfo.window.hide()
@@ -435,6 +438,7 @@ class WidgetInfo(object):
         object.__setattr__(self, "padding_r", 5)
         object.__setattr__(self, "has_shadow", True)
         object.__setattr__(self, "enable", False) #don't modify the "enable" init value
+        object.__setattr__(self, "always_update", False)
 
     def __setattr__(self, key, value):
         if hasattr(self, key):
@@ -540,6 +544,11 @@ def disable(widget, value):
             winfo.enable = True
             TooltipInfo.enable_count += 1
     return disable
+
+@chainmethod
+def always_update(widget, need):
+    set_value(widget, {"always_update" : need})
+    return always_update
 
 #------------------------this is global effect function---------------------
 def disable_all(value):

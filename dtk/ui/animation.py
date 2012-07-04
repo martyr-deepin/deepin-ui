@@ -92,7 +92,6 @@ class Animation:
 
     def stop(self):
         if self.animation_id:
-            print "stop"
             gobject.source_remove(self.animation_id)
         if self.start_id:
             gobject.source_remove(self.start_id)
