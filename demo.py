@@ -158,7 +158,8 @@ if __name__ == "__main__":
         ["theme", "menu", "max", "min", "close"], 
         app_theme.get_pixbuf("logo.png"), 
         "深度图形库",
-        "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py")
+        "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py"
+        )
     
     # Draw application background.
     button = gtk.Button()

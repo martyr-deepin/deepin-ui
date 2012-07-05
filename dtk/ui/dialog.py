@@ -35,8 +35,9 @@ import gobject
 import gtk
 
 DIALOG_MASK_SINGLE_PAGE = 0
-DIALOG_MASK_MULTIPLE_PAGE = 1
-DIALOG_MASK_TAB_PAGE = 2
+DIALOG_MASK_GLASS_PAGE = 1
+DIALOG_MASK_MULTIPLE_PAGE = 2
+DIALOG_MASK_TAB_PAGE = 3
 
 class DialogLeftButtonBox(gtk.HBox):
     '''Dialog button box.'''
@@ -150,6 +151,13 @@ class DialogBox(Window):
                 w - padding_left - padding_right, 
                 h - padding_top - padding_bottom,
                 self.draw_mask_single_page)
+        elif self.mask_type == DIALOG_MASK_GLASS_PAGE:
+            return lambda cr, x, y, w, h: draw_mask(
+                widget, x + padding_left, 
+                y + padding_top, 
+                w - padding_left - padding_right, 
+                h - padding_top - padding_bottom,
+                self.draw_mask_glass_page)
         elif self.mask_type == DIALOG_MASK_MULTIPLE_PAGE:
             return lambda cr, x, y, w, h: draw_mask(
                 widget, x + padding_left, 
@@ -186,6 +194,20 @@ class DialogBox(Window):
             ui_theme.get_shadow_color("mask_single_page_bottom").get_color_info(),
             )
 
+    def draw_mask_glass_page(self, cr, x, y, w, h):
+        '''Draw make for glass page type.'''
+        top_height = 70
+        
+        draw_vlinear(
+            cr, x, y, w, top_height,
+            ui_theme.get_shadow_color("mask_glass_page_top").get_color_info(),
+            )
+        
+        draw_vlinear(
+            cr, x, y + top_height, w, h - top_height,
+            ui_theme.get_shadow_color("mask_glass_page_bottom").get_color_info(),
+            )
+        
     def draw_mask_multiple_page(self, cr, x, y, w, h):
         '''Draw make for multiple page type.'''
         titlebar_height = self.titlebar.get_allocation().height
