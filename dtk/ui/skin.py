@@ -43,7 +43,7 @@ import tarfile
 import threading as td
 import urllib
 import uuid
-from utils import (is_in_rect, set_cursor, 
+from utils import (is_in_rect, set_cursor, remove_timeout_id,
                    color_hex_to_cairo, cairo_state, container_remove_all, 
                    cairo_disable_antialias, remove_directory, end_with_suffixs, 
                    create_directory, touch_file, scroll_to_bottom, 
@@ -367,6 +367,10 @@ class SkinPreviewIcon(gobject.GObject):
         
         self.pixbuf = get_optimum_pixbuf_from_file(self.background_path, self.width, self.height, False)
         
+        self.show_delete_button_id = None
+        self.show_edit_button_id = None
+        self.show_delay = 1000  # milliseconds
+        
         # Load skin config information.
         self.config = Config(os.path.join(self.skin_dir, "config.ini"))
         self.config.load()
@@ -475,22 +479,47 @@ class SkinPreviewIcon(gobject.GObject):
         '''Handle `motion-notify-event` signal.'''
         self.hover_flag = True
         
+        remove_timeout_id(self.show_delete_button_id)
+        remove_timeout_id(self.show_edit_button_id)
+        
         if self.is_deletable():
             if self.is_in_delete_button_area(x, y):
-                self.delete_button_status = self.BUTTON_HOVER
+                if self.delete_button_status == self.BUTTON_HIDE:
+                    self.show_delete_button_id = gtk.timeout_add(self.show_delay, lambda : self.show_delete_button(self.BUTTON_HOVER))
+                else:
+                    self.delete_button_status = self.BUTTON_HOVER
             else:
-                self.delete_button_status = self.BUTTON_NORMAL
+                if self.delete_button_status == self.BUTTON_HOVER:
+                    self.delete_button_status = self.BUTTON_NORMAL
+                else:
+                    self.show_delete_button_id = gtk.timeout_add(self.show_delay, lambda : self.show_delete_button(self.BUTTON_NORMAL))
         else:
             self.delete_button_status = self.BUTTON_HIDE
             
         if self.is_editable():
             if self.is_in_edit_button_area(x, y):
-                self.edit_button_status = self.BUTTON_HOVER
+                if self.edit_button_status == self.BUTTON_HIDE:
+                    self.show_edit_button_id = gtk.timeout_add(self.show_delay, lambda : self.show_edit_button(self.BUTTON_HOVER))
+                else:
+                    self.edit_button_status = self.BUTTON_HOVER
             else:
-                self.edit_button_status = self.BUTTON_NORMAL
+                if self.edit_button_status == self.BUTTON_HOVER:
+                    self.edit_button_status = self.BUTTON_NORMAL
+                else:
+                    self.show_edit_button_id = gtk.timeout_add(self.show_delay, lambda : self.show_edit_button(self.BUTTON_NORMAL))
         else:
             self.edit_button_status = self.BUTTON_HIDE
+            
+        self.emit_redraw_request()
         
+    def show_delete_button(self, status):
+        '''Show delete button.'''
+        self.delete_button_status = status
+        self.emit_redraw_request()
+
+    def show_edit_button(self, status):
+        '''Show edit button.'''
+        self.edit_button_status = status
         self.emit_redraw_request()
         
     def icon_item_lost_focus(self):
@@ -498,6 +527,9 @@ class SkinPreviewIcon(gobject.GObject):
         self.hover_flag = False
         self.delete_button_status = self.BUTTON_HIDE
         self.edit_button_status = self.BUTTON_HIDE
+        
+        remove_timeout_id(self.show_delete_button_id)
+        remove_timeout_id(self.show_edit_button_id)
         
         self.emit_redraw_request()
         
@@ -518,21 +550,21 @@ class SkinPreviewIcon(gobject.GObject):
         if not self.is_deletable() and not self.is_editable():
             self.change_skin_callback(self)    
         else:
-            if self.is_deletable() and self.is_in_delete_button_area(x, y):
-                self.delete_button_status = self.BUTTON_HIDE
-                self.edit_button_status = self.BUTTON_HIDE
-                
-                # Pop delete dialog.
-                self.pop_delete_skin_dialog_callback(self)
-            elif self.is_editable() and self.is_in_edit_button_area(x, y):
-                self.delete_button_status = self.BUTTON_HIDE
-                self.edit_button_status = self.BUTTON_HIDE
-                
-                self.change_skin_callback(self)
-                self.switch_edit_page_callback()
-            else:
-                self.change_skin_callback(self)
+            self.change_skin_callback(self)
             
+            if self.is_deletable() and self.is_in_delete_button_area(x, y):
+                if self.delete_button_status != self.BUTTON_HIDE:
+                    self.delete_button_status = self.BUTTON_HIDE
+                    self.edit_button_status = self.BUTTON_HIDE
+                
+                    self.pop_delete_skin_dialog_callback(self)
+            elif self.is_editable() and self.is_in_edit_button_area(x, y):
+                if self.edit_button_status != self.BUTTON_HIDE:
+                    self.delete_button_status = self.BUTTON_HIDE
+                    self.edit_button_status = self.BUTTON_HIDE
+                
+                    self.switch_edit_page_callback()
+                    
         self.emit_redraw_request()    
     
     def icon_item_button_release(self, x, y):

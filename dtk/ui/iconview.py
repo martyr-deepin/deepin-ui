@@ -397,7 +397,11 @@ class IconView(gtk.DrawingArea):
                 self.clear_focus_item()
             else:
                 (row_index, column_index, item_index, offset_x, offset_y) = index_info
-                self.clear_focus_item()
+                
+                # Don't clear focus item when motion index is current one.
+                if self.focus_index != item_index:
+                    self.clear_focus_item()
+                    
                 self.focus_index = item_index
                 
                 self.emit("motion-notify-item", self.items[self.focus_index], offset_x - self.padding_x, offset_y - self.padding_y)
