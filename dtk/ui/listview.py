@@ -68,7 +68,7 @@ class ListView(gtk.DrawingArea):
         # Init.
         gtk.DrawingArea.__init__(self)
         self.sorts = sorts
-        self.drag_data = None
+        self.drag_data = drag_data
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
@@ -626,7 +626,8 @@ class ListView(gtk.DrawingArea):
                     else:
                         # Begin drag is drag_data is not None.
                         if self.drag_data:
-                            self.drag_begin(*self.drag_data)
+                            (targets, actions, button) = self.drag_data
+                            self.drag_begin(targets, actions, button, event)
                         
                         self.drag_reference_row = None
 
