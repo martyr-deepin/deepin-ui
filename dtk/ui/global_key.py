@@ -25,6 +25,26 @@ from Xlib.display import Display
 from keymap import parse_keyevent_name
 import gtk
 import threading
+from threading import Lock
+
+global_key_running = True
+global_key_lock = Lock()
+
+def enable_global_key():
+    '''Enable global key.'''
+    global global_key_running
+    
+    global_key_lock.acquire()
+    global_key_running = True
+    global_key_lock.release()
+
+def disable_global_key():
+    '''Disable global key.'''
+    global global_key_running
+    
+    global_key_lock.acquire()
+    global_key_running = False
+    global_key_lock.release()
 
 class GlobalKey(threading.Thread):
 
@@ -35,7 +55,6 @@ class GlobalKey(threading.Thread):
         self.root = self.display.screen().root
         self._binding_map = {}
         self.stop = False
-        self.running = True
 
         self.known_modifiers_mask = 0
         gdk_modifiers = (gtk.gdk.CONTROL_MASK, gtk.gdk.SHIFT_MASK, gtk.gdk.MOD1_MASK,
@@ -76,10 +95,12 @@ class GlobalKey(threading.Thread):
         self.grab()
 
     def run(self):
+        global global_key_running
+    
         wait_for_release = False
         while not self.stop:
             event = self.display.next_event()
-            if self.running:
+            if global_key_running:
                 if event.type == X.KeyPress and not wait_for_release:
                     keycode = event.detail
                     modifiers = event.state & self.known_modifiers_mask
@@ -98,9 +119,10 @@ class GlobalKey(threading.Thread):
                     del self._upcoming_action
                     action()
                     self.display.allow_events(X.AsyncKeyboard, event.time)
-                
                 else:
                     self.display.allow_events(X.ReplayKeyboard, event.time)
+            else:
+                self.display.allow_events(X.ReplayKeyboard, event.time)
 
     def exit(self):
         self.stop = True
