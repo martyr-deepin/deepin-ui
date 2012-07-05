@@ -28,6 +28,7 @@ import math
 import os
 import pango
 import pangocairo
+import socket
 import subprocess
 import time
 from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, 
@@ -922,3 +923,24 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
 def unique_print(text):
     '''Unique print.'''
     print "%s: %s" % (time.time(), text)
+
+def check_connect_by_port(port, retry_times=6, sleep_time=0.5):
+    """
+    Check connect has active with given port.
+    """
+    ret_val = False
+    test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    retry_time = 0
+    while (True):
+        try:
+            test_socket.connect(("localhost", port))
+            ret_val = True
+            break
+        except socket.error:
+            time.sleep(sleep_time)
+            retry_time += 1
+            if retry_time >= retry_times:
+                break
+            else:
+                continue
+    return ret_val
