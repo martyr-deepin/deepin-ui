@@ -102,7 +102,7 @@ class GlobalKey(threading.Thread):
                 else:
                     self.display.allow_events(X.ReplayKeyboard, event.time)
 
-    def stop(self):
+    def exit(self):
         self.stop = True
         self.ungrab()
         self.display.close()
