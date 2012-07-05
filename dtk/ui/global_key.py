@@ -74,36 +74,31 @@ class GlobalKey(threading.Thread):
         self.grab()
 
     def run(self):
-        self.running = True
         wait_for_release = False
-        while self.running:
+        while True:
             event = self.display.next_event()
-            if event.type == X.KeyPress and not wait_for_release:
-                keycode = event.detail
-                modifiers = event.state & self.known_modifiers_mask
-                try:
-                    action = self._binding_map[(keycode, modifiers)]
-                except KeyError:
-                    self.display.allow_events(X.ReplayKeyboard, event.time)
-                else:
-                    wait_for_release = True
+            if self.running:
+                if event.type == X.KeyPress and not wait_for_release:
+                    keycode = event.detail
+                    modifiers = event.state & self.known_modifiers_mask
+                    try:
+                        action = self._binding_map[(keycode, modifiers)]
+                    except KeyError:
+                        self.display.allow_events(X.ReplayKeyboard, event.time)
+                    else:
+                        wait_for_release = True
+                        self.display.allow_events(X.AsyncKeyboard, event.time)
+                        self._upcoming_action = (keycode, modifiers, action)
+                
+                elif event.type == X.KeyRelease and wait_for_release and event.detail == self._upcoming_action[0]:
+                    wait_for_release = False
+                    action = self._upcoming_action[2]
+                    del self._upcoming_action
+                    action()
                     self.display.allow_events(X.AsyncKeyboard, event.time)
-                    self._upcoming_action = (keycode, modifiers, action)
-
-            elif event.type == X.KeyRelease and wait_for_release and event.detail == self._upcoming_action[0]:
-                wait_for_release = False
-                action = self._upcoming_action[2]
-                del self._upcoming_action
-                action()
-                self.display.allow_events(X.AsyncKeyboard, event.time)
-
-            else:
-                self.display.allow_events(X.ReplayKeyboard, event.time)
-
-    def stop(self):
-        self.running = False
-        self.ungrab()
-        self.display.close()
+                
+                else:
+                    self.display.allow_events(X.ReplayKeyboard, event.time)
 
 if __name__ == "__main__":
     gtk.gdk.threads_init()
