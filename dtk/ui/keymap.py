@@ -95,7 +95,7 @@ def parse_keyevent_name(keyevent_name):
             elif modifier == "Shift":
                 modifier_mask = modifier_mask | gdk.SHIFT_MASK
                 
-        if gdk.keyval_is_upper(keyval):
+        if gdk.keyval_is_upper(keyval) and len(get_key_name(keyval)) == 1:
             keyval = gdk.keyval_to_lower(keyval)
             modifier_mask = modifier_mask | gdk.SHIFT_MASK
         
