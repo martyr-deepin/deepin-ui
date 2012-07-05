@@ -28,7 +28,7 @@
 #include <Python.h>
 #include "pygobject.h"
 
-static void add_cookie(char cookie_file)
+static void add_cookie(char *cookie_file)
 {
      SoupSession *session = webkit_get_default_session();
      SoupCookieJar *jar = soup_cookie_jar_text_new(cookie_file, false);
