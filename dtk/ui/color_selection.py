@@ -31,7 +31,7 @@ from spin import SpinBox
 from theme import ui_theme
 import gobject
 import gtk
-from utils import (gdkcolor_to_string, color_hex_to_cairo, propagate_expose, 
+from utils import (gdkcolor_to_string, color_hex_to_cairo, propagate_expose, alpha_color_hex_to_cairo,
                    color_hex_to_rgb, color_rgb_to_hex, is_hex_color, place_center)
 
 class HSV(gtk.ColorSelection):
@@ -338,7 +338,6 @@ class ColorButton(gtk.VBox):
         self.height = 22
         self.color_area_width = 39
         self.color_area_height = 14
-        self.clickable = True
         
         self.button.set_size_request(self.width, self.height)
         self.pack_start(self.button, False, False)
@@ -367,33 +366,32 @@ class ColorButton(gtk.VBox):
         '''Get color.'''
         return self.color
         
-    def set_clickable(self, clickable):
-        '''Set clickable.'''
-        self.clickable = clickable
-        
-        self.queue_draw()
-        
     def expose_button(self, widget, event):
         '''Expose button.'''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        x, y, w, h = rect.x, rect.y, self.width, self.height
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         # Get color info.
-        if not self.clickable:
-            border_color = ui_theme.get_color("button_border_disable").get_color()
-            background_color = ui_theme.get_shadow_color("button_background_disable").get_color_info()
-        else:
-            if widget.state == gtk.STATE_NORMAL:
-                border_color = ui_theme.get_color("button_border_normal").get_color()
-                background_color = ui_theme.get_shadow_color("button_background_normal").get_color_info()
-            elif widget.state == gtk.STATE_PRELIGHT:
-                border_color = ui_theme.get_color("button_border_prelight").get_color()
-                background_color = ui_theme.get_shadow_color("button_background_prelight").get_color_info()
-            elif widget.state == gtk.STATE_ACTIVE:
-                border_color = ui_theme.get_color("button_border_active").get_color()
-                background_color = ui_theme.get_shadow_color("button_background_active").get_color_info()
+        if widget.state == gtk.STATE_NORMAL:
+            text_color = ui_theme.get_color("button_font").get_color()
+            border_color = ui_theme.get_color("button_border_normal").get_color()
+            background_color = ui_theme.get_shadow_color("button_background_normal").get_color_info()
+        elif widget.state == gtk.STATE_PRELIGHT:
+            text_color = ui_theme.get_color("button_font").get_color()
+            border_color = ui_theme.get_color("button_border_prelight").get_color()
+            background_color = ui_theme.get_shadow_color("button_background_prelight").get_color_info()
+        elif widget.state == gtk.STATE_ACTIVE:
+            text_color = ui_theme.get_color("button_font").get_color()
+            border_color = ui_theme.get_color("button_border_active").get_color()
+            background_color = ui_theme.get_shadow_color("button_background_active").get_color_info()
+        elif widget.state == gtk.STATE_INSENSITIVE:
+            text_color = ui_theme.get_color("disable_text").get_color()
+            border_color = ui_theme.get_color("disable_frame").get_color()
+            disable_background_color = ui_theme.get_color("disable_background").get_color()
+            background_color = [(0, (disable_background_color, 1.0)),
+                                (1, (disable_background_color, 1.0))]
             
         # Draw background.
         draw_vlinear(
@@ -409,7 +407,10 @@ class ColorButton(gtk.VBox):
         draw_line(cr, x + w, y + 2, x + w, y + h - 2) # right
         
         # Draw four point.
-        top_left_point = ui_theme.get_pixbuf("button/corner.png").get_pixbuf()
+        if widget.state == gtk.STATE_INSENSITIVE:
+            top_left_point = ui_theme.get_pixbuf("button/disable_corner.png").get_pixbuf()
+        else:
+            top_left_point = ui_theme.get_pixbuf("button/corner.png").get_pixbuf()
         top_right_point = top_left_point.rotate_simple(270)
         bottom_right_point = top_left_point.rotate_simple(180)
         bottom_left_point = top_left_point.rotate_simple(90)
@@ -434,6 +435,15 @@ class ColorButton(gtk.VBox):
                      self.color_area_width,
                      self.color_area_height)
         cr.fill()
+
+        # Draw mask when widget is insensitive.
+        if widget.state == gtk.STATE_INSENSITIVE:
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(("#ffffff", 0.85)))
+            cr.rectangle(x + (w - self.color_area_width) / 2,
+                         y + (h - self.color_area_height) / 2,
+                         self.color_area_width,
+                         self.color_area_height)
+            cr.fill()
         
         return True
         

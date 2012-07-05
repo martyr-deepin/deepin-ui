@@ -366,9 +366,11 @@ if __name__ == "__main__":
     entry_box.pack_start(shortcust_entry, False, False)
     
     test_button = Button("测试")
+    test_button.set_sensitive(False)
     entry_box.pack_start(test_button, False, False)
     
     color_button = ColorButton()
+    color_button.set_sensitive(False)
     entry_box.pack_start(color_button, False, False)
     
     # combobox
