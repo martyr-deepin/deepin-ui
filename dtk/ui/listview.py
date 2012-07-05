@@ -739,7 +739,7 @@ class ListView(gtk.DrawingArea):
                         self.select_rows.append(click_row)
                     self.select_rows = sorted(self.select_rows)
                 else:
-                    if self.enable_drag_drop and click_row in self.select_rows and len(self.select_rows) != len(self.items):
+                    if self.enable_drag_drop and click_row in self.select_rows:
                         self.start_drag = True
                         
                         if self.start_select_row:
