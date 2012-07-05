@@ -89,7 +89,9 @@ class DialogBox(Window):
                  close_callback=None,
                  modal=True,
                  window_hint=gtk.gdk.WINDOW_TYPE_HINT_DIALOG,
-                 window_pos=None):
+                 window_pos=None,
+                 skip_taskbar_hint=True,
+                 resizable=False):
         '''Dialog box.'''
         Window.__init__(self)
         if window_pos:
@@ -97,8 +99,8 @@ class DialogBox(Window):
         self.set_modal(modal)                                # grab focus to avoid build too many skin window
         if window_hint:
             self.set_type_hint(window_hint)
-        self.set_skip_taskbar_hint(True)                    # skip taskbar
-        self.set_resizable(False)
+        self.set_skip_taskbar_hint(skip_taskbar_hint) # skip taskbar
+        self.set_resizable(resizable)
         self.default_width = default_width
         self.default_height = default_height
         self.mask_type = mask_type
