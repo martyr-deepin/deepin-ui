@@ -39,6 +39,8 @@ class Label(gtk.EventBox):
                  text_x_align=ALIGN_START,
                  label_width=None,
                  enable_gaussian=False,
+                 enable_select=True,
+                 enable_double_click=True,
                  ):
         '''Init label.'''
         # Init.
@@ -47,6 +49,8 @@ class Label(gtk.EventBox):
         self.set_can_focus(True) # can focus to response key-press signal
         self.label_width = label_width
         self.enable_gaussian = enable_gaussian
+        self.enable_select = enable_select
+        self.enable_double_click = enable_double_click
         self.select_start_index = self.select_end_index = 0
         self.double_click_flag = False
         self.left_click_flag = False
@@ -105,7 +109,7 @@ class Label(gtk.EventBox):
             self.grab_focus()
         
             # Select all when double click left button.
-            if is_double_click(event):
+            if is_double_click(event) and self.enable_double_click:
                 self.double_click_flag = True
                 self.select_all()
             # Change cursor when click left button.
@@ -126,7 +130,7 @@ class Label(gtk.EventBox):
         
     def motion_notify_label(self, widget, event):
         '''Callback for `motion-notify-event` signal.'''
-        if not self.double_click_flag and self.left_click_flag:
+        if not self.double_click_flag and self.left_click_flag and self.enable_select:
             self.drag_end_index = self.get_index_at_event(widget, event)
             
             self.select_start_index = min(self.drag_start_index, self.drag_end_index)
