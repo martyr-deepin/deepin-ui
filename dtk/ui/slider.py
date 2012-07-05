@@ -139,8 +139,8 @@ class Wizard(Window):
                  slider_files,
                  navigate_files,
                  finish_callback=None,
-                 window_width=540, 
-                 window_height=365,
+                 window_width=552, 
+                 window_height=373,
                  navigatebar_height=60,
                  ):
         '''Init wizard.'''
@@ -178,8 +178,12 @@ class Wizard(Window):
         self.navigatebar.set_visible_window(False)
         self.navigatebar.set_size_request(-1, self.navigatebar_height)
         self.main_box.pack_start(self.slider, True, True)
-        self.main_box.pack_start(self.navigatebar, False, False)
-        self.window_frame.add(self.main_box)
+        self.main_box.pack_start(self.navigatebar, True, True)
+        self.main_align = gtk.Alignment()
+        self.main_align.set(0.5, 0.5, 1, 1)
+        self.main_align.set_padding(2, 2, 2, 2)
+        self.main_align.add(self.main_box)
+        self.window_frame.add(self.main_align)
 
         # Start animation.
         self.slider_widgets = []
