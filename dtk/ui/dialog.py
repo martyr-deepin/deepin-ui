@@ -95,6 +95,10 @@ class DialogBox(Window):
                  resizable=False):
         '''Dialog box.'''
         Window.__init__(self)
+        self.default_width = default_width
+        self.default_height = default_height
+        self.mask_type = mask_type
+        
         if window_pos:
             self.set_position(window_pos)
         self.set_modal(modal)                                # grab focus to avoid build too many skin window
@@ -102,18 +106,15 @@ class DialogBox(Window):
             self.set_type_hint(window_hint)
         self.set_skip_taskbar_hint(skip_taskbar_hint) # skip taskbar
         self.set_resizable(resizable)
-        self.default_width = default_width
-        self.default_height = default_height
-        self.mask_type = mask_type
         if self.default_width != None and self.default_height != None:
             self.set_default_size(self.default_width, self.default_height)
             self.set_geometry_hints(None, self.default_width, self.default_height, -1, -1, -1, -1, -1, -1, -1, -1)
+            
         self.padding_left = 2
         self.padding_right = 2
 
         self.titlebar = Titlebar(
             ["close"],
-            None,
             None,
             title)
         self.add_move_event(self.titlebar)

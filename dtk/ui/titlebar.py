@@ -69,7 +69,7 @@ class Titlebar(EventBox):
             self.icon_image_box = ImageBox(icon_dpixbuf)
             self.icon_align = gtk.Alignment()
             self.icon_align.set(0.5, 0.5, 0.0, 0.0)
-            self.icon_align.set_padding(5, 5, 5, 5)
+            self.icon_align.set_padding(5, 5, 5, 0)
             self.icon_align.add(self.icon_image_box)
             self.left_box.pack_start(self.icon_align, False, False)
                     
@@ -78,7 +78,7 @@ class Titlebar(EventBox):
             self.app_name_box = Label(app_name, enable_gaussian=True)
             self.app_name_align = gtk.Alignment()
             self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
-            self.app_name_align.set_padding(2, 0, 0, 0)
+            self.app_name_align.set_padding(2, 0, 5, 0)
             self.app_name_align.add(self.app_name_box)
             self.left_box.pack_start(self.app_name_align, False, False)
         
