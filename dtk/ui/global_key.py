@@ -34,6 +34,7 @@ class GlobalKey(threading.Thread):
         self.display = Display()
         self.root = self.display.screen().root
         self._binding_map = {}
+        self.stop = False
 
         self.known_modifiers_mask = 0
         gdk_modifiers = (gtk.gdk.CONTROL_MASK, gtk.gdk.SHIFT_MASK, gtk.gdk.MOD1_MASK,
@@ -75,7 +76,7 @@ class GlobalKey(threading.Thread):
 
     def run(self):
         wait_for_release = False
-        while True:
+        while not self.stop:
             event = self.display.next_event()
             if self.running:
                 if event.type == X.KeyPress and not wait_for_release:
@@ -100,6 +101,11 @@ class GlobalKey(threading.Thread):
                 else:
                     self.display.allow_events(X.ReplayKeyboard, event.time)
 
+    def stop(self):
+        self.stop = True
+        self.ungrab()
+        self.display.close()
+        
 if __name__ == "__main__":
     gtk.gdk.threads_init()
     
