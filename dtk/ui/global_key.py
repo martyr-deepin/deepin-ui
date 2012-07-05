@@ -35,6 +35,7 @@ class GlobalKey(threading.Thread):
         self.root = self.display.screen().root
         self._binding_map = {}
         self.stop = False
+        self.running = True
 
         self.known_modifiers_mask = 0
         gdk_modifiers = (gtk.gdk.CONTROL_MASK, gtk.gdk.SHIFT_MASK, gtk.gdk.MOD1_MASK,
