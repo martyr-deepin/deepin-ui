@@ -142,8 +142,7 @@ class Wizard(Window):
                  window_width=540, 
                  window_height=365,
                  navigatebar_height=60,
-                 finish_button_width=226,
-                 finish_button_height=90):
+                 ):
         '''Init wizard.'''
         # Init.
         Window.__init__(self)
@@ -152,8 +151,6 @@ class Wizard(Window):
         self.window_width = window_width
         self.window_height = window_height
         self.navigatebar_height = navigatebar_height
-        self.finish_button_width = finish_button_width
-        self.finish_button_height = finish_button_height
         self.slider_number = len(self.slider_files)
         self.slide_index = 0
         self.slide_delay = 4000 # milliseconds
@@ -198,7 +195,13 @@ class Wizard(Window):
         
     def button_press_slider(self, widget, event):
         '''Button press slider.'''
-        widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
+        if self.slide_index == self.slider_number - 1:
+            if self.finish_callback:
+                self.finish_callback()
+                
+            self.destroy()    
+        else:
+            widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
     
     def button_press_navigatebar(self, widget, event):
         '''Button press navigatebar.'''
