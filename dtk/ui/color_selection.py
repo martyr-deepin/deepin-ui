@@ -438,7 +438,7 @@ class ColorButton(gtk.VBox):
 
         # Draw mask when widget is insensitive.
         if widget.state == gtk.STATE_INSENSITIVE:
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(("#ffffff", 0.85)))
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("color_button_disable_mask").get_color_info()))
             cr.rectangle(x + (w - self.color_area_width) / 2,
                          y + (h - self.color_area_height) / 2,
                          self.color_area_width,

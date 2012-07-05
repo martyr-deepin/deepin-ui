@@ -43,6 +43,7 @@
  "combo_entry_select_background" : "#4D4D4D",
  },	
  "alpha_colors" : {
+     "color_button_disable_mask" : ("#ffffff", 0.85),
 	 "volumebutton_bg" :("#abadaa", 1.0),
 	 "volumebutton_fg" :("#98e219", 1.0),
      "frame" : ("#000000", 0.5),
