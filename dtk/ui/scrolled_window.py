@@ -83,7 +83,6 @@ class ScrolledWindow(gtk.Bin):
         self.hallocation = gdk.Rectangle()
         self.set_vadjustment(gtk.Adjustment())
         self.set_hadjustment(gtk.Adjustment())
-        #self.set_app_paintable(True)
         self.set_has_window(False)
         
     def do_expose_event(self, e):

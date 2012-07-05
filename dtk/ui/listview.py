@@ -34,7 +34,7 @@ import os
 import pango
 import subprocess
 import tempfile
-from utils import (map_value, mix_list_max, get_content_size, color_hex_to_cairo,
+from utils import (map_value, mix_list_max, get_content_size, 
                    unzip, last_index, set_cursor, get_match_parent, 
                    remove_file,
                    cairo_state, get_event_coords, is_left_button, 

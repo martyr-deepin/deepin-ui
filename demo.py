@@ -68,6 +68,7 @@ from dtk.ui.osd_tooltip import OSDTooltip
 from dtk.ui.paned import HPaned
 from dtk.ui.popup_window import PopupWindow
 from dtk.ui.scrolled_window import ScrolledWindow
+from dtk.ui.slider import Wizard
 from dtk.ui.spin import SpinBox
 from dtk.ui.statusbar import Statusbar
 from dtk.ui.tab_window import TabWindow
@@ -238,8 +239,18 @@ if __name__ == "__main__":
         )
     droplist.set_size_request(-1, 100)
     
+    images_path = os.path.join(get_parent_dir(__file__, 1), "images")
     navigatebar = Navigatebar(
-        [(app_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", None),
+        [(app_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", 
+          lambda : Wizard([os.path.join(images_path, "slide_1.jpg"),
+                      os.path.join(images_path, "slide_2.jpg"),
+                      os.path.join(images_path, "slide_3.jpg"),
+                      os.path.join(images_path, "slide_4.jpg")],
+                      [(os.path.join(images_path, "select_1.png"), os.path.join(images_path, "unselect_1.png")),
+                       (os.path.join(images_path, "select_2.png"), os.path.join(images_path, "unselect_2.png")),
+                       (os.path.join(images_path, "select_3.png"), os.path.join(images_path, "unselect_3.png")),
+                       (os.path.join(images_path, "select_4.png"), os.path.join(images_path, "unselect_4.png")),
+                       ]).show_all()),
          (app_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", None),
          (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
          (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),

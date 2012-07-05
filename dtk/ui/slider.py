@@ -20,7 +20,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from draw import draw_pixbuf
 from timeline import Timeline, CURVE_SINE
+from utils import move_window
+from window import Window
 import gobject
 import gtk
 
@@ -28,9 +31,9 @@ class Slider(gtk.Viewport):
     active_widget = None
     _size_cache = None
 
-    def __init__(self):
+    def __init__(self, slide_callback=None):
         gtk.Viewport.__init__(self)
-
+        self.slide_callback = slide_callback
         self.timeouts = dict()
 
         self.set_shadow_type(gtk.SHADOW_NONE)
@@ -61,7 +64,10 @@ class Slider(gtk.Viewport):
             timeline = Timeline(500, CURVE_SINE)
             timeline.connect('update', update)
             timeline.run()
-
+            
+        if self.slide_callback:    
+            self.slide_callback(self.layout.get_children().index(widget), widget)
+            
     def size_allocate_cb(self, source, allocation):
 
         if self._size_cache != allocation and self.active_widget:
@@ -73,12 +79,10 @@ class Slider(gtk.Viewport):
         width = (len(self.layout.get_children()) or 1) * allocation.width
         self.content.set_size_request(width, allocation.height)
 
-
     def append_widget(self, widget):
-
         self.layout.pack_start(widget, True, True, 0)
 
-    def add_slide_timeout(self, widget, seconds):
+    def add_slide_timeout(self, widget, milliseconds):
         """
         Adds a timeout for ``widget`` to slide in after ``seconds``.
         """
@@ -86,8 +90,8 @@ class Slider(gtk.Viewport):
             raise RuntimeError("A timeout for '%s' was already added" % widget)
 
         callback = lambda: self.slide_to(widget)
-        self.timeouts[widget] = (gobject.timeout_add_seconds(seconds, callback),
-                                 seconds)
+        self.timeouts[widget] = (gobject.timeout_add(milliseconds, callback),
+                                 milliseconds)
 
     def remove_slide_timeout(self, widget):
         """
@@ -99,18 +103,18 @@ class Slider(gtk.Viewport):
             pass
 
 
-    def reset_slide_timeout(self, widget, seconds=None):
+    def reset_slide_timeout(self, widget, milliseconds=None):
         """
         Shorthand to ``remove_slide_timeout`` plus ``add_slide_timeout``.
         """
-        if seconds is None:
+        if milliseconds is None:
             try:
-                seconds = self.timeouts[widget][1]
+                milliseconds = self.timeouts[widget][1]
             except KeyError:
                 pass
             else:
                 self.remove_slide_timeout(widget)
-        self.add_slide_timeout(widget, seconds)
+        self.add_slide_timeout(widget, milliseconds)
 
     def try_remove_slide_timeout(self, widget):
         try:
@@ -127,6 +131,121 @@ class Slider(gtk.Viewport):
             self.reset_slide_timeout(widget, *args, **kwargs)
 
 gobject.type_register(Slider)
+
+class Wizard(Window):
+    '''Wizard.'''
+	
+    def __init__(self, 
+                 slider_files,
+                 navigate_files,
+                 finish_callback=None,
+                 window_width=540, 
+                 window_height=365,
+                 navigatebar_height=60,
+                 finish_button_width=226,
+                 finish_button_height=90):
+        '''Init wizard.'''
+        # Init.
+        Window.__init__(self)
+        self.slider_files = slider_files
+        self.finish_callback = finish_callback
+        self.window_width = window_width
+        self.window_height = window_height
+        self.navigatebar_height = navigatebar_height
+        self.finish_button_width = finish_button_width
+        self.finish_button_height = finish_button_height
+        self.slider_number = len(self.slider_files)
+        self.slide_index = 0
+        self.slide_delay = 4000 # milliseconds
+        
+        # Init navigate pixbufs.
+        self.select_pixbufs = []
+        self.unselect_pixbufs = []
+        for (select_file, unselect_file) in navigate_files:
+            self.select_pixbufs.append(gtk.gdk.pixbuf_new_from_file(select_file))
+            self.unselect_pixbufs.append(gtk.gdk.pixbuf_new_from_file(unselect_file))
+        self.navigate_item_width = self.select_pixbufs[0].get_width()    
+        
+        # Set window attributes.
+        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # make panel window don't switch in window manager
+        self.set_skip_taskbar_hint(True)
+        self.set_resizable(False)
+        self.set_modal(True)
+        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_size_request(self.window_width, self.window_height)
+        
+        # Add widgets.
+        self.main_box = gtk.VBox()
+        self.slider = Slider(self.set_slide_page)
+        self.navigatebar = gtk.EventBox()
+        self.navigatebar.set_visible_window(False)
+        self.navigatebar.set_size_request(-1, self.navigatebar_height)
+        self.main_box.pack_start(self.slider, True, True)
+        self.main_box.pack_start(self.navigatebar, False, False)
+        self.window_frame.add(self.main_box)
+
+        # Start animation.
+        self.slider_widgets = []
+        for (index, slider_file) in enumerate(self.slider_files):
+            widget = gtk.image_new_from_file(slider_file)
+            self.slider_widgets.append(widget)
+            self.slider.append_widget(widget)
+            self.slider.add_slide_timeout(widget, index * self.slide_delay)
+            
+        self.slider.connect("button-press-event", self.button_press_slider)    
+        self.navigatebar.connect("button-press-event", self.button_press_navigatebar)        
+        self.navigatebar.connect("expose-event", self.expose_navigatebar)
+        
+    def button_press_slider(self, widget, event):
+        '''Button press slider.'''
+        widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
+    
+    def button_press_navigatebar(self, widget, event):
+        '''Button press navigatebar.'''
+        # Init. 
+        rect = widget.allocation
+        
+        # Get navigate index.
+        navigate_index = int(event.x / (rect.width / self.slider_number))
+        
+        # Remove slider timeout.
+        for widget in self.slider_widgets:
+            self.slider.try_remove_slide_timeout(widget)
+        
+        # Slide select widget.
+        self.slider.slide_to(self.slider_widgets[navigate_index])
+        
+        # Reset timeout.
+        if navigate_index < self.slider_number - 1:
+            for (index, widget) in enumerate(self.slider_widgets[navigate_index::]):
+                self.slider.add_slide_timeout(widget, index * self.slide_delay)
+                
+    def expose_navigatebar(self, widget, event):
+        '''Expose navigatebar.'''
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        
+        # Render unselect item.
+        for (index, unselect_pixbuf) in enumerate(self.unselect_pixbufs):
+            if index != self.slide_index:
+                draw_pixbuf(cr, unselect_pixbuf,
+                            rect.x + index * self.navigate_item_width,
+                            rect.y)
+                
+        # Render select item.
+        draw_pixbuf(cr, self.select_pixbufs[self.slide_index],
+                    rect.x + self.slide_index * self.navigate_item_width,
+                    rect.y)        
+        
+        return True
+    
+    def set_slide_page(self, index, widget):
+        '''Set slide page.'''
+        self.slide_index = index
+        self.navigatebar.queue_draw()    
+        
+gobject.type_register(Wizard)
 
 if __name__ == "__main__":
     window = gtk.Window()    
