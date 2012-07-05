@@ -520,10 +520,12 @@ class SkinPreviewIcon(gobject.GObject):
         else:
             if self.is_deletable() and self.is_in_delete_button_area(x, y):
                 self.delete_button_status = self.BUTTON_HIDE
+                self.edit_button_status = self.BUTTON_HIDE
                 
                 # Pop delete dialog.
                 self.pop_delete_skin_dialog_callback(self)
             elif self.is_editable() and self.is_in_edit_button_area(x, y):
+                self.delete_button_status = self.BUTTON_HIDE
                 self.edit_button_status = self.BUTTON_HIDE
                 
                 self.change_skin_callback(self)
