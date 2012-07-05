@@ -94,7 +94,7 @@ class DialogBox(Window):
                  skip_taskbar_hint=True,
                  resizable=False):
         '''Dialog box.'''
-        Window.__init__(self)
+        Window.__init__(self, resizable)
         self.default_width = default_width
         self.default_height = default_height
         self.mask_type = mask_type
@@ -105,10 +105,11 @@ class DialogBox(Window):
         if window_hint:
             self.set_type_hint(window_hint)
         self.set_skip_taskbar_hint(skip_taskbar_hint) # skip taskbar
-        self.set_resizable(resizable)
         if self.default_width != None and self.default_height != None:
             self.set_default_size(self.default_width, self.default_height)
-            self.set_geometry_hints(None, self.default_width, self.default_height, -1, -1, -1, -1, -1, -1, -1, -1)
+            
+            if resizable:
+                self.set_geometry_hints(None, self.default_width, self.default_height, -1, -1, -1, -1, -1, -1, -1, -1)
             
         self.padding_left = 2
         self.padding_right = 2
