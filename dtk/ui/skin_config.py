@@ -284,10 +284,14 @@ class SkinConfig(gobject.GObject):
         
         self.apply_skin()
     
-    def render_background(self, cr, widget, x, y):
+    def render_background(self, cr, widget, x, y, 
+                          translate_width=0,
+                          translate_height=0):
         '''Render background.'''
-        # Get toplevel size.
+        # Init.
         toplevel_rect = widget.get_toplevel().allocation
+        render_width = toplevel_rect.width + translate_width
+        render_height = toplevel_rect.height + translate_height
         
         # Draw background.
         background_x = int(self.x * self.scale_x)
@@ -304,16 +308,17 @@ class SkinConfig(gobject.GObject):
             y + background_y)
         
         # Draw dominant color if necessarily.
-        if (background_width + background_x) < toplevel_rect.width and (background_height + background_y) < toplevel_rect.height:
+        if ((background_width + background_x) < render_width 
+            and (background_height + background_y) < render_height):
             cr.set_source_rgb(*color_hex_to_cairo(self.dominant_color))
             cr.rectangle(
                 x + background_x + background_width,
                 y + background_y + background_height,
-                toplevel_rect.width - (background_width + background_x),
-                toplevel_rect.height - (background_height + background_y))
+                render_width - (background_width + background_x),
+                render_height - (background_height + background_y))
             cr.fill()
         
-        if (background_width + background_x) < toplevel_rect.width:
+        if (background_width + background_x) < render_width:
             draw_hlinear(
                 cr,
                 x + (background_width + background_x) - SHADE_SIZE,
@@ -327,11 +332,11 @@ class SkinConfig(gobject.GObject):
             cr.rectangle(
                 x + (background_width + background_x),
                 y,
-                toplevel_rect.width - (background_width + background_x),
+                render_width - (background_width + background_x),
                 (background_height + background_y))
             cr.fill()
             
-        if (background_height + background_y) < toplevel_rect.height:
+        if (background_height + background_y) < render_height:
             draw_vlinear(
                 cr,
                 x,
@@ -346,7 +351,7 @@ class SkinConfig(gobject.GObject):
                 x,
                 y + (background_height + background_y),
                 (background_width + background_x),
-                toplevel_rect.height - (background_height + background_y))
+                render_height - (background_height + background_y))
             cr.fill()
             
     def export_skin(self, filepath):
