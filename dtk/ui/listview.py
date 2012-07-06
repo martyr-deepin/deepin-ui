@@ -63,6 +63,7 @@ class ListView(gtk.DrawingArea):
                  drag_data=None, # (targets, actions, button_masks)
                  enable_multiple_select=True,
                  enable_drag_drop=True,
+                 drag_icon_pixbuf=ui_theme.get_pixbuf("listview/drag_preview.png")
                  ):
         '''Init list view.'''
         # Init.
@@ -100,6 +101,7 @@ class ListView(gtk.DrawingArea):
         self.drag_preview_pixbuf = None
         self.drag_line_pixbuf = CachePixbuf()
         self.enable_multiple_select = enable_multiple_select
+        self.drag_icon_pixbuf = drag_icon_pixbuf
         
         # Signal.
         self.connect("realize", self.realize_list_view)
@@ -595,7 +597,7 @@ class ListView(gtk.DrawingArea):
                              "#FFFFFF",
                              temp_filepath]).wait()
                         drag_num_pixbuf = gtk.gdk.pixbuf_new_from_file(temp_filepath)
-                        drag_icon_pixbuf = ui_theme.get_pixbuf("listview/drag_preview.png").get_pixbuf()
+                        drag_icon_pixbuf = self.drag_icon_pixbuf.get_pixbuf()
                         drag_num_pixbuf.copy_area(
                             0, 0, drag_num_pixbuf.get_width(), drag_num_pixbuf.get_height(),
                             drag_icon_pixbuf, 
