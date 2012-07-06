@@ -245,7 +245,9 @@ class TreeView(gtk.DrawingArea):
                         else:
                             pixbuf = self.normal_pixbuf.get_pixbuf()
                         draw_pixbuf(cr, pixbuf,
-                                    font_w + self.font_x_padding + draw_widget.width + self.arrow_x_padding, 
+                                    widget.allocation.width - self.arrow_x_padding - self.font_x_padding,
+                                    # draw_widget.width - self.arrow_x_padding + self.font_x_padding,
+                                    # font_w + self.font_x_padding + draw_widget.width + self.arrow_x_padding, 
                                     temp_height + (self.height - self.normal_pixbuf.get_pixbuf().get_height()) / 2)
                     else:
                         if widget_index == index:
@@ -253,7 +255,9 @@ class TreeView(gtk.DrawingArea):
                         else:
                             pixbuf = self.press_pixbuf.get_pixbuf()
                         draw_pixbuf(cr, pixbuf,
-                                    font_w + self.font_x_padding + draw_widget.width + self.arrow_x_padding, 
+                                    widget.allocation.width - self.arrow_x_padding - self.font_x_padding,
+                                    # draw_widget.width - self.arrow_x_padding + self.font_x_padding,
+                                    # font_w + self.font_x_padding + draw_widget.width + self.arrow_x_padding, 
                                     temp_height + (self.height - self.normal_pixbuf.get_pixbuf().get_height()) / 2)
                     
                 temp_height += self.height     
