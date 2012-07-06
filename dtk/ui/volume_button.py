@@ -24,6 +24,7 @@
 from cache_pixbuf import CachePixbuf
 from draw import draw_pixbuf
 from theme import ui_theme
+from utils import set_clickable_cursor
 import gobject
 import gtk
 
@@ -165,6 +166,8 @@ class VolumeButton(gtk.Button):
             self.connect("scroll-event",     self.__scroll_mouse_set_point)
             
         self.set_size_request(volume_width + self.__volume_left_x + self.__volume_right_x + self.__mute_volume_normal_pixbuf.get_pixbuf().get_width(), 30)
+        
+        set_clickable_cursor(self)
             
     def set_press_emit_bool(self, emit_bool):
         self.__press_emit_bool = emit_bool
