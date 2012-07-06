@@ -39,7 +39,7 @@ class TreeView(gtk.DrawingArea):
     __gsignals__ = {
         "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-        "right-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject.TYPE_INT, gobject.TYPE_INT)),
+        "right-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject.TYPE_INT, gobject.TYPE_INT, gobject.TYPE_INT)),
         }
     
     def __init__(self, width=20, height = 30,
@@ -111,7 +111,7 @@ class TreeView(gtk.DrawingArea):
         index = int(self.press_height / self.height)
         
         if index_len > index:
-            if is_single_click(event):
+            if is_single_click(event) and event.button == 1:
                 self.highlight_index = index
                 self.press_draw_bool = True
             
@@ -120,15 +120,19 @@ class TreeView(gtk.DrawingArea):
                     self.sort()
                     self.queue_draw()
             
-            if is_single_click(event):
+            if is_single_click(event) and event.button == 1:
                 self.emit("single-click-item", self.tree_list[index].tree_view_item)
             elif is_double_click(event):    
                 self.emit("double-click-item", self.tree_list[index].tree_view_item)
             elif is_right_button(event):    
-                self.emit("right-press-item", self.tree_list[index].tree_view_item, event.x_root, event.y_root)
+                self.press_height = self.highlight_index * self.height
+                self.emit("right-press-item", self.tree_list[index].tree_view_item, int(event.x_root), int(event.y_root), index)
                 
         else:
             self.press_height = temp_press_height
+            if is_right_button(event):    
+                self.press_height = self.highlight_index * self.height
+                self.emit("right-press-item", event, int(event.x_root), int(event.y_root), -1)
                     
     def set_highlight_index(self, index):        
         index_len = len(self.tree_list)
@@ -319,8 +323,8 @@ class TreeView(gtk.DrawingArea):
         self.scan_save_item = None
                         
     def set_index_text(self, index, text):    
-        # 123456
         self.tree_list[index].text = text
+        self.queue_draw()
         
     def del_item_index(self):
         if self.move_index_num is not None:
