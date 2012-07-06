@@ -88,7 +88,8 @@ class VolumeButton(gtk.Button):
                  mute_volume_hover_pixbuf   = ui_theme.get_pixbuf("volumebutton/mute_hover.png"),
                  mute_volume_press_pixbuf   = ui_theme.get_pixbuf("volumebutton/mute_press.png"),
                  #=============================================================
-                 point_volume_pixbuf = ui_theme.get_pixbuf("volumebutton/point_normal.png")
+                 point_volume_pixbuf = ui_theme.get_pixbuf("volumebutton/point_normal.png"),
+                 inc_value=5,
                  ):        
         gtk.Button.__init__(self)
         ###########################
@@ -152,6 +153,7 @@ class VolumeButton(gtk.Button):
         # point value.
         self.__point_y         = self.__volume_right_y
         self.__point_padding_x = self.__volume_right_x
+        self.inc_value = inc_value
         
         '''Init VolumeButton event.'''
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
@@ -252,12 +254,12 @@ class VolumeButton(gtk.Button):
             if self.__point_padding_x >= temp_max:
                 self.__point_padding_x = temp_max
             else:    
-                self.__point_padding_x += 1
+                self.__point_padding_x += self.inc_value
         elif volume_type == VOLUME_LEFT:
             if self.__point_padding_x <= temp_min:
                 self.__point_padding_x = temp_min
             else:    
-                self.__point_padding_x -= 1
+                self.__point_padding_x -= self.inc_value
             
         self.queue_draw()
         
