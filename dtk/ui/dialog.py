@@ -108,7 +108,7 @@ class DialogBox(Window):
         if self.default_width != None and self.default_height != None:
             self.set_default_size(self.default_width, self.default_height)
             
-            if resizable:
+            if not resizable:
                 self.set_geometry_hints(None, self.default_width, self.default_height, -1, -1, -1, -1, -1, -1, -1, -1)
             
         self.padding_left = 2
