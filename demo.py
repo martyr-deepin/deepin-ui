@@ -471,7 +471,7 @@ if __name__ == "__main__":
     
     beijing_node = tree_view.add_item(None, TreeViewItem("深度 Linux"))    
     tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
-    
+    tree_view.set_index_text(1, "深度测试改名")
     # text_view = TextView("this is line one\nline break is awesome\nblahblahlooooooooooooooooooooooooooooooooooooooooooooooooooooooooog")
     # sw = ScrolledWindow()
     # text_viewport = gtk.Viewport()

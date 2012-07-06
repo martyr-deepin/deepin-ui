@@ -318,6 +318,10 @@ class TreeView(gtk.DrawingArea):
     def clear_scan_save_item(self):
         self.scan_save_item = None
                         
+    def set_index_text(self, index, text):    
+        # 123456
+        self.tree_list[index].text = text
+        
     def del_item_index(self):
         if self.move_index_num is not None:
             self.del_item(self.tree_list[self.move_index_num].id)            
