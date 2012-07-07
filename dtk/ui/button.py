@@ -23,6 +23,7 @@
 from cache_pixbuf import CachePixbuf
 from constant import DEFAULT_FONT_SIZE
 from draw import draw_vlinear, draw_pixbuf, draw_line, draw_text
+from keymap import get_keyevent_name
 from label import Label
 from theme import ui_theme
 import gobject
@@ -46,6 +47,10 @@ class Button(gtk.Button):
         self.set_label(label)
         
         self.connect("expose-event", self.expose_button)
+        self.connect("key-press-event", self.key_press_button)
+        
+        self.keymap = {
+            "Return" : self.clicked}
         
     def set_label(self, label, font_size=DEFAULT_FONT_SIZE):
         '''Set label.'''
@@ -55,6 +60,12 @@ class Button(gtk.Button):
                               max(self.label_height + self.padding_y * 2, self.min_height))
         
         self.queue_draw()
+        
+    def key_press_button(self, widget, event):
+        '''Key press button.'''
+        key_name = get_keyevent_name(event)
+        if self.keymap.has_key(key_name):
+            self.keymap[key_name]()
         
     def expose_button(self, widget, event):
         '''Expose button.'''

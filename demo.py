@@ -104,6 +104,9 @@ def print_entry_action(entry, entry_text):
     '''Print entry action.'''
     print entry_text
     
+def clicked_test(button):
+    print "clicked"
+    
 def simulate_redraw_request(items, items_length):
     '''Simulate item's redraw request.'''
     item_index = int(time.time() * 100) % items_length
@@ -367,6 +370,7 @@ if __name__ == "__main__":
     entry_box.pack_start(shortcust_entry, False, False)
     
     test_button = Button("测试")
+    test_button.connect("clicked", clicked_test)
     entry_box.pack_start(test_button, False, False)
     
     color_button = ColorButton()
