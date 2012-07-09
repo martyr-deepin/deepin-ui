@@ -148,7 +148,6 @@ class SkinPreviewPage(gtk.VBox):
         # Add drag image support.
         self.drag_dest_set(
             gtk.DEST_DEFAULT_MOTION |
-            gtk.DEST_DEFAULT_HIGHLIGHT |
             gtk.DEST_DEFAULT_DROP,
             [("text/uri-list", 0, 1)],
             gtk.gdk.ACTION_COPY)

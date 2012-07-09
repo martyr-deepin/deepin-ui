@@ -23,7 +23,7 @@
 from button import Button
 from constant import ALIGN_MIDDLE
 from draw import draw_vlinear, draw_blank_mask
-from entry import TextEntry
+from entry import InputEntry
 from label import Label
 from mask import draw_mask
 from skin_config import skin_config
@@ -316,7 +316,7 @@ class InputDialog(DialogBox):
         self.entry_align = gtk.Alignment()
         self.entry_align.set(0.5, 0.5, 0, 0)
         self.entry_align.set_padding(0, 0, 8, 8)
-        self.entry = TextEntry(init_text)
+        self.entry = InputEntry(init_text)
         self.entry.set_size(default_width - 20, 25)
         
         self.confirm_button = Button("确认")
