@@ -279,8 +279,10 @@ class Menu(Window):
         
         menu_width = menu_height = 0
         for menu_item in self.menu_items:
-            if menu_width == 0 and isinstance(menu_item.item_box, gtk.Button):
-                menu_width = menu_item.item_box_width
+            if isinstance(menu_item.item_box, gtk.Button):
+                item_box_width = menu_item.item_box_width
+                if item_box_width > menu_width:
+                    menu_width = item_box_width
             
             menu_height += menu_item.item_box_height    
         (shadow_x, shadow_y) = get_window_shadow_size(self)
