@@ -139,9 +139,10 @@ class Wizard(Window):
                  slider_files,
                  navigate_files,
                  finish_callback=None,
-                 window_width=552, 
+                 window_width=548, 
                  window_height=373,
-                 navigatebar_height=60,
+                 navigatebar_height=58,
+                 slide_delay=4000,
                  ):
         '''Init wizard.'''
         # Init.
@@ -153,7 +154,7 @@ class Wizard(Window):
         self.navigatebar_height = navigatebar_height
         self.slider_number = len(self.slider_files)
         self.slide_index = 0
-        self.slide_delay = 4000 # milliseconds
+        self.slide_delay = slide_delay # milliseconds
         
         # Init navigate pixbufs.
         self.select_pixbufs = []
@@ -164,10 +165,7 @@ class Wizard(Window):
         self.navigate_item_width = self.select_pixbufs[0].get_width()    
         
         # Set window attributes.
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG) # make panel window don't switch in window manager
-        self.set_skip_taskbar_hint(True)
         self.set_resizable(False)
-        self.set_modal(True)
         self.set_position(gtk.WIN_POS_CENTER)
         self.set_size_request(self.window_width, self.window_height)
         
@@ -181,7 +179,7 @@ class Wizard(Window):
         self.main_box.pack_start(self.navigatebar, True, True)
         self.main_align = gtk.Alignment()
         self.main_align.set(0.5, 0.5, 1, 1)
-        self.main_align.set_padding(2, 2, 2, 2)
+        self.main_align.set_padding(0, 0, 0, 0)
         self.main_align.add(self.main_box)
         self.window_frame.add(self.main_align)
 
