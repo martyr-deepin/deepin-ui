@@ -8,6 +8,7 @@
  "tooltip_frame" : "#E7E77C",
  "color_item_hover" : "#333333",
  "color_item_highlight" : "#FF0000",
+ "color_item_frame" : "#666666",
  "disable_frame" : "#cccccc",
  "disable_background" : "#f7f7f7",
  "disable_text" : "#a6a6a6",

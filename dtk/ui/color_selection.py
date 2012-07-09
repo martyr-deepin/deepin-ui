@@ -31,8 +31,10 @@ from spin import SpinBox
 from theme import ui_theme
 import gobject
 import gtk
-from utils import (gdkcolor_to_string, color_hex_to_cairo, propagate_expose, alpha_color_hex_to_cairo,
-                   color_hex_to_rgb, color_rgb_to_hex, is_hex_color, place_center)
+from utils import (gdkcolor_to_string, color_hex_to_cairo, 
+                   propagate_expose, alpha_color_hex_to_cairo,
+                   color_hex_to_rgb, color_rgb_to_hex, cairo_disable_antialias,
+                   is_hex_color, place_center)
 
 class HSV(gtk.ColorSelection):
     '''HSV.'''
@@ -277,6 +279,13 @@ class ColorItem(gobject.GObject):
             cr.stroke()
         elif self.highlight_flag:
             cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("color_item_highlight").get_color()))
+            cr.rectangle(draw_x, draw_y, self.width, self.height)
+            cr.stroke()
+
+        # Draw frame.
+        with cairo_disable_antialias(cr):    
+            cr.set_line_width(1)
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("color_item_frame").get_color()))
             cr.rectangle(draw_x, draw_y, self.width, self.height)
             cr.stroke()
             
