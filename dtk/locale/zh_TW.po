@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-09 13:13+0800\n"
+"POT-Creation-Date: 2012-07-09 16:03+0800\n"
 "PO-Revision-Date: 2012-07-09 13:13+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,21 +17,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: /home/andy/deepin-ui-private/dtk/ui/titlebar.py:108
-msgid "change_skin"
+msgid "Change skin"
 msgstr "換膚"
 
 #: /home/andy/deepin-ui-private/dtk/ui/titlebar.py:114
-msgid "main_menu"
+msgid "Main menu"
 msgstr "主菜單"
 
 #: /home/andy/deepin-ui-private/dtk/ui/titlebar.py:120
-msgid "min_window"
+msgid "Minimum"
 msgstr "最小化"
 
 #: /home/andy/deepin-ui-private/dtk/ui/titlebar.py:126
-msgid "max_window"
+msgid "Maximize"
 msgstr "最大化"
 
 #: /home/andy/deepin-ui-private/dtk/ui/titlebar.py:132
-msgid "close_window"
+msgid "Close"
 msgstr "關閉"

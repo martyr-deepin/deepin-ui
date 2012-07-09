@@ -156,6 +156,7 @@ class Menu(Window):
         self.menu_min_width = menu_min_width
         
         # Init menu window.
+        self.set_skip_pager_hint(True)
         self.set_skip_taskbar_hint(True)
         self.set_keep_above(True)
         
