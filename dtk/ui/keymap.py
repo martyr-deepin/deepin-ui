@@ -98,7 +98,7 @@ def parse_keyevent_name(keyevent_name):
         if gdk.keyval_is_upper(keyval) and len(get_key_name(keyval)) == 1:
             keyval = gdk.keyval_to_lower(keyval)
             modifier_mask = modifier_mask | gdk.SHIFT_MASK
-        
+            
     return (keyval, modifier_mask)
 
 def has_ctrl_mask(key_event):

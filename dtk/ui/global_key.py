@@ -23,9 +23,10 @@
 from Xlib import X
 from Xlib.display import Display
 from keymap import parse_keyevent_name
-import gtk
-import threading
 from threading import Lock
+import gtk
+import gtk.gdk as gdk
+import threading
 
 global_key_running = True
 global_key_lock = Lock()
@@ -64,16 +65,44 @@ class GlobalKey(threading.Thread):
             self.known_modifiers_mask |= mod
 
     def bind(self, binding_string, action):
+        # Get keybinding's keyval and modifiers.
         keyval, modifiers = parse_keyevent_name(binding_string)
+        
+        # Get key code.
         keycode = gtk.gdk.keymap_get_default().get_entries_for_keyval(keyval)[0][0]
+        
+        # Binding key.
         self._binding_map[(keycode, modifiers)] = action
+        
+        # Make keybinding can response even user enable Num-Lock key.
+        num_lock_modifiers = modifiers | gdk.MOD2_MASK 
+        self._binding_map[(keycode, num_lock_modifiers)] = action
+        
+        # Restart grab keybinding.
         self.regrab()
         
     def unbind(self, binding_string):
+        # Get keybinding.
         keyval, modifiers = parse_keyevent_name(binding_string)
+        
+        # Get key code.
         keycode = gtk.gdk.keymap_get_default().get_entries_for_keyval(keyval)[0][0]
+        
+        # Get modifiers with Num-Lock mask.
+        num_lock_modifiers = modifiers | gdk.MOD2_MASK 
+        
+        # Remove keybinding from binding map.
+        regrab_flag = False
         if self._binding_map.has_key((keycode, modifiers)):
             del self._binding_map[(keycode, modifiers)]
+            regrab_flag = True
+            
+        # Try remove key binding (with Num-Lock mask) from binding map.
+        if self._binding_map.has_key((keycode, num_lock_modifiers)):
+            del self._binding_map[(keycode, num_lock_modifiers)]
+            regrab_flag = True
+            
+        if regrab_flag:    
             self.regrab()
 
     def grab(self):
