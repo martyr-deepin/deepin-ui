@@ -128,7 +128,7 @@ class Titlebar(EventBox):
         # Add close button.
         if "close" in button_mask:
             self.close_button = CloseButton()
-            self.button_box.pack_start(self.close_button, False, False, 1)
+            self.button_box.pack_start(self.close_button, False, False)
             Tooltip.text(self.close_button, _("Close")).show_delay(self.close_button, 2000)        
         
         # Show.
