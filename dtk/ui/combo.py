@@ -175,7 +175,7 @@ class ComboBox(gtk.VBox):
             item = self.items[item_index]
             if item:
                 self.select_index = item_index
-                self.label.set_text(item.item[0])
+                self.label.set_text(item[0])
                 
     def get_item_with_index(self, item_index):
         '''Get item with index.'''
