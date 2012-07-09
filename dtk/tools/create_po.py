@@ -70,3 +70,14 @@ if __name__ == "__main__":
             shell=True
             )
         
+    # Replace ASCII with UTF-8.
+    for lang in langs:
+        po_filepath = os.path.join(locale_dir, "%s.po" % (lang))
+        read_file = open(po_filepath, "r")
+        whole_thing = read_file.read()
+        read_file.close()
+        
+        write_file = open(po_filepath, "w")
+        whole_thing = whole_thing.replace("charset=ASCII", "charset=UTF-8");
+        write_file.write(whole_thing);
+        write_file.close()

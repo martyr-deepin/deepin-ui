@@ -24,6 +24,8 @@ from box import EventBox, ImageBox
 from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
 from draw import draw_line
 from label import Label
+from locale import _
+import tooltip as Tooltip
 from utils import window_is_max
 import gobject
 import gtk
@@ -103,26 +105,31 @@ class Titlebar(EventBox):
         if "theme" in button_mask:
             self.theme_button = ThemeButton()
             self.button_box.pack_start(self.theme_button, False, False, 1)
+            Tooltip.text(self.theme_button, _("change_skin")).show_delay(self.theme_button, 2000)
 
         # Add menu button.
         if "menu" in button_mask:
             self.menu_button = MenuButton()
             self.button_box.pack_start(self.menu_button, False, False, 1)
+            Tooltip.text(self.menu_button, _("main_menu")).show_delay(self.menu_button, 2000)
         
         # Add min button.
         if "min" in button_mask:
             self.min_button = MinButton()
             self.button_box.pack_start(self.min_button, False, False, 1)
-        
+            Tooltip.text(self.min_button, _("min_window")).show_delay(self.min_button, 2000)        
+            
         # Add max button.
         if "max" in button_mask:
             self.max_button = MaxButton()
             self.button_box.pack_start(self.max_button, False, False, 1)
+            Tooltip.text(self.max_button, _("max_window")).show_delay(self.max_button, 2000)        
 
         # Add close button.
         if "close" in button_mask:
             self.close_button = CloseButton()
             self.button_box.pack_start(self.close_button, False, False, 1)
+            Tooltip.text(self.close_button, _("close_window")).show_delay(self.close_button, 2000)        
         
         # Show.
         self.show_all()

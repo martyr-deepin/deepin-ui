@@ -22,6 +22,7 @@
 
 import gtk
 import pango
+import os
 
 MENU_ITEM_RADIUS = 2            # menu item radius
 DEFAULT_WINDOW_WIDTH = 890      # default window width
