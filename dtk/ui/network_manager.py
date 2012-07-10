@@ -182,5 +182,9 @@ def const(prefix, val):
             return key.replace(prefix,'').lower()
     raise ValueError("No constant found for %s* with value %d", (prefix, val))
 
+def is_connected():
+    '''Is connected.'''
+    return NetworkManager.Enable and NetworkManager.State in [NM_STATE_CONNECTED_LOCAL, NM_STATE_CONNECTED_SITE, NM_STATE_CONNECTED_GLOBAL]
+
 if __name__ == "__main__":
     print NetworkManager.State
