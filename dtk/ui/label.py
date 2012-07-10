@@ -174,7 +174,7 @@ class Label(gtk.EventBox):
         
     def get_content_width(self, content):
         '''Get content width.'''
-        (content_width, content_height) = get_content_size(content, self.text_size)
+        (content_width, content_height) = get_content_size(content, self.text_size, wrap_width=self.wrap_width)
         return content_width
     
     def select_all(self):
@@ -304,9 +304,9 @@ class Label(gtk.EventBox):
     def update_size(self):
         '''Update size.'''
         if self.label_width == None:
-            (label_width, label_height) = get_content_size(self.text, self.text_size)
+            (label_width, label_height) = get_content_size(self.text, self.text_size, wrap_width=self.wrap_width)
         else:
-            (label_width, label_height) = get_content_size(self.text, self.text_size)
+            (label_width, label_height) = get_content_size(self.text, self.text_size, wrap_width=self.wrap_width)
             label_width = self.label_width
             
         if self.enable_gaussian:

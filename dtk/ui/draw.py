@@ -285,8 +285,8 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
     layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
     layout_set_markup(layout, markup)
     layout.set_alignment(alignment)
-    layout.set_single_paragraph_mode(True)
     if wrap_width == None:
+        layout.set_single_paragraph_mode(True)
         layout.set_width(w * pango.SCALE)
         layout.set_ellipsize(pango.ELLIPSIZE_END)
     else:
