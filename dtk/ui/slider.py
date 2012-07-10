@@ -22,7 +22,7 @@
 
 from draw import draw_pixbuf
 from timeline import Timeline, CURVE_SINE
-from utils import move_window
+from utils import move_window, is_in_rect
 from window import Window
 import gobject
 import gtk
@@ -143,6 +143,8 @@ class Wizard(Window):
                  window_height=373,
                  navigatebar_height=58,
                  slide_delay=4000,
+                 close_area_width=24,
+                 close_area_height=24,
                  ):
         '''Init wizard.'''
         # Init.
@@ -155,6 +157,8 @@ class Wizard(Window):
         self.slider_number = len(self.slider_files)
         self.slide_index = 0
         self.slide_delay = slide_delay # milliseconds
+        self.close_area_width = close_area_width
+        self.close_area_height = close_area_height
         
         # Init navigate pixbufs.
         self.select_pixbufs = []
@@ -197,7 +201,14 @@ class Wizard(Window):
         
     def button_press_slider(self, widget, event):
         '''Button press slider.'''
-        if self.slide_index == self.slider_number - 1:
+        rect = widget.allocation
+        (window_x, window_y) = widget.get_toplevel().window.get_origin()
+        if (self.slide_index == self.slider_number - 1
+            and is_in_rect((event.x_root, event.y_root), 
+                           (window_x + rect.width - self.close_area_width,
+                            window_y,
+                            self.close_area_width,
+                            self.close_area_height))):
             if self.finish_callback:
                 self.finish_callback()
                 
