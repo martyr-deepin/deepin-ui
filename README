@@ -4,7 +4,7 @@ WARNING: for Ubuntu base system, please install python-gtk2_2.24.0-3deepin1_amd6
 
 * Install:
   sudo apt-get install git
-  sudo apt-get install python-setuptools python-gtk2-dev python-cairo-dev libwebkitgtk-dev python-imaging py-scipy py-lxml pyquery && sudo python setup.py install
+  sudo apt-get install python-setuptools python-gtk2-dev python-cairo-dev libwebkitgtk-dev python-imaging py-scipy && sudo python setup.py install
   
 * Use:
   python ./deepin-ui/demo.py
