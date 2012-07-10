@@ -1025,6 +1025,7 @@ class ShortcutKeyEntry(gtk.VBox):
 	
     __gsignals__ = {
         "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
+        "wait-key-input" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
         "shortcut-key-change" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
@@ -1092,6 +1093,7 @@ class ShortcutKeyEntry(gtk.VBox):
         
         if is_left_button(event):
             self.entry.editable_flag = True
+            self.emit("wait-key-input", self.shortcut_key)
             self.set_text("请按下新的快捷键")
             self.entry.editable_flag = False
             
