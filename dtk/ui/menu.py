@@ -329,7 +329,7 @@ class Menu(Window):
         self.submenu = None
         self.root_menu = None
         
-    def show_submenu(self, submenu, coordinate):
+    def show_submenu(self, submenu, coordinate, offset_y):
         '''Show submenu.'''
         if self.submenu != submenu:
             # Hide old submenu first.
@@ -341,7 +341,7 @@ class Menu(Window):
             
             # Show new submenu.
             rect = self.get_allocation()
-            self.submenu.show(coordinate, (-rect.width + self.shadow_radius * 2, 0))
+            self.submenu.show(coordinate, (-rect.width + self.shadow_radius * 2, offset_y))
                 
     def hide_submenu(self):
         '''Hide submenu.'''
@@ -533,7 +533,8 @@ class MenuItem(object):
             self.show_submenu_callback(
                 item_node, 
                 (menu_window_x - menu_window.shadow_radius, 
-                 item_y - widget.get_allocation().height - menu_window.shadow_radius))
+                 item_y - widget.get_allocation().height - menu_window.shadow_radius),
+                self.item_box.allocation.height + menu_window.shadow_radius)
             
             self.submenu_active = True
         else:
