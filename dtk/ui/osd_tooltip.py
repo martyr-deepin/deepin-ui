@@ -87,7 +87,6 @@ class OSDTooltip(gtk.Window):
         
         # Never draw background.
         self.window.set_back_pixmap(None, False)
-        self.window.set_override_redirect(False)
         
     def show_osd_tooltip(self, widget):
         '''Show osd tooltip.'''
