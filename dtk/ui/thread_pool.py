@@ -30,23 +30,26 @@ import time
 
 class MissionThreadPool(td.Thread):
     '''Mission thread pool'''
+    
+    FINISH_SIGNAL = "Finish"
 	
     def __init__(self, 
-                 missions,                # mission threads
                  concurrent_thread_num=5, # max concurrent thread number
                  clean_delay=0,           # clean delay (milliseconds)
-                 clean_callback=None):    # clean callback
+                 clean_callback=None,     # clean callback
+                 exit_when_finish=False   # exit thread pool when all missions finish
+                 ):    
         '''Init thread pool.'''
         # Init thread.
         td.Thread.__init__(self)
         self.setDaemon(True) # make thread exit when main program exit 
         
         # Init arguments.
-        self.missions = missions
         self.concurrent_thread_num = concurrent_thread_num
         self.clean_delay = clean_delay
         self.clean_callback = clean_callback
         self.clean_time = time.time()
+        self.exit_when_finish = exit_when_finish
         
         # Init list.
         self.active_mission_list = []
@@ -55,17 +58,31 @@ class MissionThreadPool(td.Thread):
         
         # Init lock.
         self.thread_sync_lock = Lock()
-        self.finish_lock = Q.Queue()
+        self.mission_lock = Q.Queue()
 
     def run(self):
         '''Run.'''
-        self.add_missions(self.missions)
+        self.loop()
         
-        self.finish_lock.get()
-        
-        print ">>> Finish mission pool thread."
-        
+    def loop(self):
+        '''Loop.'''
+        result = self.mission_lock.get()
+        if result == self.FINISH_SIGNAL:
+            print ">>> Finish missions."
+            if self.exit_when_finish:
+                print ">>> Exit thread pool %s" % (self)
+            else:
+                print ">>> Wait new missions."
+                self.loop()
+        else:
+            self.start_missions(result)
+            self.loop()
+            
     def add_missions(self, missions):
+        '''Add missions.'''
+        self.mission_lock.put(missions)
+        
+    def start_missions(self, missions):
         '''Add missions.'''
         for (index, mission) in enumerate(missions):
             # Add to wait list if active mission number reach max value.
@@ -130,7 +147,7 @@ class MissionThreadPool(td.Thread):
                     
             # Exit thread when download finish.
             if (len(self.active_mission_list) == 0 and len(self.wait_mission_list) == 0):
-                self.finish_lock.put("Finish")
+                self.mission_lock.put(self.FINISH_SIGNAL)
                     
     def clean_mission(self, current_time):
         '''Clean missions.'''
@@ -189,14 +206,21 @@ def clean_cover(filepath):
 if __name__ == "__main__":
     gtk.gdk.threads_init()
         
-    artists = ["John Lennon", "Aqua", "Beatles", "Bob Dylan", "BSB", "Anastacia", "Coldplay",
-               "Daniel Powter", "Dixie Chicks", "Egil Olsen", "Elton John", "Elvis Presley",
-               "James Blunt", "James Morrison", "Jason Mraz"]
+    artists_one = ["John Lennon", "Aqua", "Beatles", "Bob Dylan", "BSB", "Anastacia", "Coldplay",
+                   "James Blunt", "James Morrison", "Jason Mraz"]
+    artists_two = ["Daniel Powter", "Dixie Chicks", "Egil Olsen", "Elton John", "Elvis Presley"]
     
-    missions = []
-    for artist in artists:
-        missions.append(TestMissionThread(artist))
+    missions_one = []
+    for artist in artists_one:
+        missions_one.append(TestMissionThread(artist))
+
+    missions_two = []
+    for artist in artists_two:
+        missions_two.append(TestMissionThread(artist))
         
-    MissionThreadPool(missions, 5, 1000, clean_cover).start()
+    pool = MissionThreadPool(5, 1000, clean_cover)
+    pool.start()
+    pool.add_missions(missions_one)
+    pool.add_missions(missions_two)
 
     gtk.main()
