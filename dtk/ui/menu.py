@@ -183,7 +183,13 @@ class Menu(Window):
                 self.item_box.pack_start(menu_item.item_box, False, False)
                 
         self.connect("show", self.init_menu)
+        self.connect("hide", self.hide_menu)
         self.connect("realize", self.realize_menu)
+        
+    def hide_menu(self, widget):
+        '''Hide menu.'''
+        # Avoid menu (popup window) show at (0, 0) when next show. 
+        self.move(-1000000, -1000000)
         
     def realize_menu(self, widget):
         '''Realize menu.'''
