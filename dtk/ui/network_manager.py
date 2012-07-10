@@ -116,12 +116,10 @@ class NMDbusInterface(object):
 class NetworkManager(NMDbusInterface):
     interface_name = 'org.freedesktop.NetworkManager'
     object_path = '/org/freedesktop/NetworkManager'
-NetworkManager = NetworkManager()
 
 class Settings(NMDbusInterface):
     interface_name = 'org.freedesktop.NetworkManager.Settings'
     object_path = '/org/freedesktop/NetworkManager/Settings'
-Settings = Settings()
 
 class Connection(NMDbusInterface):
     interface_name = 'org.freedesktop.NetworkManager.Settings.Connection'
@@ -184,7 +182,13 @@ def const(prefix, val):
 
 def is_connected():
     '''Is connected.'''
-    return NetworkManager.Enable and NetworkManager.State in [NM_STATE_CONNECTED_LOCAL, NM_STATE_CONNECTED_SITE, NM_STATE_CONNECTED_GLOBAL]
-
+    try:
+        network_manager = NetworkManager()
+        return (network_manager.Enable
+                and network_manager.State in [NM_STATE_CONNECTED_LOCAL, NM_STATE_CONNECTED_SITE, NM_STATE_CONNECTED_GLOBAL])
+    except Exception, e:
+        print e
+        return False
+            
 if __name__ == "__main__":
-    print NetworkManager.State
+    print is_connected()
