@@ -198,7 +198,6 @@ class Menu(Window):
         
         # Never draw background.
         self.window.set_back_pixmap(None, False)
-        self.window.set_override_redirect(False)
                 
     def draw_menu_mask(self, cr, x, y, w, h):
         '''Draw mask.'''
