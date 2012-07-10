@@ -603,9 +603,10 @@ gobject.type_register(DisableButton)
 class LinkButton(Label):
     '''Link button.'''
 	
-    def __init__(self, text, link, enable_gaussian=True):
+    def __init__(self, text, link, enable_gaussian=True, 
+                 text_color=ui_theme.get_color("link_text")):
         '''Init link button.'''
-        Label.__init__(self, text, enable_gaussian=enable_gaussian, text_size=9,
+        Label.__init__(self, text, text_color, enable_gaussian=enable_gaussian, text_size=9,
                        gaussian_radious=1, border_radious=0)
         
         self.connect("button-press-event", lambda w, e: run_command("xdg-open %s" % link))

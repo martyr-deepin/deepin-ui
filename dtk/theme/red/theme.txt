@@ -30,6 +30,7 @@
  "entry_cursor" : "#333333",
  "osd_tooltip_text" : "#77b0e5",
  "osd_tooltip_border" : "#000000",
+ "link_text" : "#2030CE",
  "label_text" : "#000000",
  "label_select_text" : "#FFFFFF",
  "label_select_background" : "#CC3333",
