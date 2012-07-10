@@ -8,7 +8,6 @@ from utils import propagate_expose, color_hex_to_cairo, cairo_disable_antialias
 import cairo
 import gobject
 import gtk
-import time
 
 #!!!!!!!!!!!!!!!!maybe you want to goto to the line of *388* !!!!!!!!!!!!!!!!!!#
 
@@ -136,23 +135,12 @@ def update_tooltip(display):
         hide_tooltip()
 
     if TooltipInfo.show_id == 0:
+        if TooltipInfo.in_quickshow:
+            show_delay = 300
+        else:
+            show_delay = TooltipInfo.winfo.show_delay
         TooltipInfo.pos_info = (int(rx+x), int(ry+y))
-        TooltipInfo.show_id = gobject.timeout_add(TooltipInfo.winfo.show_delay, lambda : show_tooltip(*TooltipInfo.pos_info))
-
-    return
-
-    if TooltipInfo.pos_info == (int(rx+x), int(ry+y)):
-        duration = (time.time() - TooltipInfo.stamp) * 1000
-        if duration > TooltipInfo.winfo.show_delay and not TooltipInfo.on_showing \
-                and TooltipInfo.stamp != 0 :
-            show_tooltip(*TooltipInfo.pos_info)
-    else:
-        TooltipInfo.pos_info = (int(rx+x), int(ry+y))
-        hide_tooltip()
-        TooltipInfo.stamp = time.time()
-
-    return True
-
+        TooltipInfo.show_id = gobject.timeout_add(show_delay, lambda : show_tooltip(*TooltipInfo.pos_info))
 
 
 class TooltipInfo:
@@ -171,6 +159,10 @@ class TooltipInfo:
     stamp = 0
     enable_count = 0
     show_id = 0
+
+    in_quickshow = False
+    quickshow_id = 0
+    quickshow_delay = 2500
 
 def generate_tooltip_content():
     """ generate child widget and update the TooltipInfo"""
@@ -212,6 +204,20 @@ def generate_tooltip_content():
     else:
         TooltipInfo.need_update = False
 
+
+def enable_quickshow():
+    def disable_q():
+        TooltipInfo.in_quickshow = False
+        if TooltipInfo.quickshow_id != 0:
+            gobject.source_remove(TooltipInfo.quickshow_id)
+    TooltipInfo.in_quickshow = True
+    if TooltipInfo.quickshow_id == 0:
+        TooltipInfo.quickshow_id = gobject.timeout_add(TooltipInfo.quickshow_delay, disable_q)
+    else:
+        gobject.source_remove(TooltipInfo.quickshow_id)
+        TooltipInfo.quickshow_id = gobject.timeout_add(TooltipInfo.quickshow_delay, disable_q)
+
+
 def hide_tooltip():
     TooltipInfo.window.hide()
     TooltipInfo.on_showing = False
@@ -226,6 +232,7 @@ def show_tooltip(x, y):
     if TooltipInfo.enable_count == 0 or not TooltipInfo.winfo.enable:
         return
     generate_tooltip_content()
+    enable_quickshow()
 
     #What will happen if the content widget is very big?
     #----------------------------------------------
@@ -563,7 +570,6 @@ def disable_all(value):
 
 def tooltip_handler(event):
     gtk.main_do_event(event)
-    import time
     if event.type == gdk.MOTION_NOTIFY:
         # print "leave", time.time()
         update_tooltip(display)
