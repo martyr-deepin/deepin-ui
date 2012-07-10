@@ -253,7 +253,7 @@ def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#
             gaussian_radious = 0
             
         # Draw gaussian border.
-        if border_radious != None and border_color != None:
+        if border_radious != None and border_radious != 0 and border_color != None:
             render_text(text_cr, markup, gaussian_radious, gaussian_radious, w - gaussian_radious * 2, h - gaussian_radious * 2, text_size, border_color, alignment=alignment)
             dtk_cairo_blur.gaussian_blur(surface, border_radious)
         

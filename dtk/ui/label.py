@@ -41,6 +41,8 @@ class Label(gtk.EventBox):
                  enable_gaussian=False,
                  enable_select=True,
                  enable_double_click=True,
+                 gaussian_radious=2,
+                 border_radious=1,
                  ):
         '''Init label.'''
         # Init.
@@ -68,14 +70,14 @@ class Label(gtk.EventBox):
         self.text_select_background = ui_theme.get_color("label_select_background")    
             
         if self.enable_gaussian:
-            self.gaussian_radious=2
+            self.gaussian_radious = gaussian_radious
+            self.border_radious = border_radious
             self.gaussian_color="#000000"
-            self.border_radious=1
             self.border_color="#000000"
         else:
             self.gaussian_radious=None
-            self.gaussian_color=None
             self.border_radious=None
+            self.gaussian_color=None
             self.border_color=None
             
         self.text_x_align = text_x_align

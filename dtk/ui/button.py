@@ -605,7 +605,8 @@ class LinkButton(Label):
 	
     def __init__(self, text, link, enable_gaussian=True):
         '''Init link button.'''
-        Label.__init__(self, text, enable_gaussian=enable_gaussian, text_size=10)
+        Label.__init__(self, text, enable_gaussian=enable_gaussian, text_size=9,
+                       gaussian_radious=1, border_radious=0)
         
         self.connect("button-press-event", lambda w, e: run_command("xdg-open %s" % link))
         
