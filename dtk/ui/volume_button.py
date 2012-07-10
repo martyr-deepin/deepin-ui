@@ -326,7 +326,10 @@ class VolumeButton(gtk.Button):
             self.__volume_state = MUTE_STATE
                     
     def set_volume_mute(self):
+        self.temp_mute_bool = False
+        self.__mute_bool = True
         self.__volume_state = MUTE_STATE
+        self.queue_draw()
             
     def __draw_volume_left(self, widget, event):
         cr = widget.window.cairo_create()
