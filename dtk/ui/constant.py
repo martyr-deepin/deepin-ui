@@ -22,7 +22,6 @@
 
 import gtk
 import pango
-import os
 
 MENU_ITEM_RADIUS = 2            # menu item radius
 DEFAULT_WINDOW_WIDTH = 890      # default window width
@@ -56,8 +55,8 @@ DEFAULT_FONT = ' '.join(str(font_test_window.get_pango_context().get_font_descri
 font_test_window.destroy()
 
 ALIGN_START = pango.ALIGN_LEFT
-ALIGN_END = pango.ALIGN_CENTER
-ALIGN_MIDDLE = pango.ALIGN_RIGHT
+ALIGN_MIDDLE = pango.ALIGN_CENTER
+ALIGN_END = pango.ALIGN_RIGHT
 
 BUTTON_NORMAL = 0
 BUTTON_PRESS = 1
