@@ -43,6 +43,7 @@ class Label(gtk.EventBox):
                  enable_double_click=True,
                  gaussian_radious=2,
                  border_radious=1,
+                 wrap_width=None,
                  ):
         '''Init label.'''
         # Init.
@@ -59,6 +60,7 @@ class Label(gtk.EventBox):
         self.left_click_coordindate = None
         self.drag_start_index = 0
         self.drag_end_index = 0
+        self.wrap_width = wrap_width
         
         self.text = text
         self.text_size = text_size
@@ -226,7 +228,8 @@ class Label(gtk.EventBox):
                       gaussian_radious=self.gaussian_radious,
                       gaussian_color=self.gaussian_color,
                       border_radious=self.border_radious,
-                      border_color=self.border_color
+                      border_color=self.border_color,
+                      wrap_width=self.wrap_width
                       )
         elif self.select_start_index == self.select_end_index:    
             draw_text(cr, self.text, 
@@ -237,7 +240,8 @@ class Label(gtk.EventBox):
                       gaussian_radious=self.gaussian_radious,
                       gaussian_color=self.gaussian_color,
                       border_radious=self.border_radious,
-                      border_color=self.border_color
+                      border_color=self.border_color,
+                      wrap_width=self.wrap_width
                       )
         else:
             select_start_width = self.get_content_width(self.text[0:self.select_start_index])
@@ -253,7 +257,8 @@ class Label(gtk.EventBox):
                           gaussian_radious=self.gaussian_radious,
                           gaussian_color=self.gaussian_color,
                           border_radious=self.border_radious,
-                          border_color=self.border_color
+                          border_color=self.border_color,
+                          wrap_width=self.wrap_width
                           )
 
             # Draw middle text.
@@ -266,7 +271,8 @@ class Label(gtk.EventBox):
                           gaussian_radious=self.gaussian_radious,
                           gaussian_color=self.gaussian_color,
                           border_radious=self.border_radious,
-                          border_color=self.border_color
+                          border_color=self.border_color,
+                          wrap_width=self.wrap_width
                           )
 
             # Draw right text.
@@ -279,7 +285,8 @@ class Label(gtk.EventBox):
                           gaussian_radious=self.gaussian_radious,
                           gaussian_color=self.gaussian_color,
                           border_radious=self.border_radious,
-                          border_color=self.border_color
+                          border_color=self.border_color,
+                          wrap_width=self.wrap_width
                           )
         
     def get_text(self):
