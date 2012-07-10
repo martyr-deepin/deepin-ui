@@ -20,17 +20,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from draw import draw_vlinear, draw_text
 from utils import get_content_size
 import cairo
 import gtk
 import pango
 import sys
 
+# Below import must at end, otherwise will got ImportError
+from draw import draw_vlinear, draw_text
+
 def render_pixbuf(widget, event, input_args):
     '''Render pixbuf.'''
     # Init.
     (select_num, vlinear_color, text_color, filepath) = input_args
+    
     cr = widget.window.cairo_create()
     rect = widget.allocation
     num_pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, rect.width, rect.height)                                           
