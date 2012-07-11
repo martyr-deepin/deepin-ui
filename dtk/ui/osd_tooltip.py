@@ -138,7 +138,7 @@ class OSDTooltip(gtk.Window):
         self.tooltip_height = tooltip_height
         
         # Move tooltip to given position.
-        (monitor_x, monitor_y) = get_widget_root_coordinate(self.monitor_widget, WIDGET_POS_TOP_LEFT)
+        (monitor_x, monitor_y) = self.monitor_widget.window.get_origin()
         self.tooltip_x = monitor_x + self.offset_x
         self.tooltip_y = monitor_y + self.offset_y
         
