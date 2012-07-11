@@ -528,14 +528,17 @@ class ListView(gtk.DrawingArea):
         self.draw_shadow_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
         
         # Draw drag reference row.
-        if self.drag_reference_row:
+        if self.drag_reference_row != None:
             drag_pixbuf = ui_theme.get_pixbuf("listview/drag_line.png").get_pixbuf()
             self.drag_line_pixbuf.scale(drag_pixbuf, rect.width, drag_pixbuf.get_height())
-            draw_pixbuf(
-                cr,
-                self.drag_line_pixbuf.get_cache(),
-                rect.x,
-                rect.y + self.drag_reference_row * self.item_height + self.title_offset_y)
+            if self.drag_reference_row == 0:
+                drag_line_y = rect.y + self.title_offset_y
+            elif self.drag_reference_row == len(self.items):
+                drag_line_y = rect.y + (self.drag_reference_row) * self.item_height + self.title_offset_y - drag_pixbuf.get_height()
+            else:
+                drag_line_y = rect.y + self.drag_reference_row * self.item_height + self.title_offset_y
+                
+            draw_pixbuf(cr, self.drag_line_pixbuf.get_cache(), rect.x, drag_line_y)
             
         return False
     
@@ -624,7 +627,7 @@ class ListView(gtk.DrawingArea):
                                                   vadjust.get_lower()))
                             
                         # Get drag reference row.
-                        self.drag_reference_row = self.get_event_row(event)    
+                        self.drag_reference_row = self.get_event_row(event, 1)    
                         
                         self.queue_draw()
                     else:
@@ -1029,11 +1032,11 @@ class ListView(gtk.DrawingArea):
         else:
             return None
             
-    def get_event_row(self, event):
+    def get_event_row(self, event, offset_index=0):
         '''Get event row.'''
         (event_x, event_y) = get_event_coords(event)
         row = int((event_y - self.title_offset_y) / self.item_height)
-        if 0 <= row <= last_index(self.items):
+        if 0 <= row <= last_index(self.items) + offset_index:
             return row
         else:
             return None
