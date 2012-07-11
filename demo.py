@@ -485,4 +485,3 @@ if __name__ == "__main__":
     
     # Run.
     application.run()
-    # run_with_profile(application.run, "~/test.txt")

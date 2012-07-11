@@ -837,21 +837,6 @@ def get_window_shadow_size(window):
     else:
         return (0, 0)
 
-def run_with_profile(func, log_file, sort='time', amount=20):  
-    import hotshot    
-    import hotshot.stats  
-    
-    # Run hotshot.
-    filepath = os.path.expanduser(log_file)
-    prof = hotshot.Profile(filepath, 1)    
-    prof.runcall(func)
-    prof.close()    
-    
-    # Print log.
-    print "----------------------parsing profile data---------------------"
-    p = hotshot.stats.load(filepath)   
-    p.sort_stats(sort).print_stats(amount)
-
 def layout_set_markup(layout, markup):
     '''Set layout markup.'''
     if "&" in markup or "<" in markup or ">" in markup:
