@@ -22,7 +22,6 @@
 
 import subprocess
 import os
-import glob
 from ConfigParser import RawConfigParser as ConfigParser
 
 def remove_directory(path):
@@ -55,7 +54,12 @@ if __name__ == "__main__":
     create_directory(locale_dir)
     
     # Get input arguments.
-    source_files = glob.glob(os.path.join(source_dir, "*.py"))
+    source_files = []
+    for root, dirs, files in os.walk(source_dir):
+        for each_file in files:
+            if each_file.endswith(".py") and not each_file.startswith("."):
+                source_files.append(os.path.join(root, each_file))
+                
     pot_filepath = os.path.join(locale_dir, project_name + ".pot")
     
     # Generate pot file.
