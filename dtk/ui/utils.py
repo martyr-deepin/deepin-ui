@@ -950,3 +950,7 @@ def check_connect_by_port(port, retry_times=6, sleep_time=0.5):
             else:
                 continue
     return ret_val
+
+def is_network_connected():
+    '''Is network connected.'''
+    return len(filter(lambda line: line != '', open("/proc/net/arp", "r").read().split("\n")) )> 1
