@@ -330,6 +330,12 @@ class InputDialog(DialogBox):
         
         self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
+        self.connect("show", self.focus_input)
+        
+    def focus_input(self, widget):
+        '''Focus input.'''
+        self.entry.entry.grab_focus()        
+        
     def click_confirm_button(self):
         '''Click confirm button.'''
         if self.confirm_callback != None:
