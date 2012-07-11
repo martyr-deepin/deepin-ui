@@ -143,8 +143,8 @@ class Wizard(Window):
                  window_height=373,
                  navigatebar_height=58,
                  slide_delay=4000,
-                 close_area_width=24,
-                 close_area_height=24,
+                 close_area_width=32,
+                 close_area_height=32,
                  ):
         '''Init wizard.'''
         # Init.
