@@ -63,7 +63,8 @@ class ListView(gtk.DrawingArea):
                  drag_data=None, # (targets, actions, button_masks)
                  enable_multiple_select=True,
                  enable_drag_drop=True,
-                 drag_icon_pixbuf=ui_theme.get_pixbuf("listview/drag_preview.png")
+                 drag_icon_pixbuf=ui_theme.get_pixbuf("listview/drag_preview.png"),
+                 drag_out_offset=50,
                  ):
         '''Init list view.'''
         # Init.
@@ -102,6 +103,7 @@ class ListView(gtk.DrawingArea):
         self.drag_line_pixbuf = CachePixbuf()
         self.enable_multiple_select = enable_multiple_select
         self.drag_icon_pixbuf = drag_icon_pixbuf
+        self.drag_out_offset = drag_out_offset
         
         # Signal.
         self.connect("realize", self.realize_list_view)
@@ -923,8 +925,8 @@ class ListView(gtk.DrawingArea):
         (event_x, event_y) = get_event_coords(event)
         scrolled_window = get_match_parent(self, ["ScrolledWindow"])
         vadjust = scrolled_window.get_vadjustment()
-        return (0 <= event_x <= scrolled_window.allocation.width
-                and vadjust.get_value() <= event_y <= vadjust.get_value() + vadjust.get_page_size())
+        return (-self.drag_out_offset <= event_x <= scrolled_window.allocation.width + self.drag_out_offset
+                and vadjust.get_value() - self.drag_out_offset <= event_y <= vadjust.get_value() + vadjust.get_page_size() + self.drag_out_offset)
     
     def drag_select_items_at_cursor(self, event):
         '''Drag select items at cursor position.'''
