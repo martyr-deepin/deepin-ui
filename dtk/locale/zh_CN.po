@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-12 17:30+0800\n"
-"PO-Revision-Date: 2012-07-09 13:13+0800\n"
+"POT-Creation-Date: 2012-07-13 07:14+0800\n"
+"PO-Revision-Date: 2012-07-13 07:14+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -27,11 +27,11 @@ msgstr "关闭"
 
 #: ../ui/skin.py:274
 msgid "Skin version mismatch"
-msgstr "皮肤版本不匹配"
+msgstr "皮肤版本不一致"
 
 #: ../ui/skin.py:275
 msgid "Import skin version is mismatch with current one!"
-msgstr "导入的皮肤和当前皮肤版本不匹配"
+msgstr "导入皮肤和当前皮肤版本不一致"
 
 #: ../ui/skin.py:307
 msgid "Delete skin"
@@ -39,7 +39,7 @@ msgstr "删除皮肤"
 
 #: ../ui/skin.py:308
 msgid "Are you sure delete this skin?"
-msgstr "你确定删除当前皮肤吗?"
+msgstr "你确定要删除当前皮肤？"
 
 #: ../ui/skin.py:680
 msgid "Add skin from file"
@@ -47,7 +47,7 @@ msgstr "添加皮肤文件"
 
 #: ../ui/skin.py:783 ../ui/color_selection.py:75
 msgid "Select color"
-msgstr "颜色选择"
+msgstr "选择颜色"
 
 #: ../ui/skin.py:799
 msgid "Return"

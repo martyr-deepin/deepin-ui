@@ -369,7 +369,7 @@ class SkinPreviewIcon(gobject.GObject):
         
         self.show_delete_button_id = None
         self.show_edit_button_id = None
-        self.show_delay = 1000  # milliseconds
+        self.show_delay = 500  # milliseconds
         
         # Load skin config information.
         self.config = Config(os.path.join(self.skin_dir, "config.ini"))
@@ -550,8 +550,6 @@ class SkinPreviewIcon(gobject.GObject):
         if not self.is_deletable() and not self.is_editable():
             self.change_skin_callback(self)    
         else:
-            self.change_skin_callback(self)
-            
             if self.is_deletable() and self.is_in_delete_button_area(x, y):
                 if self.delete_button_status != self.BUTTON_HIDE:
                     self.delete_button_status = self.BUTTON_HIDE
@@ -563,7 +561,10 @@ class SkinPreviewIcon(gobject.GObject):
                     self.delete_button_status = self.BUTTON_HIDE
                     self.edit_button_status = self.BUTTON_HIDE
                 
+                    self.change_skin_callback(self)
                     self.switch_edit_page_callback()
+            else:
+                self.change_skin_callback(self)
                     
         self.emit_redraw_request()    
     
