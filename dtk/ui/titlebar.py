@@ -24,7 +24,7 @@ from box import EventBox, ImageBox
 from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
 from draw import draw_line
 from label import Label
-from locale import _
+from locales import _
 import tooltip as Tooltip
 from utils import window_is_max
 import gobject
