@@ -640,7 +640,7 @@ class ListView(gtk.DrawingArea):
 
                         self.queue_draw()
             else:
-                if self.enable_multiple_select:
+                if self.enable_multiple_select and (not self.press_ctrl and not self.press_shift):
                     # Get hover row.
                     hover_row = self.get_event_row(event)
                     
