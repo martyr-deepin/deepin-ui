@@ -7,6 +7,4 @@ LOCALE_DIR=os.path.join(get_parent_dir(__file__, 2), "locale")
 if not os.path.exists(LOCALE_DIR):
     LOCALE_DIR="/usr/share/locale"
     
-gettext.bindtextdomain(APP_NAME, LOCALE_DIR)
-gettext.textdomain(APP_NAME)
-_ = gettext.gettext
+_ = gettext.translation(APP_NAME, LOCALE_DIR).gettext
