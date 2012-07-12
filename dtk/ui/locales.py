@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # To test other language, use below method:
-#       env LANGUAGE=zh_CN foo.py
+#       env LANG=zh_CN LANGUAGE=zh_CN foo.py
 
 from utils import get_parent_dir
 import gettext
@@ -31,5 +31,9 @@ APP_NAME="deepin-ui"
 LOCALE_DIR=os.path.join(get_parent_dir(__file__, 2), "locale")
 if not os.path.exists(LOCALE_DIR):
     LOCALE_DIR="/usr/share/locale"
-    
-_ = gettext.translation(APP_NAME, LOCALE_DIR).gettext
+
+_ = None    
+try:
+    _ = gettext.translation(APP_NAME, LOCALE_DIR).gettext
+except Exception, e:
+    _ = lambda i : i
