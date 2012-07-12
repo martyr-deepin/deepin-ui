@@ -20,6 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# To test other language, use below method:
+#       env LANGUAGE=zh_CN foo.py
+
 from utils import get_parent_dir
 import gettext
 import os
