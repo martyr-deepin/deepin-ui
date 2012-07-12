@@ -509,7 +509,7 @@ class ListView(gtk.DrawingArea):
                 draw_text(cr, self.titles[column], 
                           cell_offset_x, offset_y, cell_widths[column], self.title_height,
                           DEFAULT_FONT_SIZE, 
-                          ui_theme.get_color("list_item_text").get_color(),
+                          ui_theme.get_color("list_view_title").get_color(),
                           alignment=pango.ALIGN_CENTER)    
                 
                 # Draw sort icon.

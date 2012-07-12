@@ -17,6 +17,7 @@
  "category_item" : "#333333",
  "category_select_item" : "#FFFFFF",
  "button_default_font" : "#000000",
+ "list_view_title" : "#151515",
  "list_item_text" : "#000000",
  "list_item_select_text" : "#ffffff",
  "titlebar" : "#000000",
