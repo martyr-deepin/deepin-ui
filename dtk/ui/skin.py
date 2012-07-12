@@ -30,6 +30,7 @@ from dominant_color import get_dominant_color
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from iconview import IconView
 from label import Label
+from locales import _
 from scrolled_window import ScrolledWindow
 from skin_config import skin_config
 from theme import ui_theme
@@ -79,12 +80,12 @@ class SkinWindow(DialogBox):
 	
     def __init__(self, app_frame_pixbuf, preview_width=450, preview_height=500):
         '''Init skin.'''
-        DialogBox.__init__(self, "选择皮肤", preview_width, preview_height, mask_type=DIALOG_MASK_SINGLE_PAGE)
+        DialogBox.__init__(self, _("Select skin"), preview_width, preview_height, mask_type=DIALOG_MASK_SINGLE_PAGE)
         self.app_frame_pixbuf = app_frame_pixbuf
         
         self.preview_page = SkinPreviewPage(self, self.change_skin, self.switch_edit_page)
 
-        self.close_button = Button("关闭")
+        self.close_button = Button(_("Close"))
         self.close_button.connect("clicked", lambda w: w.get_toplevel().destroy())
         self.right_button_box.set_buttons([self.close_button])
         
@@ -102,7 +103,7 @@ class SkinWindow(DialogBox):
         self.body_box.add(self.preview_page)
         self.preview_page.highlight_skin()
         
-        self.close_button = Button("关闭")
+        self.close_button = Button(_("Close"))
         self.close_button.connect("clicked", lambda w: w.get_toplevel().destroy())
         self.right_button_box.set_buttons([self.close_button])
         
@@ -270,8 +271,8 @@ class SkinPreviewPage(gtk.VBox):
                 # Remove skin directory if version mismatch.
                 remove_directory(skin_dir)
                 
-                ConfirmDialog("主题版本不匹配",
-                              "导入主题版本和当前应用版本不一致!").show_all()
+                ConfirmDialog(_("Skin version mismatch"),
+                              _("Import skin version is mismatch with current one!")).show_all()
                 return 
         
         # Apply new skin.
@@ -303,8 +304,8 @@ class SkinPreviewPage(gtk.VBox):
     def pop_delete_skin_dialog(self, item):
         '''Pop delete skin dialog.'''
         dialog = ConfirmDialog(
-            "删除主题",
-            "你确定要删除当前主题吗？",
+            _("Delete skin"),
+            _("Are you sure delete this skin?"),
             confirm_callback = lambda : self.remove_skin(item))
         dialog.show_all()
         dialog.connect("show", lambda w: place_center(self.get_toplevel(), w))
@@ -676,7 +677,7 @@ class SkinAddIcon(gobject.GObject):
     
     def icon_item_button_press(self, x, y):
         '''Handle button-press event.'''
-        OpenFileDialog("添加皮肤文件", None, self.ok_callback, self.cancel_callback)
+        OpenFileDialog(_("Add skin from file"), None, self.ok_callback, self.cancel_callback)
     
     def icon_item_button_release(self, x, y):
         '''Handle button-release event.'''
@@ -779,7 +780,7 @@ class SkinEditPage(gtk.VBox):
         self.color_label_align = gtk.Alignment()
         self.color_label_align.set(0.0, 0.5, 0, 0)
         self.color_label_align.set_padding(0, 0, 20, 0)
-        self.color_label = Label("配色选择", ui_theme.get_color("skin_title"), 11)
+        self.color_label = Label(_("Select color"), ui_theme.get_color("skin_title"))
         self.color_label.set_size_request(100, 30)
         self.color_label_align.add(self.color_label)
         
@@ -795,7 +796,7 @@ class SkinEditPage(gtk.VBox):
         for color in COLOR_SEQUENCE:
             self.color_select_view.add_items([ColorIconItem(color)])
         
-        self.back_button = Button("返回")
+        self.back_button = Button(_("Return"))
         self.back_button.connect("clicked", lambda w: self.switch_preview_page())
         self.dialog.right_button_box.set_buttons([self.back_button])
         
@@ -837,7 +838,7 @@ class SkinEditPage(gtk.VBox):
             
     def export_skin(self, button):
         '''Export skin.'''
-        SaveFileDialog("导出皮肤", None, skin_config.export_skin)
+        SaveFileDialog(_("Export skin"), None, skin_config.export_skin)
         
 gobject.type_register(SkinEditPage)
 

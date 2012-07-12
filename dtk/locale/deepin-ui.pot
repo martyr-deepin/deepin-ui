@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-09 16:03+0800\n"
+"POT-Creation-Date: 2012-07-12 17:32+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,22 +17,90 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: /home/andy/deepin-ui-private/dtk/ui/titlebar.py:108
+#: ../ui/skin.py:83
+msgid "Select skin"
+msgstr ""
+
+#: ../ui/skin.py:88 ../ui/skin.py:106 ../ui/titlebar.py:132
+msgid "Close"
+msgstr ""
+
+#: ../ui/skin.py:274
+msgid "Skin version mismatch"
+msgstr ""
+
+#: ../ui/skin.py:275
+msgid "Import skin version is mismatch with current one!"
+msgstr ""
+
+#: ../ui/skin.py:307
+msgid "Delete skin"
+msgstr ""
+
+#: ../ui/skin.py:308
+msgid "Are you sure delete this skin?"
+msgstr ""
+
+#: ../ui/skin.py:680
+msgid "Add skin from file"
+msgstr ""
+
+#: ../ui/skin.py:783 ../ui/color_selection.py:75
+msgid "Select color"
+msgstr ""
+
+#: ../ui/skin.py:799
+msgid "Return"
+msgstr ""
+
+#: ../ui/skin.py:841
+msgid "Export skin"
+msgstr ""
+
+#: ../ui/entry.py:1098
+msgid "Please input new shortcuts"
+msgstr ""
+
+#: ../ui/entry.py:1133
+msgid "Disabled"
+msgstr ""
+
+#: ../ui/dialog.py:273 ../ui/dialog.py:323 ../ui/color_selection.py:166
+msgid "OK"
+msgstr ""
+
+#: ../ui/dialog.py:274 ../ui/dialog.py:324 ../ui/color_selection.py:167
+msgid "Cancel"
+msgstr ""
+
+#: ../ui/titlebar.py:108
 msgid "Change skin"
 msgstr ""
 
-#: /home/andy/deepin-ui-private/dtk/ui/titlebar.py:114
+#: ../ui/titlebar.py:114
 msgid "Main menu"
 msgstr ""
 
-#: /home/andy/deepin-ui-private/dtk/ui/titlebar.py:120
+#: ../ui/titlebar.py:120
 msgid "Minimum"
 msgstr ""
 
-#: /home/andy/deepin-ui-private/dtk/ui/titlebar.py:126
+#: ../ui/titlebar.py:126
 msgid "Maximize"
 msgstr ""
 
-#: /home/andy/deepin-ui-private/dtk/ui/titlebar.py:132
-msgid "Close"
+#: ../ui/color_selection.py:113
+msgid "Color value"
+msgstr ""
+
+#: ../ui/color_selection.py:126
+msgid "Red: "
+msgstr ""
+
+#: ../ui/color_selection.py:132
+msgid "Green: "
+msgstr ""
+
+#: ../ui/color_selection.py:138
+msgid "Blue: "
 msgstr ""

@@ -25,6 +25,7 @@ from constant import ALIGN_MIDDLE
 from draw import draw_vlinear, draw_blank_mask
 from entry import InputEntry
 from label import Label
+from locales import _
 from mask import draw_mask
 from skin_config import skin_config
 from theme import ui_theme
@@ -269,8 +270,8 @@ class ConfirmDialog(DialogBox):
         self.label_align.set_padding(0, 0, 8, 8)
         self.label = Label(message, text_x_align=ALIGN_MIDDLE, text_size=11)
         
-        self.confirm_button = Button("确认")
-        self.cancel_button = Button("取消")
+        self.confirm_button = Button(_("OK"))
+        self.cancel_button = Button(_("Cancel"))
         
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
@@ -319,8 +320,8 @@ class InputDialog(DialogBox):
         self.entry = InputEntry(init_text)
         self.entry.set_size(default_width - 20, 25)
         
-        self.confirm_button = Button("确认")
-        self.cancel_button = Button("取消")
+        self.confirm_button = Button(_("OK"))
+        self.cancel_button = Button(_("Cancel"))
         
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())

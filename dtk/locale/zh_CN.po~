@@ -1,4 +1,5 @@
-# Chinese translations for PACKAGE package.
+# Chinese translations for PACKAGE package
+# PACKAGE 软件包的简体中文翻译.
 # Copyright (C) 2012 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Automatically generated, 2012.
@@ -7,46 +8,46 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-12 17:30+0800\n"
+"POT-Creation-Date: 2012-07-12 17:27+0800\n"
 "PO-Revision-Date: 2012-07-09 13:13+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
-"Language: zh_TW\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../ui/skin.py:83
 msgid "Select skin"
-msgstr "選擇皮膚"
+msgstr "选择皮肤"
 
 #: ../ui/skin.py:88 ../ui/skin.py:106 ../ui/titlebar.py:132
 msgid "Close"
-msgstr "關閉"
+msgstr "关闭"
 
 #: ../ui/skin.py:274
 msgid "Skin version mismatch"
-msgstr "皮膚版本不匹配"
+msgstr "皮肤版本不匹配"
 
 #: ../ui/skin.py:275
 msgid "Import skin version is mismatch with current one!"
-msgstr "導入的皮膚和當前皮膚版本不匹配"
+msgstr "导入的皮肤和当前皮肤版本不匹配"
 
 #: ../ui/skin.py:307
 msgid "Delete skin"
-msgstr "刪除皮膚"
+msgstr "删除皮肤"
 
 #: ../ui/skin.py:308
-msgid "Are you sure delete this skin?"
-msgstr "你確定刪除當前皮膚嗎?"
+msgid "Are you sure delete this skin？"
+msgstr "你确定删除当前皮肤吗?"
 
 #: ../ui/skin.py:680
 msgid "Add skin from file"
-msgstr "添加皮膚文件"
+msgstr "添加皮肤文件"
 
 #: ../ui/skin.py:783 ../ui/color_selection.py:75
 msgid "Select color"
-msgstr "顏色選擇"
+msgstr "颜色选择"
 
 #: ../ui/skin.py:799
 msgid "Return"
@@ -54,11 +55,11 @@ msgstr "返回"
 
 #: ../ui/skin.py:841
 msgid "Export skin"
-msgstr "導出皮膚"
+msgstr "导出皮肤"
 
 #: ../ui/entry.py:1098
 msgid "Please input new shortcuts"
-msgstr "請輸入新的快捷鍵"
+msgstr "请输入新的快捷键"
 
 #: ../ui/entry.py:1133
 msgid "Disabled"
@@ -66,7 +67,7 @@ msgstr "禁用"
 
 #: ../ui/dialog.py:273 ../ui/dialog.py:323 ../ui/color_selection.py:166
 msgid "OK"
-msgstr "確定"
+msgstr "确定"
 
 #: ../ui/dialog.py:274 ../ui/dialog.py:324 ../ui/color_selection.py:167
 msgid "Cancel"
@@ -74,11 +75,11 @@ msgstr "取消"
 
 #: ../ui/titlebar.py:108
 msgid "Change skin"
-msgstr "換膚"
+msgstr "换肤"
 
 #: ../ui/titlebar.py:114
 msgid "Main menu"
-msgstr "主菜單"
+msgstr "主菜单"
 
 #: ../ui/titlebar.py:120
 msgid "Minimum"
@@ -90,16 +91,16 @@ msgstr "最大化"
 
 #: ../ui/color_selection.py:113
 msgid "Color value"
-msgstr "顏色值"
+msgstr "颜色值"
 
 #: ../ui/color_selection.py:126
 msgid "Red: "
-msgstr "紅色: "
+msgstr "红色: "
 
 #: ../ui/color_selection.py:132
 msgid "Green: "
-msgstr "綠色: "
+msgstr "绿色: "
 
 #: ../ui/color_selection.py:138
 msgid "Blue: "
-msgstr "藍色: "
+msgstr "蓝色: "

@@ -24,6 +24,7 @@ from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
 from contextlib import contextmanager 
 from draw import draw_hlinear
 from keymap import get_keyevent_name
+from locales import _
 from menu import Menu
 from theme import ui_theme
 import gobject
@@ -1094,7 +1095,7 @@ class ShortcutKeyEntry(gtk.VBox):
         if is_left_button(event):
             self.entry.editable_flag = True
             self.emit("wait-key-input", self.shortcut_key)
-            self.set_text("请按下新的快捷键")
+            self.set_text(_("Please input new shortcuts"))
             self.entry.editable_flag = False
             
             self.entry.queue_draw()
@@ -1129,7 +1130,7 @@ class ShortcutKeyEntry(gtk.VBox):
         
         self.entry.editable_flag = True
         if self.shortcut_key == None:
-            self.set_text("禁用")
+            self.set_text(_("Disabled"))
         else:
             self.set_text(self.shortcut_key)
         self.entry.editable_flag = False

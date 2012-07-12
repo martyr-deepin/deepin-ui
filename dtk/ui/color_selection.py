@@ -26,6 +26,7 @@ from draw import draw_vlinear, draw_line, draw_pixbuf
 from entry import TextEntry
 from iconview import IconView
 from label import Label
+from locales import _
 from scrolled_window import ScrolledWindow
 from spin import SpinBox
 from theme import ui_theme
@@ -71,7 +72,7 @@ class ColorSelectDialog(DialogBox):
 	
     def __init__(self, confirm_callback=None, cancel_callback=None):
         '''Init color select dialog.'''
-        DialogBox.__init__(self, "颜色选择", mask_type=DIALOG_MASK_SINGLE_PAGE)
+        DialogBox.__init__(self, _("Select color"), mask_type=DIALOG_MASK_SINGLE_PAGE)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
         
@@ -109,7 +110,7 @@ class ColorSelectDialog(DialogBox):
         self.color_display_box.pack_start(self.color_display_align, False, False, 5)
         
         self.color_hex_box = gtk.HBox()
-        self.color_hex_label = Label("颜色值")
+        self.color_hex_label = Label(_("Color value"))
         self.color_hex_box.pack_start(self.color_hex_label, False, False, 5)
         self.color_hex_entry = TextEntry(self.color_string)
         self.color_hex_entry.entry.check_text = is_hex_color
@@ -122,19 +123,19 @@ class ColorSelectDialog(DialogBox):
         
         self.color_rgb_box = gtk.VBox()
         self.color_r_box = gtk.HBox()
-        self.color_r_label = Label("红色: ")
+        self.color_r_label = Label(_("Red: "))
         self.color_r_spin = SpinBox(self.color_r, 0, 255, 1)
         self.color_r_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_r_box.pack_start(self.color_r_label, False, False)
         self.color_r_box.pack_start(self.color_r_spin, False, False)
         self.color_g_box = gtk.HBox()
-        self.color_g_label = Label("绿色: ")
+        self.color_g_label = Label(_("Green: "))
         self.color_g_spin = SpinBox(self.color_g, 0, 255, 1)
         self.color_g_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_g_box.pack_start(self.color_g_label, False, False)
         self.color_g_box.pack_start(self.color_g_spin, False, False)
         self.color_b_box = gtk.HBox()
-        self.color_b_label = Label("蓝色: ")
+        self.color_b_label = Label(_("Blue: "))
         self.color_b_spin = SpinBox(self.color_b, 0, 255, 1)
         self.color_b_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_b_box.pack_start(self.color_b_label, False, False)
@@ -162,8 +163,8 @@ class ColorSelectDialog(DialogBox):
         self.color_select_align.add(self.color_select_scrolled_window)
         self.color_right_box.pack_start(self.color_select_align, True, True)    
         
-        self.confirm_button = Button("确定")
-        self.cancel_button = Button("取消")
+        self.confirm_button = Button(_("OK"))
+        self.cancel_button = Button(_("Cancel"))
         
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
