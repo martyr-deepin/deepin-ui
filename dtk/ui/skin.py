@@ -35,6 +35,7 @@ from scrolled_window import ScrolledWindow
 from skin_config import skin_config
 from theme import ui_theme
 from threads import post_gui
+import tooltip as Tooltip
 import gobject
 import gtk
 import math
@@ -777,6 +778,12 @@ class SkinEditPage(gtk.VBox):
         self.export_button.connect("clicked", self.export_skin)
         self.v_split_button.connect("clicked", lambda w: self.click_vertical_mirror_button())
         self.h_split_button.connect("clicked", lambda w: self.click_horizontal_mirror_button())
+        
+        Tooltip.text(self.resize_button, _("Zoom"))
+        Tooltip.text(self.v_split_button, _("Vertical flip"))
+        Tooltip.text(self.h_split_button, _("Horizontal flip"))
+        Tooltip.text(self.lock_button, _("Lock scaling"))
+        Tooltip.text(self.export_button, _("Export skin"))
         
         self.color_label_align = gtk.Alignment()
         self.color_label_align.set(0.0, 0.5, 0, 0)
