@@ -33,6 +33,8 @@ if not os.path.exists(LOCALE_DIR):
 
 _ = None    
 try:
-    _ = gettext.translation("deepin-ui", LOCALE_DIR).gettext
+    gettext.bindtextdomain("deepin-ui", LOCALE_DIR)
+    gettext.textdomain("deepin-ui")
+    _ = gettext.gettext
 except Exception, e:
     _ = lambda i : i
