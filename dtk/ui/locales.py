@@ -26,6 +26,7 @@
 from utils import get_parent_dir
 import gettext
 import os
+import locale
 
 LOCALE_DIR=os.path.join(get_parent_dir(__file__, 2), "locale")
 if not os.path.exists(LOCALE_DIR):
@@ -33,8 +34,10 @@ if not os.path.exists(LOCALE_DIR):
 
 _ = None    
 try:
+    locale.setlocale(locale.LC_ALL, '')
     gettext.bindtextdomain("deepin-ui", LOCALE_DIR)
     gettext.textdomain("deepin-ui")
     _ = gettext.gettext
 except Exception, e:
+    print "locales: %s" % (e)
     _ = lambda i : i
