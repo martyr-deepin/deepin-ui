@@ -40,7 +40,8 @@ class Titlebar(EventBox):
                  app_name=None,
                  title=None,
                  add_separator=False,
-                 height=26
+                 height=26,
+                 show_title=True,
                  ):
         '''Init titlebar.'''
         # Init.
@@ -66,32 +67,33 @@ class Titlebar(EventBox):
         self.left_box = gtk.HBox()
         self.drag_box.add(self.left_box)
         
-        # Add icon.
-        if icon_dpixbuf != None:
-            self.icon_image_box = ImageBox(icon_dpixbuf)
-            self.icon_align = gtk.Alignment()
-            self.icon_align.set(0.5, 0.5, 0.0, 0.0)
-            self.icon_align.set_padding(5, 5, 5, 0)
-            self.icon_align.add(self.icon_image_box)
-            self.left_box.pack_start(self.icon_align, False, False)
-                    
-        # Add app name.
-        if app_name != None:
-            self.app_name_box = Label(app_name, enable_gaussian=True)
-            self.app_name_align = gtk.Alignment()
-            self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
-            self.app_name_align.set_padding(2, 0, 5, 0)
-            self.app_name_align.add(self.app_name_box)
-            self.left_box.pack_start(self.app_name_align, False, False)
-        
-        # Add title.
-        if title != None:
-            self.title_box = Label(title, enable_gaussian=True, text_x_align=pango.ALIGN_CENTER)
-            self.title_align = gtk.Alignment()
-            self.title_align.set(0.5, 0.5, 0.0, 0.0)
-            self.title_align.set_padding(2, 0, 30, 30)
-            self.title_align.add(self.title_box)
-            self.left_box.pack_start(self.title_align, True, True)
+        if show_title:
+            # Add icon.
+            if icon_dpixbuf != None:
+                self.icon_image_box = ImageBox(icon_dpixbuf)
+                self.icon_align = gtk.Alignment()
+                self.icon_align.set(0.5, 0.5, 0.0, 0.0)
+                self.icon_align.set_padding(5, 5, 5, 0)
+                self.icon_align.add(self.icon_image_box)
+                self.left_box.pack_start(self.icon_align, False, False)
+                        
+            # Add app name.
+            if app_name != None:
+                self.app_name_box = Label(app_name, enable_gaussian=True)
+                self.app_name_align = gtk.Alignment()
+                self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
+                self.app_name_align.set_padding(2, 0, 5, 0)
+                self.app_name_align.add(self.app_name_box)
+                self.left_box.pack_start(self.app_name_align, False, False)
+            
+            # Add title.
+            if title != None:
+                self.title_box = Label(title, enable_gaussian=True, text_x_align=pango.ALIGN_CENTER)
+                self.title_align = gtk.Alignment()
+                self.title_align.set(0.5, 0.5, 0.0, 0.0)
+                self.title_align.set_padding(2, 0, 30, 30)
+                self.title_align.add(self.title_box)
+                self.left_box.pack_start(self.title_align, True, True)
             
         # Add button box.
         self.button_box = gtk.HBox()

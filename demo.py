@@ -66,7 +66,6 @@ from dtk.ui.navigatebar import Navigatebar
 from dtk.ui.notebook import Notebook
 from dtk.ui.osd_tooltip import OSDTooltip
 from dtk.ui.paned import HPaned
-from dtk.ui.popup_window import PopupWindow
 from dtk.ui.scrolled_window import ScrolledWindow
 from dtk.ui.slider import Wizard
 from dtk.ui.spin import SpinBox
@@ -203,7 +202,7 @@ if __name__ == "__main__":
     
     menu = Menu(
         [(None,
-          "测试测试测试1", lambda : PopupWindow(application.window)),
+          "测试测试测试1", None),
          (None,
           "测试测试测试2", sub_menu_a),
          (None,
