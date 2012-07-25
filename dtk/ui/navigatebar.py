@@ -32,7 +32,9 @@ import pango
 class Navigatebar(EventBox):
     '''Navigatebar.'''
     
-    def __init__(self, items, add_separator=False, font_size=DEFAULT_FONT_SIZE, padding_x=10, padding_y=10):
+    def __init__(self, items, add_separator=False, font_size=DEFAULT_FONT_SIZE, 
+                 padding_x=10, padding_y=10, 
+                 vertical=True):
         '''Init navigatebar.'''
         # Init event box.
         EventBox.__init__(self)
@@ -49,7 +51,8 @@ class Navigatebar(EventBox):
         # Add navigate item.
         if items:
             for (index, item) in enumerate(items):
-                nav_item = NavItem(item, index, font_size, padding_x, padding_y, self.set_index, self.get_index)
+                nav_item = NavItem(item, index, font_size, padding_x, padding_y, vertical,
+                                   self.set_index, self.get_index)
                 self.nav_item_box.pack_start(nav_item.item_box, False, False)
                 
         # Add separator.
@@ -91,11 +94,14 @@ gobject.type_register(Navigatebar)
 class NavItem(object):
     '''Navigate item.'''
 	
-    def __init__(self, element, index, font_size, padding_x, padding_y, set_index, get_index):
+    def __init__(self, element, index, font_size, padding_x, padding_y, 
+                 vertical,
+                 set_index, get_index):
         '''Init navigate item.'''
         # Init.
         self.index = index
         self.font_size = font_size
+        self.vertical = vertical
         self.set_index = set_index
         self.get_index = get_index
         (self.icon_dpixbuf, self.content, self.clicked_callback) = element
@@ -150,23 +156,40 @@ class NavItem(object):
         
         # Draw navigate item.
         nav_item_pixbuf = self.icon_dpixbuf.get_pixbuf()
-        draw_pixbuf(
-            cr, nav_item_pixbuf, 
-            rect.x + (rect.width - nav_item_pixbuf.get_width()) / 2,
-            rect.y)
+        if self.vertical:
+            draw_pixbuf(
+                cr, nav_item_pixbuf, 
+                rect.x + (rect.width - nav_item_pixbuf.get_width()) / 2,
+                rect.y)
+            
+            draw_text(cr, 
+                      self.content, 
+                      rect.x, 
+                      rect.y + nav_item_pixbuf.get_height() - 3, 
+                      rect.width, 
+                      rect.height - nav_item_pixbuf.get_height(),
+                      text_color="#FFFFFF",
+                      alignment=pango.ALIGN_CENTER,
+                      gaussian_radious=2, gaussian_color="#000000",
+                      border_radious=1, border_color="#000000", 
+                      )
+        else:
+            draw_pixbuf(
+                cr, nav_item_pixbuf, 
+                rect.x,
+                rect.y + (rect.height - nav_item_pixbuf.get_height()) / 2)
         
-        # Draw font.
-        draw_text(cr, 
-                  self.content, 
-                  rect.x, 
-                  rect.y + nav_item_pixbuf.get_height() - 3, 
-                  rect.width, 
-                  rect.height - nav_item_pixbuf.get_height(),
-                  text_color="#FFFFFF",
-                  alignment=pango.ALIGN_CENTER,
-                  gaussian_radious=2, gaussian_color="#000000",
-                  border_radious=1, border_color="#000000", 
-                  )
+            draw_text(cr, 
+                      self.content, 
+                      rect.x + nav_item_pixbuf.get_width() - 3, 
+                      rect.y,
+                      rect.width - nav_item_pixbuf.get_width(), 
+                      rect.height,
+                      text_color="#FFFFFF",
+                      alignment=pango.ALIGN_CENTER,
+                      gaussian_radious=2, gaussian_color="#000000",
+                      border_radious=1, border_color="#000000", 
+                      )
         
         # Propagate expose to children.
         propagate_expose(widget, event)
