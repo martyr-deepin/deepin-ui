@@ -84,7 +84,7 @@ class ScrolledWindow(gtk.Bin):
         self.set_vadjustment(gtk.Adjustment())
         self.set_hadjustment(gtk.Adjustment())
         self.set_has_window(False)
-        
+
     def do_expose_event(self, e):
         if e.window == self.vwindow:
             self.draw_vbar()
@@ -360,9 +360,9 @@ class ScrolledWindow(gtk.Bin):
         if self.child:
             (allocation.x, allocation.y) = (0, 0)
             self.child.do_size_allocate(self.child, allocation)
-            
+
             self.update_scrollbar()
-            
+
             if self.get_realized():
                 self.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
                 self.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
@@ -407,7 +407,7 @@ class ScrolledWindow(gtk.Bin):
                 height=self.allocation.height,
                 window_type=gtk.gdk.WINDOW_CHILD,
                 wclass=gtk.gdk.INPUT_OUTPUT,
-                event_mask=(self.get_events()| gdk.EXPOSURE_MASK | gdk.VISIBILITY_NOTIFY_MASK),
+                event_mask=(self.get_events()| gdk.EXPOSURE_MASK | gdk.VISIBILITY_NOTIFY_MASK | gdk.ALL_EVENTS_MASK ),
                 visual=self.get_visual(),
                 colormap=self.get_colormap(),
                 )
@@ -482,7 +482,8 @@ class ScrolledWindow(gtk.Bin):
         gtk.Bin.do_unmap(self)
 
     def do_remove(self, child):
-        child.set_scroll_adjustments(None, None)
+        #TODO: need this?
+        #child.set_scroll_adjustments(None, None)
         gtk.Bin.do_remove(self, child)
 
     def get_vadjustment(self):
@@ -494,17 +495,17 @@ class ScrolledWindow(gtk.Bin):
     def set_hadjustment(self, adj):
         remove_signal_id(self.h_value_change_id)
         remove_signal_id(self.h_change_id)
-        
+
         self.hadjustment = adj
         h_value_change_handler_id = self.hadjustment.connect('value-changed', self.hadjustment_changed)
         h_change_handler_id = self.hadjustment.connect('changed', self.update_scrollbar)
         self.h_value_change_id = (self.hadjustment, h_value_change_handler_id)
         self.h_change_id = (self.hadjustment, h_change_handler_id)
-        
+
     def set_vadjustment(self, adj):
         remove_signal_id(self.v_value_change_id)
         remove_signal_id(self.v_change_id)
-        
+
         self.vadjustment = adj
         v_value_change_handler_id = self.vadjustment.connect('value-changed', self.vadjustment_changed)
         v_change_handler_id = self.vadjustment.connect('changed', self.update_scrollbar)
