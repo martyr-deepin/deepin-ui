@@ -22,16 +22,12 @@
 
 import webkit
 import dtk_webkit_cookie
-#import gobject
 from gtk import gdk
-
 
 class WebView(webkit.WebView):
 
     def __init__(self, cookie_filepath=None):
-        #self = gobject.new(webkit.WebView, "self-scrolling", False)
         webkit.WebView.__init__(self)
-        #self.set_property("self-scrolling", False)
         self.cookie_filepath = cookie_filepath
         if self.cookie_filepath != None:
             dtk_webkit_cookie.add_cookie(cookie_filepath)
