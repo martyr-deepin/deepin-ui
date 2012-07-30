@@ -34,11 +34,16 @@ class Navigatebar(EventBox):
     
     def __init__(self, items, add_separator=False, font_size=DEFAULT_FONT_SIZE, 
                  padding_x=10, padding_y=10, 
-                 vertical=True):
+                 vertical=True,
+                 item_hover_pixbuf=ui_theme.get_pixbuf("navigatebar/nav_item_hover.png"),
+                 item_press_pixbuf=ui_theme.get_pixbuf("navigatebar/nav_item_press.png"),
+                 ):
         '''Init navigatebar.'''
         # Init event box.
         EventBox.__init__(self)
         self.nav_index = 0
+        self.item_hover_pixbuf = item_hover_pixbuf
+        self.item_press_pixbuf = item_press_pixbuf
         
         # Init nav box.
         self.nav_box = gtk.VBox()
@@ -52,7 +57,9 @@ class Navigatebar(EventBox):
         if items:
             for (index, item) in enumerate(items):
                 nav_item = NavItem(item, index, font_size, padding_x, padding_y, vertical,
-                                   self.set_index, self.get_index)
+                                   self.set_index, self.get_index,
+                                   self.item_hover_pixbuf,
+                                   self.item_press_pixbuf)
                 self.nav_item_box.pack_start(nav_item.item_box, False, False)
                 
         # Add separator.
@@ -96,7 +103,9 @@ class NavItem(object):
 	
     def __init__(self, element, index, font_size, padding_x, padding_y, 
                  vertical,
-                 set_index, get_index):
+                 set_index, get_index,
+                 item_hover_pixbuf,
+                 item_press_pixbuf):
         '''Init navigate item.'''
         # Init.
         self.index = index
@@ -104,8 +113,10 @@ class NavItem(object):
         self.vertical = vertical
         self.set_index = set_index
         self.get_index = get_index
+        self.item_hover_pixbuf = item_hover_pixbuf
+        self.item_press_pixbuf = item_press_pixbuf
         (self.icon_dpixbuf, self.content, self.clicked_callback) = element
-        pixbuf = ui_theme.get_pixbuf("navigatebar/nav_item_hover.png").get_pixbuf()
+        pixbuf = self.item_hover_pixbuf.get_pixbuf()
         
         # Init item button.
         self.item_button = gtk.Button()
@@ -134,8 +145,8 @@ class NavItem(object):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         select_index = self.get_index()
-        hover_pixbuf = ui_theme.get_pixbuf("navigatebar/nav_item_hover.png").get_pixbuf()
-        press_pixbuf = ui_theme.get_pixbuf("navigatebar/nav_item_press.png").get_pixbuf()
+        hover_pixbuf = self.item_hover_pixbuf.get_pixbuf()
+        press_pixbuf = self.item_press_pixbuf.get_pixbuf()
         
         # Draw background.
         if widget.state == gtk.STATE_NORMAL:
