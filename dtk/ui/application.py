@@ -67,10 +67,10 @@ class Application(object):
 
     def add_titlebar(self,
                      button_mask=["theme", "menu", "max", "min", "close"],
-                     icon_dpixbuf=None, app_name=None, title=None, add_separator=False):
+                     icon_dpixbuf=None, app_name=None, title=None, add_separator=False, show_title=True):
         '''Add titlebar.'''
         # Init titlebar.
-        self.titlebar = Titlebar(button_mask, icon_dpixbuf, app_name, title, add_separator)
+        self.titlebar = Titlebar(button_mask, icon_dpixbuf, app_name, title, add_separator, show_title=show_title)
         if "theme" in button_mask:
             self.titlebar.theme_button.connect("clicked", self.theme_callback)
         if "menu" in button_mask:
