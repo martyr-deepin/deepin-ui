@@ -32,7 +32,9 @@ global_key_running = True
 global_key_lock = Lock()
 
 def enable_global_key():
-    '''Enable global key.'''
+    '''
+    Enable global key.
+    '''
     global global_key_running
 
     global_key_lock.acquire()
@@ -40,7 +42,9 @@ def enable_global_key():
     global_key_lock.release()
 
 def disable_global_key():
-    '''Disable global key.'''
+    '''
+    Disable global key.
+    '''
     global global_key_running
 
     global_key_lock.acquire()
@@ -48,8 +52,14 @@ def disable_global_key():
     global_key_lock.release()
 
 class GlobalKey(threading.Thread):
+    '''
+    Class to handle global key.
+    '''
 
     def __init__(self):
+        '''
+        Init for global key.
+        '''
         super(GlobalKey, self).__init__()
         self.daemon = True
         self.display = Display()
@@ -65,6 +75,13 @@ class GlobalKey(threading.Thread):
             self.known_modifiers_mask |= mod
 
     def bind(self, binding_string, action):
+        '''
+        Binding keymap with given action.
+        
+        @param binding_string: Keymap string, return by function `get_keyevent_name` of module dtk.ui.keymap.
+        
+        @param action: Callback.
+        '''
         # Get keybinding's keyval and modifiers.
         return
         keyval, modifiers = parse_keyevent_name(binding_string)
@@ -83,6 +100,11 @@ class GlobalKey(threading.Thread):
         self.regrab()
 
     def unbind(self, binding_string):
+        '''
+        Unbind keymap.
+
+        @param binding_string: Keymap string that return by function `get_keyevent_name` of module dtk.ui.keymap.
+        '''
         # Get keybinding.
         keyval, modifiers = parse_keyevent_name(binding_string)
 
@@ -107,6 +129,9 @@ class GlobalKey(threading.Thread):
             self.regrab()
 
     def grab(self):
+        '''
+        Grab key.
+        '''
         for (keycode, modifiers) in self._binding_map.keys():
             try:
                 self.root.grab_key(keycode, int(modifiers), True, X.GrabModeAsync, X.GrabModeSync)
@@ -114,6 +139,9 @@ class GlobalKey(threading.Thread):
                 print e
 
     def ungrab(self):
+        '''
+        Ungrab key.
+        '''
         for (keycode, modifiers) in self._binding_map.keys():
             try:
                 self.root.ungrab_key(keycode, modifiers, self.root)
@@ -121,10 +149,16 @@ class GlobalKey(threading.Thread):
                 print e
 
     def regrab(self):
+        '''
+        Regrab key.
+        '''
         self.ungrab()
         self.grab()
 
     def run(self):
+        '''
+        GlobalKey thread loop.
+        '''
         global global_key_running
 
         wait_for_release = False
@@ -155,6 +189,9 @@ class GlobalKey(threading.Thread):
                 self.display.allow_events(X.ReplayKeyboard, event.time)
 
     def exit(self):
+        '''
+        Exit global key.
+        '''
         self.stop = True
         self.ungrab()
         self.display.close()

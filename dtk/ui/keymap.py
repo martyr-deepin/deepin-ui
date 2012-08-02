@@ -25,7 +25,14 @@ import pygtk
 pygtk.require('2.0')
 
 def get_key_name(keyval):
-    '''Get key name.'''
+    '''
+    Get key name with given key value.
+    
+    @param keyval: Key value.
+    
+    @return: 
+    Return key name with given key value.
+    '''
     key_unicode = gdk.keyval_to_unicode(keyval)
     if key_unicode == 0:
         return gdk.keyval_name(keyval)
@@ -33,7 +40,14 @@ def get_key_name(keyval):
         return str(unichr(key_unicode))
     
 def get_key_event_modifiers(key_event):
-    '''Get key event modifiers.'''
+    '''
+    Get key modifiers with given key event.
+    
+    @param key_event: Key event.
+    
+    @return:
+    Return key modifier list with given key event.
+    '''
     modifiers = []
     
     # Add Ctrl modifier.
@@ -59,7 +73,14 @@ def get_key_event_modifiers(key_event):
     return modifiers
 
 def get_keyevent_name(key_event):
-    '''Get key event name.'''
+    '''
+    Get key event name.
+    
+    @param key_event: Key event.
+    
+    @return:
+    Return key event string.
+    '''
     if key_event.is_modifier:
         return ""
     else:
@@ -74,7 +95,14 @@ def get_keyevent_name(key_event):
             return " + ".join(key_modifiers) + " + " + key_name
         
 def parse_keyevent_name(keyevent_name):
-    '''Parse keyevent name.'''
+    '''
+    Parse keyevent name.
+    
+    @param keyevent_name: Key event name that return by function L{ I{get_keyevent_name} <get_keyevent_name>}.
+
+    @return:
+    Return tuple that contain key value and modifier mask, (keyval, modifier_mask). 
+    '''
     keys = keyevent_name.split(" + ")
     if len(keys) == 1:
         keyval = int(gdk.keyval_from_name(keys[0]))
@@ -102,9 +130,23 @@ def parse_keyevent_name(keyevent_name):
     return (keyval, modifier_mask)
 
 def has_ctrl_mask(key_event):
-    '''Whether has ctrl mask in key event.'''
+    '''
+    Whether has ctrl mask in key event.
+    
+    @param key_event: Key event.
+
+    @return:
+    Return true if key event has ctrl mask. 
+    '''
     return get_key_name(key_event.keyval) in ["Control_L", "Control_R"]
 
 def has_shift_mask(key_event):
-    '''Whether has shift mask in key event.'''
+    '''
+    Whether has shift mask in key event.
+    
+    @param key_event: Key event.
+
+    @return:
+    Return true if key event has shift mask. 
+    '''
     return get_key_name(key_event.keyval) in ["Shift_L", "Shift_R"]

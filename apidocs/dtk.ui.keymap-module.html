@@ -15,8 +15,8 @@
        bgcolor="#a0c0ff" cellspacing="0">
   <tr valign="middle">
   <!-- Home link -->
-      <th>&nbsp;&nbsp;&nbsp;<a
-        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -30,12 +30,7 @@
       <th>&nbsp;&nbsp;&nbsp;<a
         href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
 
-  <!-- Project homepage -->
-      <th class="navbar" align="right" width="100%">
-        <table border="0" cellpadding="0" cellspacing="0">
-          <tr><th class="navbar" align="center"
-            >Deepin UI</th>
-          </tr></table></th>
+      <th class="navbar" width="100%"></th>
   </tr>
 </table>
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -43,7 +38,7 @@
     <td width="100%">
       <span class="breadcrumbs">
         Package&nbsp;dtk ::
-        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        Package&nbsp;ui ::
         Module&nbsp;keymap
       </span>
     </td>
@@ -85,8 +80,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_key_name"></a><span class="summary-sig-name">get_key_name</span>(<span class="summary-sig-arg">keyval</span>)</span><br />
-      Get key name.</td>
+          <td><span class="summary-sig"><a href="dtk.ui.keymap-module.html#get_key_name" class="summary-sig-name">get_key_name</a>(<span class="summary-sig-arg">keyval</span>)</span><br />
+      Get key name with given key value.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.keymap-pysrc.html#get_key_name">source&nbsp;code</a></span>
             
@@ -102,8 +97,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_key_event_modifiers"></a><span class="summary-sig-name">get_key_event_modifiers</span>(<span class="summary-sig-arg">key_event</span>)</span><br />
-      Get key event modifiers.</td>
+          <td><span class="summary-sig"><a href="dtk.ui.keymap-module.html#get_key_event_modifiers" class="summary-sig-name">get_key_event_modifiers</a>(<span class="summary-sig-arg">key_event</span>)</span><br />
+      Get key modifiers with given key event.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.keymap-pysrc.html#get_key_event_modifiers">source&nbsp;code</a></span>
             
@@ -119,7 +114,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_keyevent_name"></a><span class="summary-sig-name">get_keyevent_name</span>(<span class="summary-sig-arg">key_event</span>)</span><br />
+          <td><span class="summary-sig"><a href="dtk.ui.keymap-module.html#get_keyevent_name" class="summary-sig-name">get_keyevent_name</a>(<span class="summary-sig-arg">key_event</span>)</span><br />
       Get key event name.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.keymap-pysrc.html#get_keyevent_name">source&nbsp;code</a></span>
@@ -136,7 +131,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="parse_keyevent_name"></a><span class="summary-sig-name">parse_keyevent_name</span>(<span class="summary-sig-arg">keyevent_name</span>)</span><br />
+          <td><span class="summary-sig"><a href="dtk.ui.keymap-module.html#parse_keyevent_name" class="summary-sig-name">parse_keyevent_name</a>(<span class="summary-sig-arg">keyevent_name</span>)</span><br />
       Parse keyevent name.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.keymap-pysrc.html#parse_keyevent_name">source&nbsp;code</a></span>
@@ -153,7 +148,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="has_ctrl_mask"></a><span class="summary-sig-name">has_ctrl_mask</span>(<span class="summary-sig-arg">key_event</span>)</span><br />
+          <td><span class="summary-sig"><a href="dtk.ui.keymap-module.html#has_ctrl_mask" class="summary-sig-name">has_ctrl_mask</a>(<span class="summary-sig-arg">key_event</span>)</span><br />
       Whether has ctrl mask in key event.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.keymap-pysrc.html#has_ctrl_mask">source&nbsp;code</a></span>
@@ -170,7 +165,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="has_shift_mask"></a><span class="summary-sig-name">has_shift_mask</span>(<span class="summary-sig-arg">key_event</span>)</span><br />
+          <td><span class="summary-sig"><a href="dtk.ui.keymap-module.html#has_shift_mask" class="summary-sig-name">has_shift_mask</a>(<span class="summary-sig-arg">key_event</span>)</span><br />
       Whether has shift mask in key event.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.keymap-pysrc.html#has_shift_mask">source&nbsp;code</a></span>
@@ -207,13 +202,185 @@
     </td>
   </tr>
 </table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="get_key_name"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_key_name</span>(<span class="sig-arg">keyval</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.keymap-pysrc.html#get_key_name">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get key name with given key value.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>keyval</code></strong> - Key value.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return key name with given key value.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_key_event_modifiers"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_key_event_modifiers</span>(<span class="sig-arg">key_event</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.keymap-pysrc.html#get_key_event_modifiers">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get key modifiers with given key event.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key_event</code></strong> - Key event.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return key modifier list with given key event.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_keyevent_name"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_keyevent_name</span>(<span class="sig-arg">key_event</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.keymap-pysrc.html#get_keyevent_name">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get key event name.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key_event</code></strong> - Key event.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return key event string.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="parse_keyevent_name"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">parse_keyevent_name</span>(<span class="sig-arg">keyevent_name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.keymap-pysrc.html#parse_keyevent_name">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parse keyevent name.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>keyevent_name</code></strong> - Key event name that return by function <a 
+          href="dtk.ui.keymap-module.html#get_keyevent_name" class="link"> 
+          <i>get_keyevent_name</i></a>.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return tuple that contain key value and modifier mask, (keyval, 
+          modifier_mask).</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="has_ctrl_mask"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">has_ctrl_mask</span>(<span class="sig-arg">key_event</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.keymap-pysrc.html#has_ctrl_mask">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Whether has ctrl mask in key event.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key_event</code></strong> - Key event.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return true if key event has ctrl mask.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="has_shift_mask"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">has_shift_mask</span>(<span class="sig-arg">key_event</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.keymap-pysrc.html#has_shift_mask">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Whether has shift mask in key event.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key_event</code></strong> - Key event.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return true if key event has shift mask.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
   <tr valign="middle">
   <!-- Home link -->
-      <th>&nbsp;&nbsp;&nbsp;<a
-        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+      <th bgcolor="#70b0f0" class="navbar-select"
+          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -227,18 +394,13 @@
       <th>&nbsp;&nbsp;&nbsp;<a
         href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
 
-  <!-- Project homepage -->
-      <th class="navbar" align="right" width="100%">
-        <table border="0" cellpadding="0" cellspacing="0">
-          <tr><th class="navbar" align="center"
-            >Deepin UI</th>
-          </tr></table></th>
+      <th class="navbar" width="100%"></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Aug  2 10:54:03 2012
+    Generated by Epydoc 3.0.1 on Thu Aug  2 17:44:11 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
