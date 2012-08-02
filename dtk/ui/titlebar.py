@@ -155,7 +155,6 @@ class Titlebar(EventBox):
         @param event: Not used.
         @return: Always return True.
         """
-        '''Expose nav separator.'''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
