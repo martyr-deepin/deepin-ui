@@ -27,7 +27,21 @@ from utils import cairo_state, get_match_parent, get_window_shadow_size
 from window import Window
 
 def draw_mask(widget, x, y, w, h, render_callback):
-    '''Draw mask.'''
+    '''
+    Draw mask with given render method.
+    
+    @param widget: Target widget.
+
+    @param x: X coordinate of draw area.
+    
+    @param y: Y coordinate of draw area.
+    
+    @param w: Width of draw area.
+    
+    @param h: Height of draw area.
+    
+    @param render_callback: Render callback.
+    '''
     if isinstance(widget, Window):
         draw_window_mask(widget, x, y, w, h, render_callback)
     elif isinstance(widget, ScrolledWindow):
@@ -40,7 +54,21 @@ def draw_mask(widget, x, y, w, h, render_callback):
         print "draw_mask: unsupport widget: %s" % (widget)
 
 def draw_window_mask(widget, x, y, w, h, render_callback):
-    '''Draw window skin mask.'''
+    '''
+    Draw window mask with given render method.
+    
+    @param widget: Target widget.
+
+    @param x: X coordinate of draw area.
+    
+    @param y: Y coordinate of draw area.
+    
+    @param w: Width of draw area.
+    
+    @param h: Height of draw area.
+    
+    @param render_callback: Render callback.
+    '''
     # Init.
     cr = widget.window.cairo_create()
 
@@ -53,7 +81,21 @@ def draw_window_mask(widget, x, y, w, h, render_callback):
         render_callback(cr, x, y, w, h)
     
 def draw_scrolled_window_mask(widget, x, y, w, h, render_callback):
-    '''Draw window skin mask.'''
+    '''
+    Draw scrolled window mask with given render method.
+    
+    @param widget: Target widget.
+
+    @param x: X coordinate of draw area.
+    
+    @param y: Y coordinate of draw area.
+    
+    @param w: Width of draw area.
+    
+    @param h: Height of draw area.
+    
+    @param render_callback: Render callback.
+    '''
     # Init.
     cr = widget.window.cairo_create()
     toplevel = widget.get_toplevel()
@@ -71,7 +113,21 @@ def draw_scrolled_window_mask(widget, x, y, w, h, render_callback):
             toplevel.allocation.height)
 
 def draw_icon_view_mask(widget, x, y, w, h, render_callback):
-    '''Draw skin preview view mask.'''
+    '''
+    Draw icon view mask with given render method.
+    
+    @param widget: Target widget.
+
+    @param x: X coordinate of draw area.
+    
+    @param y: Y coordinate of draw area.
+    
+    @param w: Width of draw area.
+    
+    @param h: Height of draw area.
+    
+    @param render_callback: Render callback.
+    '''
     cr = widget.window.cairo_create()
     viewport = get_match_parent(widget, ["Viewport"])
     toplevel = widget.get_toplevel()
@@ -90,7 +146,21 @@ def draw_icon_view_mask(widget, x, y, w, h, render_callback):
             toplevel.allocation.height)
 
 def draw_list_view_mask(widget, x, y, w, h, render_callback):
-    '''Draw skin preview view mask.'''
+    '''
+    Draw list view mask with given render method.
+    
+    @param widget: Target widget.
+
+    @param x: X coordinate of draw area.
+    
+    @param y: Y coordinate of draw area.
+    
+    @param w: Width of draw area.
+    
+    @param h: Height of draw area.
+    
+    @param render_callback: Render callback.
+    '''
     cr = widget.window.cairo_create()
     viewport = get_match_parent(widget, ["Viewport"])
     toplevel = widget.get_toplevel()
