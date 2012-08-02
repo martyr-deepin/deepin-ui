@@ -46,6 +46,12 @@ case "$1" in
     "install"  )
         rm -rf `find . -name .#*` | sudo python setup.py install
         ;;
+    "module_docs"  )
+        epydoc --html --graph=all -v -o apidocs dtk/ui/$2
+        ;;
+    "build_docs"  )
+        epydoc --config epydoc.cfg
+        ;;
     * ) 
         echo "Help"
         echo "./repos.sh record         => record patch"
@@ -63,5 +69,7 @@ case "$1" in
         echo "./repos.sh pushtag        => push tag"
         echo "./repos.sh build          => build deb package"
         echo "./repos.sh install        => install deb package"
+        echo "./repos.sh module_docs    => build docs for given module"
+        echo "./repos.sh build_docs     => build docs for all modules"
         ;;
     esac
