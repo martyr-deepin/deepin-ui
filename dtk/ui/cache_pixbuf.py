@@ -23,10 +23,18 @@
 import gtk
 
 class CachePixbuf(object):
-    '''Cache pixbuf use to cache pixbuf to avoid new pixbuf generate by scale_simple.'''
+    '''
+    Cache pixbuf use to cache pixbuf to avoid new pixbuf generate by scale_simple.
+    
+    gtk.gdk.pixbuf.scale_simple is function will make application very slow, 
+    
+    We use CachePixbuf increase the call times of gtk.gdk.pixbuf.scale_simple. 
+    '''
 	
     def __init__(self):
-        '''Init cache pixbuf.'''
+        '''
+        Init cache pixbuf.
+        '''
         self.pixbuf = None
         self.cache_pixbuf = None
         self.scale_width = None
@@ -35,7 +43,19 @@ class CachePixbuf(object):
         self.horizontal_mirror = False
         
     def scale(self, pixbuf, scale_width, scale_height, vertical_mirror=False, horizontal_mirror=False):
-        '''Scale and return new pixbuf.'''
+        '''
+        Scale with given sizce and return new pixbuf.
+        
+        @param pixbuf: Original pixbuf.
+
+        @param scale_width: Scale width of pixbuf.
+
+        @param scale_height: Scale height of pixbuf.
+        
+        @param vertical_mirror: Whether pixbuf mirror vertically.
+        
+        @param horizontal_mirror: Whether pixbuf mirror horizontally.
+        '''
         if self.pixbuf != pixbuf or self.scale_width != scale_width or self.scale_height != scale_height:
             # Record init value.
             self.pixbuf = pixbuf # pixbuf always is same as create from file
@@ -64,6 +84,11 @@ class CachePixbuf(object):
             self.cache_pixbuf = self.cache_pixbuf.flip(False)
             
     def get_cache(self):
-        '''Get cache.'''
+        '''
+        Get pixbuf cache.
+        
+        @return:
+        Return cache pixbuf. 
+        '''
         return self.cache_pixbuf
         

@@ -16,7 +16,7 @@
   <tr valign="middle">
   <!-- Home link -->
       <th>&nbsp;&nbsp;&nbsp;<a
-        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+        href="dtk.ui.cache_pixbuf-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -30,12 +30,7 @@
       <th>&nbsp;&nbsp;&nbsp;<a
         href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
 
-  <!-- Project homepage -->
-      <th class="navbar" align="right" width="100%">
-        <table border="0" cellpadding="0" cellspacing="0">
-          <tr><th class="navbar" align="center"
-            >Deepin UI</th>
-          </tr></table></th>
+      <th class="navbar" width="100%"></th>
   </tr>
 </table>
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -43,7 +38,7 @@
     <td width="100%">
       <span class="breadcrumbs">
         Package&nbsp;dtk ::
-        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        Package&nbsp;ui ::
         <a href="dtk.ui.cache_pixbuf-module.html">Module&nbsp;cache_pixbuf</a> ::
         Class&nbsp;CachePixbuf
       </span>
@@ -65,9 +60,9 @@
 <h1 class="epydoc">Class CachePixbuf</h1><p class="nomargin-top"><span class="codelink"><a href="dtk.ui.cache_pixbuf-pysrc.html#CachePixbuf">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_dtk_ui_c" name="uml_class_diagram_for_dtk_ui_c">
-<area shape="rect" id="node69" href="dtk.ui.cache_pixbuf.CachePixbuf-class.html#__init__" title="Init cache pixbuf." alt="" coords="17,39,560,57"/>
-<area shape="rect" id="node69" href="dtk.ui.cache_pixbuf.CachePixbuf-class.html#scale" title="Scale and return new pixbuf." alt="" coords="17,57,560,76"/>
-<area shape="rect" id="node69" href="dtk.ui.cache_pixbuf.CachePixbuf-class.html#get_cache" title="Get cache." alt="" coords="17,76,560,95"/>
+<area shape="rect" id="node0" href="dtk.ui.cache_pixbuf.CachePixbuf-class.html#__init__" title="Init cache pixbuf." alt="" coords="17,39,560,57"/>
+<area shape="rect" id="node0" href="dtk.ui.cache_pixbuf.CachePixbuf-class.html#scale" title="Scale with given sizce and return new pixbuf." alt="" coords="17,57,560,76"/>
+<area shape="rect" id="node0" href="dtk.ui.cache_pixbuf.CachePixbuf-class.html#get_cache" title="Get pixbuf cache." alt="" coords="17,76,560,95"/>
 <area shape="rect" id="node1" href="dtk.ui.cache_pixbuf.CachePixbuf-class.html" title="Cache pixbuf use to cache pixbuf to avoid new pixbuf generate by scale_simple." alt="" coords="5,6,571,101"/>
 </map>
   <img src="uml_class_diagram_for_dtk_ui_c.gif" alt='' usemap="#uml_class_diagram_for_dtk_ui_c" ismap="ismap" class="graph-without-title" />
@@ -76,6 +71,10 @@
 <hr />
 <p>Cache pixbuf use to cache pixbuf to avoid new pixbuf generate by 
   scale_simple.</p>
+  <p>gtk.gdk.pixbuf.scale_simple is function will make application very 
+  slow,</p>
+  <p>We use CachePixbuf increase the call times of 
+  gtk.gdk.pixbuf.scale_simple.</p>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -117,13 +116,13 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="scale"></a><span class="summary-sig-name">scale</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="dtk.ui.cache_pixbuf.CachePixbuf-class.html#scale" class="summary-sig-name">scale</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">pixbuf</span>,
         <span class="summary-sig-arg">scale_width</span>,
         <span class="summary-sig-arg">scale_height</span>,
         <span class="summary-sig-arg">vertical_mirror</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">horizontal_mirror</span>=<span class="summary-sig-default">False</span>)</span><br />
-      Scale and return new pixbuf.</td>
+      Scale with given sizce and return new pixbuf.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.cache_pixbuf-pysrc.html#CachePixbuf.scale">source&nbsp;code</a></span>
             
@@ -139,8 +138,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_cache"></a><span class="summary-sig-name">get_cache</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Get cache.</td>
+          <td><span class="summary-sig"><a href="dtk.ui.cache_pixbuf.CachePixbuf-class.html#get_cache" class="summary-sig-name">get_cache</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get pixbuf cache.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.cache_pixbuf-pysrc.html#CachePixbuf.get_cache">source&nbsp;code</a></span>
             
@@ -235,6 +234,59 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="scale"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">scale</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pixbuf</span>,
+        <span class="sig-arg">scale_width</span>,
+        <span class="sig-arg">scale_height</span>,
+        <span class="sig-arg">vertical_mirror</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">horizontal_mirror</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.cache_pixbuf-pysrc.html#CachePixbuf.scale">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Scale with given sizce and return new pixbuf.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pixbuf</code></strong> - Original pixbuf.</li>
+        <li><strong class="pname"><code>scale_width</code></strong> - Scale width of pixbuf.</li>
+        <li><strong class="pname"><code>scale_height</code></strong> - Scale height of pixbuf.</li>
+        <li><strong class="pname"><code>vertical_mirror</code></strong> - Whether pixbuf mirror vertically.</li>
+        <li><strong class="pname"><code>horizontal_mirror</code></strong> - Whether pixbuf mirror horizontally.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_cache"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_cache</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.cache_pixbuf-pysrc.html#CachePixbuf.get_cache">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get pixbuf cache.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>Return cache pixbuf.</dd>
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -242,7 +294,7 @@
   <tr valign="middle">
   <!-- Home link -->
       <th>&nbsp;&nbsp;&nbsp;<a
-        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+        href="dtk.ui.cache_pixbuf-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -256,18 +308,13 @@
       <th>&nbsp;&nbsp;&nbsp;<a
         href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
 
-  <!-- Project homepage -->
-      <th class="navbar" align="right" width="100%">
-        <table border="0" cellpadding="0" cellspacing="0">
-          <tr><th class="navbar" align="center"
-            >Deepin UI</th>
-          </tr></table></th>
+      <th class="navbar" width="100%"></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Aug  2 10:54:04 2012
+    Generated by Epydoc 3.0.1 on Thu Aug  2 17:57:29 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

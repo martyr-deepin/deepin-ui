@@ -1,6 +1,6 @@
-dtk.ui.browser	dtk.ui.browser-module.html
-dtk.ui.browser.__package__	dtk.ui.browser-module.html#__package__
-dtk.ui.browser.WebView	dtk.ui.browser.WebView-class.html
-dtk.ui.browser.WebView.__init__	dtk.ui.browser.WebView-class.html#__init__
-dtk.ui.browser.WebView.save_adjustment	dtk.ui.browser.WebView-class.html#save_adjustment
-dtk.ui.browser.WebView.do_scroll	dtk.ui.browser.WebView-class.html#do_scroll
+dtk.ui.cache_pixbuf	dtk.ui.cache_pixbuf-module.html
+dtk.ui.cache_pixbuf.__package__	dtk.ui.cache_pixbuf-module.html#__package__
+dtk.ui.cache_pixbuf.CachePixbuf	dtk.ui.cache_pixbuf.CachePixbuf-class.html
+dtk.ui.cache_pixbuf.CachePixbuf.scale	dtk.ui.cache_pixbuf.CachePixbuf-class.html#scale
+dtk.ui.cache_pixbuf.CachePixbuf.get_cache	dtk.ui.cache_pixbuf.CachePixbuf-class.html#get_cache
+dtk.ui.cache_pixbuf.CachePixbuf.__init__	dtk.ui.cache_pixbuf.CachePixbuf-class.html#__init__
