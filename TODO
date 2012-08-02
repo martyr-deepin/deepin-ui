@@ -36,7 +36,6 @@ theme.py
 thread_pool.py
 threads.py
 timeline.py
-titlebar.py
 tooltip.py
 tooltip_test.py
 treeview.py
