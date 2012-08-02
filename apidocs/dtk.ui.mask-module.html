@@ -15,8 +15,8 @@
        bgcolor="#a0c0ff" cellspacing="0">
   <tr valign="middle">
   <!-- Home link -->
-      <th bgcolor="#70b0f0" class="navbar-select"
-          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -30,7 +30,12 @@
       <th>&nbsp;&nbsp;&nbsp;<a
         href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
 
-      <th class="navbar" width="100%"></th>
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
   </tr>
 </table>
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -38,7 +43,7 @@
     <td width="100%">
       <span class="breadcrumbs">
         Package&nbsp;dtk ::
-        Package&nbsp;ui ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
         Module&nbsp;mask
       </span>
     </td>
@@ -80,13 +85,13 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="dtk.ui.mask-module.html#draw_mask" class="summary-sig-name">draw_mask</a>(<span class="summary-sig-arg">widget</span>,
+          <td><span class="summary-sig"><a name="draw_mask"></a><span class="summary-sig-name">draw_mask</span>(<span class="summary-sig-arg">widget</span>,
         <span class="summary-sig-arg">x</span>,
         <span class="summary-sig-arg">y</span>,
         <span class="summary-sig-arg">w</span>,
         <span class="summary-sig-arg">h</span>,
         <span class="summary-sig-arg">render_callback</span>)</span><br />
-      Draw mask with given render method.</td>
+      Draw mask.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.mask-pysrc.html#draw_mask">source&nbsp;code</a></span>
             
@@ -102,13 +107,13 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="dtk.ui.mask-module.html#draw_window_mask" class="summary-sig-name">draw_window_mask</a>(<span class="summary-sig-arg">widget</span>,
+          <td><span class="summary-sig"><a name="draw_window_mask"></a><span class="summary-sig-name">draw_window_mask</span>(<span class="summary-sig-arg">widget</span>,
         <span class="summary-sig-arg">x</span>,
         <span class="summary-sig-arg">y</span>,
         <span class="summary-sig-arg">w</span>,
         <span class="summary-sig-arg">h</span>,
         <span class="summary-sig-arg">render_callback</span>)</span><br />
-      Draw window mask with given render method.</td>
+      Draw window skin mask.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.mask-pysrc.html#draw_window_mask">source&nbsp;code</a></span>
             
@@ -124,13 +129,13 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="dtk.ui.mask-module.html#draw_scrolled_window_mask" class="summary-sig-name">draw_scrolled_window_mask</a>(<span class="summary-sig-arg">widget</span>,
+          <td><span class="summary-sig"><a name="draw_scrolled_window_mask"></a><span class="summary-sig-name">draw_scrolled_window_mask</span>(<span class="summary-sig-arg">widget</span>,
         <span class="summary-sig-arg">x</span>,
         <span class="summary-sig-arg">y</span>,
         <span class="summary-sig-arg">w</span>,
         <span class="summary-sig-arg">h</span>,
         <span class="summary-sig-arg">render_callback</span>)</span><br />
-      Draw scrolled window mask with given render method.</td>
+      Draw window skin mask.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.mask-pysrc.html#draw_scrolled_window_mask">source&nbsp;code</a></span>
             
@@ -146,13 +151,13 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="dtk.ui.mask-module.html#draw_icon_view_mask" class="summary-sig-name">draw_icon_view_mask</a>(<span class="summary-sig-arg">widget</span>,
+          <td><span class="summary-sig"><a name="draw_icon_view_mask"></a><span class="summary-sig-name">draw_icon_view_mask</span>(<span class="summary-sig-arg">widget</span>,
         <span class="summary-sig-arg">x</span>,
         <span class="summary-sig-arg">y</span>,
         <span class="summary-sig-arg">w</span>,
         <span class="summary-sig-arg">h</span>,
         <span class="summary-sig-arg">render_callback</span>)</span><br />
-      Draw icon view mask with given render method.</td>
+      Draw skin preview view mask.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.mask-pysrc.html#draw_icon_view_mask">source&nbsp;code</a></span>
             
@@ -168,13 +173,13 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="dtk.ui.mask-module.html#draw_list_view_mask" class="summary-sig-name">draw_list_view_mask</a>(<span class="summary-sig-arg">widget</span>,
+          <td><span class="summary-sig"><a name="draw_list_view_mask"></a><span class="summary-sig-name">draw_list_view_mask</span>(<span class="summary-sig-arg">widget</span>,
         <span class="summary-sig-arg">x</span>,
         <span class="summary-sig-arg">y</span>,
         <span class="summary-sig-arg">w</span>,
         <span class="summary-sig-arg">h</span>,
         <span class="summary-sig-arg">render_callback</span>)</span><br />
-      Draw list view mask with given render method.</td>
+      Draw skin preview view mask.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="dtk.ui.mask-pysrc.html#draw_list_view_mask">source&nbsp;code</a></span>
             
@@ -185,197 +190,13 @@
     </td>
   </tr>
 </table>
-<!-- ==================== FUNCTION DETAILS ==================== -->
-<a name="section-FunctionDetails"></a>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Function Details</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-FunctionDetails"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-</table>
-<a name="draw_mask"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">draw_mask</span>(<span class="sig-arg">widget</span>,
-        <span class="sig-arg">x</span>,
-        <span class="sig-arg">y</span>,
-        <span class="sig-arg">w</span>,
-        <span class="sig-arg">h</span>,
-        <span class="sig-arg">render_callback</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="dtk.ui.mask-pysrc.html#draw_mask">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Draw mask with given render method.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>widget</code></strong> - Target widget.</li>
-        <li><strong class="pname"><code>x</code></strong> - X coordinate of draw area.</li>
-        <li><strong class="pname"><code>y</code></strong> - Y coordinate of draw area.</li>
-        <li><strong class="pname"><code>w</code></strong> - Width of draw area.</li>
-        <li><strong class="pname"><code>h</code></strong> - Height of draw area.</li>
-        <li><strong class="pname"><code>render_callback</code></strong> - Render callback.</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="draw_window_mask"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">draw_window_mask</span>(<span class="sig-arg">widget</span>,
-        <span class="sig-arg">x</span>,
-        <span class="sig-arg">y</span>,
-        <span class="sig-arg">w</span>,
-        <span class="sig-arg">h</span>,
-        <span class="sig-arg">render_callback</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="dtk.ui.mask-pysrc.html#draw_window_mask">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Draw window mask with given render method.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>widget</code></strong> - Target widget.</li>
-        <li><strong class="pname"><code>x</code></strong> - X coordinate of draw area.</li>
-        <li><strong class="pname"><code>y</code></strong> - Y coordinate of draw area.</li>
-        <li><strong class="pname"><code>w</code></strong> - Width of draw area.</li>
-        <li><strong class="pname"><code>h</code></strong> - Height of draw area.</li>
-        <li><strong class="pname"><code>render_callback</code></strong> - Render callback.</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="draw_scrolled_window_mask"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">draw_scrolled_window_mask</span>(<span class="sig-arg">widget</span>,
-        <span class="sig-arg">x</span>,
-        <span class="sig-arg">y</span>,
-        <span class="sig-arg">w</span>,
-        <span class="sig-arg">h</span>,
-        <span class="sig-arg">render_callback</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="dtk.ui.mask-pysrc.html#draw_scrolled_window_mask">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Draw scrolled window mask with given render method.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>widget</code></strong> - Target widget.</li>
-        <li><strong class="pname"><code>x</code></strong> - X coordinate of draw area.</li>
-        <li><strong class="pname"><code>y</code></strong> - Y coordinate of draw area.</li>
-        <li><strong class="pname"><code>w</code></strong> - Width of draw area.</li>
-        <li><strong class="pname"><code>h</code></strong> - Height of draw area.</li>
-        <li><strong class="pname"><code>render_callback</code></strong> - Render callback.</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="draw_icon_view_mask"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">draw_icon_view_mask</span>(<span class="sig-arg">widget</span>,
-        <span class="sig-arg">x</span>,
-        <span class="sig-arg">y</span>,
-        <span class="sig-arg">w</span>,
-        <span class="sig-arg">h</span>,
-        <span class="sig-arg">render_callback</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="dtk.ui.mask-pysrc.html#draw_icon_view_mask">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Draw icon view mask with given render method.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>widget</code></strong> - Target widget.</li>
-        <li><strong class="pname"><code>x</code></strong> - X coordinate of draw area.</li>
-        <li><strong class="pname"><code>y</code></strong> - Y coordinate of draw area.</li>
-        <li><strong class="pname"><code>w</code></strong> - Width of draw area.</li>
-        <li><strong class="pname"><code>h</code></strong> - Height of draw area.</li>
-        <li><strong class="pname"><code>render_callback</code></strong> - Render callback.</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="draw_list_view_mask"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">draw_list_view_mask</span>(<span class="sig-arg">widget</span>,
-        <span class="sig-arg">x</span>,
-        <span class="sig-arg">y</span>,
-        <span class="sig-arg">w</span>,
-        <span class="sig-arg">h</span>,
-        <span class="sig-arg">render_callback</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="dtk.ui.mask-pysrc.html#draw_list_view_mask">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Draw list view mask with given render method.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>widget</code></strong> - Target widget.</li>
-        <li><strong class="pname"><code>x</code></strong> - X coordinate of draw area.</li>
-        <li><strong class="pname"><code>y</code></strong> - Y coordinate of draw area.</li>
-        <li><strong class="pname"><code>w</code></strong> - Width of draw area.</li>
-        <li><strong class="pname"><code>h</code></strong> - Height of draw area.</li>
-        <li><strong class="pname"><code>render_callback</code></strong> - Render callback.</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
   <tr valign="middle">
   <!-- Home link -->
-      <th bgcolor="#70b0f0" class="navbar-select"
-          >&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</th>
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
 
   <!-- Tree link -->
       <th>&nbsp;&nbsp;&nbsp;<a
@@ -389,13 +210,18 @@
       <th>&nbsp;&nbsp;&nbsp;<a
         href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
 
-      <th class="navbar" width="100%"></th>
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Aug  2 17:18:05 2012
+    Generated by Epydoc 3.0.1 on Thu Aug  2 18:10:18 2012
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
