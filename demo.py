@@ -150,6 +150,8 @@ if __name__ == "__main__":
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
     
     # Set application icon.
+    iiicon = app_theme.get_pixbuf("icon.ico")
+    print type(iiicon)
     application.set_icon(app_theme.get_pixbuf("icon.ico"))
     
     # Set application preview pixbuf.
@@ -160,7 +162,7 @@ if __name__ == "__main__":
         ["theme", "menu", "max", "min", "close"], 
         app_theme.get_pixbuf("logo.png"), 
         "深度图形库",
-        "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py"
+        "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py",
         )
     
     # Draw application background.
