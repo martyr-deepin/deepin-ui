@@ -37,7 +37,8 @@ class Application(object):
     def __init__(self, app_support_colormap=True):
         """
         Initialize the Application class.
-        @param app_support_colormap: Set False if you do not want the application to support colormap. By default it's True.
+        
+        @param app_support_colormap: Set False if your program don't allow manipulate colormap, such as mplayer, otherwise you should keep this option as True.
         """
         # Init.
         self.app_support_colormap = app_support_colormap
@@ -49,6 +50,7 @@ class Application(object):
     def init(self):
         """
         This do the remain initialize step.
+        
         It Initializes the window and some important signal such as "destroy".
         """
         # Init gdk threads, the integrant method for multi-thread GUI application.
@@ -78,9 +80,11 @@ class Application(object):
                      icon_dpixbuf=None, app_name=None, title=None, add_separator=False, show_title=True):
         """
         Add titlebar to the application.
+        
         Connect click signal of the standard button to default callback.
+        
         @param button_mask: A list of string, each of which stands for a standard button on top right of the window. By default, it's ["theme", "menu", "max", "min", "close"].
-        @param icon_dpixbuf: The icon pixbuf of type dtk.ui.theme.DynamicPixbuf. The icon pixbuf is dynamic and could be changed in other parts of the program. By default, it is None.
+        @param icon_dpixbuf: The icon pixbuf of type dtk.ui.theme.DynamicPixbuf. By default, it is None.
         @param app_name: The name string of the application, which will be displayed just next to the icon_dpixbuf. By default, it is None.
         @param title: The title string of the window, which will be displayed on the center of the titlebar. By default, it is None.
         @param add_separator: If True, add a line between the titlebar and the body of the window. By default, it's False.
@@ -107,6 +111,7 @@ class Application(object):
     def close_window(self, widget):
         """
         Close the window when the close button is clicked.
+
         @param widget: A widget of Gtk.Widget. Passed by gtk.
         """
         self.window.close_window()
@@ -133,7 +138,8 @@ class Application(object):
 
     def set_title(self, title):
         """
-        Set the application title. This title is used by the window manager or the dock.
+        Set the application title.
+        
         @param title: The title string of the application.
         """
         self.window.set_title(title)
@@ -141,8 +147,9 @@ class Application(object):
     def set_default_size(self, default_width, default_height):
         """
         Set the default size of the window.
-        @param default_width: Default width in pixels of the application.
-        @param default_height: Default height in pixels of the application.
+        
+        @param default_width: Default width in pixels of the application, once set, application don't allow smaller than width.
+        @param default_height: Default height in pixels of the application, once set, application don't allow smaller than height.
         """
         self.window.set_default_size(default_width, default_height)
         self.window.set_geometry_hints(
@@ -173,6 +180,8 @@ class Application(object):
     def run(self):
         """
         Show the window and start the mainloop.
+        
+        You must use this function at last of program, otherwise program will run in loop too early that all code after application.run won't execute until program exit.
         """
         # Show window.
         self.window.show_window()
@@ -183,9 +192,11 @@ class Application(object):
     def set_skin_preview(self, preview_pixbuf):
         """
         Set the skin preview of the application.
+        
+        @note: The size of preview_pixbuf must be proportional to the size of program, otherwise adjust skin will got wrong coordinate.
+        
         @param preview_pixbuf: A pixbuf of type dtk.ui.theme.DynamicPixbuf.
         """
-        '''Set skin preview pixbuf.'''
         self.skin_preview_pixbuf = preview_pixbuf
         
     def theme_callback(self, widget):
@@ -216,5 +227,4 @@ class Application(object):
         Set the menu_button_callback function.
         @param callback: A function which is invoked when the menu button is clicked.
         """
-        '''Set menu callback.'''
         self.menu_button_callback = callback

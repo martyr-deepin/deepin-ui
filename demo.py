@@ -164,7 +164,7 @@ if __name__ == "__main__":
         "深度图形库",
         "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py",
         )
-    application.titlebar.change_title("hhhh")
+    application.set_title("hhh")
     
     # Draw application background.
     button = gtk.Button()
