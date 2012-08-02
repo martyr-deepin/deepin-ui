@@ -25,12 +25,23 @@ from collections import OrderedDict
 import gobject    
 
 class Config(gobject.GObject):
+    '''
+    Config module to read *.ini file.
+    '''
+    
     __gsignals__ = {
         "config-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
                             (gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING))
         }
     
     def __init__(self, config_file, default_config=None):
+        '''
+        Init config module.
+
+        @param config_file: Config filepath.
+        
+        @param default_config: Default config value use when config file is empty.
+        '''
         gobject.GObject.__init__(self)
         self.config_parser = ConfigParser()
         self.remove_option = self.config_parser.remove_option
@@ -47,6 +58,9 @@ class Config(gobject.GObject):
         self.load_default()
                 
     def load_default(self):            
+        '''
+        Load config items with default setting.
+        '''
         # Convert config when config is list format.
         if isinstance(self.default_config, list):
             self.default_config = self.convert_from_list(self.default_config)
@@ -58,11 +72,24 @@ class Config(gobject.GObject):
                     self.config_parser.set(section, key, value)
                 
     def load(self):            
-        ''' Load config items from the file. '''
+        ''' 
+        Load config items from the file.
+        '''
         self.config_parser.read(self.config_file)
     
     def get(self, section, option, default=None):
-        ''' specified the section for read the option value. '''
+        ''' 
+        Get specified the section for read the option value. 
+        
+        @param section: Section to index item.
+        
+        @param option: Option to index item.
+        
+        @param default: Default value if item is not exist.
+        
+        @return:
+        Return item value with match in config file.
+        '''
         try:
             return self.config_parser.get(section, option)
         except Exception, e:
@@ -70,6 +97,15 @@ class Config(gobject.GObject):
             return default
             
     def set(self, section, option, value):  
+        '''
+        Set item given value.
+
+        @param section: Section to setting.
+        
+        @param option: Option to setting.
+        
+        @param value: Item value to save.
+        '''
         if not self.config_parser.has_section(section):
             print "Section \"%s\" not exist. create..." % (section)
             self.add_section(section)
@@ -78,7 +114,11 @@ class Config(gobject.GObject):
         self.emit("config-changed", section, option, value)
         
     def write(self, given_filepath=None):    
-        ''' write configure to file. '''
+        '''
+        Save configure to file. 
+        
+        @param given_filepath: If given_filepath is None, save to default filepath, otherwise save to given filepath.
+        '''
         if given_filepath:
             f = file(given_filepath, "w")
         else:
@@ -87,14 +127,32 @@ class Config(gobject.GObject):
         f.close()
         
     def get_default(self):    
+        '''
+        Get default config value.
+        
+        @return:
+        Return default config value.
+        '''
         return self.default_config
     
     def set_default(self, default_config):
+        '''
+        Set default config value and load it.
+        
+        @param default_config: Default config value.
+        '''
         self.default_config = default_config
         self.load_default()
         
     def convert_from_list(self, config_list):
-        '''Convert to dict from list format.'''
+        '''
+        Convert to dict from list format.
+        
+        @param config_list: Config value as List format.
+        
+        @return:
+        Return config value as Dict format.
+        '''
         config_dict = OrderedDict()
         for (section, option_list) in config_list:
             option_dict = OrderedDict()
