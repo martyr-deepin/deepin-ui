@@ -167,14 +167,10 @@ class Titlebar(EventBox):
         return True
     
     def change_title(self, title):
-<<<<<<< HEAD
         """
         Change the title of the application, which is diplayed on the center of the title bar.
         @param title: New title string that want to set.
         """
-=======
-        '''Change title.'''
->>>>>>> 30d53c2205e027ffafa309281360483d3da2416a
         self.title_box.set_text(title)
         
 gobject.type_register(Titlebar)
