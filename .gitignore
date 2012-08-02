@@ -7,3 +7,5 @@ build
 dist
 dtk.egg-info
 *.po~
+apidocs
+*.swp

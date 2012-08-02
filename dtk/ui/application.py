@@ -84,7 +84,7 @@ class Application(object):
         @param app_name: The name string of the application, which will be displayed just next to the icon_dpixbuf. By default, it is None.
         @param title: The title string of the window, which will be displayed on the center of the titlebar. By default, it is None.
         @param add_separator: If True, add a line between the titlebar and the body of the window. By default, it's False.
-        @param show_title: If False, do not display the icon_dpixbuf, app_name and the title. By default, it's True.
+        @param show_title: If False, the titlebar will not be displayed. By default, it's True.
         """
         # Init titlebar.
         self.titlebar = Titlebar(button_mask, icon_dpixbuf, app_name, title, add_separator, show_title=show_title)
@@ -107,7 +107,7 @@ class Application(object):
     def close_window(self, widget):
         """
         Close the window when the close button is clicked.
-        @param widget: No used. Passed by gtk.
+        @param widget: A widget of Gtk.Widget. Passed by gtk.
         """
         self.window.close_window()
 
@@ -133,7 +133,7 @@ class Application(object):
 
     def set_title(self, title):
         """
-        Set the application title.
+        Set the application title. This title is used by the window manager or the dock.
         @param title: The title string of the application.
         """
         self.window.set_title(title)
