@@ -33,10 +33,17 @@ from utils import (get_content_size, color_hex_to_cairo, propagate_expose, set_c
                    window_is_max, get_same_level_widgets, widget_fix_cycle_destroy_bug, run_command)
 
 class Button(gtk.Button):
-    '''Button.'''
+    '''
+    Button with Deepin UI style.
+    '''
 	
     def __init__(self, label, font_size=DEFAULT_FONT_SIZE):
-        '''Init button.'''
+        '''
+        Initialize Button class.
+        
+        @param label: Button label.
+        @param font_size: Button label font size.
+        '''
         gtk.Button.__init__(self)
         self.font_size = font_size
         self.min_width = 69
@@ -53,7 +60,12 @@ class Button(gtk.Button):
             "Return" : self.clicked}
         
     def set_label(self, label, font_size=DEFAULT_FONT_SIZE):
-        '''Set label.'''
+        '''
+        Set label of Button.
+        
+        @param label: Button label.
+        @param font_size: Button label font size.
+        '''
         self.label = label
         (self.label_width, self.label_height) = get_content_size(label, self.font_size)
         self.set_size_request(max(self.label_width + self.padding_x * 2, self.min_width),
@@ -62,13 +74,23 @@ class Button(gtk.Button):
         self.queue_draw()
         
     def key_press_button(self, widget, event):
-        '''Key press button.'''
+        '''
+        Callback for `button-press-event` signal.
+        
+        @param widget: Button widget.        
+        @param event: Button press event.
+        '''
         key_name = get_keyevent_name(event)
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
         
     def expose_button(self, widget, event):
-        '''Expose button.'''
+        '''
+        Callback for `expose-event` signal.
+        
+        @param widget: Button widget.
+        @param event: Button press event.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -130,10 +152,20 @@ class Button(gtk.Button):
 gobject.type_register(Button)
 
 class ImageButton(gtk.Button):
-    '''Image button.'''
+    '''
+    ImageButton class.
+    '''
 	
     def __init__(self, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x=False, content=None):
-        '''Init font button.'''
+        '''
+        Initialize ImageButton class.
+
+        @param normal_dpixbuf: DynamicPixbuf for button normal status.
+        @param hover_dpixbuf: DynamicPixbuf for button hover status.
+        @param press_dpixbuf: DynamicPixbuf for button press status.
+        @param scale_x: Whether scale horticulturally, default is False.
+        @param content: Button label content.
+        '''
         gtk.Button.__init__(self)
         self.cache_pixbuf = CachePixbuf()
         draw_button(self, self.cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x, content)
@@ -141,10 +173,14 @@ class ImageButton(gtk.Button):
 gobject.type_register(ImageButton)
 
 class ThemeButton(gtk.Button):
-    '''Theme button.'''
+    '''
+    ThemeButton class.
+    '''
 	
     def __init__(self):
-        '''Init theme button.'''
+        '''
+        Initialize ThemeButton class.
+        '''
         gtk.Button.__init__(self)
         self.cache_pixbuf = CachePixbuf()
         draw_button(
@@ -157,10 +193,14 @@ class ThemeButton(gtk.Button):
 gobject.type_register(ThemeButton)
 
 class MenuButton(gtk.Button):
-    '''Menu button.'''
+    '''
+    MenuButton class.
+    '''
 	
     def __init__(self):
-        '''Init menu button.'''
+        '''
+        Initialize MenuButton class.
+        '''
         gtk.Button.__init__(self)
         self.cache_pixbuf = CachePixbuf()
         draw_button(
@@ -173,10 +213,14 @@ class MenuButton(gtk.Button):
 gobject.type_register(MenuButton)
 
 class MinButton(gtk.Button):
-    '''Min button.'''
+    '''
+    MinButton.
+    '''
 	
     def __init__(self):
-        '''Init min button.'''
+        '''
+        Initialize MinButton class.
+        '''
         gtk.Button.__init__(self)
         self.cache_pixbuf = CachePixbuf()
         draw_button(
@@ -189,10 +233,14 @@ class MinButton(gtk.Button):
 gobject.type_register(MinButton)
 
 class CloseButton(gtk.Button):
-    '''Close button.'''
+    '''
+    CloseButton class.
+    '''
 	
     def __init__(self):
-        '''Init close button.'''
+        '''
+        Initialize CloseButton class.
+        '''
         gtk.Button.__init__(self)
         self.cache_pixbuf = CachePixbuf()
         draw_button(
@@ -205,10 +253,18 @@ class CloseButton(gtk.Button):
 gobject.type_register(CloseButton)
 
 class MaxButton(gtk.Button):
-    '''Max button.'''
+    '''
+    MaxButton class.
+    '''
 	
     def __init__(self,sub_dir="button", max_path_prefix="window_max", unmax_path_prefix="window_unmax"):
-        '''Init max button.'''
+        '''
+        Initialize MaxButton class.
+        
+        @param sub_dir: Subdirectory of button images.
+        @param max_path_prefix: Image path prefix for maximise status.
+        @param unmax_path_prefix: Image path prefix for un-maximise status.
+        '''
         gtk.Button.__init__(self)
         self.cache_pixbuf = CachePixbuf()
         draw_max_button(self, self.cache_pixbuf, sub_dir, max_path_prefix, unmax_path_prefix)
@@ -218,7 +274,19 @@ gobject.type_register(MaxButton)
 def draw_button(widget, cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
                 scale_x=False, button_label=None, font_size=DEFAULT_FONT_SIZE, 
                 label_dcolor=ui_theme.get_color("button_default_font")):
-    '''Create button.'''
+    '''
+    Draw button.
+    
+    @param widget: Gtk.Widget instance.
+    @param cache_pixbuf: CachePixbuf.
+    @param normal_dpixbuf: DynamicPixbuf of normal status.
+    @param hover_dpixbuf: DynamicPixbuf of hover status.
+    @param press_dpixbuf: DynamicPixbuf of press status.
+    @param scale_x: Whether button scale with content.
+    @param button_label: Button label, default is None.
+    @param font_size: Button label font size, default is DEFAULT_FONT_SIZE.
+    @param label_dcolor: Button label color.
+    '''
     # Init request size.
     if scale_x:
         request_width = get_content_size(button_label, font_size)[0]
@@ -237,10 +305,23 @@ def draw_button(widget, cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixb
         
 def expose_button(widget, event, 
                   cache_pixbuf,
-                  scale_x, scaleY,
+                  scale_x, scale_y,
                   normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
                   button_label, font_size, label_dcolor):
-    '''Expose function to replace event box's image.'''
+    '''
+    Expose callback for L{ I{draw_button} <draw_button>}.
+
+    @param widget: Gtk.Widget instance.
+    @param cache_pixbuf: CachePixbuf.
+    @param scale_x: Whether button scale width with content.
+    @param scale_y: Whether button scale height with content.
+    @param normal_dpixbuf: DynamicPixbuf of normal status.
+    @param hover_dpixbuf: DynamicPixbuf of hover status.
+    @param press_dpixbuf: DynamicPixbuf of press status.
+    @param button_label: Button label, default is None.
+    @param font_size: Button label font size, default is DEFAULT_FONT_SIZE.
+    @param label_dcolor: Button label color.
+    '''
     # Init.
     rect = widget.allocation
     
@@ -258,7 +339,7 @@ def expose_button(widget, event,
     else:
         image_width = image.get_width()
         
-    if scaleY:
+    if scale_y:
         image_height = widget.allocation.height
     else:
         image_height = image.get_height()
@@ -286,7 +367,15 @@ def expose_button(widget, event,
     return True
 
 def draw_max_button(widget, cache_pixbuf, sub_dir, max_path_prefix, unmax_path_prefix):
-    '''Create max button.'''
+    '''
+    Draw maximum button.
+    
+    @param widget: Gtk.Widget instance.
+    @param cache_pixbuf: CachePixbuf to avoid unnecessary pixbuf new operation.
+    @param sub_dir: Subdirectory of button.
+    @param max_path_prefix: Prefix of maximum image path.
+    @param unmax_path_prefix: Prefix of un-maximum image path.
+    '''
     # Init request size.
     pixbuf = ui_theme.get_pixbuf("%s/%s_normal.png" % (sub_dir, unmax_path_prefix)).get_pixbuf()
     widget.set_size_request(pixbuf.get_width(), pixbuf.get_height())
@@ -298,7 +387,16 @@ def draw_max_button(widget, cache_pixbuf, sub_dir, max_path_prefix, unmax_path_p
                                      sub_dir, max_path_prefix, unmax_path_prefix))
                 
 def expose_max_button(widget, event, cache_pixbuf, sub_dir, max_path_prefix, unmax_path_prefix):
-    '''Expose function to replace event box's image.'''
+    '''
+    Expose callback for L{ I{draw_max_button} <draw_max_button>}.
+    
+    @param widget: Gtk.Widget instance.
+    @param event: Expose event.
+    @param cache_pixbuf: CachePixbuf to avoid unnecessary new pixbuf operation.
+    @param sub_dir: Subdirectory for image path.
+    @param max_path_prefix: Prefix of maximum image path.
+    @param unmax_path_prefix: Prefix of un-maximum image path.
+    '''
     # Get dynamic pixbuf.
     if window_is_max(widget):
         normal_dpixbuf = ui_theme.get_pixbuf("%s/%s_normal.png" % (sub_dir, unmax_path_prefix))
@@ -335,7 +433,9 @@ def expose_max_button(widget, event, cache_pixbuf, sub_dir, max_path_prefix, unm
     return True
 
 class ToggleButton(gtk.ToggleButton):
-    '''Image button.'''
+    '''
+    ToggleButton class.
+    '''
 	
     def __init__(self, 
                  inactive_normal_dpixbuf, active_normal_dpixbuf, 
@@ -343,7 +443,20 @@ class ToggleButton(gtk.ToggleButton):
                  inactive_press_dpixbuf=None, active_press_dpixbuf=None,
                  inactive_disable_dpixbuf=None, active_disable_dpixbuf=None,
                  button_label=None, padding_x=0):
-        '''Init font button.'''
+        '''
+        Initialize ToggleButton class.
+        
+        @param inactive_normal_dpixbuf: DynamicPixbuf for inactive normal status. 
+        @param active_normal_dpixbuf: DynamicPixbuf for active normal status. 
+        @param inactive_hover_dpixbuf: DynamicPixbuf for inactive hover status, default is None. 
+        @param active_hover_dpixbuf: DynamicPixbuf for active hover status, default is None. 
+        @param inactive_press_dpixbuf: DynamicPixbuf for inactive press status, default is None. 
+        @param active_press_dpixbuf: DynamicPixbuf for active press status, default is None. 
+        @param inactive_disable_dpixbuf: DynamicPixbuf for inactive disable status, default is None. 
+        @param active_disable_dpixbuf: DynamicPixbuf for active disable status, default is None. 
+        @param button_label: Button label, default is None.
+        @param padding_x: Padding x, default is 0.
+        '''
         gtk.ToggleButton.__init__(self)
         font_size = DEFAULT_FONT_SIZE
         label_dcolor = ui_theme.get_color("button_default_font")
@@ -368,25 +481,46 @@ class ToggleButton(gtk.ToggleButton):
         self.set_size_request(button_width + label_width + padding_x * 2,
                               button_height)
         
-        self.connect("button-press-event", self.button_press_cb)
-        self.connect("button-release-event", self.button_release_cb)
+        self.connect("button-press-event", self.press_toggle_button)
+        self.connect("button-release-event", self.release_toggle_button)
         
         # Expose button.
         self.connect("expose-event", lambda w, e : self.expose_toggle_button(
                 w, e,
                 button_label, padding_x, font_size, label_dcolor))
         
-    def button_press_cb(self, widget, event):    
+    def press_toggle_button(self, widget, event):    
+        '''
+        Callback for `button-press-event` signal.
+        
+        @param widget: ToggleButton widget.
+        @param event: Button press event.
+        '''
         self.button_press_flag = True
         self.queue_draw()
         
-    def button_release_cb(self, widget, event):    
+    def release_toggle_button(self, widget, event):    
+        '''
+        Callback for `button-press-release` signal.
+        
+        @param widget: ToggleButton widget.
+        @param event: Button release event.
+        '''
         self.button_press_flag = False
         self.queue_draw()    
         
     def expose_toggle_button(self, widget, event, 
                              button_label, padding_x, font_size, label_dcolor):
-        '''Expose function to replace event box's image.'''
+        '''
+        Callback for `expose-event` signal.
+        
+        @param widget: ToggleButton widget.
+        @param event: Expose event.
+        @param button_label: Button label string.
+        @param padding_x: horticultural padding value.
+        @param font_size: Font size.
+        @param label_dcolor: Label DynamicColor.
+        '''
         # Init.
         inactive_normal_dpixbuf, inactive_hover_dpixbuf, inactive_press_dpixbuf, inactive_disable_dpixbuf = self.inactive_pixbuf_group
         active_normal_dpixbuf, active_hover_dpixbuf, active_press_dpixbuf, active_disable_dpixbuf = self.active_pixbuf_group
@@ -454,17 +588,34 @@ class ToggleButton(gtk.ToggleButton):
         
         return True
     
-    def set_inactive_pixbuf_group(self,  new_group):
+    def set_inactive_pixbuf_group(self, new_group):
+        '''
+        Set inactive pixbuf group.
+        
+        @param new_group: Inactive pixbuf group.
+        '''
         self.inactive_pixbuf_group = new_group
         
     def set_active_pixbuf_group(self, new_group):    
+        '''
+        Set inactive pixbuf group.
+        
+        @param new_group: Active pixbuf group.
+        '''
         self.active_pixbuf_group = new_group
 
 class ActionButton(gtk.Button):
-    '''Action button.'''
+    '''
+    ActionButton class.
+    '''
 	
     def __init__(self, actions, index=0):
-        '''Action button.'''
+        '''
+        Initialize for ActionButton class.
+        
+        @param actions: Actions for button.
+        @param index: Index default is 0.
+        '''
         gtk.Button.__init__(self)
         self.actions = actions
         self.index = index
@@ -476,7 +627,11 @@ class ActionButton(gtk.Button):
         self.connect("clicked", lambda w: self.update_action_index(w))
         
     def update_action_index(self, widget):
-        '''Update action index.'''
+        '''
+        Update action index of ActionButton.
+        
+        @param widget: ActionButton widget.
+        '''
         # Call click callback.
         self.actions[self.index][1](widget)
         
@@ -489,7 +644,13 @@ class ActionButton(gtk.Button):
         self.queue_draw()    
         
     def expose_action_button(self, widget, event):
-        '''Expose action button.'''
+        '''
+        Callback for `expose-event` signal.
+        
+        @param widget: ActionButton widget.
+        @param event: Expose event.
+        @return: Always return True.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -511,10 +672,17 @@ class ActionButton(gtk.Button):
 gobject.type_register(ActionButton)
 
 class CheckButton(ToggleButton):
-    '''Check button.'''
+    '''
+    CheckButton class.
+    '''
 	
     def __init__(self, label_text=None, padding_x=8):
-        '''Init check button.'''
+        '''
+        Initialize CheckButton class.
+        
+        @param label_text: Label text.
+        @param padding_x: Horticultural padding value, default is 8.
+        '''
         ToggleButton.__init__(
             self,
             ui_theme.get_pixbuf("button/check_button_inactive_normal.png"),
@@ -531,10 +699,15 @@ class CheckButton(ToggleButton):
 gobject.type_register(CheckButton)
 
 class RadioButton(ToggleButton):
-    '''Radio button.'''
+    '''RadioButton class.'''
 	
     def __init__(self, label_text=None, padding_x=8):
-        '''Init radio button.'''
+        '''
+        Initialize RadioButton class.
+        
+        @param label_text: Label text.
+        @param padding_x: Horticultural padding value, default is 8.
+        '''
         ToggleButton.__init__(
             self,
             ui_theme.get_pixbuf("button/radio_button_inactive_normal.png"),
@@ -553,7 +726,11 @@ class RadioButton(ToggleButton):
         self.connect("clicked", self.click_radio_button)
         
     def click_radio_button(self, widget):
-        '''Click radio button.'''
+        '''
+        Callback for `clicked` signal.
+        
+        @param widget: RadioButton widget.
+        '''
         if not self.switch_lock:
             for w in get_same_level_widgets(self):
                 w.switch_lock = True
@@ -563,10 +740,16 @@ class RadioButton(ToggleButton):
 gobject.type_register(RadioButton)
 
 class DisableButton(gtk.Button):
-    '''Drop button.'''
+    '''
+    DisableButton class.
+    '''
 	
     def __init__(self, dpixbufs):
-        '''Init drop button.'''
+        '''
+        Initialize DisableButton class.
+        
+        @param dpixbufs: DyanmicPixbuf.
+        '''
         gtk.Button.__init__(self)
         pixbuf = dpixbufs[0].get_pixbuf()
         self.set_size_request(pixbuf.get_width(), pixbuf.get_height())
@@ -575,7 +758,13 @@ class DisableButton(gtk.Button):
         self.connect("expose-event", lambda w, e: self.expose_drop_button(w, e, dpixbufs))
         
     def expose_drop_button(self, widget, event, dpixbufs):
-        '''Expose drop button.'''
+        '''
+        Callback for `expose-event` signal.
+        
+        @param widget: DisableButton widget.
+        @param event: Expose event.
+        @param dpixbufs: DynamicPixbufs.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -601,11 +790,20 @@ class DisableButton(gtk.Button):
 gobject.type_register(DisableButton)
 
 class LinkButton(Label):
-    '''Link button.'''
+    '''
+    LinkButton click to open browser.
+    '''
 	
     def __init__(self, text, link, enable_gaussian=True, 
                  text_color=ui_theme.get_color("link_text")):
-        '''Init link button.'''
+        '''
+        Initialize LinkButton class.
+        
+        @param text: Link content.
+        @param link: Link address.
+        @param enable_gaussian: To enable gaussian effect on link, default is True.
+        @param text_color: Link color, just use when option enable_gaussian is False.
+        '''
         Label.__init__(self, text, text_color, enable_gaussian=enable_gaussian, text_size=9,
                        gaussian_radious=1, border_radious=0)
         
