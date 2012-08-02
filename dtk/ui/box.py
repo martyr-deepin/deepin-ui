@@ -27,18 +27,28 @@ import gobject
 import gtk
 
 class EventBox(gtk.EventBox):
-    '''Event box.'''
+    '''
+    Event box, not like Gtk.EventBox, it don't show visible window default.
+    '''
 	
     def __init__(self):
-        '''Init event box.'''
+        '''
+        Initialize the EventBox class.
+        '''
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
         
 class ImageBox(gtk.EventBox):
-    '''Box just contain image.'''
+    '''
+    ImageBox.
+    '''
 	
     def __init__(self, image_dpixbuf):
-        '''Init image box.'''
+        '''
+        Initialize the ImageBox class.
+
+        @param image_dpixbuf: Image dynamic pixbuf.
+        '''
         # Init.
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
@@ -52,7 +62,12 @@ class ImageBox(gtk.EventBox):
         self.connect("expose-event", self.expose_image_box)
         
     def expose_image_box(self, widget, event):
-        '''Expose image box.'''
+        '''
+        Callback for `expose-event` signal.
+
+        @param widget: Gtk.Widget instance.
+        @param event: Expose event.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -69,10 +84,14 @@ class ImageBox(gtk.EventBox):
 gobject.type_register(ImageBox)
 
 class BackgroundBox(gtk.VBox):
-    '''Box to expande background.'''
+    '''
+    BackgroundBox is container for clip background.
+    '''
 	
     def __init__(self):
-        '''Init background box.'''
+        '''
+        Initialize the BackgroundBox class.
+        '''
         # Init.
         gtk.VBox.__init__(self)
         self.set_can_focus(True)
@@ -80,14 +99,28 @@ class BackgroundBox(gtk.VBox):
         self.connect("expose-event", self.expose_background_box)
         
     def draw_mask(self, cr, x, y, w, h):
-        '''Draw mask.'''
+        '''
+        Mask render function.
+        
+        @param cr: Cairo context.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         draw_vlinear(cr, x, y, w, h,
                      [(0, ("#FF0000", 1)),
                       (1, ("#FF0000", 1))]
                      )
         
     def expose_background_box(self, widget, event):
-        '''Expose background box.'''
+        '''
+        Callback for `expose-event` signal.
+
+        @param widget: BackgroundBox self.
+        @param event: Expose event.        
+        @return: Always return False.        
+        '''
         cr = widget.window.cairo_create()
         rect = widget.allocation
         toplevel = widget.get_toplevel()
