@@ -25,8 +25,16 @@ import dtk_webkit_cookie
 from gtk import gdk
 
 class WebView(webkit.WebView):
+    '''
+    WebView wrap that support cookie.
+    '''
 
     def __init__(self, cookie_filepath=None):
+        '''
+        Init for WebView.
+        
+        @param cookie_filepath: Filepath to save cookie.
+        '''
         webkit.WebView.__init__(self)
         self.cookie_filepath = cookie_filepath
         if self.cookie_filepath != None:
@@ -36,11 +44,27 @@ class WebView(webkit.WebView):
         self.connect("set-scroll-adjustments", self.save_adjustment)
         self.connect("scroll-event", self.do_scroll)
 
-    def save_adjustment(self, web, hadj, vadj):
+    def save_adjustment(self, webview, hadj, vadj):
+        '''
+        Save adjustment value.
+        
+        @param webview: WebView.
+        
+        @param hadj: Horizontally adjustment.
+        
+        @param vadj: Vertically adjustment.
+        '''
         self.vadjustment = vadj
         self.hadjustment = hadj
 
     def do_scroll(self, w, e):
+        '''
+        Scroll signal handler.
+        
+        @param w: WebView widget.
+        
+        @param e: Scroll event.
+        '''
         value = self.vadjustment.value
         step = self.vadjustment.step_increment
         page_size = self.vadjustment.page_size

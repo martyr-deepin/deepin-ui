@@ -1,10 +1,6 @@
-dtk.ui.line	dtk.ui.line-module.html
-dtk.ui.line.__package__	dtk.ui.line-module.html#__package__
-dtk.ui.line.HSeparator	dtk.ui.line.HSeparator-class.html
-dtk.ui.line.HSeparator.expose_hseparator	dtk.ui.line.HSeparator-class.html#expose_hseparator
-dtk.ui.line.HSeparator.__gtype__	dtk.ui.line.HSeparator-class.html#__gtype__
-dtk.ui.line.HSeparator.__init__	dtk.ui.line.HSeparator-class.html#__init__
-dtk.ui.line.VSeparator	dtk.ui.line.VSeparator-class.html
-dtk.ui.line.VSeparator.__gtype__	dtk.ui.line.VSeparator-class.html#__gtype__
-dtk.ui.line.VSeparator.__init__	dtk.ui.line.VSeparator-class.html#__init__
-dtk.ui.line.VSeparator.expose_vseparator	dtk.ui.line.VSeparator-class.html#expose_vseparator
+dtk.ui.browser	dtk.ui.browser-module.html
+dtk.ui.browser.__package__	dtk.ui.browser-module.html#__package__
+dtk.ui.browser.WebView	dtk.ui.browser.WebView-class.html
+dtk.ui.browser.WebView.__init__	dtk.ui.browser.WebView-class.html#__init__
+dtk.ui.browser.WebView.save_adjustment	dtk.ui.browser.WebView-class.html#save_adjustment
+dtk.ui.browser.WebView.do_scroll	dtk.ui.browser.WebView-class.html#do_scroll
