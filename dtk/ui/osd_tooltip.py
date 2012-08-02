@@ -27,8 +27,7 @@ from theme import ui_theme
 import cairo
 import gobject
 import gtk
-from utils import (get_widget_root_coordinate, WIDGET_POS_TOP_LEFT, 
-                   remove_signal_id, remove_timeout_id, get_content_size)
+from utils import (remove_signal_id, remove_timeout_id, get_content_size)
 
 class OSDTooltip(gtk.Window):
     '''OSD tooltip.'''
