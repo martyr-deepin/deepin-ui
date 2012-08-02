@@ -28,7 +28,14 @@ class HSeparator(gtk.Alignment):
     '''Horizontal separator.'''
 	
     def __init__(self, color_infos, padding_x=0, padding_y=0):
-        '''Init horizontal separator.'''
+        '''Init horizontal separator.
+        
+        @param color_infos: A list of color info, [(position, (hex_color, alpha_value))]
+        
+        @param padding_x: Padding value in horizontally.
+        
+        @param padding_y: Padding value in vertically.
+        '''
         # Init.
         gtk.Alignment.__init__(self)
         self.color_infos = color_infos
@@ -45,7 +52,16 @@ class HSeparator(gtk.Alignment):
         self.show_all()
 
     def expose_hseparator(self, widget, event):
-        '''Expose separator item.'''
+        '''
+        Callback for `expose-event` signal.
+        
+        @param widget: HSeparator instance.
+        
+        @param event: Expose event.
+        
+        @return:
+        Return True.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -60,8 +76,19 @@ class HSeparator(gtk.Alignment):
 gobject.type_register(HSeparator)
 
 class VSeparator(gtk.Alignment):
+    '''
+    Vertically separator.
+    '''
     
     def __init__(self, color_infos, padding_x=0, padding_y=0):
+        '''Init vertically separator.
+        
+        @param color_infos: A list of color info, [(position, (hex_color, alpha_value))]
+        
+        @param padding_x: Padding value in horizontally.
+        
+        @param padding_y: Padding value in vertically.
+        '''
         gtk.Alignment.__init__(self)
         
         self.set(0.0, 0.0, 0.0, 1.0)
@@ -75,6 +102,16 @@ class VSeparator(gtk.Alignment):
         self.show_all()
         
     def expose_vseparator(self, widget, event):    
+        '''
+        Callback for `expose-event` signal.
+        
+        @param widget: HSeparator instance.
+        
+        @param event: Expose event.
+        
+        @return:
+        Return True.
+        '''
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
