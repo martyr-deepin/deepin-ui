@@ -150,7 +150,7 @@ class Titlebar(EventBox):
     
     def change_title(self, title):
         '''Change title.'''
-        self.title_box.change_text(title)
+        self.title_box.set_text(title)
         
 gobject.type_register(Titlebar)
 

@@ -142,7 +142,7 @@ class Application(object):
         
         @param title: The title string of the application.
         """
-        self.window.set_title(title)
+        self.titlebar.change_title(title)
 
     def set_default_size(self, default_width, default_height):
         """
