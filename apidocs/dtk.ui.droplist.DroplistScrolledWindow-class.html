@@ -1,0 +1,829 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.droplist.DroplistScrolledWindow</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        <a href="dtk.ui.droplist-module.html">Module&nbsp;droplist</a> ::
+        Class&nbsp;DroplistScrolledWindow
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="dtk.ui.droplist.DroplistScrolledWindow-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class DroplistScrolledWindow</h1><p class="nomargin-top"><span class="codelink"><a href="dtk.ui.droplist-pysrc.html#DroplistScrolledWindow">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_dtk_ui_d_11" name="uml_class_diagram_for_dtk_ui_d_11">
+<area shape="rect" id="node170" href="javascript:void(0);" title="gtk.Bin.child" alt="" coords="243,1519,323,1537"/>
+<area shape="rect" id="node170" href="javascript:void(0);" title="iter(x)" alt="" coords="243,1540,323,1559"/>
+<area shape="rect" id="node170" href="javascript:void(0);" title="gtk.Bin.get_child" alt="" coords="243,1559,323,1577"/>
+<area shape="rect" id="node1" href="javascript:void(0);" title="Object GtkBin" alt="" coords="231,1494,335,1583"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_expose_event" title="dtk.ui.scrolled_window.ScrolledWindow.do_expose_event" alt="" coords="177,1636,388,1655"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#draw_vbar" title="dtk.ui.scrolled_window.ScrolledWindow.draw_vbar" alt="" coords="177,1655,388,1673"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#draw_hbar" title="dtk.ui.scrolled_window.ScrolledWindow.draw_hbar" alt="" coords="177,1673,388,1692"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_button_release_event" title="dtk.ui.scrolled_window.ScrolledWindow.do_button_release_event" alt="" coords="177,1692,388,1711"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#make_bar_smaller" title="dtk.ui.scrolled_window.ScrolledWindow.make_bar_smaller" alt="" coords="177,1711,388,1729"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#make_bar_bigger" title="dtk.ui.scrolled_window.ScrolledWindow.make_bar_bigger" alt="" coords="177,1729,388,1748"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_scroll_event" title="dtk.ui.scrolled_window.ScrolledWindow.do_scroll_event" alt="" coords="177,1748,388,1767"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_leave_notify_event" title="dtk.ui.scrolled_window.ScrolledWindow.do_leave_notify_event" alt="" coords="177,1767,388,1785"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_enter_notify_event" title="dtk.ui.scrolled_window.ScrolledWindow.do_enter_notify_event" alt="" coords="177,1785,388,1804"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_motion_notify_event" title="dtk.ui.scrolled_window.ScrolledWindow.do_motion_notify_event" alt="" coords="177,1804,388,1823"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#calc_vbar_length" title="dtk.ui.scrolled_window.ScrolledWindow.calc_vbar_length" alt="" coords="177,1823,388,1841"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#calc_vbar_allocation" title="dtk.ui.scrolled_window.ScrolledWindow.calc_vbar_allocation" alt="" coords="177,1841,388,1860"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#calc_hbar_length" title="dtk.ui.scrolled_window.ScrolledWindow.calc_hbar_length" alt="" coords="177,1860,388,1879"/>
+<area shape="rect" id="node169" href="dtk.ui.scrolled_window.ScrolledWindow-class.html#set_vadjustment" title="dtk.ui.scrolled_window.ScrolledWindow.set_vadjustment" alt="" coords="177,1897,388,1916"/>
+<area shape="rect" id="node2" href="dtk.ui.scrolled_window.ScrolledWindow-class.html" title="Scrolled window." alt="" coords="165,1603,400,1922"/>
+<area shape="rect" id="node168" href="dtk.ui.droplist.DroplistScrolledWindow-class.html#__gtype__" title="dtk.ui.droplist.DroplistScrolledWindow.__gtype__" alt="" coords="133,1967,431,1985"/>
+<area shape="rect" id="node168" href="dtk.ui.droplist.DroplistScrolledWindow-class.html#__init__" title="Init droplist scrolled window." alt="" coords="133,1988,431,2007"/>
+<area shape="rect" id="node6" href="dtk.ui.droplist.DroplistScrolledWindow-class.html" title="Droplist scrolled window." alt="" coords="121,1942,441,2013"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.allocation" alt="" coords="201,591,364,609"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.name" alt="" coords="201,609,364,628"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.parent" alt="" coords="201,628,364,647"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.requisition" alt="" coords="201,647,364,665"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.saved_state" alt="" coords="201,665,364,684"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.state" alt="" coords="201,684,364,703"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.style" alt="" coords="201,703,364,721"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.window" alt="" coords="201,721,364,740"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.activate" alt="" coords="201,743,364,761"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.add_accelerator" alt="" coords="201,761,364,780"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.add_events" alt="" coords="201,780,364,799"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.add_mnemonic_label" alt="" coords="201,799,364,817"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.can_activate_accel" alt="" coords="201,817,364,836"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.child_focus" alt="" coords="201,836,364,855"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.child_notify" alt="" coords="201,855,364,873"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.class_path" alt="" coords="201,873,364,892"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.create_pango_context" alt="" coords="201,892,364,911"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.create_pango_layout" alt="" coords="201,911,364,929"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.destroy" alt="" coords="201,929,364,948"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.do_button_press_event" alt="" coords="201,948,364,967"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.do_can_activate_accel" alt="" coords="201,967,364,985"/>
+<area shape="rect" id="node172" href="javascript:void(0);" title="gtk.Widget.unrealize" alt="" coords="201,1004,364,1023"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="Object GtkWidget" alt="" coords="189,566,376,1029"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.border_width" alt="" coords="211,1073,355,1092"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.focus_child" alt="" coords="211,1092,355,1111"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.has_focus_chain" alt="" coords="211,1111,355,1129"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.need_resize" alt="" coords="211,1129,355,1148"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.reallocate_redraws" alt="" coords="211,1148,355,1167"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.resize_mode" alt="" coords="211,1167,355,1185"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="len(x)" alt="" coords="211,1188,355,1207"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="x != 0" alt="" coords="211,1207,355,1225"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.add" alt="" coords="211,1225,355,1244"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.add_with_properties" alt="" coords="211,1244,355,1263"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.check_resize" alt="" coords="211,1263,355,1281"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.child_get" alt="" coords="211,1281,355,1300"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.child_get_property" alt="" coords="211,1300,355,1319"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.child_set" alt="" coords="211,1319,355,1337"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.child_set_property" alt="" coords="211,1337,355,1356"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.child_type" alt="" coords="211,1356,355,1375"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.children" alt="" coords="211,1375,355,1393"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.do_check_resize" alt="" coords="211,1393,355,1412"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.do_child_type" alt="" coords="211,1412,355,1431"/>
+<area shape="rect" id="node171" href="javascript:void(0);" title="gtk.Container.unset_focus_chain" alt="" coords="211,1449,355,1468"/>
+<area shape="rect" id="node5" href="javascript:void(0);" title="Object GtkContainer" alt="" coords="199,1049,367,1474"/>
+<area shape="rect" id="node4" href="javascript:void(0);" title="Interface GInterface" alt="" coords="120,150,253,194"/>
+<area shape="rect" id="node176" href="javascript:void(0);" title="gtk.Buildable.construct_child" alt="" coords="17,391,167,409"/>
+<area shape="rect" id="node176" href="javascript:void(0);" title="gtk.Buildable.do_add_child" alt="" coords="17,409,167,428"/>
+<area shape="rect" id="node176" href="javascript:void(0);" title="gtk.Buildable.do_construct_child" alt="" coords="17,428,167,447"/>
+<area shape="rect" id="node176" href="javascript:void(0);" title="gtk.Buildable.do_get_internal_child" alt="" coords="17,447,167,465"/>
+<area shape="rect" id="node176" href="javascript:void(0);" title="gtk.Buildable.do_parser_finished" alt="" coords="17,465,167,484"/>
+<area shape="rect" id="node176" href="javascript:void(0);" title="gtk.Buildable.do_set_name" alt="" coords="17,484,167,503"/>
+<area shape="rect" id="node176" href="javascript:void(0);" title="gtk.Buildable.get_internal_child" alt="" coords="17,503,167,521"/>
+<area shape="rect" id="node176" href="javascript:void(0);" title="gtk.Buildable.parser_finished" alt="" coords="17,521,167,540"/>
+<area shape="rect" id="node8" href="javascript:void(0);" title="gtk.Buildable" alt="" coords="5,358,179,546"/>
+<area shape="rect" id="node175" href="javascript:void(0);" title="atk.ImplementorIface.ref_accessible" alt="" coords="220,456,345,475"/>
+<area shape="rect" id="node9" href="javascript:void(0);" title="atk.ImplementorIface" alt="" coords="208,423,357,481"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="??.GObject.__grefcount__" alt="" coords="403,31,524,49"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="??.GObject.__copy__" alt="" coords="403,52,524,71"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="??.GObject.__deepcopy__" alt="" coords="403,71,524,89"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="x.__delattr__(&#39;name&#39;) &lt;==&gt; del x.name" alt="" coords="403,89,524,108"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="x==y" alt="" coords="403,108,524,127"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="??.GObject.__gdoc__" alt="" coords="403,127,524,145"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="x&gt;=y" alt="" coords="403,145,524,164"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="??.GObject.__gobject_init__" alt="" coords="403,164,524,183"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="x&gt;y" alt="" coords="403,183,524,201"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="hash(x)" alt="" coords="403,201,524,220"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="x&lt;=y" alt="" coords="403,220,524,239"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="x&lt;y" alt="" coords="403,239,524,257"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="x!=y" alt="" coords="403,257,524,276"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="??.GObject.__new__" alt="" coords="403,276,524,295"/>
+<area shape="rect" id="node174" href="javascript:void(0);" title="??.GObject.weak_ref" alt="" coords="403,313,524,332"/>
+<area shape="rect" id="node7" href="javascript:void(0);" title="Object GObject" alt="" coords="391,6,535,338"/>
+<area shape="rect" id="node173" href="javascript:void(0);" title="gtk.Object.do_destroy" alt="" coords="399,409,529,428"/>
+<area shape="rect" id="node173" href="javascript:void(0);" title="gtk.Object.flags" alt="" coords="399,428,529,447"/>
+<area shape="rect" id="node173" href="javascript:void(0);" title="gtk.Object.remove_data" alt="" coords="399,447,529,465"/>
+<area shape="rect" id="node173" href="javascript:void(0);" title="gtk.Object.remove_no_notify" alt="" coords="399,465,529,484"/>
+<area shape="rect" id="node173" href="javascript:void(0);" title="gtk.Object.set_flags" alt="" coords="399,484,529,503"/>
+<area shape="rect" id="node173" href="javascript:void(0);" title="gtk.Object.unset_flags" alt="" coords="399,503,529,521"/>
+<area shape="rect" id="node10" href="javascript:void(0);" title="Object GtkObject" alt="" coords="387,377,541,527"/>
+</map>
+  <img src="uml_class_diagram_for_dtk_ui_d_11.gif" alt='' usemap="#uml_class_diagram_for_dtk_ui_d_11" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Droplist scrolled window.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.droplist.DroplistScrolledWindow-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">right_space</span>=<span class="summary-sig-default">2</span>,
+        <span class="summary-sig-arg">top_bootm_space</span>=<span class="summary-sig-default">3</span>)</span><br />
+      Init droplist scrolled window.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.droplist-pysrc.html#DroplistScrolledWindow.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html">scrolled_window.ScrolledWindow</a></code></b>:
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#add_child">add_child</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#add_with_viewport">add_with_viewport</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#calc_hbar_allocation">calc_hbar_allocation</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#calc_hbar_length">calc_hbar_length</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#calc_vbar_allocation">calc_vbar_allocation</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#calc_vbar_length">calc_vbar_length</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_add">do_add</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_button_release_event">do_button_release_event</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_enter_notify_event">do_enter_notify_event</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_expose_event">do_expose_event</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_leave_notify_event">do_leave_notify_event</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_map">do_map</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_motion_notify_event">do_motion_notify_event</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_realize">do_realize</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_remove">do_remove</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_scroll_event">do_scroll_event</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_size_allocate">do_size_allocate</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_size_request">do_size_request</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_unmap">do_unmap</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#do_unrealize">do_unrealize</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#draw_hbar">draw_hbar</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#draw_vbar">draw_vbar</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#get_hadjustment">get_hadjustment</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#get_vadjustment">get_vadjustment</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#hadjustment_changed">hadjustment_changed</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#make_bar_bigger">make_bar_bigger</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#make_bar_smaller">make_bar_smaller</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#set_hadjustment">set_hadjustment</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#set_policy">set_policy</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#set_shadow_type">set_shadow_type</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#set_vadjustment">set_vadjustment</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#update_scrollbar">update_scrollbar</a></code>,
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#vadjustment_changed">vadjustment_changed</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html">scrolled_window.ScrolledWindow</a></code></b> (private):
+      <code><a href="dtk.ui.scrolled_window.ScrolledWindow-class.html#_test_calc" onclick="show_private();">_test_calc</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>gtk.Bin</code></b>:
+      <code>__iter__</code>,
+      <code>get_child</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>gtk.Container</code></b>:
+      <code>__len__</code>,
+      <code>__nonzero__</code>,
+      <code>add</code>,
+      <code>add_with_properties</code>,
+      <code>check_resize</code>,
+      <code>child_get</code>,
+      <code>child_get_property</code>,
+      <code>child_set</code>,
+      <code>child_set_property</code>,
+      <code>child_type</code>,
+      <code>children</code>,
+      <code>do_check_resize</code>,
+      <code>do_child_type</code>,
+      <code>do_composite_name</code>,
+      <code>do_forall</code>,
+      <code>do_get_child_property</code>,
+      <code>do_set_child_property</code>,
+      <code>do_set_focus_child</code>,
+      <code>forall</code>,
+      <code>foreach</code>,
+      <code>get_border_width</code>,
+      <code>get_children</code>,
+      <code>get_focus_chain</code>,
+      <code>get_focus_child</code>,
+      <code>get_focus_hadjustment</code>,
+      <code>get_focus_vadjustment</code>,
+      <code>get_resize_mode</code>,
+      <code>install_child_property</code>,
+      <code>list_child_properties</code>,
+      <code>propagate_expose</code>,
+      <code>remove</code>,
+      <code>resize_children</code>,
+      <code>set_border_width</code>,
+      <code>set_focus_chain</code>,
+      <code>set_focus_child</code>,
+      <code>set_focus_hadjustment</code>,
+      <code>set_focus_vadjustment</code>,
+      <code>set_reallocate_redraws</code>,
+      <code>set_resize_mode</code>,
+      <code>unset_focus_chain</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>gtk.Widget</code></b>:
+      <code>activate</code>,
+      <code>add_accelerator</code>,
+      <code>add_events</code>,
+      <code>add_mnemonic_label</code>,
+      <code>can_activate_accel</code>,
+      <code>child_focus</code>,
+      <code>child_notify</code>,
+      <code>class_path</code>,
+      <code>create_pango_context</code>,
+      <code>create_pango_layout</code>,
+      <code>destroy</code>,
+      <code>do_button_press_event</code>,
+      <code>do_can_activate_accel</code>,
+      <code>do_client_event</code>,
+      <code>do_composited_changed</code>,
+      <code>do_configure_event</code>,
+      <code>do_delete_event</code>,
+      <code>do_destroy_event</code>,
+      <code>do_direction_changed</code>,
+      <code>do_drag_begin</code>,
+      <code>do_drag_data_delete</code>,
+      <code>do_drag_data_get</code>,
+      <code>do_drag_data_received</code>,
+      <code>do_drag_drop</code>,
+      <code>do_drag_end</code>,
+      <code>do_drag_leave</code>,
+      <code>do_drag_motion</code>,
+      <code>do_event</code>,
+      <code>do_focus</code>,
+      <code>do_focus_in_event</code>,
+      <code>do_focus_out_event</code>,
+      <code>do_get_accessible</code>,
+      <code>do_grab_broken_event</code>,
+      <code>do_grab_focus</code>,
+      <code>do_grab_notify</code>,
+      <code>do_hide</code>,
+      <code>do_hide_all</code>,
+      <code>do_hierarchy_changed</code>,
+      <code>do_key_press_event</code>,
+      <code>do_key_release_event</code>,
+      <code>do_map_event</code>,
+      <code>do_mnemonic_activate</code>,
+      <code>do_no_expose_event</code>,
+      <code>do_parent_set</code>,
+      <code>do_popup_menu</code>,
+      <code>do_property_notify_event</code>,
+      <code>do_proximity_in_event</code>,
+      <code>do_proximity_out_event</code>,
+      <code>do_screen_changed</code>,
+      <code>do_selection_clear_event</code>,
+      <code>do_selection_get</code>,
+      <code>do_selection_notify_event</code>,
+      <code>do_selection_received</code>,
+      <code>do_selection_request_event</code>,
+      <code>do_show</code>,
+      <code>do_show_all</code>,
+      <code>do_show_help</code>,
+      <code>do_state_changed</code>,
+      <code>do_style_set</code>,
+      <code>do_unmap_event</code>,
+      <code>do_visibility_notify_event</code>,
+      <code>do_window_state_event</code>,
+      <code>drag_begin</code>,
+      <code>drag_check_threshold</code>,
+      <code>drag_dest_add_image_targets</code>,
+      <code>drag_dest_add_text_targets</code>,
+      <code>drag_dest_add_uri_targets</code>,
+      <code>drag_dest_find_target</code>,
+      <code>drag_dest_get_target_list</code>,
+      <code>drag_dest_get_track_motion</code>,
+      <code>drag_dest_set</code>,
+      <code>drag_dest_set_proxy</code>,
+      <code>drag_dest_set_target_list</code>,
+      <code>drag_dest_set_track_motion</code>,
+      <code>drag_dest_unset</code>,
+      <code>drag_get_data</code>,
+      <code>drag_highlight</code>,
+      <code>drag_source_add_image_targets</code>,
+      <code>drag_source_add_text_targets</code>,
+      <code>drag_source_add_uri_targets</code>,
+      <code>drag_source_get_target_list</code>,
+      <code>drag_source_set</code>,
+      <code>drag_source_set_icon</code>,
+      <code>drag_source_set_icon_name</code>,
+      <code>drag_source_set_icon_pixbuf</code>,
+      <code>drag_source_set_icon_stock</code>,
+      <code>drag_source_set_target_list</code>,
+      <code>drag_source_unset</code>,
+      <code>drag_unhighlight</code>,
+      <code>draw</code>,
+      <code>ensure_style</code>,
+      <code>error_bell</code>,
+      <code>event</code>,
+      <code>freeze_child_notify</code>,
+      <code>get_accessible</code>,
+      <code>get_action</code>,
+      <code>get_activate_signal</code>,
+      <code>get_allocation</code>,
+      <code>get_ancestor</code>,
+      <code>get_app_paintable</code>,
+      <code>get_can_default</code>,
+      <code>get_can_focus</code>,
+      <code>get_child_requisition</code>,
+      <code>get_child_visible</code>,
+      <code>get_clipboard</code>,
+      <code>get_colormap</code>,
+      <code>get_composite_name</code>,
+      <code>get_direction</code>,
+      <code>get_display</code>,
+      <code>get_double_buffered</code>,
+      <code>get_events</code>,
+      <code>get_extension_events</code>,
+      <code>get_has_tooltip</code>,
+      <code>get_has_window</code>,
+      <code>get_mapped</code>,
+      <code>get_modifier_style</code>,
+      <code>get_name</code>,
+      <code>get_no_show_all</code>,
+      <code>get_pango_context</code>,
+      <code>get_parent</code>,
+      <code>get_parent_window</code>,
+      <code>get_pointer</code>,
+      <code>get_realized</code>,
+      <code>get_receives_default</code>,
+      <code>get_requisition</code>,
+      <code>get_root_window</code>,
+      <code>get_screen</code>,
+      <code>get_sensitive</code>,
+      <code>get_settings</code>,
+      <code>get_size_request</code>,
+      <code>get_snapshot</code>,
+      <code>get_state</code>,
+      <code>get_style</code>,
+      <code>get_tooltip_markup</code>,
+      <code>get_tooltip_text</code>,
+      <code>get_tooltip_window</code>,
+      <code>get_toplevel</code>,
+      <code>get_visible</code>,
+      <code>get_visual</code>,
+      <code>get_window</code>,
+      <code>grab_add</code>,
+      <code>grab_default</code>,
+      <code>grab_focus</code>,
+      <code>grab_remove</code>,
+      <code>has_default</code>,
+      <code>has_focus</code>,
+      <code>has_grab</code>,
+      <code>has_rc_style</code>,
+      <code>has_screen</code>,
+      <code>hide</code>,
+      <code>hide_all</code>,
+      <code>hide_on_delete</code>,
+      <code>input_shape_combine_mask</code>,
+      <code>intersect</code>,
+      <code>is_ancestor</code>,
+      <code>is_composited</code>,
+      <code>is_drawable</code>,
+      <code>is_focus</code>,
+      <code>is_sensitive</code>,
+      <code>is_toplevel</code>,
+      <code>keynav_failed</code>,
+      <code>list_accel_closures</code>,
+      <code>list_mnemonic_labels</code>,
+      <code>map</code>,
+      <code>menu_get_for_attach_widget</code>,
+      <code>mnemonic_activate</code>,
+      <code>modify_base</code>,
+      <code>modify_bg</code>,
+      <code>modify_cursor</code>,
+      <code>modify_fg</code>,
+      <code>modify_font</code>,
+      <code>modify_style</code>,
+      <code>modify_text</code>,
+      <code>path</code>,
+      <code>queue_clear</code>,
+      <code>queue_clear_area</code>,
+      <code>queue_draw</code>,
+      <code>queue_draw_area</code>,
+      <code>queue_resize</code>,
+      <code>queue_resize_no_redraw</code>,
+      <code>rc_get_style</code>,
+      <code>realize</code>,
+      <code>region_intersect</code>,
+      <code>remove_accelerator</code>,
+      <code>remove_mnemonic_label</code>,
+      <code>render_icon</code>,
+      <code>reparent</code>,
+      <code>reset_rc_styles</code>,
+      <code>reset_shapes</code>,
+      <code>selection_add_target</code>,
+      <code>selection_add_targets</code>,
+      <code>selection_clear_targets</code>,
+      <code>selection_convert</code>,
+      <code>selection_owner_set</code>,
+      <code>selection_remove_all</code>,
+      <code>send_expose</code>,
+      <code>send_focus_change</code>,
+      <code>set_accel_path</code>,
+      <code>set_activate_signal</code>,
+      <code>set_allocation</code>,
+      <code>set_app_paintable</code>,
+      <code>set_can_default</code>,
+      <code>set_can_focus</code>,
+      <code>set_child_visible</code>,
+      <code>set_colormap</code>,
+      <code>set_composite_name</code>,
+      <code>set_direction</code>,
+      <code>set_double_buffered</code>,
+      <code>set_events</code>,
+      <code>set_extension_events</code>,
+      <code>set_has_tooltip</code>,
+      <code>set_has_window</code>,
+      <code>set_mapped</code>,
+      <code>set_name</code>,
+      <code>set_no_show_all</code>,
+      <code>set_parent</code>,
+      <code>set_parent_window</code>,
+      <code>set_realized</code>,
+      <code>set_receives_default</code>,
+      <code>set_redraw_on_allocate</code>,
+      <code>set_scroll_adjustments</code>,
+      <code>set_sensitive</code>,
+      <code>set_set_scroll_adjustments_signal</code>,
+      <code>set_size_request</code>,
+      <code>set_state</code>,
+      <code>set_style</code>,
+      <code>set_tooltip_markup</code>,
+      <code>set_tooltip_text</code>,
+      <code>set_tooltip_window</code>,
+      <code>set_uposition</code>,
+      <code>set_usize</code>,
+      <code>set_visible</code>,
+      <code>set_window</code>,
+      <code>shape_combine_mask</code>,
+      <code>show</code>,
+      <code>show_all</code>,
+      <code>show_now</code>,
+      <code>size_allocate</code>,
+      <code>size_request</code>,
+      <code>style_attach</code>,
+      <code>style_get_property</code>,
+      <code>thaw_child_notify</code>,
+      <code>translate_coordinates</code>,
+      <code>trigger_tooltip_query</code>,
+      <code>unmap</code>,
+      <code>unparent</code>,
+      <code>unrealize</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>gtk.Object</code></b>:
+      <code>do_destroy</code>,
+      <code>flags</code>,
+      <code>remove_data</code>,
+      <code>remove_no_notify</code>,
+      <code>set_flags</code>,
+      <code>unset_flags</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><i>unreachable</i>.GObject</code></b>:
+      <code>__copy__</code>,
+      <code>__deepcopy__</code>,
+      <code>__delattr__</code>,
+      <code>__eq__</code>,
+      <code>__gdoc__</code>,
+      <code>__ge__</code>,
+      <code>__gobject_init__</code>,
+      <code>__gt__</code>,
+      <code>__hash__</code>,
+      <code>__le__</code>,
+      <code>__lt__</code>,
+      <code>__ne__</code>,
+      <code>__new__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>chain</code>,
+      <code>connect</code>,
+      <code>connect_after</code>,
+      <code>connect_object</code>,
+      <code>connect_object_after</code>,
+      <code>disconnect</code>,
+      <code>disconnect_by_func</code>,
+      <code>emit</code>,
+      <code>emit_stop_by_name</code>,
+      <code>freeze_notify</code>,
+      <code>get_data</code>,
+      <code>get_properties</code>,
+      <code>get_property</code>,
+      <code>handler_block</code>,
+      <code>handler_block_by_func</code>,
+      <code>handler_disconnect</code>,
+      <code>handler_is_connected</code>,
+      <code>handler_unblock</code>,
+      <code>handler_unblock_by_func</code>,
+      <code>notify</code>,
+      <code>props</code>,
+      <code>set_data</code>,
+      <code>set_properties</code>,
+      <code>set_property</code>,
+      <code>stop_emission</code>,
+      <code>thaw_notify</code>,
+      <code>weak_ref</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>atk.ImplementorIface</code></b>:
+      <code>ref_accessible</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>gtk.Buildable</code></b>:
+      <code>construct_child</code>,
+      <code>do_add_child</code>,
+      <code>do_construct_child</code>,
+      <code>do_get_internal_child</code>,
+      <code>do_parser_finished</code>,
+      <code>do_set_name</code>,
+      <code>get_internal_child</code>,
+      <code>parser_finished</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dtk.ui.droplist.DroplistScrolledWindow-class.html#__gtype__" class="summary-name">__gtype__</a> = <code title="&lt;GType dtk+ui+droplist+DroplistScrolledWindow (31407392)&gt;">&lt;GType dtk+ui+droplist+DroplistScrolledWindow (314<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>gtk.Bin</code></b>:
+      <code>child</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>gtk.Container</code></b>:
+      <code>border_width</code>,
+      <code>focus_child</code>,
+      <code>has_focus_chain</code>,
+      <code>need_resize</code>,
+      <code>reallocate_redraws</code>,
+      <code>resize_mode</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>gtk.Widget</code></b>:
+      <code>allocation</code>,
+      <code>name</code>,
+      <code>parent</code>,
+      <code>requisition</code>,
+      <code>saved_state</code>,
+      <code>state</code>,
+      <code>style</code>,
+      <code>window</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><i>unreachable</i>.GObject</code></b>:
+      <code>__grefcount__</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">right_space</span>=<span class="sig-default">2</span>,
+        <span class="sig-arg">top_bootm_space</span>=<span class="sig-default">3</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.droplist-pysrc.html#DroplistScrolledWindow.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Init droplist scrolled window.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__gtype__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__gtype__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+&lt;GType dtk+ui+droplist+DroplistScrolledWindow (31407392)&gt;
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Aug  2 10:18:52 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

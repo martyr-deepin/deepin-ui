@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.config</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        Module&nbsp;config
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="dtk.ui.config-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="dtk.ui.config-module.html">Module dtk.ui.config</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#! /usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2011 Deepin, Inc.</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#               2011 Hou Shaohui</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"># Author:     Hou Shaohui &lt;houshao55@gmail.com&gt;</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"># Maintainer: Hou ShaoHui &lt;houshao55@gmail.com&gt;</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"># This program is free software: you can redistribute it and/or modify</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published by</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"># the Free Software Foundation, either version 3 of the License, or</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"># any later version.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"># This program is distributed in the hope that it will be useful,</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"># but WITHOUT ANY WARRANTY; without even the implied warranty of</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"># GNU General Public License for more details.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"># You should have received a copy of the GNU General Public License</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">ConfigParser</tt> <tt class="py-keyword">import</tt> <tt class="py-name">RawConfigParser</tt> <tt class="py-keyword">as</tt> <tt class="py-name">ConfigParser</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">collections</tt> <tt class="py-keyword">import</tt> <tt class="py-name">OrderedDict</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">gobject</tt>     </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"> </tt>
+<a name="Config"></a><div id="Config-def"><a name="L27"></a><tt class="py-lineno"> 27</tt> <a class="py-toggle" href="#" id="Config-toggle" onclick="return toggle('Config');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="dtk.ui.config.Config-class.html">Config</a><tt class="py-op">(</tt><tt class="py-base-class">gobject</tt><tt class="py-op">.</tt><tt class="py-base-class">GObject</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Config-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Config-expanded"><a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">    <tt id="link-0" class="py-name" targets="Variable dtk.ui.color_selection.ColorButton.__gsignals__=dtk.ui.color_selection.ColorButton-class.html#__gsignals__,Variable dtk.ui.color_selection.ColorItem.__gsignals__=dtk.ui.color_selection.ColorItem-class.html#__gsignals__,Variable dtk.ui.combo.ComboBox.__gsignals__=dtk.ui.combo.ComboBox-class.html#__gsignals__,Variable dtk.ui.config.Config.__gsignals__=dtk.ui.config.Config-class.html#__gsignals__,Variable dtk.ui.droplist.Droplist.__gsignals__=dtk.ui.droplist.Droplist-class.html#__gsignals__,Variable dtk.ui.entry.Entry.__gsignals__=dtk.ui.entry.Entry-class.html#__gsignals__,Variable dtk.ui.entry.InputEntry.__gsignals__=dtk.ui.entry.InputEntry-class.html#__gsignals__,Variable dtk.ui.entry.ShortcutKeyEntry.__gsignals__=dtk.ui.entry.ShortcutKeyEntry-class.html#__gsignals__,Variable dtk.ui.entry.TextEntry.__gsignals__=dtk.ui.entry.TextEntry-class.html#__gsignals__,Variable dtk.ui.iconview.IconItem.__gsignals__=dtk.ui.iconview.IconItem-class.html#__gsignals__,Variable dtk.ui.iconview.IconView.__gsignals__=dtk.ui.iconview.IconView-class.html#__gsignals__,Variable dtk.ui.listview.ListItem.__gsignals__=dtk.ui.listview.ListItem-class.html#__gsignals__,Variable dtk.ui.listview.ListView.__gsignals__=dtk.ui.listview.ListView-class.html#__gsignals__,Variable dtk.ui.mplayer_view.MplayerView.__gsignals__=dtk.ui.mplayer_view.MplayerView-class.html#__gsignals__,Variable dtk.ui.skin.ColorIconItem.__gsignals__=dtk.ui.skin.ColorIconItem-class.html#__gsignals__,Variable dtk.ui.skin.SkinAddIcon.__gsignals__=dtk.ui.skin.SkinAddIcon-class.html#__gsignals__,Variable dtk.ui.skin.SkinPreviewIcon.__gsignals__=dtk.ui.skin.SkinPreviewIcon-class.html#__gsignals__,Variable dtk.ui.spin.SpinBox.__gsignals__=dtk.ui.spin.SpinBox-class.html#__gsignals__,Variable dtk.ui.textbuffer.TextBuffer.__gsignals__=dtk.ui.textbuffer.TextBuffer-class.html#__gsignals__,Variable dtk.ui.timeline.Timeline.__gsignals__=dtk.ui.timeline.Timeline-class.html#__gsignals__,Variable dtk.ui.treeview.TreeView.__gsignals__=dtk.ui.treeview.TreeView-class.html#__gsignals__,Variable dtk.ui.volume_button.VolumeButton.__gsignals__=dtk.ui.volume_button.VolumeButton-class.html#__gsignals__"><a title="dtk.ui.color_selection.ColorButton.__gsignals__
+dtk.ui.color_selection.ColorItem.__gsignals__
+dtk.ui.combo.ComboBox.__gsignals__
+dtk.ui.config.Config.__gsignals__
+dtk.ui.droplist.Droplist.__gsignals__
+dtk.ui.entry.Entry.__gsignals__
+dtk.ui.entry.InputEntry.__gsignals__
+dtk.ui.entry.ShortcutKeyEntry.__gsignals__
+dtk.ui.entry.TextEntry.__gsignals__
+dtk.ui.iconview.IconItem.__gsignals__
+dtk.ui.iconview.IconView.__gsignals__
+dtk.ui.listview.ListItem.__gsignals__
+dtk.ui.listview.ListView.__gsignals__
+dtk.ui.mplayer_view.MplayerView.__gsignals__
+dtk.ui.skin.ColorIconItem.__gsignals__
+dtk.ui.skin.SkinAddIcon.__gsignals__
+dtk.ui.skin.SkinPreviewIcon.__gsignals__
+dtk.ui.spin.SpinBox.__gsignals__
+dtk.ui.textbuffer.TextBuffer.__gsignals__
+dtk.ui.timeline.Timeline.__gsignals__
+dtk.ui.treeview.TreeView.__gsignals__
+dtk.ui.volume_button.VolumeButton.__gsignals__" class="py-name" href="#" onclick="return doclink('link-0', '__gsignals__', 'link-0');">__gsignals__</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">        <tt class="py-string">"config-changed"</tt> <tt class="py-op">:</tt> <tt class="py-op">(</tt><tt class="py-name">gobject</tt><tt class="py-op">.</tt><tt class="py-name">SIGNAL_RUN_LAST</tt><tt class="py-op">,</tt> <tt class="py-name">gobject</tt><tt class="py-op">.</tt><tt class="py-name">TYPE_NONE</tt><tt class="py-op">,</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">                            <tt class="py-op">(</tt><tt class="py-name">gobject</tt><tt class="py-op">.</tt><tt class="py-name">TYPE_STRING</tt><tt class="py-op">,</tt> <tt class="py-name">gobject</tt><tt class="py-op">.</tt><tt class="py-name">TYPE_STRING</tt><tt class="py-op">,</tt> <tt class="py-name">gobject</tt><tt class="py-op">.</tt><tt class="py-name">TYPE_STRING</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">        <tt class="py-op">}</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">     </tt>
+<a name="Config.__init__"></a><div id="Config.__init__-def"><a name="L33"></a><tt class="py-lineno"> 33</tt> <a class="py-toggle" href="#" id="Config.__init__-toggle" onclick="return toggle('Config.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.config.Config-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">config_file</tt><tt class="py-op">,</tt> <tt class="py-param">default_config</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Config.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Config.__init__-expanded"><a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-name">gobject</tt><tt class="py-op">.</tt><tt class="py-name">GObject</tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Method dtk.ui.animation.Animation.__init__()=dtk.ui.animation.Animation-class.html#__init__,Method dtk.ui.application.Application.__init__()=dtk.ui.application.Application-class.html#__init__,Method dtk.ui.box.BackgroundBox.__init__()=dtk.ui.box.BackgroundBox-class.html#__init__,Method dtk.ui.box.EventBox.__init__()=dtk.ui.box.EventBox-class.html#__init__,Method dtk.ui.box.ImageBox.__init__()=dtk.ui.box.ImageBox-class.html#__init__,Method dtk.ui.browser.WebView.__init__()=dtk.ui.browser.WebView-class.html#__init__,Method dtk.ui.button.ActionButton.__init__()=dtk.ui.button.ActionButton-class.html#__init__,Method dtk.ui.button.Button.__init__()=dtk.ui.button.Button-class.html#__init__,Method dtk.ui.button.CheckButton.__init__()=dtk.ui.button.CheckButton-class.html#__init__,Method dtk.ui.button.CloseButton.__init__()=dtk.ui.button.CloseButton-class.html#__init__,Method dtk.ui.button.DisableButton.__init__()=dtk.ui.button.DisableButton-class.html#__init__,Method dtk.ui.button.ImageButton.__init__()=dtk.ui.button.ImageButton-class.html#__init__,Method dtk.ui.button.LinkButton.__init__()=dtk.ui.button.LinkButton-class.html#__init__,Method dtk.ui.button.MaxButton.__init__()=dtk.ui.button.MaxButton-class.html#__init__,Method dtk.ui.button.MenuButton.__init__()=dtk.ui.button.MenuButton-class.html#__init__,Method dtk.ui.button.MinButton.__init__()=dtk.ui.button.MinButton-class.html#__init__,Method dtk.ui.button.RadioButton.__init__()=dtk.ui.button.RadioButton-class.html#__init__,Method dtk.ui.button.ThemeButton.__init__()=dtk.ui.button.ThemeButton-class.html#__init__,Method dtk.ui.button.ToggleButton.__init__()=dtk.ui.button.ToggleButton-class.html#__init__,Method dtk.ui.cache_pixbuf.CachePixbuf.__init__()=dtk.ui.cache_pixbuf.CachePixbuf-class.html#__init__,Method dtk.ui.categorybar.CategoryItem.__init__()=dtk.ui.categorybar.CategoryItem-class.html#__init__,Method dtk.ui.categorybar.Categorybar.__init__()=dtk.ui.categorybar.Categorybar-class.html#__init__,Method dtk.ui.color_selection.ColorButton.__init__()=dtk.ui.color_selection.ColorButton-class.html#__init__,Method dtk.ui.color_selection.ColorItem.__init__()=dtk.ui.color_selection.ColorItem-class.html#__init__,Method dtk.ui.color_selection.ColorSelectDialog.__init__()=dtk.ui.color_selection.ColorSelectDialog-class.html#__init__,Method dtk.ui.color_selection.HSV.__init__()=dtk.ui.color_selection.HSV-class.html#__init__,Method dtk.ui.combo.ComboBox.__init__()=dtk.ui.combo.ComboBox-class.html#__init__,Method dtk.ui.config.Config.__init__()=dtk.ui.config.Config-class.html#__init__,Method dtk.ui.dialog.ConfirmDialog.__init__()=dtk.ui.dialog.ConfirmDialog-class.html#__init__,Method dtk.ui.dialog.DialogBox.__init__()=dtk.ui.dialog.DialogBox-class.html#__init__,Method dtk.ui.dialog.DialogLeftButtonBox.__init__()=dtk.ui.dialog.DialogLeftButtonBox-class.html#__init__,Method dtk.ui.dialog.DialogRightButtonBox.__init__()=dtk.ui.dialog.DialogRightButtonBox-class.html#__init__,Method dtk.ui.dialog.InputDialog.__init__()=dtk.ui.dialog.InputDialog-class.html#__init__,Method dtk.ui.dialog.OpenFileDialog.__init__()=dtk.ui.dialog.OpenFileDialog-class.html#__init__,Method dtk.ui.dialog.SaveFileDialog.__init__()=dtk.ui.dialog.SaveFileDialog-class.html#__init__,Method dtk.ui.dominant_color.ColorTestWidget.__init__()=dtk.ui.dominant_color.ColorTestWidget-class.html#__init__,Method dtk.ui.droplist.Droplist.__init__()=dtk.ui.droplist.Droplist-class.html#__init__,Method dtk.ui.droplist.DroplistItem.__init__()=dtk.ui.droplist.DroplistItem-class.html#__init__,Method dtk.ui.droplist.DroplistScrolledWindow.__init__()=dtk.ui.droplist.DroplistScrolledWindow-class.html#__init__,Method dtk.ui.entry.Entry.__init__()=dtk.ui.entry.Entry-class.html#__init__,Method dtk.ui.entry.InputEntry.__init__()=dtk.ui.entry.InputEntry-class.html#__init__,Method dtk.ui.entry.ShortcutKeyEntry.__init__()=dtk.ui.entry.ShortcutKeyEntry-class.html#__init__,Method dtk.ui.entry.TextEntry.__init__()=dtk.ui.entry.TextEntry-class.html#__init__,Method dtk.ui.frame.HorizontalFrame.__init__()=dtk.ui.frame.HorizontalFrame-class.html#__init__,Method dtk.ui.frame.VerticalFrame.__init__()=dtk.ui.frame.VerticalFrame-class.html#__init__,Method dtk.ui.global_key.GlobalKey.__init__()=dtk.ui.global_key.GlobalKey-class.html#__init__,Method dtk.ui.group.ImageButtonGroup.__init__()=dtk.ui.group.ImageButtonGroup-class.html#__init__,Method dtk.ui.group.ImageButtonItem.__init__()=dtk.ui.group.ImageButtonItem-class.html#__init__,Method dtk.ui.group.ToggleButtonGroup.__init__()=dtk.ui.group.ToggleButtonGroup-class.html#__init__,Method dtk.ui.group.ToggleButtonItem.__init__()=dtk.ui.group.ToggleButtonItem-class.html#__init__,Method dtk.ui.iconview.IconItem.__init__()=dtk.ui.iconview.IconItem-class.html#__init__,Method dtk.ui.iconview.IconView.__init__()=dtk.ui.iconview.IconView-class.html#__init__,Method dtk.ui.label.Label.__init__()=dtk.ui.label.Label-class.html#__init__,Method dtk.ui.line.HSeparator.__init__()=dtk.ui.line.HSeparator-class.html#__init__,Method dtk.ui.line.VSeparator.__init__()=dtk.ui.line.VSeparator-class.html#__init__,Method dtk.ui.listview.ListItem.__init__()=dtk.ui.listview.ListItem-class.html#__init__,Method dtk.ui.listview.ListView.__init__()=dtk.ui.listview.ListView-class.html#__init__,Method dtk.ui.menu.Menu.__init__()=dtk.ui.menu.Menu-class.html#__init__,Method dtk.ui.menu.MenuItem.__init__()=dtk.ui.menu.MenuItem-class.html#__init__,Method dtk.ui.mplayer_view.MplayerView.__init__()=dtk.ui.mplayer_view.MplayerView-class.html#__init__,Method dtk.ui.mplayer_window.MplayerWindow.__init__()=dtk.ui.mplayer_window.MplayerWindow-class.html#__init__,Method dtk.ui.navigatebar.NavItem.__init__()=dtk.ui.navigatebar.NavItem-class.html#__init__,Method dtk.ui.navigatebar.Navigatebar.__init__()=dtk.ui.navigatebar.Navigatebar-class.html#__init__,Method dtk.ui.notebook.Notebook.__init__()=dtk.ui.notebook.Notebook-class.html#__init__,Method dtk.ui.osd_tooltip.OSDTooltip.__init__()=dtk.ui.osd_tooltip.OSDTooltip-class.html#__init__,Method dtk.ui.paned.HPaned.__init__()=dtk.ui.paned.HPaned-class.html#__init__,Method dtk.ui.paned.Paned.__init__()=dtk.ui.paned.Paned-class.html#__init__,Method dtk.ui.paned.VPaned.__init__()=dtk.ui.paned.VPaned-class.html#__init__,Method dtk.ui.panel.Panel.__init__()=dtk.ui.panel.Panel-class.html#__init__,Method dtk.ui.panel.TestWidget.__init__()=dtk.ui.panel.TestWidget-class.html#__init__,Method dtk.ui.popup_window.PopupWindow.__init__()=dtk.ui.popup_window.PopupWindow-class.html#__init__,Method dtk.ui.progressbar.ProgressBar.__init__()=dtk.ui.progressbar.ProgressBar-class.html#__init__,Method dtk.ui.scalebar.HScalebar.__init__()=dtk.ui.scalebar.HScalebar-class.html#__init__,Method dtk.ui.scalebar.VScalebar.__init__()=dtk.ui.scalebar.VScalebar-class.html#__init__,Method dtk.ui.scrolled_window.ScrolledWindow.__init__()=dtk.ui.scrolled_window.ScrolledWindow-class.html#__init__,Method dtk.ui.skin.ColorIconItem.__init__()=dtk.ui.skin.ColorIconItem-class.html#__init__,Method dtk.ui.skin.LoadSkinThread.__init__()=dtk.ui.skin.LoadSkinThread-class.html#__init__,Method dtk.ui.skin.SkinAddIcon.__init__()=dtk.ui.skin.SkinAddIcon-class.html#__init__,Method dtk.ui.skin.SkinEditArea.__init__()=dtk.ui.skin.SkinEditArea-class.html#__init__,Method dtk.ui.skin.SkinEditPage.__init__()=dtk.ui.skin.SkinEditPage-class.html#__init__,Method dtk.ui.skin.SkinPreviewIcon.__init__()=dtk.ui.skin.SkinPreviewIcon-class.html#__init__,Method dtk.ui.skin.SkinPreviewPage.__init__()=dtk.ui.skin.SkinPreviewPage-class.html#__init__,Method dtk.ui.skin.SkinWindow.__init__()=dtk.ui.skin.SkinWindow-class.html#__init__,Method dtk.ui.skin_config.SkinConfig.__init__()=dtk.ui.skin_config.SkinConfig-class.html#__init__,Method dtk.ui.slider.Slider.__init__()=dtk.ui.slider.Slider-class.html#__init__,Method dtk.ui.slider.Wizard.__init__()=dtk.ui.slider.Wizard-class.html#__init__,Method dtk.ui.spin.SpinBox.__init__()=dtk.ui.spin.SpinBox-class.html#__init__,Method dtk.ui.statusbar.Statusbar.__init__()=dtk.ui.statusbar.Statusbar-class.html#__init__,Method dtk.ui.tab_window.TabBox.__init__()=dtk.ui.tab_window.TabBox-class.html#__init__,Method dtk.ui.tab_window.TabWindow.__init__()=dtk.ui.tab_window.TabWindow-class.html#__init__,Method dtk.ui.textbuffer.TextBuffer.__init__()=dtk.ui.textbuffer.TextBuffer-class.html#__init__,Method dtk.ui.textbuffer.TextIter.__init__()=dtk.ui.textbuffer.TextIter-class.html#__init__,Method dtk.ui.textview.TextView.__init__()=dtk.ui.textview.TextView-class.html#__init__,Method dtk.ui.theme.DynamicAlphaColor.__init__()=dtk.ui.theme.DynamicAlphaColor-class.html#__init__,Method dtk.ui.theme.DynamicColor.__init__()=dtk.ui.theme.DynamicColor-class.html#__init__,Method dtk.ui.theme.DynamicPixbuf.__init__()=dtk.ui.theme.DynamicPixbuf-class.html#__init__,Method dtk.ui.theme.DynamicShadowColor.__init__()=dtk.ui.theme.DynamicShadowColor-class.html#__init__,Method dtk.ui.theme.DynamicTextView.__init__()=dtk.ui.theme.DynamicTextView-class.html#__init__,Method dtk.ui.theme.DynamicTreeView.__init__()=dtk.ui.theme.DynamicTreeView-class.html#__init__,Method dtk.ui.theme.Theme.__init__()=dtk.ui.theme.Theme-class.html#__init__,Method dtk.ui.thread_pool.MissionThread.__init__()=dtk.ui.thread_pool.MissionThread-class.html#__init__,Method dtk.ui.thread_pool.MissionThreadPool.__init__()=dtk.ui.thread_pool.MissionThreadPool-class.html#__init__,Method dtk.ui.thread_pool.TestMissionThread.__init__()=dtk.ui.thread_pool.TestMissionThread-class.html#__init__,Method dtk.ui.threads.AnonymityThread.__init__()=dtk.ui.threads.AnonymityThread-class.html#__init__,Method dtk.ui.timeline.Timeline.__init__()=dtk.ui.timeline.Timeline-class.html#__init__,Method dtk.ui.titlebar.Titlebar.__init__()=dtk.ui.titlebar.Titlebar-class.html#__init__,Method dtk.ui.tooltip.ChildLocation.__init__()=dtk.ui.tooltip.ChildLocation-class.html#__init__,Method dtk.ui.tooltip.WidgetInfo.__init__()=dtk.ui.tooltip.WidgetInfo-class.html#__init__,Method dtk.ui.treeview.Tree.__init__()=dtk.ui.treeview.Tree-class.html#__init__,Method dtk.ui.treeview.TreeView.__init__()=dtk.ui.treeview.TreeView-class.html#__init__,Method dtk.ui.treeview.TreeViewItem.__init__()=dtk.ui.treeview.TreeViewItem-class.html#__init__,Method dtk.ui.unique_service.UniqueService.__init__()=dtk.ui.unique_service.UniqueService-class.html#__init__,Method dtk.ui.volume_button.VolumeButton.__init__()=dtk.ui.volume_button.VolumeButton-class.html#__init__,Method dtk.ui.window.Window.__init__()=dtk.ui.window.Window-class.html#__init__"><a title="dtk.ui.animation.Animation.__init__
+dtk.ui.application.Application.__init__
+dtk.ui.box.BackgroundBox.__init__
+dtk.ui.box.EventBox.__init__
+dtk.ui.box.ImageBox.__init__
+dtk.ui.browser.WebView.__init__
+dtk.ui.button.ActionButton.__init__
+dtk.ui.button.Button.__init__
+dtk.ui.button.CheckButton.__init__
+dtk.ui.button.CloseButton.__init__
+dtk.ui.button.DisableButton.__init__
+dtk.ui.button.ImageButton.__init__
+dtk.ui.button.LinkButton.__init__
+dtk.ui.button.MaxButton.__init__
+dtk.ui.button.MenuButton.__init__
+dtk.ui.button.MinButton.__init__
+dtk.ui.button.RadioButton.__init__
+dtk.ui.button.ThemeButton.__init__
+dtk.ui.button.ToggleButton.__init__
+dtk.ui.cache_pixbuf.CachePixbuf.__init__
+dtk.ui.categorybar.CategoryItem.__init__
+dtk.ui.categorybar.Categorybar.__init__
+dtk.ui.color_selection.ColorButton.__init__
+dtk.ui.color_selection.ColorItem.__init__
+dtk.ui.color_selection.ColorSelectDialog.__init__
+dtk.ui.color_selection.HSV.__init__
+dtk.ui.combo.ComboBox.__init__
+dtk.ui.config.Config.__init__
+dtk.ui.dialog.ConfirmDialog.__init__
+dtk.ui.dialog.DialogBox.__init__
+dtk.ui.dialog.DialogLeftButtonBox.__init__
+dtk.ui.dialog.DialogRightButtonBox.__init__
+dtk.ui.dialog.InputDialog.__init__
+dtk.ui.dialog.OpenFileDialog.__init__
+dtk.ui.dialog.SaveFileDialog.__init__
+dtk.ui.dominant_color.ColorTestWidget.__init__
+dtk.ui.droplist.Droplist.__init__
+dtk.ui.droplist.DroplistItem.__init__
+dtk.ui.droplist.DroplistScrolledWindow.__init__
+dtk.ui.entry.Entry.__init__
+dtk.ui.entry.InputEntry.__init__
+dtk.ui.entry.ShortcutKeyEntry.__init__
+dtk.ui.entry.TextEntry.__init__
+dtk.ui.frame.HorizontalFrame.__init__
+dtk.ui.frame.VerticalFrame.__init__
+dtk.ui.global_key.GlobalKey.__init__
+dtk.ui.group.ImageButtonGroup.__init__
+dtk.ui.group.ImageButtonItem.__init__
+dtk.ui.group.ToggleButtonGroup.__init__
+dtk.ui.group.ToggleButtonItem.__init__
+dtk.ui.iconview.IconItem.__init__
+dtk.ui.iconview.IconView.__init__
+dtk.ui.label.Label.__init__
+dtk.ui.line.HSeparator.__init__
+dtk.ui.line.VSeparator.__init__
+dtk.ui.listview.ListItem.__init__
+dtk.ui.listview.ListView.__init__
+dtk.ui.menu.Menu.__init__
+dtk.ui.menu.MenuItem.__init__
+dtk.ui.mplayer_view.MplayerView.__init__
+dtk.ui.mplayer_window.MplayerWindow.__init__
+dtk.ui.navigatebar.NavItem.__init__
+dtk.ui.navigatebar.Navigatebar.__init__
+dtk.ui.notebook.Notebook.__init__
+dtk.ui.osd_tooltip.OSDTooltip.__init__
+dtk.ui.paned.HPaned.__init__
+dtk.ui.paned.Paned.__init__
+dtk.ui.paned.VPaned.__init__
+dtk.ui.panel.Panel.__init__
+dtk.ui.panel.TestWidget.__init__
+dtk.ui.popup_window.PopupWindow.__init__
+dtk.ui.progressbar.ProgressBar.__init__
+dtk.ui.scalebar.HScalebar.__init__
+dtk.ui.scalebar.VScalebar.__init__
+dtk.ui.scrolled_window.ScrolledWindow.__init__
+dtk.ui.skin.ColorIconItem.__init__
+dtk.ui.skin.LoadSkinThread.__init__
+dtk.ui.skin.SkinAddIcon.__init__
+dtk.ui.skin.SkinEditArea.__init__
+dtk.ui.skin.SkinEditPage.__init__
+dtk.ui.skin.SkinPreviewIcon.__init__
+dtk.ui.skin.SkinPreviewPage.__init__
+dtk.ui.skin.SkinWindow.__init__
+dtk.ui.skin_config.SkinConfig.__init__
+dtk.ui.slider.Slider.__init__
+dtk.ui.slider.Wizard.__init__
+dtk.ui.spin.SpinBox.__init__
+dtk.ui.statusbar.Statusbar.__init__
+dtk.ui.tab_window.TabBox.__init__
+dtk.ui.tab_window.TabWindow.__init__
+dtk.ui.textbuffer.TextBuffer.__init__
+dtk.ui.textbuffer.TextIter.__init__
+dtk.ui.textview.TextView.__init__
+dtk.ui.theme.DynamicAlphaColor.__init__
+dtk.ui.theme.DynamicColor.__init__
+dtk.ui.theme.DynamicPixbuf.__init__
+dtk.ui.theme.DynamicShadowColor.__init__
+dtk.ui.theme.DynamicTextView.__init__
+dtk.ui.theme.DynamicTreeView.__init__
+dtk.ui.theme.Theme.__init__
+dtk.ui.thread_pool.MissionThread.__init__
+dtk.ui.thread_pool.MissionThreadPool.__init__
+dtk.ui.thread_pool.TestMissionThread.__init__
+dtk.ui.threads.AnonymityThread.__init__
+dtk.ui.timeline.Timeline.__init__
+dtk.ui.titlebar.Titlebar.__init__
+dtk.ui.tooltip.ChildLocation.__init__
+dtk.ui.tooltip.WidgetInfo.__init__
+dtk.ui.treeview.Tree.__init__
+dtk.ui.treeview.TreeView.__init__
+dtk.ui.treeview.TreeViewItem.__init__
+dtk.ui.unique_service.UniqueService.__init__
+dtk.ui.volume_button.VolumeButton.__init__
+dtk.ui.window.Window.__init__" class="py-name" href="#" onclick="return doclink('link-1', '__init__', 'link-1');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt> <tt class="py-op">=</tt> <tt class="py-name">ConfigParser</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">remove_option</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt class="py-name">remove_option</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">has_option</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt class="py-name">has_option</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">add_section</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt class="py-name">add_section</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">getboolean</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt class="py-name">getboolean</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">getint</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt class="py-name">getint</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">getfloat</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt class="py-name">getfloat</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">options</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt class="py-name">options</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_file</tt> <tt class="py-op">=</tt> <tt class="py-name">config_file</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">default_config</tt> <tt class="py-op">=</tt> <tt class="py-name">default_config</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">         </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">        <tt class="py-comment"># Load default configure.</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Method dtk.ui.config.Config.load_default()=dtk.ui.config.Config-class.html#load_default"><a title="dtk.ui.config.Config.load_default" class="py-name" href="#" onclick="return doclink('link-2', 'load_default', 'link-2');">load_default</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">                 </tt>
+<a name="Config.load_default"></a><div id="Config.load_default-def"><a name="L49"></a><tt class="py-lineno"> 49</tt> <a class="py-toggle" href="#" id="Config.load_default-toggle" onclick="return toggle('Config.load_default');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.config.Config-class.html#load_default">load_default</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt>             </tt>
+</div><a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt class="py-comment"># Convert config when config is list format.</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">default_config</tt><tt class="py-op">,</tt> <tt class="py-name">list</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">default_config</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method dtk.ui.config.Config.convert_from_list()=dtk.ui.config.Config-class.html#convert_from_list"><a title="dtk.ui.config.Config.convert_from_list" class="py-name" href="#" onclick="return doclink('link-3', 'convert_from_list', 'link-3');">convert_from_list</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">default_config</tt><tt class="py-op">)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">             </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">default_config</tt><tt class="py-op">:</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">section</tt><tt class="py-op">,</tt> <tt class="py-name">items</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">default_config</tt><tt class="py-op">.</tt><tt class="py-name">iteritems</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">add_section</tt><tt class="py-op">(</tt><tt class="py-name">section</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-name">key</tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name" targets="Method dtk.ui.volume_button.VolumeButton.value()=dtk.ui.volume_button.VolumeButton-class.html#value"><a title="dtk.ui.volume_button.VolumeButton.value" class="py-name" href="#" onclick="return doclink('link-4', 'value', 'link-4');">value</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">items</tt><tt class="py-op">.</tt><tt class="py-name">iteritems</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Method dtk.ui.config.Config.set()=dtk.ui.config.Config-class.html#set"><a title="dtk.ui.config.Config.set" class="py-name" href="#" onclick="return doclink('link-5', 'set', 'link-5');">set</a></tt><tt class="py-op">(</tt><tt class="py-name">section</tt><tt class="py-op">,</tt> <tt class="py-name">key</tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name"><a title="dtk.ui.volume_button.VolumeButton.value" class="py-name" href="#" onclick="return doclink('link-6', 'value', 'link-4');">value</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">                 </tt>
+<a name="Config.load"></a><div id="Config.load-def"><a name="L60"></a><tt class="py-lineno"> 60</tt> <a class="py-toggle" href="#" id="Config.load-toggle" onclick="return toggle('Config.load');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.config.Config-class.html#load">load</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt>             </tt>
+</div><a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">        <tt class="py-docstring">''' Load config items from the file. '''</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt class="py-name">read</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_file</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">     </tt>
+<a name="Config.get"></a><div id="Config.get-def"><a name="L64"></a><tt class="py-lineno"> 64</tt> <a class="py-toggle" href="#" id="Config.get-toggle" onclick="return toggle('Config.get');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.config.Config-class.html#get">get</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">section</tt><tt class="py-op">,</tt> <tt class="py-param">option</tt><tt class="py-op">,</tt> <tt class="py-param">default</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Config.get-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Config.get-expanded"><a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-docstring">''' specified the section for read the option value. '''</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method dtk.ui.config.Config.get()=dtk.ui.config.Config-class.html#get"><a title="dtk.ui.config.Config.get" class="py-name" href="#" onclick="return doclink('link-7', 'get', 'link-7');">get</a></tt><tt class="py-op">(</tt><tt class="py-name">section</tt><tt class="py-op">,</tt> <tt class="py-name">option</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"config.get error: %s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">e</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">default</tt> </tt>
+</div><a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">             </tt>
+<a name="Config.set"></a><div id="Config.set-def"><a name="L72"></a><tt class="py-lineno"> 72</tt> <a class="py-toggle" href="#" id="Config.set-toggle" onclick="return toggle('Config.set');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.config.Config-class.html#set">set</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">section</tt><tt class="py-op">,</tt> <tt class="py-param">option</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt>   </tt>
+</div><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt class="py-name">has_section</tt><tt class="py-op">(</tt><tt class="py-name">section</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Section \"%s\" not exist. create..."</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">section</tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">add_section</tt><tt class="py-op">(</tt><tt class="py-name">section</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">             </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name"><a title="dtk.ui.config.Config.set" class="py-name" href="#" onclick="return doclink('link-8', 'set', 'link-5');">set</a></tt><tt class="py-op">(</tt><tt class="py-name">section</tt><tt class="py-op">,</tt> <tt class="py-name">option</tt><tt class="py-op">,</tt> <tt id="link-9" class="py-name"><a title="dtk.ui.volume_button.VolumeButton.value" class="py-name" href="#" onclick="return doclink('link-9', 'value', 'link-4');">value</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">emit</tt><tt class="py-op">(</tt><tt class="py-string">"config-changed"</tt><tt class="py-op">,</tt> <tt class="py-name">section</tt><tt class="py-op">,</tt> <tt class="py-name">option</tt><tt class="py-op">,</tt> <tt id="link-10" class="py-name"><a title="dtk.ui.volume_button.VolumeButton.value" class="py-name" href="#" onclick="return doclink('link-10', 'value', 'link-4');">value</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">         </tt>
+<a name="Config.write"></a><div id="Config.write-def"><a name="L80"></a><tt class="py-lineno"> 80</tt> <a class="py-toggle" href="#" id="Config.write-toggle" onclick="return toggle('Config.write');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.config.Config-class.html#write">write</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">given_filepath</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt>     </tt>
+</div><a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-docstring">''' write configure to file. '''</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">given_filepath</tt><tt class="py-op">:</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">            <tt class="py-name">f</tt> <tt class="py-op">=</tt> <tt class="py-name">file</tt><tt class="py-op">(</tt><tt class="py-name">given_filepath</tt><tt class="py-op">,</tt> <tt class="py-string">"w"</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">            <tt class="py-name">f</tt> <tt class="py-op">=</tt> <tt class="py-name">file</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_file</tt><tt class="py-op">,</tt> <tt class="py-string">"w"</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">config_parser</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Method dtk.ui.config.Config.write()=dtk.ui.config.Config-class.html#write"><a title="dtk.ui.config.Config.write" class="py-name" href="#" onclick="return doclink('link-11', 'write', 'link-11');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">f</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-name">f</tt><tt class="py-op">.</tt><tt class="py-name">close</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">         </tt>
+<a name="Config.get_default"></a><div id="Config.get_default-def"><a name="L89"></a><tt class="py-lineno"> 89</tt> <a class="py-toggle" href="#" id="Config.get_default-toggle" onclick="return toggle('Config.get_default');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.config.Config-class.html#get_default">get_default</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt>     </tt>
+</div><a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">default_config</tt> </tt>
+</div><a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">     </tt>
+<a name="Config.set_default"></a><div id="Config.set_default-def"><a name="L92"></a><tt class="py-lineno"> 92</tt> <a class="py-toggle" href="#" id="Config.set_default-toggle" onclick="return toggle('Config.set_default');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.config.Config-class.html#set_default">set_default</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">default_config</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Config.set_default-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Config.set_default-expanded"><a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">default_config</tt> <tt class="py-op">=</tt> <tt class="py-name">default_config</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="dtk.ui.config.Config.load_default" class="py-name" href="#" onclick="return doclink('link-12', 'load_default', 'link-2');">load_default</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">         </tt>
+<a name="Config.convert_from_list"></a><div id="Config.convert_from_list-def"><a name="L96"></a><tt class="py-lineno"> 96</tt> <a class="py-toggle" href="#" id="Config.convert_from_list-toggle" onclick="return toggle('Config.convert_from_list');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.config.Config-class.html#convert_from_list">convert_from_list</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">config_list</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Config.convert_from_list-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Config.convert_from_list-expanded"><a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-docstring">'''Convert to dict from list format.'''</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-name">config_dict</tt> <tt class="py-op">=</tt> <tt class="py-name">OrderedDict</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-op">(</tt><tt class="py-name">section</tt><tt class="py-op">,</tt> <tt class="py-name">option_list</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">config_list</tt><tt class="py-op">:</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">            <tt class="py-name">option_dict</tt> <tt class="py-op">=</tt> <tt class="py-name">OrderedDict</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-op">(</tt><tt class="py-name">option</tt><tt class="py-op">,</tt> <tt id="link-13" class="py-name"><a title="dtk.ui.volume_button.VolumeButton.value" class="py-name" href="#" onclick="return doclink('link-13', 'value', 'link-4');">value</a></tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">option_list</tt><tt class="py-op">:</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">                <tt class="py-name">option_dict</tt><tt class="py-op">[</tt><tt class="py-name">option</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-14" class="py-name"><a title="dtk.ui.volume_button.VolumeButton.value" class="py-name" href="#" onclick="return doclink('link-14', 'value', 'link-4');">value</a></tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">            <tt class="py-name">config_dict</tt><tt class="py-op">[</tt><tt class="py-name">section</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">option_dict</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">         </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">config_dict</tt>     </tt>
+</div></div><a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">         </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"><tt class="py-name">gobject</tt><tt class="py-op">.</tt><tt class="py-name">type_register</tt><tt class="py-op">(</tt><tt id="link-15" class="py-name" targets="Class dtk.ui.config.Config=dtk.ui.config.Config-class.html"><a title="dtk.ui.config.Config" class="py-name" href="#" onclick="return doclink('link-15', 'Config', 'link-15');">Config</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Aug  2 10:19:02 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.skin.SkinEditArea</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        <a href="dtk.ui.skin-module.html">Module&nbsp;skin</a> ::
+        Class&nbsp;SkinEditArea
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="dtk.ui.skin.SkinEditArea-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class SkinEditArea</h1><p class="nomargin-top"><span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_dtk_ui_s_7" name="uml_class_diagram_for_dtk_ui_s_7">
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#POSITION_LEFT_SIDE" title="dtk.ui.skin.SkinEditArea.POSITION_LEFT_SIDE" alt="" coords="17,31,316,49"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#POSITION_RIGHT_SIDE" title="dtk.ui.skin.SkinEditArea.POSITION_RIGHT_SIDE" alt="" coords="17,49,316,68"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#POSITION_TOP_SIDE" title="dtk.ui.skin.SkinEditArea.POSITION_TOP_SIDE" alt="" coords="17,68,316,87"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#POSITION_BOTTOM_SIDE" title="dtk.ui.skin.SkinEditArea.POSITION_BOTTOM_SIDE" alt="" coords="17,87,316,105"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#POSITION_TOP_LEFT_CORNER" title="dtk.ui.skin.SkinEditArea.POSITION_TOP_LEFT_CORNER" alt="" coords="17,105,316,124"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#POSITION_TOP_RIGHT_CORNER" title="dtk.ui.skin.SkinEditArea.POSITION_TOP_RIGHT_CORNER" alt="" coords="17,124,316,143"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#POSITION_BOTTOM_LEFT_CORNER" title="dtk.ui.skin.SkinEditArea.POSITION_BOTTOM_LEFT_CORNER" alt="" coords="17,143,316,161"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#POSITION_BOTTOM_RIGHT_CORNER" title="dtk.ui.skin.SkinEditArea.POSITION_BOTTOM_RIGHT_CORNER" alt="" coords="17,161,316,180"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#POSITION_INSIDE" title="dtk.ui.skin.SkinEditArea.POSITION_INSIDE" alt="" coords="17,180,316,199"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#POSITION_OUTSIDE" title="dtk.ui.skin.SkinEditArea.POSITION_OUTSIDE" alt="" coords="17,199,316,217"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#__init__" title="Init skin edit area." alt="" coords="17,220,316,239"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#eval_scale" title="Eval scale." alt="" coords="17,239,316,257"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#expose_skin_edit_area" title="Expose edit area." alt="" coords="17,257,316,276"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#button_press_skin_edit_area" title="Callback for `button&#45;press&#45;event`" alt="" coords="17,276,316,295"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#button_release_skin_edit_area" title="Callback for `button&#45;release&#45;event`." alt="" coords="17,295,316,313"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#leave_notify_skin_edit_area" title="Callback for `leave&#45;notify&#45;event` signal." alt="" coords="17,313,316,332"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#motion_skin_edit_area" title="Callback for `motion&#45;notify&#45;event`." alt="" coords="17,332,316,351"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#skin_edit_area_set_cursor" title="Set cursor." alt="" coords="17,351,316,369"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#skin_edit_area_get_action_type" title="Get action type." alt="" coords="17,369,316,388"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#is_in_resize_area" title="Is at resize area." alt="" coords="17,388,316,407"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#skin_edit_area_resize" title="Resize." alt="" coords="17,407,316,425"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#skin_edit_area_adjust_left" title="Adjust left." alt="" coords="17,425,316,444"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#skin_edit_area_adjust_top" title="Adjust top." alt="" coords="17,444,316,463"/>
+<area shape="rect" id="node440" href="dtk.ui.skin.SkinEditArea-class.html#update_lock_status" title="Update lock status." alt="" coords="17,481,316,500"/>
+<area shape="rect" id="node1" href="dtk.ui.skin.SkinEditArea-class.html" title="Skin edit area." alt="" coords="5,6,328,506"/>
+</map>
+  <img src="uml_class_diagram_for_dtk_ui_s_7.gif" alt='' usemap="#uml_class_diagram_for_dtk_ui_s_7" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Skin edit area.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">app_frame_pixbuf</span>)</span><br />
+      Init skin edit area.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="eval_scale"></a><span class="summary-sig-name">eval_scale</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Eval scale.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.eval_scale">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="expose_skin_edit_area"></a><span class="summary-sig-name">expose_skin_edit_area</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Expose edit area.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.expose_skin_edit_area">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="button_press_skin_edit_area"></a><span class="summary-sig-name">button_press_skin_edit_area</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Callback for `button-press-event`</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.button_press_skin_edit_area">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="button_release_skin_edit_area"></a><span class="summary-sig-name">button_release_skin_edit_area</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Callback for `button-release-event`.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.button_release_skin_edit_area">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="leave_notify_skin_edit_area"></a><span class="summary-sig-name">leave_notify_skin_edit_area</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Callback for `leave-notify-event` signal.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.leave_notify_skin_edit_area">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="motion_skin_edit_area"></a><span class="summary-sig-name">motion_skin_edit_area</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Callback for `motion-notify-event`.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.motion_skin_edit_area">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="skin_edit_area_set_cursor"></a><span class="summary-sig-name">skin_edit_area_set_cursor</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">action_type</span>)</span><br />
+      Set cursor.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.skin_edit_area_set_cursor">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="skin_edit_area_get_action_type"></a><span class="summary-sig-name">skin_edit_area_get_action_type</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Get action type.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.skin_edit_area_get_action_type">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_in_resize_area"></a><span class="summary-sig-name">is_in_resize_area</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Is at resize area.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.is_in_resize_area">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="skin_edit_area_resize"></a><span class="summary-sig-name">skin_edit_area_resize</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">action_type</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Resize.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.skin_edit_area_resize">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="skin_edit_area_adjust_left"></a><span class="summary-sig-name">skin_edit_area_adjust_left</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Adjust left.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.skin_edit_area_adjust_left">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="skin_edit_area_adjust_top"></a><span class="summary-sig-name">skin_edit_area_adjust_top</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Adjust top.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.skin_edit_area_adjust_top">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="skin_edit_area_adjust_right"></a><span class="summary-sig-name">skin_edit_area_adjust_right</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Adjust right.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.skin_edit_area_adjust_right">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="skin_edit_area_adjust_bottom"></a><span class="summary-sig-name">skin_edit_area_adjust_bottom</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Adjust bottom.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.skin_edit_area_adjust_bottom">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="skin_edit_area_drag_background"></a><span class="summary-sig-name">skin_edit_area_drag_background</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Drag background.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.skin_edit_area_drag_background">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="update_skin_config"></a><span class="summary-sig-name">update_skin_config</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Update skin config.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.update_skin_config">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="click_reset_button"></a><span class="summary-sig-name">click_reset_button</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Click reset button.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.click_reset_button">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="click_auto_resize_button"></a><span class="summary-sig-name">click_auto_resize_button</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Click auto resize button.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.click_auto_resize_button">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="update_lock_status"></a><span class="summary-sig-name">update_lock_status</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">toggle_button</span>)</span><br />
+      Update lock status.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.skin-pysrc.html#SkinEditArea.update_lock_status">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="POSITION_LEFT_SIDE"></a><span class="summary-name">POSITION_LEFT_SIDE</span> = <code title="0">0</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="POSITION_RIGHT_SIDE"></a><span class="summary-name">POSITION_RIGHT_SIDE</span> = <code title="1">1</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="POSITION_TOP_SIDE"></a><span class="summary-name">POSITION_TOP_SIDE</span> = <code title="2">2</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="POSITION_BOTTOM_SIDE"></a><span class="summary-name">POSITION_BOTTOM_SIDE</span> = <code title="3">3</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="POSITION_TOP_LEFT_CORNER"></a><span class="summary-name">POSITION_TOP_LEFT_CORNER</span> = <code title="4">4</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="POSITION_TOP_RIGHT_CORNER"></a><span class="summary-name">POSITION_TOP_RIGHT_CORNER</span> = <code title="5">5</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="POSITION_BOTTOM_LEFT_CORNER"></a><span class="summary-name">POSITION_BOTTOM_LEFT_CORNER</span> = <code title="6">6</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="POSITION_BOTTOM_RIGHT_CORNER"></a><span class="summary-name">POSITION_BOTTOM_RIGHT_CORNER</span> = <code title="7">7</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="POSITION_INSIDE"></a><span class="summary-name">POSITION_INSIDE</span> = <code title="8">8</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="POSITION_OUTSIDE"></a><span class="summary-name">POSITION_OUTSIDE</span> = <code title="9">9</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Aug  2 10:18:57 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

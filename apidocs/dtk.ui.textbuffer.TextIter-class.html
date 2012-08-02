@@ -1,0 +1,1047 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.textbuffer.TextIter</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        <a href="dtk.ui.textbuffer-module.html">Module&nbsp;textbuffer</a> ::
+        Class&nbsp;TextIter
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="dtk.ui.textbuffer.TextIter-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class TextIter</h1><p class="nomargin-top"><span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_dtk_ui_t_4" name="uml_class_diagram_for_dtk_ui_t_4">
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#__gtype__" title="dtk.ui.textbuffer.TextIter.__gtype__" alt="" coords="17,383,435,401"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#__init__" title="Args:..." alt="" coords="17,404,435,423"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#get_buffer" title="dtk.ui.textbuffer.TextIter.get_buffer" alt="" coords="17,423,435,441"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#get_offset" title="dtk.ui.textbuffer.TextIter.get_offset" alt="" coords="17,441,435,460"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#get_line_text" title="return text of current line including" alt="" coords="17,460,435,479"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#get_line" title="dtk.ui.textbuffer.TextIter.get_line" alt="" coords="17,479,435,497"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#get_line_offset" title="return offset in utf8" alt="" coords="17,497,435,516"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#get_line_index" title="return offset in bytes" alt="" coords="17,516,435,535"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#get_char" title="return in Unicode&#45;8 format" alt="" coords="17,535,435,553"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#get_slice" title="return a slice of text in Unicode&#45;8 format" alt="" coords="17,553,435,572"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#copy" title="dtk.ui.textbuffer.TextIter.copy" alt="" coords="17,572,435,591"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#get_text" title="TODO:what is the difference between this and get_slice()?" alt="" coords="17,591,435,609"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#has_tag" title="TODO:return True if current location is tagged with tag" alt="" coords="17,609,435,628"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#editable" title="return True is current offset is in an editable range" alt="" coords="17,628,435,647"/>
+<area shape="rect" id="node506" href="dtk.ui.textbuffer.TextIter-class.html#is_valid" title="test if textiter is in valid mode" alt="" coords="17,665,435,684"/>
+<area shape="rect" id="node1" href="dtk.ui.textbuffer.TextIter-class.html" title="TextIter for TextBuffer" alt="" coords="5,358,445,690"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="??.GObject.__grefcount__" alt="" coords="165,31,287,49"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="??.GObject.__copy__" alt="" coords="165,52,287,71"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="??.GObject.__deepcopy__" alt="" coords="165,71,287,89"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="x.__delattr__(&#39;name&#39;) &lt;==&gt; del x.name" alt="" coords="165,89,287,108"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="x==y" alt="" coords="165,108,287,127"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="??.GObject.__gdoc__" alt="" coords="165,127,287,145"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="x&gt;=y" alt="" coords="165,145,287,164"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="??.GObject.__gobject_init__" alt="" coords="165,164,287,183"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="x&gt;y" alt="" coords="165,183,287,201"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="hash(x)" alt="" coords="165,201,287,220"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="x&lt;=y" alt="" coords="165,220,287,239"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="x&lt;y" alt="" coords="165,239,287,257"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="x!=y" alt="" coords="165,257,287,276"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="??.GObject.__new__" alt="" coords="165,276,287,295"/>
+<area shape="rect" id="node507" href="javascript:void(0);" title="??.GObject.weak_ref" alt="" coords="165,313,287,332"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="Object GObject" alt="" coords="153,6,297,338"/>
+</map>
+  <img src="uml_class_diagram_for_dtk_ui_t_4.gif" alt='' usemap="#uml_class_diagram_for_dtk_ui_t_4" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>TextIter for TextBuffer</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.textbuffer.TextIter-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line_number</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">text_buffer</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">line_offset</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">text</span>=<span class="summary-sig-default"><code class="variable-quote">u'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span><br />
+      Args:...</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_buffer"></a><span class="summary-sig-name">get_buffer</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_buffer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_offset"></a><span class="summary-sig-name">get_offset</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_offset">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_line_text"></a><span class="summary-sig-name">get_line_text</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      return text of current line including</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_line_text">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_line"></a><span class="summary-sig-name">get_line</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_line">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_line_offset"></a><span class="summary-sig-name">get_line_offset</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      return offset in utf8</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_line_offset">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_line_index"></a><span class="summary-sig-name">get_line_index</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      return offset in bytes</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_line_index">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_char"></a><span class="summary-sig-name">get_char</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      return in Unicode-8 format</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_char">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_slice"></a><span class="summary-sig-name">get_slice</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">end</span>)</span><br />
+      return a slice of text in Unicode-8 format</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_slice">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="copy"></a><span class="summary-sig-name">copy</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.copy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__get_line_max"></a><span class="summary-sig-name">__get_line_max</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.__get_line_max">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_text"></a><span class="summary-sig-name">get_text</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">end</span>)</span><br />
+      TODO:what is the difference between this and get_slice()?</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_text">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="has_tag"></a><span class="summary-sig-name">has_tag</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      TODO:return True if current location is tagged with tag</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.has_tag">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__is_editable_at_current_location"></a><span class="summary-sig-name">__is_editable_at_current_location</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      TODO:return True if current location with tags is editable 
+      implemented only after self.has_tag is implemented</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.__is_editable_at_current_location">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__can_insert_at_current_location"></a><span class="summary-sig-name">__can_insert_at_current_location</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      TODO:return True if text inserted at current location is editable 
+      implemented only after self.has_tag is implemented</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.__can_insert_at_current_location">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="editable"></a><span class="summary-sig-name">editable</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">default_setting</span>)</span><br />
+      return True is current offset is in an editable range</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.editable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="can_insert"></a><span class="summary-sig-name">can_insert</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">default_editability</span>)</span><br />
+      return True is text inserted in current location is editable</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.can_insert">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_chars_in_line"></a><span class="summary-sig-name">get_chars_in_line</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      return char count in Unicode-8 format in current line</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_chars_in_line">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_bytes_in_line"></a><span class="summary-sig-name">get_bytes_in_line</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      return byte count in current line</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_bytes_in_line">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_chars_in_iter"></a><span class="summary-sig-name">get_chars_in_iter</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      return char count in Unicode-8 format in the whole text</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.get_chars_in_iter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_end"></a><span class="summary-sig-name">is_end</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      return True if at the end of iter</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.is_end">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_start"></a><span class="summary-sig-name">is_start</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.is_start">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="forward_char"></a><span class="summary-sig-name">forward_char</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.forward_char">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="backward_char"></a><span class="summary-sig-name">backward_char</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.backward_char">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="forward_line"></a><span class="summary-sig-name">forward_line</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.forward_line">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="backward_line"></a><span class="summary-sig-name">backward_line</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.backward_line">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_offset"></a><span class="summary-sig-name">set_offset</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">offset</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.set_offset">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__goto_line"></a><span class="summary-sig-name">__goto_line</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.__goto_line">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_line"></a><span class="summary-sig-name">set_line</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">line</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.set_line">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__goto_line_offset"></a><span class="summary-sig-name">__goto_line_offset</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">offset</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.__goto_line_offset">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__goto_line_index"></a><span class="summary-sig-name">__goto_line_index</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.__goto_line_index">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_line_offset"></a><span class="summary-sig-name">set_line_offset</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">offset</span>)</span><br />
+      The character offset must be less than or equal to the number of 
+      characters in the line</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.set_line_offset">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_new_text"></a><span class="summary-sig-name">set_new_text</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">text</span>,
+        <span class="summary-sig-arg">line_diff</span>,
+        <span class="summary-sig-arg">is_line_diff_negative</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.set_new_text">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.textbuffer.TextIter-class.html#set_line_index" class="summary-sig-name">set_line_index</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span><br />
+      The given byte index must be at the start of a character, it can't be
+      in the middle of a UTF-8 encoded character.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.set_line_index">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="forward_to_end"></a><span class="summary-sig-name">forward_to_end</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.forward_to_end">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="backward_to_line_start"></a><span class="summary-sig-name">backward_to_line_start</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.backward_to_line_start">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="forward_to_line_end"></a><span class="summary-sig-name">forward_to_line_end</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.forward_to_line_end">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="in_range"></a><span class="summary-sig-name">in_range</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">start</span>,
+        <span class="summary-sig-arg">end</span>)</span><br />
+      start and end must be in ascending order</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.in_range">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_invalid"></a><span class="summary-sig-name">set_invalid</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      set textiter to invalid mode</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.set_invalid">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_valid"></a><span class="summary-sig-name">is_valid</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      test if textiter is in valid mode</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.is_valid">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><i>unreachable</i>.GObject</code></b>:
+      <code>__copy__</code>,
+      <code>__deepcopy__</code>,
+      <code>__delattr__</code>,
+      <code>__eq__</code>,
+      <code>__gdoc__</code>,
+      <code>__ge__</code>,
+      <code>__gobject_init__</code>,
+      <code>__gt__</code>,
+      <code>__hash__</code>,
+      <code>__le__</code>,
+      <code>__lt__</code>,
+      <code>__ne__</code>,
+      <code>__new__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>chain</code>,
+      <code>connect</code>,
+      <code>connect_after</code>,
+      <code>connect_object</code>,
+      <code>connect_object_after</code>,
+      <code>disconnect</code>,
+      <code>disconnect_by_func</code>,
+      <code>emit</code>,
+      <code>emit_stop_by_name</code>,
+      <code>freeze_notify</code>,
+      <code>get_data</code>,
+      <code>get_properties</code>,
+      <code>get_property</code>,
+      <code>handler_block</code>,
+      <code>handler_block_by_func</code>,
+      <code>handler_disconnect</code>,
+      <code>handler_is_connected</code>,
+      <code>handler_unblock</code>,
+      <code>handler_unblock_by_func</code>,
+      <code>notify</code>,
+      <code>props</code>,
+      <code>set_data</code>,
+      <code>set_properties</code>,
+      <code>set_property</code>,
+      <code>stop_emission</code>,
+      <code>thaw_notify</code>,
+      <code>weak_ref</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__gtype__"></a><span class="summary-name">__gtype__</span> = <code title="&lt;GType dtk+ui+textbuffer+TextIter (27139424)&gt;">&lt;GType dtk+ui+textbuffer+TextIter (27139424)&gt;</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><i>unreachable</i>.GObject</code></b>:
+      <code>__grefcount__</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">line_number</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">text_buffer</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">line_offset</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">text</span>=<span class="sig-default"><code class="variable-quote">u'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Args:
+    line_number : current line number
+    text_buffer : text buffer object to which this iter belongs
+    line_offset : offset in current line
+    text : the whole text in text buffer
+
+</pre>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_line_index"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_line_index</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">index</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.textbuffer-pysrc.html#TextIter.set_line_index">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The given byte index must be at the start of a character, it can't be 
+  in the middle of a UTF-8 encoded character. We won't check for you 
+  here</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Aug  2 10:18:59 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

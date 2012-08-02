@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.iconview.IconItem</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        <a href="dtk.ui.iconview-module.html">Module&nbsp;iconview</a> ::
+        Class&nbsp;IconItem
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="dtk.ui.iconview.IconItem-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class IconItem</h1><p class="nomargin-top"><span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_dtk_ui_i" name="uml_class_diagram_for_dtk_ui_i">
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#__gsignals__" title="dtk.ui.iconview.IconItem.__gsignals__" alt="" coords="17,383,232,401"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#__gtype__" title="dtk.ui.iconview.IconItem.__gtype__" alt="" coords="17,401,232,420"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#__init__" title="Init item icon." alt="" coords="17,423,232,441"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#emit_redraw_request" title="Emit redraw&#45;request signal." alt="" coords="17,441,232,460"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#get_width" title="Get width." alt="" coords="17,460,232,479"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#get_height" title="Get height." alt="" coords="17,479,232,497"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#render" title="Render item." alt="" coords="17,497,232,516"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#icon_item_motion_notify" title="Handle `motion&#45;notify&#45;event` signal." alt="" coords="17,516,232,535"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#icon_item_lost_focus" title="Lost focus." alt="" coords="17,535,232,553"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#icon_item_highlight" title="Highlight item." alt="" coords="17,553,232,572"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#icon_item_normal" title="Set item with normal status." alt="" coords="17,572,232,591"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#icon_item_button_press" title="Handle button&#45;press event." alt="" coords="17,591,232,609"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#icon_item_button_release" title="Handle button&#45;release event." alt="" coords="17,609,232,628"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#icon_item_single_click" title="Handle single click event." alt="" coords="17,628,232,647"/>
+<area shape="rect" id="node250" href="dtk.ui.iconview.IconItem-class.html#icon_item_double_click" title="Handle double click event." alt="" coords="17,647,232,665"/>
+<area shape="rect" id="node1" href="dtk.ui.iconview.IconItem-class.html" title="Icon item." alt="" coords="5,358,243,671"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="??.GObject.__grefcount__" alt="" coords="64,31,185,49"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="??.GObject.__copy__" alt="" coords="64,52,185,71"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="??.GObject.__deepcopy__" alt="" coords="64,71,185,89"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="x.__delattr__(&#39;name&#39;) &lt;==&gt; del x.name" alt="" coords="64,89,185,108"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="x==y" alt="" coords="64,108,185,127"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="??.GObject.__gdoc__" alt="" coords="64,127,185,145"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="x&gt;=y" alt="" coords="64,145,185,164"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="??.GObject.__gobject_init__" alt="" coords="64,164,185,183"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="x&gt;y" alt="" coords="64,183,185,201"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="hash(x)" alt="" coords="64,201,185,220"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="x&lt;=y" alt="" coords="64,220,185,239"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="x&lt;y" alt="" coords="64,239,185,257"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="x!=y" alt="" coords="64,257,185,276"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="??.GObject.__new__" alt="" coords="64,276,185,295"/>
+<area shape="rect" id="node251" href="javascript:void(0);" title="??.GObject.weak_ref" alt="" coords="64,313,185,332"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="Object GObject" alt="" coords="52,6,196,338"/>
+</map>
+  <img src="uml_class_diagram_for_dtk_ui_i.gif" alt='' usemap="#uml_class_diagram_for_dtk_ui_i" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Icon item.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.iconview.IconItem-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pixbuf</span>)</span><br />
+      Init item icon.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="emit_redraw_request"></a><span class="summary-sig-name">emit_redraw_request</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Emit redraw-request signal.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.emit_redraw_request">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_width"></a><span class="summary-sig-name">get_width</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get width.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.get_width">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_height"></a><span class="summary-sig-name">get_height</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get height.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.get_height">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="render"></a><span class="summary-sig-name">render</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cr</span>,
+        <span class="summary-sig-arg">rect</span>)</span><br />
+      Render item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.render">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="icon_item_motion_notify"></a><span class="summary-sig-name">icon_item_motion_notify</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      Handle `motion-notify-event` signal.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.icon_item_motion_notify">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="icon_item_lost_focus"></a><span class="summary-sig-name">icon_item_lost_focus</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Lost focus.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.icon_item_lost_focus">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="icon_item_highlight"></a><span class="summary-sig-name">icon_item_highlight</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Highlight item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.icon_item_highlight">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="icon_item_normal"></a><span class="summary-sig-name">icon_item_normal</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Set item with normal status.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.icon_item_normal">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="icon_item_button_press"></a><span class="summary-sig-name">icon_item_button_press</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      Handle button-press event.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.icon_item_button_press">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="icon_item_button_release"></a><span class="summary-sig-name">icon_item_button_release</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      Handle button-release event.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.icon_item_button_release">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="icon_item_single_click"></a><span class="summary-sig-name">icon_item_single_click</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      Handle single click event.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.icon_item_single_click">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="icon_item_double_click"></a><span class="summary-sig-name">icon_item_double_click</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      Handle double click event.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.icon_item_double_click">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><i>unreachable</i>.GObject</code></b>:
+      <code>__copy__</code>,
+      <code>__deepcopy__</code>,
+      <code>__delattr__</code>,
+      <code>__eq__</code>,
+      <code>__gdoc__</code>,
+      <code>__ge__</code>,
+      <code>__gobject_init__</code>,
+      <code>__gt__</code>,
+      <code>__hash__</code>,
+      <code>__le__</code>,
+      <code>__lt__</code>,
+      <code>__ne__</code>,
+      <code>__new__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>chain</code>,
+      <code>connect</code>,
+      <code>connect_after</code>,
+      <code>connect_object</code>,
+      <code>connect_object_after</code>,
+      <code>disconnect</code>,
+      <code>disconnect_by_func</code>,
+      <code>emit</code>,
+      <code>emit_stop_by_name</code>,
+      <code>freeze_notify</code>,
+      <code>get_data</code>,
+      <code>get_properties</code>,
+      <code>get_property</code>,
+      <code>handler_block</code>,
+      <code>handler_block_by_func</code>,
+      <code>handler_disconnect</code>,
+      <code>handler_is_connected</code>,
+      <code>handler_unblock</code>,
+      <code>handler_unblock_by_func</code>,
+      <code>notify</code>,
+      <code>props</code>,
+      <code>set_data</code>,
+      <code>set_properties</code>,
+      <code>set_property</code>,
+      <code>stop_emission</code>,
+      <code>thaw_notify</code>,
+      <code>weak_ref</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dtk.ui.iconview.IconItem-class.html#__gsignals__" class="summary-name">__gsignals__</a> = <code title="{&quot;redraw-request&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),}">{&quot;redraw-request&quot;:(gobject.SIGNAL_RUN_LAST, gob<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__gtype__"></a><span class="summary-name">__gtype__</span> = <code title="&lt;GType dtk+ui+iconview+IconItem (24905712)&gt;">&lt;GType dtk+ui+iconview+IconItem (24905712)&gt;</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><i>unreachable</i>.GObject</code></b>:
+      <code>__grefcount__</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pixbuf</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.iconview-pysrc.html#IconItem.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Init item icon.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__gsignals__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__gsignals__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+{&quot;redraw-request&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),}
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Aug  2 10:18:53 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

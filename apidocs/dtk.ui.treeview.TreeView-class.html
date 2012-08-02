@@ -1,0 +1,773 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.treeview.TreeView</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        <a href="dtk.ui.treeview-module.html">Module&nbsp;treeview</a> ::
+        Class&nbsp;TreeView
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="dtk.ui.treeview.TreeView-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class TreeView</h1><p class="nomargin-top"><span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_dtk_ui_t_21" name="uml_class_diagram_for_dtk_ui_t_21">
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#__gsignals__" title="dtk.ui.treeview.TreeView.__gsignals__" alt="" coords="17,31,2571,49"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#__init__" title="dtk.ui.treeview.TreeView.__init__" alt="" coords="17,52,2571,71"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#tree_view_press_event" title="dtk.ui.treeview.TreeView.tree_view_press_event" alt="" coords="17,71,2571,89"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#press_notify_function" title="dtk.ui.treeview.TreeView.press_notify_function" alt="" coords="17,89,2571,108"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#set_highlight_index" title="dtk.ui.treeview.TreeView.set_highlight_index" alt="" coords="17,108,2571,127"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#get_highlight_index" title="dtk.ui.treeview.TreeView.get_highlight_index" alt="" coords="17,127,2571,145"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#get_highlight_item" title="dtk.ui.treeview.TreeView.get_highlight_item" alt="" coords="17,145,2571,164"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#tree_view_motion_event" title="dtk.ui.treeview.TreeView.tree_view_motion_event" alt="" coords="17,164,2571,183"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#get_offset_coordinate" title="Get offset coordinate." alt="" coords="17,183,2571,201"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#draw_mask" title="dtk.ui.treeview.TreeView.draw_mask" alt="" coords="17,201,2571,220"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#tree_view_expose_event" title="dtk.ui.treeview.TreeView.tree_view_expose_event" alt="" coords="17,220,2571,239"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#tree_view_key_press_event" title="dtk.ui.treeview.TreeView.tree_view_key_press_event" alt="" coords="17,239,2571,257"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#tree_view_leave_notify_event" title="dtk.ui.treeview.TreeView.tree_view_leave_notify_event" alt="" coords="17,257,2571,276"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#add_items" title="dtk.ui.treeview.TreeView.add_items" alt="" coords="17,276,2571,295"/>
+<area shape="rect" id="node554" href="dtk.ui.treeview.TreeView-class.html#sort2" title="dtk.ui.treeview.TreeView.sort2" alt="" coords="17,313,2571,332"/>
+<area shape="rect" id="node1" href="dtk.ui.treeview.TreeView-class.html" title="dtk.ui.treeview.TreeView" alt="" coords="5,6,2581,338"/>
+</map>
+  <img src="uml_class_diagram_for_dtk_ui_t_21.gif" alt='' usemap="#uml_class_diagram_for_dtk_ui_t_21" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">width</span>=<span class="summary-sig-default">20</span>,
+        <span class="summary-sig-arg">height</span>=<span class="summary-sig-default">30</span>,
+        <span class="summary-sig-arg">font_size</span>=<span class="summary-sig-default">10</span>,
+        <span class="summary-sig-arg">font_x_padding</span>=<span class="summary-sig-default">5</span>,
+        <span class="summary-sig-arg">font_width</span>=<span class="summary-sig-default">120</span>,
+        <span class="summary-sig-arg">font_height</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">font_align</span>=<span class="summary-sig-default">pango.ALIGN_LEFT</span>,
+        <span class="summary-sig-arg">arrow_x_padding</span>=<span class="summary-sig-default">10</span>,
+        <span class="summary-sig-arg">normal_pixbuf</span>=<span class="summary-sig-default">ui_theme.get_pixbuf(&quot;treeview/arrow_right.png&quot;)</span>,
+        <span class="summary-sig-arg">press_pixbuf</span>=<span class="summary-sig-default">ui_theme.get_pixbuf(&quot;treeview/arrow_down.png&quot;)</span>,
+        <span class="summary-sig-arg">normal_hover_pixbuf</span>=<span class="summary-sig-default">ui_theme.get_pixbuf(&quot;treeview/arrow_right_hover.png&quot;)</span>,
+        <span class="summary-sig-arg">press_hover_pixbuf</span>=<span class="summary-sig-default">ui_theme.get_pixbuf(&quot;treeview/arrow_down_hover.png&quot;)</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="tree_view_press_event"></a><span class="summary-sig-name">tree_view_press_event</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>,
+        <span class="summary-sig-arg">event</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.tree_view_press_event">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="press_notify_function"></a><span class="summary-sig-name">press_notify_function</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.press_notify_function">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_highlight_index"></a><span class="summary-sig-name">set_highlight_index</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.set_highlight_index">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_highlight_index"></a><span class="summary-sig-name">get_highlight_index</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.get_highlight_index">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_highlight_item"></a><span class="summary-sig-name">get_highlight_item</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.get_highlight_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="tree_view_motion_event"></a><span class="summary-sig-name">tree_view_motion_event</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>,
+        <span class="summary-sig-arg">event</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.tree_view_motion_event">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_offset_coordinate"></a><span class="summary-sig-name">get_offset_coordinate</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>)</span><br />
+      Get offset coordinate.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.get_offset_coordinate">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="draw_mask"></a><span class="summary-sig-name">draw_mask</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cr</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>,
+        <span class="summary-sig-arg">w</span>,
+        <span class="summary-sig-arg">h</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.draw_mask">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="tree_view_expose_event"></a><span class="summary-sig-name">tree_view_expose_event</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>,
+        <span class="summary-sig-arg">event</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.tree_view_expose_event">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="tree_view_key_press_event"></a><span class="summary-sig-name">tree_view_key_press_event</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>,
+        <span class="summary-sig-arg">event</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.tree_view_key_press_event">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="tree_view_leave_notify_event"></a><span class="summary-sig-name">tree_view_leave_notify_event</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>,
+        <span class="summary-sig-arg">event</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.tree_view_leave_notify_event">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="add_items"></a><span class="summary-sig-name">add_items</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">parent_id</span>,
+        <span class="summary-sig-arg">child_items</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.add_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="add_item"></a><span class="summary-sig-name">add_item</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">parent_id</span>,
+        <span class="summary-sig-arg">child_item</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.add_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="create_tree"></a><span class="summary-sig-name">create_tree</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">child_item</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.create_tree">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="scan_item"></a><span class="summary-sig-name">scan_item</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">item_id</span>,
+        <span class="summary-sig-arg">node</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.scan_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="clear_scan_save_item"></a><span class="summary-sig-name">clear_scan_save_item</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.clear_scan_save_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_index_text"></a><span class="summary-sig-name">set_index_text</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>,
+        <span class="summary-sig-arg">text</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.set_index_text">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="del_item_index"></a><span class="summary-sig-name">del_item_index</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.del_item_index">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="del_item_from_index"></a><span class="summary-sig-name">del_item_from_index</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.del_item_from_index">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="del_item"></a><span class="summary-sig-name">del_item</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">item_id</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.del_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_other_item"></a><span class="summary-sig-name">get_other_item</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.get_other_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_item_from_index"></a><span class="summary-sig-name">get_item_from_index</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.get_item_from_index">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_items"></a><span class="summary-sig-name">get_items</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">parent_id</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.get_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_text"></a><span class="summary-sig-name">set_text</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">item</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.set_text">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_text"></a><span class="summary-sig-name">get_text</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">item</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.get_text">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="clear"></a><span class="summary-sig-name">clear</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.clear">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="sort_all_nodes"></a><span class="summary-sig-name">sort_all_nodes</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">nodes</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.sort_all_nodes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_all_items"></a><span class="summary-sig-name">get_all_items</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.get_all_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="sort"></a><span class="summary-sig-name">sort</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.sort">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="sort2"></a><span class="summary-sig-name">sort2</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">node</span>,
+        <span class="summary-sig-arg">width</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.treeview-pysrc.html#TreeView.sort2">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dtk.ui.treeview.TreeView-class.html#__gsignals__" class="summary-name">__gsignals__</a> = <code title="{&quot;single-click-item&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gob\
+ject.TYPE_PYOBJECT,)), &quot;double-click-item&quot;:(gobject.SIGNAL_RUN_LAST, g\
+object.TYPE_NONE, (gobject.TYPE_PYOBJECT,)), &quot;right-press-item&quot;:(gobje\
+ct.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject\
+.TYPE_INT, gobject.TYPE_INT, gobject.TYPE_INT)),}">{&quot;single-click-item&quot;:(gobject.SIGNAL_RUN_LAST, <code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variable Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariableDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__gsignals__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__gsignals__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+{&quot;single-click-item&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gob<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+ject.TYPE_PYOBJECT,)), &quot;double-click-item&quot;:(gobject.SIGNAL_RUN_LAST, g<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+object.TYPE_NONE, (gobject.TYPE_PYOBJECT,)), &quot;right-press-item&quot;:(gobje<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+ct.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+.TYPE_INT, gobject.TYPE_INT, gobject.TYPE_INT)),}
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Aug  2 10:18:59 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

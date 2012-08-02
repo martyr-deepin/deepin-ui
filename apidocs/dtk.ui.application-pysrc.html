@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.application</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        Module&nbsp;application
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="dtk.ui.application-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="dtk.ui.application-module.html">Module dtk.ui.application</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment">#! /usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2011 ~ 2012 Deepin, Inc.</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment">#               2011 ~ 2012 Wang Yong</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"># Author:     Wang Yong &lt;lazycat.manatee@gmail.com&gt;</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"># Maintainer: Wang Yong &lt;lazycat.manatee@gmail.com&gt;</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"># This program is free software: you can redistribute it and/or modify</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published by</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"># the Free Software Foundation, either version 3 of the License, or</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"># any later version.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"># This program is distributed in the hope that it will be useful,</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"># but WITHOUT ANY WARRANTY; without even the implied warranty of</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"># GNU General Public License for more details.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"># You should have received a copy of the GNU General Public License</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module dtk.ui.mplayer_window=dtk.ui.mplayer_window-module.html"><a title="dtk.ui.mplayer_window" class="py-name" href="#" onclick="return doclink('link-0', 'mplayer_window', 'link-0');">mplayer_window</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Class dtk.ui.mplayer_window.MplayerWindow=dtk.ui.mplayer_window.MplayerWindow-class.html"><a title="dtk.ui.mplayer_window.MplayerWindow" class="py-name" href="#" onclick="return doclink('link-1', 'MplayerWindow', 'link-1');">MplayerWindow</a></tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Module dtk.ui.skin=dtk.ui.skin-module.html"><a title="dtk.ui.skin" class="py-name" href="#" onclick="return doclink('link-2', 'skin', 'link-2');">skin</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Class dtk.ui.skin.SkinWindow=dtk.ui.skin.SkinWindow-class.html"><a title="dtk.ui.skin.SkinWindow" class="py-name" href="#" onclick="return doclink('link-3', 'SkinWindow', 'link-3');">SkinWindow</a></tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-4" class="py-name" targets="Module dtk.ui.skin_config=dtk.ui.skin_config-module.html,Variable dtk.ui.skin_config.skin_config=dtk.ui.skin_config-module.html#skin_config"><a title="dtk.ui.skin_config
+dtk.ui.skin_config.skin_config" class="py-name" href="#" onclick="return doclink('link-4', 'skin_config', 'link-4');">skin_config</a></tt> <tt class="py-keyword">import</tt> <tt id="link-5" class="py-name"><a title="dtk.ui.skin_config
+dtk.ui.skin_config.skin_config" class="py-name" href="#" onclick="return doclink('link-5', 'skin_config', 'link-4');">skin_config</a></tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-6" class="py-name" targets="Module dtk.ui.threads=dtk.ui.threads-module.html"><a title="dtk.ui.threads" class="py-name" href="#" onclick="return doclink('link-6', 'threads', 'link-6');">threads</a></tt> <tt class="py-keyword">import</tt> <tt id="link-7" class="py-name" targets="Function dtk.ui.threads.post_gui()=dtk.ui.threads-module.html#post_gui"><a title="dtk.ui.threads.post_gui" class="py-name" href="#" onclick="return doclink('link-7', 'post_gui', 'link-7');">post_gui</a></tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-8" class="py-name" targets="Module dtk.ui.titlebar=dtk.ui.titlebar-module.html"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-8', 'titlebar', 'link-8');">titlebar</a></tt> <tt class="py-keyword">import</tt> <tt id="link-9" class="py-name" targets="Class dtk.ui.titlebar.Titlebar=dtk.ui.titlebar.Titlebar-class.html"><a title="dtk.ui.titlebar.Titlebar" class="py-name" href="#" onclick="return doclink('link-9', 'Titlebar', 'link-9');">Titlebar</a></tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-10" class="py-name" targets="Module dtk.ui.utils=dtk.ui.utils-module.html"><a title="dtk.ui.utils" class="py-name" href="#" onclick="return doclink('link-10', 'utils', 'link-10');">utils</a></tt> <tt class="py-keyword">import</tt> <tt id="link-11" class="py-name" targets="Function dtk.ui.utils.container_remove_all()=dtk.ui.utils-module.html#container_remove_all"><a title="dtk.ui.utils.container_remove_all" class="py-name" href="#" onclick="return doclink('link-11', 'container_remove_all', 'link-11');">container_remove_all</a></tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name" targets="Function dtk.ui.utils.place_center()=dtk.ui.utils-module.html#place_center"><a title="dtk.ui.utils.place_center" class="py-name" href="#" onclick="return doclink('link-12', 'place_center', 'link-12');">place_center</a></tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-13" class="py-name" targets="Variable dtk.ui.tooltip.TooltipInfo.window=dtk.ui.tooltip.TooltipInfo-class.html#window,Module dtk.ui.window=dtk.ui.window-module.html"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-13', 'window', 'link-13');">window</a></tt> <tt class="py-keyword">import</tt> <tt id="link-14" class="py-name" targets="Class dtk.ui.window.Window=dtk.ui.window.Window-class.html"><a title="dtk.ui.window.Window" class="py-name" href="#" onclick="return doclink('link-14', 'Window', 'link-14');">Window</a></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">gtk</tt> </tt>
+<a name="Application"></a><div id="Application-def"><a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt> <a class="py-toggle" href="#" id="Application-toggle" onclick="return toggle('Application');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html">Application</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Application-expanded"><a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">    <tt class="py-docstring">'''Application.'''</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="Application.__init__"></a><div id="Application.__init__-def"><a name="L35"></a><tt class="py-lineno"> 35</tt> <a class="py-toggle" href="#" id="Application.__init__-toggle" onclick="return toggle('Application.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">app_support_colormap</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.__init__-expanded"><a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-docstring">'''Init application.'''</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-comment"># Init.</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">app_support_colormap</tt> <tt class="py-op">=</tt> <tt class="py-name">app_support_colormap</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">close_callback</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method dtk.ui.application.Application.close_window()=dtk.ui.application.Application-class.html#close_window,Method dtk.ui.mplayer_window.MplayerWindow.close_window()=dtk.ui.mplayer_window.MplayerWindow-class.html#close_window,Method dtk.ui.window.Window.close_window()=dtk.ui.window.Window-class.html#close_window"><a title="dtk.ui.application.Application.close_window
+dtk.ui.mplayer_window.MplayerWindow.close_window
+dtk.ui.window.Window.close_window" class="py-name" href="#" onclick="return doclink('link-15', 'close_window', 'link-15');">close_window</a></tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-comment"># Start application.</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Method dtk.ui.animation.Animation.init()=dtk.ui.animation.Animation-class.html#init,Method dtk.ui.application.Application.init()=dtk.ui.application.Application-class.html#init"><a title="dtk.ui.animation.Animation.init
+dtk.ui.application.Application.init" class="py-name" href="#" onclick="return doclink('link-16', 'init', 'link-16');">init</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"> </tt>
+<a name="Application.init"></a><div id="Application.init-def"><a name="L44"></a><tt class="py-lineno"> 44</tt> <a class="py-toggle" href="#" id="Application.init-toggle" onclick="return toggle('Application.init');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#init">init</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.init-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.init-expanded"><a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">        <tt class="py-docstring">'''Init.'''</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">        <tt class="py-comment"># Init gdk threads, the integrant method for multi-thread GUI application.</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">gdk</tt><tt class="py-op">.</tt><tt class="py-name">threads_init</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-comment"># Init status.</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">menu_button_callback</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">        <tt class="py-comment"># Init window.</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">app_support_colormap</tt><tt class="py-op">:</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-17', 'window', 'link-13');">window</a></tt> <tt class="py-op">=</tt> <tt id="link-18" class="py-name"><a title="dtk.ui.window.Window" class="py-name" href="#" onclick="return doclink('link-18', 'Window', 'link-14');">Window</a></tt><tt class="py-op">(</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-19', 'window', 'link-13');">window</a></tt> <tt class="py-op">=</tt> <tt id="link-20" class="py-name"><a title="dtk.ui.mplayer_window.MplayerWindow" class="py-name" href="#" onclick="return doclink('link-20', 'MplayerWindow', 'link-1');">MplayerWindow</a></tt><tt class="py-op">(</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-21', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt class="py-name">set_position</tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">WIN_POS_CENTER</tt><tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-22', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"destroy"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Method dtk.ui.application.Application.destroy()=dtk.ui.application.Application-class.html#destroy"><a title="dtk.ui.application.Application.destroy" class="py-name" href="#" onclick="return doclink('link-23', 'destroy', 'link-23');">destroy</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">         </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-comment"># Init main box.</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">main_box</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-24', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt class="py-name">window_frame</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">        <tt class="py-comment"># Add titlebar box.</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-25', 'titlebar', 'link-8');">titlebar</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">titlebar_box</tt> <tt class="py-op">=</tt> <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">HBox</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">main_box</tt><tt class="py-op">.</tt><tt class="py-name">pack_start</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">titlebar_box</tt><tt class="py-op">,</tt> <tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"> </tt>
+<a name="Application.add_titlebar"></a><div id="Application.add_titlebar-def"><a name="L68"></a><tt class="py-lineno"> 68</tt> <a class="py-toggle" href="#" id="Application.add_titlebar-toggle" onclick="return toggle('Application.add_titlebar');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#add_titlebar">add_titlebar</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">                     <tt class="py-param">button_mask</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-string">"theme"</tt><tt class="py-op">,</tt> <tt class="py-string">"menu"</tt><tt class="py-op">,</tt> <tt class="py-string">"max"</tt><tt class="py-op">,</tt> <tt class="py-string">"min"</tt><tt class="py-op">,</tt> <tt class="py-string">"close"</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">                     <tt class="py-param">icon_dpixbuf</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">app_name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">title</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">add_separator</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.add_titlebar-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.add_titlebar-expanded"><a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-docstring">'''Add titlebar.'''</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-comment"># Init titlebar.</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-26', 'titlebar', 'link-8');">titlebar</a></tt> <tt class="py-op">=</tt> <tt id="link-27" class="py-name"><a title="dtk.ui.titlebar.Titlebar" class="py-name" href="#" onclick="return doclink('link-27', 'Titlebar', 'link-9');">Titlebar</a></tt><tt class="py-op">(</tt><tt class="py-name">button_mask</tt><tt class="py-op">,</tt> <tt class="py-name">icon_dpixbuf</tt><tt class="py-op">,</tt> <tt class="py-name">app_name</tt><tt class="py-op">,</tt> <tt class="py-name">title</tt><tt class="py-op">,</tt> <tt class="py-name">add_separator</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-string">"theme"</tt> <tt class="py-keyword">in</tt> <tt class="py-name">button_mask</tt><tt class="py-op">:</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-28', 'titlebar', 'link-8');">titlebar</a></tt><tt class="py-op">.</tt><tt class="py-name">theme_button</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"clicked"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name" targets="Method dtk.ui.application.Application.theme_callback()=dtk.ui.application.Application-class.html#theme_callback"><a title="dtk.ui.application.Application.theme_callback" class="py-name" href="#" onclick="return doclink('link-29', 'theme_callback', 'link-29');">theme_callback</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-string">"menu"</tt> <tt class="py-keyword">in</tt> <tt class="py-name">button_mask</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-30', 'titlebar', 'link-8');">titlebar</a></tt><tt class="py-op">.</tt><tt class="py-name">menu_button</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"clicked"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name" targets="Method dtk.ui.application.Application.menu_callback()=dtk.ui.application.Application-class.html#menu_callback"><a title="dtk.ui.application.Application.menu_callback" class="py-name" href="#" onclick="return doclink('link-31', 'menu_callback', 'link-31');">menu_callback</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-string">"min"</tt> <tt class="py-keyword">in</tt> <tt class="py-name">button_mask</tt><tt class="py-op">:</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-32', 'titlebar', 'link-8');">titlebar</a></tt><tt class="py-op">.</tt><tt class="py-name">min_button</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"clicked"</tt><tt class="py-op">,</tt> <tt class="py-keyword">lambda</tt> <tt id="link-33" class="py-name" targets="Variable dtk.ui.tooltip_test.w=dtk.ui.tooltip_test-module.html#w"><a title="dtk.ui.tooltip_test.w" class="py-name" href="#" onclick="return doclink('link-33', 'w', 'link-33');">w</a></tt><tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-34', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt id="link-35" class="py-name" targets="Method dtk.ui.mplayer_window.MplayerWindow.min_window()=dtk.ui.mplayer_window.MplayerWindow-class.html#min_window,Method dtk.ui.window.Window.min_window()=dtk.ui.window.Window-class.html#min_window"><a title="dtk.ui.mplayer_window.MplayerWindow.min_window
+dtk.ui.window.Window.min_window" class="py-name" href="#" onclick="return doclink('link-35', 'min_window', 'link-35');">min_window</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-string">"max"</tt> <tt class="py-keyword">in</tt> <tt class="py-name">button_mask</tt><tt class="py-op">:</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-36', 'titlebar', 'link-8');">titlebar</a></tt><tt class="py-op">.</tt><tt class="py-name">max_button</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"clicked"</tt><tt class="py-op">,</tt> <tt class="py-keyword">lambda</tt> <tt id="link-37" class="py-name"><a title="dtk.ui.tooltip_test.w" class="py-name" href="#" onclick="return doclink('link-37', 'w', 'link-33');">w</a></tt><tt class="py-op">:</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-38', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt id="link-39" class="py-name" targets="Method dtk.ui.mplayer_window.MplayerWindow.toggle_max_window()=dtk.ui.mplayer_window.MplayerWindow-class.html#toggle_max_window,Method dtk.ui.window.Window.toggle_max_window()=dtk.ui.window.Window-class.html#toggle_max_window"><a title="dtk.ui.mplayer_window.MplayerWindow.toggle_max_window
+dtk.ui.window.Window.toggle_max_window" class="py-name" href="#" onclick="return doclink('link-39', 'toggle_max_window', 'link-39');">toggle_max_window</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-string">"close"</tt> <tt class="py-keyword">in</tt> <tt class="py-name">button_mask</tt><tt class="py-op">:</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-40', 'titlebar', 'link-8');">titlebar</a></tt><tt class="py-op">.</tt><tt class="py-name">close_button</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"clicked"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">close_callback</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-41', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt id="link-42" class="py-name" targets="Method dtk.ui.mplayer_window.MplayerWindow.add_toggle_event()=dtk.ui.mplayer_window.MplayerWindow-class.html#add_toggle_event,Method dtk.ui.window.Window.add_toggle_event()=dtk.ui.window.Window-class.html#add_toggle_event"><a title="dtk.ui.mplayer_window.MplayerWindow.add_toggle_event
+dtk.ui.window.Window.add_toggle_event" class="py-name" href="#" onclick="return doclink('link-42', 'add_toggle_event', 'link-42');">add_toggle_event</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-43', 'titlebar', 'link-8');">titlebar</a></tt><tt class="py-op">.</tt><tt class="py-name">drag_box</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-44', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt id="link-45" class="py-name" targets="Method dtk.ui.mplayer_window.MplayerWindow.add_move_event()=dtk.ui.mplayer_window.MplayerWindow-class.html#add_move_event,Method dtk.ui.window.Window.add_move_event()=dtk.ui.window.Window-class.html#add_move_event"><a title="dtk.ui.mplayer_window.MplayerWindow.add_move_event
+dtk.ui.window.Window.add_move_event" class="py-name" href="#" onclick="return doclink('link-45', 'add_move_event', 'link-45');">add_move_event</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-46', 'titlebar', 'link-8');">titlebar</a></tt><tt class="py-op">.</tt><tt class="py-name">drag_box</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-comment"># Show titlebar.</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name" targets="Method dtk.ui.application.Application.show_titlebar()=dtk.ui.application.Application-class.html#show_titlebar"><a title="dtk.ui.application.Application.show_titlebar" class="py-name" href="#" onclick="return doclink('link-47', 'show_titlebar', 'link-47');">show_titlebar</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">         </tt>
+<a name="Application.close_window"></a><div id="Application.close_window-def"><a name="L90"></a><tt class="py-lineno"> 90</tt> <a class="py-toggle" href="#" id="Application.close_window-toggle" onclick="return toggle('Application.close_window');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#close_window">close_window</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">widget</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.close_window-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.close_window-expanded"><a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-docstring">'''Close window.'''</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-48" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-48', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt id="link-49" class="py-name"><a title="dtk.ui.application.Application.close_window
+dtk.ui.mplayer_window.MplayerWindow.close_window
+dtk.ui.window.Window.close_window" class="py-name" href="#" onclick="return doclink('link-49', 'close_window', 'link-15');">close_window</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"> </tt>
+<a name="Application.show_titlebar"></a><div id="Application.show_titlebar-def"><a name="L94"></a><tt class="py-lineno"> 94</tt> <a class="py-toggle" href="#" id="Application.show_titlebar-toggle" onclick="return toggle('Application.show_titlebar');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#show_titlebar">show_titlebar</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.show_titlebar-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.show_titlebar-expanded"><a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt class="py-docstring">'''Show titlebar.'''</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">titlebar_box</tt><tt class="py-op">.</tt><tt class="py-name">get_children</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> <tt class="py-keyword">and</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-50', 'titlebar', 'link-8');">titlebar</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">titlebar_box</tt><tt class="py-op">.</tt><tt class="py-name">add</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-51" class="py-name"><a title="dtk.ui.titlebar" class="py-name" href="#" onclick="return doclink('link-51', 'titlebar', 'link-8');">titlebar</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"> </tt>
+<a name="Application.hide_titlebar"></a><div id="Application.hide_titlebar-def"><a name="L99"></a><tt class="py-lineno"> 99</tt> <a class="py-toggle" href="#" id="Application.hide_titlebar-toggle" onclick="return toggle('Application.hide_titlebar');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#hide_titlebar">hide_titlebar</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.hide_titlebar-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.hide_titlebar-expanded"><a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">        <tt class="py-docstring">'''Hide titlebar.'''</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt id="link-52" class="py-name"><a title="dtk.ui.utils.container_remove_all" class="py-name" href="#" onclick="return doclink('link-52', 'container_remove_all', 'link-11');">container_remove_all</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">titlebar_box</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">post_gui</tt> </tt>
+<a name="Application.raise_to_top"></a><div id="Application.raise_to_top-def"><a name="L104"></a><tt class="py-lineno">104</tt> <a class="py-toggle" href="#" id="Application.raise_to_top-toggle" onclick="return toggle('Application.raise_to_top');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#raise_to_top">raise_to_top</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.raise_to_top-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.raise_to_top-expanded"><a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-docstring">'''Raise to top.'''</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-53', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt class="py-name">present</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="Application.set_title"></a><div id="Application.set_title-def"><a name="L108"></a><tt class="py-lineno">108</tt> <a class="py-toggle" href="#" id="Application.set_title-toggle" onclick="return toggle('Application.set_title');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#set_title">set_title</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">title</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.set_title-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.set_title-expanded"><a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-docstring">'''Set application title.'''</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-54', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Method dtk.ui.application.Application.set_title()=dtk.ui.application.Application-class.html#set_title"><a title="dtk.ui.application.Application.set_title" class="py-name" href="#" onclick="return doclink('link-55', 'set_title', 'link-55');">set_title</a></tt><tt class="py-op">(</tt><tt class="py-name">title</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"> </tt>
+<a name="Application.set_default_size"></a><div id="Application.set_default_size-def"><a name="L112"></a><tt class="py-lineno">112</tt> <a class="py-toggle" href="#" id="Application.set_default_size-toggle" onclick="return toggle('Application.set_default_size');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#set_default_size">set_default_size</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">default_width</tt><tt class="py-op">,</tt> <tt class="py-param">default_height</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.set_default_size-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.set_default_size-expanded"><a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-docstring">'''Set application default size.'''</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-56', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt id="link-57" class="py-name" targets="Method dtk.ui.application.Application.set_default_size()=dtk.ui.application.Application-class.html#set_default_size"><a title="dtk.ui.application.Application.set_default_size" class="py-name" href="#" onclick="return doclink('link-57', 'set_default_size', 'link-57');">set_default_size</a></tt><tt class="py-op">(</tt><tt class="py-name">default_width</tt><tt class="py-op">,</tt> <tt class="py-name">default_height</tt><tt class="py-op">)</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-58', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt class="py-name">set_geometry_hints</tt><tt class="py-op">(</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">            <tt class="py-name">None</tt><tt class="py-op">,</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">            <tt class="py-name">default_width</tt><tt class="py-op">,</tt>       <tt class="py-comment"># minimum width</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">            <tt class="py-name">default_height</tt>       <tt class="py-comment"># minimum height</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">            <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">            <tt class="py-op">)</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">         </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-comment"># Pass application size to skin config.</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt id="link-59" class="py-name"><a title="dtk.ui.skin_config
+dtk.ui.skin_config.skin_config" class="py-name" href="#" onclick="return doclink('link-59', 'skin_config', 'link-4');">skin_config</a></tt><tt class="py-op">.</tt><tt id="link-60" class="py-name" targets="Method dtk.ui.skin_config.SkinConfig.set_application_window_size()=dtk.ui.skin_config.SkinConfig-class.html#set_application_window_size"><a title="dtk.ui.skin_config.SkinConfig.set_application_window_size" class="py-name" href="#" onclick="return doclink('link-60', 'set_application_window_size', 'link-60');">set_application_window_size</a></tt><tt class="py-op">(</tt><tt class="py-name">default_width</tt><tt class="py-op">,</tt> <tt class="py-name">default_height</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line"> </tt>
+<a name="Application.set_icon"></a><div id="Application.set_icon-def"><a name="L125"></a><tt class="py-lineno">125</tt> <a class="py-toggle" href="#" id="Application.set_icon-toggle" onclick="return toggle('Application.set_icon');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#set_icon">set_icon</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">icon_dpixbuf</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.set_icon-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.set_icon-expanded"><a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">        <tt class="py-docstring">'''Set icon.'''</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">window_set_default_icon</tt><tt class="py-op">(</tt><tt class="py-name">icon_dpixbuf</tt><tt class="py-op">.</tt><tt id="link-61" class="py-name" targets="Method dtk.ui.theme.DynamicPixbuf.get_pixbuf()=dtk.ui.theme.DynamicPixbuf-class.html#get_pixbuf,Method dtk.ui.theme.Theme.get_pixbuf()=dtk.ui.theme.Theme-class.html#get_pixbuf"><a title="dtk.ui.theme.DynamicPixbuf.get_pixbuf
+dtk.ui.theme.Theme.get_pixbuf" class="py-name" href="#" onclick="return doclink('link-61', 'get_pixbuf', 'link-61');">get_pixbuf</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"> </tt>
+<a name="Application.destroy"></a><div id="Application.destroy-def"><a name="L129"></a><tt class="py-lineno">129</tt> <a class="py-toggle" href="#" id="Application.destroy-toggle" onclick="return toggle('Application.destroy');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#destroy">destroy</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">widget</tt><tt class="py-op">,</tt> <tt class="py-param">data</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.destroy-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.destroy-expanded"><a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-docstring">'''Destroy main window.'''</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">        <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">main_quit</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"> </tt>
+<a name="Application.run"></a><div id="Application.run-def"><a name="L133"></a><tt class="py-lineno">133</tt> <a class="py-toggle" href="#" id="Application.run-toggle" onclick="return toggle('Application.run');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.run-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.run-expanded"><a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-docstring">'''Run.'''</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-comment"># Show window.</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-62" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-62', 'window', 'link-13');">window</a></tt><tt class="py-op">.</tt><tt id="link-63" class="py-name" targets="Method dtk.ui.mplayer_window.MplayerWindow.show_window()=dtk.ui.mplayer_window.MplayerWindow-class.html#show_window,Method dtk.ui.popup_window.PopupWindow.show_window()=dtk.ui.popup_window.PopupWindow-class.html#show_window,Method dtk.ui.window.Window.show_window()=dtk.ui.window.Window-class.html#show_window"><a title="dtk.ui.mplayer_window.MplayerWindow.show_window
+dtk.ui.popup_window.PopupWindow.show_window
+dtk.ui.window.Window.show_window" class="py-name" href="#" onclick="return doclink('link-63', 'show_window', 'link-63');">show_window</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">        <tt class="py-comment"># Run main loop.</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">        <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">main</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"> </tt>
+<a name="Application.set_skin_preview"></a><div id="Application.set_skin_preview-def"><a name="L141"></a><tt class="py-lineno">141</tt> <a class="py-toggle" href="#" id="Application.set_skin_preview-toggle" onclick="return toggle('Application.set_skin_preview');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#set_skin_preview">set_skin_preview</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">preview_pixbuf</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.set_skin_preview-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.set_skin_preview-expanded"><a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">        <tt class="py-docstring">'''Set skin preview pixbuf.'''</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">skin_preview_pixbuf</tt> <tt class="py-op">=</tt> <tt class="py-name">preview_pixbuf</tt> </tt>
+</div><a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">         </tt>
+<a name="Application.theme_callback"></a><div id="Application.theme_callback-def"><a name="L145"></a><tt class="py-lineno">145</tt> <a class="py-toggle" href="#" id="Application.theme_callback-toggle" onclick="return toggle('Application.theme_callback');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#theme_callback">theme_callback</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">widget</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.theme_callback-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.theme_callback-expanded"><a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">        <tt class="py-docstring">'''Theme button callback.'''</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">        <tt class="py-name">skin_window</tt> <tt class="py-op">=</tt> <tt id="link-64" class="py-name"><a title="dtk.ui.skin.SkinWindow" class="py-name" href="#" onclick="return doclink('link-64', 'SkinWindow', 'link-3');">SkinWindow</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">skin_preview_pixbuf</tt><tt class="py-op">)</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-name">skin_window</tt><tt class="py-op">.</tt><tt class="py-name">show_all</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">        <tt class="py-name">skin_window</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"show"</tt><tt class="py-op">,</tt> <tt class="py-keyword">lambda</tt> <tt id="link-65" class="py-name"><a title="dtk.ui.tooltip_test.w" class="py-name" href="#" onclick="return doclink('link-65', 'w', 'link-33');">w</a></tt><tt class="py-op">:</tt> <tt id="link-66" class="py-name"><a title="dtk.ui.utils.place_center" class="py-name" href="#" onclick="return doclink('link-66', 'place_center', 'link-12');">place_center</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name"><a title="dtk.ui.tooltip.TooltipInfo.window
+dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-67', 'window', 'link-13');">window</a></tt><tt class="py-op">,</tt> <tt id="link-68" class="py-name"><a title="dtk.ui.tooltip_test.w" class="py-name" href="#" onclick="return doclink('link-68', 'w', 'link-33');">w</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+</div><a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"> </tt>
+<a name="Application.menu_callback"></a><div id="Application.menu_callback-def"><a name="L153"></a><tt class="py-lineno">153</tt> <a class="py-toggle" href="#" id="Application.menu_callback-toggle" onclick="return toggle('Application.menu_callback');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#menu_callback">menu_callback</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">widget</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.menu_callback-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.menu_callback-expanded"><a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">        <tt class="py-docstring">'''Menu button callback.'''</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">menu_button_callback</tt><tt class="py-op">:</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">menu_button_callback</tt><tt class="py-op">(</tt><tt id="link-69" class="py-name" targets="Variable dtk.ui.tooltip.TooltipInfo.widget=dtk.ui.tooltip.TooltipInfo-class.html#widget"><a title="dtk.ui.tooltip.TooltipInfo.widget" class="py-name" href="#" onclick="return doclink('link-69', 'widget', 'link-69');">widget</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+</div><a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"> </tt>
+<a name="Application.set_menu_callback"></a><div id="Application.set_menu_callback-def"><a name="L160"></a><tt class="py-lineno">160</tt> <a class="py-toggle" href="#" id="Application.set_menu_callback-toggle" onclick="return toggle('Application.set_menu_callback');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.application.Application-class.html#set_menu_callback">set_menu_callback</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">callback</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Application.set_menu_callback-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Application.set_menu_callback-expanded"><a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">        <tt class="py-docstring">'''Set menu callback.'''</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">menu_button_callback</tt> <tt class="py-op">=</tt> <tt class="py-name">callback</tt> </tt>
+</div></div><a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Thu Aug  2 10:19:00 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
