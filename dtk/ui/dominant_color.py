@@ -30,7 +30,15 @@ import scipy.cluster
 import scipy.misc
 import urllib
 
+__all__ = ["get_dominant_color"]
+
 def get_dominant_color(image_path):
+    '''
+    Parse image and return dominant color in image.
+
+    @param image_path: Image path to parse.
+    @return: Return dominant color, format as hexadecimal number. 
+    '''
     # print 'reading image'
     im = Image.open(image_path)
     im = im.resize((150, 150))      # optional, to reduce time
@@ -54,8 +62,14 @@ def get_dominant_color(image_path):
     return "#%s" % (colour[0:6])
 
 class ColorTestWidget(gtk.DrawingArea):
+    '''
+    Widget to test function get_dominant_color.
+    '''
 	
     def __init__(self):
+        '''
+        Initialize ColorTestWidget class.
+        '''
         gtk.DrawingArea.__init__(self)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.connect("expose-event", self.color_test_widget_expose)        

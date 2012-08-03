@@ -1,8 +1,4 @@
 animation.py
-combo.py
-dialog.py
-dominant_color.py
-draw.py
 droplist.py
 entry.py
 frame.py
