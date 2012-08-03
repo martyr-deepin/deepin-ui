@@ -648,9 +648,9 @@ def disable(widget, is_disable):
 def always_update(widget, need):
     '''
     Always create the new tooltip's content, used to show the
-    
+
     curstom tooltip content generate by function and the function's
-    
+
     return widget is different every time be invoked.
 
     @param widget: Gtk.Widget instance.

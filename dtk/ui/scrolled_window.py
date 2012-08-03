@@ -51,35 +51,35 @@ def pos2value(pos, p_range, upper):
 class ScrolledWindow(gtk.Bin):
     '''
     The scrolled window with deepin's custom scrollbar.
-    
-    @undocumented: do_expose_event
+
+    @undocumented: do_enter_notify_event
+    @undocumented: _test_calc
+    @undocumented: do_remove
+    @undocumented: do_unmap
+    @undocumented: do_map
+    @undocumented: set_policy
+    @undocumented: set_shadow_type
+    @undocumented: do_realize
+    @undocumented: do_size_request
+    @undocumented: do_unrealize
+    @undocumented: update_scrollbar
+    @undocumented: do_size_allocate
+    @undocumented: do_add
+    @undocumented: hadjustment_changed
+    @undocumented: vadjustment_changed
+    @undocumented: calc_hbar_allocation
+    @undocumented: calc_hbar_length
+    @undocumented: calc_vbar_allocation
+    @undocumented: calc_vbar_length
+    @undocumented: do_motion_notify_event
+    @undocumented: do_leave_notify_event
+    @undocumented: do_scroll_event
+    @undocumented: make_bar_bigger
+    @undocumented: make_bar_smaller
+    @undocumented: do_button_release_event
     @undocumented: draw_vbar
     @undocumented: draw_hbar
-    @undocumented: do_button_release_event
-    @undocumented: make_bar_smaller
-    @undocumented: make_bar_bigger
-    @undocumented: do_scroll_event
-    @undocumented: do_leave_notify_event
-    @undocumented: do_enter_notify_event
-    @undocumented: do_motion_notify_event
-    @undocumented: calc_vbar_length
-    @undocumented: calc_vbar_allocation
-    @undocumented: calc_hbar_length
-    @undocumented: calc_hbar_allocation
-    @undocumented: vadjustment_changed
-    @undocumented: hadjustment_changed
-    @undocumented: do_add
-    @undocumented: do_size_request
-    @undocumented: do_size_allocate
-    @undocumented: update_scrollbar
-    @undocumented: do_unrealize
-    @undocumented: do_realize
-    @undocumented: set_shadow_type
-    @undocumented: set_policy
-    @undocumented: do_map
-    @undocumented: do_unmap
-    @undocumented: do_remove
-    @undocumented: _test_calc
+    @undocumented: do_expose_event
     '''
 
     def __init__(self, right_space=2, top_bottom_space=3):
@@ -512,11 +512,19 @@ class ScrolledWindow(gtk.Bin):
 
         self.queue_resize()
 
+
     def set_shadow_type(self, t):
         #raise Warning("dtk's scrolledwindow didn't support this function")
         return
 
+
     def set_policy(self, h, v):
+        '''
+        set the policy of ScrolledWindow's scrollbar
+
+        @param h: the horizontal scrollbar policy
+        @param v: the vertical scrollbar policy
+        '''
         self._horizaontal.policy = h
         self._vertical.policy = v
         return

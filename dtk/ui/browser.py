@@ -26,7 +26,8 @@ from gtk import gdk
 
 class WebView(webkit.WebView):
     '''
-    @undocumented: [save_adjustment, do_scroll]
+    @undocumented: save_adjustment
+    @undocumented: do_scroll
     WebView wrap that support cookie.
     '''
 
@@ -47,16 +48,12 @@ class WebView(webkit.WebView):
 
     def save_adjustment(self, webview, hadj, vadj):
         '''
-        @private
         the callback of "set-scroll-adjustmens"
         '''
         self.vadjustment = vadj
         self.hadjustment = hadj
 
     def do_scroll(self, w, e):
-        '''
-        @private
-        '''
         value = self.vadjustment.value
         step = self.vadjustment.step_increment
         page_size = self.vadjustment.page_size

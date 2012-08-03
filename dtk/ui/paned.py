@@ -6,6 +6,15 @@ import gtk
 
 class Paned(gtk.Paned):
     '''
+    @undocumented: __init__
+    @undocumented: do_enter_notify_event
+    @undocumented: do_button_press_event
+    @undocumented: do_size_allocate
+    @undocumented: do_enter_notify_event
+    @undocumented: is_in_button
+    @undocumented: draw_handle
+    @undocumented: do_expose_event
+
     gtk.Paned with custom better apperance.
     '''
     def __init__(self):
