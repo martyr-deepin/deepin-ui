@@ -50,12 +50,12 @@ class ScrolledWindow(gtk.Bin):
     Be careful
     '''
 
-    def __init__(self, right_space=2, top_bootm_space=3):
+    def __init__(self, right_space=2, top_bottom_space=3):
         '''
         Init scrolled window.
 
         @param right_space: the space between right border and the vertical scroolbar.
-        @param top_bootom_space: the space between top border and the vertical scroolbar.
+        @param top_bottom_space: the space between top border and the vertical scroolbar.
         '''
         gtk.Bin.__init__(self)
         self.bar_min_length = 50  #scrollbar smallest height
@@ -63,7 +63,7 @@ class ScrolledWindow(gtk.Bin):
         self.bar_width = 14  #normal scrollbar width
         self.bar_background = ui_theme.get_color("scrolledbar")
         self.right_space = right_space
-        self.top_bootm_space = top_bootm_space
+        self.top_bottom_space = top_bottom_space
 
         self.h_value_change_id = None
         self.h_change_id = None
@@ -137,16 +137,16 @@ class ScrolledWindow(gtk.Bin):
             region = gdk.region_rectangle(gdk.Rectangle(0, 0, int(self._horizaontal.bar_len), self.bar_small_width))
 
             if self.hallocation.x == 0:
-                self.hwindow.shape_combine_region(region, self.top_bootm_space, self.bar_width - self.bar_small_width -self.right_space)
+                self.hwindow.shape_combine_region(region, self.top_bottom_space, self.bar_width - self.bar_small_width -self.right_space)
             else:
-                self.hwindow.shape_combine_region(region, -self.top_bootm_space, self.bar_width - self.bar_small_width -self.right_space)
+                self.hwindow.shape_combine_region(region, -self.top_bottom_space, self.bar_width - self.bar_small_width -self.right_space)
         elif orientation == gtk.ORIENTATION_VERTICAL:
             region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_small_width, int(self._vertical.bar_len)))
 
             if self.vallocation.y == 0:
-                self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width - self.right_space, self.top_bootm_space)
+                self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width - self.right_space, self.top_bottom_space)
             else:
-                self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width - self.right_space, -self.top_bootm_space)
+                self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width - self.right_space, -self.top_bottom_space)
         else:
             raise "make_bar_smaller's orientation must be gtk.ORIENTATION_VERTICAL or gtk.ORIENTATION_HORIZONTAL"
 
@@ -157,16 +157,16 @@ class ScrolledWindow(gtk.Bin):
             region = gdk.region_rectangle(gdk.Rectangle(0, 0, int(self._horizaontal.bar_len), self.bar_width))
 
             if self.hallocation.x == 0:
-                self.hwindow.shape_combine_region(region, self.top_bootm_space, -self.right_space)
+                self.hwindow.shape_combine_region(region, self.top_bottom_space, -self.right_space)
             else:
-                self.hwindow.shape_combine_region(region, -self.top_bootm_space, -self.right_space)
+                self.hwindow.shape_combine_region(region, -self.top_bottom_space, -self.right_space)
         elif orientation == gtk.ORIENTATION_VERTICAL:
             region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_width, int(self._vertical.bar_len)))
 
             if self.vallocation.y == 0:
-                self.vwindow.shape_combine_region(region, -self.right_space, self.top_bootm_space)
+                self.vwindow.shape_combine_region(region, -self.right_space, self.top_bottom_space)
             else:
-                self.vwindow.shape_combine_region(region, -self.right_space, -self.top_bootm_space)
+                self.vwindow.shape_combine_region(region, -self.right_space, -self.top_bottom_space)
         else:
             raise "make_bar_bigger's orientation must be gtk.ORIENTATION_VERTICAL or gtk.ORIENTATION_HORIZONTAL"
 

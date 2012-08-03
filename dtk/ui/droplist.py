@@ -33,6 +33,8 @@ from utils import (is_in_rect, get_content_size, propagate_expose,
                    alpha_color_hex_to_cairo, 
                    cairo_disable_antialias, color_hex_to_cairo)
 
+__all__ = ["DroplistScrolledWindow", "Droplist", "DroplistItem"]
+
 droplist_grab_window = gtk.Window(gtk.WINDOW_POPUP)
 droplist_grab_window.move(0, 0)
 droplist_grab_window.set_default_size(0, 0)
@@ -43,6 +45,9 @@ droplist_grab_window_press_flag = False
 root_droplists = []
 
 def droplist_grab_window_focus_in():
+    '''
+    Handle `focus-in` signal of droplist_grab_window.
+    '''
     droplist_grab_window.grab_add()
     gtk.gdk.pointer_grab(
         droplist_grab_window.window, 
@@ -51,6 +56,9 @@ def droplist_grab_window_focus_in():
         None, None, gtk.gdk.CURRENT_TIME)
     
 def droplist_grab_window_focus_out():
+    '''
+    Handle `focus-out` signal of droplist_grab_window.
+    '''
     global root_droplists
     
     for root_droplist in root_droplists:
@@ -62,7 +70,11 @@ def droplist_grab_window_focus_out():
     droplist_grab_window.grab_remove()
 
 def is_press_on_droplist_grab_window(window):
-    '''Is press on droplist grab window.'''
+    '''
+    Whether press on droplist of droplist_grab_window.
+    
+    @param window: gtk.Window or gtk.gdk.Window
+    '''
     for toplevel in gtk.window_list_toplevels():
         if isinstance(window, gtk.Window):
             if window == toplevel:
@@ -74,18 +86,36 @@ def is_press_on_droplist_grab_window(window):
     return False        
 
 def droplist_grab_window_enter_notify(widget, event):
+    '''
+    Handle `enter-notify` signal of droplist_grab_window.
+
+    @param widget: Droplist widget.
+    @param event: Enter notify event.
+    '''
     if event and event.window:
         event_widget = event.window.get_user_data()
         if isinstance(event_widget, DroplistScrolledWindow):
             event_widget.event(event)
 
 def droplist_grab_window_leave_notify(widget, event):
+    '''
+    Handle `leave-notify` signal of droplist_grab_window.
+
+    @param widget: Droplist widget.
+    @param event: Leave notify event.
+    '''
     if event and event.window:
         event_widget = event.window.get_user_data()
         if isinstance(event_widget, DroplistScrolledWindow):
             event_widget.event(event)
             
 def droplist_grab_window_scroll_event(widget, event):
+    '''
+    Handle `scroll` signal of droplist_grab_window.
+
+    @param widget: Droplist widget.
+    @param event: Scroll event.
+    '''
     global root_droplists
     
     if event and event.window:
@@ -93,6 +123,12 @@ def droplist_grab_window_scroll_event(widget, event):
             droplist.item_scrolled_window.event(event)
             
 def droplist_grab_window_key_press(widget, event):
+    '''
+    Handle `key-press-event` signal of droplist_grab_window.
+
+    @param widget: Droplist widget.
+    @param event: Key press event.
+    '''
     global root_droplists
     
     if event and event.window:
@@ -100,6 +136,12 @@ def droplist_grab_window_key_press(widget, event):
             droplist.event(event)
 
 def droplist_grab_window_key_release(widget, event):
+    '''
+    Handle `key-release-event` signal of droplist_grab_window.
+
+    @param widget: Droplist widget.
+    @param event: Key release event.
+    '''
     global root_droplists
     
     if event and event.window:
@@ -107,6 +149,12 @@ def droplist_grab_window_key_release(widget, event):
             droplist.event(event)
 
 def droplist_grab_window_button_release(widget, event):
+    '''
+    Handle `button-release-event` signal of droplist_grab_window.
+
+    @param widget: Droplist widget.
+    @param event: Button release event.
+    '''
     global root_droplists
     global droplist_grab_window_press_flag
 
@@ -123,6 +171,12 @@ def droplist_grab_window_button_release(widget, event):
                 droplist.item_scrolled_window.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
     
 def droplist_grab_window_button_press(widget, event):
+    '''
+    Handle `button-press-event` signal of droplist_grab_window.
+
+    @param widget: Droplist widget.
+    @param event: Button press event.
+    '''
     global droplist_active_item
     global droplist_grab_window_press_flag
 
@@ -143,6 +197,12 @@ def droplist_grab_window_button_press(widget, event):
             droplist_grab_window_focus_out()
     
 def droplist_grab_window_motion_notify(widget, event):
+    '''
+    Handle `motion-notify` signal of droplist_grab_window.
+
+    @param widget: Droplist widget.
+    @param event: Motion notify signal.
+    '''
     global droplist_active_item
     global droplist_grab_window_press_flag
     
@@ -210,16 +270,32 @@ droplist_grab_window.connect("key-press-event", droplist_grab_window_key_press)
 droplist_grab_window.connect("key-release-event", droplist_grab_window_key_release)
             
 class DroplistScrolledWindow(ScrolledWindow):
-    '''Droplist scrolled window.'''
+    '''
+    ScrolledWindow for droplist.
+    '''
 	
-    def __init__(self, right_space=2, top_bootm_space=3):
-        '''Init droplist scrolled window.'''
-        ScrolledWindow.__init__(self, right_space, top_bootm_space)
+    def __init__(self, right_space=2, top_bottom_space=3):
+        '''
+        Initialize DroplistScrolledWindow class.
+        
+        @param right_space: the space between right border and the vertical scroolbar.
+        @param top_bottom_space: the space between top border and the vertical scroolbar.
+        '''
+        ScrolledWindow.__init__(self, right_space, top_bottom_space)
         
 gobject.type_register(DroplistScrolledWindow)
                 
 class Droplist(gtk.Window):
-    '''Droplist.'''
+    '''
+    Droplist.
+    
+    @undocumented: expose_item_align
+    @undocumented: droplist_key_press
+    @undocumented: droplist_key_release
+    @undocumented: expose_droplist_frame
+    @undocumented: init_droplist
+    @undocumented: adjust_droplist_position
+    '''
     
     __gsignals__ = {
         "item-selected" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
@@ -236,9 +312,22 @@ class Droplist(gtk.Window):
                  item_padding_left=6, 
                  item_padding_right=32,
                  item_padding_y=3,
-                 shadow_visible=True,
                  max_width=None):
-        '''Init droplist, item format: (item_content, item_value).'''
+        '''
+        Initialize Droplist class.
+        
+        @param items: A list of item, item format: (item_content, item_value).
+        @param x_align: Horticultural alignment.
+        @param y_align: Vertical alignment.
+        @param font_size: Font size of droplist, default is DEFAULT_FONT_SIZE
+        @param opacity: Opacity of droplist window, default is 1.0.
+        @param padding_x: Padding x, default is 0.
+        @param padding_y: Padding y, default is 0.
+        @param item_padding_left: Padding at left of item, default is 6.
+        @param item_padding_right: Padding at right of item, default is 32.
+        @param item_padding_y: Padding of item vertically, default is 3.
+        @param max_width: Maximum width of droplist, default is None.
+        '''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         self.items = items
@@ -313,7 +402,9 @@ class Droplist(gtk.Window):
         self.grab_focus()
         
     def get_droplist_width(self):
-        '''Get droplist width.'''
+        '''
+        Get droplist width.
+        '''
         item_content_width = max(map(lambda item: get_content_size(item.item[0], self.font_size)[0], 
                                      filter(lambda item: isinstance(item.item_box, gtk.Button), self.droplist_items)))
         if self.max_width != None:
@@ -323,7 +414,12 @@ class Droplist(gtk.Window):
             return self.padding_x * 2 + self.item_padding_left + self.item_padding_right + int(item_content_width)
         
     def expose_item_align(self, widget, event):
-        '''Expose item align.'''
+        '''
+        Internal function to handle `expose-event` signal.
+        
+        @param widget: Droplist widget.
+        @param event: Expose event.
+        '''
         # Init.
         cr = widget.window.cairo_create()        
         rect = widget.allocation
@@ -335,7 +431,11 @@ class Droplist(gtk.Window):
         cr.fill()
         
     def get_first_index(self):
-        '''Get first index.'''
+        '''
+        Get index of first item.
+        
+        @return: Return index of first item, or return None if haven't item in droplist.
+        '''
         item_indexs = filter(lambda (index, item): isinstance(item.item_box, gtk.Button), enumerate(self.droplist_items))        
         if len(item_indexs) > 0:
             return item_indexs[0][0]
@@ -343,7 +443,11 @@ class Droplist(gtk.Window):
             return None
         
     def get_last_index(self):
-        '''Get last index.'''
+        '''
+        Get index of last item.
+        
+        @return: Return index of last item, or return None if haven't item in droplist.
+        '''
         item_indexs = filter(lambda (index, item): isinstance(item.item_box, gtk.Button), enumerate(self.droplist_items))        
         if len(item_indexs) > 0:
             return item_indexs[-1][0]
@@ -351,7 +455,11 @@ class Droplist(gtk.Window):
             return None
         
     def get_prev_index(self):
-        '''Get preview index.'''
+        '''
+        Get index of previous item.
+        
+        @return: Return index of previous item, or return None if haven't item in droplist.
+        '''
         item_indexs = filter(lambda (index, item): isinstance(item.item_box, gtk.Button), enumerate(self.droplist_items))
         if len(item_indexs) > 0:
             index_list = map(lambda (index, item): index, item_indexs)
@@ -367,7 +475,11 @@ class Droplist(gtk.Window):
             return None
         
     def get_next_index(self):
-        '''Get next index.'''
+        '''
+        Get index of next item.
+        
+        @return: Return index of next item, or return None if haven't item in droplist.
+        '''
         item_indexs = filter(lambda (index, item): isinstance(item.item_box, gtk.Button), enumerate(self.droplist_items))
         if len(item_indexs) > 0:
             index_list = map(lambda (index, item): index, item_indexs)
@@ -383,7 +495,13 @@ class Droplist(gtk.Window):
             return None
         
     def get_select_item_rect(self, item_index=None):
-        '''Get select item rect.'''
+        '''
+        Get item rectangle with given index.
+
+        @param item_index: If item_index is None, use select index.
+
+        @return: Return (x, y, w, h) rectangle for match item.
+        '''
         if item_index == None:
             item_index = self.item_select_index
         item_offset_y = sum(map(lambda item: item.item_box_height, self.droplist_items)[0:item_index])
@@ -391,7 +509,11 @@ class Droplist(gtk.Window):
         return (0, item_offset_y, item_rect.width, item_rect.height)
         
     def active_item(self, item_index=None):
-        '''Select item.'''
+        '''
+        Select item with given index.
+        
+        @param item_index: If item_index is None, use select index.
+        '''
         global droplist_active_item
         
         if item_index == None:
@@ -405,7 +527,9 @@ class Droplist(gtk.Window):
         droplist_active_item = item
         
     def select_first_item(self):
-        '''Select first item.'''
+        '''
+        Select first item.
+        '''
         if len(self.droplist_items) > 0:
             first_index = self.get_first_index()
             if first_index != None:
@@ -417,7 +541,9 @@ class Droplist(gtk.Window):
                 vadjust.set_value(vadjust.get_lower())
                 
     def select_last_item(self):
-        '''Select last item.'''
+        '''
+        Select last item.
+        '''
         if len(self.droplist_items) > 0:
             last_index = self.get_last_index()
             if last_index != None:
@@ -429,7 +555,9 @@ class Droplist(gtk.Window):
                 vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
                 
     def select_prev_item(self):
-        '''Select preview item.'''
+        '''
+        Select previous item.
+        '''
         if len(self.droplist_items) > 0:
             prev_index = self.get_prev_index()
             if prev_index != None:
@@ -449,7 +577,9 @@ class Droplist(gtk.Window):
                     self.select_first_item()
     
     def select_next_item(self):
-        '''Select next item.'''
+        '''
+        Select next item.
+        '''
         if len(self.droplist_items) > 0:
             next_index = self.get_next_index()
             if next_index != None:
@@ -469,14 +599,18 @@ class Droplist(gtk.Window):
                     self.select_first_item()
     
     def scroll_page_to_select_item(self):
-        '''Scroll page to select item.'''
+        '''
+        Scroll page to select item.
+        '''
         (item_x, item_y, item_width, item_height) = self.get_select_item_rect()
         vadjust = self.item_scrolled_window.get_vadjustment()
         vadjust.set_value(min(max(vadjust.get_lower(), item_y - self.padding_y * 2), 
                               vadjust.get_upper() - vadjust.get_page_size()))
                     
     def scroll_page_up(self):
-        '''Scroll page up.'''
+        '''
+        Scroll page up.
+        '''
         if len(self.droplist_items) > 0:
             # Scroll page up.
             vadjust = self.item_scrolled_window.get_vadjustment()
@@ -491,7 +625,9 @@ class Droplist(gtk.Window):
                     break
     
     def scroll_page_down(self):
-        '''Scroll page down.'''
+        '''
+        Scroll page down.
+        '''
         if len(self.droplist_items) > 0:
             # Scroll page up.
             vadjust = self.item_scrolled_window.get_vadjustment()
@@ -508,13 +644,20 @@ class Droplist(gtk.Window):
                     break
     
     def press_select_item(self):
-        '''Press select item.'''
+        '''
+        Press select item.
+        '''
         if len(self.droplist_items) > 0:
             if 0 <= self.item_select_index < len(self.droplist_items):
                 self.droplist_items[self.item_select_index].wrap_droplist_clicked_action()
     
     def droplist_key_press(self, widget, event):
-        '''Key press event.'''
+        '''
+        Internal function for `key-press-event` signal.
+        
+        @param widget: Droplist widget.
+        @param event: Key press event.
+        '''
         key_name = get_keyevent_name(event)
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
@@ -522,14 +665,24 @@ class Droplist(gtk.Window):
         return True     
     
     def droplist_key_release(self, widget, event):
-        '''Key press event.'''
+        '''
+        Internal function for `key-release-event` signal.
+        
+        @param widget: Droplist widget.
+        @param event: Key release event.
+        '''
         self.emit("key-release", 
                   self.items[self.item_select_index][0],
                   self.items[self.item_select_index][1],
                   self.item_select_index)    
         
     def expose_droplist_frame(self, widget, event):
-        '''Expose droplist frame.'''
+        '''
+        Callback for `expose-event` siangl of droplist frame.
+        
+        @param widget: Droplist widget.
+        @param event: Expose event.
+        '''
         cr = widget.window.cairo_create()        
         rect = widget.allocation
 
@@ -540,7 +693,14 @@ class Droplist(gtk.Window):
             cr.fill()
         
     def get_droplist_item_at_coordinate(self, (x, y)):
-        '''Get droplist item at coordinate, return None if haven't any droplist item at given coordinate.'''
+        '''
+        Get droplist item at coordinate, return None if haven't any droplist item at given coordinate.
+        
+        @param x: X coordiante.
+        @param y: Y coordiante.
+        
+        @return: Return match item with given coordinate, return None if haven't any item match coordinate.
+        '''
         match_droplist_item = None
         
         item_heights = map(lambda item: item.item_box_height, self.droplist_items)
@@ -560,7 +720,11 @@ class Droplist(gtk.Window):
         return match_droplist_item
     
     def init_droplist(self, widget):
-        '''Realize droplist.'''
+        '''
+        Callback after `show` signal.
+        
+        @param widget: Droplist widget.
+        '''
         global root_droplists
         droplist_grab_window_focus_out()
         
@@ -570,15 +734,15 @@ class Droplist(gtk.Window):
         if not self in root_droplists:
             root_droplists.append(self)
                             
-    def get_subdroplists(self):
-        '''Get subdroplists.'''
-        if self.subdroplist:
-            return [self.subdroplist] + self.subdroplist.get_subdroplists()
-        else:
-            return []
-                
     def show(self, (x, y), (offset_x, offset_y)=(0, 0)):
-        '''Show droplist.'''
+        '''
+        Show droplist.
+        
+        @param x: Show x coordinate.
+        @param y: Show y coordinate.
+        @param offset_x: Offset x value when droplist haven't space to show in origin coordinate, default is 0.
+        @param offset_y: Offset y value when droplist haven't space to show in origin coordinate, default is 0.
+        '''
         # Init offset.
         self.expect_x = x
         self.expect_y = y
@@ -589,7 +753,11 @@ class Droplist(gtk.Window):
         self.show_all()
         
     def adjust_droplist_position(self, widget):
-        '''Realize droplist.'''
+        '''
+        Internal function to adjust droplist position after `realize` signal.
+        
+        @param widget: Droplist widget.
+        '''
         # Adjust coordinate.
         (screen_width, screen_height) = get_screen_size(self)
         
@@ -622,7 +790,9 @@ class Droplist(gtk.Window):
         self.move(dx, dy)
             
     def hide(self):
-        '''Hide droplist.'''
+        '''
+        Hide droplist.
+        '''
         # Hide current droplist window.
         self.hide_all()
         
@@ -633,12 +803,33 @@ class Droplist(gtk.Window):
 gobject.type_register(Droplist)
 
 class DroplistItem(object):
-    '''Droplist item.'''
+    '''
+    DroplistItem for L{ I{Droplist} <Droplist>}.
+    
+    @undocumented: create_separator_item
+    @undocumented: create_droplist_item
+    @undocumented: realize_item_box
+    @undocumented: wrap_droplist_clicked_action
+    @undocumented: expose_droplist_item
+    '''
     
     def __init__(self, droplist, index, item, font_size, 
                  droplist_padding_x, droplist_padding_y,
                  item_padding_left, item_padding_right, item_padding_y, max_width):
-        '''Init droplist item.'''
+        '''
+        Initialize DroplistItem class.
+        
+        @param droplist: Droplist.
+        @param index: Drop item index.
+        @param item: Drop item, format (item_content, item_value)
+        @param font_size: Drop item font size.
+        @param droplist_padding_x: Padding x of droplist.
+        @param droplist_padding_y: Padding y of droplist.
+        @param item_padding_left: Padding at left of item.
+        @param item_padding_right: Padding at right of item.
+        @param item_padding_y: Padding at top or bottom of item.
+        @param max_width: Maximum width of droplist item.
+        '''
         # Init.
         self.droplist = droplist
         self.index = index
@@ -660,7 +851,9 @@ class DroplistItem(object):
             self.create_separator_item()
         
     def create_separator_item(self):
-        '''Create separator item.'''
+        '''
+        Internal function, create separator item.
+        '''
         self.item_box = HSeparator(
             ui_theme.get_shadow_color("h_separator").get_color_info(),
             self.item_padding_left, 
@@ -668,7 +861,9 @@ class DroplistItem(object):
         self.item_box_height = self.item_padding_y * 2 + 1
         
     def create_droplist_item(self):
-        '''Create droplist item.'''
+        '''
+        Internal function, create droplist item.
+        '''
         # Get item information.
         (item_content, item_value) = self.item[0:2]
         
@@ -687,7 +882,12 @@ class DroplistItem(object):
         self.item_box.connect("realize", lambda w: self.realize_item_box(w, item_content))
         
     def realize_item_box(self, widget, item_content):
-        '''Realize item box.'''
+        '''
+        Internal function, realize item box.
+        
+        @param widget: DropItem widget.
+        @param item_content: Item content.
+        '''
         # Set button size.
         (width, height) = get_content_size(item_content, self.font_size)
         self.item_box_height = self.item_padding_y * 2 + int(height)
@@ -701,7 +901,9 @@ class DroplistItem(object):
         self.item_box.set_size_request(self.item_box_width, self.item_box_height)        
         
     def wrap_droplist_clicked_action(self):
-        '''Wrap droplist action.'''
+        '''
+        Internal function to wrap clicked action.
+        '''
         # Emit item-selected signal.
         self.droplist.emit("item-selected", self.item[0], self.item[1], self.index)
             
@@ -709,7 +911,13 @@ class DroplistItem(object):
         droplist_grab_window_focus_out()
             
     def expose_droplist_item(self, widget, event, item_content):
-        '''Expose droplist item.'''
+        '''
+        Internal function to handle `expose-event` signal of item.
+
+        @param widget: DropItem widget.
+        @param event: Expose event.
+        @param item_content: Item content.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
