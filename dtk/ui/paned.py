@@ -1,4 +1,24 @@
-#!/usr/bin/python
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2011 ~ 2012 Deepin, Inc.
+#               2011 ~ 2012 Xia Bin
+#
+# Author:     Xia Bin <xiabin@gmail.com>
+# Maintainer: Xia Bin <xiabin@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from utils import is_in_rect
 import gobject
@@ -6,7 +26,8 @@ import gtk
 
 class Paned(gtk.Paned):
     '''
-    @undocumented: __init__
+    Paned.
+    
     @undocumented: do_enter_notify_event
     @undocumented: do_button_press_event
     @undocumented: do_size_allocate
@@ -18,6 +39,9 @@ class Paned(gtk.Paned):
     gtk.Paned with custom better apperance.
     '''
     def __init__(self):
+        '''
+        Initialize Paned class.
+        '''
         gtk.Paned.__init__(self)
         self.bheight = 60  #the button height or width;
         self.saved_position = -1
@@ -130,13 +154,9 @@ class VPaned(Paned):
         self.set_orientation(gtk.ORIENTATION_VERTICAL)
         self.cursor_type = gtk.gdk.Cursor(gtk.gdk.SB_V_DOUBLE_ARROW)
 
-
-
 gobject.type_register(Paned)
 gobject.type_register(HPaned)
 gobject.type_register(VPaned)
-
-
 
 if __name__ == '__main__':
     w = gtk.Window()

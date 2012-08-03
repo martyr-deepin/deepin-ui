@@ -6,7 +6,6 @@ menu.py
 mplayer_view.py
 navigatebar.py
 notebook.py
-paned.py
 progressbar.py
 scalebar.py
 skin.py
