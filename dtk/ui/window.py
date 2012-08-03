@@ -40,11 +40,10 @@ class Window(gtk.Window):
     @undocumented: expose_window_background
     @undocumented: expose_window_shadow
     @undocumented: expose_window_frame
-    @undocumented: draw_mask
     @undocumented: shape_window_frame
     @undocumented: motion_notify
-    @undocumented: resize_window
     @undocumented: double_click_window
+    @undocumented: monitor_window_state
     """
     def __init__(self, enable_resize=False, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL, shadow_visible=True):
         """
@@ -52,8 +51,8 @@ class Window(gtk.Window):
 
         @param enable_resize: If True, the window will be set resizable. By default, it's False.
         @param shadow_radius: The radius of the shadow. By default, it's 6.
-        @param window_type: A flag of type gtk._gtk.WindowType, which indicates the type of the window. By default, it's gtk.WINDOW_TOPLEVEL.
-        @param shadow_visible: If True, the shadow is visible. By default, it's True.
+        @param window_type: A flag of type gtk.WindowType, which indicates the type of the window. By default, it's gtk.WINDOW_TOPLEVEL.
+        @param shadow_visible: If True, the shadow is visible. By default, it's True, just disable when your program not allow manipulate colormap, such as mplayer. 
         """
         # Init.
         gtk.Window.__init__(self, window_type)
@@ -104,7 +103,7 @@ class Window(gtk.Window):
         
     def expose_window_background(self, widget, event):
         """
-        Expose the window background.
+        Internal function to expose the window background.
 
         @param widget: A window of type Gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
@@ -186,12 +185,20 @@ class Window(gtk.Window):
         return True
         
     def draw_mask(self, cr, x, y, w, h):
-        '''Draw mask.'''
+        '''
+        Draw mask interface, you should implement this function own.
+        
+        @param cr: Cairo context.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         pass
     
     def expose_window_shadow(self, widget, event):
         """
-        Expose the window shadow.
+        Interh function to expose the window shadow.
 
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
@@ -207,7 +214,8 @@ class Window(gtk.Window):
     
     def expose_window_frame(self, widget, event):
         """
-        Expose the window frame.
+        Internal function to expose the window frame.
+        
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
         """
@@ -226,7 +234,7 @@ class Window(gtk.Window):
 
     def shape_window_frame(self, widget, rect):
         """
-        Draw nonrectangular window frame.
+        Internal function to draw nonrectangular window frame.
 
         @param widget: A widget of type gtk.Widget.
         @param rect: The bounding region of the window.
@@ -298,6 +306,7 @@ class Window(gtk.Window):
     def close_window(self):
         """
         Close the window. Send the destroy signal to the program.
+        
         @return: Always return False.
         """
         # Hide window immediately when user click close button,
@@ -310,7 +319,7 @@ class Window(gtk.Window):
         
     def motion_notify(self, widget, event):
         """
-        Motion-notify callback. It is invoked on each motion-notify-event signal.
+        Internal callback for `motion-notify` signal. 
 
         @param widget: A widget of gtk.Widget.
         @param event: The motion-notify-event of type gtk.gdk.Event
@@ -338,14 +347,16 @@ class Window(gtk.Window):
                 
     def is_disable_window_maximized(self):
         """
-        An interface which indicates whether the window could be maximized.
+        An interface which indicates whether the window could be maximized, you should implement this function you own.
         @return: Always return False.
         """
         return False                
                 
     def monitor_window_state(self, widget, event):
         """
-        Monitor window state, add shadow when window at maximized or fullscreen status. Otherwise hide shadow.
+        Internal function to monitor window state, 
+
+        add shadow when window at maximized or fullscreen status. Otherwise hide shadow.
 
         @param widget: The window of type gtk.Widget.
         @param event: The event of gtk.gdk.Event.
