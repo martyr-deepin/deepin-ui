@@ -22,5 +22,4 @@ thread_pool.py
 threads.py
 timeline.py
 treeview.py
-unique_service.py
 volume_button.py
