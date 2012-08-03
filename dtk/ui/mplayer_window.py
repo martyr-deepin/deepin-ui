@@ -37,15 +37,18 @@ class MplayerWindow(gtk.Window):
 
     Generally speaking, compared with Window class, it uses a different shadow mechanism.
 
+    @undocumented: adjust_window_shadow
     @undocumented: get_cursor_type
+    @undocumented: expose_window
+    @undocumented: shape_window
+    @undocumented: shape_window_frame
+    @undocumented: shape_window_shadow
     @undocumented: expose_window_background
     @undocumented: expose_window_shadow
     @undocumented: expose_window_frame
-    @undocumented: draw_mask
-    @undocumented: shape_window_frame
     @undocumented: motion_notify
-    @undocumented: resize_window
     @undocumented: double_click_window
+    @undocumented: monitor_window_state
     """
 	
     def __init__(self, enable_resize=False, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL):
@@ -102,7 +105,7 @@ class MplayerWindow(gtk.Window):
         
     def adjust_window_shadow(self, widget, event):
         """
-        Adjust postion and size of the shadow of the window.
+        Internal function to adjust postion and size of the shadow of the window.
 
         @param widget: the widget of type gtk.Widget.
         @param event: the event of gtk.gdk.Event.
@@ -127,7 +130,7 @@ class MplayerWindow(gtk.Window):
         
     def expose_window(self, widget, event):
         """
-        Expose the window.
+        Internal function to expose the window.
 
         @param widget: A window of type Gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
@@ -174,7 +177,15 @@ class MplayerWindow(gtk.Window):
         return True
     
     def draw_mask(self, cr, x, y, w, h):
-        '''Draw mask.'''
+        '''
+        Draw mask interface, you should implement it you own.
+        
+        @param cr: Cairo context.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         pass
     
     def set_window_shape(self, shape_flag):
@@ -188,7 +199,7 @@ class MplayerWindow(gtk.Window):
         
     def shape_window(self, widget, rect):
         """
-        Draw the shaped window.
+        Internal function to draw the shaped window.
 
         @param widget: A widget of type gtk.Widget.
         @param rect: The bounding region of the window.
@@ -233,7 +244,7 @@ class MplayerWindow(gtk.Window):
             
     def shape_window_shadow(self, widget, rect):
         """
-        Draw the shaped window's shadow.
+        Internal function to draw the shaped window's shadow.
 
         @param widget: A widget of type gtk.Widget.
         @param rect: The bounding region of the window.
@@ -284,7 +295,7 @@ class MplayerWindow(gtk.Window):
             
     def expose_window_shadow(self, widget, event):
         """
-        Expose the window shadow.
+        Internal fucntion to expose the window shadow.
 
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
@@ -322,7 +333,10 @@ class MplayerWindow(gtk.Window):
             self.window_shadow.show_all()
         
     def is_disable_window_maximized(self):
-        '''Disable window maximized.'''
+        """
+        An interface which indicates whether the window could be maximized, you should implement this function you own.
+        @return: Always return False.
+        """
         return False                
                 
     def monitor_window_state(self, widget, event):
@@ -413,7 +427,7 @@ class MplayerWindow(gtk.Window):
         
     def double_click_window(self, widget, event):
         """
-        Double click event handler of the window. It will maximize the window.
+        Internal function to double click event handler of the window. It will maximize the window.
 
         @param widget: A widget of type gtk.Widget.
         @param event: A event of type gtk.gdk.Event.
@@ -427,7 +441,7 @@ class MplayerWindow(gtk.Window):
             
     def motion_notify(self, widget, event):
         """
-        Motion-notify callback. It is invoked on each motion-notify-event signal.
+        Internal callback for `motion-notify-event` signal.
 
         @param widget: A widget of gtk.Widget.
         @param event: The motion-notify-event of type gtk.gdk.Event

@@ -4,7 +4,6 @@ group.py
 iconview.py
 menu.py
 mplayer_view.py
-mplayer_window.py
 navigatebar.py
 notebook.py
 osd_tooltip.py
@@ -25,4 +24,3 @@ timeline.py
 treeview.py
 unique_service.py
 volume_button.py
-window.py
