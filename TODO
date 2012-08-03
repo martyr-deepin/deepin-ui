@@ -1,6 +1,5 @@
 animation.py
 categorybar.py
-color_selection.py
 combo.py
 dialog.py
 dominant_color.py

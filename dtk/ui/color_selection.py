@@ -38,10 +38,14 @@ from utils import (gdkcolor_to_string, color_hex_to_cairo,
                    is_hex_color, place_center)
 
 class HSV(gtk.ColorSelection):
-    '''HSV.'''
+    '''
+    HSV widget that use deepin-ui widget instead Gtk.ColorSelection's child widget.
+    '''
 	
     def __init__(self):
-        '''Init color selection.'''
+        '''
+        Initialize HSV class.
+        '''
         gtk.ColorSelection.__init__(self)
         
         # Remove right buttons.
@@ -51,27 +55,40 @@ class HSV(gtk.ColorSelection):
         self.get_children()[0].get_children()[0].remove(self.get_children()[0].get_children()[0].get_children()[1])
         
     def get_hsv_widget(self):
-        '''Get HSV widget.'''
+        '''
+        Get hsv widget in Gtk.ColorSelection widget.
+        '''
         return self.get_children()[0].get_children()[0].get_children()[0]
     
     def get_color_string(self):
-        '''Get color string.'''
+        '''
+        Get color string.
+        '''
         return gdkcolor_to_string(self.get_current_color())
     
     def get_rgb_color(self):
-        '''Get rgb color.'''
+        '''
+        Get RGB color.
+        '''
         gdk_color = self.get_current_color()
         return (gdk_color.red / 256, gdk_color.green / 256, gdk_color.blue / 256)
     
 gobject.type_register(HSV)
 
 class ColorSelectDialog(DialogBox):
-    '''Color select dialog.'''
+    '''
+    ColorSelectionDialog widget.
+    '''
     
     DEFAULT_COLOR_LIST = ["#000000", "#808080", "#E20417", "#F29300", "#FFEC00", "#95BE0D", "#008F35", "#00968F", "#FFFFFF", "#C0C0C0", "#E2004E", "#E2007A", "#920A7E", "#162883", "#0069B2", "#009DE0"]
 	
     def __init__(self, confirm_callback=None, cancel_callback=None):
-        '''Init color select dialog.'''
+        '''
+        Initialize ColorSelectDialog class.
+        
+        @param confirm_callback: Callback when user click OK, this callback accept one argument, color string.
+        @param cancel_callback: Callback when user click cancel, this callback don't accept any argument.
+        '''
         DialogBox.__init__(self, _("Select color"), mask_type=DIALOG_MASK_SINGLE_PAGE)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
@@ -175,32 +192,48 @@ class ColorSelectDialog(DialogBox):
         self.update_color_info(self.color_string)
         
     def click_confirm_button(self):
-        '''Click confirm button.'''
+        '''
+        Wrap callback when user click ok button.
+        '''
         if self.confirm_callback != None:
             self.confirm_callback(self.color_hex_entry.get_text())
         
         self.destroy()
         
     def click_cancel_button(self):
-        '''Click cancel button.'''
+        '''
+        Wrap callback when user click cancel button.
+        '''
         if self.cancel_callback != None:
             self.cancel_callback()
         
         self.destroy()
         
     def click_rgb_spin(self):
-        '''Click rgb spin.'''
+        '''
+        Callback when user click RGB spin.
+        '''
         self.update_color_info(color_rgb_to_hex((self.color_r_spin.get_value(),
                                                  self.color_g_spin.get_value(),
                                                  self.color_b_spin.get_value())))        
         
     def press_return_color_entry(self, entry):
-        '''Press return on color entry.'''
+        '''
+        Callback when user press `return` key on entry.
+        
+        @param entry: Color input entry.
+        '''
         self.update_color_info(entry.get_text())
         entry.select_all()
         
     def expose_display_button(self, widget, event):
-        '''Expose display button.'''
+        '''
+        Callback for `expose-event` signal.
+        
+        @param widget: Gtk.Widget instance.
+        @param event: Expose event.
+        @return: Always return True        
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -215,7 +248,12 @@ class ColorSelectDialog(DialogBox):
         return True
         
     def update_color_info(self, color_string, clear_highlight=True):
-        '''Update color info.'''
+        '''
+        Update color information.
+
+        @param color_string: Hex color string.
+        @param clear_highlight: Whether clear color select view's highlight status, default is True.
+        '''
         self.color_string = color_string
         (self.color_r, self.color_g, self.color_b) = color_hex_to_rgb(self.color_string)
         self.color_r_spin.update(self.color_r)
@@ -234,14 +272,20 @@ class ColorSelectDialog(DialogBox):
 gobject.type_register(ColorSelectDialog)
 
 class ColorItem(gobject.GObject):
-    '''Icon item.'''
+    '''
+    ColorItem class for use in L{ I{ColorSelectDialog} <ColorSelectDialog>}.
+    '''
 	
     __gsignals__ = {
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
     def __init__(self, color):
-        '''Init item icon.'''
+        '''
+        Initialize ColorItem class.
+        
+        @param color: Hex color string.
+        '''
         gobject.GObject.__init__(self)
         self.color = color
         self.width = 20
@@ -252,19 +296,40 @@ class ColorItem(gobject.GObject):
         self.highlight_flag = False
         
     def emit_redraw_request(self):
-        '''Emit redraw-request signal.'''
+        '''
+        IconView interface function.
+        
+        Emit `redraw-request` signal.
+        '''
         self.emit("redraw-request")
         
     def get_width(self):
-        '''Get width.'''
+        '''
+        IconView interface function.
+        
+        Get item width.
+        @return: Return item width, in pixel.
+        '''
         return self.width + self.padding_x * 2
         
     def get_height(self):
-        '''Get height.'''
+        '''
+        IconView interface function.
+        
+        Get item height.
+        @return: Return item height, in pixel.
+        '''
         return self.height + self.padding_y * 2
     
     def render(self, cr, rect):
-        '''Render item.'''
+        '''
+        IconView interface function.
+        
+        Render item.
+        
+        @param cr: Cairo context.
+        @param rect: Render rectangle area.
+        '''
         # Init.
         draw_x = rect.x + self.padding_x
         draw_y = rect.y + self.padding_y
@@ -291,56 +356,95 @@ class ColorItem(gobject.GObject):
             cr.stroke()
             
     def icon_item_motion_notify(self, x, y):
-        '''Handle `motion-notify-event` signal.'''
+        '''
+        IconView interface function.
+        
+        Handle `motion-notify-event` signal.
+        
+        @param x: X coordinate that user motion on item.
+        @param y: Y coordinate that user motion on item.
+        '''
         self.hover_flag = True
         
         self.emit_redraw_request()
         
     def icon_item_lost_focus(self):
-        '''Lost focus.'''
+        '''
+        IconView interface function.
+        
+        Handle `lost-focus` signal.
+        '''
         self.hover_flag = False
         
         self.emit_redraw_request()
         
     def icon_item_highlight(self):
-        '''Highlight item.'''
+        '''
+        IconView interface function.
+        
+        Handle `highlight` signal.
+        '''
         self.highlight_flag = True
 
         self.emit_redraw_request()
         
     def icon_item_normal(self):
-        '''Set item with normal status.'''
+        '''
+        Normal icon item.
+        '''
         self.highlight_flag = False
         
         self.emit_redraw_request()
     
     def icon_item_button_press(self, x, y):
-        '''Handle button-press event.'''
+        '''
+        IconView interface function.
+        
+        Handle `button-press` signal.
+        '''
         pass
     
     def icon_item_button_release(self, x, y):
-        '''Handle button-release event.'''
+        '''
+        IconView interface function.
+        
+        Handle `button-release` signal.
+        '''
         pass
     
     def icon_item_single_click(self, x, y):
-        '''Handle single click event.'''
+        '''
+        IconView interface function.
+        
+        Handle `click` signal.
+        '''
         pass
 
     def icon_item_double_click(self, x, y):
-        '''Handle double click event.'''
+        '''
+        IconView interface function.
+        
+        Handle `double-click` signal.
+        '''
         pass
     
 gobject.type_register(ColorItem)
 
 class ColorButton(gtk.VBox):
-    '''Button.'''
+    '''
+    Button to select color.
+    '''
 	
     __gsignals__ = {
         "color-select" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
     def __init__(self, color="#FF0000"):
-        '''Init button.'''
+        '''
+        Initialize ColorButton class.
+        
+        @param color: Hex color string to initialize, default is \"#FF0000\".
+        '''
         gtk.VBox.__init__(self)
         self.button = gtk.Button()
         self.color = color
@@ -356,28 +460,50 @@ class ColorButton(gtk.VBox):
         self.button.connect("button-press-event", self.popup_color_selection_dialog)
         
     def popup_color_selection_dialog(self, widget, event):
-        '''Popup color selection dialog.'''
+        '''
+        Internal function to popup color selection dialog when user click on button.
+        
+        @param widget: ColorButton widget.
+        @param event: Button press event.
+        '''
         dialog = ColorSelectDialog(self.select_color)
         dialog.show_all()
         place_center(self.get_toplevel(), dialog)
         
     def select_color(self, color):
-        '''Select color.'''
+        '''
+        Select color.
+        
+        @param color: Hex color string.
+        '''
         self.set_color(color)
         self.emit("color-select", color)
         
     def set_color(self, color):
-        '''Set color.'''
+        '''
+        Internal function to set color.
+        
+        @param color: Hex color string.
+        '''
         self.color = color
         
         self.queue_draw()
         
     def get_color(self):
-        '''Get color.'''
+        '''
+        Get color.
+        
+        @return: Return hex color string.
+        '''
         return self.color
         
     def expose_button(self, widget, event):
-        '''Expose button.'''
+        '''
+        Internal function to handle `expose-event` signal.
+        
+        @param widget: ColorButton instance.
+        @param event: Expose event.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -385,19 +511,15 @@ class ColorButton(gtk.VBox):
         
         # Get color info.
         if widget.state == gtk.STATE_NORMAL:
-            text_color = ui_theme.get_color("button_font").get_color()
             border_color = ui_theme.get_color("button_border_normal").get_color()
             background_color = ui_theme.get_shadow_color("button_background_normal").get_color_info()
         elif widget.state == gtk.STATE_PRELIGHT:
-            text_color = ui_theme.get_color("button_font").get_color()
             border_color = ui_theme.get_color("button_border_prelight").get_color()
             background_color = ui_theme.get_shadow_color("button_background_prelight").get_color_info()
         elif widget.state == gtk.STATE_ACTIVE:
-            text_color = ui_theme.get_color("button_font").get_color()
             border_color = ui_theme.get_color("button_border_active").get_color()
             background_color = ui_theme.get_shadow_color("button_background_active").get_color_info()
         elif widget.state == gtk.STATE_INSENSITIVE:
-            text_color = ui_theme.get_color("disable_text").get_color()
             border_color = ui_theme.get_color("disable_frame").get_color()
             disable_background_color = ui_theme.get_color("disable_background").get_color()
             background_color = [(0, (disable_background_color, 1.0)),
