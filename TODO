@@ -4,7 +4,6 @@ frame.py
 group.py
 iconview.py
 label.py
-listview.py
 menu.py
 mplayer_view.py
 mplayer_window.py

@@ -62,7 +62,7 @@ class DialogLeftButtonBox(gtk.HBox):
         '''
         Set buttons in box.
 
-        @note: This functin will use new buttons <b>instead</b> old buttons in button box.
+        @note: This functin will use new buttons B{instead} old buttons in button box.
         
         @param buttons: A list of Gtk.Widget instance.
         '''
@@ -94,7 +94,7 @@ class DialogRightButtonBox(gtk.HBox):
         '''
         Set buttons in box.
 
-        @note: This functin will use new buttons <b>instead</b> old buttons in button box.
+        @note: This functin will use new buttons B{instead} old buttons in button box.
         
         @param buttons: A list of Gtk.Widget instance.
         '''
