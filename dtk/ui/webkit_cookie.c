@@ -1,6 +1,6 @@
 /* Copyright (C) 2012 Deepin, Inc.
- *               2012 Wang Yong
  *               2012 Xia Bin
+ *               2012 Wang Yong
  *
  * Author:     Xia Bin <xiabin@linuxdeepin.com>
  * Maintainer: Wang Yong <lazycat.manatee@gmail.com>

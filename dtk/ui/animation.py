@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
-#               2011 ~ 2012 Wang Yong
+#               2011 ~ 2012 Xia Bin
 # 
 # Author:     Xia Bin <xiabin@gmail.com>
 # Maintainer: Xia Bin <xiabin@gmail.com>
@@ -19,6 +19,7 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import copy
 import gobject
 
