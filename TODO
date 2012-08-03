@@ -2,7 +2,6 @@ entry.py
 group.py
 iconview.py
 menu.py
-navigatebar.py
 progressbar.py
 skin.py
 skin_config.py

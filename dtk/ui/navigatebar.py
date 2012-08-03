@@ -30,7 +30,11 @@ import gtk
 import pango
 
 class Navigatebar(EventBox):
-    '''Navigatebar.'''
+    '''
+    Navigatebar.
+    
+    @undocumented: expose_nav_separator.
+    '''
     
     def __init__(self, items, add_separator=False, font_size=DEFAULT_FONT_SIZE, 
                  padding_x=10, padding_y=10, 
@@ -38,7 +42,18 @@ class Navigatebar(EventBox):
                  item_hover_pixbuf=ui_theme.get_pixbuf("navigatebar/nav_item_hover.png"),
                  item_press_pixbuf=ui_theme.get_pixbuf("navigatebar/nav_item_press.png"),
                  ):
-        '''Init navigatebar.'''
+        '''
+        Initialize Navigatebar class.
+        
+        @param items: A list of navigate item, item format: (item_icon_dpixbuf, item_content, clicked_callback)
+        @param add_separator: Whether add separator between navigatebar and body, default is False.
+        @param font_size: Font size, default is DEFAULT_FONT_SIZE.
+        @param padding_x: Padding value horizontal.
+        @param padding_y: Padding value vertical.
+        @param vertical: Draw direction, default is vertical.
+        @param item_hover_pixbuf: Item hover dpixbuf.
+        @param item_press_pixbuf: Item press dpixbuf.
+        '''
         # Init event box.
         EventBox.__init__(self)
         self.nav_index = 0
@@ -66,23 +81,33 @@ class Navigatebar(EventBox):
         if add_separator:                
             self.separator = gtk.HBox()
             self.separator.set_size_request(-1, 2)
-            self.separator.connect("expose-event", self.expose_navseparator)
+            self.separator.connect("expose-event", self.expose_nav_separator)
             self.nav_box.pack_start(self.separator, False, False)
         
         # Show.
         self.show_all()
         
     def set_index(self, index):
-        '''Set index.'''
+        '''
+        Set selected item with given index.
+        
+        @param index: Item index.
+        '''
         self.nav_item_box.queue_draw()
         self.nav_index = index
         
     def get_index(self):
-        '''Get index.'''
+        '''
+        Get selected index.
+        
+        @return: Return selected item index.
+        '''
         return self.nav_index
     
-    def expose_navseparator(self, widget, event):
-        '''Expose nav separator.'''
+    def expose_nav_separator(self, widget, event):
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -99,14 +124,32 @@ class Navigatebar(EventBox):
 gobject.type_register(Navigatebar)
 
 class NavItem(object):
-    '''Navigate item.'''
+    '''
+    Navigate item.
+    
+    @undocumented: wrap_nav_item_clicked_action
+    @undocumented: expose_nav_item
+    '''
 	
     def __init__(self, element, index, font_size, padding_x, padding_y, 
                  vertical,
                  set_index, get_index,
                  item_hover_pixbuf,
                  item_press_pixbuf):
-        '''Init navigate item.'''
+        '''
+        Initialize NavItem class.
+        
+        @param element: Item format: (item_icon_dpixbuf, item_content, clicked_callback)
+        @param index: Item index.
+        @param font_size: Font size.
+        @param padding_x: Padding value horizontal.
+        @param padding_y: Padding value vertical.
+        @param vertical: Draw direction.
+        @param set_index: Set index callback.
+        @param get_index: Get index callback.
+        @param item_hover_pixbuf: Item hover pixbuf.
+        @param item_press_pixbuf: Item press pixbuf.
+        '''
         # Init.
         self.index = index
         self.font_size = font_size
@@ -134,13 +177,17 @@ class NavItem(object):
         self.item_box.add(self.item_button)
 
     def wrap_nav_item_clicked_action(self):
-        '''Wrap clicked action.'''
+        '''
+        Internal function to wrap clicked action.
+        '''
         if self.clicked_callback:
             self.clicked_callback()
         self.set_index(self.index)
         
     def expose_nav_item(self, widget, event):
-        '''Expose navigate item.'''
+        '''
+        Internal callback `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
