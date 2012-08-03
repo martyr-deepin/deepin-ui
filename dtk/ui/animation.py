@@ -30,7 +30,6 @@ def LinerInterpolator(factor, lower, upper):
     @param factor: the current factor
     @param lower: the init lower value
     @param lower:  the init upper value
-
     @return: the calculated value
     '''
     return factor * (upper - lower)
@@ -40,7 +39,6 @@ def RandomInterpolator(base, offset, *args):
 
     @param base: the base value used to calculate result value
     @param offset: the offset apply to base.
-
     @return: the random value based on 'base' and 'offset'
     '''
 
@@ -51,11 +49,15 @@ def RandomInterpolator(base, offset, *args):
 class Animation:
     '''
     The animation class used to convenient production special effects.
+    
+    @undocumented: init
+    @undocumented: init_all
+    @undocumented: compute
     '''
     def __init__(self, widgets, property, duration, ranges, interpolator=LinerInterpolator,
                  stop_callback=None):
         '''
-        Init animation class
+        Initialize Animation class.
 
         @param widgets: the widgets apply to this animation. the type of
         this param is an gtk.Widget or an list of gtk.Widget.
@@ -65,11 +67,8 @@ class Animation:
         is millisecond
         @param ranges: the range of the property's value. the type of this param
         is an [lower,upper] or ([lower, upper], [lower,upper]), this is decsion by the parameter of the 'widget' or 'widgets'.
-        @param interpolator: this is an function used to calculate the property
-    value by the current time and value range.
+        @param interpolator: this is an function used to calculate the property value by the current time and value range.
         @param stop_callback: the callback when this animation stop.
-
-
         '''
         self.stop_callback = stop_callback
         self.delay = 50
@@ -117,9 +116,9 @@ class Animation:
 
     def set_delay(self, delay):
         '''
-        set the delay time of before the start do effect.
+        Set the delay time of before the start do effect.
 
-        @params delay: the time of dealy, unit of time is millisecond
+        @param delay: the time of dealy, unit of time is millisecond
         '''
         self.delay = delay
 
@@ -129,6 +128,7 @@ class Animation:
         else:
             self.set_method(values)
         self.time = 0
+        
     def init_all(self, values):
         if isinstance(values, list):
             values.reverse()
@@ -144,7 +144,7 @@ class Animation:
         Start the animation after the dealy time.
         or you can use Animation.set_delay function.
 
-        @params delay: the time of dealy, unit of time is millisecond
+        @param time: the time of dealy, unit of time is millisecond
         '''
         if self.start_id:
             gobject.source_remove(self.start_id)
@@ -152,10 +152,9 @@ class Animation:
         for o in self.other_concurent:
             o.start_after(time)
 
-
     def start(self):
         '''
-        start the animation object
+        Start the animation object.
         '''
         self.time = 0
         self.animation_id = gobject.timeout_add(self.delay, self.compute)
