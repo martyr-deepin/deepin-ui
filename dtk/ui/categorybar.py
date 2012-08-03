@@ -29,10 +29,16 @@ import gobject
 import gtk
 
 class Categorybar(EventBox):
-    '''Categorybar.'''
+    '''
+    Categorybar.
+    '''
 	
     def __init__(self, items, font_size=DEFAULT_FONT_SIZE, padding_left=20, padding_middle=10, padding_right=25):
-        '''Init categorybar.'''
+        '''
+        Initialize Categorybar class.
+        
+        @param items: Category item, 
+        '''
         # Init event box.
         super(Categorybar, self).__init__()
         self.category_index = 0
@@ -57,12 +63,20 @@ class Categorybar(EventBox):
         self.show_all()        
         
     def set_index(self, index):
-        '''Set index.'''
+        '''
+        Set selected item index.
+        
+        @param index: Index of selected item.
+        '''
         self.category_item_box.queue_draw()
         self.category_index = index
         
     def get_index(self):
-        '''Get index.'''
+        '''
+        Get selected index.
+        
+        @return: Return selected item index.
+        '''
         return self.category_index
         
     def get_icon_width(self, items):
