@@ -24,13 +24,22 @@ import gobject
 import gtk
 
 class MplayerView(gtk.DrawingArea):
-    '''Mplayer view.'''
+    '''
+    View to offer a drawing area for mplayer.
+    
+    MplayerView default disable double buffered to avoid video blinking when mplayer draw on it.
+    
+    @undocumented: realize_mplayer_view
+    '''
+    
     __gsignals__ = {
         "get-xid" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (long,))
     }
 	
     def __init__(self):
-        '''Init mplayer view.'''
+        '''
+        Initialize MplayerView class.
+        '''
         # Init.
         gtk.DrawingArea.__init__(self)
         self.unset_flags(gtk.DOUBLE_BUFFERED) # disable double buffered to avoid video blinking
@@ -39,7 +48,9 @@ class MplayerView(gtk.DrawingArea):
         self.connect("realize", self.realize_mplayer_view)
 
     def realize_mplayer_view(self, widget):
-        '''Realize mplayer view.'''
+        '''
+        Internal callback for `realize` signal.
+        '''
         if self.get_window() and self.get_window().xid:
             self.emit("get-xid", self.get_window().xid)
         

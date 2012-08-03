@@ -3,7 +3,6 @@ frame.py
 group.py
 iconview.py
 menu.py
-mplayer_view.py
 navigatebar.py
 progressbar.py
 scalebar.py
@@ -16,5 +15,4 @@ theme.py
 thread_pool.py
 threads.py
 timeline.py
-treeview.py
 volume_button.py
