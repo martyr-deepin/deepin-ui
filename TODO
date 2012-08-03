@@ -4,7 +4,6 @@ iconview.py
 menu.py
 navigatebar.py
 progressbar.py
-scalebar.py
 skin.py
 skin_config.py
 slider.py

@@ -27,7 +27,12 @@ import gobject
 import gtk
 
 class HScalebar(gtk.HScale):
-    '''Scalebar.'''
+    '''
+    HScalebar.
+    
+    @undocumented: expose_h_scalebar
+    @undocumented: press_volume_progressbar
+    '''
 	
     def __init__(self,
                  left_fg_dpixbuf,
@@ -38,7 +43,17 @@ class HScalebar(gtk.HScale):
                  right_bg_dpixbuf,
                  point_dpixbuf
                  ):
-        '''Init scalebar.'''
+        '''
+        Init HScalebar class.
+        
+        @param left_fg_dpixbuf: Left foreground pixbuf.
+        @param left_bg_dpixbuf: Left background pixbuf.
+        @param middle_fg_dpixbuf: Middle foreground pixbuf.
+        @param middle_bg_dpixbuf: Middle background pixbuf.
+        @param right_fg_dpixbuf: Right foreground pixbuf.
+        @param right_bg_dpixbuf: Right background pixbuf.
+        @param point_dpixbuf: Pointer pixbuf.
+        '''
         # Init.
         gtk.HScale.__init__(self)
         self.set_draw_value(False)
@@ -61,7 +76,9 @@ class HScalebar(gtk.HScale):
         self.connect("button-press-event", self.press_volume_progressbar)
         
     def expose_h_scalebar(self, widget, event):
-        '''Callback for `expose-event` event.'''
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -106,7 +123,9 @@ class HScalebar(gtk.HScale):
         return True        
 
     def press_volume_progressbar(self, widget, event):
-        '''Press volume progressbar.'''
+        '''
+        Internal callback for `button-press-event` signal.
+        '''
         # Init.
         if is_left_button(event):
             rect = widget.allocation
@@ -123,7 +142,12 @@ class HScalebar(gtk.HScale):
 gobject.type_register(HScalebar)
 
 class VScalebar(gtk.VScale):
-    '''Vscalebar.'''
+    '''
+    VScalebar.
+    
+    @undocumented: expose_v_scalebar
+    @undocumented: press_progressbar
+    '''
     
     def __init__(self,
                  upper_fg_dpixbuf,
@@ -134,7 +158,17 @@ class VScalebar(gtk.VScale):
                  bottom_bg_dpixbuf,
                  point_dpixbuf,
                  ):
+        '''
+        Initialize VScalebar class.
         
+        @param upper_fg_dpixbuf: Upper foreground pixbuf.
+        @param upper_bg_dpixbuf: Upper background pixbuf.
+        @param middle_fg_dpixbuf: Middle foreground pixbuf.
+        @param middle_bg_dpixbuf: Middle background pixbuf.
+        @param bottom_fg_dpixbuf: Bottom foreground pixbuf.
+        @param bottom_bg_dpixbuf: Bottom background pixbuf.
+        @param point_dpixbuf: Pointer pixbuf.
+        '''
         gtk.VScale.__init__(self)
 
         self.set_draw_value(False)
@@ -157,6 +191,9 @@ class VScalebar(gtk.VScale):
         self.connect("button-press-event", self.press_progressbar)
         
     def expose_v_scalebar(self, widget, event):    
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
@@ -202,6 +239,9 @@ class VScalebar(gtk.VScale):
         return True
         
     def press_progressbar(self, widget, event):
+        '''
+        Internal callback for `button-press-event` signal.
+        '''
         if is_left_button(event):
             rect = widget.allocation
             lower_value = self.get_adjustment().get_lower()
@@ -213,9 +253,15 @@ class VScalebar(gtk.VScale):
         return False    
     
     def set_has_point(self, value):
+        '''
+        Set has point.
+        '''
         self.__has_point = value
         
     def get_has_point(self):    
+        '''
+        Get has point.
+        '''
         return self.__has_point
     
 gobject.type_register(VScalebar)        
