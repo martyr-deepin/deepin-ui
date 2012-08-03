@@ -12,9 +12,7 @@ osd_tooltip.py
 paned.py
 panel.py
 progressbar.py
-pseudo_skin.py
 scalebar.py
-scrolled_window.py
 skin.py
 skin_config.py
 slider.py

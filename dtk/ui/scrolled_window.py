@@ -35,19 +35,51 @@ __all__ = ['ScrolledWindow']
 #       the *bar_len* =  (adj.page_size / adj.upper) * allocation.width/height
 # by this processing, 0~(adj.upper-adj.page_size) will be mapped to 0~p_range.
 def value2pos(value, p_range, upper):
-    '''compute the scrollbar position by the adjustment value'''
+    '''
+    Compute the scrollbar position by the adjustment value.
+    '''
     if upper == 0: return 0
     return p_range * float(value) / upper
 
 def pos2value(pos, p_range, upper):
-    '''compute the adjustment value by the scrollbar position'''
+    '''
+    Compute the adjustment value by the scrollbar position.
+    '''
     if p_range == 0 : return 0
     return pos * upper / p_range
 
 class ScrolledWindow(gtk.Bin):
     '''
     The scrolled window with deepin's custom scrollbar.
-    Be careful
+    
+    @undocumented: do_expose_event
+    @undocumented: draw_vbar
+    @undocumented: draw_hbar
+    @undocumented: do_button_release_event
+    @undocumented: make_bar_smaller
+    @undocumented: make_bar_bigger
+    @undocumented: do_scroll_event
+    @undocumented: do_leave_notify_event
+    @undocumented: do_enter_notify_event
+    @undocumented: do_motion_notify_event
+    @undocumented: calc_vbar_length
+    @undocumented: calc_vbar_allocation
+    @undocumented: calc_hbar_length
+    @undocumented: calc_hbar_allocation
+    @undocumented: vadjustment_changed
+    @undocumented: hadjustment_changed
+    @undocumented: do_add
+    @undocumented: do_size_request
+    @undocumented: do_size_allocate
+    @undocumented: update_scrollbar
+    @undocumented: do_unrealize
+    @undocumented: do_realize
+    @undocumented: set_shadow_type
+    @undocumented: set_policy
+    @undocumented: do_map
+    @undocumented: do_unmap
+    @undocumented: do_remove
+    @undocumented: _test_calc
     '''
 
     def __init__(self, right_space=2, top_bottom_space=3):
