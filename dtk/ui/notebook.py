@@ -28,7 +28,12 @@ from utils import get_content_size, propagate_expose
 import gtk
 
 class Notebook(gtk.EventBox):
-    '''Notebook.'''
+    '''
+    Notebook.
+    
+    @undocumented: calculate_tab_width
+    @undocumented: expose_notebook
+    '''
 	
     def __init__(self,
                  items,
@@ -39,7 +44,17 @@ class Notebook(gtk.EventBox):
                  background_middle_pixbuf = ui_theme.get_pixbuf("notebook/background_middle.png"),
                  background_right_pixbuf = ui_theme.get_pixbuf("notebook/background_right.png"),
                  ):
-        '''Init notebook.'''
+        '''
+        Initialize Notebook class.
+        
+        @param items: Notebook item, foramt (item_icon, item_content, item_callback).
+        @param foreground_left_pixbuf: Left foreground pixbuf.
+        @param foreground_middle_pixbuf: Middle foreground pixbuf.
+        @param foreground_right_pixbuf: Right foreground pixbuf.
+        @param background_left_pixbuf: Left background pixbuf.
+        @param background_middle_pixbuf: Middle background pixbuf.
+        @param background_right_pixbuf: Right background pixbuf.
+        '''
         # Init.
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
@@ -68,7 +83,9 @@ class Notebook(gtk.EventBox):
         self.connect("button-press-event", self.button_press_notebook)
         
     def calculate_tab_width(self):
-        '''Calculate tab width.'''
+        '''
+        Internal function to calculate tab width.
+        '''
         self.icon_width = 0
         max_tab_content_width = 0
         for (item_icon, item_content, item_callback) in self.items:
@@ -89,7 +106,12 @@ class Notebook(gtk.EventBox):
         return (tab_width, tab_image_height)
                 
     def expose_notebook(self, widget, event):
-        '''Expose notebook.'''
+        '''
+        Internal callback for `expose-event` signal.
+        
+        @param widget: Notebook wiget.
+        @param event: Expose event.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -171,7 +193,12 @@ class Notebook(gtk.EventBox):
         return True
     
     def button_press_notebook(self, widget, event):
-        '''Button press notebook.'''
+        '''
+        Internal callback for `button-press-event` signal.
+
+        @param widget: Notebook widget.
+        @param event: Button press event.
+        '''
         # Get tab index.
         tab_index = int(event.x / self.tab_width)
         if tab_index < len(self.items):
