@@ -41,10 +41,14 @@ DIALOG_MASK_MULTIPLE_PAGE = 2
 DIALOG_MASK_TAB_PAGE = 3
 
 class DialogLeftButtonBox(gtk.HBox):
-    '''Dialog button box.'''
+    '''
+    HBox to handle left side buttons in DialogBox.
+    '''
 	
     def __init__(self):
-        '''Init dialog button box.'''
+        '''
+        Initialize DialogLeftButtonBox class.
+        '''
         gtk.HBox.__init__(self)
         self.button_align = gtk.Alignment()
         self.button_align.set(0.0, 0.5, 0, 0)
@@ -55,7 +59,13 @@ class DialogLeftButtonBox(gtk.HBox):
         self.pack_start(self.button_align, True, True)
 
     def set_buttons(self, buttons):
-        '''Add buttons.'''
+        '''
+        Set buttons in box.
+
+        @note: This functin will use new buttons <b>instead</b> old buttons in button box.
+        
+        @param buttons: A list of Gtk.Widget instance.
+        '''
         container_remove_all(self.button_box)
         for button in buttons:
             self.button_box.pack_start(button, False, False, 4)
@@ -63,10 +73,14 @@ class DialogLeftButtonBox(gtk.HBox):
 gobject.type_register(DialogLeftButtonBox)
 
 class DialogRightButtonBox(gtk.HBox):
-    '''Dialog button box.'''
+    '''
+    HBox to handle right side buttons in DialogBox.
+    '''
 	
     def __init__(self):
-        '''Init dialog button box.'''
+        '''
+        Initialize DialogRightButtonBox class.
+        '''
         gtk.HBox.__init__(self)
         self.button_align = gtk.Alignment()
         self.button_align.set(1.0, 0.5, 0, 0)
@@ -77,7 +91,13 @@ class DialogRightButtonBox(gtk.HBox):
         self.pack_start(self.button_align, True, True)
 
     def set_buttons(self, buttons):
-        '''Add buttons.'''
+        '''
+        Set buttons in box.
+
+        @note: This functin will use new buttons <b>instead</b> old buttons in button box.
+        
+        @param buttons: A list of Gtk.Widget instance.
+        '''
         container_remove_all(self.button_box)
         for button in buttons:
             self.button_box.pack_start(button, False, False, 4)
@@ -85,7 +105,16 @@ class DialogRightButtonBox(gtk.HBox):
 gobject.type_register(DialogRightButtonBox)
 
 class DialogBox(Window):
-    '''Dialog box.'''
+    '''
+    Dialog box to standard dialog layout and ui detail.
+    
+    If you want build a dialog, you should use this standard.
+    
+    @undocumented: draw_mask_single_page
+    @undocumented: draw_mask_glass_page
+    @undocumented: draw_mask_multiple_page
+    @undocumented: draw_mask_tab_page
+    '''
 	
     def __init__(self, title, default_width=None, default_height=None, mask_type=None, 
                  close_callback=None,
@@ -94,7 +123,18 @@ class DialogBox(Window):
                  window_pos=None,
                  skip_taskbar_hint=True,
                  resizable=False):
-        '''Dialog box.'''
+        '''
+        Initialize DialogBox class.
+        
+        @param title: Dialog title.
+        @param default_width: Width of dialog, default is None.
+        @param default_height: Height of dialog, default is None.
+        @param mask_type: Background mask type, it allow use below type:
+         - DIALOG_MASK_SINGLE_PAGE      single mask style, use in single page that background mask include dialog button area.
+         - DIALOG_MASK_GLASS_PAGE       glass mask style, similar DIALOG_MASK_SINGLE_PAGE but with different color.
+         - DIALOG_MASK_MULTIPLE_PAGE    multiple mask style, use in multiple page that background mask not include dialog button area.
+         - DIALOG_MASK_TAB_PAGE         tab mask style, use in preference page that background mask not include button area.
+        '''
         Window.__init__(self, resizable)
         self.default_width = default_width
         self.default_height = default_height
@@ -146,7 +186,15 @@ class DialogBox(Window):
         self.draw_mask = self.get_mask_func(self, 1, 1, 0, 1)
         
     def get_mask_func(self, widget, padding_left=0, padding_right=0, padding_top=0, padding_bottom=0):
-        '''Get mask function.'''
+        '''
+        Get mask function to render background, you can use this function to return \"render function\" to draw your ui to keep same style.
+
+        @param widget: DialogBox widget.
+        @param padding_left: Padding at left side. 
+        @param padding_right: Padding at right side. 
+        @param padding_top: Padding at top side. 
+        @param padding_bottom: Padding at bottom side. 
+        '''
         if self.mask_type == DIALOG_MASK_SINGLE_PAGE:
             return lambda cr, x, y, w, h: draw_mask(
                 widget, x + padding_left, 
@@ -184,7 +232,15 @@ class DialogBox(Window):
                 draw_blank_mask)
         
     def draw_mask_single_page(self, cr, x, y, w, h):
-        '''Draw make for single page type.'''
+        '''
+        Internal render function for DIALOG_MASK_SINGLE_PAGE type.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         top_height = 70
         
         draw_vlinear(
@@ -198,7 +254,15 @@ class DialogBox(Window):
             )
 
     def draw_mask_glass_page(self, cr, x, y, w, h):
-        '''Draw make for glass page type.'''
+        '''
+        Internal render function for DIALOG_MASK_GLASS_PAGE type.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         top_height = 70
         
         draw_vlinear(
@@ -212,7 +276,15 @@ class DialogBox(Window):
             )
         
     def draw_mask_multiple_page(self, cr, x, y, w, h):
-        '''Draw make for multiple page type.'''
+        '''
+        Internal render function for DIALOG_MASK_MULTIPLE_PAGE type.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         titlebar_height = self.titlebar.get_allocation().height
         button_box_height = self.right_button_box.get_allocation().height
         dominant_color = skin_config.dominant_color
@@ -233,7 +305,15 @@ class DialogBox(Window):
             )
 
     def draw_mask_tab_page(self, cr, x, y, w, h):
-        '''Draw make for tab page type.'''
+        '''
+        Internal render function for DIALOG_MASK_TAB_PAGE type.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         button_box_height = self.right_button_box.get_allocation().height
         dominant_color = skin_config.dominant_color
         
@@ -250,7 +330,12 @@ class DialogBox(Window):
 gobject.type_register(DialogBox)
 
 class ConfirmDialog(DialogBox):
-    '''Confir dialog.'''
+    '''
+    Simple message confirm dialog.
+    
+    @undocumented: click_confirm_button
+    @undocumented: click_cancel_button
+    '''
 	
     def __init__(self, 
                  title, 
@@ -259,7 +344,16 @@ class ConfirmDialog(DialogBox):
                  default_height=145,
                  confirm_callback=None, 
                  cancel_callback=None):
-        '''Init confirm dialog.'''
+        '''
+        Initialize ConfirmDialog class.
+        
+        @param title: Title for confirm dialog.
+        @param message: Confirm message.
+        @param default_width: Dialog width, default is 330 pixel.
+        @param default_height: Dialog height, default is 145 pixel.
+        @param confirm_callback: Callback when user click confirm button.
+        @param cancel_callback: Callback when user click cancel button.
+        '''
         # Init.
         DialogBox.__init__(self, title, default_width, default_height, DIALOG_MASK_SINGLE_PAGE)
         self.confirm_callback = confirm_callback
@@ -283,14 +377,18 @@ class ConfirmDialog(DialogBox):
         self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
     def click_confirm_button(self):
-        '''Click confirm button.'''
+        '''
+        Internal function to handle click confirm button.
+        '''
         if self.confirm_callback != None:
             self.confirm_callback()        
         
         self.destroy()
         
     def click_cancel_button(self):
-        '''Click cancel button.'''
+        '''
+        Internal function to handle click cancel button.
+        '''
         if self.cancel_callback != None:
             self.cancel_callback()
         
@@ -299,7 +397,12 @@ class ConfirmDialog(DialogBox):
 gobject.type_register(ConfirmDialog)
 
 class InputDialog(DialogBox):
-    '''Input dialog.'''
+    '''
+    Simple input dialog.
+    
+    @undocumented: click_confirm_button
+    @undocumented: click_cancel_button
+    '''
 	
     def __init__(self, 
                  title, 
@@ -308,7 +411,16 @@ class InputDialog(DialogBox):
                  default_height=145,
                  confirm_callback=None, 
                  cancel_callback=None):
-        '''Init confirm dialog.'''
+        '''
+        Initialize InputDialog class.
+        
+        @param title: Input dialog title.
+        @param init_text: Initialize input text.
+        @param default_width: Width of dialog, default is 330 pixel.
+        @param default_height: Height of dialog, default is 330 pixel.
+        @param confirm_callback: Callback when user click confirm button, this callback accept one argument that return by user input text.
+        @param cancel_callback: Callback when user click cancel button, this callback not need argument.
+        '''
         # Init.
         DialogBox.__init__(self, title, default_width, default_height, DIALOG_MASK_SINGLE_PAGE)
         self.confirm_callback = confirm_callback
@@ -334,18 +446,26 @@ class InputDialog(DialogBox):
         self.connect("show", self.focus_input)
         
     def focus_input(self, widget):
-        '''Focus input.'''
+        '''
+        Grab focus on input entry.
+        
+        @param widget: InputDialog widget.
+        '''
         self.entry.entry.grab_focus()        
         
     def click_confirm_button(self):
-        '''Click confirm button.'''
+        '''
+        Inernal fucntion to handle click confirm button.
+        '''
         if self.confirm_callback != None:
             self.confirm_callback(self.entry.get_text())        
         
         self.destroy()
         
     def click_cancel_button(self):
-        '''Click cancel button.'''
+        '''
+        Inernal fucntion to handle click cancel button.
+        '''
         if self.cancel_callback != None:
             self.cancel_callback()
         
@@ -354,10 +474,19 @@ class InputDialog(DialogBox):
 gobject.type_register(InputDialog)
 
 class OpenFileDialog(gtk.FileChooserDialog):
-    '''Open file dialog.'''
+    '''
+    Simple dialog to open file.
+    '''
 	
     def __init__(self, title, parent, ok_callback=None, cancel_callback=None):
-        '''Open file dialog.'''
+        '''
+        Initialize OpenFileDialog class.
+        
+        @param title: Dialog title.
+        @param parent: Parent widget to call open file dialog.
+        @param ok_callback: Callback when user click ok button, this function accept one argument: filename.
+        @param cancel_callback: Callback when user click cancel button, this function accept one argument: filename.
+        '''
         gtk.FileChooserDialog.__init__(
             self,
             title,
@@ -381,10 +510,19 @@ class OpenFileDialog(gtk.FileChooserDialog):
 gobject.type_register(OpenFileDialog)
         
 class SaveFileDialog(gtk.FileChooserDialog):
-    '''Save file dialog.'''
+    '''
+    Simple dialog to save file.
+    '''
 	
     def __init__(self, title, parent, ok_callback=None, cancel_callback=None):
-        '''Save file dialog.'''
+        '''
+        Initialize SaveFileDialog class.
+        
+        @param title: Dialog title.
+        @param parent: Parent widget to call open file dialog.
+        @param ok_callback: Callback when user click ok button, this function accept one argument: filename.
+        @param cancel_callback: Callback when user click cancel button, this function accept one argument: filename.
+        '''
         gtk.FileChooserDialog.__init__(
             self,
             title,
