@@ -24,10 +24,20 @@ import gobject
 import gtk
 
 class HorizontalFrame(gtk.Alignment):
-    '''Horizontal frame to padding 1 pixel round child.'''
+    '''
+    Horizontal frame to padding 1 pixel round child.
+    '''
 	
     def __init__(self, padding=1, xalign=0.0, yalign=0.0, xscale=1.0, yscale=1.0):
-        '''Init horizontal frame.'''
+        '''
+        Initialize HorizontalFrame class.
+        
+        @param padding: Padding value.
+        @param xalign: The fraction of horizontal free space to the left of the child widget. Ranges from 0.0 to 1.0.
+        @param yalign: The fraction of vertical free space above the child widget. Ranges from 0.0 to 1.0.
+        @param xscale: The fraction of horizontal free space that the child widget absorbs, from 0.0 to 1.0.
+        @param yscale: The fraction of vertical free space that the child widget absorbs, from 0.0 to 1.0.
+        '''
         # Init.
         gtk.Alignment.__init__(self)
         self.set(xalign, yalign, xscale, yscale)
@@ -36,10 +46,20 @@ class HorizontalFrame(gtk.Alignment):
 gobject.type_register(HorizontalFrame)
 
 class VerticalFrame(gtk.Alignment):
-    '''Vertical frame to padding 1 pixel round child.'''
+    '''
+    Vertical frame to padding 1 pixel round child.
+    '''
 	
     def __init__(self, padding=1, xalign=0.0, yalign=0.0, xscale=1.0, yscale=1.0):
-        '''Init horizontal frame.'''
+        '''
+        Initialize VerticalFrame class.
+        
+        @param padding: Padding value.
+        @param xalign: The fraction of horizontal free space to the left of the child widget. Ranges from 0.0 to 1.0.
+        @param yalign: The fraction of vertical free space above the child widget. Ranges from 0.0 to 1.0.
+        @param xscale: The fraction of horizontal free space that the child widget absorbs, from 0.0 to 1.0.
+        @param yscale: The fraction of vertical free space that the child widget absorbs, from 0.0 to 1.0.
+        '''
         # Init.
         gtk.Alignment.__init__(self)
         self.set(xalign, yalign, xscale, yscale)
