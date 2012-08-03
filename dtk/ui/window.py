@@ -33,10 +33,16 @@ from utils import (cairo_state, propagate_expose, set_cursor,
                    is_double_click, move_window)
 
 class Window(gtk.Window):
-    '''Window.'''
-	
+    """
+    The Window class is a subclass of gtk.Window. It adds some features that deepin-ui have to gtk.Window.
+    """
     def __init__(self, enable_resize=False, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL, shadow_visible=True):
         '''Init window.'''
+        """
+        Initialise the Window class.
+
+        @param enable_resize
+        """
         # Init.
         gtk.Window.__init__(self, window_type)
         skin_config.wrap_skin_window(self)
