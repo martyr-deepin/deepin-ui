@@ -13,5 +13,4 @@ statusbar.py
 theme.py
 thread_pool.py
 threads.py
-timeline.py
 volume_button.py

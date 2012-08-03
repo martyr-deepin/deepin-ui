@@ -28,6 +28,9 @@ CURVE_SINE = lambda x: math.sin(math.pi / 2 * x)
 FRAMERATE = 30.0
 
 class Timeline(gobject.GObject):
+    '''
+    Timeline.
+    '''
 
     __gtype_name__ = 'Timeline'
     __gsignals__ = {
@@ -36,6 +39,12 @@ class Timeline(gobject.GObject):
         }
 
     def __init__(self, duration, curve):
+        '''
+        Initialize Timeline class.
+
+        @param duration: Animation duration. 
+        @param curve: Animation curve.
+        '''
         gobject.GObject.__init__(self)
 
         self.duration = duration
@@ -45,7 +54,9 @@ class Timeline(gobject.GObject):
         self._stopped = False
 
     def run(self):
-
+        '''
+        Run.
+        '''
         n_frames = (self.duration / 1000.0) * FRAMERATE
 
         while len(self._states) <= n_frames:
@@ -55,9 +66,15 @@ class Timeline(gobject.GObject):
         gobject.timeout_add(int(self.duration / n_frames), self.update)
 
     def stop(self):
+        '''
+        Stop.
+        '''
         self._stopped = True
 
     def update(self):
+        '''
+        Update.
+        '''
         if self._stopped:
             self.emit('completed')
             return False
