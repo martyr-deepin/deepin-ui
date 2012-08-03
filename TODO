@@ -5,7 +5,6 @@ group.py
 iconview.py
 label.py
 listview.py
-listview_preview_pixbuf.py
 menu.py
 mplayer_view.py
 mplayer_window.py

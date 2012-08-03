@@ -30,7 +30,13 @@ import sys
 from draw import draw_vlinear, draw_text
 
 def render_pixbuf(widget, event, input_args):
-    '''Render pixbuf.'''
+    '''
+    Render and save pixbuf.
+    
+    @param widget: Gtk.Widget instance.
+    @param event: Expose event.
+    @param input_args: Input arguments as format: (select_num, vlinear_color, text_color, filepath).
+    '''
     # Init.
     (select_num, vlinear_color, text_color, filepath) = input_args
     
