@@ -36,15 +36,15 @@ class Window(gtk.Window):
     """
     The Window class is a subclass of gtk.Window. It adds some features that deepin-ui have to gtk.Window.
 
-    @undocumented get_cursor_type
-    @undocumented expose_window_background
-    @undocumented expose_window_shadow
-    @undocumented expose_window_frame
-    @undocumented draw_mask
-    @undocumented shape_window_frame
-    @undocumented motion_notify
-    @undocumented resize_window
-    @undocumented double_click_window
+    @undocumented: get_cursor_type
+    @undocumented: expose_window_background
+    @undocumented: expose_window_shadow
+    @undocumented: expose_window_frame
+    @undocumented: draw_mask
+    @undocumented: shape_window_frame
+    @undocumented: motion_notify
+    @undocumented: resize_window
+    @undocumented: double_click_window
     """
     def __init__(self, enable_resize=False, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL, shadow_visible=True):
         """

@@ -32,10 +32,30 @@ from utils import (cairo_state, propagate_expose, resize_window,
                    is_double_click, move_window)
 
 class MplayerWindow(gtk.Window):
-    '''Window for mplayer or any software that can't running when window redirect colormap from screen.'''
+    """
+    Special Window class for mplayer.
+
+    Generally speaking, compared with Window class, it uses a different shadow mechanism.
+
+    @undocumented get_cursor_type
+    @undocumented expose_window_background
+    @undocumented expose_window_shadow
+    @undocumented expose_window_frame
+    @undocumented draw_mask
+    @undocumented shape_window_frame
+    @undocumented motion_notify
+    @undocumented resize_window
+    @undocumented double_click_window
+    """
 	
     def __init__(self, enable_resize=False, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL):
-        '''Init mplayer window.'''
+        """
+        Initialise the Window class.
+
+        @param enable_resize: If True, the window will be set resizable. By default, it's False.
+        @param shadow_radius: The radius of the shadow.
+        @param window_type: A flag of type gtk._gtk.WindowType, which indicates the type of the window. By default, it's gtk.WINDOW_TOPLEVEL.
+        """
         # Init.
         gtk.Window.__init__(self, window_type)
         skin_config.wrap_skin_window(self)
@@ -81,7 +101,12 @@ class MplayerWindow(gtk.Window):
             self.window_shadow.connect("motion-notify-event", self.motion_notify)
         
     def adjust_window_shadow(self, widget, event):
-        '''Adjust window shadow position and size. '''
+        """
+        Adjust postion and size of the shadow of the window.
+
+        @param widget: the widget of type gtk.Widget.
+        @param eventh
+        """
         if enable_shadow(self) and self.shadow_visible:    
             (x, y) = self.get_position()
             (width, height) = self.get_size()
