@@ -32,7 +32,18 @@ from utils import (propagate_expose, cairo_disable_antialias,
                    WIDGET_POS_BOTTOM_LEFT, alpha_color_hex_to_cairo)
 
 class ComboBox(gtk.VBox):
-    '''Combo box.'''
+    '''
+    ComboBox class.
+    
+    @undocumented: focus_in_combo
+    @undocumented: focus_out_combo
+    @undocumented: click_drop_button
+    @undocumented: key_press_combo
+    @undocumented: key_release_combo
+    @undocumented: update_select_content
+    @undocumented: set_sensitive
+    @undocumented: expose_combobox_frame
+    '''
 	
     __gsignals__ = {
         "item-selected" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
@@ -40,7 +51,14 @@ class ComboBox(gtk.VBox):
     }
 
     def __init__(self, items, droplist_height=None, select_index=0, max_width=None):
-        '''Init combo box.'''
+        '''
+        Initialize ComboBox class.
+        
+        @param items: ComboBox item, item format: (item_label, item_value)
+        @param droplist_height: You can set maximum height of droplist, default is None.
+        @param select_index: Initialize selected index, default is 0.
+        @param max_width: Maximum width of ComboBox, default is None that width along with content.
+        '''
         # Init.
         gtk.VBox.__init__(self)
         self.set_can_focus(True)
@@ -95,21 +113,33 @@ class ComboBox(gtk.VBox):
             "Down" : self.select_next_item}
         
     def focus_in_combo(self, widget, event):
-        '''Focus in combo.'''
+        '''
+        Internal function, focus in ComboBox.
+        
+        @param widget: Gtk.Widget instance.
+        @param event: Focus in event.
+        '''
         self.focus_flag = True
         self.label.text_color = ui_theme.get_color("menu_select_font")
 
         self.queue_draw()
         
     def focus_out_combo(self, widget, event):
-        '''Focus out combo.'''
+        '''
+        Internal function, focus out ComboBox.
+        
+        @param widget: Gtk.Widget instance.
+        @param event: Focus out event.
+        '''
         self.focus_flag = False        
         self.label.text_color = ui_theme.get_color("menu_font")
             
         self.queue_draw()
         
     def click_drop_button(self, *args):
-        '''Click drop button.'''
+        '''
+        Internal function to handle `button-press-event` signal.
+        '''
         if self.droplist.get_visible():
             self.droplist.hide()
         else:
@@ -125,7 +155,9 @@ class ComboBox(gtk.VBox):
         self.queue_draw()    
         
     def select_first_item(self):
-        '''Select first item.'''
+        '''
+        Select first item.
+        '''
         if len(self.droplist.droplist_items) > 0:
             first_index = self.droplist.get_first_index()
             if first_index != None:
@@ -134,7 +166,9 @@ class ComboBox(gtk.VBox):
                 self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
     
     def select_last_item(self):
-        '''Select last item.'''
+        '''
+        Select last item.
+        '''
         if len(self.droplist.droplist_items) > 0:
             last_index = self.droplist.get_last_index()
             if last_index != None:
@@ -143,7 +177,9 @@ class ComboBox(gtk.VBox):
                 self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
     
     def select_prev_item(self):
-        '''Select preview item.'''
+        '''
+        Select preview item.
+        '''
         if len(self.droplist.droplist_items) > 0:
             prev_index = self.droplist.get_prev_index()
             if prev_index != None:
@@ -152,7 +188,9 @@ class ComboBox(gtk.VBox):
                 self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
     
     def select_next_item(self):
-        '''Select next item.'''
+        '''
+        Select next item.
+        '''
         if len(self.droplist.droplist_items) > 0:
             next_index = self.droplist.get_next_index()
             if next_index != None:
@@ -161,7 +199,12 @@ class ComboBox(gtk.VBox):
                 self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
         
     def key_press_combo(self, widget, event):
-        '''Key press combo.'''
+        '''
+        Internal function to handle `key-press-event` signal.
+        
+        @param widget: Gtk.Widget instance.
+        @param event: Key press event.
+        '''
         if not self.droplist.get_visible():
             key_name = get_keyevent_name(event)
             if self.keymap.has_key(key_name):
@@ -170,7 +213,11 @@ class ComboBox(gtk.VBox):
             return True     
         
     def set_select_index(self, item_index):
-        '''Set select index.'''
+        '''
+        Set select index.
+        
+        @param item_index: The index of selected item.
+        '''
         if 0 <= item_index < len(self.items):
             item = self.items[item_index]
             if item:
@@ -178,25 +225,45 @@ class ComboBox(gtk.VBox):
                 self.label.set_text(item[0])
                 
     def get_item_with_index(self, item_index):
-        '''Get item with index.'''
+        '''
+        Get item with given index.
+        
+        @return: Return item that match given index, or return None if haven't special index.
+        '''
         if 0 <= item_index < len(self.items):
             return self.items[item_index]                
         else:
             return None
         
     def get_current_item(self):
-        '''Get current item.'''
+        '''
+        Get current item.
+        
+        @return: Return current item.
+        '''
         return self.get_item_with_index(self.select_index)
                 
     def key_release_combo(self, widget, event):
-        '''Handle key release.'''
+        '''
+        Internal function to handle `key-release-event` signal.
+        
+        @param widget: Gtk.Widget instance.
+        @param event: Key release event.
+        '''
         self.emit("key-release", 
                   self.items[self.select_index][0],
                   self.items[self.select_index][1],
                   self.select_index)    
     
     def update_select_content(self, droplist, item_content, item_value, item_index):
-        '''Update select content.'''
+        '''
+        Internal function to update select content.
+        
+        @param droplist: Droplist.
+        @param item_content: Item content.
+        @param item_value: Item value.
+        @param item_index: Item index.
+        '''
         self.select_index = item_index
         self.label.set_text(item_content)
         
@@ -207,12 +274,17 @@ class ComboBox(gtk.VBox):
         self.queue_draw()
         
     def set_sensitive(self, sensitive):
+        '''
+        Internal function to overwrite function `set_sensitive`.
+        '''
         super(ComboBox, self).set_sensitive(sensitive)
         self.label.set_sensitive(sensitive)
         self.dropbutton.set_sensitive(sensitive)
             
     def expose_combobox_frame(self, widget, event):
-        '''Expose combo box frame.'''
+        '''
+        Internal function to handle `expose-event` signal of frame.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
