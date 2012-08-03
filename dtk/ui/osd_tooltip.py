@@ -30,14 +30,32 @@ import gtk
 from utils import (remove_signal_id, remove_timeout_id, get_content_size)
 
 class OSDTooltip(gtk.Window):
-    '''OSD tooltip.'''
+    '''
+    OSD tooltip.
+    
+    @undocumented: realize_osd_tooltip
+    @undocumented: show_osd_tooltip
+    @undocumented: expose_osd_tooltip
+    @undocumented: handle_configure_event
+    '''
 	
     def __init__(self, monitor_widget, text_font=DEFAULT_FONT, text_size=18, 
                  offset_x=0, offset_y=0,
                  text_color=ui_theme.get_color("osd_tooltip_text"), 
                  border_color=ui_theme.get_color("osd_tooltip_border"), 
                  border_radious=1):
-        '''Init osd tooltip.'''
+        '''
+        Initialize OSDTooltip class.
+        
+        @param monitor_widget: Widget to monitor event.
+        @param text_font: Text font, default is DEFAULT_FONT.
+        @param text_size: Text size, default is 18.
+        @param offset_x: Offset X coordinate relative to monitor widget.
+        @param offset_y: Offset Y coordinate relative to monitor widget.
+        @param text_color: Text color.
+        @param border_color: Border color.
+        @param border_radious: Border radious.
+        '''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         self.monitor_widget = monitor_widget
@@ -77,7 +95,11 @@ class OSDTooltip(gtk.Window):
         self.connect("show", self.show_osd_tooltip)
         
     def realize_osd_tooltip(self, widget):
-        '''Realize osd tooltip.'''
+        '''
+        Internal function to realize OSD tooltip.
+        
+        @param widget: OSDTooltip widget.
+        '''
         # Make all event passthrough osd tooltip.
         self.window.input_shape_combine_region(gtk.gdk.Region(), 0, 0) 
         
@@ -88,12 +110,21 @@ class OSDTooltip(gtk.Window):
         self.window.set_back_pixmap(None, False)
         
     def show_osd_tooltip(self, widget):
-        '''Show osd tooltip.'''
+        '''
+        Internal function to show osd tooltip.
+        
+        @param widget: OSD tooltip widget.
+        '''
         self.move(self.tooltip_x, self.tooltip_y)
         self.resize(self.tooltip_width, self.tooltip_height)
         
     def expose_osd_tooltip(self, widget, event):
-        '''Expose osd tooltip.'''
+        '''
+        Internal function to expose osd tooltip.
+        
+        @param widget: OSD tooltip widget.
+        @param event: Expose event.
+        '''
         # Update window size.
         self.move(self.tooltip_x, self.tooltip_y)
         self.resize(self.tooltip_width, self.tooltip_height)
@@ -118,7 +149,11 @@ class OSDTooltip(gtk.Window):
         return True
         
     def show(self, text):
-        '''Show.'''
+        '''
+        Show.
+        
+        @param text: OSD tooltip text.
+        '''
         # Remove callback.j
         remove_signal_id(self.configure_event_callback_id)
         remove_signal_id(self.destroy_callback_id)
@@ -170,12 +205,10 @@ class OSDTooltip(gtk.Window):
         
         self.queue_draw()       # make sure redraw
         
-    def test(self, widget, event):
-        '''docs'''
-        print "state change"
-    
     def hide_immediately(self):
-        '''Hide immediately.'''
+        '''
+        Hide immediately.
+        '''
         # Remove callback.
         remove_signal_id(self.configure_event_callback_id)
         remove_signal_id(self.destroy_callback_id)
@@ -185,7 +218,9 @@ class OSDTooltip(gtk.Window):
         self.hide_all()
         
     def handle_configure_event(self, widget, event):
-        '''Handle configure event.'''
+        '''
+        Internal function to handle configure event.
+        '''
         # Init.
         rect = widget.allocation
         (monitor_window_x, monitor_window_y) = widget.window.get_origin()
@@ -204,7 +239,12 @@ class OSDTooltip(gtk.Window):
             self.hide_immediately()
             
     def change_style(self, text_font, text_size):
-        '''Change style.'''
+        '''
+        Change OSD tooltip style.
+        
+        @param text_font: OSD tooltip text font.
+        @param text_size: OSD tooltip text size.
+        '''
         self.text_font = text_font
         self.text_size = text_size
         

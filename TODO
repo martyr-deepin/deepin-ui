@@ -6,7 +6,6 @@ menu.py
 mplayer_view.py
 navigatebar.py
 notebook.py
-osd_tooltip.py
 paned.py
 panel.py
 progressbar.py
