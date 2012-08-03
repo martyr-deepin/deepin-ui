@@ -528,7 +528,7 @@ def text(widget, content, *args, **kargs):
 @chainmethod
 def custom(widget, cb, *args, **kargs):
     '''
-    set the custom tooltip content.
+    Set the custom tooltip content.
 
     @param widget: the widget of you want to change.
     @param cb: the function used to generate the content widget. this function should return an gtk.Widget.  Be careful: if this function generate it's content affected by other runtime factor, you alsow should use "always_update"
@@ -647,10 +647,13 @@ def disable(widget, is_disable):
 @chainmethod
 def always_update(widget, need):
     '''
-    always create the new tooltip's content, used to show the
+    Always create the new tooltip's content, used to show the
+    
     curstom tooltip content generate by function and the function's
+    
     return widget is different every time be invoked.
 
+    @param widget: Gtk.Widget instance.
     @param need: whether alwasy update.
     '''
     set_value(widget, {"always_update" : need})
@@ -659,7 +662,6 @@ def always_update(widget, need):
 #------------------------this is global effect function---------------------
 def disable_all(is_disable):
     '''
-
     '''
     count = TooltipInfo.enable_count
     if is_disable:

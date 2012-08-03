@@ -23,8 +23,6 @@ theme.py
 thread_pool.py
 threads.py
 timeline.py
-tooltip.py
-tooltip_test.py
 treeview.py
 unique_service.py
 volume_button.py
