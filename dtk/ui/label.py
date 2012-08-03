@@ -30,7 +30,21 @@ import pango
 import pangocairo
 
 class Label(gtk.EventBox):
-    '''Label.'''
+    '''
+    Label.
+    
+    @undocumented: button_press_label
+    @undocumented: button_release_label
+    @undocumented: motion_notify_label
+    @undocumented: key_press_label
+    @undocumented: focus_out_label
+    @undocumented: get_index_at_event
+    @undocumented: get_content_width
+    @undocumented: expose_label
+    @undocumented: draw_label_background
+    @undocumented: draw_label_text
+    @undocumented: update_size
+    '''
 	
     def __init__(self, 
                  text, 
@@ -45,7 +59,20 @@ class Label(gtk.EventBox):
                  border_radious=1,
                  wrap_width=None,
                  ):
-        '''Init label.'''
+        '''
+        Initialize Label class.
+        
+        @param text: Label text.
+        @param text_color: Label text color, default is None.
+        @param text_size: Label text size, default is DEFAULT_FONT_SIZE.
+        @param text_x_align: Horticultural align option, default is ALIGN_START.
+        @param label_width: Label maximum width, default is None.
+        @param enable_gaussian: Default is False, if it is True, color option no effect, default gaussian effect is white text and black shadow.
+        @param enable_select: Default is True, label content can't select if it is False.
+        @param gaussian_radious: Radious of gaussian.
+        @param border_radious: Radious of border.
+        @param wrap_width: Wrap width.
+        '''
         # Init.
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
@@ -99,7 +126,9 @@ class Label(gtk.EventBox):
             }
         
     def copy_to_clipboard(self):
-        '''Copy select text to clipboard.'''
+        '''
+        Copy select text to clipboard.
+        '''
         if self.select_start_index != self.select_end_index:
             cut_text = self.text[self.select_start_index:self.select_end_index]
             
@@ -107,7 +136,12 @@ class Label(gtk.EventBox):
             clipboard.set_text(cut_text)
             
     def button_press_label(self, widget, event):
-        '''Button press label.'''
+        '''
+        Internal callback for `button-press-event` signal.
+        
+        @param widget: Label widget.
+        @param event: Button press event.
+        '''
         if not self.enable_gaussian:
             # Get input focus.
             self.grab_focus()
@@ -124,7 +158,12 @@ class Label(gtk.EventBox):
                 self.drag_start_index = self.get_index_at_event(widget, event)
             
     def button_release_label(self, widget, event):
-        '''Button release label.'''
+        '''
+        Internal callback for `button-release-event` signal.
+        
+        @param widget: Label widget.
+        @param event: Button release event.
+        '''
         if not self.double_click_flag and self.left_click_coordindate == (event.x, event.y):
             self.select_start_index = self.select_end_index = 0
             self.queue_draw()
@@ -133,7 +172,12 @@ class Label(gtk.EventBox):
         self.left_click_flag = False
         
     def motion_notify_label(self, widget, event):
-        '''Callback for `motion-notify-event` signal.'''
+        '''
+        Internal callback for `motion-notify-event` signal.
+        
+        @param widget: Label widget.
+        @param event: Motion notify event.
+        '''
         if not self.double_click_flag and self.left_click_flag and self.enable_select:
             self.drag_end_index = self.get_index_at_event(widget, event)
             
@@ -143,7 +187,12 @@ class Label(gtk.EventBox):
             self.queue_draw()    
             
     def key_press_label(self, widget, event):
-        '''Callback for `key-press-event` signal.'''
+        '''
+        Internal callback for `key-press-event` signal.
+        
+        @param widget: Label widget.
+        @param event: Key press event. 
+        '''
         key_name = get_keyevent_name(event)
         
         if self.keymap.has_key(key_name):
@@ -152,14 +201,24 @@ class Label(gtk.EventBox):
         return False
     
     def focus_out_label(self, widget, event):
-        '''Focus out label.'''
+        '''
+        Internal callback for `focus-out-event` signal.
+        
+        @param widget: Label widget.
+        @param event: Focus out event.
+        '''
         if self.select_start_index != self.select_end_index:
             self.select_start_index = self.select_end_index = 0
             
             self.queue_draw()
     
     def get_index_at_event(self, widget, event):
-        '''Get index at event.'''
+        '''
+        Internal function to get index at event.
+        
+        @param widget: Label widget.
+        @param event: gtk.gdk.Event.
+        '''
         cr = widget.window.cairo_create()
         context = pangocairo.CairoContext(cr)
         layout = context.create_layout()
@@ -173,19 +232,28 @@ class Label(gtk.EventBox):
             return x_index
         
     def get_content_width(self, content):
-        '''Get content width.'''
+        '''
+        Internal fucntion to get content width.
+        '''
         (content_width, content_height) = get_content_size(content, self.text_size, wrap_width=self.wrap_width)
         return content_width
     
     def select_all(self):
-        '''Select all.'''
+        '''
+        Select all.
+        '''
         self.select_start_index = 0
         self.select_end_index = len(self.text)
         
         self.queue_draw()
     
     def expose_label(self, widget, event):
-        '''Expose label.'''
+        '''
+        Internal callback for `expose-event` signal.
+
+        @param widget: Label widget.
+        @param event: Expose event.
+        '''
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
@@ -198,7 +266,13 @@ class Label(gtk.EventBox):
         return True
     
     def draw_label_background(self, cr, rect):
-        '''Draw label background.'''
+        '''
+        Inernal function to draw label background.
+        
+        @param cr: Cairo context.
+        @param rect: Draw area.
+        @return: Always return True.
+        '''
         if self.select_start_index != self.select_end_index:
             select_start_width = self.get_content_width(self.text[0:self.select_start_index])
             select_end_width = self.get_content_width(self.text[0:self.select_end_index])
@@ -213,7 +287,12 @@ class Label(gtk.EventBox):
                          )
     
     def draw_label_text(self, cr, rect):
-        '''Draw label text.'''
+        '''
+        Internal fucntion to draw label text.
+        
+        @param cr: Cairo context.
+        @param rect: Draw area.
+        '''
         if self.enable_gaussian:
             label_color = "#FFFFFF"
         else:
@@ -290,19 +369,25 @@ class Label(gtk.EventBox):
                           )
         
     def get_text(self):
-        '''Get text of label.'''
+        '''
+        Get text of label.
+        '''
         return self.text
     
     def set_text(self, text):
-        '''Set text.'''
-        self.text = text
+        '''
+        Set text with given value.
         
+        @param text: Label string.
+        '''
+        self.text = text
         self.update_size()
-
         self.queue_draw()
     
     def update_size(self):
-        '''Update size.'''
+        '''
+        Internal function to update size.
+        '''
         if self.label_width == None:
             (label_width, label_height) = get_content_size(self.text, self.text_size, wrap_width=self.wrap_width)
         else:

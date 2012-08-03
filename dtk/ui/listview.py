@@ -42,7 +42,26 @@ from utils import (map_value, mix_list_max, get_content_size,
                    is_in_rect, get_disperse_index, get_window_shadow_size)
 
 class ListView(gtk.DrawingArea):
-    '''List view.'''
+    '''
+    Powerful listview widget.
+    
+    @undocumented: update_redraw_request_list
+    @undocumented: set_adjust_cursor
+    @undocumented: realize_list_view
+    @undocumented: size_allocate_list_view
+    @undocumented: expose_list_view
+    @undocumented: motion_list_view
+    @undocumented: hover_item
+    @undocumented: button_press_list_view
+    @undocumented: click_item
+    @undocumented: button_release_list_view
+    @undocumented: release_item
+    @undocumented: drag_select_items_at_cursor
+    @undocumented: leave_list_view
+    @undocumented: key_press_list_view
+    @undocumented: key_release_list_view
+
+    '''
     
     SORT_DESCENDING = False
     SORT_ASCENDING = True
@@ -66,7 +85,16 @@ class ListView(gtk.DrawingArea):
                  drag_icon_pixbuf=ui_theme.get_pixbuf("listview/drag_preview.png"),
                  drag_out_offset=50,
                  ):
-        '''Init list view.'''
+        '''
+        Initialize ListView widget.
+        
+        @param sorts: Sort function for column of listview.
+        @param drag_data: Drag data for drag data from listview, format: (targets, actions, button_masks)
+        @param enable_multiple_select: Whether allow user select multiple item, default is True.
+        @param enable_drag_drop: Whether allow user drag drop on listview, default is True.
+        @param drag_icon_pixbuf: Drag icon.
+        @param drag_out_offset: Out offset value to trigger drag action on listview, default is 50 pixel, if cursor not drag more than 50 pixel, listview won't think it is B{drag out action}.
+        '''
         # Init.
         gtk.DrawingArea.__init__(self)
         self.sorts = sorts
@@ -144,11 +172,17 @@ class ListView(gtk.DrawingArea):
             }
         
     def set_expand_column(self, column):
-        '''Set expand column.'''
+        '''
+        Set expand column.
+        
+        @param column: Column index to expand space.
+        '''
         self.expand_column = column
         
     def update_redraw_request_list(self):
-        '''Update redraw request list.'''
+        '''
+        Internal fucntion to update redraw request list.
+        '''
         # Redraw when request list is not empty.
         if len(self.redraw_request_list) > 0:
             # Get offset.
@@ -176,7 +210,12 @@ class ListView(gtk.DrawingArea):
         return True
         
     def add_titles(self, titles, title_height=24):
-        '''Add titles.'''
+        '''
+        Add titles.
+        
+        @param titles: A list of title.
+        @param title_height: Height of title.
+        '''
         self.titles = titles
         self.title_select_column = None
         self.title_adjust_column = None
@@ -196,7 +235,11 @@ class ListView(gtk.DrawingArea):
             self.title_cache_pixbufs.append(CachePixbuf())
         
     def get_title_sizes(self):
-        '''Get title sizes.'''
+        '''
+        Get title sizes.
+        
+        @return: Return title size, as format (title_width, title_height).
+        '''
         widths = []
         heights = []
         if self.titles != None:
@@ -208,7 +251,13 @@ class ListView(gtk.DrawingArea):
         return (widths, heights)    
         
     def add_items(self, items, insert_pos=None, sort_list=False):
-        '''Add items in list.'''
+        '''
+        Add items in listview.
+
+        @param items: A list of item.
+        @param insert_pos: The position to insert, default is None will insert new item at end of list.
+        @param sort_list: Whether sort list after insert, default is False.
+        '''
         # Add new items.
         with self.keep_select_status():    
             if insert_pos == None:
@@ -269,7 +318,12 @@ class ListView(gtk.DrawingArea):
         self.update_item_index()
         
     def sort_items(self, compare_method, sort_reverse=False):
-        '''Sort items.'''
+        '''
+        Sort items with given method.
+
+        @param compare_method: Compare method to sort.
+        @param sort_reverse: Whether sort reverse, default is False.
+        '''
         # Sort items.
         with self.keep_select_status():
             self.items = sorted(self.items,
@@ -283,16 +337,24 @@ class ListView(gtk.DrawingArea):
         self.queue_draw()
         
     def redraw_item(self, list_item):
-        '''Redraw item.'''
+        '''
+        Redraw item.
+        
+        @param list_item: List item need to redraw.
+        '''
         self.redraw_request_list.append(list_item)
         
     def update_item_index(self):
-        '''Update index of items.'''
+        '''
+        Update index of items.
+        '''
         for (index, item) in enumerate(self.items):
             item.set_index(index)
             
     def set_title_height(self, title_height):
-        '''Set title height.'''
+        '''
+        Set title height.
+        '''
         self.title_height = title_height
         if self.titles:
             self.title_offset_y = self.title_height
@@ -300,38 +362,65 @@ class ListView(gtk.DrawingArea):
             self.title_offset_y = 0
 
     def get_column_sort_type(self, column):
-        '''Get sort type.'''
+        '''
+        Get sort type with given column index.
+        
+        @param column: Column index.
+
+        @return: Return sort type with given column index, return None if haven't found match column index.
+        '''
         if 0 <= column <= last_index(self.title_sorts):
             return self.title_sorts[column]
         else:
             return None
         
     def set_column_sort_type(self, column, sort_type):
-        '''Set sort type.'''
+        '''
+        Set sort type with given value.
+        
+        @param column: Column index.
+        @param sort_type: Sort type.
+        '''
         if 0 <= column <= last_index(self.title_sorts):
             self.title_sorts[column] = sort_type
             
     def get_cell_widths(self):
-        '''Get cell widths.'''
+        '''
+        Get cell width of columns.
+        '''
         return self.cell_widths
     
     def set_cell_width(self, column, width):
-        '''Set cell width.'''
+        '''
+        Set cell width with given value.
+
+        @param column: Column index.
+        @param width: Column width.
+        '''
         if column <= last_index(self.cell_min_widths) and width >= self.cell_min_widths[column]:
             self.cell_widths[column] = width
             
     def set_adjust_cursor(self):
-        '''Set adjust cursor.'''
+        '''
+        Internal function to set cursor type when adjust size.
+        '''
         set_cursor(self, gtk.gdk.SB_H_DOUBLE_ARROW)
         self.adjust_cursor = True    
         
     def reset_cursor(self):
-        '''Reset cursor.'''
+        '''
+        Reset cursor type.
+        '''
         set_cursor(self, None)
         self.adjust_cursor = False
             
     def get_offset_coordinate(self, widget):
-        '''Get offset coordinate.'''
+        '''
+        Get viewport offset coordinate and viewport.
+
+        @param widget: ListView widget.
+        @return: Return viewport offset and viewport: (offset_x, offset_y, viewport).
+        '''
         # Init.
         rect = widget.allocation
 
@@ -349,29 +438,73 @@ class ListView(gtk.DrawingArea):
             return (0, 0, viewport)
             
     def draw_shadow_mask(self, cr, x, y, w, h):
-        '''Draw shadow mask.'''
+        '''
+        Shadow mask interface for overwrite.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         pass
         
     def draw_mask(self, cr, x, y, w, h):
-        '''Draw mask.'''
+        '''
+        Draw mask interface.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         draw_vlinear(cr, x, y, w, h,
                      ui_theme.get_shadow_color("linear_background").get_color_info()
                      )
         
     def draw_item_hover(self, cr, x, y, w, h):
-        '''Draw hover.'''
+        '''
+        Draw item hover interface.
+
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_hover").get_color_info())
         
     def draw_item_select(self, cr, x, y, w, h):
-        '''Draw select.'''
+        '''
+        Draw item select interface.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_select").get_color_info())
 
     def draw_item_highlight(self, cr, x, y, w, h):
-        '''Draw highlight.'''
+        '''
+        Draw item highlight interface.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_highlight").get_color_info())
         
     def realize_list_view(self, widget):
-        '''Realize list view.'''
+        '''
+        Internal fucntion for realize listview.
+        
+        @param widget: ListView wiget.
+        '''
         self.grab_focus()       # focus key after realize
 
         rect = widget.allocation
@@ -379,13 +512,23 @@ class ListView(gtk.DrawingArea):
             self.set_cell_width(self.expand_column, rect.width - (sum(self.cell_widths) - self.cell_widths[self.expand_column]))
             
     def size_allocate_list_view(self, widget, allocation):
-        '''Callback for `size_allocated` signal.'''
+        '''
+        Internal callback for `size_allocated` signal.
+        
+        @param widget: ListView widget.
+        @param allocation: ListView allocation.
+        '''
         rect = widget.allocation
         if 0 <= self.expand_column < len(self.cell_widths):
             self.set_cell_width(self.expand_column, rect.width - (sum(self.cell_widths) - self.cell_widths[self.expand_column]))
             
     def expose_list_view(self, widget, event):
-        '''Expose list view.'''
+        '''
+        Internal callback for `expose-event` signal.
+
+        @param widget: ListView widget.
+        @param event: Expose event.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -543,7 +686,12 @@ class ListView(gtk.DrawingArea):
         return False
     
     def motion_list_view(self, widget, event):
-        '''Motion list view.'''
+        '''
+        Internal callback for `motion-notify-event` signal.
+        
+        @param widget: ListView widget.
+        @param event: Motion event.
+        '''
         if self.titles:
             # Get offset.
             (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
@@ -586,7 +734,11 @@ class ListView(gtk.DrawingArea):
         self.queue_draw()
         
     def hover_item(self, event):
-        '''Hover item.'''
+        '''
+        Internal function to handle hover item.
+        
+        @param event: Motion notify event.
+        '''
         if self.left_button_press:
             if self.start_drag:
                 if self.enable_drag_drop:
@@ -676,7 +828,12 @@ class ListView(gtk.DrawingArea):
             self.emit_item_event("motion-notify-item", event)
             
     def button_press_list_view(self, widget, event):
-        '''Button press event handler.'''
+        '''
+        Internal callback for `button-press-event` signal.
+
+        @param widget: ListView widget.
+        @param event: Button press event.
+        '''
         # Grab focus when button press, otherwise key-press signal can't response.
         self.grab_focus()
         
@@ -716,7 +873,11 @@ class ListView(gtk.DrawingArea):
         self.queue_draw()    
             
     def click_item(self, event):
-        '''Click item.'''
+        '''
+        Internal function to handle click item.
+
+        @param event: Button press event.
+        '''
         click_row = self.get_event_row(event)
         
         if self.left_button_press:
@@ -808,7 +969,12 @@ class ListView(gtk.DrawingArea):
                       select_items)
             
     def button_release_list_view(self, widget, event):
-        '''Button release event handler.'''
+        '''
+        Internal callback for `button-release-event` signal.
+
+        @param widget: ListView widget.
+        @param event: Button release event.
+        '''
         if is_left_button(event):
             self.left_button_press = False
             if self.titles:
@@ -856,7 +1022,9 @@ class ListView(gtk.DrawingArea):
         
     @contextmanager
     def keep_select_status(self):
-        '''Keep select status.'''
+        '''
+        Handy function that change listview and keep select status not change.
+        '''
         # Save select items.
         start_select_item = None
         if self.start_select_row != None:
@@ -897,7 +1065,11 @@ class ListView(gtk.DrawingArea):
                         break
         
     def release_item(self, event):
-        '''Release row.'''
+        '''
+        Internal function to handle release item.
+
+        @param event: Button release event.
+        '''
         if is_left_button(event):
             release_row = self.get_event_row(event)
             
@@ -924,7 +1096,13 @@ class ListView(gtk.DrawingArea):
                 self.queue_draw()
                 
     def is_in_visible_area(self, event):
-        '''Is in visible area.'''
+        '''
+        Is event coordinate in visible area.
+        
+        @param event: gtk.gdk.Event.
+        
+        @return: Return True if event coordiante in visible area.
+        '''
         (event_x, event_y) = get_event_coords(event)
         scrolled_window = get_match_parent(self, ["ScrolledWindow"])
         vadjust = scrolled_window.get_vadjustment()
@@ -932,7 +1110,9 @@ class ListView(gtk.DrawingArea):
                 and vadjust.get_value() - self.drag_out_offset <= event_y <= vadjust.get_value() + vadjust.get_page_size() + self.drag_out_offset)
     
     def drag_select_items_at_cursor(self, event):
-        '''Drag select items at cursor position.'''
+        '''
+        Internal function to drag select items at cursor position.
+        '''
         (event_x, event_y) = get_event_coords(event)
         hover_row = min(max(int((event_y - self.title_offset_y) / self.item_height), 0),
                         len(self.items))
@@ -970,7 +1150,12 @@ class ListView(gtk.DrawingArea):
         self.queue_draw()
                 
     def leave_list_view(self, widget, event):
-        '''leave-notify-event signal handler.'''
+        '''
+        Internal callback for `leave-notify-event` signal.
+
+        @param widget: ListView widget.
+        @param event: Leave notify event.
+        '''
         # Reset.
         self.title_select_column = None
         self.title_adjust_column = None
@@ -988,7 +1173,12 @@ class ListView(gtk.DrawingArea):
         self.queue_draw()
         
     def key_press_list_view(self, widget, event):
-        '''Callback to handle key-press signal.'''
+        '''
+        Internal callback for `key-press-event` signal.
+
+        @param widget: ListView widget.
+        @param event: Key press event.
+        '''
         if has_ctrl_mask(event):
             self.press_ctrl = True
         
@@ -1007,7 +1197,12 @@ class ListView(gtk.DrawingArea):
         return True
             
     def key_release_list_view(self, widget, event):
-        '''Callback to handle key-release signal.'''
+        '''
+        Internal callback for `key-release-event` signal.
+
+        @param widget: ListView widget.
+        @param event: Key release event.
+        '''
         if has_ctrl_mask(event):
             self.press_ctrl = False
 
@@ -1015,7 +1210,12 @@ class ListView(gtk.DrawingArea):
             self.press_shift = False
         
     def emit_item_event(self, event_name, event):
-        '''Wrap method for emit event.'''
+        '''
+        Wrap method for emit event signal.
+        
+        @param event_name: Event name.
+        @param event: Event.
+        '''
         (event_x, event_y) = get_event_coords(event)
         event_row = (event_y - self.title_offset_y) / self.item_height
         if 0 <= event_row <= last_index(self.items):
@@ -1025,7 +1225,12 @@ class ListView(gtk.DrawingArea):
             self.emit(event_name, self.items[event_row], event_column, offset_x, offset_y)
         
     def get_coordinate_row(self, y):
-        '''Get row with given coordinate.'''
+        '''
+        Get row with given y coordinate.
+        
+        @param y: Y coordinate.
+        @return: Return row that match given y coordinate, return None if haven't any row match y coordiante.
+        '''
         row = int((y - self.title_offset_y) / self.item_height)
         if 0 <= row <= last_index(self.items):
             return row
@@ -1033,7 +1238,13 @@ class ListView(gtk.DrawingArea):
             return None
             
     def get_event_row(self, event, offset_index=0):
-        '''Get event row.'''
+        '''
+        Get row at event.
+
+        @param event: gtk.gdk.Event instance.
+        @param offset_index: Offset index base on event row.
+        @return: Return row at event coordinate, return None if haven't any row match event coordiante.
+        '''
         (event_x, event_y) = get_event_coords(event)
         row = int((event_y - self.title_offset_y) / self.item_height)
         if 0 <= row <= last_index(self.items) + offset_index:
@@ -1042,7 +1253,9 @@ class ListView(gtk.DrawingArea):
             return None
         
     def select_first_item(self):
-        '''Select first item.'''
+        '''
+        Select first item.
+        '''
         if len(self.items) > 0:
             # Update select rows.
             self.start_select_row = 0
@@ -1056,7 +1269,9 @@ class ListView(gtk.DrawingArea):
             self.queue_draw()
         
     def select_last_item(self):
-        '''Select last item.'''
+        '''
+        Select last item.
+        '''
         if len(self.items) > 0:
             # Update select rows.
             last_row = last_index(self.items)
@@ -1071,7 +1286,9 @@ class ListView(gtk.DrawingArea):
             self.queue_draw()
             
     def scroll_page_up(self):
-        '''Scroll page up.'''
+        '''
+        Scroll page up.
+        '''
         if self.select_rows == []:
             # Select row.
             vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
@@ -1119,7 +1336,9 @@ class ListView(gtk.DrawingArea):
                 print "scroll_page_up : impossible!"
             
     def scroll_page_down(self):
-        '''Scroll page down.'''
+        '''
+        Scroll page down.
+        '''
         if self.select_rows == []:
             # Select row.
             vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
@@ -1166,7 +1385,9 @@ class ListView(gtk.DrawingArea):
                 print "scroll_page_down : impossible!"
         
     def select_prev_item(self):
-        '''Select preview item.'''
+        '''
+        Select preview item.
+        '''
         if self.select_rows == []:
             self.select_first_item()
         else:
@@ -1205,7 +1426,9 @@ class ListView(gtk.DrawingArea):
                     self.queue_draw()    
         
     def select_next_item(self):
-        '''Select next item.'''
+        '''
+        Select next item.
+        '''
         if self.select_rows == []:
             self.select_first_item()
         else:
@@ -1243,7 +1466,9 @@ class ListView(gtk.DrawingArea):
                     self.queue_draw()
     
     def select_to_prev_item(self):
-        '''Select to preview item.'''
+        '''
+        Select to preview item.
+        '''
         if self.select_rows == []:
             self.select_first_item()
         elif self.start_select_row != None:
@@ -1274,7 +1499,9 @@ class ListView(gtk.DrawingArea):
             print "select_to_prev_item : impossible!"
     
     def select_to_next_item(self):
-        '''Select to next item.'''
+        '''
+        Select to next item.
+        '''
         if self.select_rows == []:
             self.select_first_item()
         elif self.start_select_row != None:
@@ -1306,7 +1533,9 @@ class ListView(gtk.DrawingArea):
             print "select_to_next_item : impossible!"
     
     def select_to_first_item(self):
-        '''Select to first item.'''
+        '''
+        Select to first item.
+        '''
         if self.select_rows == []:
             self.select_first_item()
         elif self.start_select_row != None:
@@ -1324,7 +1553,9 @@ class ListView(gtk.DrawingArea):
             print "select_to_first_item : impossible!"
     
     def select_to_last_item(self):
-        '''Select to last item.'''
+        '''
+        Select to last item.
+        '''
         if self.select_rows == []:
             self.select_first_item()
         elif self.start_select_row != None:
@@ -1342,7 +1573,9 @@ class ListView(gtk.DrawingArea):
             print "select_to_end_item : impossible!"
     
     def select_all_items(self):
-        '''Select all items.'''
+        '''
+        Select all items.
+        '''
         if self.select_rows == []:
             self.start_select_row = 0
             self.select_rows = range(0, len(self.items))            
@@ -1354,7 +1587,9 @@ class ListView(gtk.DrawingArea):
             self.queue_draw()
             
     def delete_select_items(self):
-        '''Delete select items.'''
+        '''
+        Delete select items.
+        '''
         # Get select items.
         remove_items = []
         for row in self.select_rows:
@@ -1384,7 +1619,9 @@ class ListView(gtk.DrawingArea):
             self.queue_draw()
             
     def update_vadjustment(self):
-        '''Update vertical adjustment.'''
+        '''
+        Update vertical adjustment.
+        '''
         list_height = self.title_offset_y + len(self.items) * self.item_height
         self.set_size_request(sum(self.cell_min_widths), list_height)            
         scrolled_window = get_match_parent(self, ["ScrolledWindow"])
@@ -1393,12 +1630,16 @@ class ListView(gtk.DrawingArea):
             vadjust.set_upper(list_height)
             
     def double_click_item(self):
-        '''Double click item.'''
+        '''
+        Double click item.
+        '''
         if len(self.select_rows) == 1:
             self.emit("double-click-item", self.items[self.select_rows[0]], -1, 0, 0)
             
     def clear(self):
-        '''Clear all list.'''
+        '''
+        Clear all list.
+        '''
         # Clear list.
         self.start_select_row = None
         self.select_rows = []
@@ -1411,14 +1652,20 @@ class ListView(gtk.DrawingArea):
         self.queue_draw()
         
     def get_current_item(self):
-        '''Get current item, if select_rows not single row, return None.'''
+        '''
+        Get current item.
+
+        @return: Return select row, or return None if not any item selected.
+        '''
         if len(self.select_rows) != 1:
             return None
         else:
             return self.items[self.select_rows[0]]
         
     def set_highlight(self, item):
-        '''Set highlight item.'''
+        '''
+        Set highlight with given item.
+        '''
         self.highlight_item = item
         
         self.visible_highlight()
@@ -1426,12 +1673,16 @@ class ListView(gtk.DrawingArea):
         self.queue_draw()
         
     def clear_highlight(self):
-        '''Clear highlight item.'''
+        '''
+        Clear highlight status.
+        '''
         self.highlight_item = None
         self.queue_draw()
         
     def visible_highlight(self):
-        '''Visible highlight item.'''
+        '''
+        Visible highlight item.
+        '''
         if self.highlight_item == None:
             print "visible_highlight: highlight item is None."
         else:
@@ -1447,32 +1698,64 @@ class ListView(gtk.DrawingArea):
 gobject.type_register(ListView)
 
 class ListItem(gobject.GObject):
-    '''List item.'''
+    '''
+    ListItem template to build your own item for L{ I{ListView} <ListView>}.
+    
+    @note: This class just template to build list item, you should build new item with same interface.
+    '''
     
     __gsignals__ = {
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
     def __init__(self, title, artist, length):
-        '''Init list item.'''
+        '''
+        Initialize ListItem class.
+
+        @param title: Title.
+        @param artist: Artist.
+        @param length: Length.
+        '''
         gobject.GObject.__init__(self)
         self.update(title, artist, length)
         self.index = None
         
     def set_index(self, index):
-        '''Update index.'''
+        '''
+        Update index.
+        
+        This is ListView interface, you should implement it.
+        
+        @param index: Index.
+        '''
         self.index = index
         
     def get_index(self):
-        '''Get index.'''
+        '''
+        Get index.
+        
+        This is ListView interface, you should implement it.
+        '''
         return self.index
         
     def emit_redraw_request(self):
-        '''Emit redraw-request signal.'''
+        '''
+        Emit redraw-request signal.
+        
+        This is ListView interface, you should implement it.
+        '''
         self.emit("redraw-request")
         
     def update(self, title, artist, length):
-        '''Update.'''
+        '''
+        Update.
+        
+        This is ListView interface, you should implement it.
+        
+        @param title: Title.
+        @param artist: Artist.
+        @param length: Length.
+        '''
         # Update.
         self.title = title
         self.artist = artist
@@ -1492,24 +1775,51 @@ class ListItem(gobject.GObject):
         (self.length_width, self.length_height) = get_content_size(self.length, DEFAULT_FONT_SIZE)
         
     def render_title(self, cr, rect, in_select, in_highlight):
-        '''Render title.'''
+        '''
+        Render title.
+        
+        @param cr: Cairo context.
+        @param rect: Redraw rectangle. 
+        @param in_select: Whether current item is selected, this value pass from ListView.
+        @param in_highlight: Whether current item is highlighted, this value pass from ListView.
+        '''
         rect.x += self.title_padding_x
         rect.width -= self.title_padding_x * 2
         render_text(cr, rect, self.title, in_select, in_highlight)
     
     def render_artist(self, cr, rect, in_select, in_highlight):
-        '''Render artist.'''
+        '''
+        Render artist.
+        
+        @param cr: Cairo context.
+        @param rect: Redraw rectangle. 
+        @param in_select: Whether current item is selected, this value pass from ListView.
+        @param in_highlight: Whether current item is highlighted, this value pass from ListView.
+        '''
         rect.x += self.artist_padding_x
         rect.width -= self.title_padding_x * 2
         render_text(cr, rect, self.artist, in_select, in_highlight)
     
     def render_length(self, cr, rect, in_select, in_highlight):
-        '''Render length.'''
+        '''
+        Render length.
+        
+        @param cr: Cairo context.
+        @param rect: Redraw rectangle. 
+        @param in_select: Whether current item is selected, this value pass from ListView.
+        @param in_highlight: Whether current item is highlighted, this value pass from ListView.
+        '''
         rect.width -= self.length_padding_x * 2
         render_text(cr, rect, self.length, in_select, in_highlight, align=ALIGN_END)
         
     def get_column_sizes(self):
-        '''Get sizes.'''
+        '''
+        Get column sizes.
+        
+        This is ListView interface, you should implement it.
+        
+        @return: Return column size tuple.
+        '''
         return [(self.title_width + self.title_padding_x * 2,
                  self.title_height + self.title_padding_y * 2),
                 (self.artist_width + self.artist_padding_x * 2, 
@@ -1519,13 +1829,29 @@ class ListItem(gobject.GObject):
                 ]    
     
     def get_renders(self):
-        '''Get render callbacks.'''
+        '''
+        Get render callbacks.
+        
+        This is ListView interface, you should implement it.
+        
+        @return: Return render functions.
+        '''
         return [self.render_title,
                 self.render_artist,
                 self.render_length]
     
 def render_text(cr, rect, content, in_select, in_highlight, align=ALIGN_START, font_size=DEFAULT_FONT_SIZE):
-    '''Render text.'''
+    '''
+    Helper render text function for ListItem, you should implement your own.
+    
+    @param cr: Cairo context.
+    @param rect: Draw area.
+    @param content: Content.
+    @param in_select: Whether item is selected.
+    @param in_highlight: Whether item is highlighted.
+    @param align: Render alignment option, default is ALIGN_START.
+    @param font_size: Render font size, default is DEFAULT_FONT_SIZE.
+    '''
     if in_select or in_highlight:
         color = ui_theme.get_color("list_item_select_text").get_color()
     else:
@@ -1537,5 +1863,13 @@ def render_text(cr, rect, content, in_select, in_highlight, align=ALIGN_START, f
               alignment=align)
     
 def render_image(cr, rect, image_path, x, y):
-    '''Render image.'''
+    '''
+    Helper render image function for ListItem, you should implement your own.
+    
+    @param cr: Cairo context.
+    @param rect: Draw area.
+    @param image_path: Image path.
+    @param x: X coordiante of draw position.
+    @param y: Y coordiante of draw position.
+    '''
     draw_pixbuf(cr, ui_theme.get_pixbuf(image_path).get_pixbuf(), x, y)

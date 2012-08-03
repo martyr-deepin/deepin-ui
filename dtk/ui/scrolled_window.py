@@ -26,6 +26,8 @@ from utils import remove_signal_id, color_hex_to_cairo
 import gobject
 import gtk
 
+__all__ = ['ScrolledWindow']
+
 # the p_range is the virtual width/height, it's value is smaller than
 # the allocation.width/height when scrollbar's width/height smaller than
 # the minmum scrollbar length.
@@ -33,27 +35,67 @@ import gtk
 #       the *bar_len* =  (adj.page_size / adj.upper) * allocation.width/height
 # by this processing, 0~(adj.upper-adj.page_size) will be mapped to 0~p_range.
 def value2pos(value, p_range, upper):
-    '''compute the scrollbar position by the adjustment value'''
+    '''
+    Compute the scrollbar position by the adjustment value.
+    '''
     if upper == 0: return 0
     return p_range * float(value) / upper
 
 def pos2value(pos, p_range, upper):
-    '''compute the adjustment value by the scrollbar position'''
+    '''
+    Compute the adjustment value by the scrollbar position.
+    '''
     if p_range == 0 : return 0
     return pos * upper / p_range
 
 class ScrolledWindow(gtk.Bin):
-    '''Scrolled window.'''
+    '''
+    The scrolled window with deepin's custom scrollbar.
+    
+    @undocumented: do_expose_event
+    @undocumented: draw_vbar
+    @undocumented: draw_hbar
+    @undocumented: do_button_release_event
+    @undocumented: make_bar_smaller
+    @undocumented: make_bar_bigger
+    @undocumented: do_scroll_event
+    @undocumented: do_leave_notify_event
+    @undocumented: do_enter_notify_event
+    @undocumented: do_motion_notify_event
+    @undocumented: calc_vbar_length
+    @undocumented: calc_vbar_allocation
+    @undocumented: calc_hbar_length
+    @undocumented: calc_hbar_allocation
+    @undocumented: vadjustment_changed
+    @undocumented: hadjustment_changed
+    @undocumented: do_add
+    @undocumented: do_size_request
+    @undocumented: do_size_allocate
+    @undocumented: update_scrollbar
+    @undocumented: do_unrealize
+    @undocumented: do_realize
+    @undocumented: set_shadow_type
+    @undocumented: set_policy
+    @undocumented: do_map
+    @undocumented: do_unmap
+    @undocumented: do_remove
+    @undocumented: _test_calc
+    '''
 
-    def __init__(self, right_space=2, top_bootm_space=3):
-        '''Init scrolled window.'''
+    def __init__(self, right_space=2, top_bottom_space=3):
+        '''
+        Init scrolled window.
+
+        @param right_space: the space between right border and the vertical scroolbar.
+        @param top_bottom_space: the space between top border and the vertical scroolbar.
+        '''
         gtk.Bin.__init__(self)
         self.bar_min_length = 50  #scrollbar smallest height
         self.bar_small_width = 7
         self.bar_width = 14  #normal scrollbar width
         self.bar_background = ui_theme.get_color("scrolledbar")
         self.right_space = right_space
-        self.top_bootm_space = top_bootm_space
+        self.top_bottom_space = top_bottom_space
 
         self.h_value_change_id = None
         self.h_change_id = None
@@ -127,16 +169,16 @@ class ScrolledWindow(gtk.Bin):
             region = gdk.region_rectangle(gdk.Rectangle(0, 0, int(self._horizaontal.bar_len), self.bar_small_width))
 
             if self.hallocation.x == 0:
-                self.hwindow.shape_combine_region(region, self.top_bootm_space, self.bar_width - self.bar_small_width -self.right_space)
+                self.hwindow.shape_combine_region(region, self.top_bottom_space, self.bar_width - self.bar_small_width -self.right_space)
             else:
-                self.hwindow.shape_combine_region(region, -self.top_bootm_space, self.bar_width - self.bar_small_width -self.right_space)
+                self.hwindow.shape_combine_region(region, -self.top_bottom_space, self.bar_width - self.bar_small_width -self.right_space)
         elif orientation == gtk.ORIENTATION_VERTICAL:
             region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_small_width, int(self._vertical.bar_len)))
 
             if self.vallocation.y == 0:
-                self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width - self.right_space, self.top_bootm_space)
+                self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width - self.right_space, self.top_bottom_space)
             else:
-                self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width - self.right_space, -self.top_bootm_space)
+                self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width - self.right_space, -self.top_bottom_space)
         else:
             raise "make_bar_smaller's orientation must be gtk.ORIENTATION_VERTICAL or gtk.ORIENTATION_HORIZONTAL"
 
@@ -147,16 +189,16 @@ class ScrolledWindow(gtk.Bin):
             region = gdk.region_rectangle(gdk.Rectangle(0, 0, int(self._horizaontal.bar_len), self.bar_width))
 
             if self.hallocation.x == 0:
-                self.hwindow.shape_combine_region(region, self.top_bootm_space, -self.right_space)
+                self.hwindow.shape_combine_region(region, self.top_bottom_space, -self.right_space)
             else:
-                self.hwindow.shape_combine_region(region, -self.top_bootm_space, -self.right_space)
+                self.hwindow.shape_combine_region(region, -self.top_bottom_space, -self.right_space)
         elif orientation == gtk.ORIENTATION_VERTICAL:
             region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_width, int(self._vertical.bar_len)))
 
             if self.vallocation.y == 0:
-                self.vwindow.shape_combine_region(region, -self.right_space, self.top_bootm_space)
+                self.vwindow.shape_combine_region(region, -self.right_space, self.top_bottom_space)
             else:
-                self.vwindow.shape_combine_region(region, -self.right_space, -self.top_bootm_space)
+                self.vwindow.shape_combine_region(region, -self.right_space, -self.top_bottom_space)
         else:
             raise "make_bar_bigger's orientation must be gtk.ORIENTATION_VERTICAL or gtk.ORIENTATION_HORIZONTAL"
 
@@ -326,6 +368,13 @@ class ScrolledWindow(gtk.Bin):
 
 
     def add_with_viewport(self, child):
+        '''
+        Used to add children without native scrolling capabilities.
+        If a child has native scrolling, use ScrolledWindow.add() insetad
+        of this function.
+
+        @param child: the child without native scrolling.
+        '''
         vp = gtk.Viewport()
         vp.set_shadow_type(gtk.SHADOW_NONE)
         vp.add(child)
@@ -333,6 +382,12 @@ class ScrolledWindow(gtk.Bin):
         self.add(vp)
 
     def add_child(self, child):
+        '''
+        Add the child to this ScrolledWindow.The child should have
+        native scrolling capabilities.
+
+        @param child: the child with native scrolling.
+        '''
         self.add_with_viewport(child)
         #raise Exception, "use add_with_viewport instead add_child"
 
@@ -487,12 +542,27 @@ class ScrolledWindow(gtk.Bin):
         gtk.Bin.do_remove(self, child)
 
     def get_vadjustment(self):
+        '''
+        Returns the vertical scrollbar's adjustment,
+        used to connect the vectical scrollbar to the child widget's
+        vertical scroll functionality.
+        '''
         return self.vadjustment
 
     def get_hadjustment(self):
+        '''
+        Returns the horizontal scrollbar's adjustment,
+        used to connect the horizontal scrollbar to the child
+        widget's horizontal scroll functionality.
+        '''
         return self.hadjustment
 
     def set_hadjustment(self, adj):
+        '''
+        Sets the gtk.Adjustment for the horizontal scrollbar.
+
+        @param adj: horizontal scroll adjustment
+        '''
         remove_signal_id(self.h_value_change_id)
         remove_signal_id(self.h_change_id)
 
@@ -503,6 +573,11 @@ class ScrolledWindow(gtk.Bin):
         self.h_change_id = (self.hadjustment, h_change_handler_id)
 
     def set_vadjustment(self, adj):
+        '''
+        Sets the gtk.Adjustment for the vertical scrollbar.
+
+        @param adj: vertical scroll adjustment
+        '''
         remove_signal_id(self.v_value_change_id)
         remove_signal_id(self.v_change_id)
 

@@ -1,16 +1,7 @@
-animation.py
-combo.py
-dialog.py
-dominant_color.py
-draw.py
-droplist.py
 entry.py
 frame.py
 group.py
 iconview.py
-label.py
-listview.py
-listview_preview_pixbuf.py
 menu.py
 mplayer_view.py
 mplayer_window.py
@@ -20,9 +11,7 @@ osd_tooltip.py
 paned.py
 panel.py
 progressbar.py
-pseudo_skin.py
 scalebar.py
-scrolled_window.py
 skin.py
 skin_config.py
 slider.py
@@ -33,8 +22,6 @@ theme.py
 thread_pool.py
 threads.py
 timeline.py
-tooltip.py
-tooltip_test.py
 treeview.py
 unique_service.py
 volume_button.py

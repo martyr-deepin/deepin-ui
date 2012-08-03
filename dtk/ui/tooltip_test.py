@@ -26,6 +26,8 @@ from gtk import gdk
 import pseudo_skin
 import tooltip as TT
 
+__all__ = []
+
 def customTooltip_cb():
     box = gtk.VBox()
     #box.set_size_request(800, 400)
