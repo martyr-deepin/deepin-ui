@@ -47,7 +47,7 @@ case "$1" in
         rm -rf `find . -name .#*` | sudo python setup.py install
         ;;
     "module_docs"  )
-        epydoc --html --graph=all -v -o apidocs dtk/ui/$2
+        epydoc --no-private --html --graph=all -v -o apidocs dtk/ui/$2
         ;;
     "build_docs"  )
         epydoc --config epydoc.cfg
