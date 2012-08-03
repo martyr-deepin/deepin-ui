@@ -37,7 +37,7 @@ class Categorybar(EventBox):
         '''
         Initialize Categorybar class.
         
-        @param items: Category item, 
+        @param items: A list of category item, format: (icon_dpixbuf, content, click_callback)
         '''
         # Init event box.
         super(Categorybar, self).__init__()
@@ -80,7 +80,11 @@ class Categorybar(EventBox):
         return self.category_index
         
     def get_icon_width(self, items):
-        '''Get icon width.'''
+        '''
+        Get icon width.
+        
+        @param items: A list of category item, format: (icon_dpixbuf, content, click_callback)
+        '''
         icon_width = 0
         for (icon_dpixbuf, content, _) in items:
             if icon_dpixbuf:
@@ -92,12 +96,29 @@ class Categorybar(EventBox):
 gobject.type_register(Categorybar)    
     
 class CategoryItem(gtk.Button):
-    '''Category item.'''
+    '''
+    CategoryItem class for use in CategoryBar.
+    
+    @undocumented: wrap_category_item_clicked_action
+    @undocumented: expose_category_item
+    '''    
 	
     def __init__(self, item, index, font_size, icon_width, 
                  padding_left, padding_middle, padding_right, 
                  set_index, get_index):
-        '''Init category item.'''
+        '''
+        Initialize CategoryItem class.
+        
+        @param item: Category item, format: (item_dpixbuf, content, click_callback)
+        @param index: Category item index.
+        @param font_size: Font size.
+        @param icon_width: Icon width.
+        @param padding_left: Padding at left of item. 
+        @param padding_middle: Padding between icon and font.
+        @param padding_right: Padding at right of item.
+        @param set_index: Set index callback.
+        @param get_index: Get index callback.
+        '''
         # Init.
         gtk.Button.__init__(self)
         self.font_size = font_size
@@ -124,13 +145,21 @@ class CategoryItem(gtk.Button):
         self.connect("clicked", lambda w: self.wrap_category_item_clicked_action())
 
     def wrap_category_item_clicked_action(self):
-        '''Wrap clicked action.'''
+        '''
+        Internal function, wrap clicked action.
+        '''
         if self.clicked_callback:
             self.clicked_callback()
         self.set_index(self.index)
 
     def expose_category_item(self, widget, event):
-        '''Expose navigate item.'''
+        '''
+        Internal function, callback for `expose-event` signal.
+        
+        @param widget: Gtk.Widget instance.
+        @param event: Expose event.
+        @return: Always return True.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
