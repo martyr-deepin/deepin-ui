@@ -51,7 +51,7 @@ class Window(gtk.Window):
         Initialise the Window class.
 
         @param enable_resize: If True, the window will be set resizable. By default, it's False.
-        @param shadow_radius: The radius of the shadow.
+        @param shadow_radius: The radius of the shadow. By default, it's 6.
         @param window_type: A flag of type gtk._gtk.WindowType, which indicates the type of the window. By default, it's gtk.WINDOW_TOPLEVEL.
         @param shadow_visible: If True, the shadow is visible. By default, it's True.
         """
@@ -393,7 +393,7 @@ class Window(gtk.Window):
         """
         Get the edge which the cursor is on, according to the cursor type.
 
-        @return: If there is a corresponding cursor type, return an instance of gtk.gdk.WindowEdge, else return None.
+        @return: If there is a corresponding cursor type, an instance of gtk.gdk.WindowEdge is returned, else None is returned.
         """
         if EDGE_DICT.has_key(self.cursor_type):
             return EDGE_DICT[self.cursor_type]

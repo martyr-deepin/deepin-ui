@@ -25,8 +25,18 @@ import dbus
 import dbus.service
 
 class UniqueService(dbus.service.Object):
+    """
+    This class implement a dbus interface, which is used to ensure that the program or service is unique in the system.
+    """
     def __init__(self, bus_name, app_dbus_name, app_object_name, unique_callback=None):
-        # Init.
+        """
+        Initialise the class.
+
+        @param bus_name: the public service name of the service.
+        @param app_dbus_name: the public service name of the service.
+        @param app_object_name: the public service path of the service.
+        @param unique_callback: the callback which is invoked when the service is found already start. By default, it's None.
+        """
         dbus.service.Object.__init__(self, bus_name, app_object_name)
         self.unique_callback = unique_callback
 
@@ -40,7 +50,14 @@ class UniqueService(dbus.service.Object):
         setattr(UniqueService, 'unique', dbus.service.method(app_dbus_name)(unique))
 
 def is_exists(app_dbus_name, app_object_name):
-    '''Is application exists.'''
+    """
+    Check the program or service is already started by its app_dbus_name and app_object_name.
+
+    @param app_dbus_name: the public service name of the service.
+    @param app_object_name: the public service path of the service.
+
+    @return: If the service is already on, True is returned. Otherwise return False.
+    """
     DBusGMainLoop(set_as_default=True) # WARING: only use once in one process
         
     # Init dbus.
