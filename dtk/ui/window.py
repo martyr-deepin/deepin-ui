@@ -103,11 +103,13 @@ class Window(gtk.Window):
         self.show_all()
         
     def expose_window_background(self, widget, event):
-        '''Expose window background.'''
         """
         Expose the window background.
+
         @param widget: A window of type Gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
+
+        @return: Always return True.
         """
         # Init.
         cr = widget.window.cairo_create()
@@ -190,6 +192,7 @@ class Window(gtk.Window):
     def expose_window_shadow(self, widget, event):
         """
         Expose the window shadow.
+
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
         """
@@ -324,6 +327,7 @@ class Window(gtk.Window):
     def resize_window(self, widget, event):
         """
         Resize the window.
+
         @param widget: The window of type gtk.Widget.
         @param event: A signal of type gtk.gdk.Event.
         """
@@ -342,6 +346,7 @@ class Window(gtk.Window):
     def monitor_window_state(self, widget, event):
         """
         Monitor window state, add shadow when window at maximized or fullscreen status. Otherwise hide shadow.
+
         @param widget: The window of type gtk.Widget.
         @param event: The event of gtk.gdk.Event.
         """
@@ -357,6 +362,7 @@ class Window(gtk.Window):
     def add_move_event(self, widget):
         """
         Add move event callback.
+
         @param widget: A widget of type gtk.Widget.
         """
         widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
@@ -364,6 +370,7 @@ class Window(gtk.Window):
     def add_toggle_event(self, widget):
         """
         Add toggle event callback.
+
         @param widget: A widget of type gtk.Widget.
         """
         widget.connect("button-press-event", self.double_click_window)        
