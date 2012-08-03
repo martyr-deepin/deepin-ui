@@ -27,11 +27,28 @@ import cairo
 import gobject
 import gtk
 
+__all__ = ["Panel"]
+
 class Panel(gtk.Window):
-    '''Panel.'''
+    '''
+    Panel.
+    
+    @undocumented: stop_render
+    @undocumented: start_show
+    @undocumented: start_hide
+    @undocumented: render_show
+    @undocumented: render_hide
+    @undocumented: shape_panel
+    '''
 	
     def __init__(self, width, height, window_type=gtk.WINDOW_TOPLEVEL):
-        '''Init panel.'''
+        '''
+        Initialize Panel class.
+        
+        @param width: Initialize panel width.
+        @param height: Initialize panel height.
+        @param window_type: Window type, default is gtk.WINDOW_TOPLEVEL.
+        '''
         # Init.
         gtk.Window.__init__(self, window_type)
         skin_config.wrap_skin_window(self)
@@ -53,36 +70,48 @@ class Panel(gtk.Window):
         self.connect("size-allocate", self.shape_panel)
         
     def stop_render(self):
-        '''Stop render callback.'''
+        '''
+        Internal function to stop render.
+        '''
         # Stop callback.
         remove_timeout_id(self.start_show_id)
         remove_timeout_id(self.start_hide_id)
             
     def show_panel(self):
-        '''Show panel.'''
+        '''
+        Show panel.
+        '''
         self.set_opacity(1)
         self.show_all()
     
     def hide_panel(self):
-        '''Hide panel.'''
+        '''
+        Hide panel.
+        '''
         self.set_opacity(0)
         self.hide_all()
         
     def start_show(self):
-        '''Start show.'''
+        '''
+        Internal function to start show.
+        '''
         if self.start_show_id == None and self.get_opacity() != 1:
             self.stop_render()
             self.start_show_id = gtk.timeout_add(self.delay, self.render_show)
             self.show_all()
         
     def start_hide(self):
-        '''Start hide.'''
+        '''
+        Internal function to start hide.
+        '''
         if self.start_hide_id == None and self.get_opacity() != 0:
             self.stop_render()
             self.start_hide_id = gtk.timeout_add(self.delay, self.render_hide)
     
     def render_show(self):
-        '''Render show effect.'''
+        '''
+        Internal function to render show effect.
+        '''
         self.set_opacity(min(self.get_opacity() + self.show_inc_opacity, 1))
         
         if self.get_opacity() >= 1:
@@ -92,7 +121,9 @@ class Panel(gtk.Window):
             return True
     
     def render_hide(self):
-        '''Render hide effect.'''
+        '''
+        Internal function to render hide effect.
+        '''
         self.set_opacity(max(self.get_opacity() - self.hide_dec_opacity, 0))
         
         if self.get_opacity() <= 0:
@@ -103,14 +134,24 @@ class Panel(gtk.Window):
             return True
         
     def resize_panel(self, w, h):
-        '''Resize panel.'''
+        '''
+        Resize panel.
+        
+        @param w: Resize width.
+        @param h: Resize height.
+        '''
         self.width = w
         self.height = h
         self.set_size_request(self.width, self.height)
         self.shape_panel(self, self.get_allocation())
         
     def shape_panel(self, widget, rect):
-        '''Shap panel window.'''
+        '''
+        Internal callback for `size-allocate` signal.
+
+        @param widget: Panel widget.
+        @param rect: Size allocation.
+        '''
         if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
