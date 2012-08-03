@@ -28,6 +28,7 @@ from draw import draw_text
 from scrolled_window import ScrolledWindow
 from skin_config import skin_config
 from theme import ui_theme
+from locales import _
 import gobject
 import gtk
 from utils import (container_remove_all, get_content_size, 
@@ -36,10 +37,19 @@ from utils import (container_remove_all, get_content_size,
                    get_window_shadow_size)
 
 class TabBox(gtk.VBox):
-    '''Tab box.'''
+    '''
+    Tab box.
+    
+    @undocumented: press_tab_title_box
+    @undocumented: expose_tab_title_box
+    @undocumented: expose_tab_content_align
+    @undocumented: expose_tab_content_box
+    '''
 	
     def __init__(self):
-        '''Init tab box.'''
+        '''
+        Initialize TabBox class.
+        '''
         # Init.
         gtk.VBox.__init__(self)
         self.tab_height = 29
@@ -77,7 +87,12 @@ class TabBox(gtk.VBox):
         self.tab_content_box.connect("expose-event", self.expose_tab_content_box)
         
     def add_items(self, items, default_index=0):
-        '''Add items.'''
+        '''
+        Add items.
+        
+        @param items: A list of tab item, tab item format: (tab_name, tab_widget)
+        @param default_index: Initialize index, default is 0.
+        '''
         self.tab_items += items
         
         for item in items:
@@ -86,7 +101,11 @@ class TabBox(gtk.VBox):
         self.switch_content(default_index)
     
     def switch_content(self, index):
-        '''Switch content.'''
+        '''
+        Switch content with given index.
+
+        @param index: Tab index.
+        '''
         if self.tab_index != index:
             self.tab_index = index
             widget = self.tab_items[index][1]
@@ -99,7 +118,9 @@ class TabBox(gtk.VBox):
             self.show_all()
         
     def press_tab_title_box(self, widget, event):
-        '''Press tab title box.'''
+        '''
+        Internal callback for `button-press-event` signal.
+        '''
         for (index, item) in enumerate(self.tab_items):
             if is_in_rect((event.x, event.y), 
                           (sum(self.tab_title_widths[0:index]),
@@ -110,7 +131,9 @@ class TabBox(gtk.VBox):
                 break
 
     def expose_tab_title_box(self, widget, event):
-        '''Expose tab title box.'''
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
@@ -210,7 +233,9 @@ class TabBox(gtk.VBox):
                         )
     
     def expose_tab_content_align(self, widget, event):
-        '''Expose tab content box.'''
+        '''
+        Internal function to `expose-event` signal.
+        '''
         cr = widget.window.cairo_create()
         rect = widget.allocation
 
@@ -220,7 +245,9 @@ class TabBox(gtk.VBox):
             cr.stroke()
 
     def expose_tab_content_box(self, widget, event):
-        '''Expose tab content box.'''
+        '''
+        Internal function to `expose-event` signal.
+        '''
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
@@ -245,14 +272,28 @@ class TabBox(gtk.VBox):
 gobject.type_register(TabBox)               
 
 class TabWindow(DialogBox):
-    '''Tab window.'''
+    '''
+    Tab window.
+    
+    @undocumented: click_confirm_button
+    @undocumented: click_cancel_button
+    '''
 	
     def __init__(self, title, items, 
                  confirm_callback=None, 
                  cancel_callback=None,
                  window_width=458,
                  window_height=472):
-        '''Init tab window.'''
+        '''
+        Initialize TabWindow clas.
+        
+        @param title: Tab window title.
+        @param items: A list of tab item, tab item format: (tab_name, tab_widget)
+        @param confirm_callback: Callback when user click ok button.
+        @param cancel_callback: Callback when user click cancel button.
+        @param window_width: Default window width.
+        @param window_height: Default window height.
+        '''
         DialogBox.__init__(self, title, window_width, window_height, mask_type=DIALOG_MASK_TAB_PAGE)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
@@ -268,8 +309,8 @@ class TabWindow(DialogBox):
         self.tab_align.set_padding(8, 0, 0, 0)
         self.tab_align.add(self.tab_box)
         
-        self.confirm_button = Button("确认")
-        self.cancel_button = Button("取消")
+        self.confirm_button = Button(_("OK"))
+        self.cancel_button = Button(_("Cancel"))
         
         self.window_box.pack_start(self.tab_align, True, True)
         
@@ -281,14 +322,18 @@ class TabWindow(DialogBox):
         self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
     def click_confirm_button(self):
-        '''Click confirm button.'''
+        '''
+        Internal function to response when user click confirm button.
+        '''
         if self.confirm_callback != None:
             self.confirm_callback()        
         
         self.destroy()
         
     def click_cancel_button(self):
-        '''Click cancel button.'''
+        '''
+        Internal function to response when user click cancel button.
+        '''
         if self.cancel_callback != None:
             self.cancel_callback()
         

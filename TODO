@@ -12,7 +12,6 @@ skin_config.py
 slider.py
 spin.py
 statusbar.py
-tab_window.py
 theme.py
 thread_pool.py
 threads.py
