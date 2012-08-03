@@ -33,7 +33,16 @@ from utils import (cairo_state, cairo_disable_antialias, color_hex_to_cairo,
                    alpha_color_hex_to_cairo, layout_set_markup)
 
 def draw_radial_ring(cr, x, y, outer_radius, inner_radius, color_infos):
-    '''Draw radial ring.'''
+    '''
+    Draw radial ring.
+    
+    @param cr: Cairo context.
+    @param x: X coordinate of draw area.
+    @param y: Y coordinate of draw area.
+    @param outer_radius: Radious for outter ring.
+    @param inner_radius: Radious for inner ring.
+    @param color_infos: A list of ColorInfo, ColorInfo format as [(color_pos, (color_hex_value, color_alpha))].
+    '''
     with cairo_state(cr):
         # Clip.
         cr.arc(x, y, outer_radius, 0, pi * 2)
@@ -45,14 +54,27 @@ def draw_radial_ring(cr, x, y, outer_radius, inner_radius, color_infos):
         draw_radial_round(cr, x, y, outer_radius, color_infos)
         
 def get_desktop_pixbuf():
-    '''Get desktop snapshot.'''
+    '''
+    Get screenshot of desktop.
+    
+    @return: Return desktop screenshot as gtk.gdk.Pixbuf. 
+    '''
     rootWindow = gtk.gdk.get_default_root_window() 
     [width, height] = rootWindow.get_size() 
     pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, width, height)
     return pixbuf.get_from_drawable(rootWindow, rootWindow.get_colormap(), 0, 0, 0, 0, width, height) 
     
 def draw_round_rectangle(cr, x, y, width, height, r):
-    '''Draw round rectangle.'''
+    '''
+    Draw round rectangle.
+    
+    @param cr: Cairo context.
+    @param x: X coordiante of rectangle area.
+    @param y: Y coordiante of rectangle area.
+    @param width: Width of rectangle area.
+    @param height: Width of rectangle area.
+    @param r: Radious of rectangle corner.
+    '''
     # Adjust coordinate when width and height is negative.
     if width < 0:
         x = x + width
@@ -90,7 +112,15 @@ def draw_round_rectangle(cr, x, y, width, height, r):
     cr.close_path()
 
 def draw_pixbuf(cr, pixbuf, x=0, y=0, alpha=1.0):
-    '''Draw pixbuf.'''
+    '''
+    Draw pixbuf on cairo context, this function use frequently for image render.
+    
+    @param cr: Cairo context.
+    @param pixbuf: gtk.gdk.Pixbuf
+    @param x: X coordiante of draw area.
+    @param y: Y coordiante of draw area.
+    @param alpha: Alpha value to render pixbuf, float value between 0 and 1.0
+    '''
     if pixbuf != None:
         cr.set_source_pixbuf(pixbuf, x, y)
         cr.paint_with_alpha(alpha)
@@ -102,7 +132,20 @@ def draw_window_frame(cr, x, y, w, h,
                       color_frame_inside_1,
                       color_frame_inside_2,
                       ):
-    '''Draw window frame.'''
+    '''
+    Draw window frame.
+    
+    @param cr: Cairo context.
+    @param x: X coordiante of draw area.
+    @param y: Y coordiante of draw area.
+    @param w: Width of draw area.
+    @param h: Height of draw area.
+    @param color_frame_outside_1: Use for draw outside 8 points.
+    @param color_frame_outside_2: Use for draw middle 4 points.
+    @param color_frame_outside_3: Use for draw inside 4 points.
+    @param color_frame_inside_1: Use for draw outside frame.
+    @param color_frame_inside_2: Use for draw inner frame and inside 4 points.
+    '''
     with cairo_disable_antialias(cr):    
         # Set line width.
         cr.set_line_width(1)
@@ -193,7 +236,16 @@ def draw_window_frame(cr, x, y, w, h,
         cr.fill()
         
 def draw_window_rectangle(cr, sx, sy, ex, ey, r):
-    '''Draw window rectangle.'''
+    '''
+    Draw window rectangle.
+    
+    @param cr: Cairo context.
+    @param sx: Source x coordinate.
+    @param sy: Source y coordinate.
+    @param ex: Target x coordinate.
+    @param ey: Target x coordinate.
+    @param r: Window frame radious.
+    '''
     with cairo_disable_antialias(cr):    
         # Set line width.
         cr.set_line_width(1)
@@ -235,6 +287,25 @@ def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#
               border_radious=None, border_color=None, 
               wrap_width=None,
               ):
+    '''
+    Standard function for draw text.
+    
+    @param cr: Cairo context.
+    @param markup: Pango markup string.
+    @param x: X coordinate of draw area.
+    @param y: Y coordinate of draw area.
+    @param w: Width of draw area.
+    @param h: Height of draw area.
+    @param text_size: Text size, default is DEFAULT_FONT_SIZE.
+    @param text_color: Text color, default is \"#000000\".
+    @param text_font: Text font, default is DEFAULT_FONT.
+    @param alignment: Font alignment option, default is pango.ALIGN_LEFT. You can set pango.ALIGN_MIDDLE or pango.ALIGN_RIGHT.
+    @param gaussian_radious: Gaussian radious, default is None.
+    @param gaussian_color: Gaussian color, default is None.
+    @param border_radious: Border radious, default is None.
+    @param border_color: Border color, default is None.
+    @param wrap_width: Wrap width of text, default is None.
+    '''
     if border_radious == None and border_color == None and gaussian_radious == None and gaussian_color == None:
         render_text(cr, markup, x, y, w, h, text_size, text_color, text_font, alignment,
                     wrap_width=wrap_width)
@@ -276,7 +347,21 @@ def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#
 def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#000000", 
                 text_font=DEFAULT_FONT, alignment=pango.ALIGN_LEFT,
                 wrap_width=None):
-    '''Draw string.'''
+    '''
+    Render text for function L{ I{draw_text} <draw_text>}, you can use this function individually.
+    
+    @param cr: Cairo context.
+    @param markup: Pango markup string.
+    @param x: X coordinate of draw area.
+    @param y: Y coordinate of draw area.
+    @param w: Width of draw area.
+    @param h: Height of draw area.
+    @param text_size: Text size, default is DEFAULT_FONT_SIZE.
+    @param text_color: Text color, default is \"#000000\".
+    @param text_font: Text font, default is DEFAULT_FONT.
+    @param alignment: Font alignment option, default is pango.ALIGN_LEFT. You can set pango.ALIGN_MIDDLE or pango.ALIGN_RIGHT.
+    @param wrap_width: Wrap width of text, default is None.
+    '''
     # Create pangocairo context.
     context = pangocairo.CairoContext(cr)
     
@@ -301,7 +386,17 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
     context.show_layout(layout)
         
 def draw_line(cr, sx, sy, ex, ey, line_width=1, antialias_status=cairo.ANTIALIAS_NONE):
-    '''Draw line.'''
+    '''
+    Draw line.
+    
+    @param cr: Cairo context.
+    @param sx: Souce X coordinate.
+    @param sy: Souce Y coordinate.
+    @param ex: Target X coordinate.
+    @param ey: Target Y coordinate.
+    @param line_width: Line width, default is 1 pixel.
+    @param antialias_status: Antialias status, default is cairo.ANTIALITAS_NONE.
+    '''
     # Save antialias.
     antialias = cr.get_antialias()
     
@@ -316,7 +411,18 @@ def draw_line(cr, sx, sy, ex, ey, line_width=1, antialias_status=cairo.ANTIALIAS
     cr.set_antialias(antialias)
 
 def draw_vlinear(cr, x, y, w, h, color_infos, radius=0, top_to_bottom=True):
-    '''Draw linear rectangle.'''
+    '''
+    Draw linear area vertically.
+    
+    @param cr: Cairo context.
+    @param x: X coordinate of draw area.
+    @param y: Y coordinate of draw area.
+    @param w: Width of draw area.
+    @param h: Height of draw area.
+    @param color_infos: A list of ColorInfo, ColorInfo format: (color_stop_position, (color_hex_value, color_alpha))
+    @param radius: Rectangle corner radious.
+    @param top_to_bottom: Draw direction, default is from top to bottom, function will draw from bottom to top if set option as False.
+    '''
     with cairo_state(cr):
         # Translate y coordinate, otherwise y is too big for LinearGradient cause render bug.
         cr.translate(0, y)
@@ -335,7 +441,18 @@ def draw_vlinear(cr, x, y, w, h, color_infos, radius=0, top_to_bottom=True):
         cr.fill()
 
 def draw_hlinear(cr, x, y, w, h, color_infos, radius=0, left_to_right=True):
-    '''Draw linear rectangle.'''
+    '''
+    Draw linear area horticulturally.
+    
+    @param cr: Cairo context.
+    @param x: X coordinate of draw area.
+    @param y: Y coordinate of draw area.
+    @param w: Width of draw area.
+    @param h: Height of draw area.
+    @param color_infos: A list of ColorInfo, ColorInfo format: (color_stop_position, (color_hex_value, color_alpha))
+    @param radius: Rectangle corner radious.
+    @param left_to_right: Draw direction, default is from left to right, function will draw from right to left if set option as False.
+    '''
     with cairo_state(cr):
         # Translate x coordinate, otherwise x is too big for LinearGradient cause render bug.
         cr.translate(x, 0)
@@ -352,7 +469,13 @@ def draw_hlinear(cr, x, y, w, h, color_infos, radius=0, left_to_right=True):
         cr.fill()
     
 def expose_linear_background(widget, event, color_infos):
-    '''Expose linear background.'''
+    '''
+    Expose linear background.
+    
+    @param widget: Gtk.Widget instance.
+    @param event: Expose event.
+    @param color_infos: A list of ColorInfo, ColorInfo format: (color_stop_position, (color_hex_value, color_alpha))
+    '''
     # Init.
     cr = widget.window.cairo_create()
     rect = widget.allocation
@@ -366,7 +489,18 @@ def expose_linear_background(widget, event, color_infos):
     return True
 
 def draw_window_shadow(cr, x, y, w, h, r, p, color_window_shadow):
-    '''Draw window shadow.'''
+    '''
+    Draw window shadow.
+    
+    @param cr: Cairo context.
+    @param x: X coordinate of draw area.
+    @param y: Y coordinate of draw area.
+    @param w: Width of draw area.
+    @param h: Height of draw area.
+    @param r: Radious of window shadow corner.
+    @param p: Padding between window shadow and window frame.
+    @param color_window_shadow: theme.DyanmicShadowColor.
+    '''
     color_infos = color_window_shadow.get_color_info()
     with cairo_state(cr):
         # Clip four corner.
@@ -421,7 +555,15 @@ def draw_window_shadow(cr, x, y, w, h, r, p, color_window_shadow):
             r, h - r * 2, color_infos, 0, False)
 
 def draw_radial_round(cr, x, y, r, color_infos):
-    '''Draw radial round.'''
+    '''
+    Draw radial round.
+    
+    @param cr: Cairo context.
+    @param x: X coordinate of draw area.
+    @param y: Y coordinate of draw area.
+    @param r: Radious of radial round.
+    @param color_infos: A list of ColorInfo, ColorInfo format: (color_stop_position, (color_hex_value, color_alpha))
+    '''
     radial = cairo.RadialGradient(x, y, r, x, y, 0)
     for (pos, color_info) in color_infos:
         add_color_stop_rgba(radial, pos, color_info)
@@ -430,6 +572,14 @@ def draw_radial_round(cr, x, y, r, color_infos):
     cr.fill()
 
 def draw_blank_mask(cr, x, y, w, h):
-    '''Draw blank mask.'''
+    '''
+    Draw blank mask, use for default mask function.
+    
+    @param cr: Cairo context.
+    @param x: X coordiante of rectangle area.
+    @param y: Y coordiante of rectangle area.
+    @param w: Width of rectangle area.
+    @param h: Width of rectangle area.
+    '''
     pass
 
