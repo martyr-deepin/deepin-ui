@@ -28,10 +28,21 @@ import gobject
 import gtk
 
 class Slider(gtk.Viewport):
+    '''
+    Slider.
+    
+    @undocumented: size_allocate_cb
+    '''
+    
     active_widget = None
     _size_cache = None
 
     def __init__(self, slide_callback=None):
+        '''
+        Initialize Slider class.
+
+        @param slide_callback: Callback when slider change image, arguments: (index, widget), default is None.
+        '''
         gtk.Viewport.__init__(self)
         self.slide_callback = slide_callback
         self.timeouts = dict()
@@ -49,7 +60,11 @@ class Slider(gtk.Viewport):
         self.connect('size-allocate', self.size_allocate_cb)
 
     def slide_to(self, widget):
-
+        '''
+        Slide to given widget.
+        
+        @param widget: Widget in slider.
+        '''
         self.active_widget = widget
 
         def update(source, status):
@@ -69,7 +84,9 @@ class Slider(gtk.Viewport):
             self.slide_callback(self.layout.get_children().index(widget), widget)
             
     def size_allocate_cb(self, source, allocation):
-
+        '''
+        Internal function for `size-allocate` signal.
+        '''
         if self._size_cache != allocation and self.active_widget:
             adjustment = self.get_hadjustment()
             adjustment.set_value(self.active_widget.get_allocation().x)
@@ -80,11 +97,19 @@ class Slider(gtk.Viewport):
         self.content.set_size_request(width, allocation.height)
 
     def append_widget(self, widget):
+        '''
+        Append widget.
+        
+        @param widget: Widget to append in slider.
+        '''
         self.layout.pack_start(widget, True, True, 0)
 
     def add_slide_timeout(self, widget, milliseconds):
         """
         Adds a timeout for ``widget`` to slide in after ``seconds``.
+        
+        @param widget: Add widget.
+        @param milliseconds: Delay time.
         """
         if widget in self.timeouts:
             raise RuntimeError("A timeout for '%s' was already added" % widget)
@@ -96,6 +121,8 @@ class Slider(gtk.Viewport):
     def remove_slide_timeout(self, widget):
         """
         Removes a timeout previously added by ``add_slide_timeout``.
+        
+        @param widget: Remove widget from slider.
         """
         try:
             gobject.source_remove(self.timeouts.pop(widget)[0])
@@ -106,6 +133,9 @@ class Slider(gtk.Viewport):
     def reset_slide_timeout(self, widget, milliseconds=None):
         """
         Shorthand to ``remove_slide_timeout`` plus ``add_slide_timeout``.
+        
+        @param widget: Slider wiget.
+        @param milliseconds: New delay value.
         """
         if milliseconds is None:
             try:
@@ -117,6 +147,11 @@ class Slider(gtk.Viewport):
         self.add_slide_timeout(widget, milliseconds)
 
     def try_remove_slide_timeout(self, widget):
+        '''
+        Try remove slide timeout that match given widget.
+
+        @param widget: Match widget.
+        '''
         try:
             self.remove_slide_timeout(widget)
         except RuntimeError:
@@ -126,6 +161,7 @@ class Slider(gtk.Viewport):
         """
         Like ``reset_slide_timeout``, but fails silently
         if the timeout for``widget`` does not exist.
+        
         """
         if widget in self.timeouts:
             self.reset_slide_timeout(widget, *args, **kwargs)
@@ -133,7 +169,13 @@ class Slider(gtk.Viewport):
 gobject.type_register(Slider)
 
 class Wizard(Window):
-    '''Wizard.'''
+    '''
+    Wizard.
+    
+    @undocumented: button_press_slider
+    @undocumented: button_press_navigatebar
+    @undocumented: expose_navigatebar
+    '''
 	
     def __init__(self, 
                  slider_files,
@@ -146,7 +188,19 @@ class Wizard(Window):
                  close_area_width=32,
                  close_area_height=32,
                  ):
-        '''Init wizard.'''
+        '''
+        Initialize Wizard class.
+        
+        @param slider_files: Big slide image file list.
+        @param navigate_files: Small navigate image file list.
+        @param finish_callback: Callback when finish show.
+        @param window_width: Default window width.
+        @param window_height: Default window height.
+        @param navigatebar_height: Navigatebar height.
+        @param slide_delay: Delay of slide, in milliseconds.
+        @param close_area_width: Width of top-right close area.
+        @param close_area_height: Height of top-right close area.
+        '''
         # Init.
         Window.__init__(self)
         self.slider_files = slider_files
@@ -200,7 +254,9 @@ class Wizard(Window):
         self.navigatebar.connect("expose-event", self.expose_navigatebar)
         
     def button_press_slider(self, widget, event):
-        '''Button press slider.'''
+        '''
+        Internal callback for slider's `button-press-event` signal.
+        '''
         rect = widget.allocation
         (window_x, window_y) = widget.get_toplevel().window.get_origin()
         if (self.slide_index == self.slider_number - 1
@@ -217,7 +273,9 @@ class Wizard(Window):
             widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
     
     def button_press_navigatebar(self, widget, event):
-        '''Button press navigatebar.'''
+        '''
+        Internal callback for navigatebar's `button-press-event` signal.
+        '''
         # Init. 
         rect = widget.allocation
         
@@ -237,7 +295,9 @@ class Wizard(Window):
                 self.slider.add_slide_timeout(widget, index * self.slide_delay)
                 
     def expose_navigatebar(self, widget, event):
-        '''Expose navigatebar.'''
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -257,7 +317,12 @@ class Wizard(Window):
         return True
     
     def set_slide_page(self, index, widget):
-        '''Set slide page.'''
+        '''
+        Set slide page.
+        
+        @param index: Index to set.
+        @param widget: The widget you want to set.
+        '''
         self.slide_index = index
         self.navigatebar.queue_draw()    
         

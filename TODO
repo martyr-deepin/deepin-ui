@@ -6,7 +6,6 @@ navigatebar.py
 progressbar.py
 skin.py
 skin_config.py
-slider.py
 spin.py
 statusbar.py
 theme.py
