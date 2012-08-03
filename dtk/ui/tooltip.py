@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Xia Bin
-# 
+#
 # Author:     Xia Bin <xiabin@gmail.com>
 # Maintainer: Xia Bin <xiabin@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -29,7 +29,10 @@ import cairo
 import gobject
 import gtk
 
-#!!!!!!!!!!!!!!!!maybe you want to goto to the line of *388* !!!!!!!!!!!!!!!!!!#
+
+__all__ = ["text", "custom", "show_delay", "hide_delay", "hide_duration",
+        "background", "padding", "has_shadow", "disable", "always_update",
+        "disable_all"]
 
 class ChildLocation:
     def __init__(self):
@@ -124,8 +127,11 @@ def find_at_coords(gdkwindow, window_x, window_y):
     return (None, cl.x, cl.y)
 
 
-#TODO: reduce the time!!!!
 def update_tooltip(display):
+    '''
+    this function will be invoked every gdk event has received.
+    so reduce the time as possible as we can.
+    '''
     if TooltipInfo.enable_count == 0:
         return
     try :
@@ -502,6 +508,16 @@ def set_value(widgets, kv):
 #------------------the default wrap function ---------------------------------------
 @chainmethod
 def text(widget, content, *args, **kargs):
+    '''
+    set the tooltip's text content.
+    the "content", "*args" and "**kargs" are pass to the dtk.ui.Label,
+    so you can change the text's color and some other property.
+
+    @param widget: the widget of you want to change.
+    @param content: the text which you want show.
+    @param *args: pass to the dtk.ui.Label
+    @param **kargs: pass to the dtk.ui.Label
+    '''
     set_value(widget, {
         "text": content,
         "text_args":args,
@@ -511,36 +527,78 @@ def text(widget, content, *args, **kargs):
 
 @chainmethod
 def custom(widget, cb, *args, **kargs):
+    '''
+    set the custom tooltip content.
+
+    @param widget: the widget of you want to change.
+    @param cb: the function used to generate the content widget. this function should return an gtk.Widget.  Be careful: if this function generate it's content affected by other runtime factor, you alsow should use "always_update"
+    to disable the internal cache mechanism
+    @param *args: pass to the cb
+    @param **kargs: pass to the cb
+    '''
     set_value(widget, {
             "custom" : cb,
             "custom_args" : args,
             "custom_kargs" : kargs
             })
     return custom
-
 @chainmethod
 def show_delay(widget, delay):
+    '''
+    set the time of the tooltip's begin show after pointer stay on the widget.
+
+    @param widget: the widget of you want to change.
+    @param delay: the time of start begin show.
+    '''
     delay = max(250, delay)
     set_value(widget, {"show_delay": delay})
     return show_delay
 
 @chainmethod
 def hide_delay(widget, delay):
+    '''
+    set the time of the tooltip's start to hide.
+
+    @param widget: the widget of you want to change.
+    @param delay: the time of start begin hide.
+    '''
     set_value(widget, {"hide_delay": delay})
     return hide_delay
 
 @chainmethod
 def hide_duration(widget, delay):
+    '''
+    set the duration of the tooltip's hide effect duration.
+
+    @param widget: the widget of you want to change.
+    @param delay: the time of the effect duration.
+    '''
     set_value(widget, {"hide_duration": delay})
     return hide_duration
 
 @chainmethod
 def background(widget, color):
+    '''
+    set the background of the tooltip's content.
+
+    @param widget: the widget of you want to change.
+    @param color: the gdk.Color of background.
+    '''
     set_value(widget, {"background": color})
     return background
 
 @chainmethod
 def padding(widget, t, l, b, r):
+    '''
+    set the padding of the tooltip's content.
+
+    @param widget: the widget of you want to change.
+
+    @param t: the top space
+    @param l: the left space
+    @param b: the bottom space
+    @param r: the right space
+    '''
     kv = {}
     if t >= 0:
         kv["padding_t"] = int(t)
@@ -554,15 +612,29 @@ def padding(widget, t, l, b, r):
     set_value(widget, kv)
     return padding
 
+
 @chainmethod
 def has_shadow(widget, need):
+    '''
+    whether this widget's tooltip need shadow.
+
+    @param widget: the widget of you want disable tooltip.
+    @param need : wheter need shadow .
+    '''
     set_value(widget, {"has_shadow": need})
     return has_shadow
 
+
 @chainmethod
-def disable(widget, value):
+def disable(widget, is_disable):
+    '''
+    disable this widget's tooltip
+
+    @param widget: the widget of you want disable tooltip.
+    @param is_disable: wheter disable tooltip.
+    '''
     winfo = WidgetInfo.get_info(widget)
-    if value:
+    if is_disable:
         if winfo.enable :
             winfo.enable = False
             TooltipInfo.enable_count -= 1
@@ -574,13 +646,23 @@ def disable(widget, value):
 
 @chainmethod
 def always_update(widget, need):
+    '''
+    always create the new tooltip's content, used to show the
+    curstom tooltip content generate by function and the function's
+    return widget is different every time be invoked.
+
+    @param need: whether alwasy update.
+    '''
     set_value(widget, {"always_update" : need})
     return always_update
 
 #------------------------this is global effect function---------------------
-def disable_all(value):
+def disable_all(is_disable):
+    '''
+
+    '''
     count = TooltipInfo.enable_count
-    if value:
+    if is_disable:
         if count > 0:
             TooltipInfo.enable_count = -count
     else:

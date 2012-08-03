@@ -26,6 +26,8 @@ from utils import remove_signal_id, color_hex_to_cairo
 import gobject
 import gtk
 
+__all__ = ['ScrolledWindow']
+
 # the p_range is the virtual width/height, it's value is smaller than
 # the allocation.width/height when scrollbar's width/height smaller than
 # the minmum scrollbar length.
@@ -43,10 +45,18 @@ def pos2value(pos, p_range, upper):
     return pos * upper / p_range
 
 class ScrolledWindow(gtk.Bin):
-    '''Scrolled window.'''
+    '''
+    The scrolled window with deepin's custom scrollbar.
+    Be careful
+    '''
 
     def __init__(self, right_space=2, top_bootm_space=3):
-        '''Init scrolled window.'''
+        '''
+        Init scrolled window.
+
+        @param right_space: the space between right border and the vertical scroolbar.
+        @param top_bootom_space: the space between top border and the vertical scroolbar.
+        '''
         gtk.Bin.__init__(self)
         self.bar_min_length = 50  #scrollbar smallest height
         self.bar_small_width = 7
@@ -326,6 +336,13 @@ class ScrolledWindow(gtk.Bin):
 
 
     def add_with_viewport(self, child):
+        '''
+        Used to add children without native scrolling capabilities.
+        If a child has native scrolling, use ScrolledWindow.add() insetad
+        of this function.
+
+        @param child: the child without native scrolling.
+        '''
         vp = gtk.Viewport()
         vp.set_shadow_type(gtk.SHADOW_NONE)
         vp.add(child)
@@ -333,6 +350,12 @@ class ScrolledWindow(gtk.Bin):
         self.add(vp)
 
     def add_child(self, child):
+        '''
+        Add the child to this ScrolledWindow.The child should have
+        native scrolling capabilities.
+
+        @param child: the child with native scrolling.
+        '''
         self.add_with_viewport(child)
         #raise Exception, "use add_with_viewport instead add_child"
 
@@ -487,12 +510,27 @@ class ScrolledWindow(gtk.Bin):
         gtk.Bin.do_remove(self, child)
 
     def get_vadjustment(self):
+        '''
+        Returns the vertical scrollbar's adjustment,
+        used to connect the vectical scrollbar to the child widget's
+        vertical scroll functionality.
+        '''
         return self.vadjustment
 
     def get_hadjustment(self):
+        '''
+        Returns the horizontal scrollbar's adjustment,
+        used to connect the horizontal scrollbar to the child
+        widget's horizontal scroll functionality.
+        '''
         return self.hadjustment
 
     def set_hadjustment(self, adj):
+        '''
+        Sets the gtk.Adjustment for the horizontal scrollbar.
+
+        @param adj: horizontal scroll adjustment
+        '''
         remove_signal_id(self.h_value_change_id)
         remove_signal_id(self.h_change_id)
 
@@ -503,6 +541,11 @@ class ScrolledWindow(gtk.Bin):
         self.h_change_id = (self.hadjustment, h_change_handler_id)
 
     def set_vadjustment(self, adj):
+        '''
+        Sets the gtk.Adjustment for the vertical scrollbar.
+
+        @param adj: vertical scroll adjustment
+        '''
         remove_signal_id(self.v_value_change_id)
         remove_signal_id(self.v_change_id)
 

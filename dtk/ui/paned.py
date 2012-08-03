@@ -5,13 +5,21 @@ import gobject
 import gtk
 
 class Paned(gtk.Paned):
+    '''
+    gtk.Paned with custom better apperance.
+    '''
     def __init__(self):
         gtk.Paned.__init__(self)
-        self.bheight = 60
+        self.bheight = 60  #the button height or width;
         self.saved_position = -1
         self.handle_size = self.style_get_property('handle-size')
 
     def do_expose_event(self, e):
+        '''
+        To intercept the default expose event and draw custom handle
+        after the **gtk.Container** expose evetn.
+        So the gtk.Paned's expose event callback is ignore.
+        '''
         #gtk.Paned.do_expose_event(self, e)
         gtk.Container.do_expose_event(self, e)
         self.draw_handle(e)
@@ -19,11 +27,13 @@ class Paned(gtk.Paned):
         return False
 
     def draw_handle(self, e):
+        '''
+        Draw the cusom handle apperance.
+        '''
         handle = self.get_handle_window()
         line_width = 1
         cr = handle.cairo_create()
         cr.set_source_rgba(1, 0,0, 0.8)
-        #cr.paint()
         (width, height) = handle.get_size()
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
             #draw line
@@ -39,6 +49,9 @@ class Paned(gtk.Paned):
         pass
 
     def is_in_button(self, x, y):
+        '''
+        Detection of wheter the mouse pointer is in the handler's button.
+        '''
         handle = self.get_handle_window()
         (width, height) = handle.get_size()
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
@@ -52,16 +65,22 @@ class Paned(gtk.Paned):
             return False
 
     def do_enter_notify_event(self, e):
+        '''
+        change the cursor style  when move in handler
+        '''
         handle = self.get_handle_window()
         (width, height) = handle.get_size()
         if self.is_in_button(e.x, e.y):
             handle.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
         else:
             handle.set_cursor(self.cursor_type)
-            
-        self.queue_draw()    
+
+        self.queue_draw()
 
     def do_button_press_event(self, e):
+        '''
+        when press the handler's button change the position.
+        '''
         if self.is_in_button(e.x, e.y):
             if self.saved_position == -1:
                 self.saved_position = self.get_position()

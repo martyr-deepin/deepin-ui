@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Xia Bin
-# 
+#
 # Author:     Xia Bin <xiabin@gmail.com>
 # Maintainer: Xia Bin <xiabin@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -24,15 +24,53 @@ import copy
 import gobject
 
 def LinerInterpolator(factor, lower, upper):
+    '''
+    Linear interpolator
+
+    @param factor: the current factor
+    @param lower: the init lower value
+    @param lower:  the init upper value
+
+    @return: the calculated value
+    '''
     return factor * (upper - lower)
 def RandomInterpolator(base, offset, *args):
+    '''
+    Random interpolator
+
+    @param base: the base value used to calculate result value
+    @param offset: the offset apply to base.
+
+    @return: the random value based on 'base' and 'offset'
+    '''
+
     import random
     return random.randint(base-offset/2, base+offset/2)
 
 
 class Animation:
+    '''
+    The animation class used to convenient production special effects.
+    '''
     def __init__(self, widgets, property, duration, ranges, interpolator=LinerInterpolator,
                  stop_callback=None):
+        '''
+        Init animation class
+
+        @param widgets: the widgets apply to this animation. the type of
+        this param is an gtk.Widget or an list of gtk.Widget.
+
+        @param property: the gtk.Widget's property used to do effect or an function to change the actual effect.
+        @param duration: the time of this effect to continued, the unit of time
+        is millisecond
+        @param ranges: the range of the property's value. the type of this param
+        is an [lower,upper] or ([lower, upper], [lower,upper]), this is decsion by the parameter of the 'widget' or 'widgets'.
+        @param interpolator: this is an function used to calculate the property
+    value by the current time and value range.
+        @param stop_callback: the callback when this animation stop.
+
+
+        '''
         self.stop_callback = stop_callback
         self.delay = 50
         try:
@@ -78,6 +116,11 @@ class Animation:
             self.set_method = set_method2
 
     def set_delay(self, delay):
+        '''
+        set the delay time of before the start do effect.
+
+        @params delay: the time of dealy, unit of time is millisecond
+        '''
         self.delay = delay
 
     def init(self, values=None):
@@ -97,6 +140,12 @@ class Animation:
             raise Warning("init_all should init multi animation")
 
     def start_after(self, time):
+        '''
+        Start the animation after the dealy time.
+        or you can use Animation.set_delay function.
+
+        @params delay: the time of dealy, unit of time is millisecond
+        '''
         if self.start_id:
             gobject.source_remove(self.start_id)
         self.start_id = gobject.timeout_add(time, self.start)
@@ -105,6 +154,9 @@ class Animation:
 
 
     def start(self):
+        '''
+        start the animation object
+        '''
         self.time = 0
         self.animation_id = gobject.timeout_add(self.delay, self.compute)
         for o in self.other_concurent:
@@ -112,6 +164,9 @@ class Animation:
         return False
 
     def stop(self):
+        '''
+        stop immediately the animation object
+        '''
         if self.animation_id:
             gobject.source_remove(self.animation_id)
         if self.start_id:
@@ -119,7 +174,7 @@ class Animation:
 
         for o in self.other_concurent:
             o.stop()
-            
+
         # Stop callback.
         if self.stop_callback:
             self.stop_callback()
@@ -147,6 +202,12 @@ class Animation:
         return True
 
     def __mul__(self, other):
+        '''
+        Overload the '*' operator to link two or more animation object.
+        the animation's effect is happend parallel.
+        @param other: the right hand side animation class.
+        @return: the new animation class with the two operator animation's effect.
+        '''
         r = copy.deepcopy(self)
         r.other_concurent.append(other)
         return r
