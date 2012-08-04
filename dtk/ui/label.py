@@ -65,7 +65,7 @@ class Label(gtk.EventBox):
         @param text: Label text.
         @param text_color: Label text color, default is None.
         @param text_size: Label text size, default is DEFAULT_FONT_SIZE.
-        @param text_x_align: Horticultural align option, default is ALIGN_START.
+        @param text_x_align: Horizontal align option, default is ALIGN_START.
         @param label_width: Label maximum width, default is None.
         @param enable_gaussian: Default is False, if it is True, color option no effect, default gaussian effect is white text and black shadow.
         @param enable_select: Default is True, label content can't select if it is False.

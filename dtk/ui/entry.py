@@ -36,7 +36,32 @@ from utils import (propagate_expose, cairo_state, color_hex_to_cairo,
                    is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias)
 
 class Entry(gtk.EventBox):
-    '''Entry.'''
+    '''
+    Entry.
+    
+    @undocumented: monitor_entry_content
+    @undocumented: realize_entry
+    @undocumented: key_press_entry
+    @undocumented: handle_key_press
+    @undocumented: handle_key_event
+    @undocumented: expose_entry
+    @undocumented: draw_entry_background
+    @undocumented: draw_entry_text
+    @undocumented: draw_entry_cursor
+    @undocumented: button_press_entry
+    @undocumented: handle_button_press
+    @undocumented: button_release_entry
+    @undocumented: motion_notify_entry
+    @undocumented: focus_in_entry
+    @undocumented: focus_out_entry
+    @undocumented: handle_focus_out
+    @undocumented: move_offsetx_right
+    @undocumented: move_offsetx_left
+    @undocumented: get_index_at_event
+    @undocumented: commit_entry
+    @undocumented: get_content_width
+    @undocumented: get_utf8_string
+    '''
     
     MOVE_LEFT = 1
     MOVE_RIGHT = 2
@@ -57,7 +82,17 @@ class Entry(gtk.EventBox):
                  background_select_color=ui_theme.get_shadow_color("entry_select_background"),
                  font_size=DEFAULT_FONT_SIZE, 
                  ):
-        '''Init entry.'''
+        '''
+        Initialize Entry class.
+        
+        @param content: Entry initialize content, default is \"\".
+        @param padding_x: Horizontal padding value, default is 5 pixel.
+        @param padding_y: Vertical padding value, default is 2 pixel.
+        @param text_color: Color of text in normal status.
+        @param text_select_color: Color of text in select status.
+        @param background_select_color: Color of background in select status.
+        @param font_size: Entry font size, default is DEFAULT_FONT_SIZE.
+        '''
         # Init.
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
@@ -107,10 +142,10 @@ class Entry(gtk.EventBox):
         
         # Add menu.
         self.right_menu = Menu(
-            [(None, "剪切", self.cut_to_clipboard),
-             (None, "复制", self.copy_to_clipboard),
-             (None, "粘贴", self.paste_from_clipboard),
-             (None, "全选", self.select_all)],
+            [(None, _("Cut"), self.cut_to_clipboard),
+             (None, _("Copy"), self.copy_to_clipboard),
+             (None, _("Paste"), self.paste_from_clipboard),
+             (None, _("Select all"), self.select_all)],
             True)
         
         # Connect signal.
@@ -126,16 +161,18 @@ class Entry(gtk.EventBox):
         self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
         
     def set_editable(self, editable):
-        '''Set editable.'''
-        self.editable_flag = editable
+        '''
+        Set entry editable status.
         
-    def set_edit_mode(self, mode):
-        '''Set edit mode.'''
-        self.edit_mode = mode
+        @param editable: If it is True, entry can edit, else entry not allow edit.
+        '''
+        self.editable_flag = editable
         
     @contextmanager
     def monitor_entry_content(self):
-        '''Monitor entry content.'''
+        '''
+        Internal function to monitor entry content.
+        '''
         old_text = self.get_text()
         try:  
             yield  
@@ -151,14 +188,22 @@ class Entry(gtk.EventBox):
                 self.set_text(old_text)
                 
     def is_editable(self):
-        '''Whether is editable.'''
+        '''
+        Whether entry is editable.
+        
+        @return: Return True if entry editable, else return False. 
+        '''
         if not self.editable_flag:
             self.emit("edit-alarm")
             
         return self.editable_flag    
         
     def set_text(self, text):
-        '''Set text.'''
+        '''
+        Set entry text.
+        
+        @param text: Entry text string.
+        '''
         if self.is_editable():
             with self.monitor_entry_content():
                 if text != None:
@@ -177,11 +222,17 @@ class Entry(gtk.EventBox):
                     self.queue_draw()
         
     def get_text(self):
-        '''Get text.'''
+        '''
+        Get entry text.
+        
+        @return: Return entry text string.
+        '''
         return self.content
     
     def realize_entry(self, widget):
-        '''Realize entry.'''
+        '''
+        Internal callback for `realize` signal.
+        '''
         text_width = self.get_content_width(self.content)
         rect = self.get_allocation()
 
@@ -191,11 +242,15 @@ class Entry(gtk.EventBox):
             self.offset_x = 0
         
     def key_press_entry(self, widget, event):
-        '''Callback for `key-press-event` signal.'''
+        '''
+        Internal callback for `key-press-event` signal.
+        '''
         self.handle_key_press(widget, event)
         
     def handle_key_press(self, widget, event):
-        '''Handle key press.'''
+        '''
+        Internal function to handle key press.
+        '''
         # Pass key to IMContext.
         input_method_filt = self.im.filter_keypress(event)
         if not input_method_filt:
@@ -204,19 +259,25 @@ class Entry(gtk.EventBox):
         return False
     
     def handle_key_event(self, event):
-        '''Handle key event.'''
+        '''
+        Internal function to handle key event.
+        '''
         key_name = get_keyevent_name(event)
         
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
             
     def clear_select_status(self):
-        '''Clear select status.'''
+        '''
+        Clear entry select status.
+        '''
         self.select_start_index = self.select_end_index = self.cursor_index
         self.move_direction = self.MOVE_NONE            
             
     def move_to_start(self):
-        '''Move to start.'''
+        '''
+        Move cursor to start position of entry.
+        '''
         self.offset_x = 0
         self.cursor_index = 0
         
@@ -225,7 +286,9 @@ class Entry(gtk.EventBox):
         self.queue_draw()
         
     def move_to_end(self):
-        '''Move to end.'''
+        '''
+        Move cursor to end position of entry.
+        '''
         text_width = self.get_content_width(self.content)
         rect = self.get_allocation()
         if text_width > rect.width - self.padding_x * 2 > 0:
@@ -237,7 +300,9 @@ class Entry(gtk.EventBox):
         self.queue_draw()
         
     def move_to_left(self):
-        '''Move to left char.'''
+        '''
+        Backward cursor one char.
+        '''
         # Avoid change focus to other widget in parent.
         if self.keynav_failed(gtk.DIR_LEFT):
             self.get_toplevel().set_focus_child(self)
@@ -262,7 +327,9 @@ class Entry(gtk.EventBox):
             self.queue_draw()    
             
     def move_to_right(self):
-        '''Move to right char.'''
+        '''
+        Forward cursor one char.
+        '''
         # Avoid change focus to other widget in parent.
         if self.keynav_failed(gtk.DIR_RIGHT):
             self.get_toplevel().set_focus_child(self)
@@ -289,7 +356,9 @@ class Entry(gtk.EventBox):
             self.queue_draw()
             
     def backspace(self):
-        '''Backspace.'''        
+        '''
+        Do backspace action.
+        '''        
         if self.is_editable():
             with self.monitor_entry_content():
                 if self.select_start_index != self.select_end_index:
@@ -311,14 +380,18 @@ class Entry(gtk.EventBox):
                     self.queue_draw()    
             
     def select_all(self):
-        '''Select all.'''
+        '''
+        Select all text of entry.
+        '''
         self.select_start_index = 0
         self.select_end_index = len(self.content)
         
         self.queue_draw()
         
     def cut_to_clipboard(self):
-        '''Cut select text to clipboard.'''
+        '''
+        Cut selected text to clipboard.
+        '''
         if self.select_start_index != self.select_end_index:
             cut_text = self.content[self.select_start_index:self.select_end_index]
             
@@ -330,7 +403,9 @@ class Entry(gtk.EventBox):
             clipboard.set_text(cut_text)
 
     def copy_to_clipboard(self):
-        '''Copy select text to clipboard.'''
+        '''
+        Copy selected text to clipboard.
+        '''
         if self.select_start_index != self.select_end_index:
             cut_text = self.content[self.select_start_index:self.select_end_index]
             
@@ -338,18 +413,24 @@ class Entry(gtk.EventBox):
             clipboard.set_text(cut_text)
     
     def paste_from_clipboard(self):
-        '''Paste text from clipboard.'''
+        '''
+        Paste text to entry from clipboard.
+        '''
         if self.is_editable():
             with self.monitor_entry_content():
                 clipboard = gtk.Clipboard()    
                 clipboard.request_text(lambda clipboard, text, data: self.commit_entry('\\n'.join(text.split('\n'))))
                 
     def press_return(self):
-        '''Press return.'''
+        '''
+        Do return action.
+        '''
         self.emit("press-return")
         
     def select_to_left(self):
-        '''Select to preview.'''
+        '''
+        Select text to left char.
+        '''
         if self.select_start_index != self.select_end_index:
             if self.move_direction == self.MOVE_LEFT:
                 if self.select_start_index > 0:
@@ -371,7 +452,9 @@ class Entry(gtk.EventBox):
         self.queue_draw()
         
     def select_to_right(self):
-        '''Select to next.'''
+        '''
+        Select text to right char.
+        '''
         if self.select_start_index != self.select_end_index:
             rect = self.get_allocation()    
             
@@ -396,7 +479,9 @@ class Entry(gtk.EventBox):
         self.queue_draw()        
         
     def select_to_start(self):
-        '''Select to start.'''
+        '''
+        Select text to start position.
+        '''
         if self.select_start_index != self.select_end_index:
             if self.move_direction == self.MOVE_LEFT:
                 self.select_start_index = 0
@@ -416,7 +501,9 @@ class Entry(gtk.EventBox):
         self.queue_draw()
         
     def select_to_end(self):
-        '''Select to end.'''
+        '''
+        Select text to end position.
+        '''
         if self.select_start_index != self.select_end_index:
             if self.move_direction == self.MOVE_RIGHT:
                 self.select_end_index = len(self.content)
@@ -441,7 +528,9 @@ class Entry(gtk.EventBox):
         self.queue_draw()
         
     def delete(self):
-        '''Delete select text.'''
+        '''
+        Delete selected text.
+        '''
         if self.is_editable() and self.select_start_index != self.select_end_index:
             with self.monitor_entry_content():
                 rect = self.get_allocation()
@@ -465,7 +554,9 @@ class Entry(gtk.EventBox):
                 self.queue_draw()
                             
     def expose_entry(self, widget, event):
-        '''Callback for `expose-event` signal.'''
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -487,7 +578,9 @@ class Entry(gtk.EventBox):
         return True
     
     def draw_entry_background(self, cr, rect):
-        '''Draw entry background.'''
+        '''
+        Internal function to draw entry background.
+        '''
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         if self.select_start_index != self.select_end_index and self.select_area_visible_flag:
@@ -502,7 +595,9 @@ class Entry(gtk.EventBox):
                          self.background_select_color.get_color_info())
             
     def draw_entry_text(self, cr, rect):
-        '''Draw entry text.'''
+        '''
+        Internal function to draw entry text.
+        '''
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         with cairo_state(cr):
             # Clip text area first.
@@ -581,7 +676,9 @@ class Entry(gtk.EventBox):
                 context.show_layout(layout)
             
     def draw_entry_cursor(self, cr, rect):
-        '''Draw entry cursor.'''
+        '''
+        Internal function to draw entry cursor.
+        '''
         if self.grab_focus_flag and self.select_start_index == self.select_end_index:
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
@@ -599,11 +696,15 @@ class Entry(gtk.EventBox):
             cr.fill()
     
     def button_press_entry(self, widget, event):
-        '''Button press entry.'''
+        '''
+        Internal callback for `button-press-event` signal.
+        '''
         self.handle_button_press(widget, event)
         
     def handle_button_press(self, widget, event):
-        '''Handle button press.'''
+        '''
+        Internal function to handle button press.
+        '''
         # Get input focus.
         self.grab_focus()
         
@@ -628,7 +729,9 @@ class Entry(gtk.EventBox):
             self.drag_start_index = self.get_index_at_event(widget, event)
             
     def button_release_entry(self, widget, event):
-        '''Callback for `button-release-event` signal.'''
+        '''
+        Internal callback for `button-release-event` signal.
+        '''
         if not self.double_click_flag and self.left_click_coordindate == (event.x, event.y):
             self.cursor_index = self.get_index_at_event(widget, event)    
             self.select_start_index = self.select_end_index = self.cursor_index
@@ -638,7 +741,9 @@ class Entry(gtk.EventBox):
         self.left_click_flag = False
             
     def motion_notify_entry(self, widget, event):
-        '''Callback for `motion-notify-event` signal.'''
+        '''
+        Internal callback for `motion-notify-event` signal.
+        '''
         if not self.double_click_flag and self.left_click_flag:
             self.cursor_index = self.drag_start_index
             self.drag_end_index = self.get_index_at_event(widget, event)
@@ -657,7 +762,9 @@ class Entry(gtk.EventBox):
             self.queue_draw()    
             
     def focus_in_entry(self, widget, event):
-        '''Callback for `focus-in-event` signal.'''
+        '''
+        Internal callback for `focus-in-event` signal.
+        '''
         self.grab_focus_flag = True
         
         # Focus in IMContext.
@@ -667,11 +774,15 @@ class Entry(gtk.EventBox):
         self.queue_draw()
             
     def focus_out_entry(self, widget, event):
-        '''Callback for `focus-out-event` signal.'''
+        '''
+        Internal callback for `focus-out-event` signal.
+        '''
         self.handle_focus_out(widget, event)
         
     def handle_focus_out(self, widget, event):
-        '''Handle focus out.'''
+        '''
+        Internal function to handle focus out.
+        '''
         self.grab_focus_flag = False
         
         # Focus out IMContext.
@@ -680,7 +791,9 @@ class Entry(gtk.EventBox):
         self.queue_draw()
         
     def move_offsetx_right(self, widget, event):
-        '''Move offset_x right.'''
+        '''
+        Internal function to move offset_x to right.
+        '''
         text_width = self.get_content_width(self.content)
         rect = self.get_allocation()
         if self.offset_x + rect.width - self.padding_x * 2 < text_width:
@@ -695,7 +808,9 @@ class Entry(gtk.EventBox):
             self.offset_x += len(self.get_utf8_string(self.content[x_index::], 0))
             
     def move_offsetx_left(self, widget, event):
-        '''Move offset_x left.'''
+        '''
+        Internal function to move offset_x to left.
+        '''
         if self.offset_x > 0:
             cr = widget.window.cairo_create()
             context = pangocairo.CairoContext(cr)
@@ -708,7 +823,9 @@ class Entry(gtk.EventBox):
             self.offset_x -= len(self.get_utf8_string(self.content[0:x_index], -1))
         
     def get_index_at_event(self, widget, event):
-        '''Get index at event.'''
+        '''
+        Internal function to get index at event.
+        '''
         cr = widget.window.cairo_create()
         context = pangocairo.CairoContext(cr)
         layout = context.create_layout()
@@ -722,7 +839,9 @@ class Entry(gtk.EventBox):
             return x_index
         
     def commit_entry(self, input_text):
-        '''Entry commit.'''
+        '''
+        Internal callback for `commit` signal.
+        '''
         if self.is_editable():
             with self.monitor_entry_content():
                 if self.select_start_index != self.select_end_index:
@@ -747,12 +866,16 @@ class Entry(gtk.EventBox):
                 self.queue_draw()
         
     def get_content_width(self, content):
-        '''Get content width.'''
+        '''
+        Internal function to get content width.
+        '''
         (content_width, content_height) = get_content_size(content, self.font_size)
         return content_width
         
     def get_utf8_string(self, content, index):
-        '''Get utf8 string.'''
+        '''
+        Internal to get utf8 string.
+        '''
         try:
             return list(content.decode('utf-8'))[index].encode('utf-8')
         except Exception, e:
@@ -762,7 +885,13 @@ class Entry(gtk.EventBox):
 gobject.type_register(Entry)
 
 class TextEntry(gtk.VBox):
-    '''Input entry.'''
+    '''
+    Text entry.
+    
+    @undocumented: set_sensitive
+    @undocumented: emit_action_active_signal
+    @undocumented: expose_text_entry
+    '''
 	
     __gsignals__ = {
         "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
@@ -776,7 +905,17 @@ class TextEntry(gtk.VBox):
                  frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point"),
                  frame_color = ui_theme.get_alpha_color("text_entry_frame"),
                  ):
-        '''Init input entry.'''
+        '''
+        Initialize InputEntry class.
+        
+        @param content: Initialize entry text, default is \"\".
+        @param action_button: Extra button add at right side of text entry, default is None.
+        @param background_color: Color of text entry background.
+        @param acme_color: Acme point color of text entry.
+        @param point_color: Pointer color of text entry.
+        @param frame_point_color: Frame pointer color of text entry.
+        @param frame_color: Frame color of text entry.
+        '''
         # Init.
         gtk.VBox.__init__(self)
         self.align = gtk.Alignment()
@@ -807,15 +946,22 @@ class TextEntry(gtk.VBox):
         self.align.connect("expose-event", self.expose_text_entry)
         
     def set_sensitive(self, sensitive):
+        '''
+        Internal function to wrap function `set_sensitive`.
+        '''
         super(TextEntry, self).set_sensitive(sensitive)
         self.entry.set_sensitive(sensitive)
             
     def emit_action_active_signal(self):
-        '''Emit action-active signal.'''
+        '''
+        Internal callback for `action-active` signal.
+        '''
         self.emit("action-active", self.get_text())                
         
     def expose_text_entry(self, widget, event):
-        '''Callback for `expose-event` signal.'''
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -891,7 +1037,12 @@ class TextEntry(gtk.VBox):
         return True
     
     def set_size(self, width, height):
-        '''Set size.'''
+        '''
+        Set text entry size with given value.
+        
+        @param width: New width of text entry.
+        @param height: New height of text entry.
+        '''
         self.set_size_request(width, height)    
         
         action_button_width = 0
@@ -901,25 +1052,49 @@ class TextEntry(gtk.VBox):
         self.entry.set_size_request(width - 2 - action_button_width, height - 2)
         
     def set_editable(self, editable):
-        '''Set editable.'''
+        '''
+        Set editable status of text entry.
+        
+        @param editable: Text entry can editable if option is True, else can't edit.
+        '''
         self.entry.set_editable(editable)
         
     def set_text(self, text):
-        '''Set text.'''
+        '''
+        Set text of text entry.
+        
+        @param text: Text entry string.
+        '''
         self.entry.set_text(text)
         
     def get_text(self):
-        '''Get text.'''
+        '''
+        Get text of text entry.
+        
+        @return: Return text of text entry.
+        '''
         return self.entry.get_text()
     
     def focus_input(self):
-        '''Focus input.'''
+        '''
+        Focus input cursor.
+        '''
         self.entry.grab_focus()
         
 gobject.type_register(TextEntry)
 
 class InputEntry(gtk.VBox):
-    '''Input entry.'''
+    '''
+    Text entry.
+    
+    Generically speaking, InputEntry is similar L{ I{TextEntry} <TextEntry>},
+    
+    only difference between two class is ui style, internal logic is same.
+    
+    @undocumented: set_sensitive
+    @undocumented: emit_action_active_signal
+    @undocumented: expose_input_entry
+    '''
 	
     __gsignals__ = {
         "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
@@ -933,7 +1108,18 @@ class InputEntry(gtk.VBox):
                  frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point"),
                  frame_color = ui_theme.get_alpha_color("text_entry_frame"),
                  ):
-        '''Init input entry.'''
+        '''
+
+        Initialize InputEntry class.
+        
+        @param content: Initialize entry text, default is \"\".
+        @param action_button: Extra button add at right side of input entry, default is None.
+        @param background_color: Color of input entry background.
+        @param acme_color: Acme point color of input entry.
+        @param point_color: Pointer color of input entry.
+        @param frame_point_color: Frame pointer color of input entry.
+        @param frame_color: Frame color of input entry.
+        '''
         # Init.
         gtk.VBox.__init__(self)
         self.align = gtk.Alignment()
@@ -961,18 +1147,25 @@ class InputEntry(gtk.VBox):
             self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
 
         # Handle signal.
-        self.align.connect("expose-event", self.expose_text_entry)
+        self.align.connect("expose-event", self.expose_input_entry)
             
     def set_sensitive(self, sensitive):
+        '''
+        Internal function to wrap function `set_sensitive`.
+        '''
         super(InputEntry, self).set_sensitive(sensitive)
         self.entry.set_sensitive(sensitive)
             
     def emit_action_active_signal(self):
-        '''Emit action-active signal.'''
+        '''
+        Internal callback for `action-active` signal.
+        '''
         self.emit("action-active", self.get_text())                
         
-    def expose_text_entry(self, widget, event):
-        '''Callback for `expose-event` signal.'''
+    def expose_input_entry(self, widget, event):
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -994,7 +1187,12 @@ class InputEntry(gtk.VBox):
         return True
     
     def set_size(self, width, height):
-        '''Set size.'''
+        '''
+        Set input entry size with given value.
+        
+        @param width: New width of input entry.
+        @param height: New height of input entry.
+        '''
         self.set_size_request(width, height)    
         
         action_button_width = 0
@@ -1004,25 +1202,47 @@ class InputEntry(gtk.VBox):
         self.entry.set_size_request(width - 2 - action_button_width, height - 2)
         
     def set_editable(self, editable):
-        '''Set editable.'''
+        '''
+        Set editable status of input entry.
+        
+        @param editable: input entry can editable if option is True, else can't edit.
+        '''
         self.entry.set_editable(editable)
         
     def set_text(self, text):
-        '''Set text.'''
+        '''
+        Set text of input entry.
+        
+        @param text: input entry string.
+        '''
         self.entry.set_text(text)
         
     def get_text(self):
-        '''Get text.'''
+        '''
+        Get text of input entry.
+        
+        @return: Return text of input entry.
+        '''
         return self.entry.get_text()
     
     def focus_input(self):
-        '''Focus input.'''
+        '''
+        Focus input cursor.
+        '''
         self.entry.grab_focus()
         
 gobject.type_register(InputEntry)
 
 class ShortcutKeyEntry(gtk.VBox):
-    '''Input entry.'''
+    '''
+    Shortcut key entry.
+    
+    @undocumented: set_sensitive
+    @undocumented: emit_action_active_signal
+    @undocumented: expose_shortcutkey_entry
+    @undocumented: handle_focus_out
+    @undocumented: handle_key_press
+    '''
 	
     __gsignals__ = {
         "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
@@ -1038,7 +1258,17 @@ class ShortcutKeyEntry(gtk.VBox):
                  frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point"),
                  frame_color = ui_theme.get_alpha_color("text_entry_frame"),
                  ):
-        '''Init input entry.'''
+        '''
+        Initialize ShortcutKeyEntry class.
+        
+        @param content: Initialize entry text, default is \"\".
+        @param action_button: Extra button add at right side of shortcutkey entry, default is None.
+        @param background_color: Color of shortcutkey entry background.
+        @param acme_color: Acme point color of shortcutkey entry.
+        @param point_color: Pointer color of shortcutkey entry.
+        @param frame_point_color: Frame pointer color of shortcutkey entry.
+        @param frame_color: Frame color of shortcutkey entry.
+        '''
         # Init.
         gtk.VBox.__init__(self)
         self.align = gtk.Alignment()
@@ -1066,7 +1296,7 @@ class ShortcutKeyEntry(gtk.VBox):
             self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
 
         # Handle signal.
-        self.align.connect("expose-event", self.expose_text_entry)
+        self.align.connect("expose-event", self.expose_shortcutkey_entry)
         
         # Setup flags.
         self.entry.cursor_visible_flag = False
@@ -1083,11 +1313,16 @@ class ShortcutKeyEntry(gtk.VBox):
         self.shortcut_key_record = None
         
     def set_sensitive(self, sensitive):
+        '''
+        Internal function to wrap function `set_sensitive`.
+        '''
         super(ShortcutKeyEntry, self).set_sensitive(sensitive)
         self.entry.set_sensitive(sensitive)
         
     def handle_button_press(self, widget, event):
-        '''Button press entry.'''
+        '''
+        Internal callback for `action-active` signal.
+        '''
         # Get input focus.
         self.entry.grab_focus()
         self.shortcut_key_record = self.shortcut_key
@@ -1101,7 +1336,9 @@ class ShortcutKeyEntry(gtk.VBox):
             self.entry.queue_draw()
             
     def handle_focus_out(self, widget, event):
-        '''Handle focus out.'''
+        '''
+        Internal function to handle focus out.
+        '''
         if self.shortcut_key != None:
             self.entry.editable_flag = True
             self.set_text(self.shortcut_key)
@@ -1116,7 +1353,9 @@ class ShortcutKeyEntry(gtk.VBox):
             self.shortcut_key_record = None
             
     def handle_key_press(self, widget, event):
-        '''Handle key press.'''
+        '''
+        Internal function to handle key press.
+        '''
         keyname = get_keyevent_name(event)
         if keyname != "":
             if keyname == "BackSpace":
@@ -1125,7 +1364,11 @@ class ShortcutKeyEntry(gtk.VBox):
                 self.set_shortcut_key(keyname)
             
     def set_shortcut_key(self, shortcut_key):
-        '''Set shortcut key.'''
+        '''
+        Set shortcut key.
+        
+        @param shortcut_key: Key string that return by function `dtk.ui.keymap.get_keyevent_name`.
+        '''
         self.shortcut_key = shortcut_key
         
         self.entry.editable_flag = True
@@ -1136,15 +1379,23 @@ class ShortcutKeyEntry(gtk.VBox):
         self.entry.editable_flag = False
                 
     def get_shortcut_key(self):
-        '''Get shortcut key.'''
+        '''
+        Get shortcut key.
+        
+        @return: Return shortcut key string, string format look function `dtk.ui.keymap.get_keyevent_name`.
+        '''
         return self.shortcut_key
             
     def emit_action_active_signal(self):
-        '''Emit action-active signal.'''
+        '''
+        Internal callback for `action-active` signal.
+        '''
         self.emit("action-active", self.get_text())                
         
-    def expose_text_entry(self, widget, event):
-        '''Callback for `expose-event` signal.'''
+    def expose_shortcutkey_entry(self, widget, event):
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -1166,7 +1417,12 @@ class ShortcutKeyEntry(gtk.VBox):
         return True
     
     def set_size(self, width, height):
-        '''Set size.'''
+        '''
+        Set shortcutkey entry size with given value.
+        
+        @param width: New width of shortcutkey entry.
+        @param height: New height of shortcutkey entry.
+        '''
         self.set_size_request(width, height)    
         
         action_button_width = 0
@@ -1176,19 +1432,33 @@ class ShortcutKeyEntry(gtk.VBox):
         self.entry.set_size_request(width - 2 - action_button_width, height - 2)
         
     def set_editable(self, editable):
-        '''Set editable.'''
+        '''
+        Set editable status of shortcutkey entry.
+        
+        @param editable: shortcutkey entry can editable if option is True, else can't edit.
+        '''
         self.entry.set_editable(editable)
         
     def set_text(self, text):
-        '''Set text.'''
+        '''
+        Set text of shortcutkey entry.
+        
+        @param text: shortcutkey entry string.
+        '''
         self.entry.set_text(text)
         
     def get_text(self):
-        '''Get text.'''
+        '''
+        Get text of shortcutkey entry.
+        
+        @return: Return text of shortcutkey entry.
+        '''
         return self.entry.get_text()
     
     def focus_input(self):
-        '''Focus input.'''
+        '''
+        Focus input cursor.
+        '''
         self.entry.grab_focus()
         
 gobject.type_register(ShortcutKeyEntry)

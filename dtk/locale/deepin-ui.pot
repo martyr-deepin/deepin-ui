@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-13 17:04+0800\n"
+"POT-Creation-Date: 2012-08-04 10:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,21 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../ui/tab_window.py:312 ../ui/color_selection.py:183 ../ui/dialog.py:367
+#: ../ui/dialog.py:435
+msgid "OK"
+msgstr ""
+
+#: ../ui/tab_window.py:313 ../ui/color_selection.py:184 ../ui/dialog.py:368
+#: ../ui/dialog.py:436
+msgid "Cancel"
+msgstr ""
+
 #: ../ui/skin.py:84
 msgid "Select skin"
 msgstr ""
 
-#: ../ui/skin.py:89 ../ui/skin.py:107 ../ui/titlebar.py:132
+#: ../ui/skin.py:89 ../ui/skin.py:107 ../ui/titlebar.py:145
 msgid "Close"
 msgstr ""
 
@@ -65,7 +75,7 @@ msgstr ""
 msgid "Export skin"
 msgstr ""
 
-#: ../ui/skin.py:791 ../ui/color_selection.py:75
+#: ../ui/skin.py:791 ../ui/color_selection.py:92
 msgid "Select color"
 msgstr ""
 
@@ -73,50 +83,58 @@ msgstr ""
 msgid "Return"
 msgstr ""
 
-#: ../ui/entry.py:1098
-msgid "Please input new shortcuts"
-msgstr ""
-
-#: ../ui/entry.py:1133
-msgid "Disabled"
-msgstr ""
-
-#: ../ui/dialog.py:273 ../ui/dialog.py:323 ../ui/color_selection.py:166
-msgid "OK"
-msgstr ""
-
-#: ../ui/dialog.py:274 ../ui/dialog.py:324 ../ui/color_selection.py:167
-msgid "Cancel"
-msgstr ""
-
-#: ../ui/titlebar.py:108
-msgid "Change skin"
-msgstr ""
-
-#: ../ui/titlebar.py:114
-msgid "Main menu"
-msgstr ""
-
-#: ../ui/titlebar.py:120
-msgid "Minimum"
-msgstr ""
-
-#: ../ui/titlebar.py:126
-msgid "Maximize"
-msgstr ""
-
-#: ../ui/color_selection.py:113
+#: ../ui/color_selection.py:130
 msgid "Color value"
 msgstr ""
 
-#: ../ui/color_selection.py:126
+#: ../ui/color_selection.py:143
 msgid "Red: "
 msgstr ""
 
-#: ../ui/color_selection.py:132
+#: ../ui/color_selection.py:149
 msgid "Green: "
 msgstr ""
 
-#: ../ui/color_selection.py:138
+#: ../ui/color_selection.py:155
 msgid "Blue: "
+msgstr ""
+
+#: ../ui/titlebar.py:121
+msgid "Change skin"
+msgstr ""
+
+#: ../ui/titlebar.py:127
+msgid "Main menu"
+msgstr ""
+
+#: ../ui/titlebar.py:133
+msgid "Minimum"
+msgstr ""
+
+#: ../ui/titlebar.py:139
+msgid "Maximize"
+msgstr ""
+
+#: ../ui/entry.py:122
+msgid "Cut"
+msgstr ""
+
+#: ../ui/entry.py:123
+msgid "Copy"
+msgstr ""
+
+#: ../ui/entry.py:124
+msgid "Paste"
+msgstr ""
+
+#: ../ui/entry.py:125
+msgid "Select all"
+msgstr ""
+
+#: ../ui/entry.py:1110
+msgid "Please input new shortcuts"
+msgstr ""
+
+#: ../ui/entry.py:1145
+msgid "Disabled"
 msgstr ""
