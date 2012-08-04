@@ -31,6 +31,8 @@ from utils import (is_in_rect, get_content_size, propagate_expose,
                    get_widget_root_coordinate, get_screen_size, 
                    alpha_color_hex_to_cairo, get_window_shadow_size)
 
+__all__ = ["Menu", "MenuItem"]
+
 menu_grab_window = gtk.Window(gtk.WINDOW_POPUP)
 menu_grab_window.move(0, 0)
 menu_grab_window.set_default_size(0, 0)
@@ -120,7 +122,21 @@ menu_grab_window.connect("button-press-event", menu_grab_window_button_press)
 menu_grab_window.connect("motion-notify-event", menu_grab_window_motion_notify)
 
 class Menu(Window):
-    '''Menu.'''
+    '''
+    Menu.
+    
+    @undocumented: realize_menu
+    @undocumented: hide_menu
+    @undocumented: get_menu_item_at_coordinate
+    @undocumented: get_menu_items
+    @undocumented: init_menu
+    @undocumented: get_submenus
+    @undocumented: get_menu_icon_info
+    @undocumented: adjust_menu_position
+    @undocumented: show_submenu
+    @undocumented: hide_submenu
+    @undocumented: get_root_menu
+    '''
     
     def __init__(self, items, 
                  is_root_menu=False,
@@ -134,7 +150,22 @@ class Menu(Window):
                  item_padding_y=3,
                  shadow_visible=True,
                  menu_min_width=130):
-        '''Init menu, item format: (item_icon, itemName, item_node).'''
+        '''
+        Initialize Menu class.
+        
+        @param items: A list of item, item format: (item_icon, itemName, item_node).
+        @param is_root_menu: Default is False for submenu, you should set it as True if you build root menu.
+        @param select_scale: Default is False, it will use parant's width if it set True.
+        @param x_align: Horizontal alignment value.
+        @param y_align: Vertical alignment value.
+        @param font_size: Menu font size, default is DEFAULT_FONT_SIZE
+        @param padding_x: Horizontal padding value, default is 3 pixel.
+        @param padding_y: Vertical padding value, default is 3 pixel.
+        @param item_padding_x: Horizontal item padding value, default is 6 pixel.
+        @param item_padding_y: Vertical item padding value, default is 3 pixel.
+        @param shadow_visible: Whether show window shadow, default is True. 
+        @param menu_min_width: Minimum width of menu.
+        '''
         global root_menus
         
         # Init.
@@ -187,12 +218,16 @@ class Menu(Window):
         self.connect("realize", self.realize_menu)
         
     def hide_menu(self, widget):
-        '''Hide menu.'''
+        '''
+        Internal callback for `hide` signal.
+        '''
         # Avoid menu (popup window) show at (0, 0) when next show. 
         self.move(-1000000, -1000000)
         
     def realize_menu(self, widget):
-        '''Realize menu.'''
+        '''
+        Internal callback for `realize` signal.
+        '''
         # Avoid menu (popup window) show at (0, 0) first. 
         self.move(-1000000, -1000000)
         
@@ -200,7 +235,15 @@ class Menu(Window):
         self.window.set_back_pixmap(None, False)
                 
     def draw_menu_mask(self, cr, x, y, w, h):
-        '''Draw mask.'''
+        '''
+        Draw mask interface.
+        
+        @param cr: Cairo context.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         # Draw background.
         cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("menu_mask").get_color_info()))
         cr.rectangle(x, y, w, h)    
@@ -211,7 +254,9 @@ class Menu(Window):
                      ui_theme.get_shadow_color("menu_side").get_color_info())
         
     def get_menu_item_at_coordinate(self, (x, y)):
-        '''Get menu item at coordinate, return None if haven't any menu item at given coordinate.'''
+        '''
+        Internal function to get menu item at coordinate, return None if haven't any menu item at given coordinate.
+        '''
         match_menu_item = None
         for menu_item in self.menu_items:                
             item_rect = menu_item.item_box.get_allocation()
@@ -223,11 +268,15 @@ class Menu(Window):
         return match_menu_item
                 
     def get_menu_items(self):
-        '''Get menu items.'''
+        '''
+        Internal function to get menu items.
+        '''
         return self.menu_items
     
     def init_menu(self, widget):
-        '''Realize menu.'''
+        '''
+        Internal callback for `show` signal.
+        '''
         global root_menus
         
         if self.is_root_menu:
@@ -242,14 +291,18 @@ class Menu(Window):
         self.adjust_menu_position()    
             
     def get_submenus(self):
-        '''Get submenus.'''
+        '''
+        Internal function to get submenus.
+        '''
         if self.submenu:
             return [self.submenu] + self.submenu.get_submenus()
         else:
             return []
                 
     def get_menu_icon_info(self, items):
-        '''Get menu icon information.'''
+        '''
+        Internal function to get menu icon information.
+        '''
         have_submenu = False
         icon_width = 16
         icon_height = 16
@@ -268,7 +321,14 @@ class Menu(Window):
         return (icon_width, icon_height, have_submenu, submenu_width, submenu_height)
         
     def show(self, (x, y), (offset_x, offset_y)=(0, 0)):
-        '''Show menu.'''
+        '''
+        Show menu with given position.
+        
+        @param x: X coordinate of menu.
+        @param y: Y coordinate of menu.
+        @param offset_x: Offset x when haven't enough space to show menu, default is 0.
+        @param offset_y: Offset y when haven't enough space to show menu, default is 0.
+        '''
         # Init offset.
         self.expect_x = x
         self.expect_y = y
@@ -279,7 +339,9 @@ class Menu(Window):
         self.show_all()
         
     def adjust_menu_position(self):
-        '''Realize menu.'''
+        '''
+        Internal function to realize menu position.
+        '''
         # Adjust coordinate.
         (screen_width, screen_height) = get_screen_size(self)
         
@@ -317,7 +379,9 @@ class Menu(Window):
         self.move(dx, dy)
         
     def hide(self):
-        '''Hide menu.'''
+        '''
+        Hide menu.
+        '''
         # Hide submenu.
         self.hide_submenu()
         
@@ -329,7 +393,9 @@ class Menu(Window):
         self.root_menu = None
         
     def show_submenu(self, submenu, coordinate, offset_y):
-        '''Show submenu.'''
+        '''
+        Internal function to show submenu.
+        '''
         if self.submenu != submenu:
             # Hide old submenu first.
             self.hide_submenu()
@@ -343,7 +409,9 @@ class Menu(Window):
             self.submenu.show(coordinate, (-rect.width + self.shadow_radius * 2, offset_y))
                 
     def hide_submenu(self):
-        '''Hide submenu.'''
+        '''
+        Internal function to hide submenu.
+        '''
         if self.submenu:
             # Hide submenu.
             self.submenu.hide()
@@ -354,7 +422,9 @@ class Menu(Window):
                 menu_item.submenu_active = False
             
     def get_root_menu(self):
-        '''Get root menu.'''
+        '''
+        Internal to get root menu.
+        '''
         if self.root_menu:
             return self.root_menu
         else:
@@ -363,7 +433,16 @@ class Menu(Window):
 gobject.type_register(Menu)
 
 class MenuItem(object):
-    '''Menu item.'''
+    '''
+    Menu item for L{ I{Menu} <Menu>}.
+    
+    @undocumented: create_separator_item
+    @undocumented: create_menu_item
+    @undocumented: realize_item_box
+    @undocumented: wrap_menu_clicked_action
+    @undocumented: expose_menu_item
+    @undocumented: enter_notify_menu_item
+    '''
     
     def __init__(self, item, font_size, 
                  select_scale,
@@ -375,7 +454,27 @@ class MenuItem(object):
                  have_submenu, submenu_width, submenu_height,
                  menu_padding_x, menu_padding_y,
                  item_padding_x, item_padding_y, min_width):
-        '''Init menu item.'''
+        '''
+        Initialize MenuItem class.
+        
+        @param item: item format: (item_icon, itemName, item_node).
+        @param font_size: Menu font size.
+        @param select_scale: Default is False, it will use parant's width if it set True.
+        @param show_submenu_callback: Callback when show submenus.
+        @param hide_submenu_callback: Callback when hide submenus.
+        @param get_root_menu_callback: Callback to get root menu.
+        @param get_menu_items_callback: Callback to get menu items.
+        @param icon_width: Icon width.
+        @param icon_height: Icon height.
+        @param have_submenu: Whether have submenu.
+        @param submenu_width: Width of submenu.
+        @param submenu_height: Height of submenu.
+        @param menu_padding_x: Horizontal padding of menu.
+        @param menu_padding_y: Vertical padding of menu.
+        @param item_padding_x: Horizontal padding of item.
+        @param item_padding_y: Vertical padding of item.
+        @param min_width: Minimum width.
+        '''
         # Init.
         self.item = item
         self.font_size = font_size
@@ -404,7 +503,9 @@ class MenuItem(object):
             self.create_separator_item()
         
     def create_separator_item(self):
-        '''Create separator item.'''
+        '''
+        Internal function to create separator item.
+        '''
         self.item_box = HSeparator(
             ui_theme.get_shadow_color("h_separator").get_color_info(),
             self.item_padding_x, 
@@ -412,7 +513,9 @@ class MenuItem(object):
         self.item_box_height = self.item_padding_y * 2 + 1
         
     def create_menu_item(self):
-        '''Create menu item.'''
+        '''
+        Internal function to create menu item.
+        '''
         # Get item information.
         (item_icons, item_content, item_node) = self.item[0:3]
         
@@ -429,7 +532,9 @@ class MenuItem(object):
         self.item_box.connect("realize", lambda w: self.realize_item_box(w, item_content))
         
     def realize_item_box(self, widget, item_content):
-        '''Realize item box.'''
+        '''
+        Internal callback for `realize` signal.
+        '''
         # Set button size.
         (width, height) = get_content_size(item_content, self.font_size)
         self.item_box_height = self.item_padding_y * 2 + max(int(height), self.icon_height)
@@ -446,7 +551,9 @@ class MenuItem(object):
         self.item_box.set_size_request(self.item_box_width, self.item_box_height)        
         
     def wrap_menu_clicked_action(self, button, event):
-        '''Wrap menu action.'''
+        '''
+        Internal function to wrap clicked menu action.
+        '''
         item_node = self.item[2]
         if not isinstance(item_node, Menu):
             # Hide menu.
@@ -460,7 +567,9 @@ class MenuItem(object):
                     item_node()
             
     def expose_menu_item(self, widget, event):
-        '''Expose menu item.'''
+        '''
+        Internal callback for `expose` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -517,7 +626,9 @@ class MenuItem(object):
         return True
 
     def enter_notify_menu_item(self, widget):
-        '''Callback for `enter-notify-event` signal.'''
+        '''
+        Internal callback for `enter-notify-event` signal.
+        '''
         # Reset all items in same menu.
         for menu_item in self.get_menu_items_callback():
             if menu_item != self and menu_item.submenu_active:
