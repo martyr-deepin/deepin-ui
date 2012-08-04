@@ -26,10 +26,19 @@ import gobject
 import gtk
 
 class Statusbar(EventBox):
-    '''Statusbar.'''
+    '''
+    Statusbar.
+    
+    @undocumented: expose_status_separator
+    '''
 	
     def __init__(self, height, add_separator=False):
-        '''Init statusbar.'''
+        '''
+        Initialize Statusbar class.
+        
+        @param height: Statusbar height.
+        @param add_separator: Whether add separator between statusbar and window body, default is False.
+        '''
         # Init.
         EventBox.__init__(self)
         self.set_size_request(-1, height)
@@ -53,7 +62,9 @@ class Statusbar(EventBox):
         self.show_all()
 
     def expose_status_separator(self, widget, event):
-        '''Expose nav separator.'''
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
