@@ -27,8 +27,20 @@ import gobject
 import gtk
 
 class ImageButtonGroup(gtk.HBox):
+    '''
+    Group container for ImageButton.
+    
+    @undocumented: set_index
+    @undocumented: get_index
+    '''
     
     def __init__(self, items, spacing=5):
+        '''
+        Initialize for ImageButtonGroup class.
+        
+        @param items: A list of ImageButton item, item format: (normal_dpixbuf, hover_dpixbuf, press_dpixbuf, clicked_callback)
+        @param spacing: Spacing value between items, default is 5 pixel.
+        '''
         gtk.HBox.__init__(self)
         self.item_index = 0
         
@@ -41,17 +53,35 @@ class ImageButtonGroup(gtk.HBox):
         self.show_all()        
         
     def set_index(self, index):    
+        '''
+        Internal function to set index.
+        '''
         self.queue_draw()
         self.item_index = index
         
     def get_index(self):    
+        '''
+        Internal function to get index.
+        '''
         return self.item_index
     
 gobject.type_register(ImageButtonGroup)
 
 class ToggleButtonGroup(gtk.HBox):
+    '''
+    Group container for ToggleButton.
+    
+    @undocumented: set_index
+    @undocumented: get_index
+    '''
     
     def __init__(self, items, spacing=5):
+        '''
+        Initialize for ToggleButtonGroup class.
+        
+        @param items: A list of ImageButton item, item format: (inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf, active_hover_dpixbuf, toggled_callback)
+        @param spacing: Spacing value between items, default is 5 pixel.
+        '''
         gtk.HBox.__init__(self)
         self.item_index = -1
         self.set_spacing(spacing)
@@ -65,20 +95,45 @@ class ToggleButtonGroup(gtk.HBox):
         self.show_all()        
         
     def set_index(self, index):    
+        '''
+        Internal function to set index.
+        '''
         self.queue_draw()
         self.item_index = index
         
     def get_index(self):    
+        '''
+        Internal function to get index.
+        '''
         return self.item_index
     
     def is_active(self):
+        '''
+        Whether at toggle button group is active.
+        
+        @return: Return True if active, else return False.
+        '''
         return self.item_index != -1
     
 gobject.type_register(ToggleButtonGroup)
 
 class ImageButtonItem(gtk.Button):
+    '''
+    Image button item for L{ I{ImageButtonGroup} <ImageButtonGroup>}.
+    
+    @undocumented: wrap_image_button_item_clicked_action
+    @undocumented: expose_image_button_item
+    '''
     
     def __init__(self, item, index, set_index, get_index):
+        '''
+        Initialize ImageButtonItem class.
+
+        @param item: Image button item, item foramt: (normal_dpixbuf, hover_dpixbuf, press_dpixbuf, clicked_callback)
+        @param index: Item index.
+        @param set_index: Set index callback.
+        @param get_index: Get index callback.
+        '''
         gtk.Button.__init__(self)
         
         self.index = index
@@ -91,16 +146,21 @@ class ImageButtonItem(gtk.Button):
         pixbuf = self.normal_dpixbuf.get_pixbuf()
         self.set_size_request(pixbuf.get_width(), pixbuf.get_height())    
         widget_fix_cycle_destroy_bug(self)
-        self.connect("expose-event", self.expose_button_item)
-        self.connect("clicked", lambda w: self.wrap_button_item_clicked_action())
+        self.connect("expose-event", self.expose_image_button_item)
+        self.connect("clicked", lambda w: self.wrap_image_button_item_clicked_action())
         
-    def wrap_button_item_clicked_action(self):    
+    def wrap_image_button_item_clicked_action(self):    
+        '''
+        Internal function to wrap clicked action.
+        '''
         if self.clicked_callback:
             self.clicked_callback()
         self.set_index(self.index)    
         
-    def expose_button_item(self, widget, event):    
-        
+    def expose_image_button_item(self, widget, event):    
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -131,14 +191,29 @@ class ImageButtonItem(gtk.Button):
             
         draw_pixbuf(cr, pixbuf, rect.x, rect.y)    
         propagate_expose(widget, event)
+        
         return True
     
 gobject.type_register(ImageButtonItem)    
 
 
 class ToggleButtonItem(gtk.ToggleButton):
+    '''
+    Toggle button item for L{ I{ToggleButtonGroup} <ToggleButtonGroup>}.
+    
+    @undocumented: wrap_image_button_item_clicked_action
+    @undocumented: expose_toggle_button_item
+    '''
     
     def __init__(self, item, index, set_index, get_index):
+        '''
+        Initialize ToggleButtonItem class.
+
+        @param item: Toggle button item, item foramt: (inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf, active_hover_dpixbuf, toggled_callback)
+        @param index: Item index.
+        @param set_index: Set index callback.
+        @param get_index: Get index callback.
+        '''
         gtk.ToggleButton.__init__(self)
         
         self.index = index
@@ -156,11 +231,16 @@ class ToggleButtonItem(gtk.ToggleButton):
         self.connect("button-press-event", lambda w,e: self.set_index(self.index))
         
     def wrap_toggle_button_clicked_action(self):    
+        '''
+        Internal function to wrap clicked action.
+        '''
         if self.toggled_callback:
             self.toggled_callback()
         
     def expose_toggle_button_item(self, widget, event):    
-        
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
