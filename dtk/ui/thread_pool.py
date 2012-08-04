@@ -29,7 +29,16 @@ import threading as td
 import time
 
 class MissionThreadPool(td.Thread):
-    '''Mission thread pool'''
+    """
+    A class of thread pool.
+    
+    @undocumented: loop
+    @undocumented: start_missions
+    @undocumented: wake_up_wait_missions
+    @undocumented: sync
+    @undocumented: finish_mission
+    @undocumented: clean_mission
+    """
     
     FINISH_SIGNAL = "Finish"
 	
@@ -39,7 +48,14 @@ class MissionThreadPool(td.Thread):
                  clean_callback=None,     # clean callback
                  exit_when_finish=False   # exit thread pool when all missions finish
                  ):    
-        '''Init thread pool.'''
+        """
+        Initialise the thread pool.
+
+        @param concurrent_thread_num: Max concurrent thread number.
+        @param clean_delay: The time between the finish of the thread and the invocation of thread clean up function.
+        @param clean_callback: The clean up function, which is invoked after the thread is finished.
+        @param exit_when_finish: Indicates whether the thread pool should be destroyed after all mission is finished. By default, it's False.
+        """
         # Init thread.
         td.Thread.__init__(self)
         self.setDaemon(True) # make thread exit when main program exit 
@@ -61,11 +77,17 @@ class MissionThreadPool(td.Thread):
         self.mission_lock = Q.Queue()
 
     def run(self):
-        '''Run.'''
+        """
+        The thread function.
+        """
         self.loop()
         
     def loop(self):
-        '''Loop.'''
+        """
+        Internal function to do loop.
+
+        It is called recusivly to start new mission and monitor the missions' status.
+        """
         result = self.mission_lock.get()
         if result == self.FINISH_SIGNAL:
             print ">>> Finish missions."
@@ -79,11 +101,19 @@ class MissionThreadPool(td.Thread):
             self.loop()
             
     def add_missions(self, missions):
-        '''Add missions.'''
+        """
+        Add missions to the thread pool.
+
+        @param missions: A list of mission which is of type class MissionThread.
+        """
         self.mission_lock.put(missions)
         
     def start_missions(self, missions):
-        '''Add missions.'''
+        """
+        Internal function to start missions in the thread pool.
+
+        @param missions: A list of mission which is of type class MissionThread.
+        """
         for (index, mission) in enumerate(missions):
             # Add to wait list if active mission number reach max value.
             if len(self.active_mission_list) >= self.concurrent_thread_num:
@@ -94,13 +124,19 @@ class MissionThreadPool(td.Thread):
                 self.start_mission(mission)
                 
     def start_mission(self, mission):
-        '''Start mission.'''
+        """
+        Start a specific mission in the thread pool.
+
+        @param mission: a mission which is of type class MissionThread.
+        """
         self.active_mission_list.append(mission)
         mission.finish_mission = self.finish_mission
         mission.start()
                 
     def wake_up_wait_missions(self):
-        '''Wake up waiting missions.'''
+        """
+        Internal function to wake up the mission which is in waiting list.
+        """
         for mission in self.wait_mission_list:
             # Just break loop when active mission is bigger than max value.
             if len(self.active_mission_list) >= self.concurrent_thread_num:
@@ -116,7 +152,9 @@ class MissionThreadPool(td.Thread):
                 
     @contextmanager
     def sync(self):
-        '''Sync.'''
+        """
+        Internal function do synchronize jobs.
+        """
         self.thread_sync_lock.acquire()
         try:  
             yield  
@@ -126,7 +164,11 @@ class MissionThreadPool(td.Thread):
             self.thread_sync_lock.release()
         
     def finish_mission(self, mission):
-        '''Finish mission.'''
+        """
+        Internal function that invoked by the MissionThread for every certain time.
+
+        @param mission: A mission of type MissionThread.
+        """
         with self.sync():
             # Remove mission from active mission list.
             if mission in self.active_mission_list:
@@ -150,7 +192,11 @@ class MissionThreadPool(td.Thread):
                 self.mission_lock.put(self.FINISH_SIGNAL)
                     
     def clean_mission(self, current_time):
-        '''Clean missions.'''
+        """
+        Internal function to call clean_callback of the mission which is invoked in finish_mission.
+
+        @param current_time: the time of type float which indicates the time the clean_mission is invoked.
+        """
         # Do clean work.
         self.clean_callback(self.mission_result_list)
                     
@@ -161,24 +207,40 @@ class MissionThreadPool(td.Thread):
         self.clean_time = current_time
                     
 class MissionThread(td.Thread):
-    '''Mission thread.'''
+    """
+    This class stands for a single mission in the thread pool.
+    """
 	
     def __init__(self):
-        '''Mission thread.'''
+        """
+        Initialise the MissionThread.
+        """
         td.Thread.__init__(self)
         self.setDaemon(True) # make thread exit when main program exit 
         
     def run(self):
-        '''Run.'''
+        """
+        The thread function.
+        """
         self.start_mission()
         self.finish_mission(self)
         
     def start_mission(self):
-        '''Start mission.'''
+        """
+        The mission thread function of MissionThread. 
+        
+        This function is MissionThread template, you should write your own implementation.
+        """
         print "Write your code here."
 
     def get_mission_result(self):
-        '''Get mission result, if you don't want handle result, just return None.'''
+        """
+        Return the mission result.
+        
+        This function is MissionThread template, you should write your own implementation.
+
+        @return: If you don't want handle result, just return None.
+        """
         return None
         
 class TestMissionThread(MissionThread):
