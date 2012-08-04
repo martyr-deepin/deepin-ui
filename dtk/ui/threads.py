@@ -24,7 +24,17 @@ import gtk
 import threading as td
 
 def post_gui(func):
-    '''Post GUI code in main thread.'''
+    '''
+    Post GUI code in main thread.
+
+    You should use post_gui wrap graphics function if function call from other threads.
+    
+    Usage:
+
+    >>> @post_gui
+    >>> def graphics_fun():
+    >>>     ....
+    '''
     def wrap(*a, **kw):
         gtk.gdk.threads_enter()
         ret = func(*a, **kw)
@@ -33,10 +43,16 @@ def post_gui(func):
     return wrap
 
 class AnonymityThread(td.Thread):
-    '''Anonymity thread.'''
+    '''
+    Anonymity thread.
+    '''
 
     def __init__(self, callback):
-        '''Init anonymity thread.'''
+        '''
+        Initialize AnonymityThread class.
+        
+        @param callback: Callback run in thread. 
+        '''
         td.Thread.__init__(self)
         self.setDaemon(True) # make thread exit when main program exit
 

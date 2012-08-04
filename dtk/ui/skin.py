@@ -57,8 +57,6 @@ __all__ = ["SkinWindow"]
 class LoadSkinThread(td.Thread):
     '''
     Thread to load skin.
-    
-    @undocumented: run
     '''
 	
     def __init__(self, skin_dirs, add_skin_icon, add_add_icon):
@@ -78,7 +76,7 @@ class LoadSkinThread(td.Thread):
         
     def run(self):
         '''
-        Internal function to run.
+        Run.
         '''
         support_foramts = get_pixbuf_support_foramts()
         for skin_dir in self.skin_dirs:
