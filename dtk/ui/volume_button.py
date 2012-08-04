@@ -50,10 +50,15 @@ VOLUME_RIGHT = "right"
 VOLUME_LEFT   = "left"
 
 class VolumeButton(gtk.Button):
+    '''
+    Volume button.
+    '''
+    
     __gsignals__ = {
         "volume-state-changed":(gobject.SIGNAL_RUN_LAST,
                            gobject.TYPE_NONE,(gobject.TYPE_INT,gobject.TYPE_INT,))
         }
+    
     def __init__(self,
                  volume_max_value = 100,
                  volume_width     = 52,
