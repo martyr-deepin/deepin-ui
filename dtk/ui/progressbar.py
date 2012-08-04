@@ -29,10 +29,17 @@ import gtk
 import pango
 
 class ProgressBar(gtk.Button):
-    '''Progress bar.'''
+    '''
+    Progress bar.
+    
+    @undocumented: expose_progressbar
+    @undocumented: update_light_ticker
+    '''
 	
     def __init__(self):
-        '''Progress bar.'''
+        '''
+        Initialize progress bar.
+        '''
         # Init.
         gtk.Button.__init__(self)
         self.progress = 0
@@ -44,7 +51,9 @@ class ProgressBar(gtk.Button):
         gtk.timeout_add(20, self.update_light_ticker)
         
     def expose_progressbar(self, widget, event):
-        '''Expose progressbar.'''
+        '''
+        Internal callback for `expose` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -86,7 +95,9 @@ class ProgressBar(gtk.Button):
         return True        
         
     def update_light_ticker(self):
-        '''Update light ticker.'''
+        '''
+        Internal function to update light ticker.
+        '''
         self.light_ticker += 1
         return True
             

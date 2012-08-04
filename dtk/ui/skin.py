@@ -52,11 +52,23 @@ from utils import (is_in_rect, set_cursor, remove_timeout_id,
                    place_center, get_pixbuf_support_foramts, find_similar_color, 
                    get_optimum_pixbuf_from_file)
 
+__all__ = ["SkinWindow"]
+
 class LoadSkinThread(td.Thread):
-    '''Load skin thread.'''
+    '''
+    Thread to load skin.
+    
+    @undocumented: run
+    '''
 	
     def __init__(self, skin_dirs, add_skin_icon, add_add_icon):
-        '''Init load skin thread.'''
+        '''
+        Initialize LoadSkinThread class.
+        
+        @param skin_dirs: Skin directories.
+        @param add_skin_icon: Callback to add skin icon.
+        @param add_add_icon: Callback to add add icon.
+        '''
         td.Thread.__init__(self)
         self.setDaemon(True) # make thread exit when main program exit
         
@@ -65,7 +77,9 @@ class LoadSkinThread(td.Thread):
         self.add_add_icon = add_add_icon
         
     def run(self):
-        '''Run.'''
+        '''
+        Internal function to run.
+        '''
         support_foramts = get_pixbuf_support_foramts()
         for skin_dir in self.skin_dirs:
             for root, dirs, files in os.walk(skin_dir):
@@ -77,10 +91,22 @@ class LoadSkinThread(td.Thread):
         self.add_add_icon()                
 
 class SkinWindow(DialogBox):
-    '''SkinWindow.'''
+    '''
+    SkinWindow.
+    
+    @undocumented: change_skin
+    @undocumented: switch_preview_page
+    @undocumented: switch_edit_page
+    '''
 	
     def __init__(self, app_frame_pixbuf, preview_width=450, preview_height=500):
-        '''Init skin.'''
+        '''
+        Initialize SkinWindow class.
+        
+        @param app_frame_pixbuf: Application's pixbuf for frame. 
+        @param preview_width: Preview width, default is 450.
+        @param preview_height: Preview height, default is 500.
+        '''
         DialogBox.__init__(self, _("Select skin"), preview_width, preview_height, mask_type=DIALOG_MASK_SINGLE_PAGE)
         self.app_frame_pixbuf = app_frame_pixbuf
         
@@ -93,13 +119,17 @@ class SkinWindow(DialogBox):
         self.switch_preview_page()
         
     def change_skin(self, item):
-        '''Change skin.'''
+        '''
+        Internal function to change skin with given item.
+        '''
         # Load skin.
         if skin_config.reload_skin(os.path.basename(item.skin_dir)):
             skin_config.apply_skin()
         
     def switch_preview_page(self):
-        '''Switch preview page.'''
+        '''
+        Internal function to switch preview page.
+        '''
         container_remove_all(self.body_box)
         self.body_box.add(self.preview_page)
         self.preview_page.highlight_skin()
@@ -111,7 +141,9 @@ class SkinWindow(DialogBox):
         self.show_all()
         
     def switch_edit_page(self):
-        '''Switch edit page.'''
+        '''
+        Internal function to switch edit page.
+        '''
         # Switch to edit page.
         container_remove_all(self.body_box)
         edit_page = SkinEditPage(self, self.app_frame_pixbuf, self.switch_preview_page)
