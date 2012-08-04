@@ -294,7 +294,11 @@ class TabWindow(DialogBox):
         @param window_width: Default window width.
         @param window_height: Default window height.
         '''
-        DialogBox.__init__(self, title, window_width, window_height, mask_type=DIALOG_MASK_TAB_PAGE)
+        DialogBox.__init__(self, 
+                           title, 
+                           window_width, 
+                           window_height, 
+                           mask_type=DIALOG_MASK_TAB_PAGE)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
         

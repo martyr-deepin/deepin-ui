@@ -50,7 +50,11 @@ class ComboBox(gtk.VBox):
         "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
     }
 
-    def __init__(self, items, droplist_height=None, select_index=0, max_width=None):
+    def __init__(self, 
+                 items, 
+                 droplist_height=None, 
+                 select_index=0, 
+                 max_width=None):
         '''
         Initialize ComboBox class.
         

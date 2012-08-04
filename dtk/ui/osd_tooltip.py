@@ -39,8 +39,12 @@ class OSDTooltip(gtk.Window):
     @undocumented: handle_configure_event
     '''
 	
-    def __init__(self, monitor_widget, text_font=DEFAULT_FONT, text_size=18, 
-                 offset_x=0, offset_y=0,
+    def __init__(self, 
+                 monitor_widget, 
+                 text_font=DEFAULT_FONT, 
+                 text_size=18, 
+                 offset_x=0, 
+                 offset_y=0,
                  text_color=ui_theme.get_color("osd_tooltip_text"), 
                  border_color=ui_theme.get_color("osd_tooltip_border"), 
                  border_radious=1):

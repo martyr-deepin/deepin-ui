@@ -28,7 +28,11 @@ class UniqueService(dbus.service.Object):
     """
     This class implement a dbus interface, which is used to ensure that the program or service is unique in the system.
     """
-    def __init__(self, bus_name, app_dbus_name, app_object_name, unique_callback=None):
+    def __init__(self, 
+                 bus_name, 
+                 app_dbus_name, 
+                 app_object_name, 
+                 unique_callback=None):
         """
         Initialise the class.
 

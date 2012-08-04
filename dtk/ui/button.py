@@ -159,7 +159,12 @@ class ImageButton(gtk.Button):
     ImageButton class.
     '''
 	
-    def __init__(self, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x=False, content=None):
+    def __init__(self, 
+                 normal_dpixbuf, 
+                 hover_dpixbuf, 
+                 press_dpixbuf, 
+                 scale_x=False, 
+                 content=None):
         '''
         Initialize ImageButton class.
 
@@ -260,7 +265,10 @@ class MaxButton(gtk.Button):
     MaxButton class.
     '''
 	
-    def __init__(self,sub_dir="button", max_path_prefix="window_max", unmax_path_prefix="window_unmax"):
+    def __init__(self,
+                 sub_dir="button", 
+                 max_path_prefix="window_max", 
+                 unmax_path_prefix="window_unmax"):
         '''
         Initialize MaxButton class.
         
@@ -447,11 +455,16 @@ class ToggleButton(gtk.ToggleButton):
     '''
 	
     def __init__(self, 
-                 inactive_normal_dpixbuf, active_normal_dpixbuf, 
-                 inactive_hover_dpixbuf=None, active_hover_dpixbuf=None, 
-                 inactive_press_dpixbuf=None, active_press_dpixbuf=None,
-                 inactive_disable_dpixbuf=None, active_disable_dpixbuf=None,
-                 button_label=None, padding_x=0):
+                 inactive_normal_dpixbuf, 
+                 active_normal_dpixbuf, 
+                 inactive_hover_dpixbuf=None, 
+                 active_hover_dpixbuf=None, 
+                 inactive_press_dpixbuf=None, 
+                 active_press_dpixbuf=None,
+                 inactive_disable_dpixbuf=None, 
+                 active_disable_dpixbuf=None,
+                 button_label=None, 
+                 padding_x=0):
         '''
         Initialize ToggleButton class.
         
@@ -811,7 +824,10 @@ class LinkButton(Label):
     LinkButton click to open browser.
     '''
 	
-    def __init__(self, text, link, enable_gaussian=True, 
+    def __init__(self, 
+                 text, 
+                 link, 
+                 enable_gaussian=True, 
                  text_color=ui_theme.get_color("link_text")):
         '''
         Initialize LinkButton class.

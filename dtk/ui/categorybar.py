@@ -33,7 +33,12 @@ class Categorybar(EventBox):
     Categorybar.
     '''
 	
-    def __init__(self, items, font_size=DEFAULT_FONT_SIZE, padding_left=20, padding_middle=10, padding_right=25):
+    def __init__(self, 
+                 items, 
+                 font_size=DEFAULT_FONT_SIZE, 
+                 padding_left=20, 
+                 padding_middle=10, 
+                 padding_right=25):
         '''
         Initialize Categorybar class.
         
@@ -103,9 +108,16 @@ class CategoryItem(gtk.Button):
     @undocumented: expose_category_item
     '''    
 	
-    def __init__(self, item, index, font_size, icon_width, 
-                 padding_left, padding_middle, padding_right, 
-                 set_index, get_index):
+    def __init__(self, 
+                 item, 
+                 index, 
+                 font_size, 
+                 icon_width, 
+                 padding_left, 
+                 padding_middle, 
+                 padding_right, 
+                 set_index, 
+                 get_index):
         '''
         Initialize CategoryItem class.
         

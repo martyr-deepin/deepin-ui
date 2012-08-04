@@ -274,7 +274,9 @@ class DroplistScrolledWindow(ScrolledWindow):
     ScrolledWindow for droplist.
     '''
 	
-    def __init__(self, right_space=2, top_bottom_space=3):
+    def __init__(self, 
+                 right_space=2, 
+                 top_bottom_space=3):
         '''
         Initialize DroplistScrolledWindow class.
         
@@ -302,7 +304,8 @@ class Droplist(gtk.Window):
         "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
     }
 
-    def __init__(self, items, 
+    def __init__(self, 
+                 items, 
                  x_align=ALIGN_START,
                  y_align=ALIGN_START,
                  font_size=DEFAULT_FONT_SIZE, 
@@ -813,9 +816,17 @@ class DroplistItem(object):
     @undocumented: expose_droplist_item
     '''
     
-    def __init__(self, droplist, index, item, font_size, 
-                 droplist_padding_x, droplist_padding_y,
-                 item_padding_left, item_padding_right, item_padding_y, max_width):
+    def __init__(self, 
+                 droplist, 
+                 index, 
+                 item, 
+                 font_size, 
+                 droplist_padding_x, 
+                 droplist_padding_y,
+                 item_padding_left, 
+                 item_padding_right, 
+                 item_padding_y, 
+                 max_width):
         '''
         Initialize DroplistItem class.
         

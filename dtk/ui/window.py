@@ -45,7 +45,11 @@ class Window(gtk.Window):
     @undocumented: double_click_window
     @undocumented: monitor_window_state
     """
-    def __init__(self, enable_resize=False, shadow_radius=6, window_type=gtk.WINDOW_TOPLEVEL, shadow_visible=True):
+    def __init__(self, 
+                 enable_resize=False, 
+                 shadow_radius=6, 
+                 window_type=gtk.WINDOW_TOPLEVEL, 
+                 shadow_visible=True):
         """
         Initialise the Window class.
 

@@ -138,7 +138,8 @@ class Menu(Window):
     @undocumented: get_root_menu
     '''
     
-    def __init__(self, items, 
+    def __init__(self, 
+                 items, 
                  is_root_menu=False,
                  select_scale=False,
                  x_align=ALIGN_START,
@@ -444,14 +445,19 @@ class MenuItem(object):
     @undocumented: enter_notify_menu_item
     '''
     
-    def __init__(self, item, font_size, 
+    def __init__(self, 
+                 item, 
+                 font_size, 
                  select_scale,
                  show_submenu_callback, 
                  hide_submenu_callback,
                  get_root_menu_callback,
                  get_menu_items_callback,
-                 icon_width, icon_height, 
-                 have_submenu, submenu_width, submenu_height,
+                 icon_width, 
+                 icon_height, 
+                 have_submenu, 
+                 submenu_width, 
+                 submenu_height,
                  menu_padding_x, menu_padding_y,
                  item_padding_x, item_padding_y, min_width):
         '''

@@ -32,7 +32,9 @@ class Statusbar(EventBox):
     @undocumented: expose_status_separator
     '''
 	
-    def __init__(self, height, add_separator=False):
+    def __init__(self, 
+                 height, 
+                 add_separator=False):
         '''
         Initialize Statusbar class.
         

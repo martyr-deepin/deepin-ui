@@ -54,7 +54,12 @@ class SpinBox(gtk.VBox):
         "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT,)),
         }
     
-    def __init__(self, value=0, lower=0, upper=100, step=10, default_width=55):
+    def __init__(self, 
+                 value=0, 
+                 lower=0, 
+                 upper=100, 
+                 step=10, 
+                 default_width=55):
         '''
         Initialize SpinBox class.
         

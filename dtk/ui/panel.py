@@ -41,7 +41,10 @@ class Panel(gtk.Window):
     @undocumented: shape_panel
     '''
 	
-    def __init__(self, width, height, window_type=gtk.WINDOW_TOPLEVEL):
+    def __init__(self, 
+                 width, 
+                 height, 
+                 window_type=gtk.WINDOW_TOPLEVEL):
         '''
         Initialize Panel class.
         

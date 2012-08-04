@@ -116,7 +116,11 @@ class DialogBox(Window):
     @undocumented: draw_mask_tab_page
     '''
 	
-    def __init__(self, title, default_width=None, default_height=None, mask_type=None, 
+    def __init__(self, 
+                 title, 
+                 default_width=None, 
+                 default_height=None, 
+                 mask_type=None, 
                  close_callback=None,
                  modal=True,
                  window_hint=gtk.gdk.WINDOW_TYPE_HINT_DIALOG,

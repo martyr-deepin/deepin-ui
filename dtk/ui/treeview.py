@@ -42,8 +42,13 @@ class TreeView(gtk.DrawingArea):
         "right-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject.TYPE_INT, gobject.TYPE_INT, gobject.TYPE_INT)),
         }
     
-    def __init__(self, width=20, height = 30,
-                 font_size = 10, font_x_padding=5, font_width=120, font_height = 0,
+    def __init__(self, 
+                 width=20, 
+                 height = 30,
+                 font_size = 10, 
+                 font_x_padding=5, 
+                 font_width=120, 
+                 font_height = 0,
                  font_align=pango.ALIGN_LEFT,
                  arrow_x_padding = 10, 
                  normal_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png"), 
@@ -464,7 +469,9 @@ class Tree(object):
 gobject.type_register(TreeView)               
 
 class TreeViewItem(object):    
-    def __init__(self, item_title, has_arrow=True):
+    def __init__(self, 
+                 item_title, 
+                 has_arrow=True):
         self.item_title = item_title
         self.has_arrow = has_arrow
         self.item_id = None

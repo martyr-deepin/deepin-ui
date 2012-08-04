@@ -31,7 +31,10 @@ class HSeparator(gtk.Alignment):
     @undocumented: expose_hseparator
     '''
 	
-    def __init__(self, color_infos, padding_x=0, padding_y=0):
+    def __init__(self, 
+                 color_infos, 
+                 padding_x=0, 
+                 padding_y=0):
         '''Init horizontal separator.
         
         @param color_infos: A list of color info, [(position, (hex_color, alpha_value))]
@@ -81,7 +84,10 @@ class VSeparator(gtk.Alignment):
     @undocumented: expose_vseparator
     '''
     
-    def __init__(self, color_infos, padding_x=0, padding_y=0):
+    def __init__(self, 
+                 color_infos, 
+                 padding_x=0, 
+                 padding_y=0):
         '''Init vertically separator.
         
         @param color_infos: A list of color info, [(position, (hex_color, alpha_value))]

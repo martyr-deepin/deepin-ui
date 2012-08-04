@@ -28,7 +28,12 @@ class HorizontalFrame(gtk.Alignment):
     Horizontal frame to padding 1 pixel round child.
     '''
 	
-    def __init__(self, padding=1, xalign=0.0, yalign=0.0, xscale=1.0, yscale=1.0):
+    def __init__(self, 
+                 padding=1, 
+                 xalign=0.0, 
+                 yalign=0.0, 
+                 xscale=1.0, 
+                 yscale=1.0):
         '''
         Initialize HorizontalFrame class.
         
@@ -50,7 +55,12 @@ class VerticalFrame(gtk.Alignment):
     Vertical frame to padding 1 pixel round child.
     '''
 	
-    def __init__(self, padding=1, xalign=0.0, yalign=0.0, xscale=1.0, yscale=1.0):
+    def __init__(self, 
+                 padding=1, 
+                 xalign=0.0, 
+                 yalign=0.0, 
+                 xscale=1.0, 
+                 yscale=1.0):
         '''
         Initialize VerticalFrame class.
         

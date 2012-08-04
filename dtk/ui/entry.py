@@ -74,7 +74,8 @@ class Entry(gtk.EventBox):
         "invalid-value" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
-    def __init__(self, content="", 
+    def __init__(self, 
+                 content="", 
                  padding_x=5, 
                  padding_y=2,
                  text_color=ui_theme.get_color("entry_text"),
@@ -897,7 +898,8 @@ class TextEntry(gtk.VBox):
         "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
-    def __init__(self, content="",
+    def __init__(self, 
+                 content="",
                  action_button=None,
                  background_color = ui_theme.get_alpha_color("text_entry_background"),
                  acme_color = ui_theme.get_alpha_color("text_entry_acme"),
@@ -1100,7 +1102,8 @@ class InputEntry(gtk.VBox):
         "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
-    def __init__(self, content="",
+    def __init__(self, 
+                 content="",
                  action_button=None,
                  background_color = ui_theme.get_alpha_color("text_entry_background"),
                  acme_color = ui_theme.get_alpha_color("text_entry_acme"),
@@ -1250,7 +1253,8 @@ class ShortcutKeyEntry(gtk.VBox):
         "shortcut-key-change" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
-    def __init__(self, content="",
+    def __init__(self, 
+                 content="",
                  action_button=None,
                  background_color = ui_theme.get_alpha_color("text_entry_background"),
                  acme_color = ui_theme.get_alpha_color("text_entry_acme"),

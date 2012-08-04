@@ -34,7 +34,9 @@ class Config(gobject.GObject):
                             (gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING))
         }
     
-    def __init__(self, config_file, default_config=None):
+    def __init__(self, 
+                 config_file, 
+                 default_config=None):
         '''
         Init config module.
 

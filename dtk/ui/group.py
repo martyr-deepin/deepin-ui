@@ -125,7 +125,11 @@ class ImageButtonItem(gtk.Button):
     @undocumented: expose_image_button_item
     '''
     
-    def __init__(self, item, index, set_index, get_index):
+    def __init__(self, 
+                 item, 
+                 index, 
+                 set_index, 
+                 get_index):
         '''
         Initialize ImageButtonItem class.
 

@@ -59,7 +59,10 @@ class LoadSkinThread(td.Thread):
     Thread to load skin.
     '''
 	
-    def __init__(self, skin_dirs, add_skin_icon, add_add_icon):
+    def __init__(self, 
+                 skin_dirs, 
+                 add_skin_icon, 
+                 add_add_icon):
         '''
         Initialize LoadSkinThread class.
         
@@ -97,7 +100,10 @@ class SkinWindow(DialogBox):
     @undocumented: switch_edit_page
     '''
 	
-    def __init__(self, app_frame_pixbuf, preview_width=450, preview_height=500):
+    def __init__(self, 
+                 app_frame_pixbuf, 
+                 preview_width=450, 
+                 preview_height=500):
         '''
         Initialize SkinWindow class.
         
@@ -154,7 +160,10 @@ gobject.type_register(SkinWindow)
 class SkinPreviewPage(gtk.VBox):
     '''Skin preview.'''
 	
-    def __init__(self, dialog, change_skin_callback, switch_edit_page_callback):
+    def __init__(self, 
+                 dialog, 
+                 change_skin_callback, 
+                 switch_edit_page_callback):
         '''Init skin preview.'''
         gtk.VBox.__init__(self)
         self.dialog = dialog
@@ -728,7 +737,10 @@ gobject.type_register(SkinAddIcon)
 class SkinEditPage(gtk.VBox):
     '''Init skin edit page.'''
 	
-    def __init__(self, dialog, app_frame_pixbuf, switch_preview_page):
+    def __init__(self, 
+                 dialog, 
+                 app_frame_pixbuf, 
+                 switch_preview_page):
         '''Init skin edit page.'''
         gtk.VBox.__init__(self)
         self.dialog = dialog

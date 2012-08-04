@@ -36,8 +36,12 @@ class Navigatebar(EventBox):
     @undocumented: expose_nav_separator.
     '''
     
-    def __init__(self, items, add_separator=False, font_size=DEFAULT_FONT_SIZE, 
-                 padding_x=10, padding_y=10, 
+    def __init__(self, 
+                 items, 
+                 add_separator=False, 
+                 font_size=DEFAULT_FONT_SIZE, 
+                 padding_x=10, 
+                 padding_y=10, 
                  vertical=True,
                  item_hover_pixbuf=ui_theme.get_pixbuf("navigatebar/nav_item_hover.png"),
                  item_press_pixbuf=ui_theme.get_pixbuf("navigatebar/nav_item_press.png"),
@@ -131,7 +135,12 @@ class NavItem(object):
     @undocumented: expose_nav_item
     '''
 	
-    def __init__(self, element, index, font_size, padding_x, padding_y, 
+    def __init__(self, 
+                 element, 
+                 index, 
+                 font_size, 
+                 padding_x, 
+                 padding_y, 
                  vertical,
                  set_index, get_index,
                  item_hover_pixbuf,

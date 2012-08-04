@@ -54,7 +54,12 @@ class Animation:
     @undocumented: init_all
     @undocumented: compute
     '''
-    def __init__(self, widgets, property, duration, ranges, interpolator=LinerInterpolator,
+    def __init__(self, 
+                 widgets, 
+                 property, 
+                 duration, 
+                 ranges, 
+                 interpolator=LinerInterpolator,
                  stop_callback=None):
         '''
         Initialize Animation class.

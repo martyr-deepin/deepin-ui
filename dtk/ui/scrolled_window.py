@@ -82,7 +82,9 @@ class ScrolledWindow(gtk.Bin):
     @undocumented: do_expose_event
     '''
 
-    def __init__(self, right_space=2, top_bottom_space=3):
+    def __init__(self, 
+                 right_space=2, 
+                 top_bottom_space=3):
         '''
         Init scrolled window.
 

@@ -172,7 +172,9 @@ class Theme(object):
     @undocumented: get_ticker
     '''
     
-    def __init__(self, system_theme_dir, user_theme_dir):
+    def __init__(self, 
+                 system_theme_dir, 
+                 user_theme_dir):
         '''
         Initialize Theme class.
         
