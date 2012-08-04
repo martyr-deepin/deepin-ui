@@ -34,6 +34,8 @@ import pango
 class Titlebar(EventBox):
     """
     Titlebar defines every thing of a title bar of a application based on deepin ui.
+    
+    @undocumented: expose_titlebar_separator
     """
     def __init__(self, 
                  button_mask=["theme", "menu", "max", "min", "close"],

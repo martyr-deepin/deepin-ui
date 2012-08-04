@@ -35,6 +35,9 @@ from utils import (get_content_size, color_hex_to_cairo, propagate_expose, set_c
 class Button(gtk.Button):
     '''
     Button with Deepin UI style.
+    
+    @undocumented: key_press_button
+    @undocumented: expose_button
     '''
 	
     def __init__(self, label, font_size=DEFAULT_FONT_SIZE):
@@ -435,6 +438,12 @@ def expose_max_button(widget, event, cache_pixbuf, sub_dir, max_path_prefix, unm
 class ToggleButton(gtk.ToggleButton):
     '''
     ToggleButton class.
+    
+    @undocumented: press_toggle_button
+    @undocumented: release_toggle_button
+    @undocumented: expose_toggle_button
+    @undocumented: set_inactive_pixbuf_group
+    @undocumented: set_active_pixbuf_group
     '''
 	
     def __init__(self, 
@@ -607,6 +616,8 @@ class ToggleButton(gtk.ToggleButton):
 class ActionButton(gtk.Button):
     '''
     ActionButton class.
+    
+    @undocumented: expose_action_button
     '''
 	
     def __init__(self, actions, index=0):
@@ -699,7 +710,11 @@ class CheckButton(ToggleButton):
 gobject.type_register(CheckButton)
 
 class RadioButton(ToggleButton):
-    '''RadioButton class.'''
+    '''
+    RadioButton class.
+    
+    @undocumented: click_radio_button
+    '''
 	
     def __init__(self, label_text=None, padding_x=8):
         '''
@@ -742,6 +757,8 @@ gobject.type_register(RadioButton)
 class DisableButton(gtk.Button):
     '''
     DisableButton class.
+    
+    @undocumented: expose_disable_button
     '''
 	
     def __init__(self, dpixbufs):
@@ -755,9 +772,9 @@ class DisableButton(gtk.Button):
         self.set_size_request(pixbuf.get_width(), pixbuf.get_height())
         
         widget_fix_cycle_destroy_bug(self)
-        self.connect("expose-event", lambda w, e: self.expose_drop_button(w, e, dpixbufs))
+        self.connect("expose-event", lambda w, e: self.expose_disable_button(w, e, dpixbufs))
         
-    def expose_drop_button(self, widget, event, dpixbufs):
+    def expose_disable_button(self, widget, event, dpixbufs):
         '''
         Callback for `expose-event` signal.
         

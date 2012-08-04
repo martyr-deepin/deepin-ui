@@ -25,7 +25,11 @@ import gobject
 import gtk
 
 class HSeparator(gtk.Alignment):
-    '''Horizontal separator.'''
+    '''
+    Horizontal separator.
+    
+    @undocumented: expose_hseparator
+    '''
 	
     def __init__(self, color_infos, padding_x=0, padding_y=0):
         '''Init horizontal separator.
@@ -73,6 +77,8 @@ gobject.type_register(HSeparator)
 class VSeparator(gtk.Alignment):
     '''
     Vertically separator.
+    
+    @undocumented: expose_vseparator
     '''
     
     def __init__(self, color_infos, padding_x=0, padding_y=0):

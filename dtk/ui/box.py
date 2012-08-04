@@ -41,6 +41,8 @@ class EventBox(gtk.EventBox):
 class ImageBox(gtk.EventBox):
     '''
     ImageBox.
+    
+    @undocumented: expose_image_box
     '''
 	
     def __init__(self, image_dpixbuf):
@@ -86,6 +88,8 @@ gobject.type_register(ImageBox)
 class BackgroundBox(gtk.VBox):
     '''
     BackgroundBox is container for clip background.
+    
+    @undocumented: expose_background_box
     '''
 	
     def __init__(self):

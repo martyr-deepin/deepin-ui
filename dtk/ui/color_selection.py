@@ -78,6 +78,12 @@ gobject.type_register(HSV)
 class ColorSelectDialog(DialogBox):
     '''
     ColorSelectionDialog widget.
+    
+    @undocumented: click_confirm_button
+    @undocumented: click_cancel_button
+    @undocumented: click_rgb_spin
+    @undocumented: press_return_color_entry
+    @undocumented: expose_display_button
     '''
     
     DEFAULT_COLOR_LIST = ["#000000", "#808080", "#E20417", "#F29300", "#FFEC00", "#95BE0D", "#008F35", "#00968F", "#FFFFFF", "#C0C0C0", "#E2004E", "#E2007A", "#920A7E", "#162883", "#0069B2", "#009DE0"]
@@ -433,6 +439,10 @@ gobject.type_register(ColorItem)
 class ColorButton(gtk.VBox):
     '''
     Button to select color.
+    
+    @undocumented: @popup_color_selection_dialog
+    @undocumented: @expose_button
+    @undocumented: @select_color
     '''
 	
     __gsignals__ = {
