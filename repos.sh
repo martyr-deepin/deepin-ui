@@ -50,7 +50,7 @@ case "$1" in
         epydoc --no-private --html --graph=all -v -o apidocs dtk/ui/$2
         ;;
     "build_docs"  )
-        epydoc --config epydoc.cfg
+        sudo python setup.py install && epydoc --graph=all -o apidocs --name Deepin-UI --html --parse-only --no-frames --no-private dtk.ui
         ;;
     * ) 
         echo "Help"

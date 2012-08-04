@@ -442,9 +442,9 @@ class ColorButton(gtk.VBox):
     '''
     Button to select color.
     
-    @undocumented: @popup_color_selection_dialog
-    @undocumented: @expose_button
-    @undocumented: @select_color
+    @undocumented: popup_color_selection_dialog
+    @undocumented: expose_button
+    @undocumented: select_color
     '''
 	
     __gsignals__ = {

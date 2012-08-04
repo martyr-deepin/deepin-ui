@@ -515,8 +515,8 @@ def text(widget, content, *args, **kargs):
 
     @param widget: the widget of you want to change.
     @param content: the text which you want show.
-    @param *args: pass to the dtk.ui.Label
-    @param **kargs: pass to the dtk.ui.Label
+    @param args: pass to the dtk.ui.Label
+    @param kargs: pass to the dtk.ui.Label
     '''
     set_value(widget, {
         "text": content,
@@ -533,8 +533,8 @@ def custom(widget, cb, *args, **kargs):
     @param widget: the widget of you want to change.
     @param cb: the function used to generate the content widget. this function should return an gtk.Widget.  Be careful: if this function generate it's content affected by other runtime factor, you alsow should use "always_update"
     to disable the internal cache mechanism
-    @param *args: pass to the cb
-    @param **kargs: pass to the cb
+    @param args: pass to the cb
+    @param kargs: pass to the cb
     '''
     set_value(widget, {
             "custom" : cb,
