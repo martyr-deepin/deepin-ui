@@ -31,7 +31,21 @@ from utils import (get_match_parent, cairo_state, get_event_coords,
                    is_single_click, get_window_shadow_size)
 
 class IconView(gtk.DrawingArea):
-    '''Icon view.'''
+    '''
+    Icon view.
+    
+    @undocumented: expose_icon_view
+    @undocumented: motion_icon_view
+    @undocumented: icon_view_get_event_index
+    @undocumented: button_press_icon_view
+    @undocumented: button_release_icon_view
+    @undocumented: leave_icon_view
+    @undocumented: key_press_icon_view
+    @undocumented: key_release_icon_view
+    @undocumented: update_redraw_request_list
+    @undocumented: redraw_item
+    @undocumented: get_offset_coordinate
+    '''
 	
     __gsignals__ = {
         "lost-focus-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
@@ -45,7 +59,12 @@ class IconView(gtk.DrawingArea):
     }
 
     def __init__(self, padding_x=0, padding_y=0):
-        '''Init icon view.'''
+        '''
+        Initialize IconView class.
+
+        @param padding_x: Horizontal padding value.
+        @param padding_y: Vertical padding value.
+        '''
         # Init.
         gtk.DrawingArea.__init__(self)
         self.padding_x = padding_x
@@ -95,7 +114,9 @@ class IconView(gtk.DrawingArea):
             }
         
     def select_first_item(self):
-        '''Select first item.'''
+        '''
+        Select first item.
+        '''
         if len(self.items) > 0:
             self.clear_focus_item()        
             self.focus_index = 0
@@ -107,7 +128,9 @@ class IconView(gtk.DrawingArea):
             vadjust.set_value(vadjust.get_lower())
             
     def select_last_item(self):
-        '''Select last item.'''
+        '''
+        Select last item.
+        '''
         if len(self.items) > 0:
             self.clear_focus_item()        
             self.focus_index = len(self.items) - 1
@@ -119,12 +142,18 @@ class IconView(gtk.DrawingArea):
             vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
             
     def return_item(self):
-        '''Double click item.'''
+        '''
+        Do return action.
+        
+        This function will emit `double-click-item` signal.
+        '''
         if self.focus_index != None:
             self.emit("double-click-item", self.items[self.focus_index], 0, 0)
             
     def select_up_item(self):
-        '''Select preview row.'''
+        '''
+        Select up row item.
+        '''
         if len(self.items) > 0:
             vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             
@@ -152,7 +181,9 @@ class IconView(gtk.DrawingArea):
                     vadjust.set_value(vadjust.get_lower())
                 
     def select_down_item(self):
-        '''Select next row.'''
+        '''
+        Select next row item.
+        '''
         if len(self.items) > 0:
             vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             if self.focus_index == None:
@@ -179,7 +210,9 @@ class IconView(gtk.DrawingArea):
                     vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
                 
     def select_left_item(self):
-        '''Select preview column.'''
+        '''
+        Select left item.
+        '''
         if len(self.items) > 0:
             vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             if self.focus_index == None:
@@ -201,7 +234,9 @@ class IconView(gtk.DrawingArea):
                     self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
                 
     def select_right_item(self):
-        '''Select next column.'''
+        '''
+        Select right item.
+        '''
         if len(self.items) > 0:
             vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             if self.focus_index == None:
@@ -223,7 +258,9 @@ class IconView(gtk.DrawingArea):
                     self.emit("motion-notify-item", self.items[self.focus_index], 0, 0)
                 
     def scroll_page_up(self):
-        '''Scroll iconview up.'''
+        '''
+        Scroll page up of iconview.
+        '''
         if len(self.items) > 0:
             vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             if self.focus_index == None:
@@ -253,7 +290,9 @@ class IconView(gtk.DrawingArea):
                 vadjust.set_value(max(0, vadjust.get_value() - vadjust.get_page_size() + self.padding_y))
                 
     def scroll_page_down(self):
-        '''Scroll iconview down.'''
+        '''
+        Scroll page down of iconview.
+        '''
         if len(self.items):
             vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
             if self.focus_index == None:
@@ -284,7 +323,12 @@ class IconView(gtk.DrawingArea):
                                       vadjust.get_value() + vadjust.get_page_size() - self.padding_y))
             
     def add_items(self, items, insert_pos=None):
-        '''Add items.'''
+        '''
+        Add items to iconview.
+        
+        @param items: A list of item that follow the rule of IconItem.
+        @param insert_pos: Insert position, default is None to insert new item at B{end} position.
+        '''
         if insert_pos == None:
             self.items += items
         else:
@@ -296,7 +340,11 @@ class IconView(gtk.DrawingArea):
         self.queue_draw()    
         
     def delete_items(self, items):
-        '''Delete item.'''
+        '''
+        Delete items.
+        
+        @param items: Items need to remove.
+        '''
         match_item = False
         for item in items:
             if item in self.items:
@@ -307,17 +355,29 @@ class IconView(gtk.DrawingArea):
             self.queue_draw()
             
     def clear(self):
-        '''Clear items'''
+        '''
+        Clear all items.
+        '''
         self.items = []            
         self.queue_draw()
             
     def draw_mask(self, cr, x, y, w, h):
-        '''Draw mask.'''
+        '''
+        Draw mask interface.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
         draw_vlinear(cr, x, y, w, h,
                      ui_theme.get_shadow_color("linear_background").get_color_info())
         
     def expose_icon_view(self, widget, event):
-        '''Expose list view.'''
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Update vadjustment.
         self.update_vadjustment()    
         
@@ -383,14 +443,18 @@ class IconView(gtk.DrawingArea):
                         item.render(cr, gtk.gdk.Rectangle(render_x, render_y, item_width, item_height))
                         
     def clear_focus_item(self):
-        '''Clear focus item status.'''
+        '''
+        Clear item's focus status.
+        '''
         if self.focus_index != None:
             if 0 <= self.focus_index < len(self.items):
                 self.emit("lost-focus-item", self.items[self.focus_index])
             self.focus_index = None
                         
     def motion_icon_view(self, widget, event):
-        '''Motion list view.'''
+        '''
+        Internal callback for `motion-notify-event` signal.
+        '''
         if len(self.items) > 0:
             index_info = self.icon_view_get_event_index(event)
             if index_info == None:
@@ -407,7 +471,9 @@ class IconView(gtk.DrawingArea):
                 self.emit("motion-notify-item", self.items[self.focus_index], offset_x - self.padding_x, offset_y - self.padding_y)
                     
     def icon_view_get_event_index(self, event):
-        '''Get index at event.'''
+        '''
+        Internal function to get item index at event coordinate..
+        '''
         if len(self.items) > 0:
             (event_x, event_y) = get_event_coords(event)
             item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
@@ -443,7 +509,9 @@ class IconView(gtk.DrawingArea):
                             event_y - row_index * item_height)
 
     def button_press_icon_view(self, widget, event):
-        '''Button press event handler.'''
+        '''
+        Internal callback for `button-press-event` signal.
+        '''
         # Grab focus when button press, otherwise key-press signal can't response.
         self.grab_focus()
         
@@ -472,18 +540,26 @@ class IconView(gtk.DrawingArea):
                     self.set_highlight(self.items[index_info[2]])
                 
     def set_highlight(self, item):
-        '''Set highlight item.'''
+        '''
+        Set highlight status with given item.
+        
+        @param item: Item need highlight.
+        '''
         self.highlight_item = item
         self.emit("highlight-item", self.highlight_item)
                 
     def clear_highlight(self):
-        '''Clear highlight.'''
+        '''
+        Clear all highlight status.
+        '''
         if self.highlight_item != None:
             self.emit("normal-item", self.highlight_item)
             self.highlight_item = None
 
     def button_release_icon_view(self, widget, event):
-        '''Button release event handler.'''
+        '''
+        Internal callback for `button-release-event` signal.
+        '''
         if len(self.items) > 0 and is_left_button(event):
             index_info = self.icon_view_get_event_index(event)
             if index_info:
@@ -500,7 +576,9 @@ class IconView(gtk.DrawingArea):
             self.single_click_item = None
         
     def leave_icon_view(self, widget, event):
-        '''leave-notify-event signal handler.'''
+        '''
+        Internal callback for `leave-notify` signal.
+        '''
         # Hide hover row when cursor out of viewport area.
         vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
         hadjust = get_match_parent(self, ["ScrolledWindow"]).get_hadjustment()
@@ -509,7 +587,9 @@ class IconView(gtk.DrawingArea):
             self.clear_focus_item()
         
     def key_press_icon_view(self, widget, event):
-        '''Callback to handle key-press signal.'''
+        '''
+        Internal callback for `key-press-event` signal.
+        '''
         key_name = get_keyevent_name(event)
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
@@ -517,11 +597,15 @@ class IconView(gtk.DrawingArea):
         return True
             
     def key_release_icon_view(self, widget, event):
-        '''Callback to handle key-release signal.'''
+        '''
+        Internal callback for `key-release-event` signal.
+        '''
         pass
         
     def update_redraw_request_list(self):
-        '''Update redraw request list.'''
+        '''
+        Internal function to update redraw request list.
+        '''
         # Redraw when request list is not empty.
         if len(self.redraw_request_list) > 0:
             # Get offset.
@@ -555,11 +639,15 @@ class IconView(gtk.DrawingArea):
         return True
     
     def redraw_item(self, list_item):
-        '''Redraw item.'''
+        '''
+        Internal function to redraw item.
+        '''
         self.redraw_request_list.append(list_item)
         
     def get_offset_coordinate(self, widget):
-        '''Get offset coordinate.'''
+        '''
+        Internal function to get offset coordinate.
+        '''
         # Init.
         rect = widget.allocation
 
@@ -576,7 +664,9 @@ class IconView(gtk.DrawingArea):
             return (0, 0, viewport)
             
     def update_vadjustment(self):
-        '''Update vertical adjustment.'''
+        '''
+        Update vertical adjustment.
+        '''
         scrolled_window = get_match_parent(self, ["ScrolledWindow"])
         
         if len(self.items) > 0:
@@ -603,14 +693,20 @@ class IconView(gtk.DrawingArea):
 gobject.type_register(IconView)
 
 class IconItem(gobject.GObject):
-    '''Icon item.'''
+    '''
+    Icon item.
+    '''
 	
     __gsignals__ = {
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
     def __init__(self, pixbuf):
-        '''Init item icon.'''
+        '''
+        Initialize ItemIcon class.
+        
+        @param pixbuf: Icon pixbuf.
+        '''
         gobject.GObject.__init__(self)
         self.pixbuf = pixbuf
         self.padding_x = 21
@@ -619,19 +715,35 @@ class IconItem(gobject.GObject):
         self.highlight_flag = False
         
     def emit_redraw_request(self):
-        '''Emit redraw-request signal.'''
+        '''
+        Emit `redraw-request` signal.
+        
+        This is IconView interface, you should implement it.
+        '''
         self.emit("redraw-request")
         
     def get_width(self):
-        '''Get width.'''
+        '''
+        Get item width.
+        
+        This is IconView interface, you should implement it.
+        '''
         return self.pixbuf.get_width() + self.padding_x * 2
         
     def get_height(self):
-        '''Get height.'''
+        '''
+        Get item height.
+        
+        This is IconView interface, you should implement it.
+        '''
         return self.pixbuf.get_height() + self.padding_y * 2
     
     def render(self, cr, rect):
-        '''Render item.'''
+        '''
+        Render item.
+        
+        This is IconView interface, you should implement it.
+        '''
         # Draw cover border.
         border_size = 4
         
@@ -656,43 +768,75 @@ class IconItem(gobject.GObject):
             rect.y + self.padding_y)
         
     def icon_item_motion_notify(self, x, y):
-        '''Handle `motion-notify-event` signal.'''
+        '''
+        Handle `motion-notify-event` signal.
+        
+        This is IconView interface, you should implement it.
+        '''
         self.hover_flag = True
         
         self.emit_redraw_request()
         
     def icon_item_lost_focus(self):
-        '''Lost focus.'''
+        '''
+        Lost focus.
+        
+        This is IconView interface, you should implement it.
+        '''
         self.hover_flag = False
         
         self.emit_redraw_request()
         
     def icon_item_highlight(self):
-        '''Highlight item.'''
+        '''
+        Highlight item.
+        
+        This is IconView interface, you should implement it.
+        '''
         self.highlight_flag = True
 
         self.emit_redraw_request()
         
     def icon_item_normal(self):
-        '''Set item with normal status.'''
+        '''
+        Set item with normal status.
+        
+        This is IconView interface, you should implement it.
+        '''
         self.highlight_flag = False
         
         self.emit_redraw_request()
     
     def icon_item_button_press(self, x, y):
-        '''Handle button-press event.'''
+        '''
+        Handle button-press event.
+        
+        This is IconView interface, you should implement it.
+        '''
         pass        
     
     def icon_item_button_release(self, x, y):
-        '''Handle button-release event.'''
+        '''
+        Handle button-release event.
+        
+        This is IconView interface, you should implement it.
+        '''
         pass
     
     def icon_item_single_click(self, x, y):
-        '''Handle single click event.'''
+        '''
+        Handle single click event.
+        
+        This is IconView interface, you should implement it.
+        '''
         pass
 
     def icon_item_double_click(self, x, y):
-        '''Handle double click event.'''
+        '''
+        Handle double click event.
+        
+        This is IconView interface, you should implement it.
+        '''
         pass
         
 gobject.type_register(IconItem)
