@@ -29,9 +29,7 @@ def get_key_name(keyval):
     Get key name with given key value.
     
     @param keyval: Key value.
-    
-    @return: 
-    Return key name with given key value.
+    @return: Return key name with given key value.
     '''
     key_unicode = gdk.keyval_to_unicode(keyval)
     if key_unicode == 0:
@@ -44,9 +42,7 @@ def get_key_event_modifiers(key_event):
     Get key modifiers with given key event.
     
     @param key_event: Key event.
-    
-    @return:
-    Return key modifier list with given key event.
+    @return: Return key modifier list with given key event.
     '''
     modifiers = []
     
@@ -77,9 +73,7 @@ def get_keyevent_name(key_event):
     Get key event name.
     
     @param key_event: Key event.
-    
-    @return:
-    Return key event string.
+    @return: Return key event string.
     '''
     if key_event.is_modifier:
         return ""
@@ -99,9 +93,7 @@ def parse_keyevent_name(keyevent_name):
     Parse keyevent name.
     
     @param keyevent_name: Key event name that return by function L{ I{get_keyevent_name} <get_keyevent_name>}.
-
-    @return:
-    Return tuple that contain key value and modifier mask, (keyval, modifier_mask). 
+    @return: Return tuple that contain key value and modifier mask, (keyval, modifier_mask). 
     '''
     keys = keyevent_name.split(" + ")
     if len(keys) == 1:
@@ -134,9 +126,7 @@ def has_ctrl_mask(key_event):
     Whether has ctrl mask in key event.
     
     @param key_event: Key event.
-
-    @return:
-    Return true if key event has ctrl mask. 
+    @return: Return true if key event has ctrl mask. 
     '''
     return get_key_name(key_event.keyval) in ["Control_L", "Control_R"]
 
@@ -145,8 +135,6 @@ def has_shift_mask(key_event):
     Whether has shift mask in key event.
     
     @param key_event: Key event.
-
-    @return:
-    Return true if key event has shift mask. 
+    @return: Return true if key event has shift mask. 
     '''
     return get_key_name(key_event.keyval) in ["Shift_L", "Shift_R"]

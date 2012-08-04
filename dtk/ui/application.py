@@ -118,7 +118,9 @@ class Application(object):
 
     def show_titlebar(self):
         """
-        Show title bar of the window. By default, it is invoked at the last step of add_titlebar.
+        Show title bar of the window. 
+
+        By default, it is invoked at the last step of add_titlebar.
         """
         if self.titlebar_box.get_children() == [] and self.titlebar != None:
             self.titlebar_box.add(self.titlebar)
@@ -164,7 +166,10 @@ class Application(object):
 
     def set_icon(self, icon_dpixbuf):
         """
-        Set the icon of the application. This icon is used by the window manager or the dock.
+        Set the icon of the application. 
+
+        This icon is used by the window manager or the dock.
+        
         @param icon_dpixbuf: The icon pixbuf of dtk.ui.theme.DynamicPixbuf.
         """
         gtk.window_set_default_icon(icon_dpixbuf.get_pixbuf())
@@ -172,6 +177,7 @@ class Application(object):
     def destroy(self, widget, data=None):
         """
         Destroy the window and quit the program.
+        
         @param widget: Not used.
         @param data: Not used.
         """
@@ -202,6 +208,7 @@ class Application(object):
     def theme_callback(self, widget):
         """
         Invoked when the theme button is clicked.
+        
         @param widget: Not used.
         @return: Always return False
         """
@@ -214,6 +221,7 @@ class Application(object):
     def menu_callback(self, widget):
         """
         Invoked when the menu button is clicked.
+        
         @param widget: Not used.
         @return: Always return False
         """
@@ -225,6 +233,7 @@ class Application(object):
     def set_menu_callback(self, callback):
         """
         Set the menu_button_callback function.
+        
         @param callback: A function which is invoked when the menu button is clicked.
         """
         self.menu_button_callback = callback

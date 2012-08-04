@@ -370,7 +370,9 @@ class ScrolledWindow(gtk.Bin):
     def add_with_viewport(self, child):
         '''
         Used to add children without native scrolling capabilities.
+        
         If a child has native scrolling, use ScrolledWindow.add() insetad
+        
         of this function.
 
         @param child: the child without native scrolling.
@@ -384,6 +386,7 @@ class ScrolledWindow(gtk.Bin):
     def add_child(self, child):
         '''
         Add the child to this ScrolledWindow.The child should have
+        
         native scrolling capabilities.
 
         @param child: the child with native scrolling.
@@ -520,7 +523,7 @@ class ScrolledWindow(gtk.Bin):
 
     def set_policy(self, h, v):
         '''
-        set the policy of ScrolledWindow's scrollbar
+        Set the policy of ScrolledWindow's scrollbar
 
         @param h: the horizontal scrollbar policy
         @param v: the vertical scrollbar policy

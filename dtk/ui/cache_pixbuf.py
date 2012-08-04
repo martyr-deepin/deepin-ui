@@ -47,13 +47,9 @@ class CachePixbuf(object):
         Scale with given sizce and return new pixbuf.
         
         @param pixbuf: Original pixbuf.
-
         @param scale_width: Scale width of pixbuf.
-
         @param scale_height: Scale height of pixbuf.
-        
         @param vertical_mirror: Whether pixbuf mirror vertically.
-        
         @param horizontal_mirror: Whether pixbuf mirror horizontally.
         '''
         if self.pixbuf != pixbuf or self.scale_width != scale_width or self.scale_height != scale_height:
@@ -87,8 +83,7 @@ class CachePixbuf(object):
         '''
         Get pixbuf cache.
         
-        @return:
-        Return cache pixbuf. 
+        @return: Return cache pixbuf. 
         '''
         return self.cache_pixbuf
         

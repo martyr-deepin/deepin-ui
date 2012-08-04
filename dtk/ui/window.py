@@ -107,7 +107,6 @@ class Window(gtk.Window):
 
         @param widget: A window of type Gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
-
         @return: Always return True.
         """
         # Init.
@@ -348,6 +347,7 @@ class Window(gtk.Window):
     def is_disable_window_maximized(self):
         """
         An interface which indicates whether the window could be maximized, you should implement this function you own.
+        
         @return: Always return False.
         """
         return False                
@@ -392,7 +392,6 @@ class Window(gtk.Window):
 
         @param widget: A widget of type gtk.Widget.
         @param event: A event of type gtk.gdk.Event.
-
         @return: Always return False.
         """
         if is_double_click(event):
@@ -416,7 +415,6 @@ class Window(gtk.Window):
         Get the cursor position.
 
         @param event: An event of type gtk.gdk.Event.
-
         @return: If the cursor is on the frame of the window, return the cursor position. Otherwise return None.
         """
         # Get event coordinate.

@@ -31,9 +31,7 @@ class HSeparator(gtk.Alignment):
         '''Init horizontal separator.
         
         @param color_infos: A list of color info, [(position, (hex_color, alpha_value))]
-        
         @param padding_x: Padding value in horizontally.
-        
         @param padding_y: Padding value in vertically.
         '''
         # Init.
@@ -56,11 +54,8 @@ class HSeparator(gtk.Alignment):
         Callback for `expose-event` signal.
         
         @param widget: HSeparator instance.
-        
         @param event: Expose event.
-        
-        @return:
-        Return True.
+        @return: Return True.
         '''
         # Init.
         cr = widget.window.cairo_create()
@@ -84,9 +79,7 @@ class VSeparator(gtk.Alignment):
         '''Init vertically separator.
         
         @param color_infos: A list of color info, [(position, (hex_color, alpha_value))]
-        
         @param padding_x: Padding value in horizontally.
-        
         @param padding_y: Padding value in vertically.
         '''
         gtk.Alignment.__init__(self)
@@ -106,11 +99,8 @@ class VSeparator(gtk.Alignment):
         Callback for `expose-event` signal.
         
         @param widget: HSeparator instance.
-        
         @param event: Expose event.
-        
-        @return:
-        Return True.
+        @return: Return True.
         '''
         cr = widget.window.cairo_create()
         rect = widget.allocation

@@ -44,9 +44,7 @@ def tree_view_get_toplevel_node_count(treeview):
     Get node count number of TreeView.
     
     @param treeview: Gtk.TreeView instance.
-    
-    @return: 
-    Return number of node.
+    @return: Return number of node.
     
     Return 0 if treeview haven't model.
     '''
@@ -61,9 +59,7 @@ def tree_view_get_selected_path(treeview):
     Get selected path of TreeView.
     
     @param treeview: Gtk.TreeView instance.
-    
-    @return:
-    Return selected path of treeview.
+    @return: Return selected path of treeview.
     
     Return None if haven't any path selected.
     '''
@@ -100,9 +96,7 @@ def tree_view_scroll_vertical(treeview, scroll_up=True):
     Scroll TreeView vertically.
     
     @param treeview: Gtk.TreeView instance.
-    
     @param scroll_up: Defalut value is True, set as False if you want scroll down.
-    
     '''
     # Init.
     scroll_num = 9
@@ -153,9 +147,7 @@ def get_entry_text(entry):
     Get text of entry.
     
     @param entry: Gtk.Entry instance.
-
-    @return:
-    Return text of entry.
+    @return: Return text of entry.
     '''
     return entry.get_text().split(" ")[0]
 
@@ -164,11 +156,8 @@ def set_cursor(cursor_widget, cursor_type=None):
     Set cursor type with given widget.
     
     @param cursor_widget: Gtk.Widget or Gdk.Window instance.
-    
     @param cursor_type: The cursor type of gtk.gdk.Cursor, please set with None if you want reset widget's cursor as default.
-    
-    @return:
-    Always return False
+    @return: Always return False
     '''
     if isinstance(cursor_widget, gtk.Widget):
         cursor_window = cursor_widget.window
@@ -197,7 +186,6 @@ def set_hover_cursor(widget, cursor_type):
     Set cursor type when mouse hover widget.
 
     @param widget: Gtk.Widget instance.
-
     @param cursor_type: The cursor type of gtk.gdk.Cursor.
     '''
     widget.connect("enter-notify-event", lambda w, e: set_cursor(w, cursor_type))
@@ -208,7 +196,6 @@ def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER):
     Get root coordinate with given widget.
     
     @param widget: Gtk.Widget instance.
-    
     @param pos_type: The position of widget's area, you can set with below constants:
      - WIDGET_POS_TOP_LEFT
      - WIDGET_POS_TOP_RIGHT
@@ -219,9 +206,7 @@ def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER):
      - WIDGET_POS_LEFT_CENTER
      - WIDGET_POS_RIGHT_CENTER
      - WIDGET_POS_CENTER
-     
-    @return:
-    Return (x, y) as root coordination.
+    @return: Return (x, y) as root coordination.
     '''
     # Get coordinate.
     (wx, wy) = widget.window.get_origin()
@@ -268,9 +253,7 @@ def get_event_root_coords(event):
     Get root coordinate with given event.
     
     @param event: Gdk.Event instance, general, we get event instance from gtk signal callback.
-    
-    @return:
-    Return (x, y) as event's root coordination.
+    @return: Return (x, y) as event's root coordination.
     '''
     (rx, ry) = event.get_root_coords()
     return (int(rx), int(ry))
@@ -280,9 +263,7 @@ def get_event_coords(event):
     Get coordinate with given event.
     
     @param event: Gdk.Event instance, general, we get event instance from gtk signal callback.
-    
-    @return:
-    Return (x, y) as event's coordination.
+    @return: Return (x, y) as event's coordination.
     '''
     (rx, ry) = event.get_coords()
     return (int(rx), int(ry))
@@ -319,9 +300,7 @@ def move_window(widget, event, window):
     This function generic use for move window when mouse drag on target widget.
     
     @param widget: Gtk.Widget instance to drag.
-
     @param event: Gdk.Event instance, generic, event come from gtk signal callback.
-    
     @param window: Gtk.Window instance.
     '''
     if is_left_button(event):
@@ -340,9 +319,7 @@ def resize_window(widget, event, window, edge):
     This function generic use for resize window when mouse drag on target widget.
     
     @param widget: Gtk.Widget instance to drag.
-
     @param event: Gdk.Event instance, generic, event come from gtk signal callback.
-    
     @param window: Gtk.Window instance.
     '''
     if is_left_button(event):
@@ -362,9 +339,7 @@ def add_in_scrolled_window(scrolled_window, widget, shadow_type=gtk.SHADOW_NONE)
     Wrap function `add_with_viewport` with shadow type of Gtk.Viewport.
     
     @param scrolled_window: Gtk.ScrolledWindow instance.
-    
     @param widget: Gtk.Widget instance.
-    
     @param shadow_type: Shadow type of Viewport, default is gtk.SHADOW_NONE.
     '''
     scrolled_window.add_with_viewport(widget)
@@ -379,9 +354,7 @@ def is_single_click(event):
     Whether an event is single click event.
     
     @param event: gtk.gdk.BUTTON_PRESS event.
-    
-    @return: 
-    Return True if event is single click event.
+    @return: Return True if event is single click event.
     '''
     return event.button == 1 and event.type == gtk.gdk.BUTTON_PRESS
         
@@ -390,9 +363,7 @@ def is_double_click(event):
     Whether an event is double click event.
     
     @param event: gtk.gdk.BUTTON_PRESS event.
-    
-    @return:
-    Return True if event is double click event.
+    @return: Return True if event is double click event.
     '''
     return event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS
 
@@ -401,9 +372,7 @@ def is_left_button(event):
     Whether event is left button event.
     
     @param event: gtk.gdk.BUTTON_PRESS event.
-    
-    @return:
-    Return True if event is left button event.
+    @return: Return True if event is left button event.
     '''
     return event.button == 1
 
@@ -412,9 +381,7 @@ def is_right_button(event):
     Whehter event is right button event.
     
     @param event: gtk.gdk.BUTTON_PRESS event.
-    
-    @return:
-    Return True if event is right button event.
+    @return: Return True if event is right button event.
     '''
     return event.button == 3
 
@@ -423,9 +390,7 @@ def is_middle_button(event):
     Whehter event is middle button event.
     
     @param event: gtk.gdk.BUTTON_PRESS event.
-    
-    @return:
-    Return True if event is middle button event.
+    @return: Return True if event is middle button event.
     '''
     return event.button == 2
 
@@ -434,7 +399,6 @@ def foreach_container(widget, callback):
     Make callback call for all children of widget.
     
     @param widget: Gtk.Container instance.
-
     @param callback: Callback.
     '''
     callback(widget)
@@ -447,7 +411,6 @@ def foreach_recursive(container, callback):
     Helper function for L{ I{foreach_container} <foreach_container>}.
     
     @param container: Gtk.Container instance.
-
     @param callback: Callback.
     '''
     container.foreach(lambda w: foreach_container(w, callback))
@@ -465,9 +428,7 @@ def get_screen_size(widget):
     Get screen size from the toplevel window associated with widget.
     
     @param widget: Gtk.Widget instance.
-    
-    @return: 
-    Return screen size as (screen_width, screen_height) 
+    @return: Return screen size as (screen_width, screen_height) 
     
     '''
     screen = widget.get_screen()
@@ -480,16 +441,12 @@ def is_in_rect((tx, ty), (x, y, w, h)):
     Whether target coordinate in given rectangle.
     
     @param tx: Target x coordinate.
-    
     @param ty: Target y coordinate.
-
     @param x: X coordinate of rectangle area.
     @param y: X coordinate of rectangle area.
     @param w: Width of rectangle area.
     @param h: Height of rectangle area.
-    
-    @return:
-    Return True if target coordinate in given rectangle.
+    @return: Return True if target coordinate in given rectangle.
     '''
     return (tx >= x and tx <= x + w and ty >= y and ty <= y + h)
 
@@ -515,16 +472,10 @@ def get_content_size(text, text_size=DEFAULT_FONT_SIZE, text_font=DEFAULT_FONT, 
     Get text size, in pixel.
     
     @param text: String or markup string.
-
     @param text_size: Text size, in pixel.
-
     @param text_font: Text font.
-
     @param wrap_width: The width of wrap rule, default don't wrap.
-    
-    @return:
-    Return text size as (text_width, text_height), return (0, 0) if occur error.
-    
+    @return: Return text size as (text_width, text_height), return (0, 0) if occur error.
     '''
     if text:
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0) # don't need give size
@@ -549,7 +500,6 @@ def create_directory(directory, remove_first=False):
     Create directory.
     
     @param directory: Target directory to create.
-    
     @param remove_first: If you want remove directory when directory has exist, set it as True.
     '''
     if remove_first and os.path.exists(directory):
@@ -603,11 +553,10 @@ def read_file(filepath, check_exists=False):
     Read file content.
     
     @param filepath: Target filepath.
-
     @param check_exists: Whether check file is exist, default is False.
     
-    @return:
-    Return \"\" if check_exists is True and filepath not exist.
+    @return: Return \"\" if check_exists is True and filepath not exist.
+    
     Otherwise return file's content.
     '''
     if check_exists and not os.path.exists(filepath):
@@ -624,11 +573,9 @@ def read_first_line(filepath, check_exists=False):
     Read first line of file.
     
     @param filepath: Target filepath.
-
     @param check_exists: Whether check file is exist, default is False.
+    @return: Return \"\" if check_exists is True and filepath not exist.
     
-    @return:
-    Return \"\" if check_exists is True and filepath not exist.
     Otherwise return file's first line.
     '''
     if check_exists and not os.path.exists(filepath):
@@ -645,11 +592,8 @@ def eval_file(filepath, check_exists=False):
     Eval file content.
     
     @param filepath: Target filepath.
-
     @param check_exists: Whether check file is exist, default is False.
-    
-    @return:
-    Return None if check_exists is True and file not exist.
+    @return: Return None if check_exists is True and file not exist.
     
     Return None if occur error when eval file.
 
@@ -674,7 +618,6 @@ def write_file(filepath, content):
     Write file with given content.
 
     @param filepath: Target filepath to write.
-
     @param content: File content to write.
     '''
     f = open(filepath, "w")
@@ -698,9 +641,7 @@ def get_command_output_first_line(commands):
     Run command and return first line of output.
     
     @param commands: Input commands.
-    
-    @return:
-    Return first line of command output.
+    @return: Return first line of command output.
     '''
     process = subprocess.Popen(commands, stdout=subprocess.PIPE)
     process.wait()
@@ -711,9 +652,7 @@ def get_command_output(commands):
     Run command and return output.
     
     @param commands: Input commands.
-
-    @return:
-    Return command output.
+    @return: Return command output.
     '''
     process = subprocess.Popen(commands, stdout=subprocess.PIPE)
     process.wait()
@@ -731,8 +670,7 @@ def get_os_version():
     '''
     Get OS version with command `lsb_release -i`.
     
-    @return:
-    Return OS version string.
+    @return: Return OS version string.
     '''
     version_infos = get_command_output_first_line(["lsb_release", "-i"]).split()
     
@@ -746,9 +684,7 @@ def get_current_time(time_format="%Y-%m-%d %H:%M:%S"):
     Get current time with given time format.
 
     @param time_format: Time format, default is %Y-%m-%d %H:%M:%S
-    
-    @return:
-    Return current time with given time format.
+    @return: Return current time with given time format.
     '''
     return time.strftime(time_format, time.localtime())
 
@@ -757,7 +693,6 @@ def add_in_list(e_list, element):
     Add element in list, don't add if element has in list.
     
     @param e_list: List to insert.
-    
     @param element: Element will insert to list.
     '''
     if not element in e_list:
@@ -768,7 +703,6 @@ def remove_from_list(e_list, element):
     Try remove element from list, do nothing if element not in list.
     
     @param e_list: List to remove.
-    
     @param element: Element try to remove from list.
     '''
     if element in e_list:
@@ -787,9 +721,7 @@ def get_dir_size(dirname):
     Get size of given directory.
     
     @param dirname: Directory path.
-    
-    @return:
-    Return total size of directory.
+    @return: Return total size of directory.
     '''
     total_size = 0
     for root, dirs, files in os.walk(dirname):
@@ -828,8 +760,7 @@ def get_font_families():
     '''
     Get all font families in system.
     
-    @return: 
-    Return font families list in current system.
+    @return: Return font families list in current system.
     '''
     fontmap = pangocairo.cairo_font_map_get_default()
     return map (lambda f: f.get_name(), fontmap.list_families())
@@ -839,11 +770,8 @@ def format_file_size(bytes, precision=2):
     Returns a humanized string for a given amount of bytes.
     
     @param bytes: Bytes number to format.
-    
     @param precision: Number precision.
-    
-    @return:
-    Return a humanized string for a given amount of bytes.
+    @return: Return a humanized string for a given amount of bytes.
     '''
     bytes = int(bytes)
     if bytes is 0:
@@ -867,9 +795,7 @@ def add_color_stop_rgba(pat, pos, color_info):
     Add color stop as rgba format.
     
     @param pat: Pattern.
-
     @param pos: Stop position.
-    
     @param color_info: (color, alpha), color is hex value, alpha value range: [0, 1] 
     '''
     # Pick color.
@@ -883,11 +809,8 @@ def alpha_color_hex_to_cairo((color, alpha)):
     Convert alpha color (color, alpha) to cairo color (r, g, b, alpha).
     
     @param color: Hex color.
-
     @param alpha: Alpha value.
-    
-    @return:
-    Return cairo value (red, green, blue, alpha).
+    @return: Return cairo value (red, green, blue, alpha).
     '''
     (r, g, b) = color_hex_to_cairo(color)
     return (r, g, b, alpha)
@@ -897,9 +820,7 @@ def color_hex_to_rgb(color):
     Convert hex color to cairo color (r, g, b).
     
     @param color: Hex color value.
-    
-    @return:
-    Return cairo value, (red, green, blue)
+    @return: Return cairo value, (red, green, blue)
     '''
     if color[0] == '#': 
         color = color[1:] 
@@ -910,9 +831,7 @@ def color_hex_to_cairo(color):
     Convert a html (hex) RGB value to cairo color. 
      
     @param color: The color to convert. 
-    
-    @return: 
-    A color in cairo format, (red, green, blue). 
+    @return: A color in cairo format, (red, green, blue). 
     """ 
     gdk_color = gtk.gdk.color_parse(color)
     return (gdk_color.red / 65535.0, gdk_color.green / 65535.0, gdk_color.blue / 65535.0)
@@ -922,9 +841,7 @@ def color_rgb_to_hex(rgb_color):
     Convert cairo color to hex color.
     
     @param rgb_color: (red, green, blue)
-    
-    @return:
-    Return hex color.
+    @return: Return hex color.
     '''
     return "#%02X%02X%02X" % rgb_color
 
@@ -934,9 +851,7 @@ def color_rgb_to_cairo(color):
      
     @type color: a triple of integers between 0 and 255 
     @param color: The color to convert. 
-    
-    @return: 
-    A color in cairo format. 
+    @return: A color in cairo format. 
     """ 
     return (color[0] / 255.0, color[1] / 255.0, color[2] / 255.0) 
 
@@ -945,11 +860,9 @@ def get_match_parent(widget, match_types):
     Get parent widget match given type.
 
     @param widget: Gtk.Widget instance.
-
     @param match_types: A list gtk widget types.
+    @return: Return first parent widget match with given types.
     
-    @return:
-    Return first parent widget match with given types.
     Return None if nothing match.
     '''
     parent = widget.get_parent()
@@ -983,11 +896,8 @@ def map_value(value_list, get_value_callback):
     Return value with map list.
     
     @param value_list: A list to loop.
-
     @param get_value_callback: Callback for element in list.
-    
-    @return:
-    Return a new list that every element is result of get_value_callback.
+    @return: Return a new list that every element is result of get_value_callback.
     '''
     if value_list == None:
         return []
@@ -999,9 +909,7 @@ def get_same_level_widgets(widget):
     Get same type widgets that in same hierarchy level.
     
     @param widget: Gtk.Widget instance to search.
-
-    @return:
-    Return a list that type match given widget at same hierarchy level.
+    @return: Return a list that type match given widget at same hierarchy level.
     '''
     parent = widget.get_parent()
     if parent == None:
@@ -1014,11 +922,8 @@ def mix_list_max(list_a, list_b):
     Return new list that element is max value between list_a and list_b.
 
     @param list_a: List a.
-
     @param list_b: List b.
-    
-    @return:
-    Return new list that element is max value between two list.
+    @return: Return new list that element is max value between two list.
     
     Return empty list if any input list is empty or two list's length is not same.
     '''
@@ -1044,9 +949,7 @@ def unzip(unzip_list):
     Unzip [(1, 'a'), (2, 'b'), (3, 'c')] to ([1, 2, 3], ['a', 'b', 'c']).
     
     @param unzip_list: List to unzip.
-    
-    @return:
-    Return new unzip list.
+    @return: Return new unzip list.
     '''
     first_list, second_list = zip(*unzip_list)
     return (list(first_list), list(second_list))
@@ -1056,9 +959,7 @@ def is_seriate_list(test_list):
     Whether is seriate list.
 
     @param test_list: Test list.
-    
-    @return:
-    Return True is test list is seriate list.
+    @return: Return True is test list is seriate list.
     '''
     for (index, item) in enumerate(test_list):
         if item != test_list[0] + index:
@@ -1071,11 +972,8 @@ def get_disperse_index(disperse_list, value):
     Get index in disperse list.
     
     @param disperse_list: Disperse list.
-
     @param value: Match value.
-    
-    @return:
-    Return index in disperse list.
+    @return: Return index in disperse list.
     '''
     for (index, _) in enumerate(disperse_list):
         start_value = sum(disperse_list[0:index])
@@ -1091,9 +989,7 @@ def window_is_max(widget):
     Whether window is maximized.
     
     @param widget: Gtk.Widget instance.
-    
-    @return:
-    Return True if widget's toplevel window is maximized.
+    @return: Return True if widget's toplevel window is maximized.
     '''
     toplevel_window = widget.get_toplevel()
     if toplevel_window.window.get_state() == gtk.gdk.WINDOW_STATE_MAXIMIZED:
@@ -1106,9 +1002,7 @@ def last_index(test_list):
     Return last index of list.
     
     @param test_list: Test list.
-    
-    @return:
-    Return last index of list.
+    @return: Return last index of list.
     '''
     return len(test_list) - 1
 
@@ -1202,9 +1096,7 @@ def enable_shadow(widget):
     Whether widget is support composited.
     
     @param widget: Gtk.Widget instance.
-    
-    @return:
-    Return True if widget is support composited.
+    @return: Return True if widget is support composited.
     '''
     return widget.is_composited()
 
@@ -1213,13 +1105,9 @@ def rgb2hsb(r_value, g_value, b_value):
     Convert color from RGB to HSB format.
     
     @param r_value: Red.
-    
     @param g_value: Green.
-    
     @param b_value: Blue.
-    
-    @return:
-    Return color with HSB (h, s, b) format.
+    @return: Return color with HSB (h, s, b) format.
     '''
     r = r_value
     g = g_value
@@ -1255,9 +1143,7 @@ def find_similar_color(search_color):
     Find simliar color match search_color.
     
     @param search_color: Color to search.
-    
-    @return:
-    Return similar color name and value, (color_name, color_value).
+    @return: Return similar color name and value, (color_name, color_value).
     '''
     (search_h, search_s, search_b) = rgb2hsb(*color_hex_to_cairo(search_color))
     hsb_colors = map(lambda name: (name, rgb2hsb(*color_hex_to_cairo(COLOR_NAME_DICT[name]))), SIMILAR_COLOR_SEQUENCE)
@@ -1290,11 +1176,8 @@ def end_with_suffixs(filepath, suffixs):
     Whether file endswith given suffixs.
     
     @param filepath: Filepath to test.
-    
     @param suffixs: A list suffix to match.
-    
-    @return:
-    Return True if filepath endswith with given suffixs.
+    @return: Return True if filepath endswith with given suffixs.
     '''
     for suffix in suffixs:
         if filepath.endswith(suffix):
@@ -1307,7 +1190,6 @@ def place_center(refer_window, place_window):
     Place place_window in center of refer_window.
     
     @param refer_window: Reference window.
-    
     @param place_window: Place window.
     '''
     (center_x, center_y) = get_widget_root_coordinate(refer_window, WIDGET_POS_CENTER)
@@ -1320,8 +1202,7 @@ def get_pixbuf_support_foramts():
     '''
     Get formats that support by pixbuf.
     
-    @return:
-    Return formats that support by pixbuf.
+    @return: Return formats that support by pixbuf.
     '''
     support_formats = []
     for support_format in gtk.gdk.pixbuf_get_formats():
@@ -1334,11 +1215,8 @@ def get_parent_dir(filepath, level=1):
     Get parent directory with given return level.
     
     @param filepath: Filepath.
-    
     @param level: Return level, default is 1
-    
-    @return:
-    Return parent directory with given return level. 
+    @return: Return parent directory with given return level. 
     '''
     parent_dir = os.path.realpath(filepath)
     
@@ -1353,9 +1231,7 @@ def gdkcolor_to_string(gdkcolor):
     Gdk color to string.
     
     @param gdkcolor: Gdk.Color
-    
-    @return:
-    Return string of gdk color.
+    @return: Return string of gdk color.
     '''
     return "#%0.2X%0.2X%0.2X" % (gdkcolor.red / 256, gdkcolor.green / 256, gdkcolor.blue / 256)
 
@@ -1364,9 +1240,7 @@ def is_long(string):
     Is string can convert to long type.
     
     @param string: Test string.
-    
-    @return:
-    Return True if string can convert to long type.
+    @return: Return True if string can convert to long type.
     '''
     if string == "":
         return True
@@ -1382,9 +1256,7 @@ def is_int(string):
     Is string can convert to int type.
     
     @param string: Test string.
-    
-    @return:
-    Return True if string can convert to int type.
+    @return: Return True if string can convert to int type.
     '''
     if string == "":
         return True
@@ -1400,9 +1272,7 @@ def is_float(string):
     Is string can convert to float type.
     
     @param string: Test string.
-    
-    @return:
-    Return True if string can convert to float type.
+    @return: Return True if string can convert to float type.
     '''
     if string == "":
         return True
@@ -1418,9 +1288,7 @@ def is_hex_color(string):
     Is string can convert to hex color type.
     
     @param string: Test string.
-    
-    @return:
-    Return True if string can convert to hex color type.
+    @return: Return True if string can convert to hex color type.
     '''
     HEX_CHAR = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
                 "a", "b", "c", "d", "e", "f",
@@ -1451,9 +1319,7 @@ def get_window_shadow_size(window):
     Get window shadow size.
     
     @param window: Test window.
-    
-    @return:
-    Return shadow size as (width, height), or return (0, 0) if window haven't shadow.
+    @return: Return shadow size as (width, height), or return (0, 0) if window haven't shadow.
     '''
     if "get_shadow_size" in dir(window):
         return window.get_shadow_size()
@@ -1465,7 +1331,6 @@ def layout_set_markup(layout, markup):
     Set layout markup.
     
     @param layout: Pango layout.
-    
     @param markup: Markup string.
     '''
     if "&" in markup or "<" in markup or ">" in markup:
@@ -1478,15 +1343,10 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
     Get optimum size pixbuf from file.
     
     @param filepath: Filepath to contain image.
-    
     @param expect_width: Expect width.
-    
     @param expect_height: Expect height.
-    
     @param cut_middle_area: Default cut image with middle area.
-    
-    @return:
-    Return optimum size pixbuf with expect size.
+    @return: Return optimum size pixbuf with expect size.
     '''
     pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
     pixbuf_width, pixbuf_height = pixbuf.get_width(), pixbuf.get_height()
@@ -1566,13 +1426,9 @@ def check_connect_by_port(port, retry_times=6, sleep_time=0.5):
     Check connect has active with given port.
     
     @param port: Test port.
-
     @param retry_times: Retry times.
-
     @param sleep_time: Sleep time between retry, in seconds.
-    
-    @return:
-    Return True if given port is active.
+    @return: Return True if given port is active.
     """
     ret_val = False
     test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -1595,7 +1451,6 @@ def is_network_connected():
     '''
     Is network connected, if nothing in file `/proc/net/arp`, network is disconnected.
     
-    @return:
-    Return True if network is connected.
+    @return: Return True if network is connected.
     '''
     return len(filter(lambda line: line != '', open("/proc/net/arp", "r").read().split("\n")) )> 1

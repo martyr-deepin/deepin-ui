@@ -39,7 +39,6 @@ class Config(gobject.GObject):
         Init config module.
 
         @param config_file: Config filepath.
-        
         @param default_config: Default config value use when config file is empty.
         '''
         gobject.GObject.__init__(self)
@@ -82,13 +81,9 @@ class Config(gobject.GObject):
         Get specified the section for read the option value. 
         
         @param section: Section to index item.
-        
         @param option: Option to index item.
-        
         @param default: Default value if item is not exist.
-        
-        @return:
-        Return item value with match in config file.
+        @return: Return item value with match in config file.
         '''
         try:
             return self.config_parser.get(section, option)
@@ -101,9 +96,7 @@ class Config(gobject.GObject):
         Set item given value.
 
         @param section: Section to setting.
-        
         @param option: Option to setting.
-        
         @param value: Item value to save.
         '''
         if not self.config_parser.has_section(section):
@@ -130,8 +123,7 @@ class Config(gobject.GObject):
         '''
         Get default config value.
         
-        @return:
-        Return default config value.
+        @return: Return default config value.
         '''
         return self.default_config
     
@@ -149,9 +141,7 @@ class Config(gobject.GObject):
         Convert to dict from list format.
         
         @param config_list: Config value as List format.
-        
-        @return:
-        Return config value as Dict format.
+        @return: Return config value as Dict format.
         '''
         config_dict = OrderedDict()
         for (section, option_list) in config_list:

@@ -31,15 +31,10 @@ def draw_mask(widget, x, y, w, h, render_callback):
     Draw mask with given render method.
     
     @param widget: Target widget.
-
     @param x: X coordinate of draw area.
-    
     @param y: Y coordinate of draw area.
-    
     @param w: Width of draw area.
-    
     @param h: Height of draw area.
-    
     @param render_callback: Render callback.
     '''
     if isinstance(widget, Window):
@@ -58,15 +53,10 @@ def draw_window_mask(widget, x, y, w, h, render_callback):
     Draw window mask with given render method.
     
     @param widget: Target widget.
-
     @param x: X coordinate of draw area.
-    
     @param y: Y coordinate of draw area.
-    
     @param w: Width of draw area.
-    
     @param h: Height of draw area.
-    
     @param render_callback: Render callback.
     '''
     # Init.
@@ -85,15 +75,10 @@ def draw_scrolled_window_mask(widget, x, y, w, h, render_callback):
     Draw scrolled window mask with given render method.
     
     @param widget: Target widget.
-
     @param x: X coordinate of draw area.
-    
     @param y: Y coordinate of draw area.
-    
     @param w: Width of draw area.
-    
     @param h: Height of draw area.
-    
     @param render_callback: Render callback.
     '''
     # Init.
@@ -117,15 +102,10 @@ def draw_icon_view_mask(widget, x, y, w, h, render_callback):
     Draw icon view mask with given render method.
     
     @param widget: Target widget.
-
     @param x: X coordinate of draw area.
-    
     @param y: Y coordinate of draw area.
-    
     @param w: Width of draw area.
-    
     @param h: Height of draw area.
-    
     @param render_callback: Render callback.
     '''
     cr = widget.window.cairo_create()
@@ -150,15 +130,10 @@ def draw_list_view_mask(widget, x, y, w, h, render_callback):
     Draw list view mask with given render method.
     
     @param widget: Target widget.
-
     @param x: X coordinate of draw area.
-    
     @param y: Y coordinate of draw area.
-    
     @param w: Width of draw area.
-    
     @param h: Height of draw area.
-    
     @param render_callback: Render callback.
     '''
     cr = widget.window.cairo_create()

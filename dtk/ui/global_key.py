@@ -79,7 +79,6 @@ class GlobalKey(threading.Thread):
         Binding keymap with given action.
         
         @param binding_string: Keymap string, return by function `get_keyevent_name` of module dtk.ui.keymap.
-        
         @param action: Callback.
         '''
         # Get keybinding's keyval and modifiers.

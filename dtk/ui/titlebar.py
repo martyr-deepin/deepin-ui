@@ -168,6 +168,7 @@ class Titlebar(EventBox):
     def change_title(self, title):
         """
         Change the title of the application, which is diplayed on the center of the title bar.
+        
         @param title: New title string that want to set.
         """
         self.title_box.set_text(title)

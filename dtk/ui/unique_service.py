@@ -55,7 +55,6 @@ def is_exists(app_dbus_name, app_object_name):
 
     @param app_dbus_name: the public service name of the service.
     @param app_object_name: the public service path of the service.
-
     @return: If the service is already on, True is returned. Otherwise return False.
     """
     DBusGMainLoop(set_as_default=True) # WARING: only use once in one process
