@@ -31,12 +31,39 @@ from utils import (alpha_color_hex_to_cairo, cairo_disable_antialias,
 
 
 class SpinBox(gtk.VBox):
+    '''
+    SpinBox.
+    
+    @undocumented: set_sensitive
+    @undocumented: size_change_cb
+    @undocumented: press_increase_button
+    @undocumented: press_decrease_button
+    @undocumented: handle_key_release
+    @undocumented: stop_update_value
+    @undocumented: increase_value
+    @undocumented: decrease_value
+    @undocumented: adjust_value
+    @undocumented: update
+    @undocumented: update_and_emit
+    @undocumented: expose_spin_bg
+    @undocumented: create_simple_button
+    '''
+    
     __gsignals__ = {
         "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT,)),
         "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT,)),
         }
     
     def __init__(self, value=0, lower=0, upper=100, step=10, default_width=55):
+        '''
+        Initialize SpinBox class.
+        
+        @param value: Initialize value, default is 0.
+        @param lower: Lower value, default is 0.
+        @param upper: Upper value, default is 100.
+        @param step: Step value, default is 10.
+        @param default_width: Default with, default is 55 pixel.
+        '''
         gtk.VBox.__init__(self)
         self.current_value = value
         self.lower_value = lower
@@ -82,39 +109,82 @@ class SpinBox(gtk.VBox):
         self.main_align.connect("expose-event", self.expose_spin_bg)
         
     def set_sensitive(self, sensitive):
+        '''
+        Internal function to wrap `set_sensitive`.
+        '''
         super(SpinBox, self).set_sensitive(sensitive)
         self.value_entry.set_sensitive(sensitive)
             
     def get_value(self):    
+        '''
+        Get current value.
+        
+        @return: Return current value. 
+        '''
         return self.current_value
     
     def set_value(self, value):
+        '''
+        Set value with given value.
+        
+        @param value: New value.
+        '''
         new_value = self.adjust_value(value)
         if new_value != self.current_value:
             self.update_and_emit(new_value)
             
     def value_changed(self):        
+        '''
+        Emit `value-changed` signal.
+        '''
         self.emit("value-changed", self.current_value)
         
     def get_lower(self):    
+        '''
+        Get minimum value.
+        '''
         return self.lower_value
     
     def set_lower(self, value):
+        '''
+        Set lower with given value.
+        
+        @param value: New lower value.
+        '''
         self.lower_value = value
         
     def get_upper(self):    
+        '''
+        Get upper value.
+        '''
         return self.upper_value
     
     def set_upper(self, value):
+        '''
+        Set upper with given value.
+        
+        @param value: New upper value.
+        '''
         self.upper_value = value
         
     def get_step(self):
+        '''
+        Get step.
+        '''
         return self.step_value
     
     def set_step(self, value):
+        '''
+        Set step with given value.
+        
+        @param value: New step value.
+        '''
         self.set_step = value
         
     def size_change_cb(self, widget, rect):    
+        '''
+        Internal callback for `size-allocate` signal.
+        '''
         if rect.width > self.default_width:
             self.default_width = rect.width
             
@@ -122,7 +192,9 @@ class SpinBox(gtk.VBox):
         self.value_entry.set_size_request(self.default_width - self.arrow_button_width, self.default_height - 2)
         
     def press_increase_button(self, widget, event):
-        '''Press increase arrow.'''
+        '''
+        Internal callback when user press increase arrow.
+        '''
         self.stop_update_value()
         
         self.increase_value()
@@ -130,7 +202,9 @@ class SpinBox(gtk.VBox):
         self.increase_value_id = gtk.timeout_add(self.update_delay, self.increase_value)
                 
     def press_decrease_button(self, widget, event):
-        '''Press decrease arrow.'''
+        '''
+        Internal callback when user press decrease arrow.
+        '''
         self.stop_update_value()
         
         self.decrease_value()
@@ -138,17 +212,24 @@ class SpinBox(gtk.VBox):
         self.decrease_value_id = gtk.timeout_add(self.update_delay, self.decrease_value)
         
     def handle_key_release(self, widget, event):
-        '''Handle key release.'''
+        '''
+        Internal callback for `key-release-event` signal.
+        '''
         self.stop_update_value()
         
         self.emit("key-release", self.current_value)
         
     def stop_update_value(self):
-        '''Stop update value.'''
+        '''
+        Internal function to stop update value.
+        '''
         for timeout_id in [self.increase_value_id, self.decrease_value_id]:
             remove_timeout_id(timeout_id)
         
     def increase_value(self):    
+        '''
+        Internal function to increase valule.
+        '''
         new_value = self.current_value + self.step_value
         if new_value > self.upper_value: 
             new_value = self.upper_value
@@ -158,6 +239,9 @@ class SpinBox(gtk.VBox):
         return True    
             
     def decrease_value(self):     
+        '''
+        Internal function to decrease valule.
+        '''
         new_value = self.current_value - self.step_value
         if new_value < self.lower_value: 
             new_value = self.lower_value
@@ -167,6 +251,9 @@ class SpinBox(gtk.VBox):
         return True                
         
     def adjust_value(self, value):        
+        '''
+        Internal function to adjust value.
+        '''
         if not isinstance(value, int):
             return self.current_value
         else:
@@ -178,16 +265,24 @@ class SpinBox(gtk.VBox):
                 return value
         
     def update(self, new_value):
-        '''Update value, just use when need avoid emit signal recursively.'''
+        '''
+        Internal function to update value, just use when need avoid emit signal recursively.
+        '''
         self.current_value = new_value
         self.value_entry.set_text(str(self.current_value))
             
     def update_and_emit(self, new_value):    
+        '''
+        Internal function to update new value and emit `value-changed` signal.
+        '''
         self.current_value = new_value
         self.value_entry.set_text(str(self.current_value))
         self.emit("value-changed", self.current_value)
         
     def expose_spin_bg(self, widget, event):    
+        '''
+        Internal callback for `expose-event` signal.
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -215,6 +310,9 @@ class SpinBox(gtk.VBox):
         return False
         
     def create_simple_button(self, name, callback=None):    
+        '''
+        Internal function to create simple button.
+        '''
         button = DisableButton(
             (ui_theme.get_pixbuf("spin/spin_arrow_%s_normal.png" % name),
              ui_theme.get_pixbuf("spin/spin_arrow_%s_hover.png" % name),
