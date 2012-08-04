@@ -26,78 +26,159 @@ import gtk
 import os
 
 class DynamicColor(object):
-    '''Dynamic color.'''
+    '''
+    Dynamic color.
+    '''
     
     def __init__(self, color):
-        '''Init.'''
+        '''
+        Initialize DynamicColor.
+        
+        @param color: Initialize color.
+        '''
         self.update(color)
         
     def update(self, color):
-        '''Update path.'''
+        '''
+        Update color.
+        
+        @param color: Color value.
+        '''
         self.color = color
 
     def get_color(self):
-        '''Get color.'''
+        '''
+        Get color.
+        
+        @return: Return current color value. 
+        '''
         return self.color
 
 class DynamicAlphaColor(object):
-    '''Dynamic alpha color.'''
+    '''
+    Dynamic alpha color.
+    '''
     
     def __init__(self, color_info):
-        '''Init.'''
+        '''
+        Initialize DynamicAlphaColor class.
+        
+        @param color_info: Color information, format as (hex_color, alpha)
+        '''
         self.update(color_info)
         
     def update(self, color_info):
-        '''Update path.'''
+        '''
+        Update color_info with given value.
+        '''
         (self.color, self.alpha) = color_info
         
     def get_color_info(self):
-        '''Get color info.'''
+        '''
+        Get color info.
+        
+        @return: Return color information, format as (hex_color, alpha)
+        '''
         return (self.color, self.alpha)
 
     def get_color(self):
-        '''Get color info.'''
+        '''
+        Get color.
+        
+        @return: Return hex color string.
+        '''
         return self.color
     
     def get_alpha(self):
-        '''Get alpha.'''
+        '''
+        Get alpha value.
+        
+        @return: Return alpha value.
+        '''
         return self.alpha
     
 class DynamicShadowColor(object):
-    '''Dynamic shadow color.'''
+    '''
+    Dynamic shadow color.
+    '''
 	
     def __init__(self, color_info):
-        '''Init.'''
+        '''
+        Initialize DynamicShadowColor class.
+        
+        @param color_info: Color information, format as:
+
+        >>> [(color_position_1, (hex_color_1, color_alpha_1),
+        >>>  (color_position_2, (hex_color_2, color_alpha_2),
+        >>>  (color_position_3, (hex_color_3, color_alpha_3)]
+        '''
         self.update(color_info)
         
     def update(self, color_info):
-        '''Update path.'''
+        '''
+        Update color with given value.
+
+        @param color_info: Color information, format as:
+
+        >>> [(color_position_1, (hex_color_1, color_alpha_1),
+        >>>  (color_position_2, (hex_color_2, color_alpha_2),
+        >>>  (color_position_3, (hex_color_3, color_alpha_3)]
+        '''
         self.color_info = color_info
         
     def get_color_info(self):
-        '''Get color info.'''
+        '''
+        Get color information.
+
+        @return: Return color information, format as:
+
+        >>> [(color_position_1, (hex_color_1, color_alpha_1),
+        >>>  (color_position_2, (hex_color_2, color_alpha_2),
+        >>>  (color_position_3, (hex_color_3, color_alpha_3)]
+        '''
         return self.color_info
 
 class DynamicPixbuf(object):
-    '''Dynamic pixbuf.'''
+    '''
+    Dynamic pixbuf.
+    '''
     
     def __init__(self, filepath):
-        '''Init.'''
+        '''
+        Initialize DynamicPixbuf class.
+        
+        @param filepath: Dynamic pixbuf filepath.
+        '''
         self.update(filepath)
         
     def update(self, filepath):
-        '''Update path.'''
+        '''
+        Update filepath with given value.
+        
+        @param filepath: Dynamic pixbuf filepath.
+        '''
         self.pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
 
     def get_pixbuf(self):
-        '''Get pixbuf.'''
+        '''
+        Get pixbuf.
+        '''
         return self.pixbuf
 
 class Theme(object):
-    '''Theme.'''
+    '''
+    Theme.
+    
+    @undocumented: get_ticker
+    '''
     
     def __init__(self, system_theme_dir, user_theme_dir):
-        '''Init theme.'''
+        '''
+        Initialize Theme class.
+        
+        @param system_theme_dir: Default theme directory.
+        @param user_theme_dir: User's theme save directory, generic is ~/.config/project-name/theme
+        '''
         # Init.
         self.system_theme_dir = system_theme_dir
         self.user_theme_dir = user_theme_dir
@@ -113,7 +194,9 @@ class Theme(object):
             create_directory(theme_dir)
         
     def load_theme(self):
-        '''Load.'''
+        '''
+        Load theme.
+        '''
         self.theme_name = skin_config.theme_name
         
         # Scan dynamic theme_info file.
@@ -135,7 +218,11 @@ class Theme(object):
         skin_config.add_theme(self)
         
     def get_theme_file_path(self, filename):
-        '''Get theme file path.'''
+        '''
+        Get theme file path with given theme name.
+        
+        @return: Return filepath of theme.
+        '''
         theme_file_dir = None
         for theme_dir in [self.system_theme_dir, self.user_theme_dir]:
             if os.path.exists(theme_dir):
@@ -149,7 +236,13 @@ class Theme(object):
             return None
             
     def get_pixbuf(self, path):
-        '''Get dynamic pixbuf.'''
+        '''
+        Get pixbuf with given relative path.
+        
+        @param path: Image relative filepath to theme.  
+        
+        @return: Return pixbuf with given relative path.
+        '''
         # Just init pixbuf_dict when first load some pixbuf.
         if not self.pixbuf_dict.has_key(path):
             self.pixbuf_dict[path] = DynamicPixbuf(self.get_theme_file_path("image/%s" % (path)))
@@ -157,23 +250,47 @@ class Theme(object):
         return self.pixbuf_dict[path]
 
     def get_color(self, color_name):
-        '''Get dynamic color.'''
+        '''
+        Get color with given dynmaic color.
+        
+        @param color_name: DynamicColor name from theme.txt.
+        
+        @return: Return color with given dynamic color.
+        '''
         return self.color_dict[color_name]
     
     def get_alpha_color(self, color_name):
-        '''Get dynamic alpha color.'''
+        '''
+        Get color with given dynmaic alpha color.
+        
+        @param color_name: DynamicAlphaColor name from theme.txt.
+        
+        @return: Return color with given dynamic alpha color.
+        '''
         return self.alpha_color_dict[color_name]
     
     def get_shadow_color(self, color_name):
-        '''Get dynamic shadow color.'''
+        '''
+        Get color with given dynmaic shadow color.
+        
+        @param color_name: DynamicShadowColor name from theme.txt.
+        
+        @return: Return color with given dynamic shadow color.
+        '''
         return self.shadow_color_dict[color_name]    
     
     def get_ticker(self):
-        '''Get ticker.'''
+        '''
+        Internal function to get ticker.
+        '''
         return self.ticker    
     
     def change_theme(self, new_theme_name):
-        '''Change ui_theme.'''
+        '''
+        Change theme with given new theme name.
+        
+        @param new_theme_name: New theme name.
+        '''
         # Update ticker.
         self.ticker += 1
         
