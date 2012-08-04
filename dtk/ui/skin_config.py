@@ -32,10 +32,37 @@ import tarfile
 import uuid
 
 class SkinConfig(gobject.GObject):
-    '''SkinConfig.'''
+    '''
+    SkinConfig.
+    
+    @undocumented: update_image_size
+    @undocumented: get_skin_file_path
+    @undocumented: is_skin_exist
+    @undocumented: get_default_skin
+    @undocumented: get_skin_dir
+    @undocumented: save_skin_name
+    @undocumented: reload_skin
+    @undocumented: load_skin
+    @undocumented: save_skin
+    @undocumented: change_theme
+    @undocumented: apply_skin
+    @undocumented: add_theme
+    @undocumented: remove_theme
+    @undocumented: wrap_skin_window
+    @undocumented: add_skin_window
+    @undocumented: remove_skin_window
+    @undocumented: reset
+    @undocumented: auto_resize
+    @undocumented: vertical_mirror_background
+    @undocumented: horizontal_mirror_background
+    @undocumented: render_background
+    @undocumented: export_skin
+    '''
 	
     def __init__(self):
-        '''Init skin.'''
+        '''
+        Initialize SkinConfig class.
+        '''
         # Init.
         gobject.GObject.__init__(self)
         self.cache_pixbuf = CachePixbuf()
@@ -44,19 +71,28 @@ class SkinConfig(gobject.GObject):
         self.window_list = []
         
     def set_application_window_size(self, app_window_width, app_window_height):
-        '''Set application window size.'''
+        '''
+        Set application window with given size.
+        
+        @param app_window_width: Application window width. 
+        @param app_window_height: Application window height. 
+        '''
         self.app_window_width = app_window_width
         self.app_window_height = app_window_height
         
     def update_image_size(self, x, y, scale_x, scale_y):
-        '''Update image size.'''
+        '''
+        Internal function to update image size.
+        '''
         self.x = x
         self.y = y
         self.scale_x = scale_x
         self.scale_y = scale_y
         
     def get_skin_file_path(self, filename):
-        '''Get skin file path.'''
+        '''
+        Internal function to get skin file path.
+        '''
         skin_file_dir = None
         for skin_dir in [self.system_skin_dir, self.user_skin_dir]:
             if os.path.exists(skin_dir):
@@ -70,7 +106,9 @@ class SkinConfig(gobject.GObject):
             return None
         
     def is_skin_exist(self, skin_name, system_skin_dir, user_skin_dir):
-        '''Is skin exist in skin directories.'''
+        '''
+        Internal function to is skin exist in skin directories.
+        '''
         for skin_dir in [system_skin_dir, user_skin_dir]:
             if os.path.exists(skin_dir):
                 if skin_name in os.listdir(os.path.expanduser(skin_dir)):
@@ -79,7 +117,9 @@ class SkinConfig(gobject.GObject):
         return False        
     
     def get_default_skin(self, system_skin_dir, user_skin_dir):
-        '''Get default skin.'''
+        '''
+        Internal function to get default skin.
+        '''
         for skin_dir in [system_skin_dir, user_skin_dir]:
             if os.path.exists(skin_dir):
                 skin_list = os.listdir(os.path.expanduser(skin_dir))
@@ -89,7 +129,9 @@ class SkinConfig(gobject.GObject):
         return None        
         
     def get_skin_dir(self):
-        '''Get skin dir.'''
+        '''
+        Internal function to get skin dir.
+        '''
         for skin_dir in [self.system_skin_dir, self.user_skin_dir]:
             if os.path.exists(skin_dir):
                 if self.skin_name in os.listdir(os.path.expanduser(skin_dir)):
@@ -99,7 +141,16 @@ class SkinConfig(gobject.GObject):
         
     def init_skin(self, skin_name, system_skin_dir, user_skin_dir, skin_config_file,
                   app_given_id, app_given_version):
-        '''Init skin.'''
+        '''
+        Init skin.
+        
+        @param skin_name: Skin name.
+        @param system_skin_dir: Default skin directory.
+        @param user_skin_dir: User's skin directory, generic use ~/.config/project-name/skin
+        @param skin_config_file: Skin's config filepath, generic use ~/.config/project-name/skin_config.ini
+        @param app_given_id: Project name.
+        @param app_given_version: Project version.
+        '''
         self.skin_config_file = skin_config_file
         if os.path.exists(skin_config_file):
             # Read skin name from config file.
@@ -126,7 +177,9 @@ class SkinConfig(gobject.GObject):
         self.app_given_version = app_given_version
         
     def save_skin_name(self):
-        '''Save skin name.'''
+        '''
+        Internal function to save skin name.
+        '''
         skin_config = Config(self.skin_config_file)
         skin_config.load()
         if skin_config.get("skin", "skin_name") != self.skin_name:
@@ -134,14 +187,20 @@ class SkinConfig(gobject.GObject):
             skin_config.write(self.skin_config_file)
             
     def reload_skin(self, skin_name=None):
-        '''Reload skin.'''
+        '''
+        Internal function to reload skin.
+        '''
         if skin_name:
             return self.load_skin(skin_name)
         else:
             return self.load_skin(self.skin_name)
         
     def load_skin(self, skin_name, system_skin_dir=None, user_skin_dir=None):
-        '''Load skin, return True if load finish, otherwise return False.'''
+        '''
+        Internal function to Load skin.
+        
+        @return: Return True if load finish, otherwise return False.
+        '''
         try:
             # Save skin dir.
             self.skin_name = skin_name
@@ -193,7 +252,9 @@ class SkinConfig(gobject.GObject):
             return False
     
     def save_skin(self, given_filepath=None):
-        '''Save skin.'''
+        '''
+        Internal function to save skin.
+        '''
         self.config.set("theme", "theme_name", self.theme_name)
         
         self.config.set("background", "x", self.x)
@@ -207,13 +268,17 @@ class SkinConfig(gobject.GObject):
         self.config.write(given_filepath)
     
     def change_theme(self, theme_name):
-        '''Change theme.'''
+        '''
+        Internal function to change theme.
+        '''
         self.theme_name = theme_name        
         
         self.apply_skin()
         
     def apply_skin(self):
-        '''Apply skin.'''
+        '''
+        Internal function to apply skin.
+        '''
         # Change theme.
         for theme in self.theme_list:
             if theme.theme_name != self.theme_name:
@@ -224,32 +289,44 @@ class SkinConfig(gobject.GObject):
             window.queue_draw()
     
     def add_theme(self, theme):
-        '''Add theme.'''
+        '''
+        Internal function to add theme.
+        '''
         if not theme in self.theme_list:
             self.theme_list.append(theme)
             
     def remove_theme(self, theme):
-        '''Remove theme.'''
+        '''
+        Internal function to remove theme.
+        '''
         if theme in self.theme_list:
             self.theme_list.remove(theme)
     
     def wrap_skin_window(self, window):
-        '''Wrap skin window.'''
+        '''
+        Internal function to wrap skin window.
+        '''
         self.add_skin_window(window)    
         window.connect("destroy", lambda w: self.remove_skin_window(w))
     
     def add_skin_window(self, window):
-        '''Add skin window.'''
+        '''
+        Internal function to add skin window.
+        '''
         if not window in self.window_list:
             self.window_list.append(window)
             
     def remove_skin_window(self, window):
-        '''Remove skin window.'''
+        '''
+        Internal function to remove skin window.
+        '''
         if window in self.window_list:
             self.window_list.remove(window)
             
     def reset(self):
-        '''Reset.'''
+        '''
+        Internal function to reset.
+        '''
         self.x = 0
         self.y = 0
         self.scale_x = 1.0
@@ -259,7 +336,9 @@ class SkinConfig(gobject.GObject):
         self.horizontal_mirror = False
         
     def auto_resize(self):
-        '''Auto resize.'''
+        '''
+        Internal function to auto resize.
+        '''
         self.x = 0
         self.y = 0
         
@@ -273,13 +352,17 @@ class SkinConfig(gobject.GObject):
         self.horizontal_mirror = False
         
     def vertical_mirror_background(self):
-        '''Vertical mirror background.'''
+        '''
+        Internal function to vertical mirror background.
+        '''
         self.vertical_mirror = not self.vertical_mirror
         
         self.apply_skin()
         
     def horizontal_mirror_background(self):
-        '''Horizontal mirror background.'''
+        '''
+        Internal function to horizontal mirror background.
+        '''
         self.horizontal_mirror = not self.horizontal_mirror
         
         self.apply_skin()
@@ -287,7 +370,9 @@ class SkinConfig(gobject.GObject):
     def render_background(self, cr, widget, x, y, 
                           translate_width=0,
                           translate_height=0):
-        '''Render background.'''
+        '''
+        Internal function to render background.
+        '''
         # Init.
         toplevel_rect = widget.get_toplevel().allocation
         render_width = toplevel_rect.width + translate_width
@@ -355,7 +440,9 @@ class SkinConfig(gobject.GObject):
             cr.fill()
             
     def export_skin(self, filepath):
-        '''Export skin.'''
+        '''
+        Internal function to export skin.
+        '''
         # Build temp config file.
         config_filepath = os.path.join("/tmp/%s", str(uuid.uuid4()))
         touch_file(config_filepath)
@@ -378,7 +465,17 @@ class SkinConfig(gobject.GObject):
         remove_file(config_filepath)    
         
     def load_themes(self, ui_theme, app_theme):
-        '''Set theme directories.'''
+        '''
+        Load theme from given directories.
+        
+        @param ui_theme: dtk.ui.theme.ui_theme.
+        @param app_theme: Theme instance, build it like below:
+        
+        >>> app_theme = Theme(
+        >>>     os.path.join(get_parent_dir(__file__), "app_theme"),
+        >>>     os.path.expanduser("~/.config/project-name/theme")
+        >>>     )
+        '''
         # Load theme.
         ui_theme.load_theme()
         app_theme.load_theme()
