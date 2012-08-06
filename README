@@ -12,4 +12,6 @@ first, otherwise, you will got memory leak (this is bug of python-gtk).
   sudo python setup.py install
 
 * Build API docs:
-  epydoc --config epydoc.cfg
+  ./repos.sh build_html
+  ./repos.sh build_pdf
+
