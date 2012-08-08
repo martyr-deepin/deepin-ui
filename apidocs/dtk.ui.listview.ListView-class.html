@@ -1,0 +1,1656 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.listview.ListView</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin-UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        <a href="dtk.ui.listview-module.html">Module&nbsp;listview</a> ::
+        Class&nbsp;ListView
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class ListView</h1><p class="nomargin-top"><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_dtk_ui_l_5" name="uml_class_diagram_for_dtk_ui_l_5">
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#SORT_DESCENDING" title="dtk.ui.listview.ListView.SORT_DESCENDING" alt="" coords="17,31,1093,49"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#SORT_ASCENDING" title="dtk.ui.listview.ListView.SORT_ASCENDING" alt="" coords="17,49,1093,68"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#SORT_PADDING_X" title="dtk.ui.listview.ListView.SORT_PADDING_X" alt="" coords="17,68,1093,87"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#TITLE_PADDING" title="dtk.ui.listview.ListView.TITLE_PADDING" alt="" coords="17,87,1093,105"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#__gsignals__" title="dtk.ui.listview.ListView.__gsignals__" alt="" coords="17,105,1093,124"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#__init__" title="Initialize ListView widget." alt="" coords="17,127,1093,145"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#set_expand_column" title="Set expand column." alt="" coords="17,145,1093,164"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#add_titles" title="Add titles." alt="" coords="17,164,1093,183"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#get_title_sizes" title="Get title sizes." alt="" coords="17,183,1093,201"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#add_items" title="Add items in listview." alt="" coords="17,201,1093,220"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#sort_items" title="Sort items with given method." alt="" coords="17,220,1093,239"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#redraw_item" title="Redraw item." alt="" coords="17,239,1093,257"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#update_item_index" title="Update index of items." alt="" coords="17,257,1093,276"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#set_title_height" title="Set title height." alt="" coords="17,276,1093,295"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#get_column_sort_type" title="Get sort type with given column index." alt="" coords="17,295,1093,313"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#set_column_sort_type" title="Set sort type with given value." alt="" coords="17,313,1093,332"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#get_cell_widths" title="Get cell width of columns." alt="" coords="17,332,1093,351"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#set_cell_width" title="Set cell width with given value." alt="" coords="17,351,1093,369"/>
+<area shape="rect" id="node68" href="dtk.ui.listview.ListView-class.html#visible_highlight" title="Visible highlight item." alt="" coords="17,388,1093,407"/>
+<area shape="rect" id="node1" href="dtk.ui.listview.ListView-class.html" title="Powerful listview widget." alt="" coords="5,6,1104,413"/>
+</map>
+  <img src="uml_class_diagram_for_dtk_ui_l_5.gif" alt='' usemap="#uml_class_diagram_for_dtk_ui_l_5" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Powerful listview widget.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sorts</span>=<span class="summary-sig-default">[]</span>,
+        <span class="summary-sig-arg">drag_data</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">enable_multiple_select</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">enable_drag_drop</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">drag_icon_pixbuf</span>=<span class="summary-sig-default">ui_theme.get_pixbuf(&quot;listview/drag_preview.png&quot;)</span>,
+        <span class="summary-sig-arg">drag_out_offset</span>=<span class="summary-sig-default">50</span>)</span><br />
+      Initialize ListView widget.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#set_expand_column" class="summary-sig-name">set_expand_column</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">column</span>)</span><br />
+      Set expand column.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.set_expand_column">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#add_titles" class="summary-sig-name">add_titles</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">titles</span>,
+        <span class="summary-sig-arg">title_height</span>=<span class="summary-sig-default">24</span>)</span><br />
+      Add titles.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.add_titles">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#get_title_sizes" class="summary-sig-name">get_title_sizes</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get title sizes.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_title_sizes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#add_items" class="summary-sig-name">add_items</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">items</span>,
+        <span class="summary-sig-arg">insert_pos</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">sort_list</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Add items in listview.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.add_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#sort_items" class="summary-sig-name">sort_items</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">compare_method</span>,
+        <span class="summary-sig-arg">sort_reverse</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Sort items with given method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.sort_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#redraw_item" class="summary-sig-name">redraw_item</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">list_item</span>)</span><br />
+      Redraw item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.redraw_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="update_item_index"></a><span class="summary-sig-name">update_item_index</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Update index of items.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.update_item_index">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_title_height"></a><span class="summary-sig-name">set_title_height</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">title_height</span>)</span><br />
+      Set title height.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.set_title_height">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#get_column_sort_type" class="summary-sig-name">get_column_sort_type</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">column</span>)</span><br />
+      Get sort type with given column index.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_column_sort_type">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#set_column_sort_type" class="summary-sig-name">set_column_sort_type</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">column</span>,
+        <span class="summary-sig-arg">sort_type</span>)</span><br />
+      Set sort type with given value.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.set_column_sort_type">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_cell_widths"></a><span class="summary-sig-name">get_cell_widths</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get cell width of columns.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_cell_widths">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#set_cell_width" class="summary-sig-name">set_cell_width</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">column</span>,
+        <span class="summary-sig-arg">width</span>)</span><br />
+      Set cell width with given value.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.set_cell_width">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="reset_cursor"></a><span class="summary-sig-name">reset_cursor</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Reset cursor type.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.reset_cursor">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#get_offset_coordinate" class="summary-sig-name">get_offset_coordinate</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">widget</span>)</span><br />
+      Get viewport offset coordinate and viewport.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_offset_coordinate">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#draw_shadow_mask" class="summary-sig-name">draw_shadow_mask</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cr</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>,
+        <span class="summary-sig-arg">w</span>,
+        <span class="summary-sig-arg">h</span>)</span><br />
+      Shadow mask interface for overwrite.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.draw_shadow_mask">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#draw_mask" class="summary-sig-name">draw_mask</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cr</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>,
+        <span class="summary-sig-arg">w</span>,
+        <span class="summary-sig-arg">h</span>)</span><br />
+      Draw mask interface.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.draw_mask">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#draw_item_hover" class="summary-sig-name">draw_item_hover</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cr</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>,
+        <span class="summary-sig-arg">w</span>,
+        <span class="summary-sig-arg">h</span>)</span><br />
+      Draw item hover interface.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.draw_item_hover">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#draw_item_select" class="summary-sig-name">draw_item_select</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cr</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>,
+        <span class="summary-sig-arg">w</span>,
+        <span class="summary-sig-arg">h</span>)</span><br />
+      Draw item select interface.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.draw_item_select">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#draw_item_highlight" class="summary-sig-name">draw_item_highlight</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cr</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>,
+        <span class="summary-sig-arg">w</span>,
+        <span class="summary-sig-arg">h</span>)</span><br />
+      Draw item highlight interface.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.draw_item_highlight">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#keep_select_status" class="summary-sig-name">keep_select_status</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Handy function that change listview and keep select status not 
+      change.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.keep_select_status">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#is_in_visible_area" class="summary-sig-name">is_in_visible_area</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Is event coordinate in visible area.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.is_in_visible_area">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#emit_item_event" class="summary-sig-name">emit_item_event</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event_name</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Wrap method for emit event signal.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.emit_item_event">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#get_coordinate_row" class="summary-sig-name">get_coordinate_row</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">y</span>)</span><br />
+      Get row with given y coordinate.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_coordinate_row">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#get_event_row" class="summary-sig-name">get_event_row</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>,
+        <span class="summary-sig-arg">offset_index</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Get row at event.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_event_row">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="select_first_item"></a><span class="summary-sig-name">select_first_item</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Select first item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.select_first_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="select_last_item"></a><span class="summary-sig-name">select_last_item</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Select last item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.select_last_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="scroll_page_up"></a><span class="summary-sig-name">scroll_page_up</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Scroll page up.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.scroll_page_up">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="scroll_page_down"></a><span class="summary-sig-name">scroll_page_down</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Scroll page down.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.scroll_page_down">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="select_prev_item"></a><span class="summary-sig-name">select_prev_item</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Select preview item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.select_prev_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="select_next_item"></a><span class="summary-sig-name">select_next_item</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Select next item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.select_next_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="select_to_prev_item"></a><span class="summary-sig-name">select_to_prev_item</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Select to preview item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.select_to_prev_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="select_to_next_item"></a><span class="summary-sig-name">select_to_next_item</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Select to next item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.select_to_next_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="select_to_first_item"></a><span class="summary-sig-name">select_to_first_item</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Select to first item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.select_to_first_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="select_to_last_item"></a><span class="summary-sig-name">select_to_last_item</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Select to last item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.select_to_last_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="select_all_items"></a><span class="summary-sig-name">select_all_items</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Select all items.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.select_all_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="delete_select_items"></a><span class="summary-sig-name">delete_select_items</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Delete select items.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.delete_select_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="update_vadjustment"></a><span class="summary-sig-name">update_vadjustment</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Update vertical adjustment.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.update_vadjustment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="double_click_item"></a><span class="summary-sig-name">double_click_item</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Double click item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.double_click_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="clear"></a><span class="summary-sig-name">clear</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Clear all list.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.clear">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.listview.ListView-class.html#get_current_item" class="summary-sig-name">get_current_item</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get current item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_current_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_highlight"></a><span class="summary-sig-name">set_highlight</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">item</span>)</span><br />
+      Set highlight with given item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.set_highlight">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="clear_highlight"></a><span class="summary-sig-name">clear_highlight</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Clear highlight status.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.clear_highlight">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="visible_highlight"></a><span class="summary-sig-name">visible_highlight</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Visible highlight item.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.visible_highlight">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="SORT_DESCENDING"></a><span class="summary-name">SORT_DESCENDING</span> = <code title="False">False</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="SORT_ASCENDING"></a><span class="summary-name">SORT_ASCENDING</span> = <code title="True">True</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="SORT_PADDING_X"></a><span class="summary-name">SORT_PADDING_X</span> = <code title="5">5</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="TITLE_PADDING"></a><span class="summary-name">TITLE_PADDING</span> = <code title="5">5</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dtk.ui.listview.ListView-class.html#__gsignals__" class="summary-name">__gsignals__</a> = <code title="{&quot;delete-select-items&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (g\
+object.TYPE_PYOBJECT,)), &quot;button-press-item&quot;:(gobject.SIGNAL_RUN_LAST,\
+ gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)), &quot;single-c\
+lick-item&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_\
+PYOBJECT, int, int, int)), &quot;double-click-item&quot;:(gobject.SIGNAL_RUN_LAS\
+T, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)), &quot;motion\
+-notify-item&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TY\
+PE_PYOBJECT, int, int, int)), &quot;right-press-items&quot;:(gobject.SIGNAL_RUN_\
+...">{&quot;delete-select-items&quot;:(gobject.SIGNAL_RUN_LAST<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sorts</span>=<span class="sig-default">[]</span>,
+        <span class="sig-arg">drag_data</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">enable_multiple_select</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">enable_drag_drop</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">drag_icon_pixbuf</span>=<span class="sig-default">ui_theme.get_pixbuf(&quot;listview/drag_preview.png&quot;)</span>,
+        <span class="sig-arg">drag_out_offset</span>=<span class="sig-default">50</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize ListView widget.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sorts</code></strong> - Sort function for column of listview.</li>
+        <li><strong class="pname"><code>drag_data</code></strong> - Drag data for drag data from listview, format: (targets, actions,
+          button_masks)</li>
+        <li><strong class="pname"><code>enable_multiple_select</code></strong> - Whether allow user select multiple item, default is True.</li>
+        <li><strong class="pname"><code>enable_drag_drop</code></strong> - Whether allow user drag drop on listview, default is True.</li>
+        <li><strong class="pname"><code>drag_icon_pixbuf</code></strong> - Drag icon.</li>
+        <li><strong class="pname"><code>drag_out_offset</code></strong> - Out offset value to trigger drag action on listview, default is 
+          50 pixel, if cursor not drag more than 50 pixel, listview won't 
+          think it is <b>drag out action</b>.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_expand_column"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_expand_column</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">column</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.set_expand_column">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set expand column.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>column</code></strong> - Column index to expand space.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_titles"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_titles</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">titles</span>,
+        <span class="sig-arg">title_height</span>=<span class="sig-default">24</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.add_titles">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add titles.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>titles</code></strong> - A list of title.</li>
+        <li><strong class="pname"><code>title_height</code></strong> - Height of title.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_title_sizes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_title_sizes</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_title_sizes">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get title sizes.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>Return title size, as format (title_width, title_height).</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_items"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_items</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">items</span>,
+        <span class="sig-arg">insert_pos</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">sort_list</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.add_items">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add items in listview.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>items</code></strong> - A list of item.</li>
+        <li><strong class="pname"><code>insert_pos</code></strong> - The position to insert, default is None will insert new item at 
+          end of list.</li>
+        <li><strong class="pname"><code>sort_list</code></strong> - Whether sort list after insert, default is False.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sort_items"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sort_items</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">compare_method</span>,
+        <span class="sig-arg">sort_reverse</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.sort_items">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Sort items with given method.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>compare_method</code></strong> - Compare method to sort.</li>
+        <li><strong class="pname"><code>sort_reverse</code></strong> - Whether sort reverse, default is False.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="redraw_item"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">redraw_item</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">list_item</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.redraw_item">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Redraw item.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>list_item</code></strong> - List item need to redraw.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_column_sort_type"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_column_sort_type</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">column</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_column_sort_type">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get sort type with given column index.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>column</code></strong> - Column index.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return sort type with given column index, return None if haven't 
+          found match column index.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_column_sort_type"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_column_sort_type</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">column</span>,
+        <span class="sig-arg">sort_type</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.set_column_sort_type">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set sort type with given value.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>column</code></strong> - Column index.</li>
+        <li><strong class="pname"><code>sort_type</code></strong> - Sort type.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_cell_width"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_cell_width</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">column</span>,
+        <span class="sig-arg">width</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.set_cell_width">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set cell width with given value.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>column</code></strong> - Column index.</li>
+        <li><strong class="pname"><code>width</code></strong> - Column width.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_offset_coordinate"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_offset_coordinate</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">widget</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_offset_coordinate">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get viewport offset coordinate and viewport.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>widget</code></strong> - ListView widget.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return viewport offset and viewport: (offset_x, offset_y, 
+          viewport).</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="draw_shadow_mask"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">draw_shadow_mask</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cr</span>,
+        <span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>,
+        <span class="sig-arg">w</span>,
+        <span class="sig-arg">h</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.draw_shadow_mask">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Shadow mask interface for overwrite.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cr</code></strong> - Cairo context.</li>
+        <li><strong class="pname"><code>x</code></strong> - X coordiante of draw area.</li>
+        <li><strong class="pname"><code>y</code></strong> - Y coordiante of draw area.</li>
+        <li><strong class="pname"><code>w</code></strong> - Width of draw area.</li>
+        <li><strong class="pname"><code>h</code></strong> - Height of draw area.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="draw_mask"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">draw_mask</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cr</span>,
+        <span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>,
+        <span class="sig-arg">w</span>,
+        <span class="sig-arg">h</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.draw_mask">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Draw mask interface.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cr</code></strong> - Cairo context.</li>
+        <li><strong class="pname"><code>x</code></strong> - X coordiante of draw area.</li>
+        <li><strong class="pname"><code>y</code></strong> - Y coordiante of draw area.</li>
+        <li><strong class="pname"><code>w</code></strong> - Width of draw area.</li>
+        <li><strong class="pname"><code>h</code></strong> - Height of draw area.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="draw_item_hover"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">draw_item_hover</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cr</span>,
+        <span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>,
+        <span class="sig-arg">w</span>,
+        <span class="sig-arg">h</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.draw_item_hover">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Draw item hover interface.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cr</code></strong> - Cairo context.</li>
+        <li><strong class="pname"><code>x</code></strong> - X coordiante of draw area.</li>
+        <li><strong class="pname"><code>y</code></strong> - Y coordiante of draw area.</li>
+        <li><strong class="pname"><code>w</code></strong> - Width of draw area.</li>
+        <li><strong class="pname"><code>h</code></strong> - Height of draw area.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="draw_item_select"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">draw_item_select</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cr</span>,
+        <span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>,
+        <span class="sig-arg">w</span>,
+        <span class="sig-arg">h</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.draw_item_select">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Draw item select interface.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cr</code></strong> - Cairo context.</li>
+        <li><strong class="pname"><code>x</code></strong> - X coordiante of draw area.</li>
+        <li><strong class="pname"><code>y</code></strong> - Y coordiante of draw area.</li>
+        <li><strong class="pname"><code>w</code></strong> - Width of draw area.</li>
+        <li><strong class="pname"><code>h</code></strong> - Height of draw area.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="draw_item_highlight"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">draw_item_highlight</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">cr</span>,
+        <span class="sig-arg">x</span>,
+        <span class="sig-arg">y</span>,
+        <span class="sig-arg">w</span>,
+        <span class="sig-arg">h</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.draw_item_highlight">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Draw item highlight interface.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cr</code></strong> - Cairo context.</li>
+        <li><strong class="pname"><code>x</code></strong> - X coordiante of draw area.</li>
+        <li><strong class="pname"><code>y</code></strong> - Y coordiante of draw area.</li>
+        <li><strong class="pname"><code>w</code></strong> - Width of draw area.</li>
+        <li><strong class="pname"><code>h</code></strong> - Height of draw area.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="keep_select_status"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">keep_select_status</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.keep_select_status">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handy function that change listview and keep select status not 
+  change.</p>
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@contextmanager</code></li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="is_in_visible_area"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_in_visible_area</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">event</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.is_in_visible_area">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Is event coordinate in visible area.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>event</code></strong> - gtk.gdk.Event.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return True if event coordiante in visible area.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="emit_item_event"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">emit_item_event</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">event_name</span>,
+        <span class="sig-arg">event</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.emit_item_event">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Wrap method for emit event signal.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>event_name</code></strong> - Event name.</li>
+        <li><strong class="pname"><code>event</code></strong> - Event.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_coordinate_row"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_coordinate_row</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">y</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_coordinate_row">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get row with given y coordinate.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>y</code></strong> - Y coordinate.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return row that match given y coordinate, return None if haven't 
+          any row match y coordiante.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_event_row"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_event_row</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">event</span>,
+        <span class="sig-arg">offset_index</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_event_row">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get row at event.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>event</code></strong> - gtk.gdk.Event instance.</li>
+        <li><strong class="pname"><code>offset_index</code></strong> - Offset index base on event row.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>Return row at event coordinate, return None if haven't any row 
+          match event coordiante.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_current_item"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_current_item</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.listview-pysrc.html#ListView.get_current_item">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get current item.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>Return select row, or return None if not any item selected.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variable Details</span></td>
+</tr>
+</table>
+<a name="__gsignals__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__gsignals__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+{&quot;delete-select-items&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (g<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+object.TYPE_PYOBJECT,)), &quot;button-press-item&quot;:(gobject.SIGNAL_RUN_LAST,<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+ gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)), &quot;single-c<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+lick-item&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+PYOBJECT, int, int, int)), &quot;double-click-item&quot;:(gobject.SIGNAL_RUN_LAS<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+T, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)), &quot;motion<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+-notify-item&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TY<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+PE_PYOBJECT, int, int, int)), &quot;right-press-items&quot;:(gobject.SIGNAL_RUN_<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin-UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Wed Aug  8 09:42:21 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

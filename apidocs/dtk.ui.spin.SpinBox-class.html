@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.spin.SpinBox</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin-UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        <a href="dtk.ui.spin-module.html">Module&nbsp;spin</a> ::
+        Class&nbsp;SpinBox
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class SpinBox</h1><p class="nomargin-top"><span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_dtk_ui_s_8" name="uml_class_diagram_for_dtk_ui_s_8">
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#__gsignals__" title="dtk.ui.spin.SpinBox.__gsignals__" alt="" coords="17,31,437,49"/>
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#__init__" title="Initialize SpinBox class." alt="" coords="17,52,437,71"/>
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#get_value" title="Get current value." alt="" coords="17,71,437,89"/>
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#set_value" title="Set value with given value." alt="" coords="17,89,437,108"/>
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#value_changed" title="Emit `value&#45;changed` signal." alt="" coords="17,108,437,127"/>
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#get_lower" title="Get minimum value." alt="" coords="17,127,437,145"/>
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#set_lower" title="Set lower with given value." alt="" coords="17,145,437,164"/>
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#get_upper" title="Get upper value." alt="" coords="17,164,437,183"/>
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#set_upper" title="Set upper with given value." alt="" coords="17,183,437,201"/>
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#get_step" title="Get step." alt="" coords="17,201,437,220"/>
+<area shape="rect" id="node100" href="dtk.ui.spin.SpinBox-class.html#set_step" title="Set step with given value." alt="" coords="17,220,437,239"/>
+<area shape="rect" id="node1" href="dtk.ui.spin.SpinBox-class.html" title="SpinBox." alt="" coords="5,6,448,245"/>
+</map>
+  <img src="uml_class_diagram_for_dtk_ui_s_8.gif" alt='' usemap="#uml_class_diagram_for_dtk_ui_s_8" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>SpinBox.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.spin.SpinBox-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">lower</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">upper</span>=<span class="summary-sig-default">100</span>,
+        <span class="summary-sig-arg">step</span>=<span class="summary-sig-default">10</span>,
+        <span class="summary-sig-arg">default_width</span>=<span class="summary-sig-default">55</span>)</span><br />
+      Initialize SpinBox class.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.spin.SpinBox-class.html#get_value" class="summary-sig-name">get_value</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get current value.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.get_value">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.spin.SpinBox-class.html#set_value" class="summary-sig-name">set_value</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set value with given value.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.set_value">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="value_changed"></a><span class="summary-sig-name">value_changed</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Emit `value-changed` signal.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.value_changed">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_lower"></a><span class="summary-sig-name">get_lower</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get minimum value.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.get_lower">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.spin.SpinBox-class.html#set_lower" class="summary-sig-name">set_lower</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set lower with given value.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.set_lower">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_upper"></a><span class="summary-sig-name">get_upper</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get upper value.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.get_upper">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.spin.SpinBox-class.html#set_upper" class="summary-sig-name">set_upper</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set upper with given value.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.set_upper">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_step"></a><span class="summary-sig-name">get_step</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get step.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.get_step">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.spin.SpinBox-class.html#set_step" class="summary-sig-name">set_step</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set step with given value.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.set_step">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dtk.ui.spin.SpinBox-class.html#__gsignals__" class="summary-name">__gsignals__</a> = <code title="{&quot;value-changed&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject\
+.TYPE_INT,)), &quot;key-release&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NON\
+E, (gobject.TYPE_INT,)),}">{&quot;value-changed&quot;:(gobject.SIGNAL_RUN_LAST, gobj<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">value</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">lower</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">upper</span>=<span class="sig-default">100</span>,
+        <span class="sig-arg">step</span>=<span class="sig-default">10</span>,
+        <span class="sig-arg">default_width</span>=<span class="sig-default">55</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialize SpinBox class.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>value</code></strong> - Initialize value, default is 0.</li>
+        <li><strong class="pname"><code>lower</code></strong> - Lower value, default is 0.</li>
+        <li><strong class="pname"><code>upper</code></strong> - Upper value, default is 100.</li>
+        <li><strong class="pname"><code>step</code></strong> - Step value, default is 10.</li>
+        <li><strong class="pname"><code>default_width</code></strong> - Default with, default is 55 pixel.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_value"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_value</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.get_value">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get current value.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>Return current value.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_value"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_value</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.set_value">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set value with given value.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>value</code></strong> - New value.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_lower"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_lower</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.set_lower">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set lower with given value.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>value</code></strong> - New lower value.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_upper"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_upper</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.set_upper">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set upper with given value.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>value</code></strong> - New upper value.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_step"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_step</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.spin-pysrc.html#SpinBox.set_step">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set step with given value.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>value</code></strong> - New step value.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variable Details</span></td>
+</tr>
+</table>
+<a name="__gsignals__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__gsignals__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+{&quot;value-changed&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+.TYPE_INT,)), &quot;key-release&quot;:(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NON<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+E, (gobject.TYPE_INT,)),}
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin-UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Wed Aug  8 09:42:22 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

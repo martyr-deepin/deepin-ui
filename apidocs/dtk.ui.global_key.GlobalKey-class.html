@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.global_key.GlobalKey</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin-UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        <a href="dtk.ui.global_key-module.html">Module&nbsp;global_key</a> ::
+        Class&nbsp;GlobalKey
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class GlobalKey</h1><p class="nomargin-top"><span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_dtk_ui_g" name="uml_class_diagram_for_dtk_ui_g">
+<area shape="rect" id="node55" href="dtk.ui.global_key.GlobalKey-class.html#__init__" title="Init for global key." alt="" coords="17,385,209,404"/>
+<area shape="rect" id="node55" href="dtk.ui.global_key.GlobalKey-class.html#bind" title="Binding keymap with given action." alt="" coords="17,404,209,423"/>
+<area shape="rect" id="node55" href="dtk.ui.global_key.GlobalKey-class.html#unbind" title="Unbind keymap." alt="" coords="17,423,209,441"/>
+<area shape="rect" id="node55" href="dtk.ui.global_key.GlobalKey-class.html#grab" title="Grab key." alt="" coords="17,441,209,460"/>
+<area shape="rect" id="node55" href="dtk.ui.global_key.GlobalKey-class.html#ungrab" title="Ungrab key." alt="" coords="17,460,209,479"/>
+<area shape="rect" id="node55" href="dtk.ui.global_key.GlobalKey-class.html#regrab" title="Regrab key." alt="" coords="17,479,209,497"/>
+<area shape="rect" id="node55" href="dtk.ui.global_key.GlobalKey-class.html#run" title="GlobalKey thread loop." alt="" coords="17,497,209,516"/>
+<area shape="rect" id="node55" href="dtk.ui.global_key.GlobalKey-class.html#exit" title="Exit global key." alt="" coords="17,516,209,535"/>
+<area shape="rect" id="node1" href="dtk.ui.global_key.GlobalKey-class.html" title="Class to handle global key." alt="" coords="5,353,221,541"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="repr(x)" alt="" coords="29,103,197,121"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.start" alt="" coords="29,121,197,140"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.join" alt="" coords="29,140,197,159"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.name" alt="" coords="29,159,197,177"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.ident" alt="" coords="29,177,197,196"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.isAlive" alt="" coords="29,196,197,215"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.is_alive" alt="" coords="29,215,197,233"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.daemon" alt="" coords="29,233,197,252"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.isDaemon" alt="" coords="29,252,197,271"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.setDaemon" alt="" coords="29,271,197,289"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.getName" alt="" coords="29,289,197,308"/>
+<area shape="rect" id="node56" href="javascript:void(0);" title="threading.Thread.setName" alt="" coords="29,308,197,327"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="threading.Thread" alt="" coords="17,70,209,333"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="threading._Verbose" alt="" coords="44,6,183,50"/>
+</map>
+  <img src="uml_class_diagram_for_dtk_ui_g.gif" alt='' usemap="#uml_class_diagram_for_dtk_ui_g" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Class to handle global key.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.global_key.GlobalKey-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Init for global key.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.global_key.GlobalKey-class.html#bind" class="summary-sig-name">bind</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">binding_string</span>,
+        <span class="summary-sig-arg">action</span>)</span><br />
+      Binding keymap with given action.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.bind">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.global_key.GlobalKey-class.html#unbind" class="summary-sig-name">unbind</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">binding_string</span>)</span><br />
+      Unbind keymap.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.unbind">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="grab"></a><span class="summary-sig-name">grab</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Grab key.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.grab">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="ungrab"></a><span class="summary-sig-name">ungrab</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Ungrab key.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.ungrab">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="regrab"></a><span class="summary-sig-name">regrab</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Regrab key.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.regrab">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.global_key.GlobalKey-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      GlobalKey thread loop.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.run">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="exit"></a><span class="summary-sig-name">exit</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Exit global key.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.exit">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>threading.Thread</code></b>:
+      <code>__repr__</code>,
+      <code>daemon</code>,
+      <code>getName</code>,
+      <code>ident</code>,
+      <code>isAlive</code>,
+      <code>isDaemon</code>,
+      <code>is_alive</code>,
+      <code>join</code>,
+      <code>name</code>,
+      <code>setDaemon</code>,
+      <code>setName</code>,
+      <code>start</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Init for global key.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="bind"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">bind</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">binding_string</span>,
+        <span class="sig-arg">action</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.bind">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Binding keymap with given action.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>binding_string</code></strong> - Keymap string, return by function `get_keyevent_name` of module 
+          dtk.ui.keymap.</li>
+        <li><strong class="pname"><code>action</code></strong> - Callback.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="unbind"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">unbind</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">binding_string</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.unbind">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Unbind keymap.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>binding_string</code></strong> - Keymap string that return by function `get_keyevent_name` of 
+          module dtk.ui.keymap.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="run"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">run</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.global_key-pysrc.html#GlobalKey.run">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>GlobalKey thread loop.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        threading.Thread.run
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin-UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Wed Aug  8 09:42:20 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

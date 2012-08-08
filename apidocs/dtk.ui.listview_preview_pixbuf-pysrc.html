@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.listview_preview_pixbuf</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin-UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        Module&nbsp;listview_preview_pixbuf
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="dtk.ui.listview_preview_pixbuf-module.html">Module dtk.ui.listview_preview_pixbuf</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-comment">#! /usr/bin/env python</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2011 ~ 2012 Deepin, Inc.</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-comment">#               2011 ~ 2012 Wang Yong</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment"># </tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-comment"># Author:     Wang Yong &lt;lazycat.manatee@gmail.com&gt;</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-comment"># Maintainer: Wang Yong &lt;lazycat.manatee@gmail.com&gt;</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-comment"># </tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-comment"># This program is free software: you can redistribute it and/or modify</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-comment"># it under the terms of the GNU General Public License as published by</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-comment"># the Free Software Foundation, either version 3 of the License, or</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-comment"># any later version.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-comment"># </tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-comment"># This program is distributed in the hope that it will be useful,</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-comment"># but WITHOUT ANY WARRANTY; without even the implied warranty of</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt class="py-comment"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt class="py-comment"># GNU General Public License for more details.</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"><tt class="py-comment"># </tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment"># You should have received a copy of the GNU General Public License</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-comment"># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Module dtk.ui.utils=dtk.ui.utils-module.html"><a title="dtk.ui.utils" class="py-name" href="#" onclick="return doclink('link-0', 'utils', 'link-0');">utils</a></tt> <tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Function dtk.ui.utils.get_content_size()=dtk.ui.utils-module.html#get_content_size"><a title="dtk.ui.utils.get_content_size" class="py-name" href="#" onclick="return doclink('link-1', 'get_content_size', 'link-1');">get_content_size</a></tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">cairo</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">gtk</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">pango</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">sys</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt class="py-comment"># Below import must at end, otherwise will got ImportError</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name" targets="Module dtk.ui.draw=dtk.ui.draw-module.html"><a title="dtk.ui.draw" class="py-name" href="#" onclick="return doclink('link-2', 'draw', 'link-2');">draw</a></tt> <tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Function dtk.ui.draw.draw_vlinear()=dtk.ui.draw-module.html#draw_vlinear"><a title="dtk.ui.draw.draw_vlinear" class="py-name" href="#" onclick="return doclink('link-3', 'draw_vlinear', 'link-3');">draw_vlinear</a></tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name" targets="Function dtk.ui.draw.draw_text()=dtk.ui.draw-module.html#draw_text"><a title="dtk.ui.draw.draw_text" class="py-name" href="#" onclick="return doclink('link-4', 'draw_text', 'link-4');">draw_text</a></tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"> </tt>
+<a name="render_pixbuf"></a><div id="render_pixbuf-def"><a name="L32"></a><tt class="py-lineno">32</tt> <a class="py-toggle" href="#" id="render_pixbuf-toggle" onclick="return toggle('render_pixbuf');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="dtk.ui.listview_preview_pixbuf-module.html#render_pixbuf">render_pixbuf</a><tt class="py-op">(</tt><tt class="py-param">widget</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">input_args</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="render_pixbuf-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="render_pixbuf-expanded"><a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line"><tt class="py-docstring">    Render and save pixbuf.</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"><tt class="py-docstring">    </tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"><tt class="py-docstring">    @param widget: Gtk.Widget instance.</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"><tt class="py-docstring">    @param event: Expose event.</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"><tt class="py-docstring">    @param input_args: Input arguments as format: (select_num, vlinear_color, text_color, filepath).</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">    <tt class="py-comment"># Init.</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">select_num</tt><tt class="py-op">,</tt> <tt class="py-name">vlinear_color</tt><tt class="py-op">,</tt> <tt class="py-name">text_color</tt><tt class="py-op">,</tt> <tt class="py-name">filepath</tt><tt class="py-op">)</tt> <tt class="py-op">=</tt> <tt class="py-name">input_args</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">     </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">    <tt class="py-name">cr</tt> <tt class="py-op">=</tt> <tt class="py-name">widget</tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Module dtk.ui.window=dtk.ui.window-module.html"><a title="dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-5', 'window', 'link-5');">window</a></tt><tt class="py-op">.</tt><tt class="py-name">cairo_create</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">    <tt class="py-name">rect</tt> <tt class="py-op">=</tt> <tt class="py-name">widget</tt><tt class="py-op">.</tt><tt class="py-name">allocation</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">    <tt class="py-name">num_pixbuf</tt> <tt class="py-op">=</tt> <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">gdk</tt><tt class="py-op">.</tt><tt class="py-name">Pixbuf</tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">gdk</tt><tt class="py-op">.</tt><tt class="py-name">COLORSPACE_RGB</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">width</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">height</tt><tt class="py-op">)</tt>                                            </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">    <tt class="py-comment"># Draw background.</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">    <tt class="py-name">cr</tt><tt class="py-op">.</tt><tt class="py-name">set_operator</tt><tt class="py-op">(</tt><tt class="py-name">cairo</tt><tt class="py-op">.</tt><tt class="py-name">OPERATOR_OVER</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">    <tt id="link-6" class="py-name"><a title="dtk.ui.draw.draw_vlinear" class="py-name" href="#" onclick="return doclink('link-6', 'draw_vlinear', 'link-3');">draw_vlinear</a></tt><tt class="py-op">(</tt><tt class="py-name">cr</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">x</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">y</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">width</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">height</tt><tt class="py-op">,</tt> <tt class="py-name">eval</tt><tt class="py-op">(</tt><tt class="py-name">vlinear_color</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">     </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">    <tt class="py-comment"># Draw text.</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">    <tt id="link-7" class="py-name"><a title="dtk.ui.draw.draw_text" class="py-name" href="#" onclick="return doclink('link-7', 'draw_text', 'link-4');">draw_text</a></tt><tt class="py-op">(</tt><tt class="py-name">cr</tt><tt class="py-op">,</tt> <tt class="py-name">select_num</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">x</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">y</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">width</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">height</tt><tt class="py-op">,</tt> <tt class="py-name">text_color</tt><tt class="py-op">=</tt><tt class="py-name">text_color</tt><tt class="py-op">,</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">              <tt class="py-name">alignment</tt><tt class="py-op">=</tt><tt class="py-name">pango</tt><tt class="py-op">.</tt><tt class="py-name">ALIGN_CENTER</tt><tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">     </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">    <tt class="py-comment"># Render pixbuf from drawing area.</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">    <tt class="py-name">num_pixbuf</tt><tt class="py-op">.</tt><tt class="py-name">get_from_drawable</tt><tt class="py-op">(</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">        <tt class="py-name">widget</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name"><a title="dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-8', 'window', 'link-5');">window</a></tt><tt class="py-op">,</tt> <tt class="py-name">widget</tt><tt class="py-op">.</tt><tt class="py-name">get_colormap</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt>  </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line">        <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">width</tt><tt class="py-op">,</tt> <tt class="py-name">rect</tt><tt class="py-op">.</tt><tt class="py-name">height</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">save</tt><tt class="py-op">(</tt><tt class="py-name">filepath</tt><tt class="py-op">,</tt> <tt class="py-string">"png"</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">     </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line">    <tt class="py-comment"># Exit after generate png file.</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line">    <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">main_quit</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line"> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">"__main__"</tt><tt class="py-op">:</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">    <tt class="py-comment"># Get input arguments.</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">    <tt class="py-name">input_args</tt> <tt class="py-op">=</tt> <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">:</tt><tt class="py-op">]</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">select_num</tt><tt class="py-op">,</tt> <tt class="py-name">vlinear_color</tt><tt class="py-op">,</tt> <tt class="py-name">text_color</tt><tt class="py-op">,</tt> <tt class="py-name">filepath</tt><tt class="py-op">)</tt> <tt class="py-op">=</tt> <tt class="py-name">input_args</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">     </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">    <tt class="py-comment"># Init.</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">    <tt class="py-name">num_padding_x</tt> <tt class="py-op">=</tt> <tt class="py-number">8</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">    <tt class="py-name">num_padding_y</tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">num_width</tt><tt class="py-op">,</tt> <tt class="py-name">num_height</tt><tt class="py-op">)</tt> <tt class="py-op">=</tt> <tt id="link-9" class="py-name"><a title="dtk.ui.utils.get_content_size" class="py-name" href="#" onclick="return doclink('link-9', 'get_content_size', 'link-1');">get_content_size</a></tt><tt class="py-op">(</tt><tt class="py-name">select_num</tt><tt class="py-op">)</tt>         </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">    <tt class="py-name">pixbuf_width</tt> <tt class="py-op">=</tt> <tt class="py-name">num_width</tt> <tt class="py-op">+</tt> <tt class="py-name">num_padding_x</tt> <tt class="py-op">*</tt> <tt class="py-number">2</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">    <tt class="py-name">pixbuf_height</tt> <tt class="py-op">=</tt> <tt class="py-name">num_height</tt> <tt class="py-op">+</tt> <tt class="py-name">num_padding_y</tt> <tt class="py-op">*</tt> <tt class="py-number">2</tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line"> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">    <tt class="py-comment"># Create window.</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">    <tt id="link-10" class="py-name"><a title="dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-10', 'window', 'link-5');">window</a></tt> <tt class="py-op">=</tt> <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Class dtk.ui.window.Window=dtk.ui.window.Window-class.html"><a title="dtk.ui.window.Window" class="py-name" href="#" onclick="return doclink('link-11', 'Window', 'link-11');">Window</a></tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">WINDOW_POPUP</tt><tt class="py-op">)</tt>  </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">    <tt id="link-12" class="py-name"><a title="dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-12', 'window', 'link-5');">window</a></tt><tt class="py-op">.</tt><tt class="py-name">set_colormap</tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">gdk</tt><tt class="py-op">.</tt><tt class="py-name">Screen</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">get_rgba_colormap</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">    <tt id="link-13" class="py-name"><a title="dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-13', 'window', 'link-5');">window</a></tt><tt class="py-op">.</tt><tt class="py-name">move</tt><tt class="py-op">(</tt><tt class="py-op">-</tt><tt class="py-name">pixbuf_width</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-name">pixbuf_height</tt><tt class="py-op">)</tt> <tt class="py-comment"># move out of screen</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line">    <tt id="link-14" class="py-name"><a title="dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-14', 'window', 'link-5');">window</a></tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method dtk.ui.application.Application.set_default_size()=dtk.ui.application.Application-class.html#set_default_size"><a title="dtk.ui.application.Application.set_default_size" class="py-name" href="#" onclick="return doclink('link-15', 'set_default_size', 'link-15');">set_default_size</a></tt><tt class="py-op">(</tt><tt class="py-name">pixbuf_width</tt><tt class="py-op">,</tt> <tt class="py-name">pixbuf_height</tt><tt class="py-op">)</tt> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">    <tt id="link-16" class="py-name"><a title="dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-16', 'window', 'link-5');">window</a></tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">        <tt class="py-string">"expose-event"</tt><tt class="py-op">,</tt>  </tt>
+<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line">        <tt class="py-keyword">lambda</tt> <tt id="link-17" class="py-name" targets="Variable dtk.ui.tooltip_test.w=dtk.ui.tooltip_test-module.html#w"><a title="dtk.ui.tooltip_test.w" class="py-name" href="#" onclick="return doclink('link-17', 'w', 'link-17');">w</a></tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> <tt id="link-18" class="py-name" targets="Function dtk.ui.listview_preview_pixbuf.render_pixbuf()=dtk.ui.listview_preview_pixbuf-module.html#render_pixbuf"><a title="dtk.ui.listview_preview_pixbuf.render_pixbuf" class="py-name" href="#" onclick="return doclink('link-18', 'render_pixbuf', 'link-18');">render_pixbuf</a></tt><tt class="py-op">(</tt><tt id="link-19" class="py-name"><a title="dtk.ui.tooltip_test.w" class="py-name" href="#" onclick="return doclink('link-19', 'w', 'link-17');">w</a></tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">,</tt> <tt class="py-name">input_args</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">     </tt>
+<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line">    <tt id="link-20" class="py-name"><a title="dtk.ui.window" class="py-name" href="#" onclick="return doclink('link-20', 'window', 'link-5');">window</a></tt><tt class="py-op">.</tt><tt class="py-name">show_all</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line">     </tt>
+<a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line">    <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">main</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin-UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Wed Aug  8 09:42:26 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

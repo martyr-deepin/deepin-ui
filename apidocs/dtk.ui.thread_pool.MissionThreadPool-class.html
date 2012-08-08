@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dtk.ui.thread_pool.MissionThreadPool</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin-UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;dtk ::
+        <a href="dtk.ui-module.html">Package&nbsp;ui</a> ::
+        <a href="dtk.ui.thread_pool-module.html">Module&nbsp;thread_pool</a> ::
+        Class&nbsp;MissionThreadPool
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class MissionThreadPool</h1><p class="nomargin-top"><span class="codelink"><a href="dtk.ui.thread_pool-pysrc.html#MissionThreadPool">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_dtk_ui_t_11" name="uml_class_diagram_for_dtk_ui_t_11">
+<area shape="rect" id="node118" href="dtk.ui.thread_pool.MissionThreadPool-class.html#FINISH_SIGNAL" title="dtk.ui.thread_pool.MissionThreadPool.FINISH_SIGNAL" alt="" coords="17,377,628,396"/>
+<area shape="rect" id="node118" href="dtk.ui.thread_pool.MissionThreadPool-class.html#__init__" title="Initialise the thread pool." alt="" coords="17,399,628,417"/>
+<area shape="rect" id="node118" href="dtk.ui.thread_pool.MissionThreadPool-class.html#run" title="The thread function." alt="" coords="17,417,628,436"/>
+<area shape="rect" id="node118" href="dtk.ui.thread_pool.MissionThreadPool-class.html#add_missions" title="Add missions to the thread pool." alt="" coords="17,436,628,455"/>
+<area shape="rect" id="node118" href="dtk.ui.thread_pool.MissionThreadPool-class.html#start_mission" title="Start a specific mission in the thread pool." alt="" coords="17,455,628,473"/>
+<area shape="rect" id="node1" href="dtk.ui.thread_pool.MissionThreadPool-class.html" title="A class of thread pool." alt="" coords="5,353,640,479"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="repr(x)" alt="" coords="239,103,407,121"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.start" alt="" coords="239,121,407,140"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.join" alt="" coords="239,140,407,159"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.name" alt="" coords="239,159,407,177"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.ident" alt="" coords="239,177,407,196"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.isAlive" alt="" coords="239,196,407,215"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.is_alive" alt="" coords="239,215,407,233"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.daemon" alt="" coords="239,233,407,252"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.isDaemon" alt="" coords="239,252,407,271"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.setDaemon" alt="" coords="239,271,407,289"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.getName" alt="" coords="239,289,407,308"/>
+<area shape="rect" id="node119" href="javascript:void(0);" title="threading.Thread.setName" alt="" coords="239,308,407,327"/>
+<area shape="rect" id="node2" href="javascript:void(0);" title="threading.Thread" alt="" coords="227,70,419,333"/>
+<area shape="rect" id="node3" href="javascript:void(0);" title="threading._Verbose" alt="" coords="253,6,392,50"/>
+</map>
+  <img src="uml_class_diagram_for_dtk_ui_t_11.gif" alt='' usemap="#uml_class_diagram_for_dtk_ui_t_11" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>A class of thread pool.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.thread_pool.MissionThreadPool-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">concurrent_thread_num</span>=<span class="summary-sig-default">5</span>,
+        <span class="summary-sig-arg">clean_delay</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">clean_callback</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">exit_when_finish</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Initialise the thread pool.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.thread_pool-pysrc.html#MissionThreadPool.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.thread_pool.MissionThreadPool-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      The thread function.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.thread_pool-pysrc.html#MissionThreadPool.run">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.thread_pool.MissionThreadPool-class.html#add_missions" class="summary-sig-name">add_missions</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">missions</span>)</span><br />
+      Add missions to the thread pool.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.thread_pool-pysrc.html#MissionThreadPool.add_missions">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dtk.ui.thread_pool.MissionThreadPool-class.html#start_mission" class="summary-sig-name">start_mission</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mission</span>)</span><br />
+      Start a specific mission in the thread pool.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="dtk.ui.thread_pool-pysrc.html#MissionThreadPool.start_mission">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>threading.Thread</code></b>:
+      <code>__repr__</code>,
+      <code>daemon</code>,
+      <code>getName</code>,
+      <code>ident</code>,
+      <code>isAlive</code>,
+      <code>isDaemon</code>,
+      <code>is_alive</code>,
+      <code>join</code>,
+      <code>name</code>,
+      <code>setDaemon</code>,
+      <code>setName</code>,
+      <code>start</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="FINISH_SIGNAL"></a><span class="summary-name">FINISH_SIGNAL</span> = <code title="&quot;Finish&quot;">&quot;Finish&quot;</code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">concurrent_thread_num</span>=<span class="sig-default">5</span>,
+        <span class="sig-arg">clean_delay</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">clean_callback</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">exit_when_finish</span>=<span class="sig-default">False</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.thread_pool-pysrc.html#MissionThreadPool.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Initialise the thread pool.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>concurrent_thread_num</code></strong> - Max concurrent thread number.</li>
+        <li><strong class="pname"><code>clean_delay</code></strong> - The time between the finish of the thread and the invocation of 
+          thread clean up function.</li>
+        <li><strong class="pname"><code>clean_callback</code></strong> - The clean up function, which is invoked after the thread is 
+          finished.</li>
+        <li><strong class="pname"><code>exit_when_finish</code></strong> - Indicates whether the thread pool should be destroyed after all 
+          mission is finished. By default, it's False.</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="run"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">run</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.thread_pool-pysrc.html#MissionThreadPool.run">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>The thread function.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        threading.Thread.run
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_missions"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_missions</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">missions</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.thread_pool-pysrc.html#MissionThreadPool.add_missions">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add missions to the thread pool.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>missions</code></strong> - A list of mission which is of type class MissionThread.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="start_mission"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">start_mission</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mission</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="dtk.ui.thread_pool-pysrc.html#MissionThreadPool.start_mission">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Start a specific mission in the thread pool.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>mission</code></strong> - a mission which is of type class MissionThread.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dtk.ui-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Deepin-UI</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Wed Aug  8 09:42:22 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
