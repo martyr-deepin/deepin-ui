@@ -22,6 +22,13 @@
 
 # To test other language, use below method:
 #       env LANG=zh_CN LANGUAGE=zh_CN foo.py
+# 
+# WARNING: relative directory `locale` just for test.
+# Please copy *.mo files in directory `/usr/share/locale` 
+# and JUST read *.mo files from `/usr/share/locale`
+# 
+# Read *.mo files from relative directory will make translation string 
+# can't work, at least i test it can't work in Debian-base system.
 
 from utils import get_parent_dir
 import gettext

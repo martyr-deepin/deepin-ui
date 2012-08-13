@@ -138,9 +138,14 @@ class SkinConfig(gobject.GObject):
                     return os.path.join(skin_dir, self.skin_name)                
                 
         return None       
-        
-    def init_skin(self, skin_name, system_skin_dir, user_skin_dir, skin_config_file,
-                  app_given_id, app_given_version):
+    
+    def init_skin(self, 
+                  skin_name, 
+                  system_skin_dir, 
+                  user_skin_dir, 
+                  skin_config_file,
+                  app_given_id, 
+                  app_given_version):
         '''
         Init skin.
         

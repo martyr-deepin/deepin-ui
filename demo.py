@@ -22,29 +22,20 @@
 
 # Import skin and theme, those must before at any other modules.
 # from skin import ui_theme, app_theme
-from dtk.ui.skin_config import skin_config
-from dtk.ui.theme import Theme, ui_theme
+import time
+start_time = time.time()
+
+from dtk.ui.init_skin import init_skin
 from dtk.ui.utils import get_parent_dir
 import os
 
-# Init skin config.
-skin_config.init_skin(
+app_theme = init_skin(
+    "deepin-ui-demo", 
+    "1.0",
     "01",
     os.path.join(get_parent_dir(__file__), "skin"),
-    os.path.expanduser("~/.config/deepin-ui-demo/skin"),
-    os.path.expanduser("~/.config/deepin-ui-demo/skin_config.ini"),
-    "deepin-ui-demo",
-    "1.0"
-    )
-
-# Create application theme.
-app_theme = Theme(
     os.path.join(get_parent_dir(__file__), "app_theme"),
-    os.path.expanduser("~/.config/deepin-ui-demo/theme")
     )
-
-# Set theme.
-skin_config.load_themes(ui_theme, app_theme)
 
 # Load other modules.
 from dtk.ui.application import Application
@@ -80,6 +71,8 @@ import dbus.service
 import gtk
 import sys
 import time
+
+print time.time() - start_time
 
 def print_button_press(list_view, list_item, column, offset_x, offset_y):
     '''Print button press.'''
@@ -150,8 +143,6 @@ if __name__ == "__main__":
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
     
     # Set application icon.
-    iiicon = app_theme.get_pixbuf("icon.ico")
-    print type(iiicon)
     application.set_icon(app_theme.get_pixbuf("icon.ico"))
     
     # Set application preview pixbuf.

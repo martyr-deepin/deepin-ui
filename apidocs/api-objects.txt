@@ -92,6 +92,8 @@ dtk.ui.global_key.enable_global_key	dtk.ui.global_key-module.html#enable_global_
 dtk.ui.global_key.global_key_running	dtk.ui.global_key-module.html#global_key_running
 dtk.ui.group	dtk.ui.group-module.html
 dtk.ui.iconview	dtk.ui.iconview-module.html
+dtk.ui.init_skin	dtk.ui.init_skin-module.html
+dtk.ui.init_skin.init_skin	dtk.ui.init_skin-module.html#init_skin
 dtk.ui.keymap	dtk.ui.keymap-module.html
 dtk.ui.keymap.has_ctrl_mask	dtk.ui.keymap-module.html#has_ctrl_mask
 dtk.ui.keymap.get_key_event_modifiers	dtk.ui.keymap-module.html#get_key_event_modifiers
