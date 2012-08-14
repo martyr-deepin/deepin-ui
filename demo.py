@@ -37,6 +37,7 @@ app_theme = init_skin(
     os.path.join(get_parent_dir(__file__), "app_theme"),
     )
 
+
 # Load other modules.
 from dtk.ui.application import Application
 from dtk.ui.browser import WebView

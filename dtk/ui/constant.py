@@ -48,11 +48,23 @@ WIDGET_POS_LEFT_CENTER = 6
 WIDGET_POS_RIGHT_CENTER = 7
 WIDGET_POS_CENTER = 8
 
-font_test_window = gtk.Window(gtk.WINDOW_POPUP)
-font_test_window.set_default_size(0, 0)
-font_test_window.move(-1000000, -1000000)
-DEFAULT_FONT = ' '.join(str(font_test_window.get_pango_context().get_font_description()).split(" ")[0:-1])
-font_test_window.destroy()
+def get_system_font():
+    '''
+    Get system font.
+    
+    This function will create invisible gtk window to get system font, window destroy after detect.
+    
+    @return: Return font string in current system.
+    '''
+    font_test_window = gtk.Window(gtk.WINDOW_POPUP)
+    font_test_window.set_default_size(0, 0)
+    font_test_window.move(-1000000, -1000000)
+    font_name = ' '.join(str(font_test_window.get_pango_context().get_font_description()).split(" ")[0:-1])
+    font_test_window.destroy()
+    
+    return font_name
+
+DEFAULT_FONT = get_system_font()
 
 ALIGN_START = pango.ALIGN_LEFT
 ALIGN_MIDDLE = pango.ALIGN_CENTER
