@@ -467,7 +467,7 @@ class ScrolledWindow(gtk.Bin):
                 height=self.allocation.height,
                 window_type=gtk.gdk.WINDOW_CHILD,
                 wclass=gtk.gdk.INPUT_OUTPUT,
-                event_mask=(self.get_events()| gdk.EXPOSURE_MASK | gdk.VISIBILITY_NOTIFY_MASK | gdk.ALL_EVENTS_MASK ),
+                event_mask=(self.get_events()| gdk.EXPOSURE_MASK | gdk.VISIBILITY_NOTIFY_MASK),
                 visual=self.get_visual(),
                 colormap=self.get_colormap(),
                 )
