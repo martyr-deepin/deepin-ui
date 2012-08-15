@@ -66,23 +66,18 @@ class ComboBox(gtk.VBox):
         # Init.
         gtk.VBox.__init__(self)
         self.set_can_focus(True)
-        self.items = items
         self.droplist_height = droplist_height
-        self.select_index = select_index
         self.focus_flag = False
         
-        self.droplist = Droplist(self.items, max_width=max_width)
+        self.dropbutton_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()
+        self.label_padding_left = 6
+        self.set_items(items, select_index, max_width)
+        
         if self.droplist_height:
             self.droplist.set_size_request(-1, self.droplist_height)
-        self.width = self.droplist.get_droplist_width() 
         self.height = 22
-        self.label_padding_left = 6
         self.box = gtk.HBox()
-        self.dropbutton_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()
-        self.label = Label(self.items[select_index][0], 
-                           label_width=self.width - self.dropbutton_width - 1 - self.label_padding_left,
-                           enable_select=False,
-                           enable_double_click=False)
+        
         self.label.text_color = ui_theme.get_color("menu_font")
         self.dropbutton = DisableButton(
             (ui_theme.get_pixbuf("combo/dropbutton_normal.png"),
@@ -115,6 +110,19 @@ class ComboBox(gtk.VBox):
             "End" : self.select_last_item,
             "Up" : self.select_prev_item,
             "Down" : self.select_next_item}
+        
+    def set_items(self, items, select_index=0, max_width=None):
+        '''
+        Update items.
+        '''
+        self.items = items
+        self.select_index = select_index
+        self.droplist = Droplist(self.items, max_width=max_width)
+        self.width = self.droplist.get_droplist_width() 
+        self.label = Label(self.items[select_index][0], 
+                           label_width=self.width - self.dropbutton_width - 1 - self.label_padding_left,
+                           enable_select=False,
+                           enable_double_click=False)
         
     def focus_in_combo(self, widget, event):
         '''
