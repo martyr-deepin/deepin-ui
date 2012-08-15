@@ -27,7 +27,7 @@ from label import Label
 from theme import ui_theme
 import gobject
 import gtk
-from utils import (propagate_expose, cairo_disable_antialias, 
+from utils import (propagate_expose, cairo_disable_antialias,
                    color_hex_to_cairo, get_widget_root_coordinate, 
                    WIDGET_POS_BOTTOM_LEFT, alpha_color_hex_to_cairo)
 
@@ -71,20 +71,21 @@ class ComboBox(gtk.VBox):
         
         self.dropbutton_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()
         self.label_padding_left = 6
-        self.set_items(items, select_index, max_width)
-        
-        if self.droplist_height:
-            self.droplist.set_size_request(-1, self.droplist_height)
-        self.height = 22
         self.box = gtk.HBox()
-        
-        self.label.text_color = ui_theme.get_color("menu_font")
         self.dropbutton = DisableButton(
             (ui_theme.get_pixbuf("combo/dropbutton_normal.png"),
              ui_theme.get_pixbuf("combo/dropbutton_hover.png"),
              ui_theme.get_pixbuf("combo/dropbutton_press.png"),
              ui_theme.get_pixbuf("combo/dropbutton_disable.png")),
             )
+        
+        self.set_items(items, select_index, max_width, True)
+        
+        if self.droplist_height:
+            self.droplist.set_size_request(-1, self.droplist_height)
+        self.height = 22
+        
+        self.label.text_color = ui_theme.get_color("menu_font")
                 
         self.align = gtk.Alignment()
         self.align.set(0.5, 0.5, 0.0, 0.0)
@@ -92,14 +93,14 @@ class ComboBox(gtk.VBox):
         
         self.pack_start(self.align, False, False)
         self.align.add(self.box)
+        
+        
         self.box.pack_start(self.label, False, False)
         self.box.pack_start(self.dropbutton, False, False)
+        self.label.connect("button-press-event", self.click_drop_button)
         
         self.align.connect("expose-event", self.expose_combobox_frame)
-        self.label.connect("button-press-event", self.click_drop_button)
         self.dropbutton.connect("button-press-event", self.click_drop_button)
-        self.droplist.connect("item-selected", self.update_select_content)
-        self.droplist.connect("key-release", lambda dl, s, o, i: self.emit("key-release", s, o, i))
         self.connect("key-press-event", self.key_press_combo)
         self.connect("key-release-event", self.key_release_combo)
         self.connect("focus-in-event", self.focus_in_combo)
@@ -111,18 +112,36 @@ class ComboBox(gtk.VBox):
             "Up" : self.select_prev_item,
             "Down" : self.select_next_item}
         
-    def set_items(self, items, select_index=0, max_width=None):
+    def set_items(self, items, select_index=0, max_width=None, create_label=False):
         '''
-        Update items.
+        Update combo's items in runtime.
+        
+        @param items: ComboBox item, item format: (item_label, item_value)
+        @param select_index: Initialize selected index, default is 0.
+        @param max_width: Maximum width of ComboBox, default is None that width along with content.
+        @param create_label: This option just set as True when combo widget create, you should always ignore it.
         '''
+        # Init.
         self.items = items
         self.select_index = select_index
-        self.droplist = Droplist(self.items, max_width=max_width)
+        
+        # Build droplist and update width.
+        self.droplist = Droplist(items, max_width=max_width)
+        self.droplist.connect("item-selected", self.update_select_content)
+        self.droplist.connect("key-release", lambda dl, s, o, i: self.emit("key-release", s, o, i))
         self.width = self.droplist.get_droplist_width() 
-        self.label = Label(self.items[select_index][0], 
-                           label_width=self.width - self.dropbutton_width - 1 - self.label_padding_left,
-                           enable_select=False,
-                           enable_double_click=False)
+
+        # Create label when first time build combo widget.
+        if create_label:
+            self.label = Label(items[select_index][0], 
+                               label_width=self.width - self.dropbutton_width - 1 - self.label_padding_left,
+                               enable_select=False,
+                               enable_double_click=False)
+        
+        # Update label size.
+        self.label.set_text(self.items[select_index][0])
+        self.label.label_width = self.width - self.dropbutton_width - 1 - self.label_padding_left
+        self.label.update_size()
         
     def focus_in_combo(self, widget, event):
         '''
