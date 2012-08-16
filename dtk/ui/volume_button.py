@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# houshaohui:code->[str_size function, get size, type, mtime, combox]. 
 # Copyright (C) 2012 Deepin, Inc.
 #               2012 Hailong Qiu
 #
@@ -35,17 +34,16 @@ x = 500 -> 500 * 0.2 = 100
 x = 100 -> 100 * 0.2 = 20 
 '''
 
-# volume state.
 ZERO_STATE = 0
 MIN_STATE = 1
 MID_STATE = 2
 MAX_STATE = 3
 MUTE_STATE = -1
-# mouse volume state.
+
 MOUSE_VOLUME_STATE_PRESS  = 1
 MOUSE_VOLUME_STATE_HOVER  = 2
 MOUSE_VOLUME_STATE_NORMAL = -1
-# volume type.
+
 VOLUME_RIGHT = "right"
 VOLUME_LEFT   = "left"
 
@@ -55,47 +53,53 @@ class VolumeButton(gtk.Button):
     '''
     
     __gsignals__ = {
-        "volume-state-changed":(gobject.SIGNAL_RUN_LAST,
-                           gobject.TYPE_NONE,(gobject.TYPE_INT,gobject.TYPE_INT,))
+        "volume-state-changed":(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,(gobject.TYPE_INT,gobject.TYPE_INT,))
         }
     
     def __init__(self,
                  volume_max_value = 100,
-                 volume_width     = 52,
-                 volume_x         = 0,
-                 volume_y         = 15,
-                 line_width       = 3,
-                 volume_left_right_padding_x = 5,
-                 volume_left_show_value = [(1, 33),(34, 66),(67, 100)],
+                 volume_width = 52,
+                 volume_x = 0,
+                 volume_y = 15,
+                 line_height = 3,
+                 volume_padding_x = 5,
+                 volume_level_values = [(1, 33),(34, 66),(67, 100)],
                  scroll_bool = False,
                  press_emit_bool = False,
-                 #=============================================================
+                 inc_value=5,
                  bg_pixbuf = ui_theme.get_pixbuf("volumebutton/bg.png"),
                  fg_pixbuf = ui_theme.get_pixbuf("volumebutton/fg.png"),
-                 #=============================================================
                  zero_volume_normal_pixbuf = ui_theme.get_pixbuf("volumebutton/zero_normal.png"),
                  zero_volume_hover_pixbuf = ui_theme.get_pixbuf("volumebutton/zero_hover.png"),
                  zero_volume_press_pixbuf = ui_theme.get_pixbuf("volumebutton/zero_press.png"),
-                 #=============================================================
-                 min_volume_normal_pixbuf   = ui_theme.get_pixbuf("volumebutton/lower_normal.png"),
-                 min_volume_hover_pixbuf    = ui_theme.get_pixbuf("volumebutton/lower_hover.png"),
-                 min_volume_press_pixbuf    = ui_theme.get_pixbuf("volumebutton/lower_press.png"),
-                 #=============================================================
-                 mid_volume_normal_pixbuf   = ui_theme.get_pixbuf("volumebutton/middle_normal.png"),
-                 mid_volume_hover_pixbuf    = ui_theme.get_pixbuf("volumebutton/middle_hover.png"),
-                 mid_volume_press_pixbuf    = ui_theme.get_pixbuf("volumebutton/middle_press.png"),
-                 #=============================================================
+                 min_volume_normal_pixbuf = ui_theme.get_pixbuf("volumebutton/lower_normal.png"),
+                 min_volume_hover_pixbuf = ui_theme.get_pixbuf("volumebutton/lower_hover.png"),
+                 min_volume_press_pixbuf = ui_theme.get_pixbuf("volumebutton/lower_press.png"),
+                 mid_volume_normal_pixbuf = ui_theme.get_pixbuf("volumebutton/middle_normal.png"),
+                 mid_volume_hover_pixbuf = ui_theme.get_pixbuf("volumebutton/middle_hover.png"),
+                 mid_volume_press_pixbuf = ui_theme.get_pixbuf("volumebutton/middle_press.png"),
                  max_volume_normal_pixbuf = ui_theme.get_pixbuf("volumebutton/high_normal.png"),
-                 max_volume_hover_pixbuf  = ui_theme.get_pixbuf("volumebutton/high_hover.png"),
-                 max_volume_press_pixbuf  = ui_theme.get_pixbuf("volumebutton/high_press.png"),
-                 #=============================================================
-                 mute_volume_normal_pixbuf  = ui_theme.get_pixbuf("volumebutton/mute_normal.png"),
-                 mute_volume_hover_pixbuf   = ui_theme.get_pixbuf("volumebutton/mute_hover.png"),
-                 mute_volume_press_pixbuf   = ui_theme.get_pixbuf("volumebutton/mute_press.png"),
-                 #=============================================================
+                 max_volume_hover_pixbuf = ui_theme.get_pixbuf("volumebutton/high_hover.png"),
+                 max_volume_press_pixbuf = ui_theme.get_pixbuf("volumebutton/high_press.png"),
+                 mute_volume_normal_pixbuf = ui_theme.get_pixbuf("volumebutton/mute_normal.png"),
+                 mute_volume_hover_pixbuf = ui_theme.get_pixbuf("volumebutton/mute_hover.png"),
+                 mute_volume_press_pixbuf = ui_theme.get_pixbuf("volumebutton/mute_press.png"),
                  point_volume_pixbuf = ui_theme.get_pixbuf("volumebutton/point_normal.png"),
-                 inc_value=5,
                  ):        
+        '''
+        Initialize VolumeButton class.
+        
+        @param volume_max_value: Maximum value of volume, default is 100.
+        @param volume_width: Width of volume button widget, default is 52 pixel.
+        @param volume_x: X padding of volume button widget.
+        @param volume_y: Y padding of volume button widget.
+        @param line_height: Height of volume progressbar, default is 3 pixel.
+        @param volume_padding_x: X padding value around volume progressbar.
+        @param volume_level_values: The values of volume level.
+        @param scroll_bool: True allowed scroll to change value, default is False.
+        @param press_emit_bool: True to emit `volume-state-changed` signal when press, default is False.
+        @param inc_value: The increase value of volume change, default is 5.
+        '''
         gtk.Button.__init__(self)
         ###########################
         if volume_x < max_volume_normal_pixbuf.get_pixbuf().get_width():
@@ -130,7 +134,7 @@ class VolumeButton(gtk.Button):
         '''Init Set VolumeButton attr.'''
         '''Init value.'''
         self.__press_emit_bool  = press_emit_bool
-        self.__line_width       = line_width
+        self.__line_height       = line_height
         self.__current_value    = 0
         self.__mute_bool        = False
         self.temp_mute_bool     = False
@@ -138,12 +142,12 @@ class VolumeButton(gtk.Button):
         self.__volume_max_value = volume_max_value
         self.__volume_width     = volume_width
         
-        self.__volume_left_x    = volume_x - self.__max_volume_normal_pixbuf.get_pixbuf().get_width() - volume_left_right_padding_x
+        self.__volume_left_x    = volume_x - self.__max_volume_normal_pixbuf.get_pixbuf().get_width() - volume_padding_x
         self.__volume_left_y    = volume_y - self.__max_volume_normal_pixbuf.get_pixbuf().get_height()/2 + self.__point_volume_pixbuf.get_pixbuf().get_height()/2
         self.__volume_right_x   = volume_x
         self.__volume_right_y   = volume_y
         '''Left'''
-        self.volume_left_show_value = volume_left_show_value
+        self.volume_level_values = volume_level_values
         self.__volume_state = MIN_STATE
         self.__mouse_state  = MOUSE_VOLUME_STATE_NORMAL
         '''Right'''
@@ -306,19 +310,19 @@ class VolumeButton(gtk.Button):
     def volume_state(self):
         del self.__volume_state
         
-    def set_volume_left_show_value(self, show_value):
+    def set_volume_level_values(self, show_value):
         try:
             show_value[0][0] - show_value[0][1]
             show_value[1][0] - show_value[1][1]
             show_value[2][0] - show_value[2][1]
             
-            self.volume_left_show_value = show_value
+            self.volume_level_values = show_value
         except:    
             print "Error show value!!"
         
     def __set_volume_value_to_state(self, value):
         if not self.__mute_bool:
-            temp_show_value = self.volume_left_show_value
+            temp_show_value = self.volume_level_values
             if temp_show_value[0][0] <= value <= temp_show_value[0][1]:
                 self.__volume_state = MIN_STATE
             elif temp_show_value[1][0] <= value <= temp_show_value[1][1]:
@@ -391,21 +395,21 @@ class VolumeButton(gtk.Button):
     
     '''Right function'''            
     @property
-    def line_width(self):
-        return self.__line_width
+    def line_height(self):
+        return self.__line_height
     
-    @line_width.setter
-    def line_width(self, width):
-        self.__line_width = width
+    @line_height.setter
+    def line_height(self, width):
+        self.__line_height = width
         self.queue_draw()
         
-    @line_width.getter    
-    def line_width(self):    
-        return self.__line_width
+    @line_height.getter    
+    def line_height(self):    
+        return self.__line_height
     
-    @line_width.deleter
-    def line_width(self):
-        del self.__line_width
+    @line_height.deleter
+    def line_height(self):
+        del self.__line_height
         
     @property    
     def value(self):
@@ -454,7 +458,7 @@ class VolumeButton(gtk.Button):
         
     def __draw_volume_right(self, widget, event):
         cr = widget.window.cairo_create()
-        cr.set_line_width(self.__line_width)
+        cr.set_line_width(self.__line_height)
         x, y, w, h = widget.allocation
     
         fg_height_average = (self.__point_volume_pixbuf.get_pixbuf().get_height() - self.__fg_pixbuf.get_pixbuf().get_height()) / 2
@@ -528,8 +532,8 @@ if __name__ == "__main__":
         print volume_button.volume_state
         volume_button.max_value = 200
         volume_button.value = 100
-        volume_button.line_width = 4    # Set draw line width.    
-        # volume_button.set_volume_left_show_value([(0,10),(11,80),(81,100)])
+        volume_button.line_height = 4    # Set draw line width.    
+        # volume_button.set_volume_level_values([(0,10),(11,80),(81,100)])
         
     win = gtk.Window(gtk.WINDOW_TOPLEVEL)
     # win = Window()
