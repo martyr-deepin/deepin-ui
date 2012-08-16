@@ -123,7 +123,7 @@ def create_tab_window_item(name):
     align.add(gtk.Button(name))
     
     return (name, align)
-    
+
 if __name__ == "__main__":
     # Build DBus name.
     app_dbus_name = "com.deepin.demo"
@@ -413,15 +413,13 @@ if __name__ == "__main__":
     
     icon_view_scrolled_window = ScrolledWindow()
     icon_view = IconView(10, 10)
-    # icon_view = IconView()
     icon_view_scrolled_window.add_child(icon_view)
     icon_view_hframe.add(icon_view_scrolled_window)
     
     icon_view_vframe.add(icon_view_hframe)
     
-    icon_items = map(lambda index: IconItem(
-            app_theme.get_pixbuf("cover/%s.jpg" % (index)).get_pixbuf()
-            ), range(1, 33))
+    icon_files = map(lambda index: os.path.join(os.path.dirname(__file__), "cover/%s.jpg" % (index)), range(1, 33))
+    icon_items = map(lambda icon_file_path: IconItem(icon_file_path, 96, 96), icon_files * 100)
     icon_view.add_items(icon_items)
     
     tab_4_box.pack_start(icon_view_vframe, True, True)

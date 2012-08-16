@@ -24,6 +24,7 @@ from draw import draw_pixbuf, draw_vlinear
 from keymap import get_keyevent_name
 from skin_config import skin_config
 from theme import ui_theme
+import gc
 import gobject
 import gtk
 from utils import (get_match_parent, cairo_state, get_event_coords, 
@@ -34,6 +35,8 @@ class IconView(gtk.DrawingArea):
     '''
     Icon view.
     
+    @undocumented: realize_icon_view
+    @undocumented: button_release_scrolled_window
     @undocumented: expose_icon_view
     @undocumented: motion_icon_view
     @undocumented: icon_view_get_event_index
@@ -45,6 +48,7 @@ class IconView(gtk.DrawingArea):
     @undocumented: update_redraw_request_list
     @undocumented: redraw_item
     @undocumented: get_offset_coordinate
+    @undocumented: get_render_item_indexes
     '''
 	
     __gsignals__ = {
@@ -78,6 +82,7 @@ class IconView(gtk.DrawingArea):
         self.single_click_item = None
         
         # Signal.
+        self.connect("realize", self.realize_icon_view)
         self.connect("realize", lambda w: self.grab_focus()) # focus key after realize
         self.connect("expose-event", self.expose_icon_view)    
         self.connect("motion-notify-event", self.motion_icon_view)
@@ -112,6 +117,30 @@ class IconView(gtk.DrawingArea):
             "Page_Up" : self.scroll_page_up,
             "Page_Down" : self.scroll_page_down,
             }
+        
+    def realize_icon_view(self, widget):
+        '''
+        Realize icon view.
+        '''
+        scrolled_window = get_match_parent(self, ["ScrolledWindow"])
+        scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
+        
+    def button_release_scrolled_window(self, widget, event):
+        '''
+        Internal callback for `button-release-event` signal of scrolled window.
+        '''
+        # Get items information.
+        (item_width, item_height, columns, start_index, end_index) = self.get_render_item_info()
+
+        # Release item resource.
+        need_gc_collect = False
+        for item in self.items[0:start_index] + self.items[end_index:-1]:
+            if item.icon_item_release_resource():
+                need_gc_collect = True
+                
+        # Just do gc work when need collect.
+        if need_gc_collect:
+            gc.collect()
         
     def select_first_item(self):
         '''
@@ -412,22 +441,8 @@ class IconView(gtk.DrawingArea):
                              viewport.allocation.height)        
                 cr.clip()
                 
-                # Draw item.
-                item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
-                scrolled_window = get_match_parent(self, ["ScrolledWindow"])
-                columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
-                    
-                # Get viewport index.
-                start_y = offset_y - self.padding_y
-                start_row = max(int(start_y / item_height), 0)
-                start_index = start_row * columns
-                
-                end_y = offset_y - self.padding_y + viewport.allocation.height
-                if end_y % item_height == 0:
-                    end_row = end_y / item_height - 1
-                else:
-                    end_row = end_y / item_height
-                end_index = min((end_row + 1) * columns, len(self.items))
+                # Get item information.
+                (item_width, item_height, columns, start_index, end_index) = self.get_render_item_info()
                 
                 for (index, item) in enumerate(self.items[start_index:end_index]):
                     row = int((start_index + index) / columns)
@@ -441,6 +456,32 @@ class IconView(gtk.DrawingArea):
                         cr.clip()
                         
                         item.render(cr, gtk.gdk.Rectangle(render_x, render_y, item_width, item_height))
+                        
+    def get_render_item_info(self):
+        '''
+        Internal function to get information of render items.
+        '''
+        # Get offset.
+        (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+
+        # Get item size.
+        item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+        scrolled_window = get_match_parent(self, ["ScrolledWindow"])
+        columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
+        
+        # Get viewport index.
+        start_y = offset_y - self.padding_y
+        start_row = max(int(start_y / item_height), 0)
+        start_index = start_row * columns
+        
+        end_y = offset_y - self.padding_y + viewport.allocation.height
+        if end_y % item_height == 0:
+            end_row = end_y / item_height - 1
+        else:
+            end_row = end_y / item_height
+        end_index = min((end_row + 1) * columns, len(self.items))
+        
+        return (item_width, item_height, columns, start_index, end_index)
                         
     def clear_focus_item(self):
         '''
@@ -701,14 +742,17 @@ class IconItem(gobject.GObject):
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
-    def __init__(self, pixbuf):
+    def __init__(self, pixbuf_path, image_width, image_height):
         '''
         Initialize ItemIcon class.
         
         @param pixbuf: Icon pixbuf.
         '''
         gobject.GObject.__init__(self)
-        self.pixbuf = pixbuf
+        self.pixbuf_path = pixbuf_path
+        self.image_width = image_width
+        self.image_height = image_height
+        self.pixbuf = None
         self.padding_x = 21
         self.padding_y = 21
         self.hover_flag = False
@@ -728,7 +772,7 @@ class IconItem(gobject.GObject):
         
         This is IconView interface, you should implement it.
         '''
-        return self.pixbuf.get_width() + self.padding_x * 2
+        return self.image_width + self.padding_x * 2
         
     def get_height(self):
         '''
@@ -736,7 +780,7 @@ class IconItem(gobject.GObject):
         
         This is IconView interface, you should implement it.
         '''
-        return self.pixbuf.get_height() + self.padding_y * 2
+        return self.image_height + self.padding_y * 2
     
     def render(self, cr, rect):
         '''
@@ -754,13 +798,16 @@ class IconItem(gobject.GObject):
         else:
             cr.set_source_rgb(1, 1, 1)
         cr.rectangle(
-            rect.x + (rect.width - self.pixbuf.get_width()) / 2 - border_size,
-            rect.y + (rect.height - self.pixbuf.get_height()) / 2 - border_size,
-            self.pixbuf.get_width() + border_size * 2,
-            self.pixbuf.get_height() + border_size * 2)
+            rect.x + (rect.width - self.image_width) / 2 - border_size,
+            rect.y + (rect.height - self.image_height) / 2 - border_size,
+            self.image_width + border_size * 2,
+            self.image_height + border_size * 2)
         cr.fill()
         
         # Draw cover.
+        if not self.pixbuf:
+            self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.pixbuf_path)
+            
         draw_pixbuf(
             cr, 
             self.pixbuf, 
@@ -838,5 +885,22 @@ class IconItem(gobject.GObject):
         This is IconView interface, you should implement it.
         '''
         pass
+    
+    def icon_item_release_resource(self):
+        '''
+        Release item resource.
+
+        If you have pixbuf in item, you should release memory resource like below code:
+
+        >>> del self.pixbuf
+        >>> self.pixbuf = None
+
+        This is IconView interface, you should implement it.
+        
+        @return: Return True if do release work, otherwise return False.
+        
+        When this function return True, IconView will call function gc.collect() to release object to release memory.
+        '''
+        return False
         
 gobject.type_register(IconItem)
