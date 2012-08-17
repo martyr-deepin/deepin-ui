@@ -135,7 +135,7 @@ class IconView(gtk.DrawingArea):
         # Release item resource.
         need_gc_collect = False
         for item in self.items[0:start_index] + self.items[end_index:-1]:
-            if item.icon_item_release_resource():
+            if "icon_item_release_resource" in dir(item) and item.icon_item_release_resource():
                 need_gc_collect = True
                 
         # Just do gc work when need collect.
