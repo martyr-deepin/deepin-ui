@@ -355,6 +355,28 @@ class ListView(gtk.DrawingArea):
         for (index, item) in enumerate(self.items):
             item.set_index(index)
             
+    def reorder_item(self, item, index):
+        '''
+        Reorder item with given index.
+        
+        @param item: Item need reorder.
+        @param index: Reorder index.
+
+        If index < 0, move to begin position of list view, if index > max_index, move to end position of list view. 
+        '''
+        if index < 0:
+            index = 0
+        else:
+            index = len(self.items) - 1
+        
+        with self.keep_select_status():
+            self.items.remove(item)
+            self.items.insert(index, item)
+            
+        self.update_item_index()
+            
+        self.queue_draw()    
+            
     def set_title_height(self, title_height):
         '''
         Set title height.
