@@ -51,6 +51,10 @@ class TreeView(ScrolledWindow):
         self.draw_align = gtk.Alignment()
         self.draw_align.set(0.5, 0.5, 1, 1)
         
+        # Init treeview attributes.
+        self.visible_items = []
+        
+        # Connect widgets.
         self.draw_align.add(self.draw_area)
         self.add_child(self.draw_align)
 
@@ -61,6 +65,12 @@ class TreeItem(gobject.GObject):
     Tree item template use for L{ I{TreeView} <TreeView>}.
     '''
 	
+    __gsignals__ = {
+        "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "add-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT,)),
+        "remove-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT,)),
+    }
+    
     def __init__(self):
         '''
         Initialize TreeItem class.
@@ -68,8 +78,22 @@ class TreeItem(gobject.GObject):
         gobject.GObject.__init__(self)
         self.parent_item = None
         self.chlid_items = None
+        self.row_index = None
+        self.column_index = None
         
-        self.item_row = None
-        self.item_column = None
+    def expand(self):
+        pass
+    
+    def unexpand(self):
+        pass
+    
+    def get_height(self):
+        pass
+    
+    def get_column_widths(self):
+        pass
+    
+    def get_column_renders(self):
+        pass
         
 gobject.type_register(TreeItem)
