@@ -214,6 +214,7 @@ if __name__ == "__main__":
          ],
         True
         )
+    menu.set_menu_item_sensitive_by_index(1, False)
     application.set_menu_callback(lambda button: menu.show(
             get_widget_root_coordinate(button, WIDGET_POS_BOTTOM_LEFT),
             (button.get_allocation().width, 0)))

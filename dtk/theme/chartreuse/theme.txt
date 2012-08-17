@@ -13,6 +13,7 @@
  "disable_background" : "#f7f7f7",
  "disable_text" : "#a6a6a6",
  "menu_font" : "#000000",
+ "menu_disable_font" : "#a6a6a6",
  "menu_select_font" : "#FFFFFF",
  "category_item" : "#333333",
  "category_select_item" : "#FFFFFF",

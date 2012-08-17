@@ -154,7 +154,7 @@ class Menu(Window):
         '''
         Initialize Menu class.
         
-        @param items: A list of item, item format: (item_icon, itemName, item_node).
+        @param items: A list of item, item format: ((item_normal_dpixbuf, item_hover_dpixbuf, item_disable_dpixbuf), item_name, item_node).
         @param is_root_menu: Default is False for submenu, you should set it as True if you build root menu.
         @param select_scale: Default is False, it will use parant's width if it set True.
         @param x_align: Horizontal alignment value.
@@ -430,7 +430,21 @@ class Menu(Window):
             return self.root_menu
         else:
             return self
+        
+    def set_menu_item_sensitive_by_index(self, index, sensitive):
+        '''
+        Set sensitive state of menu item with given index.
+        
+        @param index: Menu item index.
+        @return: Return True if set success, else return False, index out of bound will cause return False.
+        '''
+        if 0 <= index < len(self.menu_items):
+            self.menu_items[index].item_box.set_sensitive(sensitive)
             
+            return True
+        else:
+            return False
+
 gobject.type_register(Menu)
 
 class MenuItem(object):
@@ -463,7 +477,7 @@ class MenuItem(object):
         '''
         Initialize MenuItem class.
         
-        @param item: item format: (item_icon, itemName, item_node).
+        @param item: item format: ((item_normal_dpixbuf, item_hover_dpixbuf, item_disable_dpixbuf), item_name, item_node).
         @param font_size: Menu font size.
         @param select_scale: Default is False, it will use parant's width if it set True.
         @param show_submenu_callback: Callback when show submenus.
@@ -583,7 +597,10 @@ class MenuItem(object):
         (item_icons, item_content, item_node) = self.item[0:3]
         
         # Draw select effect.
-        if self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
+        if widget.state == gtk.STATE_INSENSITIVE:
+            # Set font color.
+            font_color = ui_theme.get_color("menu_disable_font").get_color()
+        elif self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
             # Draw background.
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
                          ui_theme.get_shadow_color("menu_item_select").get_color_info(),
@@ -596,8 +613,10 @@ class MenuItem(object):
         pixbuf = None
         pixbuf_width = 0
         if item_icons:
-            (item_normal_dpixbuf, item_hover_dpixbuf) = item_icons
-            if self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
+            (item_normal_dpixbuf, item_hover_dpixbuf, item_disable_dpixbuf) = item_icons
+            if widget.state == gtk.STATE_INSENSITIVE:
+                pixbuf = item_disable_dpixbuf.get_pixbuf()
+            elif self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
                 if item_hover_dpixbuf == None:
                     pixbuf = item_normal_dpixbuf.get_pixbuf()
                 else:
@@ -618,7 +637,9 @@ class MenuItem(object):
         
         # Draw submenu arrow.
         if isinstance(item_node, Menu):
-            if self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
+            if widget.state == gtk.STATE_INSENSITIVE:
+                submenu_pixbuf = ui_theme.get_pixbuf("menu/arrow_disable.png").get_pixbuf()
+            elif self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
                 submenu_pixbuf = ui_theme.get_pixbuf("menu/arrow_hover.png").get_pixbuf()
             else:
                 submenu_pixbuf = ui_theme.get_pixbuf("menu/arrow_normal.png").get_pixbuf()
@@ -643,15 +664,16 @@ class MenuItem(object):
         
         (item_icons, item_content, item_node) = self.item[0:3]
         if isinstance(item_node, Menu):
-            menu_window = self.item_box.get_toplevel()
-            (menu_window_x, menu_window_y) = get_widget_root_coordinate(menu_window, WIDGET_POS_RIGHT_CENTER)
-            (item_x, item_y) = get_widget_root_coordinate(self.item_box)
-            self.show_submenu_callback(
-                item_node, 
-                (menu_window_x - menu_window.shadow_radius, 
-                 item_y - widget.get_allocation().height - menu_window.shadow_radius),
-                self.item_box.allocation.height + menu_window.shadow_radius)
-            
-            self.submenu_active = True
+            if widget.state != gtk.STATE_INSENSITIVE:
+                menu_window = self.item_box.get_toplevel()
+                (menu_window_x, menu_window_y) = get_widget_root_coordinate(menu_window, WIDGET_POS_RIGHT_CENTER)
+                (item_x, item_y) = get_widget_root_coordinate(self.item_box)
+                self.show_submenu_callback(
+                    item_node, 
+                    (menu_window_x - menu_window.shadow_radius, 
+                     item_y - widget.get_allocation().height - menu_window.shadow_radius),
+                    self.item_box.allocation.height + menu_window.shadow_radius)
+                
+                self.submenu_active = True
         else:
             self.hide_submenu_callback()
