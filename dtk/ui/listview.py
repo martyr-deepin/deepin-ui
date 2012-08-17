@@ -36,7 +36,7 @@ import subprocess
 import tempfile
 from utils import (map_value, mix_list_max, get_content_size, 
                    unzip, last_index, set_cursor, get_match_parent, 
-                   remove_file,
+                   remove_file, remove_timeout_id,
                    cairo_state, get_event_coords, is_left_button, 
                    is_right_button, is_double_click, is_single_click, 
                    is_in_rect, get_disperse_index, get_window_shadow_size)
@@ -45,6 +45,8 @@ class ListView(gtk.DrawingArea):
     '''
     Powerful listview widget.
     
+    @undocumented: update_select_rows
+    @undocumented: auto_scroll_list_view
     @undocumented: update_redraw_request_list
     @undocumented: set_adjust_cursor
     @undocumented: realize_list_view
@@ -132,6 +134,8 @@ class ListView(gtk.DrawingArea):
         self.enable_multiple_select = enable_multiple_select
         self.drag_icon_pixbuf = drag_icon_pixbuf
         self.drag_out_offset = drag_out_offset
+        self.auto_scroll_id = None
+        self.auto_scroll_delay = 70 # milliseconds
         
         # Signal.
         self.connect("realize", self.realize_list_view)
@@ -770,13 +774,7 @@ class ListView(gtk.DrawingArea):
                     # Get hover row.
                     if self.is_in_visible_area(event):
                         # Scroll viewport when cursor almost reach bound of viewport.
-                        vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
-                        if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
-                            vadjust.set_value(min(vadjust.get_value() + self.item_height, 
-                                                  vadjust.get_upper() - vadjust.get_page_size()))
-                        elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
-                            vadjust.set_value(max(vadjust.get_value() - self.item_height, 
-                                                  vadjust.get_lower()))
+                        self.auto_scroll_list_view(event)
                             
                         # Get drag reference row.
                         self.drag_reference_row = self.get_event_row(event, 1)    
@@ -807,13 +805,7 @@ class ListView(gtk.DrawingArea):
                             self.select_rows = [hover_row]
                             
                         # Scroll viewport when cursor almost reach bound of viewport.
-                        vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
-                        if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
-                            vadjust.set_value(min(vadjust.get_value() + self.item_height, 
-                                                  vadjust.get_upper() - vadjust.get_page_size()))
-                        elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
-                            vadjust.set_value(max(vadjust.get_value() - self.item_height, 
-                                                  vadjust.get_lower()))
+                        self.auto_scroll_list_view(event)
                             
                         self.queue_draw()
         else:
@@ -826,6 +818,47 @@ class ListView(gtk.DrawingArea):
                 
             # Emit motion notify event to item.
             self.emit_item_event("motion-notify-item", event)
+            
+    def auto_scroll_list_view(self, event):
+        '''
+        Internal function to scroll list view automatically.
+        '''
+        # Remove auto scroll handler.
+        remove_timeout_id(self.auto_scroll_id)
+        
+        vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
+        if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.item_height:
+            self.auto_scroll_id = gobject.timeout_add(self.auto_scroll_delay, lambda : self.auto_scroll_list_view_down(vadjust))
+        elif event.y < vadjust.get_value() + 2 * self.item_height + self.title_offset_y:
+            self.auto_scroll_id = gobject.timeout_add(self.auto_scroll_delay, lambda : self.auto_scroll_list_view_up(vadjust))
+            
+    def auto_scroll_list_view_down(self, vadjust):
+        '''
+        Internal function to scroll list view down automatically.
+        '''
+        vadjust.set_value(min(vadjust.get_value() + self.item_height, 
+                              vadjust.get_upper() - vadjust.get_page_size()))
+        
+        if self.start_drag:
+            self.drag_reference_row = self.get_row_with_coordinate(self.get_pointer()[1], 1)
+        else:
+            self.update_select_rows(self.get_row_with_coordinate(self.get_pointer()[1]))
+        
+        return True
+
+    def auto_scroll_list_view_up(self, vadjust):
+        '''
+        Internal function to scroll list view up automatically.
+        '''
+        vadjust.set_value(max(vadjust.get_value() - self.item_height, 
+                              vadjust.get_lower()))
+            
+        if self.start_drag:
+            self.drag_reference_row = self.get_row_with_coordinate(self.get_pointer()[1], 1)
+        else:
+            self.update_select_rows(self.get_row_with_coordinate(self.get_pointer()[1]))
+            
+        return True
             
     def button_press_list_view(self, widget, event):
         '''
@@ -1019,6 +1052,9 @@ class ListView(gtk.DrawingArea):
             self.drag_preview_pixbuf = None
             self.title_adjust_column = None
             self.queue_draw()
+
+        # Remove auto scroll handler.
+        remove_timeout_id(self.auto_scroll_id)    
         
     @contextmanager
     def keep_select_status(self):
@@ -1246,11 +1282,36 @@ class ListView(gtk.DrawingArea):
         @return: Return row at event coordinate, return None if haven't any row match event coordiante.
         '''
         (event_x, event_y) = get_event_coords(event)
-        row = int((event_y - self.title_offset_y) / self.item_height)
+        return self.get_row_with_coordinate(event.y, offset_index)
+        
+    def get_row_with_coordinate(self, y, offset_index=0):
+        '''
+        Get row with y coordinate.
+        
+        @param y: Y coordinate.
+        @param offset_index: Row offset index.
+        @return: Return row at y coordinate, return None if haven't any row match y coordiante.
+        '''
+        row = int((y - self.title_offset_y) / self.item_height)
         if 0 <= row <= last_index(self.items) + offset_index:
             return row
         else:
             return None
+        
+    def update_select_rows(self, hover_row):
+        '''
+        Internal function to update select rows.
+        '''
+        hover_row = self.get_row_with_coordinate(self.get_pointer()[1])
+            
+        # Update select area.
+        if hover_row != None and self.start_select_row != None:
+            if hover_row > self.start_select_row:
+                self.select_rows = range(self.start_select_row, hover_row + 1)
+            elif hover_row < self.start_select_row:
+                self.select_rows = range(hover_row, self.start_select_row + 1)
+            else:
+                self.select_rows = [hover_row]
         
     def select_first_item(self):
         '''
