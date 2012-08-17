@@ -1655,29 +1655,36 @@ class ListView(gtk.DrawingArea):
         remove_items = []
         for row in self.select_rows:
             remove_items.append(self.items[row])
-            
-        if remove_items != []:
-            # Init select row.
-            self.start_select_row = None
-            self.select_rows = []
-            cache_remove_items = []
-            
-            # Remove select items.
-            for remove_item in remove_items:
-                cache_remove_items.append(remove_item)
-                self.items.remove(remove_item)
-                
-            # Emit remove items signal.     
-            self.emit("delete-select-items", cache_remove_items)    
-                
-            # Update item index.
-            self.update_item_index()    
-            
-            # Update vertical adjustment.
-            self.update_vadjustment()        
         
-            # Redraw.
-            self.queue_draw()
+        self.delete_items(remove_items)    
+            
+    def delete_items(self, remove_items):
+        '''
+        Delete given items.
+        
+        @param items: Items need to remove.
+        '''
+        # Init select row.
+        self.start_select_row = None
+        self.select_rows = []
+        cache_remove_items = []
+        
+        # Remove select items.
+        for remove_item in remove_items:
+            cache_remove_items.append(remove_item)
+            self.items.remove(remove_item)
+            
+        # Emit remove items signal.     
+        self.emit("delete-select-items", cache_remove_items)    
+            
+        # Update item index.
+        self.update_item_index()    
+        
+        # Update vertical adjustment.
+        self.update_vadjustment()        
+        
+        # Redraw.
+        self.queue_draw()
             
     def update_vadjustment(self):
         '''
