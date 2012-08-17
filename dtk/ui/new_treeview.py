@@ -68,6 +68,7 @@ class TreeItem(gobject.GObject):
         gobject.GObject.__init__(self)
         self.parent_item = None
         self.chlid_items = None
+        
         self.item_row = None
         self.item_column = None
         
