@@ -35,6 +35,7 @@ app_theme = init_skin(
 from dtk.ui.application import Application
 from dtk.ui.new_treeview import TreeView
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
+from dtk.ui.file_treeview import get_dir_items
 import gtk
 
 if __name__ == "__main__":
@@ -59,7 +60,7 @@ if __name__ == "__main__":
         )
     
     # Add TreeView.
-    treeview = TreeView()
+    treeview = TreeView(get_dir_items("/home/andy"))
     treeview_align = gtk.Alignment()
     treeview_align.set(0.5, 0.5, 1, 1)
     treeview_align.set_padding(0, 2, 2, 2)

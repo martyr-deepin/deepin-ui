@@ -22,6 +22,8 @@
 
 import gtk
 import gobject
+from utils import cairo_state, get_window_shadow_size
+from skin_config import skin_config
 from scrolled_window import ScrolledWindow
 
 class TreeView(ScrolledWindow):
@@ -32,8 +34,6 @@ class TreeView(ScrolledWindow):
     def __init__(self,
                  items=[],
                  sort_methods=[],
-                 row_normal_height=None,
-                 row_select_height=None,
                  drag_data=None,
                  enable_multiple_select=True,
                  enable_drag_drop=True,
@@ -57,7 +57,80 @@ class TreeView(ScrolledWindow):
         # Connect widgets.
         self.draw_align.add(self.draw_area)
         self.add_child(self.draw_align)
+        
+        # Handle signals.
+        self.draw_area.connect("expose-event", self.expose_tree_view)
+        
+        # Add items.
+        self.add_items(items)
+        
+    def add_items(self, items):
+        '''
+        Add items.
+        '''
+        self.visible_items += items
+        
+    def expose_tree_view(self, widget, event):
+        '''
+        Internal callback to handle `expose-event` signal.
+        '''
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
 
+        # Draw background.
+        # (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
+        # with cairo_state(cr):
+        #     cr.translate(-self.allocation.x, -self.allocation.y)
+        #     cr.rectangle(offset_x, offset_y, 
+        #                  self.allocation.x + self.allocation.width, 
+        #                  self.allocation.y + self.allocation.height)
+        #     cr.clip()
+            
+        #     (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
+        #     skin_config.render_background(cr, widget, offset_x + shadow_x, offset_y + shadow_y)
+        
+        # Draw items.
+        item_height = 0
+        for item in self.visible_items:
+            render_x = rect.x
+            render_y = rect.y + item_height
+            render_width = rect.width
+            render_height = item.get_height()
+            
+            with cairo_state(cr):
+                cr.rectangle(render_x, render_y, render_width, render_height)
+                cr.clip()
+
+                item.get_column_renders()[0](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
+                
+            item_height += item.get_height()    
+        
+        return False
+
+    def get_offset_coordinate(self, widget):
+        '''
+        Get viewport offset coordinate and viewport.
+
+        @param widget: ListView widget.
+        @return: Return viewport offset and viewport: (offset_x, offset_y, viewport).
+        '''
+        # Init.
+        rect = widget.allocation
+
+        # Get coordinate.
+        viewport = self.get_child()
+        if viewport: 
+            coordinate = widget.translate_coordinates(viewport, rect.x, rect.y)
+            if len(coordinate) == 2:
+                (offset_x, offset_y) = coordinate
+                return (-offset_x, -offset_y, viewport)
+            else:
+                return (0, 0, viewport)    
+
+        else:
+            return (0, 0, viewport)
+        
 gobject.type_register(TreeView)
 
 class TreeItem(gobject.GObject):

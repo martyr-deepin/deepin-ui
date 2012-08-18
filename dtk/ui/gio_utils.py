@@ -22,6 +22,7 @@
 
 import gio
 import gtk
+import os
 
 file_icon_pixbuf_dict = {}
 
@@ -77,7 +78,7 @@ def get_dir_child_infos(dir_path):
                     return file_infos        
             # Return empty list if got error when get enumerator of file.
             except Exception, e:
-                print "get_dir_chlidren error: %s" % (e)
+                print "get_dir_children error: %s" % (e)
                 return []
         # Return empty list if file is not directory.
         else:
@@ -86,12 +87,42 @@ def get_dir_child_infos(dir_path):
 def get_dir_child_names(dir_path):
     '''
     Get children names with given directory path.
+    
     @param dir_path: Directory path.
     @return: Return a list of filepath.
     '''
     return map(lambda info: info.get_name(), get_dir_child_infos(dir_path))
 
+def get_dir_child_files(dir_path):
+    '''
+    Get children gio.File with given directory path.
+
+    @param dir_path: Directory path.
+    @return: Return a list of gio.File.
+    '''
+    gfiles = []
+    for file_info in get_dir_child_infos(dir_path):
+        gfiles.append(gio.File(os.path.join(dir_path, file_info.get_name())))
+    
+    return gfiles    
+
+def get_gfile_name(gfile):
+    '''
+    Get name of gfile.
+    '''
+    return gfile.query_info("standard::*").get_name()
+
+def is_directory(gfile):
+    '''
+    Whether gfile is directory.
+    
+    @param gfile: gio.File.
+    @return: Return True if gfile is directory, else return False.
+    '''
+    return gfile.query_info("standard::*").get_file_type() == gio.FILE_TYPE_DIRECTORY
+
 if __name__ == "__main__":
     print get_file_icon_pixbuf("/data/Picture/宝宝/ETB8227272-0003.JPG", 24)
-    print get_dir_child_names("/")
+    print get_dir_child_files("/")
+    print get_dir_child_names("/home/andy")
     
