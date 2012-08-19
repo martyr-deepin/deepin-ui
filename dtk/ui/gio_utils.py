@@ -23,8 +23,18 @@
 import gio
 import gtk
 import os
+import collections
 
 file_icon_pixbuf_dict = {}
+FILE_TYPE_COMPARE_WEIGHTS = {
+    gio.FILE_TYPE_DIRECTORY : 0,
+    gio.FILE_TYPE_SYMBOLIC_LINK : 1,
+    gio.FILE_TYPE_MOUNTABLE : 2,
+    gio.FILE_TYPE_REGULAR : 3,
+    gio.FILE_TYPE_SHORTCUT : 4,
+    gio.FILE_TYPE_SPECIAL : 5,
+    gio.FILE_TYPE_UNKNOWN : 6
+    }
 
 def get_file_icon_pixbuf(filepath, icon_size):
     '''
@@ -42,9 +52,13 @@ def get_file_icon_pixbuf(filepath, icon_size):
         gfile_icon = gfile_info.get_icon()
         icon_theme = gtk.icon_theme_get_default()
         icon_info = icon_theme.lookup_by_gicon(gfile_icon, icon_size, gtk.ICON_LOOKUP_USE_BUILTIN)
-        return icon_info.load_icon()
+        if icon_info:
+            return icon_info.load_icon()
+        # Return unknown icon when icon_info is None.
+        else:
+            return icon_theme.load_icon("unknown", icon_size, gtk.ICON_LOOKUP_USE_BUILTIN)
     
-def get_dir_child_infos(dir_path):
+def get_dir_child_infos(dir_path, sort=None, reverse=False):
     '''
     Get children FileInfos with given directory path.
     
@@ -75,7 +89,10 @@ def get_dir_child_infos(dir_path):
                         else:
                             file_infos.append(file_info)
                             
-                    return file_infos        
+                    if sort:
+                        return sort(file_infos, reverse)
+                    else:
+                        return file_infos        
             # Return empty list if got error when get enumerator of file.
             except Exception, e:
                 print "get_dir_children error: %s" % (e)
@@ -93,7 +110,7 @@ def get_dir_child_names(dir_path):
     '''
     return map(lambda info: info.get_name(), get_dir_child_infos(dir_path))
 
-def get_dir_child_files(dir_path):
+def get_dir_child_files(dir_path, sort_files=None, reverse=False):
     '''
     Get children gio.File with given directory path.
 
@@ -101,10 +118,37 @@ def get_dir_child_files(dir_path):
     @return: Return a list of gio.File.
     '''
     gfiles = []
-    for file_info in get_dir_child_infos(dir_path):
+    for file_info in get_dir_child_infos(dir_path, sort_files, reverse):
         gfiles.append(gio.File(os.path.join(dir_path, file_info.get_name())))
-    
+
     return gfiles    
+    
+def sort_file_by_name(file_infos, reverse):
+    '''
+    Sort file info by name.
+    '''
+    # Init.
+    file_info_oreder_dict = collections.OrderedDict(
+        [(gio.FILE_TYPE_DIRECTORY, []),
+         (gio.FILE_TYPE_SYMBOLIC_LINK, []),
+         (gio.FILE_TYPE_MOUNTABLE, []),
+         (gio.FILE_TYPE_REGULAR, []),
+         (gio.FILE_TYPE_SHORTCUT, []),
+         (gio.FILE_TYPE_SPECIAL, []),
+         (gio.FILE_TYPE_UNKNOWN, []),
+         ]
+        )
+    
+    # Split info with different file type.
+    for file_info in file_infos:
+        file_info_oreder_dict[file_info.get_file_type()].append(file_info)
+    
+    # Get sorted info list.
+    infos = []    
+    for (file_type, file_type_infos) in file_info_oreder_dict.items():
+        infos += sorted(file_type_infos, key=lambda info: info.get_name())
+        
+    return infos    
 
 def get_gfile_name(gfile):
     '''

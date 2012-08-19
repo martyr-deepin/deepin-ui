@@ -21,12 +21,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from new_treeview import TreeItem
-from gio_utils import get_file_icon_pixbuf, is_directory, get_dir_child_files, get_gfile_name
+from gio_utils import (get_file_icon_pixbuf, is_directory, get_dir_child_files, 
+                       get_gfile_name, sort_file_by_name)
 from draw import draw_pixbuf, draw_text
+from theme import ui_theme
 import gobject
 
 ICON_SIZE = 24
 ICON_PADDING_LEFT = ICON_PADDING_RIGHT = 4
+INDICATOR_PADDING_LEFT = INDICATOR_PADDING_RIGHT = 4
+ITEM_PADDING_Y = 2
+ITEM_HEIGHT = ICON_SIZE + ITEM_PADDING_Y * 2
 
 class DirItem(TreeItem):
     '''
@@ -48,15 +53,24 @@ class DirItem(TreeItem):
         '''
         Render icon and name of DirItem.
         '''
+        # Draw directory arrow icon.
+        expand_indicator_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png").get_pixbuf()
+        draw_pixbuf(cr, expand_indicator_pixbuf,
+                    rect.x + INDICATOR_PADDING_LEFT,
+                    rect.y + (rect.height - expand_indicator_pixbuf.get_height()) / 2,
+                    )
+        
         # Draw directory icon.
         draw_pixbuf(cr, self.pixbuf, 
-                    rect.x + ICON_PADDING_LEFT, 
-                    rect.y)
+                    rect.x + INDICATOR_PADDING_LEFT + expand_indicator_pixbuf.get_width() + INDICATOR_PADDING_RIGHT + ICON_PADDING_LEFT,
+                    rect.y + (rect.height - ICON_SIZE) / 2,
+                    )
         
         # Draw directory name.
         draw_text(cr, self.name, 
-                  rect.x + ICON_SIZE + ICON_PADDING_LEFT + ICON_PADDING_RIGHT, 
-                  rect.y, rect.width, rect.height)
+                  rect.x + INDICATOR_PADDING_LEFT + expand_indicator_pixbuf.get_width() + INDICATOR_PADDING_RIGHT + ICON_PADDING_LEFT + ICON_SIZE + ICON_PADDING_RIGHT,
+                  rect.y,
+                  rect.width, rect.height)
         
     def expand(self):
         pass
@@ -65,7 +79,7 @@ class DirItem(TreeItem):
         pass
     
     def get_height(self):
-        return ICON_SIZE
+        return ITEM_HEIGHT
     
     def get_column_widths(self):
         pass
@@ -94,15 +108,20 @@ class FileItem(TreeItem):
         '''
         Render icon and name of DirItem.
         '''
+        # Init.
+        expand_indicator_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png").get_pixbuf()
+        
         # Draw directory icon.
         draw_pixbuf(cr, self.pixbuf, 
-                    rect.x + ICON_PADDING_LEFT, 
-                    rect.y)
+                    rect.x + INDICATOR_PADDING_LEFT + expand_indicator_pixbuf.get_width() + INDICATOR_PADDING_RIGHT + ICON_PADDING_LEFT,
+                    rect.y + (rect.height - ICON_SIZE) / 2,
+                    )
         
         # Draw directory name.
         draw_text(cr, self.name, 
-                  rect.x + ICON_SIZE + ICON_PADDING_LEFT + ICON_PADDING_RIGHT, 
-                  rect.y, rect.width, rect.height)
+                  rect.x + INDICATOR_PADDING_LEFT + expand_indicator_pixbuf.get_width() + INDICATOR_PADDING_RIGHT + ICON_PADDING_LEFT + ICON_SIZE + ICON_PADDING_RIGHT,
+                  rect.y,
+                  rect.width, rect.height)
         
     def expand(self):
         pass
@@ -111,7 +130,7 @@ class FileItem(TreeItem):
         pass
     
     def get_height(self):
-        return ICON_SIZE
+        return ITEM_HEIGHT
     
     def get_column_widths(self):
         pass
@@ -182,7 +201,7 @@ def get_dir_items(dir_path):
     Get children items with given directory path.
     '''
     items = []
-    for gfile in get_dir_child_files(dir_path):
+    for gfile in get_dir_child_files(dir_path, sort_file_by_name):
         if is_directory(gfile):
             items.append(DirItem(gfile))
         else:

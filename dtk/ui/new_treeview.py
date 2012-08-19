@@ -22,6 +22,8 @@
 
 import gtk
 import gobject
+from draw import draw_vlinear
+from theme import ui_theme
 from utils import cairo_state, get_window_shadow_size
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
@@ -79,16 +81,19 @@ class TreeView(ScrolledWindow):
         rect = widget.allocation
 
         # Draw background.
-        # (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
-        # with cairo_state(cr):
-        #     cr.translate(-self.allocation.x, -self.allocation.y)
-        #     cr.rectangle(offset_x, offset_y, 
-        #                  self.allocation.x + self.allocation.width, 
-        #                  self.allocation.y + self.allocation.height)
-        #     cr.clip()
+        (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
+        with cairo_state(cr):
+            cr.translate(-self.allocation.x, -self.allocation.y)
+            cr.rectangle(offset_x, offset_y, 
+                         self.allocation.x + self.allocation.width, 
+                         self.allocation.y + self.allocation.height)
+            cr.clip()
             
-        #     (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
-        #     skin_config.render_background(cr, widget, offset_x + shadow_x, offset_y + shadow_y)
+            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
+            skin_config.render_background(cr, widget, offset_x + shadow_x, offset_y + shadow_y)
+            
+        # Draw mask.
+        self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
         
         # Draw items.
         item_height = 0
@@ -108,6 +113,20 @@ class TreeView(ScrolledWindow):
         
         return False
 
+    def draw_mask(self, cr, x, y, w, h):
+        '''
+        Draw mask interface.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
+        draw_vlinear(cr, x, y, w, h,
+                     ui_theme.get_shadow_color("linear_background").get_color_info()
+                     )
+        
     def get_offset_coordinate(self, widget):
         '''
         Get viewport offset coordinate and viewport.
