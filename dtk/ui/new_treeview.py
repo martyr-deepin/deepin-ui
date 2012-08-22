@@ -28,7 +28,7 @@ from utils import cairo_state, get_window_shadow_size, last_index, get_event_coo
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
 
-class TreeView(ScrolledWindow):
+class TreeView(gtk.VBox):
     '''
     TreeView widget.
     '''
@@ -43,14 +43,14 @@ class TreeView(ScrolledWindow):
                  enable_drag_drop=True,
                  drag_icon_pixbuf=None,
                  start_drag_offset=50,
-                 right_space=2,
+                 right_space=0,
                  top_bottom_space=3
                  ):
         '''
         Initialize TreeView class.
         '''
         # Init.
-        ScrolledWindow.__init__(self, right_space, top_bottom_space)
+        gtk.VBox.__init__(self)
         self.visible_items = []
         self.sort_methods = sort_methods
         self.drag_data = drag_data
@@ -79,24 +79,36 @@ class TreeView(ScrolledWindow):
         self.draw_align = gtk.Alignment()
         self.draw_align.set(0.5, 0.5, 1, 1)
         
+        self.scrolled_window = ScrolledWindow(right_space, top_bottom_space)
+        
         # Connect widgets.
         self.draw_align.add(self.draw_area)
-        self.add_child(self.draw_align)
+        self.scrolled_window.add_child(self.draw_align)
+        
+        self.pack_start(self.scrolled_window, True, True)
+        
         
         # Handle signals.
-        self.draw_area.connect("expose-event", self.expose_tree_view)
-        self.draw_area.connect("button-press-event", self.button_press_tree_view)
+        self.draw_area.connect("expose-event", lambda w, e: self.expose_tree_view(w))
+        self.scrolled_window.connect("button-press-event", self.button_press_tree_view)
         
         # Add items.
         self.add_items(items)
         
+    def update_item_index(self):
+        '''
+        Update index of items.
+        '''
+        for (index, item) in enumerate(self.visible_items):
+            item.row_index = index
+            
     def redraw_request(self, item):
         if not item in self.redraw_request_list:
             self.redraw_request_list.append(item)
     
     def update_redraw_request_list(self):
         if len(self.redraw_request_list) > 0:
-            pass
+            self.scrolled_window.queue_draw()
         
         # Clear redraw request list.
         self.redraw_request_list = []
@@ -114,15 +126,17 @@ class TreeView(ScrolledWindow):
         for item in items:
             item.redraw_request_callback = self.redraw_request
         
+        self.update_item_index()    
+            
         self.update_vadjustment()
         
     def update_vadjustment(self):
         vadjust_height = sum(map(lambda i: i.get_height(), self.visible_items))
         self.draw_area.set_size_request(-1, vadjust_height)
-        vadjust = self.get_vadjustment()
+        vadjust = self.scrolled_window.get_vadjustment()
         vadjust.set_upper(vadjust_height)
         
-    def expose_tree_view(self, widget, event):
+    def expose_tree_view(self, widget):
         '''
         Internal callback to handle `expose-event` signal.
         '''
@@ -133,10 +147,10 @@ class TreeView(ScrolledWindow):
         # Draw background.
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
         with cairo_state(cr):
-            cr.translate(-self.allocation.x, -self.allocation.y)
+            cr.translate(-self.scrolled_window.allocation.x, -self.scrolled_window.allocation.y)
             cr.rectangle(offset_x, offset_y, 
-                         self.allocation.x + self.allocation.width, 
-                         self.allocation.y + self.allocation.height)
+                         self.scrolled_window.allocation.x + self.scrolled_window.allocation.width, 
+                         self.scrolled_window.allocation.y + self.scrolled_window.allocation.height)
             cr.clip()
             
             (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
@@ -165,7 +179,7 @@ class TreeView(ScrolledWindow):
     
     def get_expose_bound(self):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
-        page_size = self.get_vadjustment().get_page_size()
+        page_size = self.scrolled_window.get_vadjustment().get_page_size()
         
         start_row = None
         end_row = None
@@ -196,18 +210,22 @@ class TreeView(ScrolledWindow):
         return (start_row, end_row, start_y)    
     
     def button_press_tree_view(self, widget, event):
-        self.grab_focus()
+        if event.window != self.scrolled_window.vwindow and event.window != self.scrolled_window.hwindow:
+            self.scrolled_window.grab_focus()
         
-        if is_left_button(event):
-            self.left_button_press = True
+            if is_left_button(event):
+                self.left_button_press = True
             
-            self.click_item(event)
+                self.click_item(event)
             
     def click_item(self, event):
         click_row = self.get_event_row(event)
         
         if self.left_button_press:
             if click_row == None:
+                for row in self.select_rows:
+                    self.visible_items[row].unselect()
+                
                 self.start_select_row = None
                 self.select_rows = []
             else:
@@ -219,22 +237,15 @@ class TreeView(ScrolledWindow):
                     if self.enable_drag_drop and click_row in self.select_rows:
                         pass
                     else:
+                        for row in self.select_rows:
+                            self.visible_items[row].unselect()
+                    
                         self.start_drag = False
                         
                         self.start_select_row = click_row
                         self.select_rows = [click_row]
+                        self.visible_items[click_row].select()
                         
-                        
-    def emit_item_event(self, event_name, event):
-        '''
-        Wrap method for emit event signal.
-        
-        @param event_name: Event name.
-        @param event: Event.
-        '''
-        item_row = self.get_row_with_coordinate(event)
-        self.emit(event_name, self.visible_items[item_row], 0, 0, 0)
-        
     def get_event_row(self, event, offset_index=0):
         '''
         Get row at event.
@@ -244,14 +255,18 @@ class TreeView(ScrolledWindow):
         @return: Return row at event coordinate, return None if haven't any row match event coordiante.
         '''
         (event_x, event_y) = get_event_coords(event)
-        return self.get_row_with_coordinate(event.y, offset_index)
-    
-    def get_row_with_coordinate(self, y, offset_index=0):
-        row = int((y - self.title_offset_y) / self.item_height)
-        if 0 <= row <= last_index(self.visible_items) + offset_index:
-            return row
-        else:
-            return None
+        vadjust = self.scrolled_window.get_vadjustment()
+        
+        item_height_count = 0
+        item_index_count = 0
+        for item in self.visible_items:
+            if item_height_count <= vadjust.get_value() + event_y <= item_height_count + item.get_height():
+                return item_index_count
+            
+            item_height_count += item.get_height()
+            item_index_count += 1
+            
+        return None    
 
     def draw_mask(self, cr, x, y, w, h):
         '''
@@ -278,7 +293,7 @@ class TreeView(ScrolledWindow):
         rect = widget.allocation
 
         # Get coordinate.
-        viewport = self.get_child()
+        viewport = self.scrolled_window.get_child()
         if viewport: 
             coordinate = widget.translate_coordinates(viewport, rect.x, rect.y)
             if len(coordinate) == 2:
@@ -315,6 +330,7 @@ class TreeItem(gobject.GObject):
         self.redraw_request_callback = None
         self.add_items_callback = None
         self.remove_items_callback = None
+        self.is_select = False
         
     def expand(self):
         pass
@@ -331,6 +347,9 @@ class TreeItem(gobject.GObject):
     def get_column_renders(self):
         pass
         
+    def unselect(self):
+        pass
+    
     def select(self):
         pass
     

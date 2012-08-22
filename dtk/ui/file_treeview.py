@@ -23,7 +23,7 @@
 from new_treeview import TreeItem
 from gio_utils import (get_file_icon_pixbuf, is_directory, get_dir_child_files, 
                        get_gfile_name, sort_file_by_name)
-from draw import draw_pixbuf, draw_text
+from draw import draw_pixbuf, draw_text, draw_vlinear
 from theme import ui_theme
 import gobject
 
@@ -53,6 +53,11 @@ class DirItem(TreeItem):
         '''
         Render icon and name of DirItem.
         '''
+        # Draw select background.
+        if self.is_select:
+            draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
+                         ui_theme.get_shadow_color("listview_select").get_color_info())
+        
         # Draw directory arrow icon.
         expand_indicator_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png").get_pixbuf()
         draw_pixbuf(cr, expand_indicator_pixbuf,
@@ -87,8 +92,17 @@ class DirItem(TreeItem):
     def get_column_renders(self):
         return [self.render_name]
     
+    def unselect(self):
+        self.is_select = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
     def select(self):
-        pass
+        self.is_select = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
     
 gobject.type_register(DirItem)
 
@@ -111,6 +125,11 @@ class FileItem(TreeItem):
         '''
         Render icon and name of DirItem.
         '''
+        # Draw select background.
+        if self.is_select:
+            draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
+                         ui_theme.get_shadow_color("listview_select").get_color_info())
+        
         # Init.
         expand_indicator_pixbuf = ui_theme.get_pixbuf("treeview/arrow_right.png").get_pixbuf()
         
@@ -141,8 +160,17 @@ class FileItem(TreeItem):
     def get_column_renders(self):
         return [self.render_name]
         
+    def unselect(self):
+        self.is_select = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
     def select(self):
-        pass
+        self.is_select = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
     
 gobject.type_register(DirItem)
 
