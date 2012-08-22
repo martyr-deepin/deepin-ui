@@ -186,6 +186,13 @@ class TreeView(ScrolledWindow):
             item_index_count += 1
             item_height_count += item.get_height()
             
+        assert(start_row != None and start_y != None)    
+        
+        # Items' height must smaller than page size if end_row is None after scan all items.
+        # Then we need adjust end_row with last item index, -1.
+        if end_row == None:
+            end_row = -1
+        
         return (start_row, end_row, start_y)    
     
     def button_press_tree_view(self, widget, event):
