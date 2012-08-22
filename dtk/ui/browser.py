@@ -111,8 +111,7 @@ class WebView(webkit.WebView):
         settings = self.get_settings()
         settings.set_property("enable-default-context-menu", True)
         settings.set_property("enable-developer-extras", True)
-        inspector = Inspector(self.get_web_inspector())
-
+        Inspector(self.get_web_inspector())
 
     def save_adjustment(self, webview, hadj, vadj):
         '''
