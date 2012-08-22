@@ -26,6 +26,7 @@ from gio_utils import (get_file_icon_pixbuf, is_directory, get_dir_child_files,
 from draw import draw_pixbuf, draw_text, draw_vlinear
 from theme import ui_theme
 import gobject
+import gio
 
 ICON_SIZE = 24
 ICON_PADDING_LEFT = ICON_PADDING_RIGHT = 4
@@ -105,6 +106,9 @@ class DirItem(TreeItem):
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
     
+    def double_click(self):
+        print self.name        
+    
 gobject.type_register(DirItem)
 
 class FileItem(TreeItem):
@@ -173,6 +177,13 @@ class FileItem(TreeItem):
         
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
+            
+    def double_click(self):
+        app_info = gio.app_info_get_default_for_type(self.gfile.query_info("standard::*").get_content_type(), False)
+        if app_info:
+            app_info.launch([self.gfile], None)
+        else:
+            print "Don't know how to open file: %s" % (self.name)
     
 gobject.type_register(DirItem)
 

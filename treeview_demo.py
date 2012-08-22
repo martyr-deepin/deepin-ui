@@ -60,8 +60,8 @@ if __name__ == "__main__":
         )
     
     # Add TreeView.
-    # treeview = TreeView(get_dir_items(os.path.expanduser("~")))
-    treeview = TreeView(get_dir_items("/"))
+    treeview = TreeView(get_dir_items(os.path.expanduser("~")))
+    # treeview = TreeView(get_dir_items("/"))
     treeview_align = gtk.Alignment()
     treeview_align.set(0.5, 0.5, 1, 1)
     treeview_align.set_padding(0, 2, 2, 2)

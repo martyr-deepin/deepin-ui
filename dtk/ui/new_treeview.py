@@ -24,9 +24,11 @@ import gtk
 import gobject
 from draw import draw_vlinear
 from theme import ui_theme
-from utils import cairo_state, get_window_shadow_size, last_index, get_event_coords, is_left_button
+from utils import (cairo_state, get_window_shadow_size, get_event_coords, 
+                   is_left_button, is_double_click, is_single_click)
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
+import copy
 
 class TreeView(gtk.VBox):
     '''
@@ -68,6 +70,8 @@ class TreeView(gtk.VBox):
         self.left_button_press = False
         self.press_ctrl = False
         self.press_shift = False
+        self.single_click_row = None
+        self.double_click_row = None
         
         # Init redraw.
         self.redraw_request_list = []
@@ -76,6 +80,8 @@ class TreeView(gtk.VBox):
         
         # Init widgets.
         self.draw_area = gtk.DrawingArea()
+        self.draw_area.add_events(gtk.gdk.ALL_EVENTS_MASK)
+        self.draw_area.set_can_focus(True)
         self.draw_align = gtk.Alignment()
         self.draw_align.set(0.5, 0.5, 1, 1)
         
@@ -90,7 +96,8 @@ class TreeView(gtk.VBox):
         
         # Handle signals.
         self.draw_area.connect("expose-event", lambda w, e: self.expose_tree_view(w))
-        self.scrolled_window.connect("button-press-event", self.button_press_tree_view)
+        self.draw_area.connect("button-press-event", self.button_press_tree_view)
+        self.draw_area.connect("button-release-event", self.button_release_tree_view)
         
         # Add items.
         self.add_items(items)
@@ -203,20 +210,20 @@ class TreeView(gtk.VBox):
         assert(start_row != None and start_y != None)    
         
         # Items' height must smaller than page size if end_row is None after scan all items.
-        # Then we need adjust end_row with last item index.
+        # Then we need adjust end_row with last index of visible list.
         if end_row == None:
             end_row = len(self.visible_items)
         
         return (start_row, end_row, start_y)    
     
     def button_press_tree_view(self, widget, event):
-        if event.window != self.scrolled_window.vwindow and event.window != self.scrolled_window.hwindow:
-            self.scrolled_window.grab_focus()
+        # if event.window != self.scrolled_window.vwindow and event.window != self.scrolled_window.hwindow:
+        self.scrolled_window.grab_focus()
         
-            if is_left_button(event):
-                self.left_button_press = True
+        if is_left_button(event):
+            self.left_button_press = True
             
-                self.click_item(event)
+            self.click_item(event)
             
     def click_item(self, event):
         click_row = self.get_event_row(event)
@@ -246,6 +253,29 @@ class TreeView(gtk.VBox):
                         self.select_rows = [click_row]
                         self.visible_items[click_row].select()
                         
+            if is_double_click(event):
+                self.double_click_row = copy.deepcopy(click_row)
+            elif is_single_click(event):
+                self.single_click_row = copy.deepcopy(click_row)                
+                
+    def button_release_tree_view(self, widget, event):
+        if is_left_button(event):
+            self.left_button_press = False
+            self.release_item(event)
+            
+    def release_item(self, event):
+        if is_left_button(event):
+            release_row = self.get_event_row(event)
+            
+            if self.double_click_row == release_row:
+                self.visible_items[release_row].double_click()
+            elif self.single_click_row == release_row:
+                self.visible_items[release_row].single_click()
+
+            self.double_click_row = None    
+            self.single_click_row = None    
+            self.start_drag = False
+                        
     def get_event_row(self, event, offset_index=0):
         '''
         Get row at event.
@@ -255,12 +285,11 @@ class TreeView(gtk.VBox):
         @return: Return row at event coordinate, return None if haven't any row match event coordiante.
         '''
         (event_x, event_y) = get_event_coords(event)
-        vadjust = self.scrolled_window.get_vadjustment()
         
         item_height_count = 0
         item_index_count = 0
         for item in self.visible_items:
-            if item_height_count <= vadjust.get_value() + event_y <= item_height_count + item.get_height():
+            if item_height_count <= event_y <= item_height_count + item.get_height():
                 return item_index_count
             
             item_height_count += item.get_height()
@@ -346,5 +375,11 @@ class TreeItem(gobject.GObject):
     
     def select(self):
         pass
+    
+    def single_click(self):
+        pass        
+
+    def double_click(self):
+        pass        
     
 gobject.type_register(TreeItem)
