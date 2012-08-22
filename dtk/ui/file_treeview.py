@@ -38,7 +38,7 @@ class DirItem(TreeItem):
     Directory item.
     '''
 	
-    def __init__(self, gfile):
+    def __init__(self, gfile, column_index=0):
         '''
         Initialize DirItem class.
         '''
@@ -48,6 +48,7 @@ class DirItem(TreeItem):
         self.name = get_gfile_name(self.gfile)
         self.directory_path = gfile.get_path()
         self.pixbuf = get_file_icon_pixbuf(self.directory_path, ICON_SIZE)
+        self.column_index = column_index
         
     def render_name(self, cr, rect):
         '''
@@ -111,7 +112,7 @@ class FileItem(TreeItem):
     File item.
     '''
 	
-    def __init__(self, gfile):
+    def __init__(self, gfile, column_index=0):
         '''
         Initialize FileItem class.
         '''
@@ -120,6 +121,7 @@ class FileItem(TreeItem):
         self.name = get_gfile_name(self.gfile)
         self.file_path = gfile.get_path()
         self.pixbuf = get_file_icon_pixbuf(self.file_path, ICON_SIZE)
+        self.column_index = column_index
         
     def render_name(self, cr, rect):
         '''

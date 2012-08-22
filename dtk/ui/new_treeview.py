@@ -203,9 +203,9 @@ class TreeView(gtk.VBox):
         assert(start_row != None and start_y != None)    
         
         # Items' height must smaller than page size if end_row is None after scan all items.
-        # Then we need adjust end_row with last item index, -1.
+        # Then we need adjust end_row with last item index.
         if end_row == None:
-            end_row = -1
+            end_row = len(self.visible_items)
         
         return (start_row, end_row, start_y)    
     
@@ -312,12 +312,6 @@ class TreeItem(gobject.GObject):
     Tree item template use for L{ I{TreeView} <TreeView>}.
     '''
 	
-    # __gsignals__ = {
-    #     "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-    #     "add-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT,)),
-    #     "remove-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT,)),
-    # }
-    
     def __init__(self):
         '''
         Initialize TreeItem class.
