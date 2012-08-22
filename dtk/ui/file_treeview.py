@@ -87,6 +87,9 @@ class DirItem(TreeItem):
     def get_column_renders(self):
         return [self.render_name]
     
+    def select(self):
+        pass
+    
 gobject.type_register(DirItem)
 
 class FileItem(TreeItem):
@@ -138,6 +141,9 @@ class FileItem(TreeItem):
     def get_column_renders(self):
         return [self.render_name]
         
+    def select(self):
+        pass
+    
 gobject.type_register(DirItem)
 
 class LoadingItem(TreeItem):
@@ -192,6 +198,9 @@ class EmptyItem(TreeItem):
         pass
     
     def get_column_renders(self):
+        pass
+    
+    def select(self):
         pass
     
 gobject.type_register(EmptyItem)
