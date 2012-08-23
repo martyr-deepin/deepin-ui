@@ -26,7 +26,7 @@ from draw import draw_vlinear
 from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask
 from utils import (cairo_state, get_window_shadow_size, get_event_coords, 
-                   is_left_button, is_double_click, is_single_click)
+                   is_left_button, is_double_click, is_single_click, remove_timeout_id)
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
 import copy
@@ -35,6 +35,8 @@ class TreeView(gtk.VBox):
     '''
     TreeView widget.
     '''
+    
+    AUTO_SCROLL_HEIGHT = 24
 	
     def __init__(self,
                  items=[],
@@ -74,6 +76,8 @@ class TreeView(gtk.VBox):
         self.press_shift = False
         self.single_click_row = None
         self.double_click_row = None
+        self.auto_scroll_id = None
+        self.auto_scroll_delay = 70 # milliseconds
         
         # Init redraw.
         self.redraw_request_list = []
@@ -98,6 +102,7 @@ class TreeView(gtk.VBox):
         self.draw_area.connect("expose-event", lambda w, e: self.expose_tree_view(w))
         self.draw_area.connect("button-press-event", self.button_press_tree_view)
         self.draw_area.connect("button-release-event", self.button_release_tree_view)
+        self.draw_area.connect("motion-notify-event", self.motion_tree_view)
         self.draw_area.connect("key-press-event", self.key_press_tree_view)
         self.draw_area.connect("key-release-event", self.key_release_tree_view)
         
@@ -312,6 +317,9 @@ class TreeView(gtk.VBox):
             self.left_button_press = False
             self.release_item(event)
             
+        # Remove auto scroll handler.
+        remove_timeout_id(self.auto_scroll_id)    
+        
     def release_item(self, event):
         if is_left_button(event):
             release_row = self.get_event_row(event)
@@ -335,7 +343,107 @@ class TreeView(gtk.VBox):
                 
                 self.start_select_row = self.press_in_select_rows
                 self.press_in_select_rows = None
+                
+    def motion_tree_view(self, widget, event):
+        self.hover_item(event)
+        
+        # Disable press_in_select_rows once move mouse.
+        self.press_in_select_rows = None
+
+    def hover_item(self, event):
+        if self.left_button_press:
+            if self.start_drag:
+                if self.enable_drag_drop:
+                    pass
+                
+            else:
+                if self.enable_multiple_select and (not self.press_ctrl and not self.press_shift):
+                    # Get hover row.
+                    hover_row = self.get_event_row(event)
+                    
+                    # Highlight drag area.
+                    if hover_row != None and self.start_select_row != None:
+                        for row in self.select_rows:
+                            self.visible_items[row].unselect()
+                    
+                        # Update select area.
+                        if hover_row > self.start_select_row:
+                            self.select_rows = range(self.start_select_row, hover_row + 1)
+                        elif hover_row < self.start_select_row:
+                            self.select_rows = range(hover_row, self.start_select_row + 1)
+                        else:
+                            self.select_rows = [hover_row]
+                            
+                        # Scroll viewport when cursor almost reach bound of viewport.
+                        self.auto_scroll_tree_view(event)
+                            
+                        for row in self.select_rows:
+                            self.visible_items[row].select()
+                            
+    def auto_scroll_tree_view(self, event):
+        '''
+        Internal function to scroll list view automatically.
+        '''
+        # Remove auto scroll handler.
+        remove_timeout_id(self.auto_scroll_id)
+        
+        vadjust = self.scrolled_window.get_vadjustment()
+        if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.AUTO_SCROLL_HEIGHT:
+            self.auto_scroll_id = gobject.timeout_add(self.auto_scroll_delay, lambda : self.auto_scroll_tree_view_down(vadjust))
+        elif event.y < vadjust.get_value() + 2 * self.AUTO_SCROLL_HEIGHT + self.title_offset_y:
+            self.auto_scroll_id = gobject.timeout_add(self.auto_scroll_delay, lambda : self.auto_scroll_tree_view_up(vadjust))
             
+    def auto_scroll_tree_view_down(self, vadjust):
+        '''
+        Internal function to scroll list view down automatically.
+        '''
+        vadjust.set_value(min(vadjust.get_value() + self.AUTO_SCROLL_HEIGHT, 
+                              vadjust.get_upper() - vadjust.get_page_size()))
+        
+        if self.start_drag:
+            # self.drag_reference_row = self.get_row_with_coordinate(self.draw_area.get_pointer()[1], 1)
+            pass
+        else:
+            self.update_select_rows(self.get_row_with_coordinate(self.draw_area.get_pointer()[1]))
+        
+        return True
+
+    def auto_scroll_tree_view_up(self, vadjust):
+        '''
+        Internal function to scroll list view up automatically.
+        '''
+        vadjust.set_value(max(vadjust.get_value() - self.AUTO_SCROLL_HEIGHT, 
+                              vadjust.get_lower()))
+            
+        if self.start_drag:
+            # self.drag_reference_row = self.get_row_with_coordinate(self.draw_area.get_pointer()[1], 1)
+            pass
+        else:
+            self.update_select_rows(self.get_row_with_coordinate(self.draw_area.get_pointer()[1]))
+            
+        return True
+
+    def update_select_rows(self, hover_row):
+        '''
+        Internal function to update select rows.
+        '''
+        hover_row = self.get_row_with_coordinate(self.draw_area.get_pointer()[1])
+            
+        # Update select area.
+        if hover_row != None and self.start_select_row != None:
+            for row in self.select_rows:
+                self.visible_items[row].unselect()
+                            
+            if hover_row > self.start_select_row:
+                self.select_rows = range(self.start_select_row, hover_row + 1)
+            elif hover_row < self.start_select_row:
+                self.select_rows = range(hover_row, self.start_select_row + 1)
+            else:
+                self.select_rows = [hover_row]
+                
+            for row in self.select_rows:
+                self.visible_items[row].select()
+                
     def key_press_tree_view(self, widget, event):
         if has_ctrl_mask(event):
             self.press_ctrl = True
@@ -367,11 +475,13 @@ class TreeView(gtk.VBox):
         @return: Return row at event coordinate, return None if haven't any row match event coordiante.
         '''
         (event_x, event_y) = get_event_coords(event)
+        return self.get_row_with_coordinate(event_y)
         
+    def get_row_with_coordinate(self, y):
         item_height_count = 0
         item_index_count = 0
         for item in self.visible_items:
-            if item_height_count <= event_y <= item_height_count + item.get_height():
+            if item_height_count <= y <= item_height_count + item.get_height():
                 return item_index_count
             
             item_height_count += item.get_height()
