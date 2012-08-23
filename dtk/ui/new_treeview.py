@@ -324,10 +324,11 @@ class TreeView(gtk.VBox):
         if is_left_button(event):
             release_row = self.get_event_row(event)
             
-            if self.double_click_row == release_row:
-                self.visible_items[release_row].double_click()
-            elif self.single_click_row == release_row:
-                self.visible_items[release_row].single_click()
+            if release_row:
+                if self.double_click_row == release_row:
+                    self.visible_items[release_row].double_click()
+                elif self.single_click_row == release_row:
+                    self.visible_items[release_row].single_click()
 
             self.double_click_row = None    
             self.single_click_row = None    
