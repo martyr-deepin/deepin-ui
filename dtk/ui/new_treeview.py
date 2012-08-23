@@ -146,6 +146,10 @@ class TreeView(gtk.VBox):
         for item in items:
             if item in self.visible_items:
                 self.visible_items.remove(item)
+                
+            if item.row_index in self.select_rows:
+                item.is_select = False
+                self.select_rows.remove(item.row_index)
             
         self.update_item_index()    
         

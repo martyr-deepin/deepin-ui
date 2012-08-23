@@ -293,6 +293,12 @@ class LoadingItem(TreeItem):
                   rect.y, 
                   rect.width, rect.height)
     
+    def unselect(self):
+        self.is_select = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
     def select(self):
         self.is_select = True
         
@@ -334,6 +340,12 @@ class EmptyItem(TreeItem):
                   rect.y, 
                   rect.width, rect.height)
     
+    def unselect(self):
+        self.is_select = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
     def select(self):
         self.is_select = True
         
