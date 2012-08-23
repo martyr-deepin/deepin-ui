@@ -54,7 +54,7 @@ class AnonymityThread(td.Thread):
         @param callback: Callback run in thread. 
         '''
         td.Thread.__init__(self)
-        self.setDaemon(True) # make thread exit when main program exit
+        self.setDaemon(True)    # make thread exit when main program exit
 
         self.callback = callback
         

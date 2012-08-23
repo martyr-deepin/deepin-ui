@@ -122,19 +122,33 @@ class TreeView(gtk.VBox):
         
         return True
         
-    def add_items(self, items):
+    def add_items(self, items, insert_pos=None):
         '''
         Add items.
         '''
-        self.visible_items += items
+        if insert_pos == None:
+            self.visible_items += items
+        else:
+            self.visible_items = self.visible_items[0:insert_pos] + items + self.visible_items[insert_pos::]
         
         # Update redraw callback.
         # Callback is better way to avoid perfermance problem than gobject signal.
         for item in items:
             item.redraw_request_callback = self.redraw_request
+            item.add_items_callback = self.add_items
+            item.delete_items_callback = self.delete_items
         
         self.update_item_index()    
             
+        self.update_vadjustment()
+        
+    def delete_items(self, items):
+        for item in items:
+            if item in self.visible_items:
+                self.visible_items.remove(item)
+            
+        self.update_item_index()    
+        
         self.update_vadjustment()
         
     def update_vadjustment(self):
@@ -352,7 +366,7 @@ class TreeItem(gobject.GObject):
         self.column_index = None
         self.redraw_request_callback = None
         self.add_items_callback = None
-        self.remove_items_callback = None
+        self.delete_items_callback = None
         self.is_select = False
         
     def expand(self):
