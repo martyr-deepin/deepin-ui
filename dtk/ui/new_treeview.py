@@ -24,6 +24,7 @@ import gtk
 import gobject
 from draw import draw_vlinear
 from theme import ui_theme
+from keymap import has_ctrl_mask, has_shift_mask
 from utils import (cairo_state, get_window_shadow_size, get_event_coords, 
                    is_left_button, is_double_click, is_single_click)
 from skin_config import skin_config
@@ -66,6 +67,7 @@ class TreeView(gtk.VBox):
         self.start_select_row = None
         self.select_rows = []
         self.press_item = None
+        self.press_in_select_rows = None
         self.title_offset_y = 0
         self.left_button_press = False
         self.press_ctrl = False
@@ -96,6 +98,8 @@ class TreeView(gtk.VBox):
         self.draw_area.connect("expose-event", lambda w, e: self.expose_tree_view(w))
         self.draw_area.connect("button-press-event", self.button_press_tree_view)
         self.draw_area.connect("button-release-event", self.button_release_tree_view)
+        self.draw_area.connect("key-press-event", self.key_press_tree_view)
+        self.draw_area.connect("key-release-event", self.key_release_tree_view)
         
         # Add items.
         self.add_items(items)
@@ -229,8 +233,7 @@ class TreeView(gtk.VBox):
         return (start_row, end_row, start_y)    
     
     def button_press_tree_view(self, widget, event):
-        # if event.window != self.scrolled_window.vwindow and event.window != self.scrolled_window.hwindow:
-        self.scrolled_window.grab_focus()
+        self.draw_area.grab_focus()
         
         if is_left_button(event):
             self.left_button_press = True
@@ -242,19 +245,16 @@ class TreeView(gtk.VBox):
         
         if self.left_button_press:
             if click_row == None:
-                for row in self.select_rows:
-                    self.visible_items[row].unselect()
-                
-                self.start_select_row = None
-                self.select_rows = []
+                self.unselect_all()
             else:
                 if self.press_shift:
-                    pass
+                    self.shift_click(click_row)
                 elif self.press_ctrl:
-                    pass
+                    self.ctrl_click(click_row)
                 else:
                     if self.enable_drag_drop and click_row in self.select_rows:
-                        pass
+                        # Record press_in_select_rows, disable select rows if mouse not move after release button.
+                        self.press_in_select_rows = click_row
                     else:
                         for row in self.select_rows:
                             self.visible_items[row].unselect()
@@ -269,6 +269,43 @@ class TreeView(gtk.VBox):
                 self.double_click_row = copy.deepcopy(click_row)
             elif is_single_click(event):
                 self.single_click_row = copy.deepcopy(click_row)                
+                
+    def shift_click(self, click_row):
+        for row in self.select_rows:
+            self.visible_items[row].unselect()
+        
+        if self.select_rows == [] or self.start_select_row == None:
+            self.start_select_row = click_row
+            self.select_rows = [click_row]
+        else:
+            if len(self.select_rows) == 1:
+                self.start_select_row = self.select_rows[0]
+        
+            if click_row < self.start_select_row:
+                self.select_rows = range(click_row, self.start_select_row + 1)
+            elif click_row > self.start_select_row:
+                self.select_rows = range(self.start_select_row, click_row + 1)
+            else:
+                self.select_rows = [click_row]
+                
+        for row in self.select_rows:
+            self.visible_items[row].select()
+            
+    def ctrl_click(self, click_row):
+        if click_row in self.select_rows:
+            self.select_rows.remove(click_row)
+            self.visible_items[click_row].unselect()
+        else:
+            self.start_select_row = click_row
+            self.select_rows.append(click_row)
+            self.visible_items[click_row].select()
+                
+    def unselect_all(self):
+        for row in self.select_rows:
+            self.visible_items[row].unselect()
+                
+        self.start_select_row = None
+        self.select_rows = []
                 
     def button_release_tree_view(self, widget, event):
         if is_left_button(event):
@@ -287,7 +324,40 @@ class TreeView(gtk.VBox):
             self.double_click_row = None    
             self.single_click_row = None    
             self.start_drag = False
-                        
+            
+            # Disable select rows when press_in_select_rows valid after button release.
+            if self.press_in_select_rows:
+                for row in self.select_rows:
+                    self.visible_items[row].unselect()
+                
+                self.select_rows = [self.press_in_select_rows]
+                self.visible_items[self.press_in_select_rows].select()
+                
+                self.start_select_row = self.press_in_select_rows
+                self.press_in_select_rows = None
+            
+    def key_press_tree_view(self, widget, event):
+        if has_ctrl_mask(event):
+            self.press_ctrl = True
+            
+        if has_shift_mask(event):
+            self.press_shift = True
+            
+        return True    
+            
+    def key_release_tree_view(self, widget, event):
+        '''
+        Internal callback for `key-release-event` signal.
+
+        @param widget: ListView widget.
+        @param event: Key release event.
+        '''
+        if has_ctrl_mask(event):
+            self.press_ctrl = False
+
+        if has_shift_mask(event):
+            self.press_shift = False
+            
     def get_event_row(self, event, offset_index=0):
         '''
         Get row at event.
