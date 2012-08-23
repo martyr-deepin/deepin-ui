@@ -90,9 +90,7 @@ class TreeView(gtk.VBox):
         # Connect widgets.
         self.draw_align.add(self.draw_area)
         self.scrolled_window.add_child(self.draw_align)
-        
         self.pack_start(self.scrolled_window, True, True)
-        
         
         # Handle signals.
         self.draw_area.connect("expose-event", lambda w, e: self.expose_tree_view(w))
