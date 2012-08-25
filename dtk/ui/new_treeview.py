@@ -25,7 +25,7 @@ import gobject
 from draw import draw_vlinear
 from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask
-from utils import (cairo_state, get_window_shadow_size, get_event_coords, 
+from utils import (cairo_state, get_window_shadow_size, get_event_coords, cairo_disable_antialias,
                    is_left_button, is_double_click, is_single_click, remove_timeout_id)
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
@@ -67,6 +67,7 @@ class TreeView(gtk.VBox):
         self.start_drag_offset = start_drag_offset
         self.start_drag = False
         self.start_select_row = None
+        self.start_select_item = None
         self.select_rows = []
         self.press_item = None
         self.press_in_select_rows = None
@@ -78,6 +79,7 @@ class TreeView(gtk.VBox):
         self.double_click_row = None
         self.auto_scroll_id = None
         self.auto_scroll_delay = 70 # milliseconds
+        self.drag_reference_row = None
         
         # Init redraw.
         self.redraw_request_list = []
@@ -201,7 +203,16 @@ class TreeView(gtk.VBox):
 
                 item.get_column_renders()[0](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
                 
+            # Draw drag row.
+            if self.drag_reference_row != None and item == self.visible_items[self.drag_reference_row]:
+                with cairo_disable_antialias(cr):
+                    cr.set_line_width(1)
+                    cr.rectangle(render_x + 1, render_y, render_width - 1, render_height)
+                    cr.set_source_rgba(0, 0, 0, 0.5)
+                    cr.stroke()
+                
             item_height_count += item.get_height()    
+            
         
         return False
     
@@ -258,6 +269,11 @@ class TreeView(gtk.VBox):
                     self.ctrl_click(click_row)
                 else:
                     if self.enable_drag_drop and click_row in self.select_rows:
+                        self.start_drag = True
+                        
+                        if self.start_select_row:
+                            self.start_select_item = self.visible_items[self.start_select_row]
+                            
                         # Record press_in_select_rows, disable select rows if mouse not move after release button.
                         self.press_in_select_rows = click_row
                     else:
@@ -330,6 +346,9 @@ class TreeView(gtk.VBox):
                 elif self.single_click_row == release_row:
                     self.visible_items[release_row].single_click()
 
+            if self.start_drag and self.is_in_visible_area(event):
+                self.drag_select_items_at_cursor(event)
+                
             self.double_click_row = None    
             self.single_click_row = None    
             self.start_drag = False
@@ -344,7 +363,50 @@ class TreeView(gtk.VBox):
                 
                 self.start_select_row = self.press_in_select_rows
                 self.press_in_select_rows = None
+
+            self.drag_reference_row = None
+            
+            self.queue_draw()
                 
+    def is_in_visible_area(self, event):
+        '''
+        Is event coordinate in visible area.
+        
+        @param event: gtk.gdk.Event.
+        
+        @return: Return True if event coordiante in visible area.
+        '''
+        (event_x, event_y) = get_event_coords(event)
+        vadjust = self.scrolled_window.get_vadjustment()
+        return (-self.start_drag_offset <= event_x <= self.scrolled_window.allocation.width + self.start_drag_offset
+                and vadjust.get_value() - self.start_drag_offset <= event_y <= vadjust.get_value() + vadjust.get_page_size() + self.start_drag_offset)
+    
+    def drag_select_items_at_cursor(self, event):
+        '''
+        Internal function to drag select items at cursor position.
+        '''
+        if self.drag_reference_row != None:
+            print (self.drag_reference_row, len(self.visible_items))
+            
+            select_items = map(lambda row: self.visible_items[row], self.select_rows)
+            before_items = self.visible_items[:self.drag_reference_row]
+            after_items = self.visible_items[self.drag_reference_row::]
+            
+            for item in select_items:
+                if item in before_items:
+                    before_items.remove(item)
+                    
+                if item in after_items:
+                    after_items.remove(item)
+                    
+            self.visible_items = before_items + select_items + after_items        
+            
+            self.select_rows = range(len(before_items), len(before_items + select_items))
+            
+            self.update_item_index()
+            
+            self.queue_draw()
+        
     def motion_tree_view(self, widget, event):
         self.hover_item(event)
         
@@ -355,8 +417,21 @@ class TreeView(gtk.VBox):
         if self.left_button_press:
             if self.start_drag:
                 if self.enable_drag_drop:
-                    pass
-                
+                    if self.is_in_visible_area(event):
+                        self.auto_scroll_tree_view(event)
+                        
+                        self.drag_reference_row = self.get_event_row(event)
+                        
+                        self.queue_draw()
+                    else:
+                        # Begin drag is drag_data is not None.
+                        if self.drag_data:
+                            (targets, actions, button) = self.drag_data
+                            self.drag_begin(targets, actions, button, event)
+                        
+                        self.drag_reference_row = None
+                        
+                        self.queue_draw()
             else:
                 if self.enable_multiple_select and (not self.press_ctrl and not self.press_shift):
                     # Get hover row.
@@ -402,8 +477,7 @@ class TreeView(gtk.VBox):
                               vadjust.get_upper() - vadjust.get_page_size()))
         
         if self.start_drag:
-            # self.drag_reference_row = self.get_row_with_coordinate(self.draw_area.get_pointer()[1], 1)
-            pass
+            self.drag_reference_row = self.get_row_with_coordinate(self.draw_area.get_pointer()[1])
         else:
             self.update_select_rows(self.get_row_with_coordinate(self.draw_area.get_pointer()[1]))
         
@@ -417,8 +491,7 @@ class TreeView(gtk.VBox):
                               vadjust.get_lower()))
             
         if self.start_drag:
-            # self.drag_reference_row = self.get_row_with_coordinate(self.draw_area.get_pointer()[1], 1)
-            pass
+            self.drag_reference_row = self.get_row_with_coordinate(self.draw_area.get_pointer()[1])
         else:
             self.update_select_rows(self.get_row_with_coordinate(self.draw_area.get_pointer()[1]))
             
