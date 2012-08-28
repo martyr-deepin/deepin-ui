@@ -58,6 +58,10 @@ class SkinConfig(gobject.GObject):
     @undocumented: render_background
     @undocumented: export_skin
     '''
+    
+    __gsignals__ = {
+        "theme-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+    }
 	
     def __init__(self):
         '''
@@ -292,6 +296,9 @@ class SkinConfig(gobject.GObject):
         # Redraw application.
         for window in self.window_list:
             window.queue_draw()
+            
+        # Emit `theme-changed` signal.
+        self.emit("theme-changed", self.theme_name)    
     
     def add_theme(self, theme):
         '''
