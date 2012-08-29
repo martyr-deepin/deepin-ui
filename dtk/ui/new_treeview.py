@@ -204,15 +204,33 @@ class TreeView(gtk.VBox):
                 item.get_column_renders()[0](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
                 
             # Draw drag row.
-            if self.drag_reference_row != None and item == self.visible_items[self.drag_reference_row]:
-                with cairo_disable_antialias(cr):
-                    cr.set_line_width(1)
-                    cr.rectangle(render_x + 1, render_y, render_width - 1, render_height)
-                    cr.set_source_rgba(0, 0, 0, 0.5)
-                    cr.stroke()
-                
+            if self.drag_reference_row != None:
+                if self.drag_reference_row < len(self.visible_items):
+                    if item == self.visible_items[self.drag_reference_row]:
+                        with cairo_disable_antialias(cr):
+                            # cr.set_line_width(1)
+                            # cr.rectangle(render_x + 1, render_y, render_width - 1, render_height)
+                            # cr.set_source_rgba(0, 0, 0, 0.5)
+                            # cr.stroke()
+                            
+                            cr.set_line_width(1)
+                            cr.rectangle(render_x + 1, render_y, render_width - 1, 2)
+                            cr.set_source_rgba(0, 0, 0, 0.5)
+                            cr.stroke()
+                else:
+                    if item == self.visible_items[-1]:
+                        with cairo_disable_antialias(cr):
+                            # cr.set_line_width(1)
+                            # cr.rectangle(render_x + 1, render_y, render_width - 1, render_height)
+                            # cr.set_source_rgba(0, 0, 0, 0.5)
+                            # cr.stroke()
+                            
+                            cr.set_line_width(1)
+                            cr.rectangle(render_x + 1, render_y + item.get_height(), render_width - 1, 2)
+                            cr.set_source_rgba(0, 0, 0, 0.5)
+                            cr.stroke()
+                        
             item_height_count += item.get_height()    
-            
         
         return False
     
@@ -386,8 +404,6 @@ class TreeView(gtk.VBox):
         Internal function to drag select items at cursor position.
         '''
         if self.drag_reference_row != None:
-            print (self.drag_reference_row, len(self.visible_items))
-            
             select_items = map(lambda row: self.visible_items[row], self.select_rows)
             before_items = self.visible_items[:self.drag_reference_row]
             after_items = self.visible_items[self.drag_reference_row::]
@@ -420,8 +436,8 @@ class TreeView(gtk.VBox):
                     if self.is_in_visible_area(event):
                         self.auto_scroll_tree_view(event)
                         
-                        self.drag_reference_row = self.get_event_row(event)
-                        
+                        self.drag_reference_row = self.get_drag_row(get_event_coords(event)[1])
+                            
                         self.queue_draw()
                     else:
                         # Begin drag is drag_data is not None.
@@ -469,6 +485,13 @@ class TreeView(gtk.VBox):
         elif event.y < vadjust.get_value() + 2 * self.AUTO_SCROLL_HEIGHT + self.title_offset_y:
             self.auto_scroll_id = gobject.timeout_add(self.auto_scroll_delay, lambda : self.auto_scroll_tree_view_up(vadjust))
             
+    def get_drag_row(self, drag_y):
+        (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
+        if drag_y >= offset_y + self.scrolled_window.get_vadjustment().get_page_size():
+            return len(self.visible_items)
+        else:
+            return self.get_row_with_coordinate(drag_y)
+            
     def auto_scroll_tree_view_down(self, vadjust):
         '''
         Internal function to scroll list view down automatically.
@@ -477,7 +500,7 @@ class TreeView(gtk.VBox):
                               vadjust.get_upper() - vadjust.get_page_size()))
         
         if self.start_drag:
-            self.drag_reference_row = self.get_row_with_coordinate(self.draw_area.get_pointer()[1])
+            self.drag_reference_row = self.get_drag_row(self.draw_area.get_pointer()[1])
         else:
             self.update_select_rows(self.get_row_with_coordinate(self.draw_area.get_pointer()[1]))
         
@@ -491,7 +514,7 @@ class TreeView(gtk.VBox):
                               vadjust.get_lower()))
             
         if self.start_drag:
-            self.drag_reference_row = self.get_row_with_coordinate(self.draw_area.get_pointer()[1])
+            self.drag_reference_row = self.get_drag_row(self.draw_area.get_pointer()[1])
         else:
             self.update_select_rows(self.get_row_with_coordinate(self.draw_area.get_pointer()[1]))
             
