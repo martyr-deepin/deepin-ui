@@ -116,7 +116,7 @@ class TreeView(gtk.VBox):
         self.keymap = {
             "Home" : self.select_first_item,
             "End" : self.select_last_item,
-            # "Page_Up" : self.scroll_page_up,
+            "Page_Up" : self.scroll_page_up,
             # "Page_Down" : self.scroll_page_down,
             # "Return" : self.double_click_item,
             # "Up" : self.select_prev_item,
@@ -167,6 +167,56 @@ class TreeView(gtk.VBox):
             # Scroll to bottom.
             vadjust = self.scrolled_window.get_vadjustment()
             vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+            
+    def scroll_page_up(self):
+        '''
+        Scroll page up.
+        '''
+        if self.select_rows == []:
+            # Select row.
+            vadjust = self.scrolled_window.get_vadjustment()
+            select_y = max(vadjust.get_value() - vadjust.get_page_size(), 0)
+            select_row = self.get_row_with_coordinate(select_y)
+            
+            # Update select row.
+            self.start_select_row = select_row
+            self.set_select_rows([select_row])
+            
+            # Scroll viewport make sure preview row in visible area.
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
+            if select_row == 0:
+                vadjust.set_value(vadjust.get_lower())
+            else:
+                item_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:select_row]))
+                if offset_y > item_height_count:
+                    vadjust.set_value(max(item_height_count - self.visible_items[select_row].get_height(), vadjust.get_lower()))
+        else:
+            if self.start_select_row != None:
+                # Record offset before scroll.
+                vadjust = self.scrolled_window.get_vadjustment()
+                
+                item_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:self.start_select_row]))
+                scroll_offset_y = item_height_count - vadjust.get_value()
+                
+                # Get select row.
+                select_y = max(item_height_count - vadjust.get_page_size(), 0)
+                select_row = self.get_row_with_coordinate(select_y)
+                
+                # Update select row.
+                self.start_select_row = select_row
+                self.set_select_rows([select_row])
+                
+                # Scroll viewport make sure preview row in visible area.
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
+                if select_row == 0:
+                    vadjust.set_value(vadjust.get_lower())
+                else:
+                    item_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:select_row]))
+                    if offset_y > item_height_count:
+                        vadjust.set_value(max(item_height_count - scroll_offset_y, 
+                                              vadjust.get_lower()))
+            else:
+                print "scroll_page_up : impossible!"
             
     def select_all_items(self):
         '''
