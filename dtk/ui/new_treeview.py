@@ -115,7 +115,7 @@ class TreeView(gtk.VBox):
         # Init keymap.
         self.keymap = {
             "Home" : self.select_first_item,
-            # "End" : self.select_last_item,
+            "End" : self.select_last_item,
             # "Page_Up" : self.scroll_page_up,
             # "Page_Down" : self.scroll_page_down,
             # "Return" : self.double_click_item,
@@ -153,6 +153,20 @@ class TreeView(gtk.VBox):
             # Scroll to top.
             vadjust = self.scrolled_window.get_vadjustment()
             vadjust.set_value(vadjust.get_lower())
+            
+    def select_last_item(self):
+        '''
+        Select last item.
+        '''
+        if len(self.visible_items) > 0:
+            # Update select rows.
+            last_row = len(self.visible_items) - 1
+            self.start_select_row = last_row
+            self.set_select_rows([last_row])
+            
+            # Scroll to bottom.
+            vadjust = self.scrolled_window.get_vadjustment()
+            vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
             
     def select_all_items(self):
         '''
