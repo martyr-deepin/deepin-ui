@@ -49,6 +49,7 @@ class TreeView(gtk.VBox):
                  enable_drag_drop=True,
                  drag_icon_pixbuf=None,
                  start_drag_offset=50,
+                 mask_bound_height=24,
                  right_space=0,
                  top_bottom_space=3
                  ):
@@ -66,6 +67,8 @@ class TreeView(gtk.VBox):
         self.enable_drag_drop = enable_drag_drop
         self.drag_icon_pixbuf = drag_icon_pixbuf
         self.start_drag_offset = start_drag_offset
+        self.mask_bound_height = mask_bound_height
+        self.mask_bound_alpha_step = 1.0 / self.mask_bound_height
         self.start_drag = False
         self.start_select_row = None
         self.start_select_item = None
@@ -546,48 +549,46 @@ class TreeView(gtk.VBox):
                 
             item_height_count += item.get_height()    
             
-        alpha_height = 24
-        alpha_step = 1.0 / alpha_height
         vadjust = self.scrolled_window.get_vadjustment()
         page_size = vadjust.get_page_size()    
         start_y = vadjust.get_value()
         
         if vadjust.get_value() != vadjust.get_lower():
             i = 0
-            while (i < alpha_height):
+            while (i < self.mask_bound_height):
                 with cairo_state(cr):
                     cr.rectangle(rect.x, rect.y + start_y + i, rect.width, 1)
                     cr.clip()
                     cr.set_source_surface(surface, 0, 0)
-                    cr.paint_with_alpha(i * alpha_step)
+                    cr.paint_with_alpha(i * self.mask_bound_alpha_step)
             
                 i += 1    
         else:
             with cairo_state(cr):
-                cr.rectangle(rect.x, rect.y + start_y, rect.width, alpha_height)
+                cr.rectangle(rect.x, rect.y + start_y, rect.width, self.mask_bound_height)
                 cr.clip()
                 cr.set_source_surface(surface, 0, 0)
                 cr.paint()
             
         with cairo_state(cr):
-            cr.rectangle(rect.x, rect.y + start_y + alpha_height, rect.width, page_size - 2 * alpha_height)
+            cr.rectangle(rect.x, rect.y + start_y + self.mask_bound_height, rect.width, page_size - 2 * self.mask_bound_height)
             cr.clip()
             cr.set_source_surface(surface, 0, 0)
             cr.paint()
             
         if vadjust.get_value() + page_size != vadjust.get_upper():
             i = 0    
-            while (i < alpha_height):
+            while (i < self.mask_bound_height):
                 with cairo_state(cr):
-                    cr.rectangle(rect.x, rect.y + start_y + page_size - alpha_height + i, rect.width, 1)
+                    cr.rectangle(rect.x, rect.y + start_y + page_size - self.mask_bound_height + i, rect.width, 1)
                     cr.clip()
                     cr.set_source_surface(surface, 0, 0)
-                    cr.paint_with_alpha(1.0 - i * alpha_step)
+                    cr.paint_with_alpha(1.0 - i * self.mask_bound_alpha_step)
             
                 i += 1   
         else:
             with cairo_state(cr):
-                cr.rectangle(rect.x, rect.y + start_y + page_size - alpha_height, rect.width, alpha_height)
+                cr.rectangle(rect.x, rect.y + start_y + page_size - self.mask_bound_height, rect.width, self.mask_bound_height)
                 cr.clip()
                 cr.set_source_surface(surface, 0, 0)
                 cr.paint()
