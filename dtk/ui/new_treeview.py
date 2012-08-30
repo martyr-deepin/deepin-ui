@@ -513,9 +513,20 @@ class TreeView(gtk.VBox):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
+        (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
 
         # Draw background.
-        (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
+        self.draw_background(widget, cr, offset_x, offset_y)
+            
+        # Draw mask.
+        self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
+        
+        # Draw items.
+        self.draw_items(rect, cr)
+        
+        return False
+    
+    def draw_background(self, widget, cr, offset_x, offset_y):
         with cairo_state(cr):
             cr.translate(-self.scrolled_window.allocation.x, -self.scrolled_window.allocation.y)
             cr.rectangle(offset_x, offset_y, 
@@ -526,74 +537,94 @@ class TreeView(gtk.VBox):
             (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
             skin_config.render_background(cr, widget, offset_x + shadow_x, offset_y + shadow_y)
             
-        # Draw mask.
-        self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
+    def draw_items(self, rect, cr):
+        vadjust = self.scrolled_window.get_vadjustment()
         
-        # Draw items.
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, rect.height)
-        surface_context = cairo.Context(surface)
-        surface_cr = gtk.gdk.CairoContext(surface_context)
+        if vadjust.get_value() != vadjust.get_lower():
+            top_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
+            top_surface_cr = gtk.gdk.CairoContext(cairo.Context(top_surface))
+            
+            clip_y = vadjust.get_value() + self.mask_bound_height
+        else:
+            top_surface = top_surface_cr = None
+            
+            clip_y = vadjust.get_value()
+            
+        if vadjust.get_value() + vadjust.get_page_size() != vadjust.get_upper():
+            bottom_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
+            bottom_surface_cr = gtk.gdk.CairoContext(cairo.Context(bottom_surface))
+            
+            clip_height = vadjust.get_page_size() - self.mask_bound_height - (clip_y - vadjust.get_value())
+        else:
+            bottom_surface = bottom_surface_cr = None
+            
+            clip_height = vadjust.get_page_size() - (clip_y - vadjust.get_value())
         
         (start_row, end_row, item_height_count) = self.get_expose_bound()
+            
         for item in self.visible_items[start_row:end_row]:
             render_x = rect.x
             render_y = rect.y + item_height_count
             render_width = rect.width
             render_height = item.get_height()
             
-            with cairo_state(surface_cr):
-                surface_cr.rectangle(render_x, render_y, render_width, render_height)
-                surface_cr.clip()
-
-                item.get_column_renders()[0](surface_cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
+            if top_surface_cr:
+                if (not render_y > vadjust.get_value() + self.mask_bound_height) and (not render_y + render_height < vadjust.get_value()):
+                    top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                    top_surface_cr.clip()
+                    
+                    item.get_column_renders()[0](
+                        top_surface_cr,
+                        gtk.gdk.Rectangle(render_x, 
+                                          render_y - int(vadjust.get_value()), 
+                                          render_width, 
+                                          render_height))
+            
+            if bottom_surface_cr:
+                if (not render_y > vadjust.get_value() + vadjust.get_page_size()) and (not render_y + render_height < vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height):
+                    bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                    bottom_surface_cr.clip()
+                    
+                    item.get_column_renders()[0](
+                        bottom_surface_cr,
+                        gtk.gdk.Rectangle(render_x, 
+                                          render_y - int(vadjust.get_value()) - int(vadjust.get_page_size() - self.mask_bound_height), 
+                                          render_width, 
+                                          render_height))
+            
+            with cairo_state(cr):
+                cr.rectangle(rect.x, clip_y, rect.width, clip_height)
+                cr.clip()
+                
+                with cairo_state(cr):
+                    cr.rectangle(render_x, render_y, render_width, render_height)
+                    cr.clip()
+            
+                    item.get_column_renders()[0](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
                 
             item_height_count += item.get_height()    
             
-        vadjust = self.scrolled_window.get_vadjustment()
-        page_size = vadjust.get_page_size()    
-        start_y = vadjust.get_value()
-        
-        if vadjust.get_value() != vadjust.get_lower():
+        if top_surface:
             i = 0
             while (i < self.mask_bound_height):
                 with cairo_state(cr):
-                    cr.rectangle(rect.x, rect.y + start_y + i, rect.width, 1)
+                    cr.rectangle(rect.x, vadjust.get_value() + i, rect.width, 1)
                     cr.clip()
-                    cr.set_source_surface(surface, 0, 0)
+                    cr.set_source_surface(top_surface, 0, vadjust.get_value())
                     cr.paint_with_alpha(i * self.mask_bound_alpha_step)
-            
+                    
                 i += 1    
-        else:
-            with cairo_state(cr):
-                cr.rectangle(rect.x, rect.y + start_y, rect.width, self.mask_bound_height)
-                cr.clip()
-                cr.set_source_surface(surface, 0, 0)
-                cr.paint()
             
-        with cairo_state(cr):
-            cr.rectangle(rect.x, rect.y + start_y + self.mask_bound_height, rect.width, page_size - 2 * self.mask_bound_height)
-            cr.clip()
-            cr.set_source_surface(surface, 0, 0)
-            cr.paint()
-            
-        if vadjust.get_value() + page_size != vadjust.get_upper():
-            i = 0    
+        if bottom_surface:
+            i = 0
             while (i < self.mask_bound_height):
                 with cairo_state(cr):
-                    cr.rectangle(rect.x, rect.y + start_y + page_size - self.mask_bound_height + i, rect.width, 1)
+                    cr.rectangle(rect.x, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height + i, rect.width, 1)
                     cr.clip()
-                    cr.set_source_surface(surface, 0, 0)
+                    cr.set_source_surface(bottom_surface, 0, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height)
                     cr.paint_with_alpha(1.0 - i * self.mask_bound_alpha_step)
-            
-                i += 1   
-        else:
-            with cairo_state(cr):
-                cr.rectangle(rect.x, rect.y + start_y + page_size - self.mask_bound_height, rect.width, self.mask_bound_height)
-                cr.clip()
-                cr.set_source_surface(surface, 0, 0)
-                cr.paint()
-        
-        return False
+                    
+                i += 1    
     
     def get_expose_bound(self):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
