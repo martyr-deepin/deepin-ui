@@ -24,7 +24,7 @@ import gtk
 import gobject
 from draw import draw_vlinear
 from theme import ui_theme
-from keymap import has_ctrl_mask, has_shift_mask
+from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
 from utils import (cairo_state, get_window_shadow_size, get_event_coords,
                    is_left_button, is_double_click, is_single_click, remove_timeout_id)
 from skin_config import skin_config
@@ -111,6 +111,36 @@ class TreeView(gtk.VBox):
         
         # Add items.
         self.add_items(items)
+        
+        # Init keymap.
+        self.keymap = {
+            # "Home" : self.select_first_item,
+            # "End" : self.select_last_item,
+            # "Page_Up" : self.scroll_page_up,
+            # "Page_Down" : self.scroll_page_down,
+            # "Return" : self.double_click_item,
+            # "Up" : self.select_prev_item,
+            # "Down" : self.select_next_item,
+            # "Delete" : self.delete_select_items,
+            # "Shift + Up" : self.select_to_prev_item,
+            # "Shift + Down" : self.select_to_next_item,
+            # "Shift + Home" : self.select_to_first_item,
+            # "Shift + End" : self.select_to_last_item,
+            "Ctrl + a" : self.select_all_items,
+            }
+        
+    def select_all_items(self):
+        '''
+        Select all items.
+        '''
+        if self.select_rows == []:
+            self.start_select_row = 0
+            self.select_rows = range(0, len(self.visible_items))            
+        else:
+            self.select_rows = range(0, len(self.visible_items))            
+
+        for select_row in self.select_rows:
+            self.visible_items[select_row].select()
         
     def update_item_index(self):
         '''
@@ -537,6 +567,10 @@ class TreeView(gtk.VBox):
             
         if has_shift_mask(event):
             self.press_shift = True
+            
+        key_name = get_keyevent_name(event)
+        if self.keymap.has_key(key_name):
+            self.keymap[key_name]()
             
         return True    
             
