@@ -538,8 +538,10 @@ class TreeView(gtk.VBox):
             skin_config.render_background(cr, widget, offset_x + shadow_x, offset_y + shadow_y)
             
     def draw_items(self, rect, cr):
+        # Init.
         vadjust = self.scrolled_window.get_vadjustment()
         
+        # Init top surface.
         if vadjust.get_value() != vadjust.get_lower():
             top_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
             top_surface_cr = gtk.gdk.CairoContext(cairo.Context(top_surface))
@@ -549,7 +551,8 @@ class TreeView(gtk.VBox):
             top_surface = top_surface_cr = None
             
             clip_y = vadjust.get_value()
-            
+        
+        # Init bottom surface.
         if vadjust.get_value() + vadjust.get_page_size() != vadjust.get_upper():
             bottom_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
             bottom_surface_cr = gtk.gdk.CairoContext(cairo.Context(bottom_surface))
@@ -560,14 +563,15 @@ class TreeView(gtk.VBox):
             
             clip_height = vadjust.get_page_size() - (clip_y - vadjust.get_value())
         
+        # Draw items.
         (start_row, end_row, item_height_count) = self.get_expose_bound()
-            
         for item in self.visible_items[start_row:end_row]:
             render_x = rect.x
             render_y = rect.y + item_height_count
             render_width = rect.width
             render_height = item.get_height()
-            
+        
+            # Draw on top surface.
             if top_surface_cr:
                 if (not render_y > vadjust.get_value() + self.mask_bound_height) and (not render_y + render_height < vadjust.get_value()):
                     top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
@@ -580,6 +584,7 @@ class TreeView(gtk.VBox):
                                           render_width, 
                                           render_height))
             
+            # Draw on bottom surface.
             if bottom_surface_cr:
                 if (not render_y > vadjust.get_value() + vadjust.get_page_size()) and (not render_y + render_height < vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height):
                     bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
@@ -592,6 +597,7 @@ class TreeView(gtk.VBox):
                                           render_width, 
                                           render_height))
             
+            # Draw on drawing area cairo.
             with cairo_state(cr):
                 cr.rectangle(rect.x, clip_y, rect.width, clip_height)
                 cr.clip()
@@ -604,6 +610,7 @@ class TreeView(gtk.VBox):
                 
             item_height_count += item.get_height()    
             
+        # Draw alpha mask on top surface.
         if top_surface:
             i = 0
             while (i < self.mask_bound_height):
@@ -615,6 +622,7 @@ class TreeView(gtk.VBox):
                     
                 i += 1    
             
+        # Draw alpha mask on bottom surface.
         if bottom_surface:
             i = 0
             while (i < self.mask_bound_height):
