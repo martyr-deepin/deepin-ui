@@ -122,7 +122,7 @@ class TreeView(gtk.VBox):
             "Down" : self.select_next_item,
             "Shift + Up" : self.select_to_prev_item,
             "Shift + Down" : self.select_to_next_item,
-            # "Shift + Home" : self.select_to_first_item,
+            "Shift + Home" : self.select_to_first_item,
             # "Shift + End" : self.select_to_last_item,
             "Ctrl + a" : self.select_all_items,
             # "Return" : self.double_click_item,
@@ -402,6 +402,24 @@ class TreeView(gtk.VBox):
         else:
             print "select_to_next_item : impossible!"
     
+    def select_to_first_item(self):
+        '''
+        Select to first item.
+        '''
+        if self.select_rows == []:
+            self.select_first_item()
+        elif self.start_select_row != None:
+            if self.start_select_row == self.select_rows[-1]:
+                self.set_select_rows(range(0, self.select_rows[-1] + 1))
+                vadjust = self.scrolled_window.get_vadjustment()
+                vadjust.set_value(vadjust.get_lower())
+            elif self.start_select_row == self.select_rows[0]:
+                self.set_select_rows(range(0, self.select_rows[0] + 1))
+                vadjust = self.scrolled_window.get_vadjustment()
+                vadjust.set_value(vadjust.get_lower())
+        else:
+            print "select_to_first_item : impossible!"
+            
     def select_all_items(self):
         '''
         Select all items.
