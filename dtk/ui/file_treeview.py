@@ -29,6 +29,7 @@ from theme import ui_theme
 import gobject
 import gio
 import threading as td
+from utils import cairo_disable_antialias
 
 ICON_SIZE = 24
 ICON_PADDING_LEFT = ICON_PADDING_RIGHT = 4
@@ -117,6 +118,16 @@ class DirItem(TreeItem):
                   rect.y,
                   rect.width, rect.height)
         
+        # Draw drag line.
+        if self.drag_line:
+            with cairo_disable_antialias(cr):
+                cr.set_line_width(1)
+                if self.drag_line_at_bottom:
+                    cr.rectangle(rect.x, rect.y + rect.height - 1, rect.width, 1)
+                else:
+                    cr.rectangle(rect.x, rect.y, rect.width, 1)
+                cr.fill()
+        
     def expand(self):
         self.is_expand = True
         
@@ -181,6 +192,13 @@ class DirItem(TreeItem):
             self.unexpand()
         else:
             self.expand()
+
+    def draw_drag_line(self, drag_line, drag_line_at_bottom=False):
+        self.drag_line = drag_line
+        self.drag_line_at_bottom = drag_line_at_bottom
+
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
     
 gobject.type_register(DirItem)
 
@@ -224,6 +242,16 @@ class FileItem(TreeItem):
                   rect.y,
                   rect.width, rect.height)
         
+        # Draw drag line.
+        if self.drag_line:
+            with cairo_disable_antialias(cr):
+                cr.set_line_width(1)
+                if self.drag_line_at_bottom:
+                    cr.rectangle(rect.x, rect.y + rect.height - 1, rect.width, 1)
+                else:
+                    cr.rectangle(rect.x, rect.y, rect.width, 1)
+                cr.fill()
+            
     def expand(self):
         pass
     
@@ -258,6 +286,13 @@ class FileItem(TreeItem):
         else:
             print "Don't know how to open file: %s" % (self.name)
     
+    def draw_drag_line(self, drag_line, drag_line_at_bottom=False):
+        self.drag_line = drag_line
+        self.drag_line_at_bottom = drag_line_at_bottom
+
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
 gobject.type_register(DirItem)
 
 class LoadingItem(TreeItem):
