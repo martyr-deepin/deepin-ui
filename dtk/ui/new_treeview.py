@@ -120,13 +120,13 @@ class TreeView(gtk.VBox):
             "Page_Down" : self.scroll_page_down,
             "Up" : self.select_prev_item,
             "Down" : self.select_next_item,
-            # "Delete" : self.delete_select_items,
-            # "Shift + Up" : self.select_to_prev_item,
+            "Shift + Up" : self.select_to_prev_item,
             # "Shift + Down" : self.select_to_next_item,
             # "Shift + Home" : self.select_to_first_item,
             # "Shift + End" : self.select_to_last_item,
-            # "Return" : self.double_click_item,
             "Ctrl + a" : self.select_all_items,
+            # "Return" : self.double_click_item,
+            # "Delete" : self.delete_select_items,
             }
         
     def set_select_rows(self, rows):
@@ -338,6 +338,38 @@ class TreeView(gtk.VBox):
                     vadjust.set_value(max(vadjust.get_lower(),
                                           next_row_height_count - vadjust.get_page_size()))
                     
+    def select_to_prev_item(self):
+        '''
+        Select to preview item.
+        '''
+        if self.select_rows == []:
+            self.select_first_item()
+        elif self.start_select_row != None:
+            if self.start_select_row == self.select_rows[-1]:
+                first_row = self.select_rows[0]
+                if first_row > 0:
+                    prev_row = first_row - 1
+                    self.set_select_rows([prev_row] + self.select_rows)
+                    
+                    (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
+                    vadjust = self.scrolled_window.get_vadjustment()
+                    prev_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:prev_row])) 
+                    if offset_y > prev_row_height_count:
+                        vadjust.set_value(max(vadjust.get_lower(), 
+                                              prev_row_height_count - self.visible_items[prev_row].get_height()))
+            elif self.start_select_row == self.select_rows[0]:
+                last_row = self.select_rows[-1]
+                self.set_select_rows(self.select_rows.remove(last_row))
+                
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
+                vadjust = self.scrolled_window.get_vadjustment()
+                prev_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:prev_row])) 
+                if offset_y > prev_row_height_count:
+                    vadjust.set_value(max(vadjust.get_lower(), 
+                                          prev_row_height_count - self.visible_items[prev_row].get_height()))
+        else:
+            print "select_to_prev_item : impossible!"
+    
     def select_all_items(self):
         '''
         Select all items.
