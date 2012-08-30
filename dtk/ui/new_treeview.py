@@ -114,7 +114,7 @@ class TreeView(gtk.VBox):
         
         # Init keymap.
         self.keymap = {
-            # "Home" : self.select_first_item,
+            "Home" : self.select_first_item,
             # "End" : self.select_last_item,
             # "Page_Up" : self.scroll_page_up,
             # "Page_Down" : self.scroll_page_down,
@@ -129,18 +129,39 @@ class TreeView(gtk.VBox):
             "Ctrl + a" : self.select_all_items,
             }
         
+    def set_select_rows(self, rows):
+        for select_row in self.select_rows:
+            self.visible_items[select_row].unselect()
+            
+        self.select_rows = rows
+        
+        if rows == []:
+            self.start_select_row = None
+        else:
+            for select_row in self.select_rows:
+                self.visible_items[select_row].select()
+        
+    def select_first_item(self):
+        '''
+        Select first item.
+        '''
+        if len(self.visible_items) > 0:
+            # Update select rows.
+            self.start_select_row = 0
+            self.set_select_rows([0])
+            
+            # Scroll to top.
+            vadjust = self.scrolled_window.get_vadjustment()
+            vadjust.set_value(vadjust.get_lower())
+            
     def select_all_items(self):
         '''
         Select all items.
         '''
         if self.select_rows == []:
             self.start_select_row = 0
-            self.select_rows = range(0, len(self.visible_items))            
-        else:
-            self.select_rows = range(0, len(self.visible_items))            
-
-        for select_row in self.select_rows:
-            self.visible_items[select_row].select()
+            
+        self.set_select_rows(range(0, len(self.visible_items)))    
         
     def update_item_index(self):
         '''
@@ -299,14 +320,9 @@ class TreeView(gtk.VBox):
                         # Record press_in_select_rows, disable select rows if mouse not move after release button.
                         self.press_in_select_rows = click_row
                     else:
-                        for row in self.select_rows:
-                            self.visible_items[row].unselect()
-                    
                         self.start_drag = False
-                        
                         self.start_select_row = click_row
-                        self.select_rows = [click_row]
-                        self.visible_items[click_row].select()
+                        self.set_select_rows([click_row])
                         
             if is_double_click(event):
                 self.double_click_row = copy.deepcopy(click_row)
@@ -314,26 +330,22 @@ class TreeView(gtk.VBox):
                 self.single_click_row = copy.deepcopy(click_row)                
                 
     def shift_click(self, click_row):
-        for row in self.select_rows:
-            self.visible_items[row].unselect()
-        
         if self.select_rows == [] or self.start_select_row == None:
             self.start_select_row = click_row
-            self.select_rows = [click_row]
+            select_rows = [click_row]
         else:
             if len(self.select_rows) == 1:
                 self.start_select_row = self.select_rows[0]
         
             if click_row < self.start_select_row:
-                self.select_rows = range(click_row, self.start_select_row + 1)
+                select_rows = range(click_row, self.start_select_row + 1)
             elif click_row > self.start_select_row:
-                self.select_rows = range(self.start_select_row, click_row + 1)
+                select_rows = range(self.start_select_row, click_row + 1)
             else:
-                self.select_rows = [click_row]
+                select_rows = [click_row]
                 
-        for row in self.select_rows:
-            self.visible_items[row].select()
-            
+        self.set_select_rows(select_rows)        
+
     def ctrl_click(self, click_row):
         if click_row in self.select_rows:
             self.select_rows.remove(click_row)
@@ -344,11 +356,7 @@ class TreeView(gtk.VBox):
             self.visible_items[click_row].select()
                 
     def unselect_all(self):
-        for row in self.select_rows:
-            self.visible_items[row].unselect()
-                
-        self.start_select_row = None
-        self.select_rows = []
+        self.set_select_rows([])
                 
     def button_release_tree_view(self, widget, event):
         if is_left_button(event):
@@ -377,12 +385,7 @@ class TreeView(gtk.VBox):
             
             # Disable select rows when press_in_select_rows valid after button release.
             if self.press_in_select_rows:
-                for row in self.select_rows:
-                    self.visible_items[row].unselect()
-                
-                self.select_rows = [self.press_in_select_rows]
-                self.visible_items[self.press_in_select_rows].select()
-                
+                self.set_select_rows([self.press_in_select_rows])
                 self.start_select_row = self.press_in_select_rows
                 self.press_in_select_rows = None
 
@@ -475,22 +478,18 @@ class TreeView(gtk.VBox):
                     
                     # Highlight drag area.
                     if hover_row != None and self.start_select_row != None:
-                        for row in self.select_rows:
-                            self.visible_items[row].unselect()
-                    
                         # Update select area.
                         if hover_row > self.start_select_row:
-                            self.select_rows = range(self.start_select_row, hover_row + 1)
+                            select_rows = range(self.start_select_row, hover_row + 1)
                         elif hover_row < self.start_select_row:
-                            self.select_rows = range(hover_row, self.start_select_row + 1)
+                            select_rows = range(hover_row, self.start_select_row + 1)
                         else:
-                            self.select_rows = [hover_row]
+                            select_rows = [hover_row]
                             
                         # Scroll viewport when cursor almost reach bound of viewport.
                         self.auto_scroll_tree_view(event)
-                            
-                        for row in self.select_rows:
-                            self.visible_items[row].select()
+                        
+                        self.set_select_rows(select_rows)
                             
     def auto_scroll_tree_view(self, event):
         '''
@@ -548,18 +547,14 @@ class TreeView(gtk.VBox):
             
         # Update select area.
         if hover_row != None and self.start_select_row != None:
-            for row in self.select_rows:
-                self.visible_items[row].unselect()
-                            
             if hover_row > self.start_select_row:
-                self.select_rows = range(self.start_select_row, hover_row + 1)
+                select_rows = range(self.start_select_row, hover_row + 1)
             elif hover_row < self.start_select_row:
-                self.select_rows = range(hover_row, self.start_select_row + 1)
+                select_rows = range(hover_row, self.start_select_row + 1)
             else:
-                self.select_rows = [hover_row]
+                select_rows = [hover_row]
                 
-            for row in self.select_rows:
-                self.visible_items[row].select()
+            self.set_select_rows(select_rows)    
                 
     def key_press_tree_view(self, widget, event):
         if has_ctrl_mask(event):
