@@ -22,6 +22,7 @@
 
 import gtk
 import gobject
+import cairo
 from draw import draw_vlinear
 from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
@@ -526,6 +527,10 @@ class TreeView(gtk.VBox):
         self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
         
         # Draw items.
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, rect.height)
+        surface_context = cairo.Context(surface)
+        surface_cr = gtk.gdk.CairoContext(surface_context)
+        
         (start_row, end_row, item_height_count) = self.get_expose_bound()
         for item in self.visible_items[start_row:end_row]:
             render_x = rect.x
@@ -533,13 +538,59 @@ class TreeView(gtk.VBox):
             render_width = rect.width
             render_height = item.get_height()
             
-            with cairo_state(cr):
-                cr.rectangle(render_x, render_y, render_width, render_height)
-                cr.clip()
+            with cairo_state(surface_cr):
+                surface_cr.rectangle(render_x, render_y, render_width, render_height)
+                surface_cr.clip()
 
-                item.get_column_renders()[0](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
+                item.get_column_renders()[0](surface_cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
                 
             item_height_count += item.get_height()    
+            
+        alpha_height = 24
+        alpha_step = 1.0 / alpha_height
+        vadjust = self.scrolled_window.get_vadjustment()
+        page_size = vadjust.get_page_size()    
+        start_y = vadjust.get_value()
+        
+        if vadjust.get_value() != vadjust.get_lower():
+            i = 0
+            while (i < alpha_height):
+                with cairo_state(cr):
+                    cr.rectangle(rect.x, rect.y + start_y + i, rect.width, 1)
+                    cr.clip()
+                    cr.set_source_surface(surface, 0, 0)
+                    cr.paint_with_alpha(i * alpha_step)
+            
+                i += 1    
+        else:
+            with cairo_state(cr):
+                cr.rectangle(rect.x, rect.y + start_y, rect.width, alpha_height)
+                cr.clip()
+                cr.set_source_surface(surface, 0, 0)
+                cr.paint()
+            
+        with cairo_state(cr):
+            cr.rectangle(rect.x, rect.y + start_y + alpha_height, rect.width, page_size - 2 * alpha_height)
+            cr.clip()
+            cr.set_source_surface(surface, 0, 0)
+            cr.paint()
+            
+        if vadjust.get_value() + page_size != vadjust.get_upper():
+            i = 0    
+            while (i < alpha_height):
+                with cairo_state(cr):
+                    cr.rectangle(rect.x, rect.y + start_y + page_size - alpha_height + i, rect.width, 1)
+                    cr.clip()
+                    cr.set_source_surface(surface, 0, 0)
+                    cr.paint_with_alpha(1.0 - i * alpha_step)
+            
+                i += 1   
+        else:
+            with cairo_state(cr):
+                cr.rectangle(rect.x, rect.y + start_y + page_size - alpha_height, rect.width, alpha_height)
+                cr.clip()
+                cr.set_source_surface(surface, 0, 0)
+                cr.paint()
         
         return False
     
