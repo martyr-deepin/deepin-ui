@@ -119,7 +119,7 @@ class TreeView(gtk.VBox):
             "Page_Up" : self.scroll_page_up,
             "Page_Down" : self.scroll_page_down,
             "Up" : self.select_prev_item,
-            # "Down" : self.select_next_item,
+            "Down" : self.select_next_item,
             # "Delete" : self.delete_select_items,
             # "Shift + Up" : self.select_to_prev_item,
             # "Shift + Down" : self.select_to_next_item,
@@ -301,6 +301,42 @@ class TreeView(gtk.VBox):
                 if offset_y > prev_row_height_count:
                     vadjust.set_value(max(vadjust.get_lower(), 
                                           prev_row_height_count - self.visible_items[prev_row].get_height()))
+                    
+    def select_next_item(self):
+        '''
+        Select next item.
+        '''
+        if self.select_rows == []:
+            self.select_first_item()
+        else:
+            # Get next row.
+            next_row = min(len(self.visible_items) - 1, self.start_select_row + 1)
+            
+            # Redraw when next row is not current row.
+            if next_row != self.start_select_row:
+                # Select next row.
+                self.start_select_row = next_row
+                self.set_select_rows([next_row])
+                
+                # Scroll viewport make sure next row in visible area.
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
+                vadjust = self.scrolled_window.get_vadjustment()
+                next_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:next_row]))
+                if offset_y + vadjust.get_page_size() < next_row_height_count + self.visible_items[next_row].get_height() or offset_y > next_row_height_count:
+                    vadjust.set_value(max(vadjust.get_lower(),
+                                          next_row_height_count + self.visible_items[next_row].get_height() - vadjust.get_page_size()))
+            elif len(self.select_rows) > 1:
+                # Select next row.
+                self.start_select_row = next_row
+                self.set_select_rows([next_row])
+                
+                # Scroll viewport make sure next row in visible area.
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                vadjust = self.scrolled_window.get_vadjustment()
+                next_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:(next_row + 1)]))
+                if offset_y + vadjust.get_page_size() < next_row_height_count:
+                    vadjust.set_value(max(vadjust.get_lower(),
+                                          next_row_height_count - vadjust.get_page_size()))
                     
     def select_all_items(self):
         '''
