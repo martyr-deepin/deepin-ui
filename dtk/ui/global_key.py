@@ -27,6 +27,8 @@ from threading import Lock
 import gtk
 import gtk.gdk as gdk
 import threading
+import sys
+import traceback
 
 global_key_running = True
 global_key_lock = Lock()
@@ -135,7 +137,8 @@ class GlobalKey(threading.Thread):
             try:
                 self.root.grab_key(keycode, int(modifiers), True, X.GrabModeAsync, X.GrabModeSync)
             except Exception, e:
-                print e
+                print "function grab got error: %s" % (e)
+                traceback.print_exc(file=sys.stdout)
 
     def ungrab(self):
         '''
@@ -145,7 +148,8 @@ class GlobalKey(threading.Thread):
             try:
                 self.root.ungrab_key(keycode, modifiers, self.root)
             except Exception, e:
-                print e
+                print "function ungrab got error: %s" % (e)
+                traceback.print_exc(file=sys.stdout)
 
     def regrab(self):
         '''

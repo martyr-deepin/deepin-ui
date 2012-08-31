@@ -34,6 +34,8 @@ import os
 import pango
 import subprocess
 import tempfile
+import sys
+import traceback
 from utils import (map_value, mix_list_max, get_content_size, 
                    unzip, last_index, set_cursor, get_match_parent, 
                    remove_file, remove_timeout_id,
@@ -1095,7 +1097,9 @@ class ListView(gtk.DrawingArea):
         try:  
             yield  
         except Exception, e:  
-            print 'with an cairo error %s' % e  
+            print 'function keep_select_status got error %s' % e  
+            traceback.print_exc(file=sys.stdout)
+            
         else:  
             # Restore select status.
             if start_select_item != None or select_items != []:

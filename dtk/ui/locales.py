@@ -33,6 +33,8 @@
 from utils import get_parent_dir
 import gettext
 import os
+import sys
+import traceback
 
 LOCALE_DIR=os.path.join(get_parent_dir(__file__, 2), "locale")
 if not os.path.exists(LOCALE_DIR):
@@ -44,4 +46,6 @@ try:
     gettext.textdomain("deepin-ui")
     _ = gettext.gettext
 except Exception, e:
+    print "module locales got error: %s" % (e)
+    traceback.print_exc(file=sys.stdout)
     _ = lambda i : i

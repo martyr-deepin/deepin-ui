@@ -23,6 +23,8 @@
 from ConfigParser import RawConfigParser as ConfigParser
 from collections import OrderedDict
 import gobject    
+import sys
+import traceback
 
 class Config(gobject.GObject):
     '''
@@ -90,7 +92,9 @@ class Config(gobject.GObject):
         try:
             return self.config_parser.get(section, option)
         except Exception, e:
-            print "config.get error: %s" % (e)
+            print "function get got error: %s" % (e)
+            traceback.print_exc(file=sys.stdout)
+            
             return default
             
     def set(self, section, option, value):  

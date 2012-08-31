@@ -27,6 +27,8 @@ import gtk
 import os
 import threading as td
 import time
+import sys
+import traceback
 
 class MissionThreadPool(td.Thread):
     """
@@ -159,7 +161,8 @@ class MissionThreadPool(td.Thread):
         try:  
             yield  
         except Exception, e:  
-            print 'sync error %s' % e  
+            print 'function sync got error: %s' % e  
+            traceback.print_exc(file=sys.stdout)
         else:  
             self.thread_sync_lock.release()
         

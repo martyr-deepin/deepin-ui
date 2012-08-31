@@ -21,9 +21,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gio
+from utils import format_file_size
 import gtk
 import os
 import collections
+import sys
+import traceback
+import time
 
 file_icon_pixbuf_dict = {}
 FILE_TYPE_COMPARE_WEIGHTS = {
@@ -58,6 +62,22 @@ def get_file_icon_pixbuf(filepath, icon_size):
         else:
             return icon_theme.load_icon("unknown", icon_size, gtk.ICON_LOOKUP_USE_BUILTIN)
     
+def get_dir_child_num(gfile):
+    gfile_enumerator = gfile.enumerate_children("standard::*")
+    
+    # Return empty list if enumerator is None.
+    if gfile_enumerator == None:
+        return 0
+    else:
+        child_num = 0
+        while True:
+            if gfile_enumerator.next_file() == None:
+                break
+            else:
+                child_num += 1
+                
+        return child_num            
+        
 def get_dir_child_infos(dir_path, sort=None, reverse=False):
     '''
     Get children FileInfos with given directory path.
@@ -95,7 +115,9 @@ def get_dir_child_infos(dir_path, sort=None, reverse=False):
                         return file_infos        
             # Return empty list if got error when get enumerator of file.
             except Exception, e:
-                print "get_dir_children error: %s" % (e)
+                print "function get_dir_children got error: %s" % (e)
+                traceback.print_exc(file=sys.stdout)
+                
                 return []
         # Return empty list if file is not directory.
         else:
@@ -155,6 +177,21 @@ def get_gfile_name(gfile):
     Get name of gfile.
     '''
     return gfile.query_info("standard::*").get_name()
+
+def get_gfile_type(gfile):
+    '''
+    Get type of gfile.
+    '''
+    return gio.content_type_get_description(gfile.query_info("standard::*").get_content_type())
+
+def get_gfile_modification_time(gfile):
+    return time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(gfile.query_info("time::modified").get_modification_time()))
+
+def get_gfile_size(gfile):
+    if gfile.query_info("standard::type").get_file_type() == gio.FILE_TYPE_DIRECTORY:
+        return "%s 项" % (get_dir_child_num(gfile))
+    else:
+        return format_file_size(gfile.query_info("standard::size").get_size())
 
 def is_directory(gfile):
     '''

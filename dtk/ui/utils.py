@@ -31,6 +31,8 @@ import pangocairo
 import socket
 import subprocess
 import time
+import traceback
+import sys
 from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, 
                       WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, 
                       WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, 
@@ -609,7 +611,8 @@ def eval_file(filepath, check_exists=False):
             
             return content
         except Exception, e:
-            print e
+            print "function eval_file got error: %s" % e
+            traceback.print_exc(file=sys.stdout)
             
             return None
 
@@ -634,7 +637,8 @@ def kill_process(proc):
         if proc != None:
             proc.kill()
     except Exception, e:
-        print "kill_process got error: %s" % (e)
+        print "function kill_process got error: %s" % (e)
+        traceback.print_exc(file=sys.stdout)
     
 def get_command_output_first_line(commands):
     '''
@@ -775,7 +779,7 @@ def format_file_size(bytes, precision=2):
     '''
     bytes = int(bytes)
     if bytes is 0:
-        return '0B'
+        return '0 B'
     else:
         log = math.floor(math.log(bytes, 1024))
         quotient = 1024 ** log
@@ -785,10 +789,10 @@ def format_file_size(bytes, precision=2):
             prec = 0
         else:
             prec = precision
-        return "%.*f%s" % (prec,
-                           size,
-                           ['B', 'KB', 'MB', 'GB', 'TB','PB', 'EB', 'ZB', 'YB']
-                           [int(log)])
+        return "%.*f %s" % (prec,
+                            size,
+                            ['B', 'KB', 'MB', 'GB', 'TB','PB', 'EB', 'ZB', 'YB']
+                            [int(log)])
 
 def add_color_stop_rgba(pat, pos, color_info):
     '''
@@ -1017,7 +1021,8 @@ def cairo_state(cr):
     try:  
         yield  
     except Exception, e:  
-        print 'with an cairo error %s' % e  
+        print 'function cairo_state got error: %s' % e  
+        traceback.print_exc(file=sys.stdout)
     else:  
         cr.restore()
 
@@ -1035,7 +1040,8 @@ def cairo_disable_antialias(cr):
     try:  
         yield  
     except Exception, e:  
-        print 'with an cairo error %s' % e  
+        print 'function cairo_disable_antialias got error: %s' % e  
+        traceback.print_exc(file=sys.stdout)
     else:  
         # Restore antialias.
         cr.set_antialias(antialias)
@@ -1055,7 +1061,8 @@ def exec_time():
     try:  
         yield  
     except Exception, e:  
-        print 'exec_time error %s' % e  
+        print 'function exec_time got error %s' % e  
+        traceback.print_exc(file=sys.stdout)
     else:  
         print "time: %f" % (time.time() - start_time)
 

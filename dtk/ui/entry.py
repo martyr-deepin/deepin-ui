@@ -27,6 +27,8 @@ from keymap import get_keyevent_name
 from locales import _
 from menu import Menu
 from theme import ui_theme
+import sys
+import traceback
 import gobject
 import gtk
 import pango
@@ -178,7 +180,8 @@ class Entry(gtk.EventBox):
         try:  
             yield  
         except Exception, e:  
-            print 'monitor_entry_content error %s' % e  
+            print 'function monitor_entry_content got error %s' % e  
+            traceback.print_exc(file=sys.stdout)
         else:  
             new_text = self.get_text()
             if self.check_text == None or self.check_text(new_text):
@@ -880,7 +883,8 @@ class Entry(gtk.EventBox):
         try:
             return list(content.decode('utf-8'))[index].encode('utf-8')
         except Exception, e:
-            print "get_utf8_string got error: %s" % (e)
+            print "function get_utf8_string got error: %s" % (e)
+            traceback.print_exc(file=sys.stdout)
             return ""
     
 gobject.type_register(Entry)

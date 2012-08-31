@@ -30,6 +30,8 @@ import gtk
 import os
 import tarfile
 import uuid
+import sys
+import traceback
 
 class SkinConfig(gobject.GObject):
     '''
@@ -257,7 +259,9 @@ class SkinConfig(gobject.GObject):
 
             return True
         except Exception, e:
-            print "load_skin error: %s" % (e)
+            print "function load_skin got error: %s" % (e)
+            traceback.print_exc(file=sys.stdout)
+            
             return False
     
     def save_skin(self, given_filepath=None):

@@ -85,6 +85,7 @@ class TreeView(gtk.VBox):
         self.auto_scroll_delay = 70 # milliseconds
         self.drag_item = None
         self.drag_reference_row = None
+        self.column_widths = []
         
         # Init redraw.
         self.redraw_request_list = []
@@ -112,6 +113,7 @@ class TreeView(gtk.VBox):
         self.draw_area.connect("motion-notify-event", self.motion_tree_view)
         self.draw_area.connect("key-press-event", self.key_press_tree_view)
         self.draw_area.connect("key-release-event", self.key_release_tree_view)
+        self.draw_area.connect("size-allocate", self.size_allocated_tree_view)
         
         # Add items.
         self.add_items(items)
@@ -458,6 +460,15 @@ class TreeView(gtk.VBox):
         for (index, item) in enumerate(self.visible_items):
             item.row_index = index
             
+    def update_item_widths(self):
+        self.column_widths = []
+        for item in self.visible_items:
+            for (index, column_width) in enumerate(item.get_column_widths()):
+                if index < len(self.column_widths):
+                    self.column_widths[index] = max(self.column_widths[index], column_width)
+                else:
+                    self.column_widths.insert(index, column_width)
+            
     def redraw_request(self, item):
         if not item in self.redraw_request_list:
             self.redraw_request_list.append(item)
@@ -488,6 +499,8 @@ class TreeView(gtk.VBox):
             item.delete_items_callback = self.delete_items
         
         self.update_item_index()    
+        
+        self.update_item_widths()
             
         self.update_vadjustment()
         
@@ -497,6 +510,8 @@ class TreeView(gtk.VBox):
                 self.visible_items.remove(item)
                 
         self.update_item_index()    
+        
+        self.update_item_widths()
         
         self.update_vadjustment()
         
@@ -565,48 +580,61 @@ class TreeView(gtk.VBox):
         
         # Draw items.
         (start_row, end_row, item_height_count) = self.get_expose_bound()
-        for item in self.visible_items[start_row:end_row]:
-            render_x = rect.x
-            render_y = rect.y + item_height_count
-            render_width = rect.width
-            render_height = item.get_height()
         
-            # Draw on top surface.
-            if top_surface_cr:
-                if (not render_y > vadjust.get_value() + self.mask_bound_height) and (not render_y + render_height < vadjust.get_value()):
-                    top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
-                    top_surface_cr.clip()
-                    
-                    item.get_column_renders()[0](
-                        top_surface_cr,
-                        gtk.gdk.Rectangle(render_x, 
-                                          render_y - int(vadjust.get_value()), 
-                                          render_width, 
-                                          render_height))
+        column_widths = []
+        fixed_width_count = sum(filter(lambda w: w != -1, self.column_widths))
+        for column_width in self.column_widths:
+            if column_width == -1:
+                column_widths.append(rect.width - fixed_width_count)
+            else:
+                column_widths.append(column_width)
             
-            # Draw on bottom surface.
-            if bottom_surface_cr:
-                if (not render_y > vadjust.get_value() + vadjust.get_page_size()) and (not render_y + render_height < vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height):
-                    bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
-                    bottom_surface_cr.clip()
-                    
-                    item.get_column_renders()[0](
-                        bottom_surface_cr,
-                        gtk.gdk.Rectangle(render_x, 
-                                          render_y - int(vadjust.get_value()) - int(vadjust.get_page_size() - self.mask_bound_height), 
-                                          render_width, 
-                                          render_height))
-            
-            # Draw on drawing area cairo.
-            with cairo_state(cr):
-                cr.rectangle(rect.x, clip_y, rect.width, clip_height)
-                cr.clip()
+        for item in self.visible_items[start_row:end_row]:
+            item_width_count = 0
+            for (index, column_width) in enumerate(column_widths):
+                render_x = rect.x + item_width_count
+                render_y = rect.y + item_height_count
+                render_width = column_width
+                render_height = item.get_height()
                 
+                # Draw on top surface.
+                if top_surface_cr:
+                    if (not render_y > vadjust.get_value() + self.mask_bound_height) and (not render_y + render_height < vadjust.get_value()):
+                        top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                        top_surface_cr.clip()
+                        
+                        item.get_column_renders()[index](
+                            top_surface_cr,
+                            gtk.gdk.Rectangle(render_x, 
+                                              render_y - int(vadjust.get_value()), 
+                                              render_width, 
+                                              render_height))
+                
+                # Draw on bottom surface.
+                if bottom_surface_cr:
+                    if (not render_y > vadjust.get_value() + vadjust.get_page_size()) and (not render_y + render_height < vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height):
+                        bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                        bottom_surface_cr.clip()
+                        
+                        item.get_column_renders()[index](
+                            bottom_surface_cr,
+                            gtk.gdk.Rectangle(render_x, 
+                                              render_y - int(vadjust.get_value()) - int(vadjust.get_page_size() - self.mask_bound_height), 
+                                              render_width, 
+                                              render_height))
+                
+                # Draw on drawing area cairo.
                 with cairo_state(cr):
-                    cr.rectangle(render_x, render_y, render_width, render_height)
+                    cr.rectangle(rect.x, clip_y, rect.width, clip_height)
                     cr.clip()
-            
-                    item.get_column_renders()[0](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
+                    
+                    with cairo_state(cr):
+                        cr.rectangle(render_x, render_y, render_width, render_height)
+                        cr.clip()
+                
+                        item.get_column_renders()[index](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
+                    
+                item_width_count += column_width
                 
             item_height_count += item.get_height()    
             
@@ -956,6 +984,9 @@ class TreeView(gtk.VBox):
 
         if has_shift_mask(event):
             self.press_shift = False
+            
+    def size_allocated_tree_view(self, widget, rect):
+        self.update_item_widths()
             
     def get_event_row(self, event, offset_index=0):
         '''

@@ -22,14 +22,16 @@
 
 from new_treeview import TreeItem
 from gio_utils import (get_file_icon_pixbuf, is_directory, get_dir_child_files, 
-                       get_gfile_name, sort_file_by_name)
+                       get_gfile_modification_time, get_gfile_size,
+                       get_gfile_name, get_gfile_type, sort_file_by_name)
 from draw import draw_pixbuf, draw_text, draw_vlinear
 from threads import post_gui
 from theme import ui_theme
+import pango
 import gobject
 import gio
 import threading as td
-from utils import cairo_disable_antialias
+from utils import cairo_disable_antialias, get_content_size
 
 ICON_SIZE = 24
 ICON_PADDING_LEFT = ICON_PADDING_RIGHT = 4
@@ -37,6 +39,27 @@ INDICATOR_PADDING_LEFT = INDICATOR_PADDING_RIGHT = 4
 ITEM_PADDING_Y = 2
 ITEM_HEIGHT = ICON_SIZE + ITEM_PADDING_Y * 2
 COLUMN_OFFSET = 32
+MODIFICATION_TIME_PADDING_LEFT = 12
+TYPE_PADDING_LEFT = 12
+SIZE_PADDING_LEFT = 12
+
+def get_name_width(column_index, name):
+    expand_indicator_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png").get_pixbuf()
+    return COLUMN_OFFSET * column_index + INDICATOR_PADDING_LEFT + expand_indicator_pixbuf.get_width() + INDICATOR_PADDING_RIGHT + ICON_PADDING_LEFT + ICON_SIZE + ICON_PADDING_RIGHT + get_content_size(name)[0]
+
+def get_modification_time_width(time):
+    return get_content_size(time)[0] + MODIFICATION_TIME_PADDING_LEFT
+
+def get_type_width(file_type):
+    return get_content_size(file_type)[0] + TYPE_PADDING_LEFT
+
+def get_size_width(size):
+    return get_content_size(size)[0] + SIZE_PADDING_LEFT
+
+def render_background(item, cr, rect):
+    if item.is_select:
+        draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
+                     ui_theme.get_shadow_color("listview_select").get_color_info())
 
 class LoadingThread(td.Thread):
     
@@ -81,11 +104,18 @@ class DirItem(TreeItem):
         TreeItem.__init__(self)
         self.gfile = gfile
         self.name = get_gfile_name(self.gfile)
+        self.modification_time = get_gfile_modification_time(self.gfile)
+        self.type = get_gfile_type(self.gfile)
+        self.size = get_gfile_size(self.gfile)
         self.directory_path = gfile.get_path()
         self.pixbuf = get_file_icon_pixbuf(self.directory_path, ICON_SIZE)
         self.column_index = column_index
         self.is_expand = False
         self.load_status = self.LOADING_INIT
+        self.name_width = get_name_width(self.column_index, self.name)
+        self.modification_time_width = get_modification_time_width(self.modification_time)
+        self.type_width = get_type_width(self.type)
+        self.size_width = get_size_width(self.size)
         
     def render_name(self, cr, rect):
         '''
@@ -117,6 +147,83 @@ class DirItem(TreeItem):
                   rect.x + COLUMN_OFFSET * self.column_index + INDICATOR_PADDING_LEFT + expand_indicator_pixbuf.get_width() + INDICATOR_PADDING_RIGHT + ICON_PADDING_LEFT + ICON_SIZE + ICON_PADDING_RIGHT,
                   rect.y,
                   rect.width, rect.height)
+        
+        # Draw drag line.
+        if self.drag_line:
+            with cairo_disable_antialias(cr):
+                cr.set_line_width(1)
+                if self.drag_line_at_bottom:
+                    cr.rectangle(rect.x, rect.y + rect.height - 1, rect.width, 1)
+                else:
+                    cr.rectangle(rect.x, rect.y, rect.width, 1)
+                cr.fill()
+
+    def render_modification_time(self, cr, rect):
+        '''
+        Render type of DirItem.
+        '''
+        # Draw select background.
+        if self.is_select:
+            draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
+                         ui_theme.get_shadow_color("listview_select").get_color_info())
+        
+        # Draw directory type.
+        draw_text(cr, self.modification_time, 
+                  rect.x + MODIFICATION_TIME_PADDING_LEFT,
+                  rect.y,
+                  rect.width, rect.height)
+        
+        # Draw drag line.
+        if self.drag_line:
+            with cairo_disable_antialias(cr):
+                cr.set_line_width(1)
+                if self.drag_line_at_bottom:
+                    cr.rectangle(rect.x, rect.y + rect.height - 1, rect.width, 1)
+                else:
+                    cr.rectangle(rect.x, rect.y, rect.width, 1)
+                cr.fill()
+                
+    def render_type(self, cr, rect):
+        '''
+        Render type of DirItem.
+        '''
+        # Draw select background.
+        if self.is_select:
+            draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
+                         ui_theme.get_shadow_color("listview_select").get_color_info())
+        
+        # Draw directory type.
+        draw_text(cr, self.type, 
+                  rect.x + TYPE_PADDING_LEFT,
+                  rect.y,
+                  rect.width, rect.height)
+        
+        # Draw drag line.
+        if self.drag_line:
+            with cairo_disable_antialias(cr):
+                cr.set_line_width(1)
+                if self.drag_line_at_bottom:
+                    cr.rectangle(rect.x, rect.y + rect.height - 1, rect.width, 1)
+                else:
+                    cr.rectangle(rect.x, rect.y, rect.width, 1)
+                cr.fill()
+
+    def render_size(self, cr, rect):
+        '''
+        Render size of DirItem.
+        '''
+        # Draw select background.
+        if self.is_select:
+            draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
+                         ui_theme.get_shadow_color("listview_select").get_color_info())
+        
+        # Draw directory size.
+        draw_text(cr, self.size, 
+                  rect.x,
+                  rect.y,
+                  rect.width, rect.height,
+                  alignment=pango.ALIGN_RIGHT
+                  )
         
         # Draw drag line.
         if self.drag_line:
@@ -170,10 +277,14 @@ class DirItem(TreeItem):
         return ITEM_HEIGHT
     
     def get_column_widths(self):
-        pass
+        return [self.name_width, self.size_width, self.type_width, -1]
     
     def get_column_renders(self):
-        return [self.render_name]
+        return [self.render_name,
+                self.render_size,
+                self.render_type,
+                self.render_modification_time,
+                ]
     
     def unselect(self):
         self.is_select = False
@@ -214,9 +325,16 @@ class FileItem(TreeItem):
         TreeItem.__init__(self)
         self.gfile = gfile
         self.name = get_gfile_name(self.gfile)
+        self.modification_time = get_gfile_modification_time(self.gfile)
+        self.type = get_gfile_type(self.gfile)
+        self.size = get_gfile_size(self.gfile)
         self.file_path = gfile.get_path()
         self.pixbuf = get_file_icon_pixbuf(self.file_path, ICON_SIZE)
         self.column_index = column_index
+        self.name_width = get_name_width(self.column_index, self.name)
+        self.modification_time_width = get_modification_time_width(self.modification_time)
+        self.type_width = get_type_width(self.type)
+        self.size_width = get_size_width(self.size)
         
     def render_name(self, cr, rect):
         '''
@@ -252,6 +370,84 @@ class FileItem(TreeItem):
                     cr.rectangle(rect.x, rect.y, rect.width, 1)
                 cr.fill()
             
+    def render_modification_time(self, cr, rect):
+        '''
+        Render type of DirItem.
+        '''
+        # Draw select background.
+        if self.is_select:
+            draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
+                         ui_theme.get_shadow_color("listview_select").get_color_info())
+        
+        # Draw directory type.
+        draw_text(cr, self.modification_time, 
+                  rect.x + MODIFICATION_TIME_PADDING_LEFT,
+                  rect.y,
+                  rect.width, rect.height)
+        
+        # Draw drag line.
+        if self.drag_line:
+            with cairo_disable_antialias(cr):
+                cr.set_line_width(1)
+                if self.drag_line_at_bottom:
+                    cr.rectangle(rect.x, rect.y + rect.height - 1, rect.width, 1)
+                else:
+                    cr.rectangle(rect.x, rect.y, rect.width, 1)
+                cr.fill()
+                
+    def render_type(self, cr, rect):
+        '''
+        Render type of DirItem.
+        '''
+        # Draw select background.
+        if self.is_select:
+            draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
+                         ui_theme.get_shadow_color("listview_select").get_color_info())
+        
+        # Draw directory type.
+        draw_text(cr, self.type, 
+                  rect.x + TYPE_PADDING_LEFT,
+                  rect.y,
+                  rect.width, rect.height)
+        
+        # Draw drag line.
+        if self.drag_line:
+            with cairo_disable_antialias(cr):
+                cr.set_line_width(1)
+                if self.drag_line_at_bottom:
+                    cr.rectangle(rect.x, rect.y + rect.height - 1, rect.width, 1)
+                else:
+                    cr.rectangle(rect.x, rect.y, rect.width, 1)
+                cr.fill()
+                
+    def render_size(self, cr, rect):
+        '''
+        Render size of DirItem.
+        '''
+        # Draw select background.
+        if self.is_select:
+            draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
+                         ui_theme.get_shadow_color("listview_select").get_color_info())
+        
+        # Draw directory size.
+        draw_text(cr, self.size, 
+                  rect.x,
+                  rect.y,
+                  rect.width, 
+                  rect.height,
+                  alignment=pango.ALIGN_RIGHT,
+                  )
+        
+        # Draw drag line.
+        if self.drag_line:
+            with cairo_disable_antialias(cr):
+                cr.set_line_width(1)
+                if self.drag_line_at_bottom:
+                    cr.rectangle(rect.x, rect.y + rect.height - 1, rect.width, 1)
+                else:
+                    cr.rectangle(rect.x, rect.y, rect.width, 1)
+                cr.fill()
+                
     def expand(self):
         pass
     
@@ -262,10 +458,14 @@ class FileItem(TreeItem):
         return ITEM_HEIGHT
     
     def get_column_widths(self):
-        pass
+        return [self.name_width, self.size_width, self.type_width, -1]
     
     def get_column_renders(self):
-        return [self.render_name]
+        return [self.render_name,
+                self.render_size,
+                self.render_type,
+                self.render_modification_time,
+                ]
         
     def unselect(self):
         self.is_select = False
@@ -311,10 +511,14 @@ class LoadingItem(TreeItem):
         return ITEM_HEIGHT
     
     def get_column_widths(self):
-        pass
+        return [200, 1, -1]
     
     def get_column_renders(self):
-        return [self.render]
+        return [self.render,
+                lambda cr, rect: render_background(self, cr, rect),
+                lambda cr, rect: render_background(self, cr, rect),
+                lambda cr, rect: render_background(self, cr, rect),
+                ]
     
     def render(self, cr, rect):
         # Draw select background.
@@ -358,10 +562,14 @@ class EmptyItem(TreeItem):
         return ITEM_HEIGHT
     
     def get_column_widths(self):
-        pass
+        return [200, 1, -1]
     
     def get_column_renders(self):
-        return [self.render]
+        return [self.render,
+                lambda cr, rect: render_background(self, cr, rect),
+                lambda cr, rect: render_background(self, cr, rect),
+                lambda cr, rect: render_background(self, cr, rect)
+                ]
     
     def render(self, cr, rect):
         # Draw select background.
