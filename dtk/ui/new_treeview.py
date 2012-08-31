@@ -28,7 +28,7 @@ from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
 from cache_pixbuf import CachePixbuf
 from utils import (cairo_state, get_window_shadow_size, get_event_coords,
-                   container_remove_all,
+                   container_remove_all, get_same_level_widgets,
                    is_left_button, is_double_click, is_single_click, remove_timeout_id)
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
@@ -43,6 +43,7 @@ class TitleBox(gtk.Button):
         self.last_one = last_one
         self.cache_pixbuf = CachePixbuf()
         self.sort_descending = True
+        self.focus_in = False
         
         self.connect("expose-event", self.expose_title_box)
         
@@ -76,21 +77,25 @@ class TitleBox(gtk.Button):
                   alignment=pango.ALIGN_CENTER)    
         
         # Draw sort icon.
-        if self.sort_descending:
-            sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
-        else:
-            sort_pixbuf = ui_theme.get_pixbuf("listview/sort_ascending.png").get_pixbuf()
-
-        draw_pixbuf(cr, sort_pixbuf,
-                    x + w - sort_pixbuf.get_width(),
-                    y + (h - sort_pixbuf.get_height()) / 2)    
+        if self.focus_in:
+            if self.sort_descending:
+                sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
+            else:
+                sort_pixbuf = ui_theme.get_pixbuf("listview/sort_ascending.png").get_pixbuf()
+            
+            draw_pixbuf(cr, sort_pixbuf,
+                        x + w - sort_pixbuf.get_width(),
+                        y + (h - sort_pixbuf.get_height()) / 2)    
         
         return True
     
     def toggle_sort(self):
         self.sort_descending = not self.sort_descending
         
-        self.queue_draw()
+        for title_box in get_same_level_widgets(self):
+            title_box.focus_in = title_box == self
+
+            title_box.queue_draw()
 
 class TreeView(gtk.VBox):
     '''
