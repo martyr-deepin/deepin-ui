@@ -23,14 +23,74 @@
 import gtk
 import gobject
 import cairo
-from draw import draw_vlinear
+from draw import draw_vlinear, draw_pixbuf, draw_text
 from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
+from cache_pixbuf import CachePixbuf
 from utils import (cairo_state, get_window_shadow_size, get_event_coords,
+                   container_remove_all,
                    is_left_button, is_double_click, is_single_click, remove_timeout_id)
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
 import copy
+import pango
+
+class TitleBox(gtk.Button):
+	
+    def __init__(self, title, last_one):
+        gtk.Button.__init__(self)
+        self.title = title
+        self.last_one = last_one
+        self.cache_pixbuf = CachePixbuf()
+        self.sort_descending = True
+        
+        self.connect("expose-event", self.expose_title_box)
+        
+    def expose_title_box(self, widget, event):
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
+        # Draw background.
+        if widget.state == gtk.STATE_NORMAL:
+            header_pixbuf = ui_theme.get_pixbuf("listview/header_normal.png").get_pixbuf()
+        elif widget.state == gtk.STATE_PRELIGHT:
+            header_pixbuf = ui_theme.get_pixbuf("listview/header_hover.png").get_pixbuf()
+        elif widget.state == gtk.STATE_ACTIVE:
+            header_pixbuf = ui_theme.get_pixbuf("listview/header_press.png").get_pixbuf()
+
+        self.cache_pixbuf.scale(header_pixbuf, w, h)
+        draw_pixbuf(cr, self.cache_pixbuf.get_cache(), x, y)
+        
+        # Draw title.
+        if not self.last_one:
+            split_pixbuf = ui_theme.get_pixbuf("listview/split.png").get_pixbuf()
+            draw_pixbuf(cr, 
+                        split_pixbuf,
+                        x + w - split_pixbuf.get_width() + 1, 
+                        y)
+            
+        # Draw title.
+        draw_text(cr, self.title, x, y, w, h,
+                  alignment=pango.ALIGN_CENTER)    
+        
+        # Draw sort icon.
+        if self.sort_descending:
+            sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
+        else:
+            sort_pixbuf = ui_theme.get_pixbuf("listview/sort_ascending.png").get_pixbuf()
+
+        draw_pixbuf(cr, sort_pixbuf,
+                    x + w - sort_pixbuf.get_width(),
+                    y + (h - sort_pixbuf.get_height()) / 2)    
+        
+        return True
+    
+    def toggle_sort(self):
+        self.sort_descending = not self.sort_descending
+        
+        self.queue_draw()
 
 class TreeView(gtk.VBox):
     '''
@@ -41,7 +101,6 @@ class TreeView(gtk.VBox):
 	
     def __init__(self,
                  items=[],
-                 sort_methods=[],
                  drag_data=None,
                  enable_hover=True,
                  enable_highlight=True,
@@ -59,7 +118,8 @@ class TreeView(gtk.VBox):
         # Init.
         gtk.VBox.__init__(self)
         self.visible_items = []
-        self.sort_methods = sort_methods
+        self.titles = None
+        self.sort_methods = None
         self.drag_data = drag_data
         self.enable_hover = enable_hover
         self.enable_highlight = enable_highlight
@@ -75,7 +135,6 @@ class TreeView(gtk.VBox):
         self.select_rows = []
         self.press_item = None
         self.press_in_select_rows = None
-        self.title_offset_y = 0
         self.left_button_press = False
         self.press_ctrl = False
         self.press_shift = False
@@ -93,6 +152,8 @@ class TreeView(gtk.VBox):
         gtk.timeout_add(self.redraw_delay, self.update_redraw_request_list)
         
         # Init widgets.
+        self.title_box = gtk.HBox()
+        
         self.draw_area = gtk.DrawingArea()
         self.draw_area.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.draw_area.set_can_focus(True)
@@ -104,6 +165,7 @@ class TreeView(gtk.VBox):
         # Connect widgets.
         self.draw_align.add(self.draw_area)
         self.scrolled_window.add_child(self.draw_align)
+        self.pack_start(self.title_box, False, False)
         self.pack_start(self.scrolled_window, True, True)
         
         # Handle signals.
@@ -134,6 +196,27 @@ class TreeView(gtk.VBox):
             # "Return" : self.double_click_item,
             # "Delete" : self.delete_select_items,
             }
+        
+    def set_column_titles(self, titles, sort_methods=None):
+        if titles != None:
+            self.titles = titles
+            
+            if sort_methods != None:
+                self.sort_methods = map(lambda t: cmp, self.titles)
+            else:
+                self.sort_methods = sort_methods
+                
+            container_remove_all(self.title_box)
+            
+            for (index, title) in enumerate(self.titles):
+                title_box = TitleBox(title, index == len(self.titles) - 1)
+                title_box.connect("clicked", lambda w: w.toggle_sort())
+                self.title_box.pack_start(title_box)
+        else:
+            self.titles = None
+            self.sort_methods = None
+            
+            container_remove_all(self.title_box)
         
     def set_select_rows(self, rows):
         for select_row in self.select_rows:
@@ -468,6 +551,16 @@ class TreeView(gtk.VBox):
                     self.column_widths[index] = max(self.column_widths[index], column_width)
                 else:
                     self.column_widths.insert(index, column_width)
+                    
+        if self.titles != None:
+            title_boxs = self.title_box.get_children()
+            fixed_width_count = sum(filter(lambda w: w != -1, self.column_widths))
+            title_height = ui_theme.get_pixbuf("listview/header_press.png").get_pixbuf().get_height()
+            for (index, column_width) in enumerate(self.column_widths):
+                if column_width == -1:
+                    title_boxs[index].set_size_request(self.draw_area.allocation.width - fixed_width_count, title_height)
+                else:
+                    title_boxs[index].set_size_request(column_width, title_height)
             
     def redraw_request(self, item):
         if not item in self.redraw_request_list:
@@ -904,7 +997,7 @@ class TreeView(gtk.VBox):
         vadjust = self.scrolled_window.get_vadjustment()
         if event.y > vadjust.get_value() + vadjust.get_page_size() - 2 * self.AUTO_SCROLL_HEIGHT:
             self.auto_scroll_id = gobject.timeout_add(self.auto_scroll_delay, lambda : self.auto_scroll_tree_view_down(vadjust))
-        elif event.y < vadjust.get_value() + 2 * self.AUTO_SCROLL_HEIGHT + self.title_offset_y:
+        elif event.y < vadjust.get_value() + 2 * self.AUTO_SCROLL_HEIGHT:
             self.auto_scroll_id = gobject.timeout_add(self.auto_scroll_delay, lambda : self.auto_scroll_tree_view_up(vadjust))
             
     def get_drag_row(self, drag_y):
