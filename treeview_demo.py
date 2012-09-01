@@ -35,7 +35,8 @@ app_theme = init_skin(
 from dtk.ui.application import Application
 from dtk.ui.new_treeview import TreeView
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
-from dtk.ui.file_treeview import get_dir_items
+from dtk.ui.file_treeview import (get_dir_items, sort_by_name, sort_by_size,
+                                  sort_by_type, sort_by_mtime)
 import gtk
 
 if __name__ == "__main__":
@@ -66,7 +67,8 @@ if __name__ == "__main__":
     treeview_align.set(0.5, 0.5, 1, 1)
     treeview_align.set_padding(0, 2, 2, 2)
     
-    treeview.set_column_titles(["文件名", "大小", "类型", "修改时间"])
+    treeview.set_column_titles(["文件名", "大小", "类型", "修改时间"],
+                               [sort_by_name, sort_by_size, sort_by_type, sort_by_mtime])
     
     treeview_align.add(treeview)
     application.main_box.pack_start(treeview_align)

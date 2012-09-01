@@ -21,9 +21,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from new_treeview import TreeItem
+import collections
 from gio_utils import (get_file_icon_pixbuf, is_directory, get_dir_child_files, 
                        get_gfile_modification_time, get_gfile_size,
-                       get_gfile_name, get_gfile_type, sort_file_by_name)
+                       get_gfile_type,get_file_type_dict,
+                       get_gfile_name, get_gfile_content_type, sort_file_by_name)
 from draw import draw_pixbuf, draw_text, draw_vlinear
 from threads import post_gui
 from theme import ui_theme
@@ -31,7 +33,9 @@ import pango
 import gobject
 import gio
 import threading as td
-from utils import cairo_disable_antialias, get_content_size
+from utils import cairo_disable_antialias, get_content_size, format_file_size
+import traceback
+import sys
 
 ICON_SIZE = 24
 ICON_PADDING_LEFT = ICON_PADDING_RIGHT = 4
@@ -40,8 +44,80 @@ ITEM_PADDING_Y = 2
 ITEM_HEIGHT = ICON_SIZE + ITEM_PADDING_Y * 2
 COLUMN_OFFSET = 32
 MODIFICATION_TIME_PADDING_LEFT = 12
-TYPE_PADDING_LEFT = 12
+CONTENT_TYPE_PADDING_LEFT = 12
 SIZE_PADDING_LEFT = 12
+
+def sort_by_name(items, sort_reverse, sort_action_id):
+    if len(items) == 1 and (isinstance(items[0], EmptyItem) or isinstance(items[0], LoadingItem)):
+        return (items, sort_action_id)
+    else:
+        # Init.
+        item_oreder_dict = collections.OrderedDict(get_file_type_dict())
+        
+        # Split item with different file type.
+        for item in items:
+            item_oreder_dict[item.type].append(item)
+            
+        # Get sorted item list.
+        item_list = []
+        for (file_type, type_items) in item_oreder_dict.items():
+            item_list += sorted(type_items, key=lambda i: i.name, reverse=sort_reverse)
+            
+        return (item_list, sort_action_id)    
+
+def sort_by_size(items, sort_reverse, sort_action_id):
+    if len(items) == 1 and (isinstance(items[0], EmptyItem) or isinstance(items[0], LoadingItem)):
+        return (items, sort_action_id)
+    else:
+        # Init.
+        item_oreder_dict = collections.OrderedDict(get_file_type_dict())
+        
+        # Split item with different file type.
+        for item in items:
+            item_oreder_dict[item.type].append(item)
+            
+        # Get sorted item list.
+        item_list = []
+        for (file_type, type_items) in item_oreder_dict.items():
+            item_list += sorted(type_items, key=lambda i: i.size, reverse=sort_reverse)
+            
+        return (item_list, sort_action_id)    
+
+def sort_by_type(items, sort_reverse, sort_action_id):
+    if len(items) == 1 and (isinstance(items[0], EmptyItem) or isinstance(items[0], LoadingItem)):
+        return (items, sort_action_id)
+    else:
+        # Init.
+        item_oreder_dict = collections.OrderedDict(get_file_type_dict())
+        
+        # Split item with different file type.
+        for item in items:
+            item_oreder_dict[item.type].append(item)
+            
+        # Get sorted item list.
+        item_list = []
+        for (file_type, type_items) in item_oreder_dict.items():
+            item_list += sorted(type_items, key=lambda i: i.content_type, reverse=sort_reverse)
+            
+        return (item_list, sort_action_id)    
+
+def sort_by_mtime(items, sort_reverse, sort_action_id):
+    if len(items) == 1 and (isinstance(items[0], EmptyItem) or isinstance(items[0], LoadingItem)):
+        return (items, sort_action_id)
+    else:
+        # Init.
+        item_oreder_dict = collections.OrderedDict(get_file_type_dict())
+        
+        # Split item with different file type.
+        for item in items:
+            item_oreder_dict[item.type].append(item)
+            
+        # Get sorted item list.
+        item_list = []
+        for (file_type, type_items) in item_oreder_dict.items():
+            item_list += sorted(type_items, key=lambda i: i.modification_time, reverse=sort_reverse)
+            
+        return (item_list, sort_action_id)    
 
 def get_name_width(column_index, name):
     expand_indicator_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png").get_pixbuf()
@@ -51,7 +127,7 @@ def get_modification_time_width(time):
     return get_content_size(time)[0] + MODIFICATION_TIME_PADDING_LEFT
 
 def get_type_width(file_type):
-    return get_content_size(file_type)[0] + TYPE_PADDING_LEFT
+    return get_content_size(file_type)[0] + CONTENT_TYPE_PADDING_LEFT
 
 def get_size_width(size):
     return get_content_size(size)[0] + SIZE_PADDING_LEFT
@@ -69,17 +145,21 @@ class LoadingThread(td.Thread):
         self.dir_item = dir_item
         
     def run(self):
-        self.dir_item.load_status = self.dir_item.LOADING_START
-        self.items = get_dir_items(self.dir_item.gfile.get_path(), self.dir_item.column_index + 1)
-        if self.items == []:
-            self.items = [EmptyItem(self.dir_item.column_index + 1)]
-
-        for item in self.items:
-            item.parent_item = self.dir_item
+        try:
+            self.dir_item.load_status = self.dir_item.LOADING_START
+            self.items = get_dir_items(self.dir_item.gfile.get_path(), self.dir_item.column_index + 1)
+            if self.items == []:
+                self.items = [EmptyItem(self.dir_item.column_index + 1)]
             
-        self.dir_item.load_status = self.dir_item.LOADING_FINSIH
-            
-        self.render_items()
+            for item in self.items:
+                item.parent_item = self.dir_item
+                
+            self.dir_item.load_status = self.dir_item.LOADING_FINSIH
+                
+            self.render_items()
+        except Exception, e:
+            print "class LoadingThread got error: %s" % (e)
+            traceback.print_exc(file=sys.stdout)
         
     @post_gui    
     def render_items(self):
@@ -103,10 +183,12 @@ class DirItem(TreeItem):
         # Init.
         TreeItem.__init__(self)
         self.gfile = gfile
+        self.type = get_gfile_type(self.gfile)
         self.name = get_gfile_name(self.gfile)
         self.modification_time = get_gfile_modification_time(self.gfile)
-        self.type = get_gfile_type(self.gfile)
+        self.content_type = get_gfile_content_type(self.gfile)
         self.size = get_gfile_size(self.gfile)
+        self.size_name = "%s 项" % (self.size)
         self.directory_path = gfile.get_path()
         self.pixbuf = get_file_icon_pixbuf(self.directory_path, ICON_SIZE)
         self.column_index = column_index
@@ -114,8 +196,8 @@ class DirItem(TreeItem):
         self.load_status = self.LOADING_INIT
         self.name_width = get_name_width(self.column_index, self.name)
         self.modification_time_width = get_modification_time_width(self.modification_time)
-        self.type_width = get_type_width(self.type)
-        self.size_width = get_size_width(self.size)
+        self.content_type_width = get_type_width(self.content_type)
+        self.size_width = get_size_width(self.size_name)
         
     def render_name(self, cr, rect):
         '''
@@ -193,8 +275,8 @@ class DirItem(TreeItem):
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
         # Draw directory type.
-        draw_text(cr, self.type, 
-                  rect.x + TYPE_PADDING_LEFT,
+        draw_text(cr, self.content_type, 
+                  rect.x + CONTENT_TYPE_PADDING_LEFT,
                   rect.y,
                   rect.width, rect.height)
         
@@ -218,7 +300,7 @@ class DirItem(TreeItem):
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
         # Draw directory size.
-        draw_text(cr, self.size, 
+        draw_text(cr, self.size_name,
                   rect.x,
                   rect.y,
                   rect.width, rect.height,
@@ -277,7 +359,7 @@ class DirItem(TreeItem):
         return ITEM_HEIGHT
     
     def get_column_widths(self):
-        return [self.name_width, self.size_width, self.type_width, -1]
+        return [self.name_width, self.size_width, self.content_type_width, -1]
     
     def get_column_renders(self):
         return [self.render_name,
@@ -324,17 +406,19 @@ class FileItem(TreeItem):
         '''
         TreeItem.__init__(self)
         self.gfile = gfile
+        self.type = get_gfile_type(self.gfile)
         self.name = get_gfile_name(self.gfile)
         self.modification_time = get_gfile_modification_time(self.gfile)
-        self.type = get_gfile_type(self.gfile)
+        self.content_type = get_gfile_content_type(self.gfile)
         self.size = get_gfile_size(self.gfile)
+        self.size_name = format_file_size(self.size)
         self.file_path = gfile.get_path()
         self.pixbuf = get_file_icon_pixbuf(self.file_path, ICON_SIZE)
         self.column_index = column_index
         self.name_width = get_name_width(self.column_index, self.name)
         self.modification_time_width = get_modification_time_width(self.modification_time)
-        self.type_width = get_type_width(self.type)
-        self.size_width = get_size_width(self.size)
+        self.content_type_width = get_type_width(self.content_type)
+        self.size_width = get_size_width(self.size_name)
         
     def render_name(self, cr, rect):
         '''
@@ -405,8 +489,8 @@ class FileItem(TreeItem):
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
         # Draw directory type.
-        draw_text(cr, self.type, 
-                  rect.x + TYPE_PADDING_LEFT,
+        draw_text(cr, self.content_type, 
+                  rect.x + CONTENT_TYPE_PADDING_LEFT,
                   rect.y,
                   rect.width, rect.height)
         
@@ -430,7 +514,7 @@ class FileItem(TreeItem):
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
         # Draw directory size.
-        draw_text(cr, self.size, 
+        draw_text(cr, self.size_name,
                   rect.x,
                   rect.y,
                   rect.width, 
@@ -458,7 +542,7 @@ class FileItem(TreeItem):
         return ITEM_HEIGHT
     
     def get_column_widths(self):
-        return [self.name_width, self.size_width, self.type_width, -1]
+        return [self.name_width, self.size_width, self.content_type_width, -1]
     
     def get_column_renders(self):
         return [self.render_name,

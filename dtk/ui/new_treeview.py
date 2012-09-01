@@ -23,6 +23,7 @@
 import gtk
 import gobject
 import cairo
+from threads import post_gui
 from draw import draw_vlinear, draw_pixbuf, draw_text
 from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
@@ -34,15 +35,28 @@ from skin_config import skin_config
 from scrolled_window import ScrolledWindow
 import copy
 import pango
+import threading as td
+
+class SortThread(td.Thread):
+	
+    def __init__(self, sort_action, render_action):
+        td.Thread.__init__(self)
+        self.setDaemon(True)
+        self.sort_action = sort_action
+        self.render_action = render_action
+        
+    def run(self):
+        self.render_action(*self.sort_action())
 
 class TitleBox(gtk.Button):
 	
-    def __init__(self, title, last_one):
+    def __init__(self, title, index, last_one):
         gtk.Button.__init__(self)
         self.title = title
+        self.index = index
         self.last_one = last_one
         self.cache_pixbuf = CachePixbuf()
-        self.sort_descending = True
+        self.sort_ascending = True
         self.focus_in = False
         
         self.connect("expose-event", self.expose_title_box)
@@ -78,10 +92,10 @@ class TitleBox(gtk.Button):
         
         # Draw sort icon.
         if self.focus_in:
-            if self.sort_descending:
-                sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
-            else:
+            if self.sort_ascending:
                 sort_pixbuf = ui_theme.get_pixbuf("listview/sort_ascending.png").get_pixbuf()
+            else:
+                sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
             
             draw_pixbuf(cr, sort_pixbuf,
                         x + w - sort_pixbuf.get_width(),
@@ -89,13 +103,16 @@ class TitleBox(gtk.Button):
         
         return True
     
-    def toggle_sort(self):
-        self.sort_descending = not self.sort_descending
+    def toggle_sort(self, sort_action, render_action):
+        print "*************"
+        self.sort_ascending = not self.sort_ascending
         
         for title_box in get_same_level_widgets(self):
             title_box.focus_in = title_box == self
 
             title_box.queue_draw()
+            
+        SortThread(lambda : sort_action(self.index), render_action).start()
 
 class TreeView(gtk.VBox):
     '''
@@ -150,6 +167,7 @@ class TreeView(gtk.VBox):
         self.drag_item = None
         self.drag_reference_row = None
         self.column_widths = []
+        self.sort_action_id = 0
         
         # Init redraw.
         self.redraw_request_list = []
@@ -202,20 +220,34 @@ class TreeView(gtk.VBox):
             # "Delete" : self.delete_select_items,
             }
         
-    def set_column_titles(self, titles, sort_methods=None):
-        if titles != None:
+    def sort_column(self, column_index):
+        self.sort_action_id += 1
+        
+        return self.sort_methods[column_index](
+            self.visible_items,
+            self.title_box.get_children()[column_index].sort_ascending,
+            self.sort_action_id)
+    
+    @post_gui
+    def render_sort_column(self, items, sort_action_id):
+        if sort_action_id == self.sort_action_id:
+            print sort_action_id
+            self.visible_items = []
+        
+            self.add_items(items)
+        else:
+            print "render_sort_column: old sort result!"
+        
+    def set_column_titles(self, titles, sort_methods):
+        if titles != None and sort_methods != None:
             self.titles = titles
-            
-            if sort_methods != None:
-                self.sort_methods = map(lambda t: cmp, self.titles)
-            else:
-                self.sort_methods = sort_methods
+            self.sort_methods = sort_methods
                 
             container_remove_all(self.title_box)
             
             for (index, title) in enumerate(self.titles):
-                title_box = TitleBox(title, index == len(self.titles) - 1)
-                title_box.connect("clicked", lambda w: w.toggle_sort())
+                title_box = TitleBox(title, index, index == len(self.titles) - 1)
+                title_box.connect("clicked", lambda w: w.toggle_sort(self.sort_column, self.render_sort_column))
                 self.title_box.pack_start(title_box)
         else:
             self.titles = None
@@ -1183,7 +1215,7 @@ class TreeItem(gobject.GObject):
     
     def get_column_renders(self):
         pass
-        
+    
     def unselect(self):
         pass
     

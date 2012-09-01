@@ -30,15 +30,16 @@ import traceback
 import time
 
 file_icon_pixbuf_dict = {}
-FILE_TYPE_COMPARE_WEIGHTS = {
-    gio.FILE_TYPE_DIRECTORY : 0,
-    gio.FILE_TYPE_SYMBOLIC_LINK : 1,
-    gio.FILE_TYPE_MOUNTABLE : 2,
-    gio.FILE_TYPE_REGULAR : 3,
-    gio.FILE_TYPE_SHORTCUT : 4,
-    gio.FILE_TYPE_SPECIAL : 5,
-    gio.FILE_TYPE_UNKNOWN : 6
-    }
+
+def get_file_type_dict():
+    return ([(gio.FILE_TYPE_DIRECTORY, []),
+             (gio.FILE_TYPE_SYMBOLIC_LINK, []),
+             (gio.FILE_TYPE_MOUNTABLE, []),
+             (gio.FILE_TYPE_REGULAR, []),
+             (gio.FILE_TYPE_SHORTCUT, []),
+             (gio.FILE_TYPE_SPECIAL, []),
+             (gio.FILE_TYPE_UNKNOWN, []),
+             ])
 
 def get_file_icon_pixbuf(filepath, icon_size):
     '''
@@ -140,8 +141,10 @@ def get_dir_child_files(dir_path, sort_files=None, reverse=False):
     @return: Return a list of gio.File.
     '''
     gfiles = []
-    for file_info in get_dir_child_infos(dir_path, sort_files, reverse):
-        gfiles.append(gio.File(os.path.join(dir_path, file_info.get_name())))
+    file_infos = get_dir_child_infos(dir_path, sort_files, reverse)
+    for (index, file_info) in enumerate(file_infos):
+        gfile = gio.File(os.path.join(dir_path, file_infos[index].get_name()))
+        gfiles.append(gfile)
 
     return gfiles    
     
@@ -150,16 +153,7 @@ def sort_file_by_name(file_infos, reverse):
     Sort file info by name.
     '''
     # Init.
-    file_info_oreder_dict = collections.OrderedDict(
-        [(gio.FILE_TYPE_DIRECTORY, []),
-         (gio.FILE_TYPE_SYMBOLIC_LINK, []),
-         (gio.FILE_TYPE_MOUNTABLE, []),
-         (gio.FILE_TYPE_REGULAR, []),
-         (gio.FILE_TYPE_SHORTCUT, []),
-         (gio.FILE_TYPE_SPECIAL, []),
-         (gio.FILE_TYPE_UNKNOWN, []),
-         ]
-        )
+    file_info_oreder_dict = collections.OrderedDict(get_file_type_dict())
     
     # Split info with different file type.
     for file_info in file_infos:
@@ -178,7 +172,7 @@ def get_gfile_name(gfile):
     '''
     return gfile.query_info("standard::*").get_name()
 
-def get_gfile_type(gfile):
+def get_gfile_content_type(gfile):
     '''
     Get type of gfile.
     '''
@@ -189,9 +183,12 @@ def get_gfile_modification_time(gfile):
 
 def get_gfile_size(gfile):
     if gfile.query_info("standard::type").get_file_type() == gio.FILE_TYPE_DIRECTORY:
-        return "%s 项" % (get_dir_child_num(gfile))
+        return get_dir_child_num(gfile)
     else:
-        return format_file_size(gfile.query_info("standard::size").get_size())
+        return gfile.query_info("standard::size").get_size()
+    
+def get_gfile_type(gfile):
+    return gfile.query_info("standard::type").get_file_type()
 
 def is_directory(gfile):
     '''
