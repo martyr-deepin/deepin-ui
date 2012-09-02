@@ -24,6 +24,7 @@ from draw import draw_pixbuf, draw_vlinear
 from keymap import get_keyevent_name
 from skin_config import skin_config
 from theme import ui_theme
+import cairo
 import gc
 import gobject
 import gtk
@@ -62,7 +63,11 @@ class IconView(gtk.DrawingArea):
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
     }
 
-    def __init__(self, padding_x=0, padding_y=0):
+    def __init__(self, 
+                 padding_x=0, 
+                 padding_y=0,
+                 mask_bound_height=24,
+                 ):
         '''
         Initialize IconView class.
 
@@ -73,6 +78,8 @@ class IconView(gtk.DrawingArea):
         gtk.DrawingArea.__init__(self)
         self.padding_x = padding_x
         self.padding_y = padding_y
+        self.mask_bound_height = mask_bound_height
+        self.mask_bound_alpha_step = 1.0 / self.mask_bound_height
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
@@ -401,7 +408,8 @@ class IconView(gtk.DrawingArea):
         @param h: Height of draw area.
         '''
         draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("linear_background").get_color_info())
+                     ui_theme.get_shadow_color("linear_background").get_color_info()
+                     )
         
     def expose_icon_view(self, widget, event):
         '''
@@ -431,24 +439,80 @@ class IconView(gtk.DrawingArea):
             
         # Draw mask.
         self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
+        
+        # Draw items.
+        self.draw_items(cr, rect, offset_x, offset_y, viewport)
             
-        # Draw item.
+    def draw_items(self, cr, rect, offset_x, offset_y, viewport):
+        # Draw items.
         if len(self.items) > 0:
+            # Init.
+            vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
+            
+            # Init top surface.
+            if vadjust.get_value() != vadjust.get_lower():
+                top_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
+                top_surface_cr = gtk.gdk.CairoContext(cairo.Context(top_surface))
+                
+                clip_y = vadjust.get_value() + self.mask_bound_height
+            else:
+                top_surface = top_surface_cr = None
+                
+                clip_y = vadjust.get_value()
+                
+            # Init bottom surface.
+            if vadjust.get_value() + vadjust.get_page_size() != vadjust.get_upper():
+                bottom_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
+                bottom_surface_cr = gtk.gdk.CairoContext(cairo.Context(bottom_surface))
+                
+                clip_height = vadjust.get_page_size() - self.mask_bound_height - (clip_y - vadjust.get_value())
+            else:
+                bottom_surface = bottom_surface_cr = None
+                
+                clip_height = vadjust.get_page_size() - (clip_y - vadjust.get_value())
+            
             with cairo_state(cr):
-                # Don't draw any item out of viewport area.
-                cr.rectangle(offset_x, offset_y,
-                             viewport.allocation.width, 
-                             viewport.allocation.height)        
-                cr.clip()
-                
-                # Get item information.
+                # Draw on drawing area.
                 (item_width, item_height, columns, start_index, end_index) = self.get_render_item_info()
-                
                 for (index, item) in enumerate(self.items[start_index:end_index]):
                     row = int((start_index + index) / columns)
                     column = (start_index + index) % columns
                     render_x = rect.x + self.padding_x + column * item_width
                     render_y = rect.y + self.padding_y + row * item_height
+                    render_width = item_width
+                    render_height = item_height
+                    
+                    # Draw on top surface.
+                    if top_surface_cr:
+                        if (not render_y > vadjust.get_value() + self.mask_bound_height) and (not render_y + render_height < vadjust.get_value()):
+                            top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                            top_surface_cr.clip()
+                            
+                            item.render(
+                                top_surface_cr,
+                                gtk.gdk.Rectangle(render_x, 
+                                                  render_y - int(vadjust.get_value()), 
+                                                  render_width, 
+                                                  render_height))
+                    
+                    # Draw on bottom surface.
+                    if bottom_surface_cr:
+                        if (not render_y > vadjust.get_value() + vadjust.get_page_size()) and (not render_y + render_height < vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height):
+                            bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                            bottom_surface_cr.clip()
+                            
+                            item.render(
+                                bottom_surface_cr,
+                                gtk.gdk.Rectangle(render_x, 
+                                                  render_y - int(vadjust.get_value()) - int(vadjust.get_page_size() - self.mask_bound_height), 
+                                                  render_width, 
+                                                  render_height))
+
+                    cr.rectangle(offset_x, 
+                                 offset_y + clip_y - vadjust.get_value(),
+                                 viewport.allocation.width,
+                                 clip_height + 1)
+                    cr.clip()
                     
                     with cairo_state(cr):
                         # Don't allow draw out of item area.
@@ -457,6 +521,30 @@ class IconView(gtk.DrawingArea):
                         
                         item.render(cr, gtk.gdk.Rectangle(render_x, render_y, item_width, item_height))
                         
+            # Draw alpha mask on top surface.
+            if top_surface:
+                i = 0
+                while (i < self.mask_bound_height):
+                    with cairo_state(cr):
+                        cr.rectangle(rect.x, vadjust.get_value() + i, rect.width, 1)
+                        cr.clip()
+                        cr.set_source_surface(top_surface, 0, vadjust.get_value())
+                        cr.paint_with_alpha(i * self.mask_bound_alpha_step)
+                        
+                    i += 1    
+                
+            # Draw alpha mask on bottom surface.
+            if bottom_surface:
+                i = 0
+                while (i < self.mask_bound_height):
+                    with cairo_state(cr):
+                        cr.rectangle(rect.x, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height + i, rect.width, 1)
+                        cr.clip()
+                        cr.set_source_surface(bottom_surface, 0, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height)
+                        cr.paint_with_alpha(1.0 - i * self.mask_bound_alpha_step)
+                        
+                    i += 1    
+                
     def get_render_item_info(self):
         '''
         Internal function to get information of render items.
