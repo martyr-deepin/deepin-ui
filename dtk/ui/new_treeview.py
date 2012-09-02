@@ -56,7 +56,7 @@ class TitleBox(gtk.Button):
         self.index = index
         self.last_one = last_one
         self.cache_pixbuf = CachePixbuf()
-        self.sort_ascending = True
+        self.sort_ascending = False
         self.focus_in = False
         
         self.connect("expose-event", self.expose_title_box)
@@ -104,12 +104,10 @@ class TitleBox(gtk.Button):
         return True
     
     def toggle_sort(self, sort_action, render_action):
-        print "*************"
         self.sort_ascending = not self.sort_ascending
         
         for title_box in get_same_level_widgets(self):
             title_box.focus_in = title_box == self
-
             title_box.queue_draw()
             
         SortThread(lambda : sort_action(self.index), render_action).start()
@@ -231,12 +229,11 @@ class TreeView(gtk.VBox):
     @post_gui
     def render_sort_column(self, items, sort_action_id):
         if sort_action_id == self.sort_action_id:
-            print sort_action_id
             self.visible_items = []
         
             self.add_items(items)
         else:
-            print "render_sort_column: old sort result!"
+            print "render_sort_column: drop old sort result!"
         
     def set_column_titles(self, titles, sort_methods):
         if titles != None and sort_methods != None:
@@ -247,7 +244,7 @@ class TreeView(gtk.VBox):
             
             for (index, title) in enumerate(self.titles):
                 title_box = TitleBox(title, index, index == len(self.titles) - 1)
-                title_box.connect("clicked", lambda w: w.toggle_sort(self.sort_column, self.render_sort_column))
+                title_box.connect("button-press-event", lambda w, e: w.toggle_sort(self.sort_column, self.render_sort_column))
                 self.title_box.pack_start(title_box)
         else:
             self.titles = None
