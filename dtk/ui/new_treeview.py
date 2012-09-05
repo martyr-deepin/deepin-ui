@@ -218,13 +218,58 @@ class TreeView(gtk.VBox):
             # "Delete" : self.delete_select_items,
             }
         
-    def sort_column(self, column_index):
+    def sort_column(self, sort_column_index):
+        # Update sort action id.
         self.sort_action_id += 1
         
-        return self.sort_methods[column_index](
-            self.visible_items,
-            self.title_box.get_children()[column_index].sort_ascending,
-            self.sort_action_id)
+        # Save current action id to return.
+        sort_action_id = self.sort_action_id
+        
+        # Split items with different column index.
+        level_items = []
+        column_index = None
+        for item in self.visible_items:
+            if item.column_index != column_index:
+                level_items.append((item.column_index, item.parent_item, [item]))
+                column_index = item.column_index
+            else:
+                if len(level_items) == 0:
+                    level_items.append((item.column_index, item.parent_item, [item]))
+                else:
+                    level_items[-1][2].append(item)
+        
+        # Connect all toplevel items to sort.
+        toplevel_items = []
+        child_items = []
+        for item in level_items:
+            (column_index, parent_item, items) = item
+            if column_index == 0:
+                toplevel_items += items
+            else:
+                child_items.append(item)
+        level_items = [(0, None, toplevel_items)] + child_items        
+        
+        # Sort items with different column index to make sure parent item sort before child item.
+        level_items = sorted(level_items, key=lambda (column_index, parent_item, items): column_index)            
+        
+        # Sort all items.
+        result_items = []
+        for (column_index, parent_item, items) in level_items:
+            # Do sort action.
+            sort_items = self.sort_methods[sort_column_index](
+                items, 
+                self.title_box.get_children()[sort_column_index].sort_ascending
+                )
+            
+            # If column index is 0, insert at last position.
+            if column_index == 0:
+                result_items += sort_items
+            # Insert after parent item if column index is not 0 (child items).
+            else:
+                split_index = result_items.index(parent_item) + 1
+                result_items = result_items[0:split_index] + sort_items + result_items[split_index::]
+            
+        return (result_items, sort_action_id)
     
     @post_gui
     def render_sort_column(self, items, sort_action_id):

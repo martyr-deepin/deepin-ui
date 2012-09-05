@@ -47,9 +47,9 @@ MODIFICATION_TIME_PADDING_LEFT = 12
 CONTENT_TYPE_PADDING_LEFT = 12
 SIZE_PADDING_LEFT = 12
 
-def sort_by_key(items, sort_reverse, sort_action_id, sort_key):
+def sort_by_key(items, sort_reverse, sort_key):
     if len(items) == 1 and (isinstance(items[0], EmptyItem) or isinstance(items[0], LoadingItem)):
-        return (items, sort_action_id)
+        return items
     else:
         # Init.
         item_oreder_dict = collections.OrderedDict(get_file_type_dict())
@@ -63,19 +63,19 @@ def sort_by_key(items, sort_reverse, sort_action_id, sort_key):
         for (file_type, type_items) in item_oreder_dict.items():
             item_list += sorted(type_items, key=sort_key, reverse=sort_reverse)
             
-        return (item_list, sort_action_id)    
+        return item_list    
 
-def sort_by_name(items, sort_reverse, sort_action_id):
-    return sort_by_key(items, sort_reverse, sort_action_id, lambda i: i.name)
+def sort_by_name(items, sort_reverse):
+    return sort_by_key(items, sort_reverse, lambda i: i.name)
 
-def sort_by_size(items, sort_reverse, sort_action_id):
-    return sort_by_key(items, sort_reverse, sort_action_id, lambda i: i.size)
+def sort_by_size(items, sort_reverse):
+    return sort_by_key(items, sort_reverse, lambda i: i.size)
 
-def sort_by_type(items, sort_reverse, sort_action_id):
-    return sort_by_key(items, sort_reverse, sort_action_id, lambda i: i.content_type)
+def sort_by_type(items, sort_reverse):
+    return sort_by_key(items, sort_reverse, lambda i: i.content_type)
 
-def sort_by_mtime(items, sort_reverse, sort_action_id):
-    return sort_by_key(items, sort_reverse, sort_action_id, lambda i: i.modification_time)
+def sort_by_mtime(items, sort_reverse):
+    return sort_by_key(items, sort_reverse, lambda i: i.modification_time)
 
 def get_name_width(column_index, name):
     expand_indicator_pixbuf = ui_theme.get_pixbuf("treeview/arrow_down.png").get_pixbuf()
