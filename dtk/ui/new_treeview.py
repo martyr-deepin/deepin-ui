@@ -35,6 +35,7 @@ from skin_config import skin_config
 from scrolled_window import ScrolledWindow
 import copy
 import pango
+import math
 import threading as td
 
 class SortThread(td.Thread):
@@ -148,7 +149,6 @@ class TreeView(gtk.VBox):
         self.drag_icon_pixbuf = drag_icon_pixbuf
         self.start_drag_offset = start_drag_offset
         self.mask_bound_height = mask_bound_height
-        self.mask_bound_alpha_step = 1.0 / self.mask_bound_height
         self.start_drag = False
         self.start_select_row = None
         self.start_select_item = None
@@ -768,12 +768,12 @@ class TreeView(gtk.VBox):
         # Draw alpha mask on top surface.
         if top_surface:
             i = 0
-            while (i < self.mask_bound_height):
+            while (i <= self.mask_bound_height):
                 with cairo_state(cr):
                     cr.rectangle(rect.x, vadjust.get_value() + i, rect.width, 1)
                     cr.clip()
                     cr.set_source_surface(top_surface, 0, vadjust.get_value())
-                    cr.paint_with_alpha(i * self.mask_bound_alpha_step)
+                    cr.paint_with_alpha(math.sin(i * math.pi / 2 / self.mask_bound_height))
                     
                 i += 1    
             
@@ -785,7 +785,7 @@ class TreeView(gtk.VBox):
                     cr.rectangle(rect.x, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height + i, rect.width, 1)
                     cr.clip()
                     cr.set_source_surface(bottom_surface, 0, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height)
-                    cr.paint_with_alpha(1.0 - i * self.mask_bound_alpha_step)
+                    cr.paint_with_alpha(1.0 - (math.sin(i * math.pi / 2 / self.mask_bound_height)))
                     
                 i += 1    
     

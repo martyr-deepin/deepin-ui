@@ -28,6 +28,7 @@ import cairo
 import gc
 import gobject
 import gtk
+import math
 from utils import (get_match_parent, cairo_state, get_event_coords, 
                    is_in_rect, is_left_button, is_double_click, 
                    is_single_click, get_window_shadow_size)
@@ -79,7 +80,6 @@ class IconView(gtk.DrawingArea):
         self.padding_x = padding_x
         self.padding_y = padding_y
         self.mask_bound_height = mask_bound_height
-        self.mask_bound_alpha_step = 1.0 / self.mask_bound_height
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         self.items = []
@@ -524,24 +524,24 @@ class IconView(gtk.DrawingArea):
             # Draw alpha mask on top surface.
             if top_surface:
                 i = 0
-                while (i < self.mask_bound_height):
+                while (i <= self.mask_bound_height):
                     with cairo_state(cr):
                         cr.rectangle(rect.x, vadjust.get_value() + i, rect.width, 1)
                         cr.clip()
                         cr.set_source_surface(top_surface, 0, vadjust.get_value())
-                        cr.paint_with_alpha(i * self.mask_bound_alpha_step)
+                        cr.paint_with_alpha(math.sin(i * math.pi / 2 / self.mask_bound_height))
                         
                     i += 1    
                 
             # Draw alpha mask on bottom surface.
             if bottom_surface:
                 i = 0
-                while (i < self.mask_bound_height):
+                while (i <= self.mask_bound_height):
                     with cairo_state(cr):
                         cr.rectangle(rect.x, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height + i, rect.width, 1)
                         cr.clip()
                         cr.set_source_surface(bottom_surface, 0, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height)
-                        cr.paint_with_alpha(1.0 - i * self.mask_bound_alpha_step)
+                        cr.paint_with_alpha(1.0 - (math.sin(i * math.pi / 2 / self.mask_bound_height)))
                         
                     i += 1    
                 

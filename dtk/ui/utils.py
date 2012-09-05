@@ -490,7 +490,7 @@ def get_content_size(text, text_size=DEFAULT_FONT_SIZE, text_font=DEFAULT_FONT, 
             layout.set_single_paragraph_mode(True)
         else:
             layout.set_width(wrap_width * pango.SCALE)
-            layout.set_single_paragraph_mode(False)
+            layout.set_single_paragraph_mode(False) 
             layout.set_wrap(pango.WRAP_WORD)
         
         return layout.get_pixel_size()
@@ -955,8 +955,7 @@ def unzip(unzip_list):
     @param unzip_list: List to unzip.
     @return: Return new unzip list.
     '''
-    first_list, second_list = zip(*unzip_list)
-    return (list(first_list), list(second_list))
+    return tuple(map(list, zip(*unzip_list))) 
 
 def is_seriate_list(test_list):
     '''
