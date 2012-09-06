@@ -4,8 +4,8 @@
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Xia Bin
 # 
-# Author:     Xia Bin <xiabin@gmail.com>
-# Maintainer: Xia Bin <xiabin@gmail.com>
+# Author:     Xia Bin <xiabin@linuxdeepin.com>
+# Maintainer: Xia Bin <xiabin@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

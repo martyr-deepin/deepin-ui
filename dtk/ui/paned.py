@@ -3,9 +3,10 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Xia Bin
+#               2011 ~ 2012 Wang Yong
 #
-# Author:     Xia Bin <xiabin@gmail.com>
-# Maintainer: Xia Bin <xiabin@gmail.com>
+# Author:     Xia Bin <xiabin@linuxdeepin.com>
+# Maintainer: Wang Yong <lazycat.manatee@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@ from draw import draw_pixbuf
 from utils import is_in_rect, color_hex_to_cairo
 import gobject
 import gtk
+import math
 from theme import ui_theme
         
 class Paned(gtk.Paned):
@@ -51,6 +53,9 @@ class Paned(gtk.Paned):
         self.handle_size = self.style_get_property('handle-size')
         self.show_button = False
         self.init_button("normal")
+        self.animation_delay = 20 # milliseconds
+        self.animation_times = 10
+        self.animation_position_frames = []
         
     def init_button(self, status):
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
@@ -179,19 +184,39 @@ class Paned(gtk.Paned):
             if self.saved_position == -1:
                 self.saved_position = self.get_position()
                 if self.shrink_first:
-                    self.set_position(0)
+                    self.change_position(0)
                 else:
                     if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
-                        self.set_position(self.allocation.width)
+                        self.change_position(self.allocation.width)
                     else:
-                        self.set_position(self.allocation.height)
+                        self.change_position(self.allocation.height)
             else:
-                self.set_position(self.saved_position)
+                self.change_position(self.saved_position)
                 self.saved_position = -1
         else:
             gtk.Paned.do_button_press_event(self, e)
-            print "*****************"
+            
         return True
+    
+    def change_position(self, new_position):
+        current_position = self.get_position()
+        if new_position != current_position:
+            for i in range(0, self.animation_times + 1):
+                step = int(math.sin(math.pi * i / 2 / self.animation_times) * (new_position - current_position))
+                self.animation_position_frames.append(current_position + step)
+                
+            if self.animation_position_frames[-1] != new_position:
+                self.animation_position_frames.append(new_position)
+                
+            gtk.timeout_add(self.animation_delay, self.update_position)
+        
+    def update_position(self):
+        self.set_position(self.animation_position_frames.pop(0))        
+        
+        if self.animation_position_frames == []:
+            return False
+        else:
+            return True
 
     def do_size_allocate(self, e):
         gtk.Paned.do_size_allocate(self, e)
