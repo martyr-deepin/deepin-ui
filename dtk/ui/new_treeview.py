@@ -216,8 +216,8 @@ class TreeView(gtk.VBox):
             "Shift + Home" : self.select_to_first_item,
             "Shift + End" : self.select_to_last_item,
             "Ctrl + a" : self.select_all_items,
+            "Delete" : self.delete_select_items,
             # "Return" : self.double_click_item,
-            # "Delete" : self.delete_select_items,
             }
         
     def expand_item(self):
@@ -641,6 +641,13 @@ class TreeView(gtk.VBox):
             
         self.set_select_rows(range(0, len(self.visible_items)))    
         
+    def delete_select_items(self):
+        delete_items = map(lambda row: self.visible_items[row], self.select_rows)
+        self.start_select_row = None
+        self.select_rows = []
+        
+        self.delete_items(delete_items)
+        
     def update_item_index(self):
         '''
         Update index of items.
@@ -978,7 +985,7 @@ class TreeView(gtk.VBox):
                     self.visible_items[release_row].single_click()
 
             if self.start_drag and self.is_in_visible_area(event):
-                self.drag_select_items_at_cursor(event)
+                self.drag_select_items_at_cursor()
                 
             self.double_click_row = None    
             self.single_click_row = None    
@@ -1027,7 +1034,7 @@ class TreeView(gtk.VBox):
             # Update drag row.
             self.drag_reference_row = row
     
-    def drag_select_items_at_cursor(self, event):
+    def drag_select_items_at_cursor(self):
         '''
         Internal function to drag select items at cursor position.
         '''
