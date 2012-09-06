@@ -49,7 +49,21 @@ class Paned(gtk.Paned):
         self.bheight = ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf().get_width()
         self.saved_position = -1
         self.handle_size = self.style_get_property('handle-size')
-
+        self.show_button = False
+        self.init_button("normal")
+        
+    def init_button(self, status):
+        if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
+            if self.shrink_first:
+                self.button_pixbuf = ui_theme.get_pixbuf("paned/paned_left_%s.png" % status).get_pixbuf()
+            else:
+                self.button_pixbuf = ui_theme.get_pixbuf("paned/paned_right_%s.png" % status).get_pixbuf()
+        else:
+            if self.shrink_first:
+                self.button_pixbuf = ui_theme.get_pixbuf("paned/paned_up_%s.png" % status).get_pixbuf()
+            else:
+                self.button_pixbuf = ui_theme.get_pixbuf("paned/paned_down_%s.png" % status).get_pixbuf()
+            
     def do_expose_event(self, e):
         '''
         To intercept the default expose event and draw custom handle
@@ -70,41 +84,44 @@ class Paned(gtk.Paned):
         cr = handle.cairo_create()
         cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("paned_line").get_color()))
         (width, height) = handle.get_size()
-        print (width, height)
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
             if self.shrink_first:
                 cr.rectangle(0, 0, line_width, height)
                 cr.fill()
-                
-                draw_pixbuf(cr, 
-                            ui_theme.get_pixbuf("paned/paned_left_normal.png").get_pixbuf(),
-                            0,
-                            (height - self.bheight)  / 2)
+
+                if self.show_button:
+                    draw_pixbuf(cr, 
+                                ui_theme.get_pixbuf("paned/paned_left_normal.png").get_pixbuf(),
+                                0,
+                                (height - self.bheight)  / 2)
             else:
                 cr.rectangle(width - line_width, 0, line_width, height)
                 cr.fill()
                 
-                draw_pixbuf(cr, 
-                            ui_theme.get_pixbuf("paned/paned_right_normal.png").get_pixbuf(),
-                            0,
-                            (height - self.bheight)  / 2)
+                if self.show_button:
+                    draw_pixbuf(cr, 
+                                ui_theme.get_pixbuf("paned/paned_right_normal.png").get_pixbuf(),
+                                0,
+                                (height - self.bheight)  / 2)
         else:
             if self.shrink_first:
                 cr.rectangle(0, 0, width, line_width)
                 cr.fill()
                 
-                draw_pixbuf(cr, 
-                            ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf(),
-                            (width - self.bheight) / 2,
-                            0)
+                if self.show_button:
+                    draw_pixbuf(cr, 
+                                ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf(),
+                                (width - self.bheight) / 2,
+                                0)
             else:
                 cr.rectangle(0, height - line_width, width, line_width)
                 cr.fill()
 
-                draw_pixbuf(cr, 
-                            ui_theme.get_pixbuf("paned/paned_down_normal.png").get_pixbuf(),
-                            (width - self.bheight) / 2,
-                            0)
+                if self.show_button:
+                    draw_pixbuf(cr, 
+                                ui_theme.get_pixbuf("paned/paned_down_normal.png").get_pixbuf(),
+                                (width - self.bheight) / 2,
+                                0)
 
     def is_in_button(self, x, y):
         '''
@@ -123,6 +140,17 @@ class Paned(gtk.Paned):
             return False
 
     def do_enter_notify_event(self, e):
+        self.show_button = True
+        
+        self.queue_draw()
+    
+    def do_leave_notify_event(self, e):
+        self.show_button = False
+        self.init_button("normal")
+        
+        self.queue_draw()
+        
+    def do_motion_notify_event(self, e):
         '''
         change the cursor style  when move in handler
         '''
@@ -130,16 +158,24 @@ class Paned(gtk.Paned):
         (width, height) = handle.get_size()
         if self.is_in_button(e.x, e.y):
             handle.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+            
+            self.init_button("hover")
         else:
             handle.set_cursor(self.cursor_type)
+            
+            self.init_button("normal")
 
         self.queue_draw()
+        
+        gtk.Paned.do_motion_notify_event(self, e)
 
     def do_button_press_event(self, e):
         '''
         when press the handler's button change the position.
         '''
         if self.is_in_button(e.x, e.y):
+            self.init_button("press")
+            
             if self.saved_position == -1:
                 self.saved_position = self.get_position()
                 if self.shrink_first:
@@ -154,6 +190,7 @@ class Paned(gtk.Paned):
                 self.saved_position = -1
         else:
             gtk.Paned.do_button_press_event(self, e)
+            print "*****************"
         return True
 
     def do_size_allocate(self, e):
