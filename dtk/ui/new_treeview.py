@@ -20,6 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+import traceback
+from contextlib import contextmanager 
 import gtk
 import gobject
 import cairo
@@ -151,7 +154,6 @@ class TreeView(gtk.VBox):
         self.mask_bound_height = mask_bound_height
         self.start_drag = False
         self.start_select_row = None
-        self.start_select_item = None
         self.select_rows = []
         self.press_item = None
         self.press_in_select_rows = None
@@ -217,7 +219,6 @@ class TreeView(gtk.VBox):
             "Shift + End" : self.select_to_last_item,
             "Ctrl + a" : self.select_all_items,
             "Delete" : self.delete_select_items,
-            # "Return" : self.double_click_item,
             }
         
     def expand_item(self):
@@ -245,64 +246,62 @@ class TreeView(gtk.VBox):
                         
         
     def sort_column(self, sort_column_index):
-        # Update sort action id.
-        self.sort_action_id += 1
-        
-        # Save current action id to return.
-        sort_action_id = self.sort_action_id
-        
-        # Split items with different column index.
-        level_items = []
-        column_index = None
-        for item in self.visible_items:
-            if item.column_index != column_index:
-                level_items.append((item.column_index, item.parent_item, [item]))
-                column_index = item.column_index
-            else:
-                if len(level_items) == 0:
-                    level_items.append((item.column_index, item.parent_item, [item]))
-                else:
-                    level_items[-1][2].append(item)
-        
-        # Connect all toplevel items to sort.
-        toplevel_items = []
-        child_items = []
-        for item in level_items:
-            (column_index, parent_item, items) = item
-            if column_index == 0:
-                toplevel_items += items
-            else:
-                child_items.append(item)
-        level_items = [(0, None, toplevel_items)] + child_items        
-        
-        # Sort items with different column index to make sure parent item sort before child item.
-        level_items = sorted(level_items, key=lambda (column_index, parent_item, items): column_index)            
-        
-        # Sort all items.
-        result_items = []
-        for (column_index, parent_item, items) in level_items:
-            # Do sort action.
-            sort_items = self.sort_methods[sort_column_index](
-                items, 
-                self.title_box.get_children()[sort_column_index].sort_ascending
-                )
-            
-            # If column index is 0, insert at last position.
-            if column_index == 0:
-                result_items += sort_items
-            # Insert after parent item if column index is not 0 (child items).
-            else:
-                split_index = result_items.index(parent_item) + 1
-                result_items = result_items[0:split_index] + sort_items + result_items[split_index::]
-            
-        return (result_items, sort_action_id)
+       # Update sort action id.
+       self.sort_action_id += 1
+       
+       # Save current action id to return.
+       sort_action_id = self.sort_action_id
+       
+       # Split items with different column index.
+       level_items = []
+       column_index = None
+       for item in self.visible_items:
+           if item.column_index != column_index:
+               level_items.append((item.column_index, item.parent_item, [item]))
+               column_index = item.column_index
+           else:
+               if len(level_items) == 0:
+                   level_items.append((item.column_index, item.parent_item, [item]))
+               else:
+                   level_items[-1][2].append(item)
+       
+       # Connect all toplevel items to sort.
+       toplevel_items = []
+       child_items = []
+       for item in level_items:
+           (column_index, parent_item, items) = item
+           if column_index == 0:
+               toplevel_items += items
+           else:
+               child_items.append(item)
+       level_items = [(0, None, toplevel_items)] + child_items        
+       
+       # Sort items with different column index to make sure parent item sort before child item.
+       level_items = sorted(level_items, key=lambda (column_index, parent_item, items): column_index)            
+       
+       # Sort all items.
+       result_items = []
+       for (column_index, parent_item, items) in level_items:
+           # Do sort action.
+           sort_items = self.sort_methods[sort_column_index](
+               items, 
+               self.title_box.get_children()[sort_column_index].sort_ascending
+               )
+           
+           # If column index is 0, insert at last position.
+           if column_index == 0:
+               result_items += sort_items
+           # Insert after parent item if column index is not 0 (child items).
+           else:
+               split_index = result_items.index(parent_item) + 1
+               result_items = result_items[0:split_index] + sort_items + result_items[split_index::]
+           
+       return (result_items, sort_action_id)
     
     @post_gui
     def render_sort_column(self, items, sort_action_id):
         if sort_action_id == self.sort_action_id:
-            self.visible_items = []
-        
-            self.add_items(items)
+            self.add_items(items, None, True)
         else:
             print "render_sort_column: drop old sort result!"
         
@@ -686,28 +685,33 @@ class TreeView(gtk.VBox):
         self.redraw_request_list = []
         
         return True
-        
-    def add_items(self, items, insert_pos=None):
+
+    
+    def add_items(self, items, insert_pos=None, clear_first=False):
         '''
         Add items.
         '''
-        if insert_pos == None:
-            self.visible_items += items
-        else:
-            self.visible_items = self.visible_items[0:insert_pos] + items + self.visible_items[insert_pos::]
-        
-        # Update redraw callback.
-        # Callback is better way to avoid perfermance problem than gobject signal.
-        for item in items:
-            item.redraw_request_callback = self.redraw_request
-            item.add_items_callback = self.add_items
-            item.delete_items_callback = self.delete_items
-        
-        self.update_item_index()    
-        
-        self.update_item_widths()
+        with self.keep_select_status():
+            if clear_first:
+                self.visible_items = []
             
-        self.update_vadjustment()
+            if insert_pos == None:
+                self.visible_items += items
+            else:
+                self.visible_items = self.visible_items[0:insert_pos] + items + self.visible_items[insert_pos::]
+            
+            # Update redraw callback.
+            # Callback is better way to avoid perfermance problem than gobject signal.
+            for item in items:
+                item.redraw_request_callback = self.redraw_request
+                item.add_items_callback = self.add_items
+                item.delete_items_callback = self.delete_items
+            
+            self.update_item_index()    
+            
+            self.update_item_widths()
+                
+            self.update_vadjustment()
         
     def delete_items(self, items):
         for item in items:
@@ -922,9 +926,6 @@ class TreeView(gtk.VBox):
                     if self.enable_drag_drop and click_row in self.select_rows:
                         self.start_drag = True
                         
-                        if self.start_select_row:
-                            self.start_select_item = self.visible_items[self.start_select_row]
-                            
                         # Record press_in_select_rows, disable select rows if mouse not move after release button.
                         self.press_in_select_rows = click_row
                     else:
@@ -1252,6 +1253,52 @@ class TreeView(gtk.VBox):
 
         else:
             return (0, 0, viewport)
+        
+    @contextmanager
+    def keep_select_status(self):
+        '''
+        Handy function that change listview and keep select status not change.
+        '''
+        # Save select items.
+        start_select_item = None
+        if self.start_select_row != None:
+            start_select_item = self.visible_items[self.start_select_row]
+        
+        select_items = []
+        for row in self.select_rows:
+            select_items.append(self.visible_items[row])
+            
+        try:  
+            yield  
+        except Exception, e:  
+            print 'function keep_select_status got error %s' % e  
+            traceback.print_exc(file=sys.stdout)
+            
+        else:  
+            # Restore select status.
+            if start_select_item != None or select_items != []:
+                # Init start select row.
+                if start_select_item != None:
+                    self.start_select_row = None
+                
+                # Init select rows.
+                if select_items != []:
+                    self.select_rows = []
+                
+                for (index, item) in enumerate(self.visible_items):
+                    # Try restore select row.
+                    if item in select_items:
+                        self.select_rows.append(index)
+                        select_items.remove(item)
+                    
+                    # Try restore start select row.
+                    if item == start_select_item:
+                        self.start_select_row = index
+                        start_select_item = None
+                    
+                    # Stop loop when finish restore row status.
+                    if select_items == [] and start_select_item == None:
+                        break
         
 gobject.type_register(TreeView)
 
