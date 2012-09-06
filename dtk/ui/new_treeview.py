@@ -714,15 +714,16 @@ class TreeView(gtk.VBox):
             self.update_vadjustment()
         
     def delete_items(self, items):
-        for item in items:
-            if item in self.visible_items:
-                self.visible_items.remove(item)
-                
-        self.update_item_index()    
-        
-        self.update_item_widths()
-        
-        self.update_vadjustment()
+        with self.keep_select_status():
+            for item in items:
+                if item in self.visible_items:
+                    self.visible_items.remove(item)
+                    
+            self.update_item_index()    
+            
+            self.update_item_widths()
+            
+            self.update_vadjustment()
         
     def update_vadjustment(self):
         vadjust_height = sum(map(lambda i: i.get_height(), self.visible_items))
