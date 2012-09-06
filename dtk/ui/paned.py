@@ -20,10 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from utils import is_in_rect
+from draw import draw_pixbuf
+from utils import is_in_rect, color_hex_to_cairo
 import gobject
 import gtk
-
+from theme import ui_theme
+        
 class Paned(gtk.Paned):
     '''
     Paned.
@@ -38,12 +40,13 @@ class Paned(gtk.Paned):
 
     gtk.Paned with custom better apperance.
     '''
-    def __init__(self):
+    def __init__(self, shrink_first):
         '''
         Initialize Paned class.
         '''
         gtk.Paned.__init__(self)
-        self.bheight = 60  #the button height or width;
+        self.shrink_first = shrink_first
+        self.bheight = ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf().get_width()
         self.saved_position = -1
         self.handle_size = self.style_get_property('handle-size')
 
@@ -53,7 +56,6 @@ class Paned(gtk.Paned):
         after the **gtk.Container** expose evetn.
         So the gtk.Paned's expose event callback is ignore.
         '''
-        #gtk.Paned.do_expose_event(self, e)
         gtk.Container.do_expose_event(self, e)
         self.draw_handle(e)
 
@@ -66,20 +68,43 @@ class Paned(gtk.Paned):
         handle = self.get_handle_window()
         line_width = 1
         cr = handle.cairo_create()
-        cr.set_source_rgba(1, 0,0, 0.8)
+        cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("paned_line").get_color()))
         (width, height) = handle.get_size()
+        print (width, height)
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
-            #draw line
-            cr.rectangle(0, 0, line_width, height)
-
-            #draw_button
-            cr.rectangle(0, (height-self.bheight)/2,  width, self.bheight)
+            if self.shrink_first:
+                cr.rectangle(0, 0, line_width, height)
+                cr.fill()
+                
+                draw_pixbuf(cr, 
+                            ui_theme.get_pixbuf("paned/paned_left_normal.png").get_pixbuf(),
+                            0,
+                            (height - self.bheight)  / 2)
+            else:
+                cr.rectangle(width - line_width, 0, line_width, height)
+                cr.fill()
+                
+                draw_pixbuf(cr, 
+                            ui_theme.get_pixbuf("paned/paned_right_normal.png").get_pixbuf(),
+                            0,
+                            (height - self.bheight)  / 2)
         else:
-            cr.rectangle(0, 0, height, line_width)
-            cr.rectangle((width-self.bheight)/2, 0, self.bheight, width)
+            if self.shrink_first:
+                cr.rectangle(0, 0, width, line_width)
+                cr.fill()
+                
+                draw_pixbuf(cr, 
+                            ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf(),
+                            (width - self.bheight) / 2,
+                            0)
+            else:
+                cr.rectangle(0, height - line_width, width, line_width)
+                cr.fill()
 
-        cr.fill()
-        pass
+                draw_pixbuf(cr, 
+                            ui_theme.get_pixbuf("paned/paned_down_normal.png").get_pixbuf(),
+                            (width - self.bheight) / 2,
+                            0)
 
     def is_in_button(self, x, y):
         '''
@@ -117,7 +142,13 @@ class Paned(gtk.Paned):
         if self.is_in_button(e.x, e.y):
             if self.saved_position == -1:
                 self.saved_position = self.get_position()
-                self.set_position(0)
+                if self.shrink_first:
+                    self.set_position(0)
+                else:
+                    if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
+                        self.set_position(self.allocation.width)
+                    else:
+                        self.set_position(self.allocation.height)
             else:
                 self.set_position(self.saved_position)
                 self.saved_position = -1
@@ -143,21 +174,21 @@ class Paned(gtk.Paned):
         c2.size_allocate(a2)
 
 class HPaned(Paned):
-    def __init__(self):
-        Paned.__init__(self)
+    def __init__(self, shrink_first=True):
+        Paned.__init__(self, shrink_first)
         self.set_orientation(gtk.ORIENTATION_HORIZONTAL)
         self.cursor_type = gtk.gdk.Cursor(gtk.gdk.SB_H_DOUBLE_ARROW)
 
 class VPaned(Paned):
-    def __init__(self):
-        Paned.__init__(self)
+    def __init__(self, shrink_first=True):
+        Paned.__init__(self, shrink_first)
         self.set_orientation(gtk.ORIENTATION_VERTICAL)
         self.cursor_type = gtk.gdk.Cursor(gtk.gdk.SB_V_DOUBLE_ARROW)
-
+        
 gobject.type_register(Paned)
 gobject.type_register(HPaned)
 gobject.type_register(VPaned)
-
+        
 if __name__ == '__main__':
     w = gtk.Window()
     w.set_size_request(700, 400)
