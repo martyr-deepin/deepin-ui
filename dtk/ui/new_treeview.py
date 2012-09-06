@@ -209,6 +209,7 @@ class TreeView(gtk.VBox):
             "Page_Down" : self.scroll_page_down,
             "Up" : self.select_prev_item,
             "Down" : self.select_next_item,
+            "Left" : self.unexpand_item,
             "Right" : self.expand_item,
             "Shift + Up" : self.select_to_prev_item,
             "Shift + Down" : self.select_to_next_item,
@@ -222,6 +223,26 @@ class TreeView(gtk.VBox):
     def expand_item(self):
         if len(self.select_rows) == 1:
             self.visible_items[self.select_rows[0]].expand()
+            
+    def unexpand_item(self):
+        if len(self.select_rows) == 1:
+            select_item = self.visible_items[self.select_rows[0]]
+            if select_item.is_expand:
+                select_item.unexpand()
+            else:
+                if select_item.parent_item != None:
+                    new_row = select_item.parent_item.row_index
+                    self.start_select_row = new_row
+                    self.set_select_rows([new_row])
+                    
+                    # Scroll viewport make sure preview row in visible area.
+                    (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
+                    vadjust = self.scrolled_window.get_vadjustment()
+                    new_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:new_row])) 
+                    if offset_y > new_row_height_count:
+                        vadjust.set_value(max(vadjust.get_lower(), 
+                                              new_row_height_count - self.visible_items[new_row].get_height()))
+                        
         
     def sort_column(self, sort_column_index):
         # Update sort action id.
@@ -1245,6 +1266,7 @@ class TreeItem(gobject.GObject):
         self.add_items_callback = None
         self.delete_items_callback = None
         self.is_select = False
+        self.is_expand = False
         self.drag_line = False
         self.drag_line_at_bottom = False
         
