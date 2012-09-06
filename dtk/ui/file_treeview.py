@@ -522,7 +522,7 @@ class FileItem(TreeItem):
             self.redraw_request_callback(self)
             
     def double_click(self):
-        app_info = gio.app_info_get_default_for_type(self.gfile.query_info("standard::*").get_content_type(), False)
+        app_info = gio.app_info_get_default_for_type(self.gfile.query_info("standard::content-type").get_content_type(), False)
         if app_info:
             app_info.launch([self.gfile], None)
         else:

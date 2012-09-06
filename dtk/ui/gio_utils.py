@@ -21,7 +21,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gio
-from utils import format_file_size
 import gtk
 import os
 import collections
@@ -49,14 +48,15 @@ def get_file_icon_pixbuf(filepath, icon_size):
     @return: Return icon pixbuf with given filepath.
     '''
     gfile = gio.File(filepath)
-    gfile_info = gfile.query_info("standard::*")
-    mime_type = gfile_info.get_content_type()
+    mime_type = gfile.query_info("standard::content-type").get_content_type()
     if file_icon_pixbuf_dict.has_key(mime_type):
         return file_icon_pixbuf_dict[mime_type] 
     else:
-        gfile_icon = gfile_info.get_icon()
         icon_theme = gtk.icon_theme_get_default()
-        icon_info = icon_theme.lookup_by_gicon(gfile_icon, icon_size, gtk.ICON_LOOKUP_USE_BUILTIN)
+        icon_info = icon_theme.lookup_by_gicon(
+            gfile.query_info("standard::icon").get_icon(),
+            icon_size, 
+            gtk.ICON_LOOKUP_USE_BUILTIN)
         if icon_info:
             return icon_info.load_icon()
         # Return unknown icon when icon_info is None.
@@ -93,7 +93,7 @@ def get_dir_child_infos(dir_path, sort=None, reverse=False):
     if not gfile.query_exists():    
         return [] 
     else:
-        gfile_info = gfile.query_info("standard::*")
+        gfile_info = gfile.query_info("standard::type")
         if gfile_info.get_file_type() == gio.FILE_TYPE_DIRECTORY:
             try:
                 gfile_enumerator = gfile.enumerate_children("standard::*")
@@ -170,13 +170,13 @@ def get_gfile_name(gfile):
     '''
     Get name of gfile.
     '''
-    return gfile.query_info("standard::*").get_name()
+    return gfile.query_info("standard::name").get_name()
 
 def get_gfile_content_type(gfile):
     '''
     Get type of gfile.
     '''
-    return gio.content_type_get_description(gfile.query_info("standard::*").get_content_type())
+    return gio.content_type_get_description(gfile.query_info("standard::content-type").get_content_type())
 
 def get_gfile_modification_time(gfile):
     return time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(gfile.query_info("time::modified").get_modification_time()))
@@ -197,7 +197,7 @@ def is_directory(gfile):
     @param gfile: gio.File.
     @return: Return True if gfile is directory, else return False.
     '''
-    return gfile.query_info("standard::*").get_file_type() == gio.FILE_TYPE_DIRECTORY
+    return gfile.query_info("standard::type").get_file_type() == gio.FILE_TYPE_DIRECTORY
 
 if __name__ == "__main__":
     print get_file_icon_pixbuf("/data/Picture/宝宝/ETB8227272-0003.JPG", 24)
