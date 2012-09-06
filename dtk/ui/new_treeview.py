@@ -209,6 +209,7 @@ class TreeView(gtk.VBox):
             "Page_Down" : self.scroll_page_down,
             "Up" : self.select_prev_item,
             "Down" : self.select_next_item,
+            "Right" : self.expand_item,
             "Shift + Up" : self.select_to_prev_item,
             "Shift + Down" : self.select_to_next_item,
             "Shift + Home" : self.select_to_first_item,
@@ -217,6 +218,10 @@ class TreeView(gtk.VBox):
             # "Return" : self.double_click_item,
             # "Delete" : self.delete_select_items,
             }
+        
+    def expand_item(self):
+        if len(self.select_rows) == 1:
+            self.visible_items[self.select_rows[0]].expand()
         
     def sort_column(self, sort_column_index):
         # Update sort action id.
