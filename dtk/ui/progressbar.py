@@ -27,34 +27,14 @@ import cairo
 import gobject
 import gtk
 
-class ProgressBar(gtk.Button):
-    '''
-    Progress bar.
-    
-    @undocumented: expose_progressbar
-    @undocumented: update_light_ticker
-    '''
+class ProgressBuffer(gobject.GObject):
 	
     def __init__(self):
-        '''
-        Initialize progress bar.
-        '''
-        # Init.
-        gtk.Button.__init__(self)
+        gobject.GObject.__init__(self)
         self.progress = 0
-        # self.progress = 100
-        self.test_ticker = 0.0
         
-        # Expose callback.
-        self.connect("expose-event", self.expose_progressbar)
-        
-    def expose_progressbar(self, widget, event):
-        '''
-        Internal callback for `expose` signal.
-        '''
+    def render(self, cr, rect):
         # Init.
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         # Draw background frame.
@@ -103,18 +83,42 @@ class ProgressBar(gtk.Button):
             cr.set_source_rgba(1, 1, 1, 0.5)
             cr.rectangle(x + 1, y + 1, w - 2, 1)
             cr.fill()
+
+gobject.type_register(ProgressBuffer)
+
+class ProgressBar(gtk.Button):
+    '''
+    Progress bar.
+    
+    @undocumented: expose_progressbar
+    @undocumented: update_light_ticker
+    '''
+	
+    def __init__(self):
+        '''
+        Initialize progress bar.
+        '''
+        # Init.
+        gtk.Button.__init__(self)
+        self.progress_buffer = ProgressBuffer()
+        
+        # Expose callback.
+        self.connect("expose-event", self.expose_progressbar)
+        
+    def expose_progressbar(self, widget, event):
+        '''
+        Internal callback for `expose` signal.
+        '''
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        
+        self.progress_buffer.render(cr, rect)
                
         # Propagate expose.
         propagate_expose(widget, event)
         
         return True        
-        
-    def test_progressbar(self):
-        '''Test prorgressbar.'''
-        self.test_ticker += 1
-        self.progress = self.test_ticker % 101
-        self.queue_draw()
-        return True
         
 gobject.type_register(ProgressBar)
 
@@ -123,7 +127,8 @@ if __name__ == "__main__":
     
     window = gtk.Window()    
     progressbar = ProgressBar()
-    progressbar.set_size_request(200, 14)
+    progressbar.progress_buffer.progress = 100
+    progressbar.set_size_request(112, 12)
     progressbar_align = gtk.Alignment()
     progressbar_align.set(0.5, 0.5, 0.0, 0.0)
     progressbar_align.add(progressbar)
@@ -132,5 +137,4 @@ if __name__ == "__main__":
     window.connect("destroy", lambda w: gtk.main_quit())
     
     window.show_all()
-    gtk.timeout_add(100, progressbar.test_progressbar)
     gtk.main()
