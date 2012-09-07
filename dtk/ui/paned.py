@@ -233,11 +233,17 @@ class Paned(gtk.Paned):
         offset = self.handle_size
 
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
-            rect.x -= offset
-            rect.width += offset
+            if self.shrink_first:
+                rect.x -= offset
+                rect.width += offset
+            else:
+                rect.width += offset
         else:
-            rect.y -= offset
-            rect.height += offset
+            if self.shrink_first:
+                rect.y -= offset
+                rect.height += offset
+            else:
+                rect.height += offset
             
         child.size_allocate(rect)
 
