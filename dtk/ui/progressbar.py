@@ -100,6 +100,7 @@ class ProgressBar(gtk.Button):
         '''
         # Init.
         gtk.Button.__init__(self)
+        self.test_ticker = 0
         self.progress_buffer = ProgressBuffer()
         
         # Expose callback.
@@ -120,6 +121,14 @@ class ProgressBar(gtk.Button):
         
         return True        
         
+        
+    def test_progressbar(self):
+        '''Test prorgressbar.'''
+        self.test_ticker += 1
+        self.progress_buffer.progress = self.test_ticker % 101
+        self.queue_draw()
+        return True
+    
 gobject.type_register(ProgressBar)
 
 if __name__ == "__main__":
@@ -137,4 +146,5 @@ if __name__ == "__main__":
     window.connect("destroy", lambda w: gtk.main_quit())
     
     window.show_all()
+    gtk.timeout_add(100, progressbar.test_progressbar)
     gtk.main()
