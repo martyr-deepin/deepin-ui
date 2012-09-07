@@ -54,7 +54,7 @@ class Paned(gtk.Paned):
         self.show_button = False
         self.init_button("normal")
         self.animation_delay = 20 # milliseconds
-        self.animation_times = 30
+        self.animation_times = 20
         self.animation_position_frames = []
         
     def init_button(self, status):

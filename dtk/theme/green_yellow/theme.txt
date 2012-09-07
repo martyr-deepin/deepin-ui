@@ -47,7 +47,7 @@
  "combo_entry_select_background" : "#9AB34D",
  "paned_line" : "#a9a9a9",
  "progressbar_background_frame" : "#b3b3b3",
- "progressbar_foreground_frame" : "#2e7599",
+ "progressbar_foreground_frame" : "#97992e",
  },	
  "alpha_colors" : {
      "color_button_disable_mask" : ("#ffffff", 0.85),
@@ -138,8 +138,8 @@
 		(1,		("#777777", 0))
 	 ],
 	 "progressbar_foreground" : [
-		(0, ("#0d93d6", 1)),
-		(1, ("#2887b7", 1)),
+		(0, ("#d3d60d", 1)),
+		(1, ("#b5b828", 1)),
 	 ],
 	 "progressbar_background" : [
 	    (0, ("#f5f5f5", 1)),

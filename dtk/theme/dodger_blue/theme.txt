@@ -139,7 +139,7 @@
 	 ],
 	 "progressbar_foreground" : [
 		(0, ("#0d93d6", 1)),
-		(1, ("#2887b7", 1)),
+		(1, ("#2888b8", 1)),
 	 ],
 	 "progressbar_background" : [
 	    (0, ("#f5f5f5", 1)),
