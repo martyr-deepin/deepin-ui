@@ -50,11 +50,11 @@ class Paned(gtk.Paned):
         self.shrink_first = shrink_first
         self.bheight = ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf().get_width()
         self.saved_position = -1
-        self.handle_size = self.style_get_property('handle-size')
+        self.handle_size = 10
         self.show_button = False
         self.init_button("normal")
         self.animation_delay = 20 # milliseconds
-        self.animation_times = 80
+        self.animation_times = 30
         self.animation_position_frames = []
         
     def init_button(self, status):
@@ -221,19 +221,25 @@ class Paned(gtk.Paned):
     def do_size_allocate(self, e):
         gtk.Paned.do_size_allocate(self, e)
 
-        c2 = self.get_child2()
+        if self.shrink_first:
+            child = self.get_child2()
+        else:
+            child = self.get_child1()
 
-        if c2 == None: return
+        if child == None: return
 
-        a2 = c2.allocation
+        rect = child.allocation
+        
+        offset = self.handle_size
 
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
-            a2.x -= self.handle_size
-            a2.width += self.handle_size
+            rect.x -= offset
+            rect.width += offset
         else:
-            a2.y -= self.handle_size
-            a2.height += self.handle_size
-        c2.size_allocate(a2)
+            rect.y -= offset
+            rect.height += offset
+            
+        child.size_allocate(rect)
 
 class HPaned(Paned):
     def __init__(self, shrink_first=True):

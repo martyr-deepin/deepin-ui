@@ -27,6 +27,7 @@ from threads import post_gui
 from titlebar import Titlebar
 from utils import container_remove_all, place_center
 from window import Window
+import os
 import gtk
 
 class Application(object):
@@ -57,7 +58,7 @@ class Application(object):
         gtk.gdk.threads_init()
         
         # Load customize rc style before any other.
-        gtk.rc_parse_string("style 'my_style' {\n    GtkPaned::handle-size = 9\n }\nwidget '*' style 'my_style'")
+        gtk.rc_parse_string("style 'my_style' {\n    GtkPaned::handle-size = 11\n }\nwidget '*' style 'my_style'")
 
         # Init status.
         self.menu_button_callback = None
