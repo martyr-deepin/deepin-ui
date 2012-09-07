@@ -43,7 +43,7 @@ class ProgressBuffer(gobject.GObject):
             cr.rectangle(x + 1, y, w - 2, h)
             cr.clip()
             
-            cr.set_source_rgb(*color_hex_to_cairo("#b3b3b3"))
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("progressbar_background_frame").get_color()))
             cr.rectangle(x, y, w, h)
             cr.set_line_width(1)
             cr.stroke()
@@ -65,7 +65,7 @@ class ProgressBuffer(gobject.GObject):
                 cr.clip()
             
                 cr.set_antialias(cairo.ANTIALIAS_NONE)
-                cr.set_source_rgb(*color_hex_to_cairo("#2e7599"))
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("progressbar_foreground_frame").get_color()))
                 cr.rectangle(x + 1, y + 1, int(w * self.progress / 100) - 1, h - 1)
                 cr.set_line_width(1)
                 cr.stroke()
