@@ -56,27 +56,28 @@ class ProgressBuffer(gobject.GObject):
             draw_vlinear(cr, x + 1, y + 1, w - 2, h - 2,
                          ui_theme.get_shadow_color("progressbar_background").get_color_info(), 
                          )
-    
-        # Draw foreground frame.
-        with cairo_state(cr):
-            cr.rectangle(x, y + 1, w, h - 2)
-            cr.rectangle(x + 1, y, w - 2, h)
-            cr.clip()
-
-            cr.set_antialias(cairo.ANTIALIAS_NONE)
-            cr.set_source_rgb(*color_hex_to_cairo("#2e7599"))
-            cr.rectangle(x + 1, y + 1, int(w * self.progress / 100) - 1, h - 1)
-            cr.set_line_width(1)
-            cr.stroke()
             
-        # Draw foreground.
-        with cairo_state(cr):
-            cr.rectangle(x + 1, y + 1, w - 2, h - 2)
-            cr.clip()
+        if self.progress > 0:    
+            # Draw foreground frame.
+            with cairo_state(cr):
+                cr.rectangle(x, y + 1, w, h - 2)
+                cr.rectangle(x + 1, y, w - 2, h)
+                cr.clip()
             
-            draw_vlinear(cr, x + 1, y + 1, int(w * self.progress / 100) - 2, h - 2,
-                         ui_theme.get_shadow_color("progressbar_foreground").get_color_info(), 
-                         )
+                cr.set_antialias(cairo.ANTIALIAS_NONE)
+                cr.set_source_rgb(*color_hex_to_cairo("#2e7599"))
+                cr.rectangle(x + 1, y + 1, int(w * self.progress / 100) - 1, h - 1)
+                cr.set_line_width(1)
+                cr.stroke()
+                
+            # Draw foreground.
+            with cairo_state(cr):
+                cr.rectangle(x + 1, y + 1, w - 2, h - 2)
+                cr.clip()
+                
+                draw_vlinear(cr, x + 1, y + 1, int(w * self.progress / 100) - 2, h - 2,
+                             ui_theme.get_shadow_color("progressbar_foreground").get_color_info(), 
+                             )
             
         # Draw light.
         with cairo_disable_antialias(cr):
