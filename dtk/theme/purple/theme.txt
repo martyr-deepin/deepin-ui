@@ -45,7 +45,7 @@
  "combo_entry_frame" : "#d6c4dd",
  "combo_entry_background" : "#FFFFFF",
  "combo_entry_select_background" : "#974DB3",
- "paned_line" : "#d6d6d6",
+ "paned_line" : "#a9a9a9",
  },	
  "alpha_colors" : {
      "color_button_disable_mask" : ("#ffffff", 0.85),
