@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state
+from theme import ui_theme
 from skin_config import skin_config
 from utils import get_window_shadow_size
 import gobject
@@ -113,8 +114,7 @@ class BackgroundBox(gtk.VBox):
         @param h: Height of draw area.
         '''
         draw_vlinear(cr, x, y, w, h,
-                     [(0, ("#FF0000", 1)),
-                      (1, ("#FF0000", 1))]
+                     ui_theme.get_shadow_color("linear_background").get_color_info()
                      )
         
     def expose_background_box(self, widget, event):
