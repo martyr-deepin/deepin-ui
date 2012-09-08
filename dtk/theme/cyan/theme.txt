@@ -68,6 +68,13 @@
 	 "window_frame_inside_1" : ("#FFFFFF", 0.2),
 	 "window_frame_inside_2" : ("#FFFFFF", 0.6),
 	 "window_shadow_corner" : ("#000000", 0.1),
+	 "dragable_tab_active_frame" : ("#333333", 0.8),
+	 "dragable_tab_active_background" : ("#FFFFFF", 1),
+	 "dragable_tab_inactive_frame" : ("#666666", 0.8),
+	 "dragable_tab_inactive_background" : ("#FFFFFF", 0.8),
+	 "dragable_tab_top_active_frame" : ("#333333", 0.7),
+	 "dragable_tab_top_inactive_frame" : ("#666666", 0.7),
+	 "dragable_tab_bottom_active_frame" : ("#333333", 0.7),
  },
  "shadow_colors" : {
      "mask_multiple_page" : [

@@ -20,7 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from box import EventBox
 from button import Button
 from constant import DEFAULT_FONT_SIZE
 from dialog import DialogBox, DIALOG_MASK_TAB_PAGE
@@ -60,7 +59,8 @@ class TabBox(gtk.VBox):
         self.tab_unselect_bg_color = ui_theme.get_color("tab_unselect_bg")
         self.tab_unselect_frame_color = ui_theme.get_color("tab_unselect_bg")
         
-        self.tab_title_box = EventBox()
+        self.tab_title_box = gtk.DrawingArea()
+        self.tab_title_box.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.tab_title_box.set_size_request(-1, self.tab_height)
         self.tab_title_align = gtk.Alignment()
         self.tab_title_align.set(0.0, 0.0, 1.0, 1.0)
@@ -137,100 +137,113 @@ class TabBox(gtk.VBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
-        # Draw title unselect tab.
-        tab_title_width = sum(self.tab_title_widths)
-        
+        # Draw background.
+        (offset_x, offset_y) = widget.translate_coordinates(self.get_toplevel(), 0, 0)
         with cairo_state(cr):
-            with cairo_disable_antialias(cr):
-                cr.rectangle(rect.x,
-                             rect.y,
-                             sum(self.tab_title_widths[0:self.tab_index]),
-                             self.tab_height)
-                cr.rectangle(rect.x + sum(self.tab_title_widths[0:min(self.tab_index + 1, len(self.tab_items))]) + 1,
-                             rect.y,
-                             sum(self.tab_title_widths) - sum(self.tab_title_widths[0:min(self.tab_index + 1, len(self.tab_items))]),
-                             self.tab_height)
-                cr.clip()
-                
-                cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_unselect_bg_color.get_color(), 0.7)))
-                cr.rectangle(rect.x + 1, rect.y + 1, tab_title_width, self.tab_height)
-                cr.fill()
-                    
-                cr.set_line_width(1)
-                cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_unselect_frame_color.get_color(), 1.0)))
-                cr.rectangle(rect.x + 1, rect.y + 1, tab_title_width, self.tab_height)
-                cr.stroke()
-                
-                for (index, width) in enumerate(self.tab_title_widths[:-1]):
-                    cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_unselect_frame_color.get_color(), 1.0)))
-                    cr.rectangle(rect.x + 1 + sum(self.tab_title_widths[0:index]) + width,
-                                 rect.y + 1,
-                                 1,
+            cr.translate(-offset_x, -offset_y)
+            
+            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
+            skin_config.render_background(cr, widget, shadow_x, shadow_y)
+            
+        if len(self.tab_items) > 0:    
+            # Draw title unselect tab.
+            tab_title_width = sum(self.tab_title_widths)
+            
+            with cairo_state(cr):
+                with cairo_disable_antialias(cr):
+                    cr.rectangle(0,
+                                 0,
+                                 sum(self.tab_title_widths[0:self.tab_index]),
                                  self.tab_height)
-                    cr.fill()
+                    cr.rectangle(sum(self.tab_title_widths[0:min(self.tab_index + 1, len(self.tab_items))]) + 1,
+                                 0,
+                                 sum(self.tab_title_widths) - sum(self.tab_title_widths[0:min(self.tab_index + 1, len(self.tab_items))]),
+                                 self.tab_height)
+                    cr.clip()
                     
-                cr.set_source_rgb(*color_hex_to_cairo(self.tab_select_frame_color.get_color()))    
-                cr.rectangle(rect.x,
-                             rect.y + rect.height - 1,
-                             sum(self.tab_title_widths[0:self.tab_index]),
-                             1)
-                cr.fill()
-            
-                cr.set_source_rgb(*color_hex_to_cairo(self.tab_select_frame_color.get_color()))    
-                cr.rectangle(rect.x + 1 + sum(self.tab_title_widths[0:self.tab_index]),
-                             rect.y + rect.height - 1,
-                             rect.width - sum(self.tab_title_widths[0:self.tab_index]),
-                             1)
-                cr.fill()
-                        
-        for (index, item) in enumerate(self.tab_items):
-            # Draw title background.
-            title = item[0]
-            
-            # Draw title tab.
-            with cairo_disable_antialias(cr):
-                if index == self.tab_index:
-                    # Draw title select tab.
-                    cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_select_bg_color.get_color(), 0.93)))    
-                    if index == 0:
-                        cr.rectangle(rect.x + sum(self.tab_title_widths[0:index]),
-                                     rect.y + 1,
-                                     self.tab_title_widths[index] + 1,
-                                     self.tab_height)
-                    else:
-                        cr.rectangle(rect.x + 1 + sum(self.tab_title_widths[0:index]),
-                                     rect.y + 1,
-                                     self.tab_title_widths[index],
-                                     self.tab_height)
+                    cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_unselect_bg_color.get_color(), 0.7)))
+                    cr.rectangle(1, 1, tab_title_width, self.tab_height)
                     cr.fill()
-                    
-                    if index == 0:
-                        cr.rectangle(rect.x,
-                                     rect.y,
-                                     rect.width,
-                                     self.tab_height)
-                        cr.clip()
                         
                     cr.set_line_width(1)
-                    cr.set_source_rgb(*color_hex_to_cairo(self.tab_select_frame_color.get_color()))    
-                    if index == 0:
-                        cr.rectangle(rect.x + sum(self.tab_title_widths[0:index]),
-                                     rect.y + 1,
-                                     self.tab_title_widths[index] + 2,
-                                     self.tab_height)
-                    else:
-                        cr.rectangle(rect.x + 1 + sum(self.tab_title_widths[0:index]),
-                                     rect.y + 1,
-                                     self.tab_title_widths[index] + 1,
-                                     self.tab_height)
+                    cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_unselect_frame_color.get_color(), 1.0)))
+                    cr.rectangle(1, 1, tab_title_width, self.tab_height)
                     cr.stroke()
                     
-            draw_text(cr, title, 
-                        rect.x + sum(self.tab_title_widths[0:index]) + self.tab_padding_x,
-                        rect.y + self.tab_padding_y,
-                        self.tab_title_widths[index] - self.tab_padding_x * 2,
-                        self.tab_height - self.tab_padding_y * 2,
-                        )
+                    for (index, width) in enumerate(self.tab_title_widths[:-1]):
+                        cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_unselect_frame_color.get_color(), 1.0)))
+                        cr.rectangle(1 + sum(self.tab_title_widths[0:index]) + width,
+                                     1,
+                                     1,
+                                     self.tab_height)
+                        cr.fill()
+                        
+                    cr.set_source_rgb(*color_hex_to_cairo(self.tab_select_frame_color.get_color()))    
+                    cr.rectangle(0,
+                                 rect.height - 1,
+                                 sum(self.tab_title_widths[0:self.tab_index]),
+                                 1)
+                    cr.fill()
+                
+                    cr.set_source_rgb(*color_hex_to_cairo(self.tab_select_frame_color.get_color()))    
+                    cr.rectangle(1 + sum(self.tab_title_widths[0:self.tab_index]),
+                                 rect.height - 1,
+                                 rect.width - sum(self.tab_title_widths[0:self.tab_index]),
+                                 1)
+                    cr.fill()
+                            
+            for (index, item) in enumerate(self.tab_items):
+                # Draw title background.
+                title = item[0]
+                
+                # Draw title tab.
+                with cairo_disable_antialias(cr):
+                    if index == self.tab_index:
+                        # Draw title select tab.
+                        cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_select_bg_color.get_color(), 0.93)))    
+                        if index == 0:
+                            cr.rectangle(sum(self.tab_title_widths[0:index]),
+                                         1,
+                                         self.tab_title_widths[index] + 1,
+                                         self.tab_height)
+                        else:
+                            cr.rectangle(1 + sum(self.tab_title_widths[0:index]),
+                                         1,
+                                         self.tab_title_widths[index],
+                                         self.tab_height)
+                        cr.fill()
+                        
+                        if index == 0:
+                            cr.rectangle(0,
+                                         0,
+                                         rect.width,
+                                         self.tab_height)
+                            cr.clip()
+                            
+                        cr.set_line_width(1)
+                        cr.set_source_rgb(*color_hex_to_cairo(self.tab_select_frame_color.get_color()))    
+                        if index == 0:
+                            cr.rectangle(sum(self.tab_title_widths[0:index]),
+                                         1,
+                                         self.tab_title_widths[index] + 2,
+                                         self.tab_height)
+                        else:
+                            cr.rectangle(1 + sum(self.tab_title_widths[0:index]),
+                                         1,
+                                         self.tab_title_widths[index] + 1,
+                                         self.tab_height)
+                        cr.stroke()
+                        
+                draw_text(cr, title, 
+                          sum(self.tab_title_widths[0:index]) + self.tab_padding_x,
+                          self.tab_padding_y,
+                          self.tab_title_widths[index] - self.tab_padding_x * 2,
+                          self.tab_height - self.tab_padding_y * 2,
+                          )
+        else:
+            cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_select_bg_color.get_color(), 0.93)))
+            cr.rectangle(0, 0, rect.width, rect.height)
+            cr.fill()
     
     def expose_tab_content_align(self, widget, event):
         '''

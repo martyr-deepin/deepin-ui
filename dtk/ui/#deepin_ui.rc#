@@ -1,4 +1,0 @@
-style 'my_style' {
-    GtkPaned::handle-size = 9
-}
-widget '*' style 'my_style'
