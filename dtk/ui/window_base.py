@@ -21,16 +21,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import EDGE_DICT
-from draw import draw_window_shadow, draw_window_frame
-from skin_config import skin_config
-from theme import ui_theme
-import cairo
-import gobject
 import gtk
-from utils import (cairo_state, propagate_expose, set_cursor, 
-                   resize_window, get_event_root_coords, 
-                   enable_shadow, alpha_color_hex_to_cairo, 
-                   is_double_click, move_window)
+from utils import (resize_window, is_double_click, move_window)
 
 class WindowBase(gtk.Window):
     '''
