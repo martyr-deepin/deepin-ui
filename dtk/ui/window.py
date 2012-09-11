@@ -126,13 +126,14 @@ class Window(WindowBase):
             
         # Draw background.
         with cairo_state(cr):
-            cr.rectangle(x + 2, y, w - 4, 1)
-            cr.rectangle(x + 1, y + 1, w - 2, 1)
-            cr.rectangle(x, y + 2, w, h - 4)
-            cr.rectangle(x + 2, y + h - 1, w - 4, 1)
-            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
-            
-            cr.clip()
+            if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+                cr.rectangle(x + 2, y, w - 4, 1)
+                cr.rectangle(x + 1, y + 1, w - 2, 1)
+                cr.rectangle(x, y + 2, w, h - 4)
+                cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+                cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+                
+                cr.clip()
             
             skin_config.render_background(cr, self, x, y)
         
@@ -203,18 +204,19 @@ class Window(WindowBase):
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
         """
-        # Init.
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        
-        draw_window_frame(cr, x, y, w, h,
-                          ui_theme.get_alpha_color("window_frame_outside_1"),
-                          ui_theme.get_alpha_color("window_frame_outside_2"),
-                          ui_theme.get_alpha_color("window_frame_outside_3"),
-                          ui_theme.get_alpha_color("window_frame_inside_1"),
-                          ui_theme.get_alpha_color("window_frame_inside_2"),
-                          )
+        if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+            # Init.
+            cr = widget.window.cairo_create()
+            rect = widget.allocation
+            x, y, w, h = rect.x, rect.y, rect.width, rect.height
+            
+            draw_window_frame(cr, x, y, w, h,
+                              ui_theme.get_alpha_color("window_frame_outside_1"),
+                              ui_theme.get_alpha_color("window_frame_outside_2"),
+                              ui_theme.get_alpha_color("window_frame_outside_3"),
+                              ui_theme.get_alpha_color("window_frame_inside_1"),
+                              ui_theme.get_alpha_color("window_frame_inside_2"),
+                              )
 
     def shape_window_frame(self, widget, rect):
         """
@@ -224,28 +226,29 @@ class Window(WindowBase):
         @param rect: The bounding region of the window.
         """
         if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
-            # Init.
-            x, y, w, h = rect.x, rect.y, rect.width, rect.height
-            bitmap = gtk.gdk.Pixmap(None, w, h, 1)
-            cr = bitmap.cairo_create()
-            
-            # Clear the bitmap
-            cr.set_source_rgb(0.0, 0.0, 0.0)
-            cr.set_operator(cairo.OPERATOR_CLEAR)
-            cr.paint()
-            
-            # Draw our shape into the bitmap using cairo.
-            cr.set_source_rgb(1.0, 1.0, 1.0)
-            cr.set_operator(cairo.OPERATOR_OVER)
-            
-            cr.rectangle(x + 1, y, w - 2, 1)
-            cr.rectangle(x, y + 1, w, h - 2)
-            cr.rectangle(x + 1, y + h - 1, w - 2, 1)
-            
-            cr.fill()
-            
-            # Shape with given mask.
-            widget.shape_combine_mask(bitmap, 0, 0)
+            if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+                # Init.
+                x, y, w, h = rect.x, rect.y, rect.width, rect.height
+                bitmap = gtk.gdk.Pixmap(None, w, h, 1)
+                cr = bitmap.cairo_create()
+                
+                # Clear the bitmap
+                cr.set_source_rgb(0.0, 0.0, 0.0)
+                cr.set_operator(cairo.OPERATOR_CLEAR)
+                cr.paint()
+                
+                # Draw our shape into the bitmap using cairo.
+                cr.set_source_rgb(1.0, 1.0, 1.0)
+                cr.set_operator(cairo.OPERATOR_OVER)
+                
+                cr.rectangle(x + 1, y, w - 2, 1)
+                cr.rectangle(x, y + 1, w, h - 2)
+                cr.rectangle(x + 1, y + h - 1, w - 2, 1)
+                
+                cr.fill()
+                
+                # Shape with given mask.
+                widget.shape_combine_mask(bitmap, 0, 0)
             
     def hide_shadow(self):
         """

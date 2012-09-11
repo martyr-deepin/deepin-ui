@@ -152,13 +152,14 @@ class MplayerWindow(WindowBase):
         
         # Draw background.
         with cairo_state(cr):
-            cr.rectangle(x + 2, y, w - 4, 1)
-            cr.rectangle(x + 1, y + 1, w - 2, 1)
-            cr.rectangle(x, y + 2, w, h - 4)
-            cr.rectangle(x + 2, y + h - 1, w - 4, 1)
-            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
-            
-            cr.clip()
+            if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+                cr.rectangle(x + 2, y, w - 4, 1)
+                cr.rectangle(x + 1, y + 1, w - 2, 1)
+                cr.rectangle(x, y + 2, w, h - 4)
+                cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+                cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+                
+                cr.clip()
             
             skin_config.render_background(cr, self, x, y)
         
@@ -166,13 +167,14 @@ class MplayerWindow(WindowBase):
             self.draw_mask(cr, x, y, w, h)
             
         # Draw window frame.
-        draw_window_frame(cr, x, y, w, h,
-                          ui_theme.get_alpha_color("window_frame_outside_1"),
-                          ui_theme.get_alpha_color("window_frame_outside_2"),
-                          ui_theme.get_alpha_color("window_frame_outside_3"),
-                          ui_theme.get_alpha_color("window_frame_inside_1"),
-                          ui_theme.get_alpha_color("window_frame_inside_2"),
-                          )
+        if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+            draw_window_frame(cr, x, y, w, h,
+                              ui_theme.get_alpha_color("window_frame_outside_1"),
+                              ui_theme.get_alpha_color("window_frame_outside_2"),
+                              ui_theme.get_alpha_color("window_frame_outside_3"),
+                              ui_theme.get_alpha_color("window_frame_inside_1"),
+                              ui_theme.get_alpha_color("window_frame_inside_2"),
+                              )
         
         # Propagate expose.
         propagate_expose(widget, event)
@@ -195,7 +197,7 @@ class MplayerWindow(WindowBase):
         @param widget: A widget of type gtk.Widget.
         @param rect: The bounding region of the window.
         """
-        if rect.width > 0 and rect.height > 0:
+        if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             bitmap = gtk.gdk.Pixmap(None, w, h, 1)
@@ -213,7 +215,7 @@ class MplayerWindow(WindowBase):
             if not self.shape_flag:
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
-            elif self.window != None and self.window.get_state() == gtk.gdk.WINDOW_STATE_FULLSCREEN:
+            elif self.window.get_state() in [gtk.gdk.WINDOW_STATE_FULLSCREEN, gtk.gdk.WINDOW_STATE_MAXIMIZED]:
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
             else:
@@ -229,7 +231,7 @@ class MplayerWindow(WindowBase):
             
             # Redraw whole window.
             self.queue_draw()
-            
+                
             if enable_shadow(self) and self.shadow_visible:
                 self.window_shadow.queue_draw()
             
