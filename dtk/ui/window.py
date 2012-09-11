@@ -59,18 +59,22 @@ class Window(WindowBase):
         """
         # Init.
         WindowBase.__init__(self, window_type)
+        self.shadow_radius = shadow_radius
+        self.enable_resize = enable_resize
+        self.shadow_visible = shadow_visible
+        
+        self.init()
+        
+    def init(self):
         skin_config.wrap_skin_window(self)
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.window_shadow = gtk.Alignment()
         self.window_frame = gtk.VBox()
-        self.shadow_radius = shadow_radius
         self.frame_radius = 2
         self.shadow_is_visible = True
         self.cursor_type = None
-        self.enable_resize = enable_resize
-        self.shadow_visible = shadow_visible
         
         # Shadow setup.
         if enable_shadow(self) and self.shadow_visible:
@@ -315,6 +319,27 @@ class Window(WindowBase):
             return (0, 0)
         
 gobject.type_register(Window)
+
+class EmbedWindow(gtk.Plug):
+    def __init__(self,
+                 enable_resize=False, 
+                 shadow_radius=6, 
+                 shadow_visible=True):
+        gtk.Plug.__init__(self, 0)
+        self.shadow_radius = shadow_radius
+        self.enable_resize = enable_resize
+        self.shadow_visible = shadow_visible
+        
+        self.init()
+        
+        # def show_plug_id():
+        #     print self.get_id()
+        # self.connect("realize", lambda w: show_plug_id())    
+
+# Mix-in Window methods (except __init__) to EmbedWindow
+EmbedWindow.__bases__ += (Window,)        
+        
+gobject.type_register(EmbedWindow)
     
 if __name__ == "__main__":
     import pseudo_skin

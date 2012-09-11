@@ -33,7 +33,7 @@ app_theme = init_skin(
     )
 
 # from dtk.ui.window import EmbedWindow
-from dtk.ui.window import Window, PlugWindow
+from dtk.ui.window import Window, EmbedWindow
 from dtk.ui.application import Application
 from dtk.ui.new_treeview import TreeView
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
@@ -44,9 +44,9 @@ import gtk
 if __name__ == "__main__":
     gtk.gdk.threads_init()
     
-    # window = EmbedWindow()
+    window = EmbedWindow()
     # window = Window(is_embed=True)
-    window = PlugWindow()
+    # window = PlugWindow()
     window.set_default_size(200, 100)
     
     # window.window_frame.add(gtk.Button("Test Builder"))

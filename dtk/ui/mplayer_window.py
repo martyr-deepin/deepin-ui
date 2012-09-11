@@ -64,13 +64,17 @@ class MplayerWindow(WindowBase):
         """
         # Init.
         WindowBase.__init__(self, window_type)
+        self.shadow_radius = shadow_radius
+        self.enable_resize = enable_resize
+        
+        self.init()
+        
+    def init(self):
         skin_config.wrap_skin_window(self)
         self.set_decorated(False)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
-        self.shadow_radius = shadow_radius
         self.frame_radius = 2
         self.shadow_is_visible = True
-        self.enable_resize = enable_resize
         self.window_frame = gtk.VBox()
         self.add(self.window_frame)
         self.shape_flag = True
@@ -377,6 +381,26 @@ class MplayerWindow(WindowBase):
     
 gobject.type_register(MplayerWindow)
     
+class EmbedMplayerWindow(gtk.Plug):
+    def __init__(self,
+                 enable_resize=False, 
+                 shadow_radius=6, 
+                 ):
+        gtk.Plug.__init__(self, 0)
+        self.shadow_radius = shadow_radius
+        self.enable_resize = enable_resize
+        
+        self.init()
+        
+        # def show_plug_id():
+        #     print self.get_id()
+        # self.connect("realize", lambda w: show_plug_id())    
+
+# Mix-in MplayerWindow methods (except __init__) to EmbedMplayerWindow
+EmbedMplayerWindow.__bases__ += (MplayerWindow,)        
+        
+gobject.type_register(EmbedMplayerWindow)
+
 if __name__ == "__main__":
     window = MplayerWindow()
     window.connect("destroy", lambda w: gtk.main_quit())
