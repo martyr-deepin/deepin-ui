@@ -170,7 +170,10 @@ class Menu(Window):
         global root_menus
         
         # Init.
-        Window.__init__(self, shadow_visible=shadow_visible, window_type=gtk.WINDOW_POPUP)
+        Window.__init__(self, 
+                        shadow_visible=shadow_visible, 
+                        window_type=gtk.WINDOW_POPUP,
+                        shadow_radius=6)
         self.set_can_focus(True) # can focus to response key-press signal
         self.draw_mask = self.draw_menu_mask
         self.is_root_menu = is_root_menu
