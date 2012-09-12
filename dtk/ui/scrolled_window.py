@@ -82,8 +82,8 @@ class ScrolledWindow(gtk.Bin):
     @undocumented: do_expose_event
     '''
 
-    def __init__(self, 
-                 right_space=2, 
+    def __init__(self,
+                 right_space=2,
                  top_bottom_space=3):
         '''
         Init scrolled window.
@@ -372,9 +372,9 @@ class ScrolledWindow(gtk.Bin):
     def add_with_viewport(self, child):
         '''
         Used to add children without native scrolling capabilities.
-        
+
         If a child has native scrolling, use ScrolledWindow.add() insetad
-        
+
         of this function.
 
         @param child: the child without native scrolling.
@@ -388,7 +388,7 @@ class ScrolledWindow(gtk.Bin):
     def add_child(self, child):
         '''
         Add the child to this ScrolledWindow.The child should have
-        
+
         native scrolling capabilities.
 
         @param child: the child with native scrolling.
@@ -412,6 +412,7 @@ class ScrolledWindow(gtk.Bin):
     def do_size_allocate(self, allocation):
         #print "do_size_allocate", allocation
         self.allocation = allocation
+        self.window.move_resize(allocation.x, allocation.y, allocation.width, allocation.height)
 
         if self.get_realized():
             self.binwindow.move_resize(*self.allocation)
