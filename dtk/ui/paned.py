@@ -56,6 +56,7 @@ class Paned(gtk.Paned):
         self.animation_delay = 20 # milliseconds
         self.animation_times = 10
         self.animation_position_frames = []
+        self.press_coordinate = None
         
     def init_button(self, status):
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
@@ -128,16 +129,16 @@ class Paned(gtk.Paned):
                                 (width - self.bheight) / 2,
                                 0)
 
-    def is_in_button(self, x, y):
+    def is_in_button(self, x, y, offset=0):
         '''
         Detection of wheter the mouse pointer is in the handler's button.
         '''
         handle = self.get_handle_window()
         (width, height) = handle.get_size()
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
-            rect =  (0, (height-self.bheight)/2, width, self.bheight)
+            rect =  (0, (height-self.bheight) / 2 - offset, width + offset * 2, self.bheight)
         else:
-            rect =  ((width-self.bheight)/2, 0, self.bheight, height)
+            rect =  ((width-self.bheight) / 2 - offset, 0, self.bheight, height + offset * 2)
 
         if is_in_rect((x, y), rect):
             return True
@@ -159,6 +160,9 @@ class Paned(gtk.Paned):
         '''
         change the cursor style  when move in handler
         '''
+        # Reset press coordinate if motion mouse after press event.
+        self.press_coordinate = None
+        
         handle = self.get_handle_window()
         (width, height) = handle.get_size()
         if self.is_in_button(e.x, e.y):
@@ -178,25 +182,45 @@ class Paned(gtk.Paned):
         '''
         when press the handler's button change the position.
         '''
+        self.press_coordinate = (e.x, e.y)
+        
         if self.is_in_button(e.x, e.y):
             self.init_button("press")
-            
-            if self.saved_position == -1:
-                self.saved_position = self.get_position()
-                if self.shrink_first:
-                    self.change_position(0)
-                else:
-                    if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
-                        self.change_position(self.allocation.width)
-                    else:
-                        self.change_position(self.allocation.height)
-            else:
-                self.change_position(self.saved_position)
-                self.saved_position = -1
+        
+            self.do_press_actoin()
         else:
             gtk.Paned.do_button_press_event(self, e)
             
         return True
+    
+    def do_button_release_event(self, e):
+        '''
+        docs
+        '''
+        gtk.Paned.do_button_release_event(self, e)
+        
+        # Do press event if not in button and finish `click` event.
+        if (not self.is_in_button(e.x, e.y)) and self.press_coordinate == (e.x, e.y):
+            self.do_press_actoin()
+            
+        return True    
+
+    def do_press_actoin(self):
+        '''
+        docs
+        '''
+        if self.saved_position == -1:
+            self.saved_position = self.get_position()
+            if self.shrink_first:
+                self.change_position(0)
+            else:
+                if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
+                    self.change_position(self.allocation.width)
+                else:
+                    self.change_position(self.allocation.height)
+        else:
+            self.change_position(self.saved_position)
+            self.saved_position = -1
     
     def change_position(self, new_position):
         current_position = self.get_position()
