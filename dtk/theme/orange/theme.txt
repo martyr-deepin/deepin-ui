@@ -108,10 +108,8 @@
 	    (1,     ("#FFF8F2", 0.0)),
      ],
      "linear_background" : [
-	    (0,		("#EFEFEF", 0.6)),
-		(0.05,	("#EFEFEF", 0.75)),
-		(0.95,	("#EFEFEF", 0.75)),
-		(1,		("#EFEFEF", 0.6)),
+	    (0,		("#EFEFEF", 0.75)),
+		(1,		("#EFEFEF", 0.75)),
 	 ],
 	 "category_item_press" : [
 		(0, ("#53ABDE", 0.8)),

@@ -78,6 +78,8 @@ class TabBox(gtk.VBox):
         self.tab_title_widths = []
         self.tab_index = -1
         
+        self.default_widget = None
+        
         self.pack_start(self.tab_title_align, False, False)
         self.pack_start(self.tab_content_align, True, True)
         
@@ -85,6 +87,20 @@ class TabBox(gtk.VBox):
         self.tab_title_box.connect("expose-event", self.expose_tab_title_box)
         self.tab_content_align.connect("expose-event", self.expose_tab_content_align)
         self.tab_content_box.connect("expose-event", self.expose_tab_content_box)
+        
+    def show_default_page(self):
+        if self.default_widget != None and len(self.tab_items) == 0:
+            container_remove_all(self.tab_content_box)
+            self.tab_content_box.add(self.default_widget)
+            self.tab_title_box.queue_draw()
+            self.tab_content_box.queue_draw()
+            
+            self.show_all()
+        
+    def set_default_widget(self, widget):
+        self.default_widget = widget
+        
+        self.show_default_page()
         
     def add_items(self, items, default_index=0):
         '''

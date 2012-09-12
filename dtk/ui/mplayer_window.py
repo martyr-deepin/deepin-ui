@@ -20,18 +20,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import EDGE_DICT
 from draw import draw_window_shadow, draw_window_frame
 from skin_config import skin_config
+from window_base import WindowBase
 from theme import ui_theme
 import cairo
 import gobject
 import gtk
-from utils import (cairo_state, propagate_expose, resize_window, 
-                   set_cursor, get_event_root_coords, enable_shadow, 
-                   is_double_click, move_window)
+from utils import (cairo_state, propagate_expose, set_cursor, 
+                   get_event_root_coords, 
+                   enable_shadow)
 
-class MplayerWindow(gtk.Window):
+class MplayerWindow(WindowBase):
     """
     Special Window class for mplayer.
 
@@ -53,7 +53,7 @@ class MplayerWindow(gtk.Window):
 	
     def __init__(self, 
                  enable_resize=False, 
-                 shadow_radius=6, 
+                 shadow_radius=10, 
                  window_type=gtk.WINDOW_TOPLEVEL):
         """
         Initialise the Window class.
@@ -63,14 +63,18 @@ class MplayerWindow(gtk.Window):
         @param window_type: A flag of type gtk._gtk.WindowType, which indicates the type of the window. By default, it's gtk.WINDOW_TOPLEVEL.
         """
         # Init.
-        gtk.Window.__init__(self, window_type)
+        WindowBase.__init__(self, window_type)
+        self.shadow_radius = shadow_radius
+        self.enable_resize = enable_resize
+        
+        self.init()
+        
+    def init(self):
         skin_config.wrap_skin_window(self)
         self.set_decorated(False)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
-        self.shadow_radius = shadow_radius
         self.frame_radius = 2
         self.shadow_is_visible = True
-        self.enable_resize = enable_resize
         self.window_frame = gtk.VBox()
         self.add(self.window_frame)
         self.shape_flag = True
@@ -152,13 +156,14 @@ class MplayerWindow(gtk.Window):
         
         # Draw background.
         with cairo_state(cr):
-            cr.rectangle(x + 2, y, w - 4, 1)
-            cr.rectangle(x + 1, y + 1, w - 2, 1)
-            cr.rectangle(x, y + 2, w, h - 4)
-            cr.rectangle(x + 2, y + h - 1, w - 4, 1)
-            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
-            
-            cr.clip()
+            if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+                cr.rectangle(x + 2, y, w - 4, 1)
+                cr.rectangle(x + 1, y + 1, w - 2, 1)
+                cr.rectangle(x, y + 2, w, h - 4)
+                cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+                cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+                
+                cr.clip()
             
             skin_config.render_background(cr, self, x, y)
         
@@ -166,30 +171,19 @@ class MplayerWindow(gtk.Window):
             self.draw_mask(cr, x, y, w, h)
             
         # Draw window frame.
-        draw_window_frame(cr, x, y, w, h,
-                          ui_theme.get_alpha_color("window_frame_outside_1"),
-                          ui_theme.get_alpha_color("window_frame_outside_2"),
-                          ui_theme.get_alpha_color("window_frame_outside_3"),
-                          ui_theme.get_alpha_color("window_frame_inside_1"),
-                          ui_theme.get_alpha_color("window_frame_inside_2"),
-                          )
+        if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+            draw_window_frame(cr, x, y, w, h,
+                              ui_theme.get_alpha_color("window_frame_outside_1"),
+                              ui_theme.get_alpha_color("window_frame_outside_2"),
+                              ui_theme.get_alpha_color("window_frame_outside_3"),
+                              ui_theme.get_alpha_color("window_frame_inside_1"),
+                              ui_theme.get_alpha_color("window_frame_inside_2"),
+                              )
         
         # Propagate expose.
         propagate_expose(widget, event)
         
         return True
-    
-    def draw_mask(self, cr, x, y, w, h):
-        '''
-        Draw mask interface, you should implement it you own.
-        
-        @param cr: Cairo context.
-        @param x: X coordinate of draw area.
-        @param y: Y coordinate of draw area.
-        @param w: Width of draw area.
-        @param h: Height of draw area.
-        '''
-        pass
     
     def set_window_shape(self, shape_flag):
         """
@@ -207,7 +201,7 @@ class MplayerWindow(gtk.Window):
         @param widget: A widget of type gtk.Widget.
         @param rect: The bounding region of the window.
         """
-        if rect.width > 0 and rect.height > 0:
+        if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
             bitmap = gtk.gdk.Pixmap(None, w, h, 1)
@@ -225,7 +219,7 @@ class MplayerWindow(gtk.Window):
             if not self.shape_flag:
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
-            elif self.window != None and self.window.get_state() == gtk.gdk.WINDOW_STATE_FULLSCREEN:
+            elif self.window.get_state() in [gtk.gdk.WINDOW_STATE_FULLSCREEN, gtk.gdk.WINDOW_STATE_MAXIMIZED]:
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
             else:
@@ -241,7 +235,7 @@ class MplayerWindow(gtk.Window):
             
             # Redraw whole window.
             self.queue_draw()
-            
+                
             if enable_shadow(self) and self.shadow_visible:
                 self.window_shadow.queue_draw()
             
@@ -335,13 +329,6 @@ class MplayerWindow(gtk.Window):
         if enable_shadow(self) and self.shadow_visible:
             self.window_shadow.show_all()
         
-    def is_disable_window_maximized(self):
-        """
-        An interface which indicates whether the window could be maximized, you should implement this function you own.
-        @return: Always return False.
-        """
-        return False                
-                
     def monitor_window_state(self, widget, event):
         """
         Monitor window state, add shadow when window at maximized or fullscreen status. Otherwise hide shadow.
@@ -349,98 +336,9 @@ class MplayerWindow(gtk.Window):
         @param widget: The window of type gtk.Widget.
         @param event: The event of gtk.gdk.Event.
         """
-        window_state = self.window.get_state()
-        if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:
-            self.hide_shadow()
-            
-            if self.is_disable_window_maximized():
-                self.unmaximize()
-        else:
-            self.show_shadow()
-            
+        super(MplayerWindow, self).monitor_window_state(widget, event)
+        
         self.adjust_window_shadow(widget, event)    
-            
-    def min_window(self):
-        """
-        Minimize the window. Make it iconified.
-        """
-        self.iconify()
-        
-    def toggle_max_window(self):
-        """
-        Toggle the window size between maximized size and normal size.
-        """
-        window_state = self.window.get_state()
-        if window_state == gtk.gdk.WINDOW_STATE_MAXIMIZED:
-            self.unmaximize()
-        else:
-            self.maximize()
-            
-    def toggle_fullscreen_window(self):
-        """
-        Toggle the window between fullscreen mode and normal size.
-        """
-        window_state = self.window.get_state()
-        if window_state == gtk.gdk.WINDOW_STATE_FULLSCREEN:
-            self.unfullscreen()
-        else:
-            self.fullscreen()
-            
-    def close_window(self):
-        """
-        Close the window. Send the destroy signal to the program.
-
-        @return: Always return False.
-        """
-        # Hide window immediately when user click close button,
-        # user will feeling this software very quick, ;p
-        self.hide_all()
-
-        self.emit("destroy")
-    
-        return False
-        
-    def resize_window(self, widget, event):
-        """
-        Resize the window.
-
-        @param widget: The window of type gtk.Widget.
-        @param event: A signal of type gtk.gdk.Event.
-        """
-        if self.enable_resize:
-            edge = self.get_edge()            
-            if edge != None:
-                resize_window(self, event, self, edge)
-                
-    def add_move_event(self, widget):
-        """
-        Add move event callback.
-
-        @param widget: A widget of type gtk.Widget.
-        """
-        widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
-        
-    def add_toggle_event(self, widget):
-        """
-        Add toggle event callback.
-
-        @param widget: A widget of type gtk.Widget.
-        """
-        widget.connect("button-press-event", self.double_click_window)        
-        
-    def double_click_window(self, widget, event):
-        """
-        Internal function to double click event handler of the window. It will maximize the window.
-
-        @param widget: A widget of type gtk.Widget.
-        @param event: A event of type gtk.gdk.Event.
-
-        @return: Always return False.
-        """
-        if is_double_click(event):
-            self.toggle_max_window()
-            
-        return False    
             
     def motion_notify(self, widget, event):
         """
@@ -453,17 +351,6 @@ class MplayerWindow(gtk.Window):
             self.cursor_type = self.get_cursor_type(event)
             set_cursor(self.window_shadow, self.cursor_type)
             
-    def get_edge(self):
-        """
-        Get the edge which the cursor is on, according to the cursor type.
-
-        @return: If there is a corresponding cursor type, return an instance of gtk.gdk.WindowEdge, else return None.
-        """
-        if EDGE_DICT.has_key(self.cursor_type):
-            return EDGE_DICT[self.cursor_type]
-        else:
-            return None
-
     def get_cursor_type(self, event):
         """
         Get the cursor position.
@@ -482,33 +369,7 @@ class MplayerWindow(gtk.Window):
         wh = rect.height
         
         # Return cursor position. 
-        if wx <= ex <= wx + self.shadow_padding:
-            if wy <= ey <= wy + self.shadow_padding * 2:
-                return gtk.gdk.TOP_LEFT_CORNER
-            elif wy + wh - (self.shadow_padding * 2) <= ey <= wy + wh:
-                return gtk.gdk.BOTTOM_LEFT_CORNER
-            elif wy + self.shadow_padding < ey < wy + wh - self.shadow_padding:
-                return gtk.gdk.LEFT_SIDE
-            else:
-                return None
-        elif wx + ww - self.shadow_padding <= ex <= wx + ww:
-            if wy <= ey <= wy + self.shadow_padding * 2:
-                return gtk.gdk.TOP_RIGHT_CORNER
-            elif wy + wh - (self.shadow_padding * 2) <= ey <= wy + wh:
-                return gtk.gdk.BOTTOM_RIGHT_CORNER
-            elif wy + self.shadow_padding < ey < wy + wh - self.shadow_padding:
-                return gtk.gdk.RIGHT_SIDE
-            else:
-                return None
-        elif wx + self.shadow_padding < ex < wx + ww - self.shadow_padding:
-            if wy <= ey <= wy + self.shadow_padding:
-                return gtk.gdk.TOP_SIDE
-            elif wy + wh - self.shadow_padding <= ey <= wy + wh:
-                return gtk.gdk.BOTTOM_SIDE
-            else: 
-                return None
-        else:
-            return None
+        return self.get_cursor_type_with_coordinate(ex, ey, wx, wy, ww, wh)
         
     def get_shadow_size(self):
         """
@@ -520,6 +381,26 @@ class MplayerWindow(gtk.Window):
     
 gobject.type_register(MplayerWindow)
     
+class EmbedMplayerWindow(gtk.Plug):
+    def __init__(self,
+                 enable_resize=False, 
+                 shadow_radius=6, 
+                 ):
+        gtk.Plug.__init__(self, 0)
+        self.shadow_radius = shadow_radius
+        self.enable_resize = enable_resize
+        
+        self.init()
+        
+        # def show_plug_id():
+        #     print self.get_id()
+        # self.connect("realize", lambda w: show_plug_id())    
+
+# Mix-in MplayerWindow methods (except __init__) to EmbedMplayerWindow
+EmbedMplayerWindow.__bases__ += (MplayerWindow,)        
+        
+gobject.type_register(EmbedMplayerWindow)
+
 if __name__ == "__main__":
     window = MplayerWindow()
     window.connect("destroy", lambda w: gtk.main_quit())

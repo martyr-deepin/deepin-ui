@@ -747,7 +747,8 @@ class TreeView(gtk.VBox):
         self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
         
         # Draw items.
-        self.draw_items(rect, cr)
+        if len(self.visible_items) > 0:
+            self.draw_items(rect, cr)
         
         return False
     

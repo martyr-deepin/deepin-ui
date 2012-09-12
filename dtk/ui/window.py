@@ -20,19 +20,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from constant import EDGE_DICT
 from draw import draw_window_shadow, draw_window_frame
 from skin_config import skin_config
 from theme import ui_theme
+from window_base import WindowBase
 import cairo
 import gobject
 import gtk
 from utils import (cairo_state, propagate_expose, set_cursor, 
-                   resize_window, get_event_root_coords, 
-                   enable_shadow, alpha_color_hex_to_cairo, 
-                   is_double_click, move_window)
+                   get_event_root_coords, 
+                   enable_shadow, alpha_color_hex_to_cairo)
 
-class Window(gtk.Window):
+class Window(WindowBase):
     """
     The Window class is a subclass of gtk.Window. It adds some features that deepin-ui have to gtk.Window.
 
@@ -47,7 +46,7 @@ class Window(gtk.Window):
     """
     def __init__(self, 
                  enable_resize=False, 
-                 shadow_radius=6, 
+                 shadow_radius=10, 
                  window_type=gtk.WINDOW_TOPLEVEL, 
                  shadow_visible=True):
         """
@@ -59,19 +58,23 @@ class Window(gtk.Window):
         @param shadow_visible: If True, the shadow is visible. By default, it's True, just disable when your program not allow manipulate colormap, such as mplayer. 
         """
         # Init.
-        gtk.Window.__init__(self, window_type)
+        WindowBase.__init__(self, window_type)
+        self.shadow_radius = shadow_radius
+        self.enable_resize = enable_resize
+        self.shadow_visible = shadow_visible
+        
+        self.init()
+        
+    def init(self):
         skin_config.wrap_skin_window(self)
         self.set_decorated(False)
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.window_shadow = gtk.Alignment()
         self.window_frame = gtk.VBox()
-        self.shadow_radius = shadow_radius
         self.frame_radius = 2
         self.shadow_is_visible = True
         self.cursor_type = None
-        self.enable_resize = enable_resize
-        self.shadow_visible = shadow_visible
         
         # Shadow setup.
         if enable_shadow(self) and self.shadow_visible:
@@ -98,12 +101,6 @@ class Window(gtk.Window):
         self.connect("button-press-event", self.resize_window)
         self.connect("window-state-event", self.monitor_window_state)
         self.window_frame.connect("expose-event", self.expose_window_frame)
-        
-    def show_window(self):
-        """
-        Show the window.
-        """
-        self.show_all()
         
     def expose_window_background(self, widget, event):
         """
@@ -133,13 +130,14 @@ class Window(gtk.Window):
             
         # Draw background.
         with cairo_state(cr):
-            cr.rectangle(x + 2, y, w - 4, 1)
-            cr.rectangle(x + 1, y + 1, w - 2, 1)
-            cr.rectangle(x, y + 2, w, h - 4)
-            cr.rectangle(x + 2, y + h - 1, w - 4, 1)
-            cr.rectangle(x + 1, y + h - 2, w - 2, 1)
-            
-            cr.clip()
+            if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+                cr.rectangle(x + 2, y, w - 4, 1)
+                cr.rectangle(x + 1, y + 1, w - 2, 1)
+                cr.rectangle(x, y + 2, w, h - 4)
+                cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+                cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+                
+                cr.clip()
             
             skin_config.render_background(cr, self, x, y)
         
@@ -187,18 +185,6 @@ class Window(gtk.Window):
         
         return True
         
-    def draw_mask(self, cr, x, y, w, h):
-        '''
-        Draw mask interface, you should implement this function own.
-        
-        @param cr: Cairo context.
-        @param x: X coordinate of draw area.
-        @param y: Y coordinate of draw area.
-        @param w: Width of draw area.
-        @param h: Height of draw area.
-        '''
-        pass
-    
     def expose_window_shadow(self, widget, event):
         """
         Interh function to expose the window shadow.
@@ -222,18 +208,19 @@ class Window(gtk.Window):
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
         """
-        # Init.
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        
-        draw_window_frame(cr, x, y, w, h,
-                          ui_theme.get_alpha_color("window_frame_outside_1"),
-                          ui_theme.get_alpha_color("window_frame_outside_2"),
-                          ui_theme.get_alpha_color("window_frame_outside_3"),
-                          ui_theme.get_alpha_color("window_frame_inside_1"),
-                          ui_theme.get_alpha_color("window_frame_inside_2"),
-                          )
+        if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+            # Init.
+            cr = widget.window.cairo_create()
+            rect = widget.allocation
+            x, y, w, h = rect.x, rect.y, rect.width, rect.height
+            
+            draw_window_frame(cr, x, y, w, h,
+                              ui_theme.get_alpha_color("window_frame_outside_1"),
+                              ui_theme.get_alpha_color("window_frame_outside_2"),
+                              ui_theme.get_alpha_color("window_frame_outside_3"),
+                              ui_theme.get_alpha_color("window_frame_inside_1"),
+                              ui_theme.get_alpha_color("window_frame_inside_2"),
+                              )
 
     def shape_window_frame(self, widget, rect):
         """
@@ -243,28 +230,29 @@ class Window(gtk.Window):
         @param rect: The bounding region of the window.
         """
         if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
-            # Init.
-            x, y, w, h = rect.x, rect.y, rect.width, rect.height
-            bitmap = gtk.gdk.Pixmap(None, w, h, 1)
-            cr = bitmap.cairo_create()
-            
-            # Clear the bitmap
-            cr.set_source_rgb(0.0, 0.0, 0.0)
-            cr.set_operator(cairo.OPERATOR_CLEAR)
-            cr.paint()
-            
-            # Draw our shape into the bitmap using cairo.
-            cr.set_source_rgb(1.0, 1.0, 1.0)
-            cr.set_operator(cairo.OPERATOR_OVER)
-            
-            cr.rectangle(x + 1, y, w - 2, 1)
-            cr.rectangle(x, y + 1, w, h - 2)
-            cr.rectangle(x + 1, y + h - 1, w - 2, 1)
-            
-            cr.fill()
-            
-            # Shape with given mask.
-            widget.shape_combine_mask(bitmap, 0, 0)
+            if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+                # Init.
+                x, y, w, h = rect.x, rect.y, rect.width, rect.height
+                bitmap = gtk.gdk.Pixmap(None, w, h, 1)
+                cr = bitmap.cairo_create()
+                
+                # Clear the bitmap
+                cr.set_source_rgb(0.0, 0.0, 0.0)
+                cr.set_operator(cairo.OPERATOR_CLEAR)
+                cr.paint()
+                
+                # Draw our shape into the bitmap using cairo.
+                cr.set_source_rgb(1.0, 1.0, 1.0)
+                cr.set_operator(cairo.OPERATOR_OVER)
+                
+                cr.rectangle(x + 1, y, w - 2, 1)
+                cr.rectangle(x, y + 1, w, h - 2)
+                cr.rectangle(x + 1, y + h - 1, w - 2, 1)
+                
+                cr.fill()
+                
+                # Shape with given mask.
+                widget.shape_combine_mask(bitmap, 0, 0)
             
     def hide_shadow(self):
         """
@@ -279,46 +267,6 @@ class Window(gtk.Window):
         """
         self.shadow_is_visible = True
         self.window_shadow.set_padding(self.shadow_padding, self.shadow_padding, self.shadow_padding, self.shadow_padding)
-        
-    def min_window(self):
-        """
-        Minimize the window. Make it iconified.
-        """
-        self.iconify()
-        
-    def toggle_max_window(self):
-        """
-        Toggle the window size between maximized size and normal size.
-        """
-        window_state = self.window.get_state()
-        if window_state == gtk.gdk.WINDOW_STATE_MAXIMIZED:
-            self.unmaximize()
-        else:
-            self.maximize()
-            
-    def toggle_fullscreen_window(self):
-        """
-        Toggle the window between fullscreen mode and normal size.
-        """
-        window_state = self.window.get_state()
-        if window_state == gtk.gdk.WINDOW_STATE_FULLSCREEN:
-            self.unfullscreen()
-        else:
-            self.fullscreen()
-            
-    def close_window(self):
-        """
-        Close the window. Send the destroy signal to the program.
-        
-        @return: Always return False.
-        """
-        # Hide window immediately when user click close button,
-        # user will feeling this software very quick, ;p
-        self.hide_all()
-
-        self.emit("destroy")
-    
-        return False
         
     def motion_notify(self, widget, event):
         """
@@ -336,84 +284,6 @@ class Window(gtk.Window):
                 
             self.cursor_type = cursor_type
             
-    def resize_window(self, widget, event):
-        """
-        Resize the window.
-
-        @param widget: The window of type gtk.Widget.
-        @param event: A signal of type gtk.gdk.Event.
-        """
-        if self.enable_resize:
-            edge = self.get_edge()            
-            if edge != None:
-                resize_window(widget, event, self, edge)
-                
-    def is_disable_window_maximized(self):
-        """
-        An interface which indicates whether the window could be maximized, you should implement this function you own.
-        
-        @return: Always return False.
-        """
-        return False                
-                
-    def monitor_window_state(self, widget, event):
-        """
-        Internal function to monitor window state, 
-
-        add shadow when window at maximized or fullscreen status. Otherwise hide shadow.
-
-        @param widget: The window of type gtk.Widget.
-        @param event: The event of gtk.gdk.Event.
-        """
-        window_state = self.window.get_state()
-        if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:
-            self.hide_shadow()
-            
-            if self.is_disable_window_maximized():
-                self.unmaximize()
-        else:
-            self.show_shadow()
-        
-    def add_move_event(self, widget):
-        """
-        Add move event callback.
-
-        @param widget: A widget of type gtk.Widget.
-        """
-        widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
-        
-    def add_toggle_event(self, widget):
-        """
-        Add toggle event callback.
-
-        @param widget: A widget of type gtk.Widget.
-        """
-        widget.connect("button-press-event", self.double_click_window)        
-        
-    def double_click_window(self, widget, event):
-        """
-        Double click event handler of the window. It will maximize the window.
-
-        @param widget: A widget of type gtk.Widget.
-        @param event: A event of type gtk.gdk.Event.
-        @return: Always return False.
-        """
-        if is_double_click(event):
-            self.toggle_max_window()
-            
-        return False    
-            
-    def get_edge(self):
-        """
-        Get the edge which the cursor is on, according to the cursor type.
-
-        @return: If there is a corresponding cursor type, an instance of gtk.gdk.WindowEdge is returned, else None is returned.
-        """
-        if EDGE_DICT.has_key(self.cursor_type):
-            return EDGE_DICT[self.cursor_type]
-        else:
-            return None
-
     def get_cursor_type(self, event):
         """
         Get the cursor position.
@@ -431,33 +301,7 @@ class Window(gtk.Window):
         wh = rect.height
         
         # Return cursor position. 
-        if wx <= ex <= wx + self.shadow_padding:
-            if wy <= ey <= wy + self.shadow_padding * 2:
-                return gtk.gdk.TOP_LEFT_CORNER
-            elif wy + wh - (self.shadow_padding * 2) <= ey <= wy + wh:
-                return gtk.gdk.BOTTOM_LEFT_CORNER
-            elif wy + self.shadow_padding < ey < wy + wh - self.shadow_padding:
-                return gtk.gdk.LEFT_SIDE
-            else:
-                return None
-        elif wx + ww - self.shadow_padding <= ex <= wx + ww:
-            if wy <= ey <= wy + self.shadow_padding * 2:
-                return gtk.gdk.TOP_RIGHT_CORNER
-            elif wy + wh - (self.shadow_padding * 2) <= ey <= wy + wh:
-                return gtk.gdk.BOTTOM_RIGHT_CORNER
-            elif wy + self.shadow_padding < ey < wy + wh - self.shadow_padding:
-                return gtk.gdk.RIGHT_SIDE
-            else:
-                return None
-        elif wx + self.shadow_padding < ex < wx + ww - self.shadow_padding:
-            if wy <= ey <= wy + self.shadow_padding:
-                return gtk.gdk.TOP_SIDE
-            elif wy + wh - self.shadow_padding <= ey <= wy + wh:
-                return gtk.gdk.BOTTOM_SIDE
-            else: 
-                return None
-        else:
-            return None
+        return self.get_cursor_type_with_coordinate(ex, ey, wx, wy, ww, wh)
         
     def get_shadow_size(self):
         """
@@ -475,6 +319,27 @@ class Window(gtk.Window):
             return (0, 0)
         
 gobject.type_register(Window)
+
+class EmbedWindow(gtk.Plug):
+    def __init__(self,
+                 enable_resize=False, 
+                 shadow_radius=6, 
+                 shadow_visible=True):
+        gtk.Plug.__init__(self, 0)
+        self.shadow_radius = shadow_radius
+        self.enable_resize = enable_resize
+        self.shadow_visible = shadow_visible
+        
+        self.init()
+        
+        # def show_plug_id():
+        #     print self.get_id()
+        # self.connect("realize", lambda w: show_plug_id())    
+
+# Mix-in Window methods (except __init__) to EmbedWindow
+EmbedWindow.__bases__ += (Window,)        
+        
+gobject.type_register(EmbedWindow)
     
 if __name__ == "__main__":
     import pseudo_skin

@@ -244,6 +244,8 @@ class Entry(gtk.EventBox):
             self.offset_x = text_width - rect.width + self.padding_x * 2
         else:
             self.offset_x = 0
+            
+        self.im.set_client_window(widget.window)
         
     def key_press_entry(self, widget, event):
         '''
@@ -685,19 +687,34 @@ class Entry(gtk.EventBox):
         '''
         if self.grab_focus_flag and self.select_start_index == self.select_end_index:
             # Init.
-            x, y, w, h = rect.x, rect.y, rect.width, rect.height
-            left_str = self.content[0:self.cursor_index]
-            left_str_width = self.get_content_width(left_str)
-            padding_y = (h - (get_content_size("Height", self.font_size)[-1])) / 2
+            cursor_rect = self.get_cursor_rect()
             
             # Draw cursor.
             cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entry_cursor").get_color()))
-            cr.rectangle(x + self.padding_x + left_str_width - self.offset_x,
-                         y + padding_y,
-                         1, 
-                         h - padding_y * 2
-                         )
+            cr.rectangle(cursor_rect.x, cursor_rect.y, cursor_rect.width, cursor_rect.height)
             cr.fill()
+            
+            # Tell input method follow cursor position.
+            self.im.set_cursor_location(cursor_rect)
+            
+    def get_cursor_rect(self):
+        '''
+        docs
+        '''
+        # Init.
+        rect = self.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        left_str = self.content[0:self.cursor_index]
+        left_str_width = self.get_content_width(left_str)
+        padding_y = (h - (get_content_size("Height", self.font_size)[-1])) / 2
+        
+        # Draw cursor.
+        return gtk.gdk.Rectangle(
+            x + self.padding_x + left_str_width - self.offset_x,
+            y + padding_y,
+            1, 
+            h - padding_y * 2
+            )
     
     def button_press_entry(self, widget, event):
         '''
@@ -771,8 +788,6 @@ class Entry(gtk.EventBox):
         '''
         self.grab_focus_flag = True
         
-        # Focus in IMContext.
-        self.im.set_client_window(widget.window)
         self.im.focus_in()
         
         self.queue_draw()
