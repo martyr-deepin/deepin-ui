@@ -412,9 +412,9 @@ class ScrolledWindow(gtk.Bin):
     def do_size_allocate(self, allocation):
         #print "do_size_allocate", allocation
         self.allocation = allocation
-        self.window.move_resize(allocation.x, allocation.y, allocation.width, allocation.height)
 
         if self.get_realized():
+            self.window.move_resize(allocation.x, allocation.y, allocation.width, allocation.height)
             self.binwindow.move_resize(*self.allocation)
 
         #must before calc_xxx_length, because we need child to cumpute the adjustment value
