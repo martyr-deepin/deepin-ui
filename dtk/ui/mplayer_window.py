@@ -53,7 +53,7 @@ class MplayerWindow(WindowBase):
 	
     def __init__(self, 
                  enable_resize=False, 
-                 shadow_radius=6, 
+                 shadow_radius=10, 
                  window_type=gtk.WINDOW_TOPLEVEL):
         """
         Initialise the Window class.
