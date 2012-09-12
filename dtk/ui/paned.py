@@ -129,16 +129,16 @@ class Paned(gtk.Paned):
                                 (width - self.bheight) / 2,
                                 0)
 
-    def is_in_button(self, x, y, offset=0):
+    def is_in_button(self, x, y):
         '''
         Detection of wheter the mouse pointer is in the handler's button.
         '''
         handle = self.get_handle_window()
         (width, height) = handle.get_size()
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
-            rect =  (0, (height-self.bheight) / 2 - offset, width + offset * 2, self.bheight)
+            rect =  (0, (height - self.bheight) / 2, width, self.bheight)
         else:
-            rect =  ((width-self.bheight) / 2 - offset, 0, self.bheight, height + offset * 2)
+            rect =  ((width - self.bheight) / 2, 0, self.bheight, height)
 
         if is_in_rect((x, y), rect):
             return True
@@ -182,13 +182,16 @@ class Paned(gtk.Paned):
         '''
         when press the handler's button change the position.
         '''
-        self.press_coordinate = (e.x, e.y)
-        
         if self.is_in_button(e.x, e.y):
             self.init_button("press")
         
             self.do_press_actoin()
         else:
+            handle = self.get_handle_window()
+            (width, height) = handle.get_size()
+            if is_in_rect((e.x, e.y), (0, 0, width, height)):
+                self.press_coordinate = (e.x, e.y)
+        
             gtk.Paned.do_button_press_event(self, e)
             
         return True
