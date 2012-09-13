@@ -81,8 +81,9 @@ def coords_to_parent(window, x, y):
 def find_at_coords(gdkwindow, window_x, window_y):
     cl = ChildLocation()
 
-    widget = gdkwindow.get_user_data()
-    if widget == None:
+    try:
+        widget = gdkwindow.get_user_data()
+    except:
         return (None, cl.x, cl.y)
 
     cl.x = window_x
