@@ -140,10 +140,7 @@ class Paned(gtk.Paned):
         else:
             rect =  ((width - self.bheight) / 2, 0, self.bheight, height)
 
-        if is_in_rect((x, y), rect):
-            return True
-        else:
-            return False
+        return is_in_rect((x, y), rect)
 
     def do_enter_notify_event(self, e):
         self.show_button = True
@@ -182,16 +179,19 @@ class Paned(gtk.Paned):
         '''
         when press the handler's button change the position.
         '''
-        if self.is_in_button(e.x, e.y):
-            self.init_button("press")
-        
-            self.do_press_actoin()
+        handle = self.get_handle_window()
+        if e.window == handle:
+            if self.is_in_button(e.x, e.y):
+                self.init_button("press")
+            
+                self.do_press_actoin()
+            else:
+                (width, height) = handle.get_size()
+                if is_in_rect((e.x, e.y), (0, 0, width, height)):
+                    self.press_coordinate = (e.x, e.y)
+            
+                gtk.Paned.do_button_press_event(self, e)
         else:
-            handle = self.get_handle_window()
-            (width, height) = handle.get_size()
-            if is_in_rect((e.x, e.y), (0, 0, width, height)):
-                self.press_coordinate = (e.x, e.y)
-        
             gtk.Paned.do_button_press_event(self, e)
             
         return True
