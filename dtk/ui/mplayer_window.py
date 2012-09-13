@@ -66,6 +66,8 @@ class MplayerWindow(WindowBase):
         WindowBase.__init__(self, window_type)
         self.shadow_radius = shadow_radius
         self.enable_resize = enable_resize
+        if enable_shadow(self) and self.shadow_visible:    
+            self.window_shadow.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         
         self.init()
         
@@ -94,7 +96,6 @@ class MplayerWindow(WindowBase):
             self.window_shadow = gtk.Window(gtk.WINDOW_TOPLEVEL)
             self.window_shadow.add_events(gtk.gdk.ALL_EVENTS_MASK)
             self.window_shadow.set_decorated(False)
-            self.window_shadow.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
             self.window_shadow.set_transient_for(self)
             self.window_shadow.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_MENU)
 

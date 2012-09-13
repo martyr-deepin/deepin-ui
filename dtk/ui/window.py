@@ -62,13 +62,13 @@ class Window(WindowBase):
         self.shadow_radius = shadow_radius
         self.enable_resize = enable_resize
         self.shadow_visible = shadow_visible
+        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         
         self.init()
         
     def init(self):
         skin_config.wrap_skin_window(self)
         self.set_decorated(False)
-        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.window_shadow = gtk.Alignment()
         self.window_frame = gtk.VBox()
