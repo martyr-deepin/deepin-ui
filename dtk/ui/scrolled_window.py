@@ -118,6 +118,7 @@ class ScrolledWindow(gtk.Bin):
                 self.is_inside = False # is pointer in the scrollbar region?
                 self.in_motion = False # is user is draging scrollbar?
                 self.policy = gtk.POLICY_AUTOMATIC
+                self.need_update_region = False # update gdk.Window's shape_region when need
 
         self._horizaontal = Record()
         self._vertical = Record()
@@ -168,14 +169,22 @@ class ScrolledWindow(gtk.Bin):
 
     def make_bar_smaller(self, orientation):
         if orientation == gtk.ORIENTATION_HORIZONTAL:
-            region = gdk.region_rectangle(gdk.Rectangle(0, 0, int(self._horizaontal.bar_len), self.bar_small_width))
+            bar_len = self._horizaontal.bar_len
+            if bar_len == 0:
+                self._horizaontal.need_update_region = True
+                return
+            region = gdk.region_rectangle(gdk.Rectangle(0, 0, int(bar_len), self.bar_small_width))
 
             if self.hallocation.x == 0:
                 self.hwindow.shape_combine_region(region, self.top_bottom_space, self.bar_width - self.bar_small_width -self.right_space)
             else:
                 self.hwindow.shape_combine_region(region, -self.top_bottom_space, self.bar_width - self.bar_small_width -self.right_space)
         elif orientation == gtk.ORIENTATION_VERTICAL:
-            region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_small_width, int(self._vertical.bar_len)))
+            bar_len = self._vertical.bar_len
+            if bar_len == 0:
+                self._vertical.need_update_region = True
+                return
+            region = gdk.region_rectangle(gdk.Rectangle(0, 0, self.bar_small_width, int(bar_len)))
 
             if self.vallocation.y == 0:
                 self.vwindow.shape_combine_region(region, self.bar_width-self.bar_small_width - self.right_space, self.top_bottom_space)
@@ -434,6 +443,12 @@ class ScrolledWindow(gtk.Bin):
             self.calc_hbar_length()
             self.vadjustment.emit('value-changed')
             self.hadjustment.emit('value-changed')
+            if self._horizaontal.need_update_region:
+                self.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
+                self._horizaontal.need_update_region = False
+            if self._vertical.need_update_region:
+                self.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
+                self._vertical.need_update_region = False
 
     def do_unrealize(self):
         #print "do_unrealize"
