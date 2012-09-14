@@ -328,9 +328,15 @@ class ScrolledWindow(gtk.Bin):
             self._vertical.bar_len = max(bar_len, self.bar_min_length)
 
     def calc_vbar_allocation(self):
-        self.vallocation = gdk.Rectangle(
-                self.allocation.width - self.bar_width, int(self._vertical.bar_pos),
-                self.bar_width, int(self._vertical.bar_len))
+        bar_len = int(self._vertical.bar_len)
+        if bar_len == 0:
+            self.vallocation = gdk.Rectangle(0, 0, 0, 0)
+            self.vwindow.hide()
+        else:
+            self.vwindow.show()
+            self.vallocation = gdk.Rectangle(
+                    self.allocation.width - self.bar_width, int(self._vertical.bar_pos),
+                    self.bar_width, bar_len)
 
     def calc_hbar_length(self):
         self._horizaontal.virtual_len = self.allocation.width
@@ -355,9 +361,15 @@ class ScrolledWindow(gtk.Bin):
         #assert 0 <= int(self.hpos) <= self.allocation.width - self.hbar_length,\
         #        "self.hpos %f   self.allocation.width %f self.hbar_lengh %f" % (self.hpos, self.allocation.width,
         #                self.hbar_length)
-        self.hallocation = gdk.Rectangle(
-                int(self._horizaontal.bar_pos), self.allocation.height - self.bar_width,
-                int(self._horizaontal.bar_len), self.bar_width)
+        bar_len = int(self._horizaontal.bar_len)
+        if bar_len == 0:
+            self.hallocation = gdk.Rectangle(0, 0, 0, 0)
+            self.hwindow.hide()
+        else:
+            self.hwindow.show()
+            self.hallocation = gdk.Rectangle(
+                    int(self._horizaontal.bar_pos), self.allocation.height - self.bar_width,
+                    bar_len, self.bar_width)
 
     def vadjustment_changed(self, adj):
         if self.get_realized():
@@ -375,6 +387,7 @@ class ScrolledWindow(gtk.Bin):
             self._horizaontal.bar_pos = value2pos(adj.value, self._horizaontal.virtual_len, upper)
             self.calc_hbar_allocation()
             self.hwindow.move_resize(*self.hallocation)
+            print self.hwindow.get_geometry()
             self.queue_draw()
 
 
@@ -423,7 +436,6 @@ class ScrolledWindow(gtk.Bin):
         self.allocation = allocation
 
         if self.get_realized():
-            self.window.move_resize(allocation.x, allocation.y, allocation.width, allocation.height)
             self.binwindow.move_resize(*self.allocation)
 
         #must before calc_xxx_length, because we need child to cumpute the adjustment value
@@ -446,9 +458,11 @@ class ScrolledWindow(gtk.Bin):
             if self._horizaontal.need_update_region:
                 self.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
                 self._horizaontal.need_update_region = False
+                self.hwindow.show()
             if self._vertical.need_update_region:
                 self.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
                 self._vertical.need_update_region = False
+                self.vwindow.show()
 
     def do_unrealize(self):
         #print "do_unrealize"
@@ -553,8 +567,8 @@ class ScrolledWindow(gtk.Bin):
     def do_map(self):
         gtk.Bin.do_map(self)  #must before self.xwindow.show(), didn't know the reason.
         self.binwindow.show()
-        self.hwindow.show()
-        self.vwindow.show()
+        #self.hwindow.show()  #will show or hide in calc_xbar_allocation()
+        #self.vwindow.show()
         if self.child and not self.child.get_mapped() and self.child.get_visible():
             self.child.do_map(self.child)
 
