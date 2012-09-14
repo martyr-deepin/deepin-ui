@@ -387,10 +387,8 @@ class ScrolledWindow(gtk.Bin):
             self._horizaontal.bar_pos = value2pos(adj.value, self._horizaontal.virtual_len, upper)
             self.calc_hbar_allocation()
             self.hwindow.move_resize(*self.hallocation)
-            print self.hwindow.get_geometry()
             self.queue_draw()
-
-
+            
     def add_with_viewport(self, child):
         '''
         Used to add children without native scrolling capabilities.
