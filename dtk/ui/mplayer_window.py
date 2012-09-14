@@ -66,6 +66,11 @@ class MplayerWindow(WindowBase):
         WindowBase.__init__(self, window_type)
         self.shadow_radius = shadow_radius
         self.enable_resize = enable_resize
+        self.background_color = (0, 0, 0, 0)
+        # FIXME: Because mplayer don't allowed window redirect colormap to screen.
+        # We build shadow window to emulate it, but shadow's visual effect 
+        # is not good enough, so we disable shadow temporary for future fixed.
+        self.shadow_visible = False
         if enable_shadow(self) and self.shadow_visible:    
             self.window_shadow.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         
@@ -80,11 +85,6 @@ class MplayerWindow(WindowBase):
         self.window_frame = gtk.VBox()
         self.add(self.window_frame)
         self.shape_flag = True
-        
-        # FIXME: Because mplayer don't allowed window redirect colormap to screen.
-        # We build shadow window to emulate it, but shadow's visual effect 
-        # is not good enough, so we disable shadow temporary for future fixed.
-        self.shadow_visible = False
         
         if enable_shadow(self) and self.shadow_visible:
             self.shadow_padding = self.shadow_radius - self.frame_radius
@@ -151,7 +151,7 @@ class MplayerWindow(WindowBase):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         # Clear color to transparent window.
-        cr.set_source_rgba(0.0, 0.0, 0.0, 0.0)
+        cr.set_source_rgba(*self.background_color)
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
         
@@ -390,12 +390,13 @@ class EmbedMplayerWindow(gtk.Plug):
         gtk.Plug.__init__(self, 0)
         self.shadow_radius = shadow_radius
         self.enable_resize = enable_resize
+        self.background_color = (1, 1, 1, 1)
+        # FIXME: Because mplayer don't allowed window redirect colormap to screen.
+        # We build shadow window to emulate it, but shadow's visual effect 
+        # is not good enough, so we disable shadow temporary for future fixed.
+        self.shadow_visible = False
         
         self.init()
-        
-        # def show_plug_id():
-        #     print self.get_id()
-        # self.connect("realize", lambda w: show_plug_id())    
 
 # Mix-in MplayerWindow methods (except __init__) to EmbedMplayerWindow
 EmbedMplayerWindow.__bases__ += (MplayerWindow,)        
