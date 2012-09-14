@@ -393,6 +393,19 @@ if __name__ == "__main__":
     tab_1_box.pack_start(entry_frame, False, False)
 
     # Combo button.
+    combo_menu = Menu(
+        [(None, "选项1", None),
+         (None, "选项2", None),
+         (None, "选项3", None),
+         ],
+        True)
+    
+    def click_combo_button(widget):
+        print "click combo button"
+        
+    def show_combo_menu(widget, x, y, offset_x, offset_y):
+        combo_menu.show((x, y), (offset_x, offset_y))
+        
     combo_button = ComboButton(
         app_theme.get_pixbuf("button/button_normal.png"),
         app_theme.get_pixbuf("button/button_hover.png"),
@@ -403,6 +416,8 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("button/arrow_press.png"),
         app_theme.get_pixbuf("button/arrow_normal.png"),
         )
+    combo_button.connect("button-clicked", click_combo_button)
+    combo_button.connect("arrow-clicked", show_combo_menu)
     
     tab_1_box.pack_start(combo_button, False, False)
     

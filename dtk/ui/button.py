@@ -30,7 +30,8 @@ import gobject
 import gtk
 import pango
 from utils import (get_content_size, color_hex_to_cairo, propagate_expose, set_clickable_cursor,
-                   window_is_max, get_same_level_widgets, widget_fix_cycle_destroy_bug, run_command)
+                   window_is_max, get_same_level_widgets, widget_fix_cycle_destroy_bug, run_command,
+                   get_widget_root_coordinate, WIDGET_POS_BOTTOM_LEFT)
 
 __all__ = ["Button", "ImageButton", "ThemeButton",
            "MenuButton", "MinButton", "CloseButton",
@@ -857,6 +858,11 @@ class ComboButton(gtk.Button):
     class docs
     '''
 	
+    __gsignals__ = {
+        "button-clicked" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "arrow-clicked" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int, int, int, int)),
+    }
+    
     def __init__(self,
                  button_normal_dpixbuf,
                  button_hover_dpixbuf,
@@ -882,12 +888,15 @@ class ComboButton(gtk.Button):
         self.arrow_disable_dpixbuf = arrow_disable_dpixbuf
         button_pixbuf = button_normal_dpixbuf.get_pixbuf()
         arrow_pixbuf = arrow_normal_dpixbuf.get_pixbuf()
-        self.set_size_request(button_pixbuf.get_width() + arrow_pixbuf.get_width(), button_pixbuf.get_height())
         self.button_width = button_pixbuf.get_width()
+        self.arrow_width = arrow_pixbuf.get_width()
+        self.height = button_pixbuf.get_height()
+        self.set_size_request(self.button_width + self.arrow_width, self.height)
         self.in_button = True
         
         self.connect("expose-event", self.expose_combo_button)
-        self.connect("motion-notify-event", self.motion_notify_combo_button)
+        self.connect("button-press-event", self.button_press_combo_button)
+        self.connect("clicked", self.click_combo_button)
         
     def expose_combo_button(self, widget, event):
         # Init.
@@ -904,11 +913,11 @@ class ComboButton(gtk.Button):
             arrow_pixbuf = self.arrow_hover_dpixbuf.get_pixbuf()
         elif widget.state == gtk.STATE_ACTIVE:
             if self.in_button:
-                button_pixbuf = self.button_hover_dpixbuf.get_pixbuf()
-                arrow_pixbuf = self.arrow_press_dpixbuf.get_pixbuf()
-            else:
                 button_pixbuf = self.button_press_dpixbuf.get_pixbuf()
                 arrow_pixbuf = self.arrow_hover_dpixbuf.get_pixbuf()
+            else:
+                button_pixbuf = self.button_hover_dpixbuf.get_pixbuf()
+                arrow_pixbuf = self.arrow_press_dpixbuf.get_pixbuf()
         elif widget.state == gtk.STATE_INSENSITIVE:
             button_pixbuf = self.button_disable_dpixbuf.get_pixbuf()
             arrow_pixbuf = self.arrow_disable_dpixbuf.get_pixbuf()
@@ -919,8 +928,18 @@ class ComboButton(gtk.Button):
 
         return True    
     
-    def motion_notify_combo_button(self, widget, event):
-        print (event.x, self.button_width, self.allocation)
+    def button_press_combo_button(self, widget, event):
         self.in_button = event.x < self.button_width
+        
+    def click_combo_button(self, widget):
+        if self.in_button:
+            self.emit("button-clicked")
+        else:
+            (button_x, button_y) = get_widget_root_coordinate(self, WIDGET_POS_BOTTOM_LEFT)
+            self.emit("arrow-clicked", 
+                      button_x + self.button_width,
+                      button_y,
+                      self.arrow_width,
+                      self.height)
 
 gobject.type_register(ComboButton)
