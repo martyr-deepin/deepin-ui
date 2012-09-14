@@ -62,13 +62,14 @@ class Window(WindowBase):
         self.shadow_radius = shadow_radius
         self.enable_resize = enable_resize
         self.shadow_visible = shadow_visible
+        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
+        self.background_color = (0, 0, 0, 0)
         
         self.init()
         
     def init(self):
         skin_config.wrap_skin_window(self)
         self.set_decorated(False)
-        self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.window_shadow = gtk.Alignment()
         self.window_frame = gtk.VBox()
@@ -115,7 +116,7 @@ class Window(WindowBase):
         rect = widget.allocation
         
         # Clear color to transparent window.
-        cr.set_source_rgba(0.0, 0.0, 0.0, 0.0)
+        cr.set_source_rgba(*self.background_color)
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
         
@@ -329,12 +330,9 @@ class EmbedWindow(gtk.Plug):
         self.shadow_radius = shadow_radius
         self.enable_resize = enable_resize
         self.shadow_visible = shadow_visible
+        self.background_color = (1, 1, 1, 0.93)
         
         self.init()
-        
-        # def show_plug_id():
-        #     print self.get_id()
-        # self.connect("realize", lambda w: show_plug_id())    
 
 # Mix-in Window methods (except __init__) to EmbedWindow
 EmbedWindow.__bases__ += (Window,)        

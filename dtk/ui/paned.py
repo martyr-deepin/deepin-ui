@@ -42,12 +42,15 @@ class Paned(gtk.Paned):
 
     gtk.Paned with custom better apperance.
     '''
-    def __init__(self, shrink_first):
+    def __init__(self, 
+                 shrink_first,
+                 enable_animation=False):
         '''
         Initialize Paned class.
         '''
         gtk.Paned.__init__(self)
         self.shrink_first = shrink_first
+        self.enable_animation = enable_animation
         self.bheight = ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf().get_width()
         self.saved_position = -1
         self.handle_size = 10
@@ -227,15 +230,18 @@ class Paned(gtk.Paned):
     
     def change_position(self, new_position):
         current_position = self.get_position()
-        if new_position != current_position:
-            for i in range(0, self.animation_times + 1):
-                step = int(math.sin(math.pi * i / 2 / self.animation_times) * (new_position - current_position))
-                self.animation_position_frames.append(current_position + step)
-                
-            if self.animation_position_frames[-1] != new_position:
-                self.animation_position_frames.append(new_position)
-                
-            gtk.timeout_add(self.animation_delay, self.update_position)
+        if self.enable_animation:
+            if new_position != current_position:
+                for i in range(0, self.animation_times + 1):
+                    step = int(math.sin(math.pi * i / 2 / self.animation_times) * (new_position - current_position))
+                    self.animation_position_frames.append(current_position + step)
+                    
+                if self.animation_position_frames[-1] != new_position:
+                    self.animation_position_frames.append(new_position)
+                    
+                gtk.timeout_add(self.animation_delay, self.update_position)
+        else:
+            self.set_position(new_position)
         
     def update_position(self):
         self.set_position(self.animation_position_frames.pop(0))        

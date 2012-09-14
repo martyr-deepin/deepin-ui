@@ -41,7 +41,7 @@ app_theme = init_skin(
 # Load other modules.
 from dtk.ui.application import Application
 from dtk.ui.browser import WebView
-from dtk.ui.button import CheckButton, RadioButton
+from dtk.ui.button import CheckButton, RadioButton, ComboButton
 from dtk.ui.button import ImageButton, LinkButton, Button
 from dtk.ui.categorybar import Categorybar
 from dtk.ui.color_selection import ColorButton
@@ -391,6 +391,36 @@ if __name__ == "__main__":
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
     tab_1_box.pack_start(entry_frame, False, False)
+
+    # Combo button.
+    combo_menu = Menu(
+        [(None, "选项1", None),
+         (None, "选项2", None),
+         (None, "选项3", None),
+         ],
+        is_root_menu=True,
+        )
+    
+    def click_combo_button(widget):
+        print "click combo button"
+        
+    def show_combo_menu(widget, x, y, offset_x, offset_y):
+        combo_menu.show((x, y), (offset_x, offset_y))
+        
+    combo_button = ComboButton(
+        app_theme.get_pixbuf("button/button_normal.png"),
+        app_theme.get_pixbuf("button/button_hover.png"),
+        app_theme.get_pixbuf("button/button_press.png"),
+        app_theme.get_pixbuf("button/button_normal.png"),
+        app_theme.get_pixbuf("button/arrow_normal.png"),
+        app_theme.get_pixbuf("button/arrow_hover.png"),
+        app_theme.get_pixbuf("button/arrow_press.png"),
+        app_theme.get_pixbuf("button/arrow_normal.png"),
+        )
+    combo_button.connect("button-clicked", click_combo_button)
+    combo_button.connect("arrow-clicked", show_combo_menu)
+    
+    tab_1_box.pack_start(combo_button, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)
