@@ -398,7 +398,8 @@ if __name__ == "__main__":
          (None, "选项2", None),
          (None, "选项3", None),
          ],
-        True)
+        is_root_menu=True,
+        )
     
     def click_combo_button(widget):
         print "click combo button"
