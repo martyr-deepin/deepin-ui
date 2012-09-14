@@ -390,7 +390,7 @@ class EmbedMplayerWindow(gtk.Plug):
         gtk.Plug.__init__(self, 0)
         self.shadow_radius = shadow_radius
         self.enable_resize = enable_resize
-        self.background_color = (1, 1, 1, 1)
+        self.background_color = (1, 1, 1, 0.93)
         # FIXME: Because mplayer don't allowed window redirect colormap to screen.
         # We build shadow window to emulate it, but shadow's visual effect 
         # is not good enough, so we disable shadow temporary for future fixed.

@@ -330,7 +330,7 @@ class EmbedWindow(gtk.Plug):
         self.shadow_radius = shadow_radius
         self.enable_resize = enable_resize
         self.shadow_visible = shadow_visible
-        self.background_color = (1, 1, 1, 1)
+        self.background_color = (1, 1, 1, 0.93)
         
         self.init()
 
