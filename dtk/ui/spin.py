@@ -96,6 +96,7 @@ class SpinBox(gtk.VBox):
         button_box.pack_start(arrow_down_button, False, False)
         self.value_entry = Entry(str(value))
         self.value_entry.check_text = is_float
+        self.value_entry.connect("changed", lambda entry, value_string: self.update_and_emit(int(value_string)))
         
         self.main_align = gtk.Alignment()
         self.main_align.set(0.5, 0.5, 0, 0)
