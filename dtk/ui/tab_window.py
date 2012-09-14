@@ -68,11 +68,9 @@ class TabBox(gtk.VBox):
         self.tab_title_align.add(self.tab_title_box)
         self.tab_content_align = gtk.Alignment()
         self.tab_content_align.set(0.0, 0.0, 1.0, 1.0)
-        self.tab_content_align.set_padding(0, 1, 0, 0)
-        self.tab_content_scrolled_window = ScrolledWindow()
-        self.tab_content_align.add(self.tab_content_scrolled_window)
+        self.tab_content_align.set_padding(0, 0, 0, 0)
         self.tab_content_box = gtk.VBox()
-        self.tab_content_scrolled_window.add_child(self.tab_content_box)
+        self.tab_content_align.add(self.tab_content_box)
         
         self.tab_items = []
         self.tab_title_widths = []
@@ -160,7 +158,7 @@ class TabBox(gtk.VBox):
             
             (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
             skin_config.render_background(cr, widget, shadow_x, shadow_y)
-            
+        
         if len(self.tab_items) > 0:    
             # Draw title unselect tab.
             tab_title_width = sum(self.tab_title_widths)
@@ -269,29 +267,24 @@ class TabBox(gtk.VBox):
         rect = widget.allocation
 
         with cairo_disable_antialias(cr):
+            cr.rectangle(rect.x, rect.y, sum(self.tab_title_widths[0:self.tab_index]), rect.height)
+            cr.rectangle(rect.x + sum(self.tab_title_widths[0:self.tab_index + 1]), 
+                         rect.y, 
+                         rect.width - sum(self.tab_title_widths[0:self.tab_index + 1]), 
+                         rect.height)
+            cr.clip()
+            
             cr.set_source_rgb(*color_hex_to_cairo(self.tab_select_frame_color.get_color()))
-            cr.rectangle(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2)
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.stroke()
 
     def expose_tab_content_box(self, widget, event):
         '''
         Internal function to `expose-event` signal.
         '''
+        # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        
-        # Draw background.
-        toplevel = widget.get_toplevel()
-        coordinate = widget.translate_coordinates(toplevel, rect.x, rect.y)
-        (offset_x, offset_y) = coordinate
-        
-        with cairo_state(cr):
-            cr.translate(-offset_x, -offset_y)
-            cr.rectangle(offset_x, offset_y, rect.width, rect.height)
-            cr.clip()
-            
-            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
-            skin_config.render_background(cr, self, rect.x + shadow_x, rect.y + shadow_y)
         
         # Draw mask.
         cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_select_bg_color.get_color(), 0.93)))
