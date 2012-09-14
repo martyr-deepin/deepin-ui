@@ -100,3 +100,5 @@ SIMILAR_COLOR_SEQUENCE = ["red", "orange", "gold", "yellow", "green_yellow", "ch
                           "deep_pink", "purple", "dark_purple", "blue", "dodger_blue", "cyan"]
 
 VERSION = "1.0.1"
+
+PANED_HANDLE_SIZE = 11

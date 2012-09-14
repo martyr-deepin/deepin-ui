@@ -23,6 +23,7 @@
 
 from draw import draw_pixbuf
 from utils import is_in_rect, color_hex_to_cairo
+from constant import PANED_HANDLE_SIZE
 import gobject
 import gtk
 import math
@@ -53,7 +54,7 @@ class Paned(gtk.Paned):
         self.enable_animation = enable_animation
         self.bheight = ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf().get_width()
         self.saved_position = -1
-        self.handle_size = 10
+        self.handle_size = PANED_HANDLE_SIZE - 1
         self.show_button = False
         self.init_button("normal")
         self.animation_delay = 20 # milliseconds

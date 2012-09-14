@@ -286,6 +286,18 @@ class TabBox(gtk.VBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         
+        # Draw background.
+        toplevel = widget.get_toplevel()
+        coordinate = widget.translate_coordinates(toplevel, 0, 0)
+        (offset_x, offset_y) = coordinate
+
+        with cairo_state(cr):
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.clip()
+            
+            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
+            skin_config.render_background(cr, self, shadow_x, shadow_y)
+        
         # Draw mask.
         cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_select_bg_color.get_color(), 0.93)))
         cr.rectangle(rect.x, rect.y, rect.width, rect.height)
