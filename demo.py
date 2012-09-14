@@ -41,7 +41,7 @@ app_theme = init_skin(
 # Load other modules.
 from dtk.ui.application import Application
 from dtk.ui.browser import WebView
-from dtk.ui.button import CheckButton, RadioButton
+from dtk.ui.button import CheckButton, RadioButton, ComboButton
 from dtk.ui.button import ImageButton, LinkButton, Button
 from dtk.ui.categorybar import Categorybar
 from dtk.ui.color_selection import ColorButton
@@ -391,6 +391,20 @@ if __name__ == "__main__":
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
     tab_1_box.pack_start(entry_frame, False, False)
+
+    # Combo button.
+    combo_button = ComboButton(
+        app_theme.get_pixbuf("button/button_normal.png"),
+        app_theme.get_pixbuf("button/button_hover.png"),
+        app_theme.get_pixbuf("button/button_press.png"),
+        app_theme.get_pixbuf("button/button_normal.png"),
+        app_theme.get_pixbuf("button/arrow_normal.png"),
+        app_theme.get_pixbuf("button/arrow_hover.png"),
+        app_theme.get_pixbuf("button/arrow_press.png"),
+        app_theme.get_pixbuf("button/arrow_normal.png"),
+        )
+    
+    tab_1_box.pack_start(combo_button, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)

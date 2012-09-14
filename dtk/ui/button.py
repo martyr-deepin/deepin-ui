@@ -851,3 +851,76 @@ class LinkButton(Label):
         set_clickable_cursor(self)
 
 gobject.type_register(LinkButton)
+
+class ComboButton(gtk.Button):
+    '''
+    class docs
+    '''
+	
+    def __init__(self,
+                 button_normal_dpixbuf,
+                 button_hover_dpixbuf,
+                 button_press_dpixbuf,
+                 button_disable_dpixbuf,
+                 arrow_normal_dpixbuf,
+                 arrow_hover_dpixbuf,
+                 arrow_press_dpixbuf,
+                 arrow_disable_dpixbuf,
+                 ):
+        '''
+        init docs
+        '''
+        # Init.
+        gtk.Button.__init__(self)
+        self.button_normal_dpixbuf = button_normal_dpixbuf
+        self.button_hover_dpixbuf = button_hover_dpixbuf
+        self.button_press_dpixbuf = button_press_dpixbuf
+        self.button_disable_dpixbuf = button_disable_dpixbuf
+        self.arrow_normal_dpixbuf = arrow_normal_dpixbuf
+        self.arrow_hover_dpixbuf = arrow_hover_dpixbuf
+        self.arrow_press_dpixbuf = arrow_press_dpixbuf
+        self.arrow_disable_dpixbuf = arrow_disable_dpixbuf
+        button_pixbuf = button_normal_dpixbuf.get_pixbuf()
+        arrow_pixbuf = arrow_normal_dpixbuf.get_pixbuf()
+        self.set_size_request(button_pixbuf.get_width() + arrow_pixbuf.get_width(), button_pixbuf.get_height())
+        self.button_width = button_pixbuf.get_width()
+        self.in_button = True
+        
+        self.connect("expose-event", self.expose_combo_button)
+        self.connect("motion-notify-event", self.motion_notify_combo_button)
+        
+    def expose_combo_button(self, widget, event):
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
+        # Get pixbuf info.
+        if widget.state == gtk.STATE_NORMAL:
+            button_pixbuf = self.button_normal_dpixbuf.get_pixbuf()
+            arrow_pixbuf = self.arrow_normal_dpixbuf.get_pixbuf()
+        elif widget.state == gtk.STATE_PRELIGHT:
+            button_pixbuf = self.button_hover_dpixbuf.get_pixbuf()
+            arrow_pixbuf = self.arrow_hover_dpixbuf.get_pixbuf()
+        elif widget.state == gtk.STATE_ACTIVE:
+            if self.in_button:
+                button_pixbuf = self.button_hover_dpixbuf.get_pixbuf()
+                arrow_pixbuf = self.arrow_press_dpixbuf.get_pixbuf()
+            else:
+                button_pixbuf = self.button_press_dpixbuf.get_pixbuf()
+                arrow_pixbuf = self.arrow_hover_dpixbuf.get_pixbuf()
+        elif widget.state == gtk.STATE_INSENSITIVE:
+            button_pixbuf = self.button_disable_dpixbuf.get_pixbuf()
+            arrow_pixbuf = self.arrow_disable_dpixbuf.get_pixbuf()
+
+        # Draw.
+        draw_pixbuf(cr, button_pixbuf, rect.x, rect.y)
+        draw_pixbuf(cr, arrow_pixbuf, rect.x + self.button_width, rect.y)
+
+        return True    
+    
+    def motion_notify_combo_button(self, widget, event):
+        print (event.x, self.button_width, self.allocation)
+        self.in_button = event.x < self.button_width
+
+gobject.type_register(ComboButton)
