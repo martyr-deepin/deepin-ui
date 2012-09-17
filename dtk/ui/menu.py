@@ -85,10 +85,12 @@ def menu_grab_window_button_press(widget, event):
         elif isinstance(event_widget, Menu):
             menu_item = event_widget.get_menu_item_at_coordinate(event.get_root_coords())
             if menu_item:
-                menu_item.item_box.event(event)
+                if menu_item.item_box.state != gtk.STATE_INSENSITIVE:
+                    menu_item.item_box.event(event)
         else:
-            event_widget.event(event)
-            menu_grab_window_focus_out()
+            if event_widget.state != gtk.STATE_INSENSITIVE:
+                event_widget.event(event)
+                menu_grab_window_focus_out()
     
 def menu_grab_window_motion_notify(widget, event):
     global menu_active_item
