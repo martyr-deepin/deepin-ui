@@ -568,66 +568,8 @@ class ListView(gtk.DrawingArea):
         # Draw mask.
         self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
             
-        if len(self.items) > 0:
-            with cairo_state(cr):
-                # Don't draw any item under title area.
-                cr.rectangle(offset_x, offset_y + self.title_offset_y,
-                             viewport.allocation.width, viewport.allocation.height - self.title_offset_y)        
-                cr.clip()
-                
-                # Draw hover row.
-                highlight_row = None
-                if self.highlight_item:
-                    highlight_row = self.highlight_item.get_index()
-                
-                if self.hover_row != None and not self.hover_row in self.select_rows and self.hover_row != highlight_row:
-                    self.draw_item_hover(
-                        cr, offset_x, self.title_offset_y + self.hover_row * self.item_height,
-                        viewport.allocation.width, self.item_height)
-                
-                # Draw select rows.
-                for select_row in self.select_rows:
-                    if select_row != highlight_row:
-                        self.draw_item_select(
-                            cr, offset_x, self.title_offset_y + select_row * self.item_height,
-                            viewport.allocation.width, self.item_height)
-                    
-                # Draw highlight row.
-                if self.highlight_item:
-                    self.draw_item_highlight(
-                        cr, offset_x, self.title_offset_y + self.highlight_item.get_index() * self.item_height,
-                        viewport.allocation.width, self.item_height)
-                    
-                # Get viewport index.
-                start_y = offset_y - self.title_offset_y
-                end_y = offset_y + viewport.allocation.height - self.title_offset_y
-                start_index = max(start_y / self.item_height, 0)
-                if (end_y - end_y / self.item_height * self.item_height) == 0:
-                    end_index = min(end_y / self.item_height + 1, len(self.items))
-                else:
-                    end_index = min(end_y / self.item_height + 2, len(self.items))        
-                    
-                # Draw list item.
-                for (row, item) in enumerate(self.items[start_index:end_index]):
-                    renders = item.get_renders()
-                    for (column, render) in enumerate(renders):
-                        cell_width = cell_widths[column]
-                        cell_x = sum(cell_widths[0:column])
-                        render_x = rect.x + cell_x
-                        render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
-                        render_width = cell_width
-                        render_height = self.item_height
-                        
-                        with cairo_state(cr):
-                            # Don't allowed list item draw out of cell rectangle.
-                            cr.rectangle(render_x, render_y, render_width, render_height)
-                            cr.clip()
-                            
-                            # Render cell.
-                            render(cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height),
-                                   (start_index + row) in self.select_rows,
-                                   item == self.highlight_item)
-            
+        # Draw items.
+        self.draw_items(cr, rect, offset_x, offset_y, viewport, cell_widths)
                     
         # Draw titles.
         if self.titles:
@@ -698,6 +640,67 @@ class ListView(gtk.DrawingArea):
             
         return False
     
+    def draw_items(self, cr, rect, offset_x, offset_y, viewport, cell_widths):
+        if len(self.items) > 0:
+            with cairo_state(cr):
+                # Don't draw any item under title area.
+                cr.rectangle(offset_x, offset_y + self.title_offset_y,
+                             viewport.allocation.width, viewport.allocation.height - self.title_offset_y)        
+                cr.clip()
+                
+                # Draw hover row.
+                highlight_row = None
+                if self.highlight_item:
+                    highlight_row = self.highlight_item.get_index()
+                
+                if self.hover_row != None and not self.hover_row in self.select_rows and self.hover_row != highlight_row:
+                    self.draw_item_hover(
+                        cr, offset_x, self.title_offset_y + self.hover_row * self.item_height,
+                        viewport.allocation.width, self.item_height)
+                
+                # Draw select rows.
+                for select_row in self.select_rows:
+                    if select_row != highlight_row:
+                        self.draw_item_select(
+                            cr, offset_x, self.title_offset_y + select_row * self.item_height,
+                            viewport.allocation.width, self.item_height)
+                    
+                # Draw highlight row.
+                if self.highlight_item:
+                    self.draw_item_highlight(
+                        cr, offset_x, self.title_offset_y + self.highlight_item.get_index() * self.item_height,
+                        viewport.allocation.width, self.item_height)
+                    
+                # Get viewport index.
+                start_y = offset_y - self.title_offset_y
+                end_y = offset_y + viewport.allocation.height - self.title_offset_y
+                start_index = max(start_y / self.item_height, 0)
+                if (end_y - end_y / self.item_height * self.item_height) == 0:
+                    end_index = min(end_y / self.item_height + 1, len(self.items))
+                else:
+                    end_index = min(end_y / self.item_height + 2, len(self.items))        
+                    
+                # Draw list item.
+                for (row, item) in enumerate(self.items[start_index:end_index]):
+                    renders = item.get_renders()
+                    for (column, render) in enumerate(renders):
+                        cell_width = cell_widths[column]
+                        cell_x = sum(cell_widths[0:column])
+                        render_x = rect.x + cell_x
+                        render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
+                        render_width = cell_width
+                        render_height = self.item_height
+                        
+                        with cairo_state(cr):
+                            # Don't allowed list item draw out of cell rectangle.
+                            cr.rectangle(render_x, render_y, render_width, render_height)
+                            cr.clip()
+                            
+                            # Render cell.
+                            render(cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height),
+                                   (start_index + row) in self.select_rows,
+                                   item == self.highlight_item)
+            
     def motion_list_view(self, widget, event):
         '''
         Internal callback for `motion-notify-event` signal.
