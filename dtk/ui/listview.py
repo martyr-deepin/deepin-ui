@@ -27,6 +27,8 @@ from draw import draw_pixbuf, draw_vlinear, draw_text
 from keymap import get_keyevent_name, has_ctrl_mask, has_shift_mask
 from skin_config import skin_config
 from theme import ui_theme
+import math
+import cairo
 import copy
 import gobject
 import gtk
@@ -88,6 +90,7 @@ class ListView(gtk.DrawingArea):
                  enable_drag_drop=True,
                  drag_icon_pixbuf=ui_theme.get_pixbuf("listview/drag_preview.png"),
                  drag_out_offset=50,
+                 mask_bound_height=24,
                  ):
         '''
         Initialize ListView widget.
@@ -136,6 +139,7 @@ class ListView(gtk.DrawingArea):
         self.enable_multiple_select = enable_multiple_select
         self.drag_icon_pixbuf = drag_icon_pixbuf
         self.drag_out_offset = drag_out_offset
+        self.mask_bound_height = mask_bound_height
         self.auto_scroll_id = None
         self.auto_scroll_delay = 70 # milliseconds
         
@@ -642,35 +646,65 @@ class ListView(gtk.DrawingArea):
     
     def draw_items(self, cr, rect, offset_x, offset_y, viewport, cell_widths):
         if len(self.items) > 0:
+            # Init.
+            vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
+            
+            # Init top surface.
+            if vadjust.get_value() != vadjust.get_lower():
+                top_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
+                top_surface_cr = gtk.gdk.CairoContext(cairo.Context(top_surface))
+                
+                clip_y = vadjust.get_value() + self.mask_bound_height
+            else:
+                top_surface = top_surface_cr = None
+                
+                clip_y = vadjust.get_value()
+                
+            # Init bottom surface.
+            if vadjust.get_value() + vadjust.get_page_size() != vadjust.get_upper():
+                bottom_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
+                bottom_surface_cr = gtk.gdk.CairoContext(cairo.Context(bottom_surface))
+                
+                clip_height = vadjust.get_page_size() - self.mask_bound_height - (clip_y - vadjust.get_value())
+            else:
+                bottom_surface = bottom_surface_cr = None
+                
+                clip_height = vadjust.get_page_size() - (clip_y - vadjust.get_value())
+            
             with cairo_state(cr):
+                if top_surface_cr:
+                    top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                    top_surface_cr.clip()
+                    
+                    self.draw_items_row(top_surface_cr, offset_x, viewport, 
+                                        int(vadjust.get_value()))
+                    
+                if bottom_surface_cr:
+                    bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                    bottom_surface_cr.clip()
+                    
+                    self.draw_items_row(bottom_surface_cr, offset_x, viewport,
+                                        int(vadjust.get_value()) + int(vadjust.get_page_size()) + self.mask_bound_height)
+                
                 # Don't draw any item under title area.
-                cr.rectangle(offset_x, offset_y + self.title_offset_y,
-                             viewport.allocation.width, viewport.allocation.height - self.title_offset_y)        
+                cr.rectangle(offset_x, 
+                             offset_y + self.title_offset_y + clip_y - vadjust.get_value(),
+                             viewport.allocation.width, 
+                             clip_height + 1 - self.title_offset_y
+                             )        
                 cr.clip()
                 
-                # Draw hover row.
-                highlight_row = None
-                if self.highlight_item:
-                    highlight_row = self.highlight_item.get_index()
-                
-                if self.hover_row != None and not self.hover_row in self.select_rows and self.hover_row != highlight_row:
-                    self.draw_item_hover(
-                        cr, offset_x, self.title_offset_y + self.hover_row * self.item_height,
-                        viewport.allocation.width, self.item_height)
-                
-                # Draw select rows.
-                for select_row in self.select_rows:
-                    if select_row != highlight_row:
-                        self.draw_item_select(
-                            cr, offset_x, self.title_offset_y + select_row * self.item_height,
-                            viewport.allocation.width, self.item_height)
+                self.draw_items_row(cr, offset_x, viewport)
                     
-                # Draw highlight row.
-                if self.highlight_item:
-                    self.draw_item_highlight(
-                        cr, offset_x, self.title_offset_y + self.highlight_item.get_index() * self.item_height,
-                        viewport.allocation.width, self.item_height)
-                    
+            with cairo_state(cr):
+                # Don't draw any item under title area.
+                cr.rectangle(offset_x, 
+                             offset_y + self.title_offset_y + clip_y - vadjust.get_value(),
+                             viewport.allocation.width, 
+                             clip_height + 1 - self.title_offset_y
+                             )        
+                cr.clip()
+                
                 # Get viewport index.
                 start_y = offset_y - self.title_offset_y
                 end_y = offset_y + viewport.allocation.height - self.title_offset_y
@@ -691,6 +725,38 @@ class ListView(gtk.DrawingArea):
                         render_width = cell_width
                         render_height = self.item_height
                         
+                        # Draw on top surface.
+                        if top_surface_cr:
+                            if (not render_y > vadjust.get_value() + self.mask_bound_height) and (not render_y + render_height < vadjust.get_value()):
+                                top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                                top_surface_cr.clip()
+                                
+                                render(
+                                    top_surface_cr,
+                                    gtk.gdk.Rectangle(render_x, 
+                                                      render_y - int(vadjust.get_value()), 
+                                                      render_width, 
+                                                      render_height),
+                                    (start_index + row) in self.select_rows,
+                                    item == self.highlight_item
+                                    )
+                        
+                        # Draw on bottom surface.
+                        if bottom_surface_cr:
+                            if (not render_y > vadjust.get_value() + vadjust.get_page_size()) and (not render_y + render_height < vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height):
+                                bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                                bottom_surface_cr.clip()
+                                
+                                render(
+                                    bottom_surface_cr,
+                                    gtk.gdk.Rectangle(render_x, 
+                                                      render_y - int(vadjust.get_value()) - int(vadjust.get_page_size() - self.mask_bound_height), 
+                                                      render_width, 
+                                                      render_height),
+                                    (start_index + row) in self.select_rows,
+                                    item == self.highlight_item
+                                    )
+                                
                         with cairo_state(cr):
                             # Don't allowed list item draw out of cell rectangle.
                             cr.rectangle(render_x, render_y, render_width, render_height)
@@ -701,6 +767,71 @@ class ListView(gtk.DrawingArea):
                                    (start_index + row) in self.select_rows,
                                    item == self.highlight_item)
             
+            # Draw alpha mask on top surface.
+            if top_surface:
+                i = 0
+                while (i <= self.mask_bound_height):
+                    with cairo_state(cr):
+                        cr.rectangle(rect.x, vadjust.get_value() + self.title_offset_y + i, rect.width, 1)
+                        cr.clip()
+                        cr.set_source_surface(
+                            top_surface, 
+                            0, 
+                            vadjust.get_value() + self.title_offset_y
+                            )
+                        cr.paint_with_alpha(math.sin(i * math.pi / 2 / self.mask_bound_height))
+                        
+                    i += 1    
+                
+            # Draw alpha mask on bottom surface.
+            if bottom_surface:
+                i = 0
+                while (i <= self.mask_bound_height):
+                    with cairo_state(cr):
+                        cr.rectangle(rect.x, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height + i, rect.width, 1)
+                        cr.clip()
+                        cr.set_source_surface(
+                            bottom_surface, 
+                            0, 
+                            vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height
+                            )
+                        cr.paint_with_alpha(1.0 - (math.sin(i * math.pi / 2 / self.mask_bound_height)))
+                        
+                    i += 1    
+                    
+    def draw_items_row(self, cr, offset_x, viewport, render_offset_y=0):
+        # Draw hover row.
+        highlight_row = None
+        if self.highlight_item:
+            highlight_row = self.highlight_item.get_index()
+        
+        if self.hover_row != None and not self.hover_row in self.select_rows and self.hover_row != highlight_row:
+            self.draw_item_hover(
+                cr, 
+                offset_x, 
+                self.title_offset_y + self.hover_row * self.item_height - render_offset_y,
+                viewport.allocation.width, 
+                self.item_height)
+        
+        # Draw select rows.
+        for select_row in self.select_rows:
+            if select_row != highlight_row:
+                self.draw_item_select(
+                    cr, 
+                    offset_x, 
+                    self.title_offset_y + select_row * self.item_height - render_offset_y,
+                    viewport.allocation.width, 
+                    self.item_height)
+            
+        # Draw highlight row.
+        if self.highlight_item:
+            self.draw_item_highlight(
+                cr, 
+                offset_x, 
+                self.title_offset_y + self.highlight_item.get_index() * self.item_height - render_offset_y,
+                viewport.allocation.width, 
+                self.item_height)
+                    
     def motion_list_view(self, widget, event):
         '''
         Internal callback for `motion-notify-event` signal.
