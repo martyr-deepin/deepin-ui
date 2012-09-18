@@ -465,18 +465,6 @@ class ListView(gtk.DrawingArea):
         else:
             return (0, 0, viewport)
             
-    def draw_shadow_mask(self, cr, x, y, w, h):
-        '''
-        Shadow mask interface for overwrite.
-        
-        @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
-        @param w: Width of draw area.
-        @param h: Height of draw area.
-        '''
-        pass
-        
     def draw_mask(self, cr, x, y, w, h):
         '''
         Draw mask interface.
@@ -695,9 +683,6 @@ class ListView(gtk.DrawingArea):
                                 cell_offset_x + cell_width - sort_pixbuf.get_width() - self.SORT_PADDING_X,
                                 offset_y + (self.title_height - sort_pixbuf.get_height()) / 2)    
 
-        # Draw shadow mask.
-        self.draw_shadow_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
-        
         # Draw drag reference row.
         if self.drag_reference_row != None:
             drag_pixbuf = ui_theme.get_pixbuf("listview/drag_line.png").get_pixbuf()
