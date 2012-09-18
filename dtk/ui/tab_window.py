@@ -23,8 +23,7 @@
 from button import Button
 from constant import DEFAULT_FONT_SIZE
 from dialog import DialogBox, DIALOG_MASK_TAB_PAGE
-from draw import draw_text
-from scrolled_window import ScrolledWindow
+from draw import draw_text, draw_round_rectangle
 from skin_config import skin_config
 from theme import ui_theme
 from locales import _
@@ -45,7 +44,7 @@ class TabBox(gtk.VBox):
     @undocumented: expose_tab_content_box
     '''
 	
-    def __init__(self):
+    def __init__(self, can_close_tab=False):
         '''
         Initialize TabBox class.
         '''
@@ -58,6 +57,15 @@ class TabBox(gtk.VBox):
         self.tab_select_frame_color = ui_theme.get_color("tab_select_frame")
         self.tab_unselect_bg_color = ui_theme.get_color("tab_unselect_bg")
         self.tab_unselect_frame_color = ui_theme.get_color("tab_unselect_bg")
+        self.can_close_tab = can_close_tab
+        self.close_button_size = 6
+        self.close_button_frame_size = 3
+        self.close_button_padding_x = 4
+        self.close_button_padding_y = 6
+        self.close_button_select_background_color = "#EE0000"
+        self.close_button_select_foreground_color = "#FFFFFF"
+        self.close_button_color = "#666666"
+        self.hover_close_button_index = None
         
         self.tab_title_box = gtk.DrawingArea()
         self.tab_title_box.add_events(gtk.gdk.ALL_EVENTS_MASK)
@@ -83,6 +91,7 @@ class TabBox(gtk.VBox):
         
         self.tab_title_box.connect("button-press-event", self.press_tab_title_box)
         self.tab_title_box.connect("expose-event", self.expose_tab_title_box)
+        self.tab_title_box.connect("motion-notify-event", self.motion_notify_tab_title_box)
         self.tab_content_align.connect("expose-event", self.expose_tab_content_align)
         self.tab_content_box.connect("expose-event", self.expose_tab_content_box)
         
@@ -113,6 +122,20 @@ class TabBox(gtk.VBox):
             self.tab_title_widths.append(get_content_size(item[0], DEFAULT_FONT_SIZE)[0] + self.tab_padding_x * 2)
             
         self.switch_content(default_index)
+        
+    def delete_items(self, items):
+        item_indexs = map(lambda item: self.tab_items.index(item), items)
+        
+        for item in items:
+            self.tab_items.remove(item)
+            
+        for title_width in map(lambda item_index: self.tab_title_widths[item_index], item_indexs):
+            self.tab_title_widths.remove(title_width)
+            
+        if len(self.tab_items) == 0:
+            self.show_default_page()
+            
+        print self.tab_items    
     
     def switch_content(self, index):
         '''
@@ -135,14 +158,37 @@ class TabBox(gtk.VBox):
         '''
         Internal callback for `button-press-event` signal.
         '''
+        press_index = self.get_close_button_at_event(event)
+        
+        if press_index != None:
+            self.delete_items([self.tab_items[press_index]])
+        else:
+            for (index, item) in enumerate(self.tab_items):
+                if is_in_rect((event.x, event.y), 
+                              (sum(self.tab_title_widths[0:index]),
+                               0,
+                               self.tab_title_widths[index],
+                               self.tab_height)):
+                    self.switch_content(index)
+                    break
+            
+    def get_close_button_at_event(self, event):
+        hover_index = None
         for (index, item) in enumerate(self.tab_items):
-            if is_in_rect((event.x, event.y), 
-                          (sum(self.tab_title_widths[0:index]),
-                           0,
-                           self.tab_title_widths[index],
-                           self.tab_height)):
-                self.switch_content(index)
+            button_x = sum(self.tab_title_widths[0:index + 1]) - self.close_button_padding_x - self.close_button_size
+            button_y = self.close_button_padding_y
+            if is_in_rect((event.x, event.y), (button_x, button_y, self.close_button_size, self.close_button_size)):
+                hover_index = index
                 break
+            
+        return hover_index    
+            
+    def motion_notify_tab_title_box(self, widget, event):
+        hover_index = self.get_close_button_at_event(event)
+
+        if hover_index != self.hover_close_button_index:
+            self.hover_close_button_index = hover_index
+            widget.queue_draw()
 
     def expose_tab_title_box(self, widget, event):
         '''
@@ -254,11 +300,41 @@ class TabBox(gtk.VBox):
                           self.tab_title_widths[index] - self.tab_padding_x * 2,
                           self.tab_height - self.tab_padding_y * 2,
                           )
+                
+                # Draw close button.
+                if self.can_close_tab:
+                    button_x = sum(self.tab_title_widths[0:index + 1]) - self.close_button_padding_x - self.close_button_size
+                    button_y = self.close_button_padding_y
+                    
+                    if self.hover_close_button_index == index:
+                        cr.set_source_rgb(*color_hex_to_cairo(self.close_button_select_background_color))
+                        draw_round_rectangle(
+                            cr,
+                            button_x - self.close_button_frame_size,
+                            button_y - self.close_button_frame_size,
+                            self.close_button_size + self.close_button_frame_size * 2,
+                            self.close_button_size + self.close_button_frame_size * 2,
+                            2
+                            )
+                        cr.fill()
+                    
+                    cr.set_line_width(1.5)
+                    if self.hover_close_button_index == index:
+                        cr.set_source_rgb(*color_hex_to_cairo(self.close_button_select_foreground_color))
+                    else:
+                        cr.set_source_rgb(*color_hex_to_cairo(self.close_button_color))
+                    cr.move_to(button_x, button_y)
+                    cr.line_to(button_x + self.close_button_size, button_y + self.close_button_size)
+                    cr.stroke()
+
+                    cr.move_to(button_x + self.close_button_size, button_y)
+                    cr.line_to(button_x, button_y + self.close_button_size)
+                    cr.stroke()
         else:
             cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_select_bg_color.get_color(), 0.93)))
             cr.rectangle(0, 0, rect.width, rect.height)
             cr.fill()
-    
+            
     def expose_tab_content_align(self, widget, event):
         '''
         Internal function to `expose-event` signal.
