@@ -152,7 +152,8 @@ class Menu(Window):
                  item_padding_x=6, 
                  item_padding_y=3,
                  shadow_visible=True,
-                 menu_min_width=130):
+                 menu_min_width=130,
+                 menu_item_select_color=None):
         '''
         Initialize Menu class.
         
@@ -191,6 +192,7 @@ class Menu(Window):
         self.item_padding_x = item_padding_x
         self.item_padding_y = item_padding_y
         self.menu_min_width = menu_min_width
+        self.menu_item_select_color = menu_item_select_color
         
         # Init menu window.
         self.set_skip_pager_hint(True)
@@ -210,12 +212,24 @@ class Menu(Window):
             
             for item in items:
                 menu_item = MenuItem(
-                    item, font_size, self.select_scale, self.show_submenu, self.hide_submenu, 
-                    self.get_root_menu, self.get_menu_items,
-                    icon_width, icon_height,
-                    have_submenu, submenu_width, submenu_height,
-                    padding_x, padding_y,
-                    item_padding_x, item_padding_y, self.menu_min_width)
+                    item, 
+                    font_size, 
+                    self.select_scale, 
+                    self.show_submenu, 
+                    self.hide_submenu, 
+                    self.get_root_menu, 
+                    self.get_menu_items,
+                    icon_width, 
+                    icon_height,
+                    have_submenu, 
+                    submenu_width, 
+                    submenu_height,
+                    padding_x, 
+                    padding_y,
+                    item_padding_x, 
+                    item_padding_y, 
+                    self.menu_min_width,
+                    self.menu_item_select_color)
                 self.menu_items.append(menu_item)
                 self.item_box.pack_start(menu_item.item_box, False, False)
                 
@@ -478,7 +492,8 @@ class MenuItem(object):
                  submenu_width, 
                  submenu_height,
                  menu_padding_x, menu_padding_y,
-                 item_padding_x, item_padding_y, min_width):
+                 item_padding_x, item_padding_y, min_width,
+                 menu_item_select_color=None):
         '''
         Initialize MenuItem class.
         
@@ -520,6 +535,7 @@ class MenuItem(object):
         self.submenu_active = False
         self.min_width = min_width
         self.arrow_padding_x = 5
+        self.menu_item_select_color = menu_item_select_color
 
         # Create.
         if self.item:
@@ -607,8 +623,12 @@ class MenuItem(object):
             font_color = ui_theme.get_color("menu_disable_font").get_color()
         elif self.submenu_active or widget.state in [gtk.STATE_PRELIGHT, gtk.STATE_ACTIVE]:
             # Draw background.
+            if self.menu_item_select_color:
+                item_select_color = self.menu_item_select_color
+            else:
+                item_select_color = ui_theme.get_shadow_color("menu_item_select").get_color_info()
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                         ui_theme.get_shadow_color("menu_item_select").get_color_info(),
+                         item_select_color,
                          MENU_ITEM_RADIUS)
             
             # Set font color.
