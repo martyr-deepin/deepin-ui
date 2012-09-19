@@ -46,7 +46,7 @@ class Window(WindowBase):
     """
     def __init__(self, 
                  enable_resize=False, 
-                 shadow_radius=10, 
+                 shadow_radius=6, 
                  window_type=gtk.WINDOW_TOPLEVEL, 
                  shadow_visible=True):
         """
