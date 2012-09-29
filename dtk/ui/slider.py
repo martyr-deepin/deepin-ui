@@ -37,7 +37,9 @@ class Slider(gtk.Viewport):
     active_widget = None
     _size_cache = None
 
-    def __init__(self, slide_callback=None):
+    def __init__(self, 
+                 slide_callback=None,
+                 default_index=0):
         '''
         Initialize Slider class.
 
@@ -45,6 +47,7 @@ class Slider(gtk.Viewport):
         '''
         gtk.Viewport.__init__(self)
         self.slide_callback = slide_callback
+        self.default_index = default_index
         self.timeouts = dict()
 
         self.set_shadow_type(gtk.SHADOW_NONE)
@@ -95,6 +98,15 @@ class Slider(gtk.Viewport):
 
         width = (len(self.layout.get_children()) or 1) * allocation.width
         self.content.set_size_request(width, allocation.height)
+        
+        if self.default_index > 0:
+            self.set_widget(self.layout.get_children()[self.default_index])
+                
+    def set_widget(self, widget):
+        rect = self.allocation
+        self.active_widget = widget
+        adjustment = self.get_hadjustment()
+        adjustment.set_value(rect.width * self.default_index)
 
     def append_widget(self, widget):
         '''
