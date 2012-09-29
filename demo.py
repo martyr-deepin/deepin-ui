@@ -28,7 +28,6 @@ start_time = time.time()
 from dtk.ui.init_skin import init_skin
 from dtk.ui.utils import get_parent_dir
 import os
-
 app_theme = init_skin(
     "deepin-ui-demo", 
     "1.0",
@@ -67,6 +66,7 @@ from dtk.ui.treeview import TreeView, TreeViewItem
 from dtk.ui.unique_service import UniqueService, is_exists
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
+from dtk.ui.breadcrumb import Bread, Crumb
 import dbus
 import dbus.service
 import gtk
@@ -261,6 +261,7 @@ if __name__ == "__main__":
     application.window.add_move_event(navigatebar)
     application.window.add_toggle_event(navigatebar)
     
+
     notebook_box = gtk.VBox()
     tab_1_box = gtk.VBox()
     tab_2_box = gtk.VBox()
@@ -464,8 +465,27 @@ if __name__ == "__main__":
     button_box.pack_start(radio_button_1, False, False, 4)
     button_box.pack_start(radio_button_2, False, False, 4)
     tab_5_box.pack_start(button_box, False, False)
+
+    # Breadcrumb
+    bread = Bread(["Root",[(None, "Test", None)]],
+                  app_theme.get_pixbuf("nav_button/arrow_right.png").get_pixbuf(),
+                  app_theme.get_pixbuf("nav_button/arrow_down.png").get_pixbuf(),
+                  show_entry = True,
+                  show_others = False)
+    bread.connect("entry-changed", lambda w, p: bread.change_node(0,[(i,[(None, "test", None)]) for i in p.split("/")[1:]]))
+    bread.set_size(100, -1)
+     
+
+    tab_5_box.pack_start(bread, False, False)
+    btn = gtk.Button("add")
+    btn.connect("clicked", lambda w: bread.add(Crumb("Child", Menu(
+                                [(None, "Child", None),],
+                                shadow_visible = False,
+                                is_root_menu = True))))
+
+    tab_5_box.pack_start(btn, False, False)
     
-    # Tree view.
+    #Tree view.
     def tree_view_single_click_cb(widget, item):
         pass    
 
@@ -476,6 +496,8 @@ if __name__ == "__main__":
     tree_view.connect("single-click-item", tree_view_single_click_cb)    
     
     tab_5_box.pack_start(tree_view_scrolled_window)
+
+
     
     wuhan_node = tree_view.add_item(None, TreeViewItem("Linux Deepin"))
 
