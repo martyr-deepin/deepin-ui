@@ -34,9 +34,6 @@ class Slider(gtk.Viewport):
     @undocumented: size_allocate_cb
     '''
     
-    active_widget = None
-    _size_cache = None
-
     def __init__(self, 
                  slide_callback=None,
                  default_index=0):
@@ -46,6 +43,7 @@ class Slider(gtk.Viewport):
         @param slide_callback: Callback when slider change image, arguments: (index, widget), default is None.
         '''
         gtk.Viewport.__init__(self)
+        self.active_widget = None
         self.slide_callback = slide_callback
         self.default_index = default_index
         self.timeouts = dict()
@@ -55,13 +53,8 @@ class Slider(gtk.Viewport):
         self.layout = gtk.HBox(True)
         self.content = gtk.EventBox()
         self.content.add(self.layout)
-
-        self.container = gtk.Fixed()
-        self.container.add(self.content)
-        self.add(self.container)
-
-        self.connect('size-allocate', self.size_allocate_cb)
-
+        self.add(self.content)
+        
     def slide_to(self, widget):
         '''
         Slide to given widget.
@@ -70,43 +63,28 @@ class Slider(gtk.Viewport):
         '''
         self.active_widget = widget
 
-        def update(source, status):
-            pos = end_position - start_position
-            adjustment.set_value(start_position + int(round(status * pos)))
-
-        adjustment = self.get_hadjustment()
-        start_position = adjustment.get_value()
+        start_position = self.get_hadjustment().get_value()
         end_position = widget.get_allocation().x
 
         if start_position != end_position:
             timeline = Timeline(500, CURVE_SINE)
-            timeline.connect('update', update)
+            timeline.connect('update', lambda source, status: 
+                             self.update(source,
+                                         status, 
+                                         start_position,
+                                         end_position - start_position))
             timeline.run()
-            
+        
         if self.slide_callback:    
             self.slide_callback(self.layout.get_children().index(widget), widget)
             
-    def size_allocate_cb(self, source, allocation):
-        '''
-        Internal function for `size-allocate` signal.
-        '''
-        if self._size_cache != allocation and self.active_widget:
-            adjustment = self.get_hadjustment()
-            adjustment.set_value(self.active_widget.get_allocation().x)
+    def update(self, source, status, start_position, pos):
+        self.get_hadjustment().set_value(start_position + int(round(status * pos)))
 
-        self._size_cache = allocation
-
-        width = (len(self.layout.get_children()) or 1) * allocation.width
-        self.content.set_size_request(width, allocation.height)
-        
-        if self.default_index > 0:
-            self.set_widget(self.layout.get_children()[self.default_index])
-                
     def set_widget(self, widget):
-        rect = self.allocation
         self.active_widget = widget
         adjustment = self.get_hadjustment()
-        adjustment.set_value(rect.width * self.default_index)
+        adjustment.set_value(widget.get_allocation().x)
 
     def append_widget(self, widget):
         '''
@@ -131,52 +109,15 @@ class Slider(gtk.Viewport):
                                  milliseconds)
 
     def remove_slide_timeout(self, widget):
-        """
-        Removes a timeout previously added by ``add_slide_timeout``.
-        
-        @param widget: Remove widget from slider.
-        """
-        try:
-            gobject.source_remove(self.timeouts.pop(widget)[0])
-        except KeyError:
-            pass
-
-
-    def reset_slide_timeout(self, widget, milliseconds=None):
-        """
-        Shorthand to ``remove_slide_timeout`` plus ``add_slide_timeout``.
-        
-        @param widget: Slider wiget.
-        @param milliseconds: New delay value.
-        """
-        if milliseconds is None:
-            try:
-                milliseconds = self.timeouts[widget][1]
-            except KeyError:
-                pass
-            else:
-                self.remove_slide_timeout(widget)
-        self.add_slide_timeout(widget, milliseconds)
-
-    def try_remove_slide_timeout(self, widget):
         '''
         Try remove slide timeout that match given widget.
 
         @param widget: Match widget.
         '''
         try:
-            self.remove_slide_timeout(widget)
+            gobject.source_remove(self.timeouts.pop(widget)[0])
         except RuntimeError:
             pass
-
-    def try_reset_slide_timeout(self, widget, *args, **kwargs):
-        """
-        Like ``reset_slide_timeout``, but fails silently
-        if the timeout for``widget`` does not exist.
-        
-        """
-        if widget in self.timeouts:
-            self.reset_slide_timeout(widget, *args, **kwargs)
 
 gobject.type_register(Slider)
 
@@ -296,7 +237,7 @@ class Wizard(Window):
         
         # Remove slider timeout.
         for widget in self.slider_widgets:
-            self.slider.try_remove_slide_timeout(widget)
+            self.slider.remove_slide_timeout(widget)
         
         # Slide select widget.
         self.slider.slide_to(self.slider_widgets[navigate_index])

@@ -78,11 +78,12 @@ class Timeline(gobject.GObject):
         if self._stopped:
             self.emit('completed')
             return False
-
-        self.emit('update', self._states.pop())
-        if len(self._states) == 0:
-            self.emit('completed')
-            return False
-        return True
+        else:
+            self.emit('update', self._states.pop())
+            
+            if len(self._states) == 0:
+                self.emit('completed')
+                return False
+            return True
     
 gobject.type_register(Timeline)
