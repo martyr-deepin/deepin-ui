@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
-#             Zeng Zhi <zengzhilg@gmail.com>
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Zeng Zhi
 # 
@@ -27,17 +26,13 @@ from button import Button # used for left,right button,maby use eventbox?
 from theme import ui_theme
 from skin_config import skin_config
 from menu import Menu
-from entry import Entry, InputEntry
 from constant import  DEFAULT_FONT_SIZE
-from draw import (draw_vlinear, draw_line, 
-                         draw_text, draw_pixbuf,draw_round_rectangle)
+from draw import (draw_vlinear, draw_line, draw_text, draw_pixbuf)
 from utils import (get_content_size,get_window_shadow_size, 
                           color_hex_to_cairo, get_match_parent)
 import gtk 
 import gobject
 import pango
-import cairo
-
 
 class Bread(gtk.HBox):
     """
@@ -46,16 +41,16 @@ class Bread(gtk.HBox):
     """
 
     __gsignals__= {
-        "entry-changed" : (gobject.SIGNAL_RUN_LAST, 
-                          gobject.TYPE_NONE,
-                          (gobject.TYPE_STRING,))}
+        "entry-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,))
+        }
     
     def __init__(self,
                  crumb,
-                 arrow_right,
-                 arrow_down,
+                 arrow_right=ui_theme.get_pixbuf("treeview/arrow_right.png").get_pixbuf(),
+                 arrow_down=ui_theme.get_pixbuf("treeview/arrow_down.png").get_pixbuf(),
                  show_others=False, 
-                 show_entry=False):
+                 show_entry=False
+                 ):
         """
         Initialize Bread class.
 
@@ -65,9 +60,8 @@ class Bread(gtk.HBox):
         @param show_others: If True, crumbs will not be destroyed, otherwise all crumbs on the right side will be destroyed
         @param show_entry: If True, an entry will pop up when click space area          in Bread
         """
-        
-        super(Bread, self).__init__(spacing = 0)
         # Init
+        super(Bread, self).__init__(spacing = 0)
         self.arrow_right = arrow_right
         self.arrow_down = arrow_down
         self.item_list = list()
@@ -99,6 +93,7 @@ class Bread(gtk.HBox):
         self.pack_start(left_box, False, True)
         self.pack_start(self.scroll_win, True, True)
         self.pack_end(right_box, False, True)
+        
         # Init Hbox        
         self.hbox = gtk.HBox(False, 0)
         self.hbox.show()
@@ -589,10 +584,8 @@ if __name__ == "__main__":
     # test breadcrumb widget
     bread = Bread([("Root", menu),
                    ("Level1", menu)],
-                    app_theme.get_pixbuf("nav_button/arrow_right.png").get_pixbuf(),
-                    app_theme.get_pixbuf("nav_button/arrow_down.png").get_pixbuf(),
-                    show_others = False,
-                    show_entry = True)
+                  show_others = False,
+                  show_entry = True)
     bread.add(["xxx",menu])
     # Must set_size 
     bread.set_size(200, -1)
