@@ -351,7 +351,8 @@ class Crumb(gtk.Button):
         self.font_size = font_size
         self.padding_x = padding_x
         self.menu_list = self.create_menu(menu_list)
-        self.menu_list.connect("hide", self.hide_cb)
+        if self.menu_list != None:
+            self.menu_list.connect("hide", self.hide_cb)
         self.menu_press = False
         self.menu_show = False
         self.index_id = 0
@@ -368,9 +369,10 @@ class Crumb(gtk.Button):
         @param menu_list: menu_list
         @return: Menu instance
         """
-        if isinstance(menu_list, list):
-            menu_list = Menu(menu_list, shadow_visible = False)
-        menu_list.is_root_menu = True
+        if menu_list != None:
+            if isinstance(menu_list, list):
+                menu_list = Menu(menu_list, shadow_visible = False)
+            menu_list.is_root_menu = True
         return menu_list
 
     def hide_cb(self, widget):
@@ -392,8 +394,12 @@ class Crumb(gtk.Button):
         @param widget: Crumb
         @param event: An event of gtk.gdk.Event
         """
-        self.in_button = event.x < (widget.allocation.width - self.menu_min)
-        self.menu_press = True
+        if self.menu_list == None:
+            self.in_button = True
+            self.menu_press = False
+        else:
+            self.in_button = event.x < (widget.allocation.width - self.menu_min)
+            self.menu_press = True
 
     def button_clicked(self, widget):
         """
@@ -423,11 +429,19 @@ class Crumb(gtk.Button):
         '''
         self.label = label
         (self.label_w, self.label_h) = get_content_size(self.label, font_size)
-        self.set_size_request(
+        if self.menu_list == None:
+            self.set_size_request(
+                max(self.label_w + 2 * self.padding_x, self.btn_min),
+                self.height)
+
+            self.button_width = self.get_size_request()[0]
+        else:
+            self.set_size_request(
                 max(self.label_w + 2 * self.padding_x + self.menu_min, self.btn_min + self.menu_min),
                 self.height)
 
-        self.button_width = self.get_size_request()[0] - self.menu_min
+            self.button_width = self.get_size_request()[0] - self.menu_min
+            
         self.queue_draw()
 
     def expose_cb(self, widget, event):
@@ -494,10 +508,11 @@ class Crumb(gtk.Button):
             x , y + 1  , self.button_width, h -1,
             button_color)
 
-        draw_vlinear(
-            cr,
-            x + self.button_width, y + 1 , self.menu_min, h -1,
-            menu_color)
+        if self.menu_list != None:
+            draw_vlinear(
+                cr,
+                x + self.button_width, y + 1, self.menu_min, h -1,
+                menu_color)
 
         if not widget.state == gtk.STATE_NORMAL:
             # Draw button border.
@@ -514,16 +529,21 @@ class Crumb(gtk.Button):
             cr.set_source_rgb(*color_hex_to_cairo(border_color))
             # Draw button border
             draw_rectangle(cr, x + 1 , y + 1, self.button_width, h -1) 
-            # Draw menu border
-            draw_rectangle(cr, x + self.button_width + 1, y + 1, self.menu_min -1, h -1)
+            
+            if self.menu_list != None:
+                # Draw menu border
+                draw_rectangle(cr, x + self.button_width + 1, y + 1, self.menu_min -1, h -1)
 
             # Draw innner border
             cr.set_source_rgb(1, 1, 1)
             draw_rectangle(cr, x + 2, y + 2, self.button_width - 2, h -3)
-            draw_rectangle(cr, x + self.button_width + 2, y + 2, self.menu_min -3 , h -3)
+            
+            if self.menu_list != None:
+                draw_rectangle(cr, x + self.button_width + 2, y + 2, self.menu_min -3 , h -3)
 
-        # Draw an arrow
-        draw_pixbuf(cr, arrow_pixbuf, x + self.button_width + (self.menu_min - arrow_width)/2, y + (h - arrow_height)/2)
+        if self.menu_list != None:
+            # Draw an arrow
+            draw_pixbuf(cr, arrow_pixbuf, x + self.button_width + (self.menu_min - arrow_width)/2, y + (h - arrow_height)/2)
 
         # Draw text
         draw_text(cr, self.label, x, y , self.button_width, h, self.font_size, text_color,
