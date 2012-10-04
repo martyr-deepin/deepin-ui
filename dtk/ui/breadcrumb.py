@@ -226,7 +226,6 @@ class Bread(gtk.HBox):
             crumb.connect("item_clicked", self.click_cb)
             self.hbox.pack_start(crumb, False, False)
             self.item_list.append(crumb.get_size_request()[0])
-        self.change_sensitive(len(self.item_list) - 1)
         page_size = self.adj.page_size
         
         # show right button if crumbs exceed scrolled window size
@@ -250,23 +249,6 @@ class Bread(gtk.HBox):
         self.item_list[index:] = []
         self.add(crumbs)
         
-    def change_sensitive(self, index):
-        """
-        Internal function to change all Crumbs back to gtk.STATE_NORMAL
-
-        @param index: The index of crumb need set to insensitive
-        """
-        objects = self.hbox.get_children()
-        for i in objects:
-            i.set_sensitive(True) 
-            i.btn_clicked = False
-            i.set_state(gtk.STATE_NORMAL)
-
-        objects[index].set_sensitive(False)
-        if sum(self.item_list) < self.adj.page_size:
-            self.right_btn.hide()
-            self.left_btn.hide()
-
     def click_cb(self, widget, index, label):
         """
         Internal callback function to "clicked" signal
@@ -275,13 +257,10 @@ class Bread(gtk.HBox):
         @param index: The index value of clicked crumb
         @param label: Label of the crumb
         """
-        if self.show_others:
-            self.change_sensitive(index)
-        else:
+        if not self.show_others:
             for i in self.hbox.get_children()[(index + 1): -1]:
                 i.destroy()
             self.item_list[(index + 1):] = []
-            self.change_sensitive(index)
 
     def move_right(self, widget):
         """
