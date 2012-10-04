@@ -46,10 +46,10 @@ class Bread(gtk.HBox):
     
     def __init__(self,
                  crumb,
-                 arrow_right=ui_theme.get_pixbuf("treeview/arrow_right.png").get_pixbuf(),
-                 arrow_down=ui_theme.get_pixbuf("treeview/arrow_down.png").get_pixbuf(),
                  show_others=False, 
-                 show_entry=False
+                 show_entry=False,
+                 arrow_right=ui_theme.get_pixbuf("treeview/arrow_right.png"),
+                 arrow_down=ui_theme.get_pixbuf("treeview/arrow_down.png"),
                  ):
         """
         Initialize Bread class.
@@ -441,8 +441,8 @@ class Crumb(gtk.Button):
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         #!# should move this part to Bread class since app_theme is golobalized
-        arrow_right = self.arrow_right
-        arrow_down = self.arrow_down
+        arrow_right = self.arrow_right.get_pixbuf()
+        arrow_down = self.arrow_down.get_pixbuf()
         arrow_width, arrow_height = arrow_right.get_width(), arrow_right.get_height()
         arrow_pixbuf = arrow_right
 
@@ -528,6 +528,7 @@ class Crumb(gtk.Button):
         # Draw text
         draw_text(cr, self.label, x, y , self.button_width, h, self.font_size, text_color,
                     alignment = pango.ALIGN_CENTER)
+        
         return True
 
 gobject.type_register(Crumb)
