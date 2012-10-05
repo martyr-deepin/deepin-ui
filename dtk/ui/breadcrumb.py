@@ -46,10 +46,10 @@ class Bread(gtk.HBox):
     
     def __init__(self,
                  crumb,
-                 show_others=False, 
-                 show_entry=False,
                  arrow_right=ui_theme.get_pixbuf("treeview/arrow_right.png"),
                  arrow_down=ui_theme.get_pixbuf("treeview/arrow_down.png"),
+                 show_others=False, 
+                 show_entry=False,
                  ):
         """
         Initialize Bread class.
@@ -543,7 +543,7 @@ class Crumb(gtk.Button):
 
         if self.menu_list != None:
             # Draw an arrow
-            draw_pixbuf(cr, arrow_pixbuf, x + self.button_width + (self.menu_min - arrow_width)/2, y + (h - arrow_height)/2)
+            draw_pixbuf(cr, arrow_pixbuf, x + self.button_width + (self.menu_min - arrow_width) / 2, y + (h - arrow_height) / 2)
 
         # Draw text
         draw_text(cr, self.label, x, y , self.button_width, h, self.font_size, text_color,
