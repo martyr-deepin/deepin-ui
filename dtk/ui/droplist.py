@@ -377,7 +377,11 @@ class Droplist(gtk.Window):
         
         if items:
             for (index, item) in enumerate(items):
-                droplist_item = self.create_item(index, item)
+                droplist_item = DroplistItem(
+                    self,
+                    index, item, font_size, 
+                    padding_x, padding_y,
+                    item_padding_left, item_padding_right, item_padding_y, self.max_width)
                 self.droplist_items.append(droplist_item)
                 self.item_box.pack_start(droplist_item.item_box, False, False)
                 
@@ -399,19 +403,6 @@ class Droplist(gtk.Window):
         
         self.select_first_item()
         self.grab_focus()
-        
-    def create_item(self, index, item):    
-        return DroplistItem(
-            self,
-            index,
-            item, 
-            self.font_size, 
-            self.padding_x, 
-            self.padding_y,
-            self.item_padding_left, 
-            self.item_padding_right, 
-            self.item_padding_y, 
-            self.max_width)
         
     def get_droplist_width(self):
         '''
