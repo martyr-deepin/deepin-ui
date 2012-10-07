@@ -60,6 +60,7 @@ def droplist_grab_window_focus_out():
     Handle `focus-out` signal of droplist_grab_window.
     '''
     global root_droplists
+    global droplist_grab_window_press_flag
     
     for root_droplist in root_droplists:
         root_droplist.hide()
@@ -68,6 +69,8 @@ def droplist_grab_window_focus_out():
     
     gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
     droplist_grab_window.grab_remove()
+    
+    droplist_grab_window_press_flag = False
 
 def is_press_on_droplist_grab_window(window):
     '''

@@ -189,7 +189,7 @@ def propagate_expose(widget, event):
     
     @param event: Gdk.Event instance.
     '''
-    if "get_child" in dir(widget) and widget.get_child() != None:
+    if hasattr(widget, "get_child") and widget.get_child() != None:
         widget.propagate_expose(widget.get_child(), event)
         
 def move_window(widget, event, window):
@@ -1224,7 +1224,7 @@ def get_window_shadow_size(window):
     @param window: Test window.
     @return: Return shadow size as (width, height), or return (0, 0) if window haven't shadow.
     '''
-    if "get_shadow_size" in dir(window):
+    if hasattr(window, "get_shadow_size"):
         return window.get_shadow_size()
     else:
         return (0, 0)

@@ -155,6 +155,7 @@ class TreeView(gtk.VBox):
         self.start_drag = False
         self.start_select_row = None
         self.select_rows = []
+        self.hover_row = None
         self.press_item = None
         self.press_in_select_rows = None
         self.left_button_press = False
@@ -1101,6 +1102,17 @@ class TreeView(gtk.VBox):
                         self.auto_scroll_tree_view(event)
                         
                         self.set_select_rows(select_rows)
+        else:                
+            if self.enable_hover:
+                hover_row = self.get_event_row(event)
+                
+                if self.hover_row != hover_row:
+                    if self.hover_row != None:
+                        self.visible_items[self.hover_row].unhover()
+                        
+                    self.hover_row = hover_row    
+                    if self.hover_row != None:
+                        self.visible_items[self.hover_row].hover()
                             
     def auto_scroll_tree_view(self, event):
         '''
@@ -1322,6 +1334,7 @@ class TreeItem(gobject.GObject):
         self.add_items_callback = None
         self.delete_items_callback = None
         self.is_select = False
+        self.is_hover = False
         self.is_expand = False
         self.drag_line = False
         self.drag_line_at_bottom = False
@@ -1345,6 +1358,12 @@ class TreeItem(gobject.GObject):
         pass
     
     def select(self):
+        pass
+    
+    def unhover(self):
+        pass
+    
+    def hover(self):
         pass
     
     def single_click(self):
