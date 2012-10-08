@@ -358,9 +358,22 @@ class Crumb(gtk.Button):
         self.index_id = 0
         self.set_label(label)
         self.in_button = True
+        self.in_menu = True
         self.connect("expose_event", self.expose_cb)
         self.connect("button_press_event", self.button_press_cb)
         self.connect("clicked", self.button_clicked)
+        self.add_events(gtk.gdk.POINTER_MOTION_MASK)
+
+    def motion_notify_cb(self, widget, event):
+        """
+        Internal callback function to Crumb "motion-notify-event" signal
+        @param widget: Crumb
+        @param event: an event of gtk.gdk.event
+        """
+        in_menu = event.x > self.button_width
+        if self.in_menu !=in_menu:
+            self.in_menu = in_menu
+            self.queue_draw()
 
     def create_menu(self, menu_list):
         """
@@ -451,6 +464,8 @@ class Crumb(gtk.Button):
         @param widget: Crumb
         @param event: An event of gtk.gdk.Event
         """
+        if self.menu_list == None:
+            self.menu_min = 0
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
@@ -477,9 +492,14 @@ class Crumb(gtk.Button):
             text_color = ui_theme.get_color("button_font").get_color()
             border_color = "#7ab2db"
             arrow_pixbuf = arrow_right
+            self.connect("motion-notify-event", self.motion_notify_cb)
 
-            button_color = button_prelight
-            menu_color = button_prelight
+            if self.in_menu:
+                button_color = button_prelight
+                menu_color = button_active
+            else:
+                button_color = button_prelight
+                menu_color = button_prelight
 
         elif widget.state == gtk.STATE_ACTIVE:
             text_color = ui_theme.get_color("button_font").get_color()
@@ -505,13 +525,13 @@ class Crumb(gtk.Button):
         # Draw background.
         draw_vlinear(
             cr,
-            x , y + 1  , self.button_width, h -1,
+            x , y  , self.button_width, h ,
             button_color)
 
         if self.menu_list != None:
             draw_vlinear(
                 cr,
-                x + self.button_width, y + 1, self.menu_min, h -1,
+                x + self.button_width, y , self.menu_min, h,
                 menu_color)
 
         if not widget.state == gtk.STATE_NORMAL:
@@ -527,12 +547,13 @@ class Crumb(gtk.Button):
                 draw_line(cr, x + w , y , x + w , y + h)
                 
             cr.set_source_rgb(*color_hex_to_cairo(border_color))
+            #cr.set_source_rgb(0,0,0)
             # Draw button border
-            draw_rectangle(cr, x + 1 , y + 1, self.button_width, h -1) 
+            draw_rectangle(cr, x + 1 , y + 1 , self.button_width, h -1) 
             
             if self.menu_list != None:
                 # Draw menu border
-                draw_rectangle(cr, x + self.button_width + 1, y + 1, self.menu_min -1, h -1)
+                draw_rectangle(cr, x + self.button_width + 1, y + 1 , self.menu_min -1, h -1 )
 
             # Draw innner border
             cr.set_source_rgb(1, 1, 1)
