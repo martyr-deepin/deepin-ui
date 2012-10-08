@@ -412,7 +412,8 @@ class Crumb(gtk.Button):
             self.menu_press = False
         else:
             self.in_button = event.x < (widget.allocation.width - self.menu_min)
-            self.menu_press = True
+            if not self.in_button:
+                self.menu_press = True
 
     def button_clicked(self, widget):
         """
