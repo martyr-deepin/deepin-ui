@@ -550,15 +550,15 @@ class Crumb(gtk.Button):
             cr.set_source_rgb(*color_hex_to_cairo(border_color))
             #cr.set_source_rgb(0,0,0)
             # Draw button border
-            draw_rectangle(cr, x + 1 , y + 1 , self.button_width, h -1) 
+            draw_rectangle(cr, x + 1 , y + 1 , self.button_width -1 , h -1) 
             
             if self.menu_list != None:
                 # Draw menu border
-                draw_rectangle(cr, x + self.button_width + 1, y + 1 , self.menu_min -1, h -1 )
+                draw_rectangle(cr, x + self.button_width , y + 1 , self.menu_min , h -1 )
 
             # Draw innner border
             cr.set_source_rgb(1, 1, 1)
-            draw_rectangle(cr, x + 2, y + 2, self.button_width - 2, h -3)
+            draw_rectangle(cr, x + 2, y + 2, self.button_width - 3, h -3)
             
             if self.menu_list != None:
                 draw_rectangle(cr, x + self.button_width + 2, y + 2, self.menu_min -3 , h -3)
