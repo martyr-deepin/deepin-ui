@@ -368,7 +368,7 @@ class TextItem(TreeItem):
                  text, 
                  text_size = DEFAULT_FONT_SIZE,
                  padding_x = 10,
-                 padding_y = 5):
+                 padding_y = 6):
         '''
         init docs
         '''
@@ -435,7 +435,7 @@ class IconTextItem(TreeItem):
                  text_size = DEFAULT_FONT_SIZE,
                  icon_width = 16,
                  padding_x = 10,
-                 padding_y = 5):
+                 padding_y = 6):
         '''
         init docs
         '''
