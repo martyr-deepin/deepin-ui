@@ -337,7 +337,8 @@ class BreadMenu(Poplist):
                          max_width,
                          False,
                          self.shape_bread_menu_frame,
-                         self.expose_bread_menu_frame
+                         self.expose_bread_menu_frame,
+                         align_size=2
                          )
         
         self.treeview.draw_mask = self.draw_treeview_mask

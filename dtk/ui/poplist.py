@@ -248,6 +248,7 @@ class Poplist(Window):
                  x_align=ALIGN_START,
                  y_align=ALIGN_START,
                  min_width=130,
+                 align_size=0,
                  ):
         '''
         init docs
@@ -263,10 +264,11 @@ class Poplist(Window):
         self.x_align = x_align
         self.y_align = y_align
         self.min_width = min_width
+        self.align_size = align_size
         self.window_width = self.window_height = 0
         self.treeview_align = gtk.Alignment()
         self.treeview_align.set(0.5, 0.5, 0, 0)
-        self.treeview_align.set_padding(2, 2, 2, 2)
+        self.treeview_align.set_padding(self.align_size, self.align_size, self.align_size, self.align_size)
         self.treeview = TreeView(self.items,
                                  enable_highlight=False,
                                  enable_multiple_select=False,
@@ -304,8 +306,8 @@ class Poplist(Window):
         self.treeview.set_size_request(adjust_width, adjust_height)
         
         (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()
-        self.window_width = adjust_width + shadow_padding_x * 2 + 4
-        self.window_height = adjust_height + shadow_padding_y * 2 + 4
+        self.window_width = adjust_width + shadow_padding_x * 2 + self.align_size * 2
+        self.window_height = adjust_height + shadow_padding_y * 2 + self.align_size * 2
         self.set_default_size(self.window_width, self.window_height)
         self.set_geometry_hints(
             None,
