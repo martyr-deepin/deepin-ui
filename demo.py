@@ -473,9 +473,7 @@ if __name__ == "__main__":
     tab_5_box.pack_start(button_box, False, False)
 
     # Breadcrumb
-    bread = Bread(["Root",[(None, "Test", None)]],
-                  app_theme.get_pixbuf("nav_button/arrow_right.png").get_pixbuf(),
-                  app_theme.get_pixbuf("nav_button/arrow_down.png").get_pixbuf(),
+    bread = Bread(["Root", None],
                   show_entry = True,
                   show_others = False)
     bread.connect("entry-changed", lambda w, p: bread.change_node(0,[(i,[(None, "test", None)]) for i in p.split("/")[1:]]))

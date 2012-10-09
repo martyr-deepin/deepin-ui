@@ -48,7 +48,9 @@ class Window(WindowBase):
                  enable_resize=False, 
                  shadow_radius=6, 
                  window_type=gtk.WINDOW_TOPLEVEL, 
-                 shadow_visible=True):
+                 shadow_visible=True,
+                 shape_frame_function=None,
+                 expose_frame_function=None):
         """
         Initialise the Window class.
 
@@ -62,6 +64,8 @@ class Window(WindowBase):
         self.shadow_radius = shadow_radius
         self.enable_resize = enable_resize
         self.shadow_visible = shadow_visible
+        self.shape_frame_function = shape_frame_function
+        self.expose_frame_function = expose_frame_function
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.background_color = (0, 0, 0, 0)
         
@@ -209,7 +213,9 @@ class Window(WindowBase):
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
         """
-        if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+        if self.expose_frame_function:
+            self.expose_frame_function(widget, event)
+        elif self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
             # Init.
             cr = widget.window.cairo_create()
             rect = widget.allocation
@@ -230,7 +236,9 @@ class Window(WindowBase):
         @param widget: A widget of type gtk.Widget.
         @param rect: The bounding region of the window.
         """
-        if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
+        if self.shape_frame_function:
+            self.shape_frame_function(widget, rect)
+        elif widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
             if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
                 # Init.
                 x, y, w, h = rect.x, rect.y, rect.width, rect.height

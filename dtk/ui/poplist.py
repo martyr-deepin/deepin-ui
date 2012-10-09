@@ -241,6 +241,9 @@ class Poplist(Window):
                  items,
                  max_height=None,
                  max_width=None,
+                 shadow_visible=True,
+                 shape_frame_function=None,
+                 expose_frame_function=None,
                  x_align=ALIGN_START,
                  y_align=ALIGN_START,
                  min_width=130,
@@ -249,7 +252,10 @@ class Poplist(Window):
         init docs
         '''
         # Init.
-        Window.__init__(self)
+        Window.__init__(self, 
+                        shadow_visible=shadow_visible,
+                        shape_frame_function=shape_frame_function,
+                        expose_frame_function=expose_frame_function)
         self.items = items
         self.max_height = max_height
         self.max_width = max_width
@@ -257,6 +263,9 @@ class Poplist(Window):
         self.y_align = y_align
         self.min_width = min_width
         self.window_width = self.window_height = 0
+        self.treeview_align = gtk.Alignment()
+        self.treeview_align.set(0.5, 0.5, 0, 0)
+        self.treeview_align.set_padding(2, 2, 2, 2)
         self.treeview = TreeView(self.items,
                                  enable_highlight=False,
                                  enable_multiple_select=False,
@@ -264,7 +273,8 @@ class Poplist(Window):
         self.treeview.scrolled_window.belong_to_polist = True # tag scrolled_window with poplist type
         
         # Connect widgets.
-        self.window_frame.pack_start(self.treeview, True, False)
+        self.treeview_align.add(self.treeview)
+        self.window_frame.pack_start(self.treeview_align, True, False)
         
         self.connect("realize", self.realize_poplist)
         self.connect_after("show", self.init_poplist)
@@ -293,8 +303,8 @@ class Poplist(Window):
         self.treeview.set_size_request(adjust_width, adjust_height)
         
         (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()
-        self.window_width = adjust_width + shadow_padding_x * 2
-        self.window_height = adjust_height + shadow_padding_y * 2
+        self.window_width = adjust_width + shadow_padding_x * 2 + 4
+        self.window_height = adjust_height + shadow_padding_y * 2 + 4
         self.set_default_size(self.window_width, self.window_height)
         self.set_geometry_hints(
             None,

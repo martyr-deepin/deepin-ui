@@ -28,11 +28,12 @@ from skin_config import skin_config
 from menu import Menu
 from constant import  DEFAULT_FONT_SIZE
 from draw import (draw_vlinear, draw_line, draw_text, draw_pixbuf)
-from utils import (get_content_size,get_window_shadow_size, 
-                          color_hex_to_cairo, get_match_parent)
+from utils import (get_content_size,get_window_shadow_size, cairo_disable_antialias,
+                   color_hex_to_cairo, alpha_color_hex_to_cairo, get_match_parent)
 import gtk 
 import gobject
 import pango
+from poplist import Poplist
 
 class Bread(gtk.HBox):
     """
@@ -318,6 +319,54 @@ class Bread(gtk.HBox):
 
 gobject.type_register(Bread)
 
+class BreadMenu(Poplist):
+    '''
+    class docs
+    '''
+	
+    def __init__(self,
+                 items,
+                 max_height=None,
+                 max_width=None):
+        '''
+        init docs
+        '''
+        Poplist.__init__(self,
+                         items, 
+                         max_height,
+                         max_width,
+                         False,
+                         self.shape_bread_menu_frame,
+                         self.expose_bread_menu_frame
+                         )
+        
+        self.treeview.draw_mask = self.draw_treeview_mask
+        self.expose_window_frame = self.expose_bread_menu_frame
+        
+    def draw_treeview_mask(self, cr, x, y, w, h):
+        cr.set_source_rgb(1, 1, 1)
+        cr.rectangle(x, y, w, h)
+        cr.fill()
+        
+    def shape_bread_menu_frame(self, widget, event):
+        pass
+        
+    def expose_bread_menu_frame(self, widget, event):
+        cr = widget.window.cairo_create()        
+        rect = widget.allocation
+
+        with cairo_disable_antialias(cr):
+            cr.set_line_width(1)
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("window_frame_outside_3").get_color_info()))
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
+
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("window_frame_inside_2").get_color_info()))
+            cr.rectangle(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2)
+            cr.fill()
+        
+gobject.type_register(BreadMenu)
+
 class Crumb(gtk.Button):
     """
     Crumb class 
@@ -330,14 +379,14 @@ class Crumb(gtk.Button):
 
     def __init__(self,
                  label,
-                 menu_list = None,
+                 menu_items = None,
                  font_size = DEFAULT_FONT_SIZE,
                  padding_x = 15,):
         """
         Initialize function
 
         @param label: Crumb item label
-        @param menu_list: Crumb menu ,could be a Menu instance or a list, default is None
+        @param menu_items: Crumb menu ,could be a Menu instance or a list, default is None
         @param font_size: Default font size
         @param padding_x: Default horizontal padding
         """
@@ -350,9 +399,9 @@ class Crumb(gtk.Button):
         self.height = 26 # crumb height
         self.font_size = font_size
         self.padding_x = padding_x
-        self.menu_list = self.create_menu(menu_list)
-        if self.menu_list != None:
-            self.menu_list.connect("hide", self.hide_cb)
+        self.menu = self.create_menu(menu_items)
+        if self.menu != None:
+            self.menu.connect("hide", self.hide_cb)
         self.menu_press = False
         self.menu_show = False
         self.index_id = 0
@@ -375,18 +424,17 @@ class Crumb(gtk.Button):
             self.in_menu = in_menu
             self.queue_draw()
 
-    def create_menu(self, menu_list):
+    def create_menu(self, menu_items):
         """
         Internal function to create menu
         
-        @param menu_list: menu_list
+        @param menu_items: menu_items
         @return: Menu instance
         """
-        if menu_list != None:
-            if isinstance(menu_list, list):
-                menu_list = Menu(menu_list, shadow_visible = False)
-            menu_list.is_root_menu = True
-        return menu_list
+        if menu_items != None and isinstance(menu_items, list):
+            return BreadMenu(menu_items)
+        else:
+            return None
 
     def hide_cb(self, widget):
         """
@@ -407,7 +455,7 @@ class Crumb(gtk.Button):
         @param widget: Crumb
         @param event: An event of gtk.gdk.Event
         """
-        if self.menu_list == None:
+        if self.menu == None:
             self.in_button = True
             self.menu_press = False
         else:
@@ -429,10 +477,9 @@ class Crumb(gtk.Button):
             self.menu_show = not self.menu_show
             if self.menu_show:
                 (win_x, win_y) = self.window.get_origin()
-                self.menu_list.show(
-                                (win_x + widget.allocation.x + self.button_width,
-                                 win_y + widget.allocation.height),
-                                 (0,0))
+                self.menu.show((win_x + widget.allocation.x + self.button_width,
+                                win_y + widget.allocation.height),
+                               (0,0))
 
     def set_label(self, label, font_size = DEFAULT_FONT_SIZE):
         '''
@@ -443,7 +490,7 @@ class Crumb(gtk.Button):
         '''
         self.label = label
         (self.label_w, self.label_h) = get_content_size(self.label, font_size)
-        if self.menu_list == None:
+        if self.menu == None:
             self.set_size_request(
                 max(self.label_w + 2 * self.padding_x, self.btn_min),
                 self.height)
@@ -465,7 +512,7 @@ class Crumb(gtk.Button):
         @param widget: Crumb
         @param event: An event of gtk.gdk.Event
         """
-        if self.menu_list == None:
+        if self.menu == None:
             self.menu_min = 0
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -529,7 +576,7 @@ class Crumb(gtk.Button):
             x , y  , self.button_width, h ,
             button_color)
 
-        if self.menu_list != None:
+        if self.menu != None:
             draw_vlinear(
                 cr,
                 x + self.button_width, y , self.menu_min, h,
@@ -552,7 +599,7 @@ class Crumb(gtk.Button):
             # Draw button border
             draw_rectangle(cr, x + 1 , y + 1 , self.button_width -1 , h -1) 
             
-            if self.menu_list != None:
+            if self.menu != None:
                 # Draw menu border
                 draw_rectangle(cr, x + self.button_width , y + 1 , self.menu_min , h -1 )
 
@@ -560,10 +607,10 @@ class Crumb(gtk.Button):
             cr.set_source_rgb(1, 1, 1)
             draw_rectangle(cr, x + 2, y + 2, self.button_width - 3, h -3)
             
-            if self.menu_list != None:
+            if self.menu != None:
                 draw_rectangle(cr, x + self.button_width + 2, y + 2, self.menu_min -3 , h -3)
 
-        if self.menu_list != None:
+        if self.menu != None:
             # Draw an arrow
             draw_pixbuf(cr, arrow_pixbuf, x + self.button_width + (self.menu_min - arrow_width) / 2, y + (h - arrow_height) / 2)
 
