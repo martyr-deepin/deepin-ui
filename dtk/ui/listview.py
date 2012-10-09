@@ -27,6 +27,7 @@ from draw import draw_pixbuf, draw_vlinear, draw_text
 from keymap import get_keyevent_name, has_ctrl_mask, has_shift_mask
 from skin_config import skin_config
 from theme import ui_theme
+from utils import get_parent_dir
 import math
 import cairo
 import copy
@@ -894,7 +895,7 @@ class ListView(gtk.DrawingArea):
                         temp_filepath = tempfile.mktemp()
                         subprocess.Popen(
                             ["python", 
-                             os.path.join(os.path.dirname(__file__), "listview_preview_pixbuf.py"),
+                             os.path.join(get_parent_dir(__file__), "listview_preview_pixbuf.py"),
                              str(len(self.select_rows)),
                              str([(0, ("#40408c", 1)),
                                   (1, ("#0093F9", 1))]),
