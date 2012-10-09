@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from theme import DynamicPixbuf
 from scrolled_window import ScrolledWindow
 from theme import ui_theme
 from window import Window
@@ -450,14 +451,21 @@ class IconTextItem(TreeItem):
         
     def render(self, cr, rect):
         font_color = ui_theme.get_color("menu_font").get_color()
-        icon_pixbuf = self.icon_normal_dpixbuf.get_pixbuf()
+        if isinstance(self.icon_normal_dpixbuf, gtk.gdk.Pixbuf):
+            icon_pixbuf = self.icon_normal_dpixbuf
+        elif isinstance(self.icon_normal_dpixbuf, DynamicPixbuf):
+            icon_pixbuf = self.icon_normal_dpixbuf.get_pixbuf()
+            
         if self.is_hover:
             # Draw background.
             draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
                          ui_theme.get_shadow_color("menu_item_select").get_color_info())
         
             # Set icon pixbuf.
-            icon_pixbuf = self.icon_hover_dpixbuf.get_pixbuf()
+            if isinstance(self.icon_hover_dpixbuf, gtk.gdk.Pixbuf):
+                icon_pixbuf = self.icon_hover_dpixbuf
+            elif isinstance(self.icon_hover_dpixbuf, DynamicPixbuf):
+                icon_pixbuf = self.icon_hover_dpixbuf.get_pixbuf()
             
             # Set font color.
             font_color = ui_theme.get_color("menu_select_font").get_color()
