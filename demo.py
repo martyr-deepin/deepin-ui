@@ -60,7 +60,7 @@ from dtk.ui.paned import HPaned
 from dtk.ui.scrolled_window import ScrolledWindow
 from dtk.ui.slider import Wizard
 from dtk.ui.spin import SpinBox
-from dtk.ui.poplist import Poplist, TextItem
+from dtk.ui.poplist import Poplist, IconTextItem
 from dtk.ui.statusbar import Statusbar
 from dtk.ui.tab_window import TabWindow
 from dtk.ui.treeview import TreeView, TreeViewItem
@@ -250,9 +250,12 @@ if __name__ == "__main__":
                        (os.path.join(images_path, "select_3.png"), os.path.join(images_path, "unselect_3.png")),
                        (os.path.join(images_path, "select_4.png"), os.path.join(images_path, "unselect_4.png")),
                        ]).show_all()),
-         (app_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : Poplist(map(lambda text: TextItem(str(text)), range(0, 300)),
-                                                                                max_height=300
-                                                                                ).show_all()),
+         (app_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航2", lambda : Poplist(map(lambda text: IconTextItem((app_theme.get_pixbuf("button/button_normal.png"),
+                                                                                                          app_theme.get_pixbuf("button/button_normal.png"),
+                                                                                                          app_theme.get_pixbuf("button/button_normal.png"),
+                                                                                                          ), str(text)), range(0, 300)),
+                                                                                  max_height=300
+                                                                                ).show((450, 250))),
          (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
          (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
          (app_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
