@@ -36,7 +36,7 @@ class Slider(gtk.Viewport):
     
     def __init__(self, 
                  slide_callback=None,
-                 default_index=0):
+                 ):
         '''
         Initialize Slider class.
 
@@ -45,7 +45,6 @@ class Slider(gtk.Viewport):
         gtk.Viewport.__init__(self)
         self.active_widget = None
         self.slide_callback = slide_callback
-        self.default_index = default_index
         self.timeouts = dict()
 
         self.set_shadow_type(gtk.SHADOW_NONE)
