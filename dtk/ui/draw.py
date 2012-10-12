@@ -488,6 +488,59 @@ def expose_linear_background(widget, event, color_infos):
     
     return True
 
+def draw_shadow(cr, x, y, w, h, r, color_window_shadow):
+    '''
+    Draw window shadow.
+    
+    @param cr: Cairo context.
+    @param x: X coordinate of draw area.
+    @param y: Y coordinate of draw area.
+    @param w: Width of draw area.
+    @param h: Height of draw area.
+    @param r: Radious of window shadow corner.
+    @param p: Padding between window shadow and window frame.
+    @param color_window_shadow: theme.DyanmicShadowColor.
+    '''
+    color_infos = color_window_shadow.get_color_info()
+    with cairo_state(cr):
+        # Clip four corner.
+        cr.rectangle(x, y, r, r)
+        cr.rectangle(x + w - r, y, r, r)
+        cr.rectangle(x, y + h - r, r, r)
+        cr.rectangle(x + w - r, y + h - r, r, r)
+        
+        cr.clip()
+        
+        # Draw four round.
+        draw_radial_round(cr, x + r, y + r, r, color_infos)
+        draw_radial_round(cr, x + r, y + h - r, r, color_infos)
+        draw_radial_round(cr, x + w - r, y + r, r, color_infos)
+        draw_radial_round(cr, x + w - r, y + h - r, r, color_infos)
+        
+    with cairo_state(cr):
+        # Draw four side.
+        draw_vlinear(
+            cr, 
+            x + r, y, 
+            w - r * 2, r, color_infos)
+        draw_vlinear(
+            cr, 
+            x + r, y + h - r, 
+            w - r * 2, r, color_infos, 0, False)
+        draw_hlinear(
+            cr, 
+            x, y + r, 
+            r, h - r * 2, color_infos)
+        draw_hlinear(
+            cr, 
+            x + w - r, y + r, 
+            r, h - r * 2, color_infos, 0, False)
+        
+    # Fill inside.
+    cr.set_source_rgba(*alpha_color_hex_to_cairo(color_infos[-1][1]))    
+    cr.rectangle(x + r, y + r, w - r * 2, h - r * 2)
+    cr.fill()
+        
 def draw_window_shadow(cr, x, y, w, h, r, p, color_window_shadow):
     '''
     Draw window shadow.

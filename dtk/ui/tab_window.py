@@ -204,7 +204,7 @@ class TabBox(gtk.VBox):
             
             (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
             skin_config.render_background(cr, widget, shadow_x, shadow_y)
-        
+            
         if len(self.tab_items) > 0:    
             # Draw title unselect tab.
             tab_title_width = sum(self.tab_title_widths)
