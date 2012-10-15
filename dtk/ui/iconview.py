@@ -110,7 +110,7 @@ class IconView(gtk.DrawingArea):
         
         # Redraw.
         self.redraw_request_list = []
-        self.redraw_delay = 100 # 100 milliseconds should be enough for redraw
+        self.redraw_delay = 50 # 50 milliseconds should be enough for redraw
         gtk.timeout_add(self.redraw_delay, self.update_redraw_request_list)
         
         self.keymap = {
