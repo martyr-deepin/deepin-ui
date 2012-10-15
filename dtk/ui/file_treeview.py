@@ -338,7 +338,7 @@ class DirItem(TreeItem):
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
     
-    def double_click(self):
+    def double_click(self, column, offset_x, offset_y):
         if self.is_expand:
             self.unexpand()
         else:
@@ -521,7 +521,7 @@ class FileItem(TreeItem):
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
             
-    def double_click(self):
+    def double_click(self, column, offset_x, offset_y):
         app_info = gio.app_info_get_default_for_type(self.gfile.query_info("standard::content-type").get_content_type(), False)
         if app_info:
             app_info.launch([self.gfile], None)

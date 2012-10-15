@@ -32,7 +32,7 @@ from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
 from cache_pixbuf import CachePixbuf
 from utils import (cairo_state, get_window_shadow_size, get_event_coords,
-                   container_remove_all, get_same_level_widgets,
+                   container_remove_all, get_same_level_widgets, get_disperse_index,
                    is_left_button, is_double_click, is_single_click, remove_timeout_id)
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
@@ -793,13 +793,7 @@ class TreeView(gtk.VBox):
         # Draw items.
         (start_row, end_row, item_height_count) = self.get_expose_bound()
         
-        column_widths = []
-        fixed_width_count = sum(filter(lambda w: w != -1, self.column_widths))
-        for column_width in self.column_widths:
-            if column_width == -1:
-                column_widths.append(rect.width - fixed_width_count)
-            else:
-                column_widths.append(column_width)
+        column_widths = self.get_column_widths()
             
         for item in self.visible_items[start_row:end_row]:
             item_width_count = 0
@@ -915,7 +909,7 @@ class TreeView(gtk.VBox):
             self.click_item(event)
             
     def click_item(self, event):
-        click_row = self.get_event_row(event)
+        (click_row, click_column, offset_x, offset_y) = self.get_cell_with_event(event)
         
         if self.left_button_press:
             if click_row == None:
@@ -935,6 +929,8 @@ class TreeView(gtk.VBox):
                         self.start_drag = False
                         self.start_select_row = click_row
                         self.set_select_rows([click_row])
+                        
+                        self.visible_items[click_row].button_press(click_column, offset_x, offset_y)
                         
             if is_double_click(event):
                 self.double_click_row = copy.deepcopy(click_row)
@@ -980,13 +976,13 @@ class TreeView(gtk.VBox):
         
     def release_item(self, event):
         if is_left_button(event):
-            release_row = self.get_event_row(event)
+            (release_row, release_column, offset_x, offset_y) = self.get_cell_with_event(event)
             
             if release_row != None:
                 if self.double_click_row == release_row:
-                    self.visible_items[release_row].double_click()
+                    self.visible_items[release_row].double_click(release_column, offset_x, offset_y)
                 elif self.single_click_row == release_row:
-                    self.visible_items[release_row].single_click()
+                    self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
 
             if self.start_drag and self.is_in_visible_area(event):
                 self.drag_select_items_at_cursor()
@@ -1104,15 +1100,15 @@ class TreeView(gtk.VBox):
                         self.set_select_rows(select_rows)
         else:                
             if self.enable_hover:
-                hover_row = self.get_event_row(event)
+                (hover_row, hover_column, offset_x, offset_y) = self.get_cell_with_event(event)
                 
                 if self.hover_row != hover_row:
                     if self.hover_row != None:
-                        self.visible_items[self.hover_row].unhover()
+                        self.visible_items[self.hover_row].unhover(hover_column, offset_x, offset_y)
                         
                     self.hover_row = hover_row    
                     if self.hover_row != None:
-                        self.visible_items[self.hover_row].hover()
+                        self.visible_items[self.hover_row].hover(hover_column, offset_x, offset_y)
                             
     def auto_scroll_tree_view(self, event):
         '''
@@ -1218,6 +1214,35 @@ class TreeView(gtk.VBox):
         '''
         (event_x, event_y) = get_event_coords(event)
         return self.get_row_with_coordinate(event_y)
+    
+    def get_column_widths(self):
+        rect = self.draw_area.allocation
+        column_widths = []
+        fixed_width_count = sum(filter(lambda w: w != -1, self.column_widths))
+        for column_width in self.column_widths:
+            if column_width == -1:
+                column_widths.append(rect.width - fixed_width_count)
+            else:
+                column_widths.append(column_width)
+
+        return column_widths        
+    
+    def get_cell_with_event(self, event):
+        (event_x, event_y) = get_event_coords(event)
+        
+        item_height_count = 0
+        item_index_count = 0
+        for item in self.visible_items:
+            if item_height_count <= event_y <= item_height_count + item.get_height():
+                event_row = item_index_count
+                offset_y = event_y - item_height_count
+                (event_column, offset_x) = get_disperse_index(self.get_column_widths(), event_x)
+                return (event_row, event_column, offset_x, offset_y)
+            
+            item_height_count += item.get_height()
+            item_index_count += 1
+            
+        return None    
         
     def get_row_with_coordinate(self, y):
         item_height_count = 0
@@ -1360,16 +1385,19 @@ class TreeItem(gobject.GObject):
     def select(self):
         pass
     
-    def unhover(self):
+    def unhover(self, column, offset_x, offset_y):
         pass
     
-    def hover(self):
+    def hover(self, column, offset_x, offset_y):
         pass
     
-    def single_click(self):
+    def button_press(self, column, offset_x, offset_y):
+        pass        
+    
+    def single_click(self, column, offset_x, offset_y):
         pass        
 
-    def double_click(self):
+    def double_click(self, column, offset_x, offset_y):
         pass        
     
     def draw_drag_line(self, drag_line, drag_line_at_bottom=False):
