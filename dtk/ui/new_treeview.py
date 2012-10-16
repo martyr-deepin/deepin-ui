@@ -909,33 +909,35 @@ class TreeView(gtk.VBox):
             self.click_item(event)
             
     def click_item(self, event):
-        (click_row, click_column, offset_x, offset_y) = self.get_cell_with_event(event)
-        
-        if self.left_button_press:
-            if click_row == None:
-                self.unselect_all()
-            else:
-                if self.press_shift:
-                    self.shift_click(click_row)
-                elif self.press_ctrl:
-                    self.ctrl_click(click_row)
+        cell = self.get_cell_with_event(event)
+        if cell != None:
+            (click_row, click_column, offset_x, offset_y) = cell
+            
+            if self.left_button_press:
+                if click_row == None:
+                    self.unselect_all()
                 else:
-                    if self.enable_drag_drop and click_row in self.select_rows:
-                        self.start_drag = True
-                        
-                        # Record press_in_select_rows, disable select rows if mouse not move after release button.
-                        self.press_in_select_rows = click_row
+                    if self.press_shift:
+                        self.shift_click(click_row)
+                    elif self.press_ctrl:
+                        self.ctrl_click(click_row)
                     else:
-                        self.start_drag = False
-                        self.start_select_row = click_row
-                        self.set_select_rows([click_row])
-                        
-                        self.visible_items[click_row].button_press(click_column, offset_x, offset_y)
-                        
-            if is_double_click(event):
-                self.double_click_row = copy.deepcopy(click_row)
-            elif is_single_click(event):
-                self.single_click_row = copy.deepcopy(click_row)                
+                        if self.enable_drag_drop and click_row in self.select_rows:
+                            self.start_drag = True
+                            
+                            # Record press_in_select_rows, disable select rows if mouse not move after release button.
+                            self.press_in_select_rows = click_row
+                        else:
+                            self.start_drag = False
+                            self.start_select_row = click_row
+                            self.set_select_rows([click_row])
+                            
+                            self.visible_items[click_row].button_press(click_column, offset_x, offset_y)
+                            
+                if is_double_click(event):
+                    self.double_click_row = copy.deepcopy(click_row)
+                elif is_single_click(event):
+                    self.single_click_row = copy.deepcopy(click_row)                
                 
     def shift_click(self, click_row):
         if self.select_rows == [] or self.start_select_row == None:
@@ -976,28 +978,30 @@ class TreeView(gtk.VBox):
         
     def release_item(self, event):
         if is_left_button(event):
-            (release_row, release_column, offset_x, offset_y) = self.get_cell_with_event(event)
-            
-            if release_row != None:
-                if self.double_click_row == release_row:
-                    self.visible_items[release_row].double_click(release_column, offset_x, offset_y)
-                elif self.single_click_row == release_row:
-                    self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
-
-            if self.start_drag and self.is_in_visible_area(event):
-                self.drag_select_items_at_cursor()
+            cell = self.get_cell_with_event(event)
+            if cell != None:
+                (release_row, release_column, offset_x, offset_y) = cell
                 
-            self.double_click_row = None    
-            self.single_click_row = None    
-            self.start_drag = False
-            
-            # Disable select rows when press_in_select_rows valid after button release.
-            if self.press_in_select_rows:
-                self.set_select_rows([self.press_in_select_rows])
-                self.start_select_row = self.press_in_select_rows
-                self.press_in_select_rows = None
-
-            self.set_drag_row(None)
+                if release_row != None:
+                    if self.double_click_row == release_row:
+                        self.visible_items[release_row].double_click(release_column, offset_x, offset_y)
+                    elif self.single_click_row == release_row:
+                        self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
+                
+                if self.start_drag and self.is_in_visible_area(event):
+                    self.drag_select_items_at_cursor()
+                    
+                self.double_click_row = None    
+                self.single_click_row = None    
+                self.start_drag = False
+                
+                # Disable select rows when press_in_select_rows valid after button release.
+                if self.press_in_select_rows:
+                    self.set_select_rows([self.press_in_select_rows])
+                    self.start_select_row = self.press_in_select_rows
+                    self.press_in_select_rows = None
+                
+                self.set_drag_row(None)
             
     def is_in_visible_area(self, event):
         '''
@@ -1100,15 +1104,17 @@ class TreeView(gtk.VBox):
                         self.set_select_rows(select_rows)
         else:                
             if self.enable_hover:
-                (hover_row, hover_column, offset_x, offset_y) = self.get_cell_with_event(event)
-                
-                if self.hover_row != hover_row:
-                    if self.hover_row != None:
-                        self.visible_items[self.hover_row].unhover(hover_column, offset_x, offset_y)
-                        
-                    self.hover_row = hover_row    
-                    if self.hover_row != None:
-                        self.visible_items[self.hover_row].hover(hover_column, offset_x, offset_y)
+                cell = self.get_cell_with_event(event)
+                if cell != None:
+                    (hover_row, hover_column, offset_x, offset_y) = cell
+                    
+                    if self.hover_row != hover_row:
+                        if self.hover_row != None:
+                            self.visible_items[self.hover_row].unhover(hover_column, offset_x, offset_y)
+                            
+                        self.hover_row = hover_row    
+                        if self.hover_row != None:
+                            self.visible_items[self.hover_row].hover(hover_column, offset_x, offset_y)
                             
     def auto_scroll_tree_view(self, event):
         '''
