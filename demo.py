@@ -43,6 +43,7 @@ from dtk.ui.browser import WebView
 from dtk.ui.button import CheckButton, RadioButton, ComboButton
 from dtk.ui.button import ImageButton, LinkButton, Button
 from dtk.ui.categorybar import Categorybar
+from dtk.ui.star_view import StarView
 from dtk.ui.color_selection import ColorButton
 from dtk.ui.combo import ComboBox
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
@@ -427,7 +428,13 @@ if __name__ == "__main__":
     combo_button.connect("button-clicked", click_combo_button)
     combo_button.connect("arrow-clicked", show_combo_menu)
     
-    tab_1_box.pack_start(combo_button, False, False)
+    temp_hbox = gtk.HBox()
+    tab_1_box.pack_start(temp_hbox, False, False)
+    
+    temp_hbox.pack_start(combo_button, False, False)
+    
+    star_view = StarView()
+    temp_hbox.pack_start(star_view, False, False)
     
     # Add statusbar.
     statusbar = Statusbar(36)
