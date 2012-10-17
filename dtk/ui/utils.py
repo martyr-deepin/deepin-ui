@@ -32,6 +32,7 @@ import socket
 import subprocess
 import time
 import traceback
+import commands
 import sys
 from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, 
                       WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, 
@@ -537,25 +538,25 @@ def kill_process(proc):
         print "function kill_process got error: %s" % (e)
         traceback.print_exc(file=sys.stdout)
     
-def get_command_output_first_line(commands):
+def get_command_output_first_line(commands, in_shell=False):
     '''
     Run command and return first line of output.
     
     @param commands: Input commands.
     @return: Return first line of command output.
     '''
-    process = subprocess.Popen(commands, stdout=subprocess.PIPE)
+    process = subprocess.Popen(commands, stdout=subprocess.PIPE, shell=in_shell)
     process.wait()
     return process.stdout.readline()
 
-def get_command_output(commands):
+def get_command_output(commands, in_shell=False):
     '''
     Run command and return output.
     
     @param commands: Input commands.
     @return: Return command output.
     '''
-    process = subprocess.Popen(commands, stdout=subprocess.PIPE)
+    process = subprocess.Popen(commands, stdout=subprocess.PIPE, shell=in_shell)
     process.wait()
     return process.stdout.readlines()
     
@@ -1352,8 +1353,15 @@ def check_connect_by_port(port, retry_times=6, sleep_time=0.5):
 
 def is_network_connected():
     '''
-    Is network connected, if nothing in file `/proc/net/arp`, network is disconnected.
+    Is network connected, if nothing output from command `arp -n`, network is disconnected.
     
-    @return: Return True if network is connected.
+    @return: Return True if network is connected or command `arp -n` failed.
     '''
-    return len(filter(lambda line: line != '', open("/proc/net/arp", "r").read().split("\n")) )> 1
+    try:
+        return len(commands.getoutput("arp -n").split("\n")) > 1
+    except Exception, e:
+        print "function is_network_connected got error: %s" % e
+        traceback.print_exc(file=sys.stdout)
+        
+        return True
+    
