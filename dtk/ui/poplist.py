@@ -496,13 +496,13 @@ class IconTextItem(TreeItem):
     def get_column_renders(self):
         return [self.render]
 
-    def unhover(self):
+    def unhover(self, column, offset_x, offset_y):
         self.is_hover = False
 
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
     
-    def hover(self):
+    def hover(self, column, offset_x, offset_y):
         self.is_hover = True
         
         if self.redraw_request_callback:
