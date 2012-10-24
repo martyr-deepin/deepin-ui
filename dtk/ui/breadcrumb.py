@@ -42,7 +42,8 @@ class Bread(gtk.HBox):
     """
 
     __gsignals__= {
-        "entry-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,))
+        "entry-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+        "item_clicked" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT,gobject.TYPE_STRING,))
         }
     
     def __init__(self,
@@ -191,8 +192,6 @@ class Bread(gtk.HBox):
         widget.destroy()
         self.eventbox.show()
         self.emit("entry-changed", label)
-        print "signal \"entry-changed\"", "with path:%s"%label
-        
         
     def redraw_bg(self, widget, event):
         """
@@ -262,6 +261,8 @@ class Bread(gtk.HBox):
             for i in self.hbox.get_children()[(index + 1): -1]:
                 i.destroy()
             self.item_list[(index + 1):] = []
+            
+        self.emit("item_clicked", index, label)    
 
     def move_right(self, widget):
         """
@@ -472,7 +473,6 @@ class Crumb(gtk.Button):
         """
         if self.in_button:
             self.emit("item_clicked", self.index_id, self.label)
-            print "\"item_clicked\" signal emitted, with index_id:%d, label:\"%s\""%(self.index_id, self.label)
         else:
             self.menu_press = False
             self.menu_show = not self.menu_show
