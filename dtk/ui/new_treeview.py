@@ -323,6 +323,26 @@ class TreeView(gtk.VBox):
             
             container_remove_all(self.title_box)
         
+    def select_items(self, items):
+        for select_row in self.select_rows:
+            self.visible_items[select_row].unselect()
+            
+        select_rows = []    
+        for item in items:
+            try:
+                select_rows.append(self.visible_items.index(item))
+            except Exception, e:
+                print "function select_items got error: %s" % e
+                traceback.print_exc(file=sys.stdout)
+                
+        self.select_rows = select_rows
+        
+        if select_rows == []:
+            self.start_select_row = None
+        else:
+            for select_row in self.select_rows:
+                self.visible_items[select_row].select()
+            
     def set_select_rows(self, rows):
         for select_row in self.select_rows:
             self.visible_items[select_row].unselect()
