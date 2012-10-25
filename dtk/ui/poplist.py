@@ -21,7 +21,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from theme import DynamicPixbuf
-from scrolled_window import ScrolledWindow
 from theme import ui_theme
 from window import Window
 from draw import draw_text, draw_vlinear, draw_pixbuf
@@ -30,208 +29,7 @@ from new_treeview import TreeView, TreeItem
 from constant import DEFAULT_FONT_SIZE, ALIGN_START, ALIGN_MIDDLE
 import gobject
 import gtk
-
-poplist_grab_window = gtk.Window(gtk.WINDOW_POPUP)
-poplist_grab_window.move(0, 0)
-poplist_grab_window.set_default_size(0, 0)
-poplist_grab_window.show()
-root_poplists = []
-poplist_grab_window_press_flag = False
-
-def poplist_grab_window_focus_in():
-    '''
-    Handle `focus-in` signal of poplist_grab_window.
-    '''
-    poplist_grab_window.grab_add()
-    gtk.gdk.pointer_grab(
-        poplist_grab_window.window, 
-        True,
-        gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.ENTER_NOTIFY_MASK | gtk.gdk.LEAVE_NOTIFY_MASK,
-        None, None, gtk.gdk.CURRENT_TIME)
-    
-def poplist_grab_window_focus_out():
-    '''
-    Handle `focus-out` signal of poplist_grab_window.
-    '''
-    global root_poplists
-    global poplist_grab_window_press_flag
-    
-    for root_poplist in root_poplists:
-        root_poplist.hide()
-    
-    root_poplists = []    
-    
-    gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
-    poplist_grab_window.grab_remove()
-    
-    poplist_grab_window_press_flag = False
-    
-def is_press_on_poplist_grab_window(window):
-    '''
-    Whether press on poplist of poplist_grab_window.
-    
-    @param window: gtk.Window or gtk.gdk.Window
-    '''
-    for toplevel in gtk.window_list_toplevels():
-        if isinstance(window, gtk.Window):
-            if window == toplevel:
-                return True
-        elif isinstance(window, gtk.gdk.Window):
-            if window == toplevel.window:
-                return True
-            
-    return False        
-
-def poplist_grab_window_button_press(widget, event):
-    '''
-    Handle `button-press-event` signal of poplist_grab_window.
-
-    @param widget: Poplist widget.
-    @param event: Button press event.
-    '''
-    global poplist_active_item
-    global poplist_grab_window_press_flag
-
-    poplist_grab_window_press_flag = True
-    
-    if event and event.window:
-        event_widget = event.window.get_user_data()
-        if is_press_on_poplist_grab_window(event.window):
-            poplist_grab_window_focus_out()
-        elif isinstance(event_widget, ScrolledWindow) and hasattr(event_widget, "belong_to_polist"):
-            event_widget.event(event)
-        elif isinstance(event_widget, Poplist):
-            event_widget.event(event)
-        else:
-            event_widget.event(event)
-            poplist_grab_window_focus_out()
-            
-def poplist_grab_window_enter_notify(widget, event):
-    '''
-    Handle `enter-notify` signal of poplist_grab_window.
-
-    @param widget: Poplist widget.
-    @param event: Enter notify event.
-    '''
-    if event and event.window:
-        event_widget = event.window.get_user_data()
-        if isinstance(event_widget, ScrolledWindow) and hasattr(event_widget, "belong_to_polist"):
-            event_widget.event(event)
-
-def poplist_grab_window_leave_notify(widget, event):
-    '''
-    Handle `leave-notify` signal of poplist_grab_window.
-
-    @param widget: Poplist widget.
-    @param event: Leave notify event.
-    '''
-    if event and event.window:
-        event_widget = event.window.get_user_data()
-        if isinstance(event_widget, ScrolledWindow) and hasattr(event_widget, "belong_to_polist"):
-            event_widget.event(event)
-            
-def poplist_grab_window_scroll_event(widget, event):
-    '''
-    Handle `scroll` signal of poplist_grab_window.
-
-    @param widget: Poplist widget.
-    @param event: Scroll event.
-    '''
-    global root_poplists
-    
-    if event and event.window:
-        for poplist in root_poplists:
-            poplist.treeview.scrolled_window.event(event)
-            
-def poplist_grab_window_key_press(widget, event):
-    '''
-    Handle `key-press-event` signal of poplist_grab_window.
-
-    @param widget: Poplist widget.
-    @param event: Key press event.
-    '''
-    global root_poplists
-    
-    if event and event.window:
-        for poplist in root_poplists:
-            poplist.event(event)
-
-def poplist_grab_window_key_release(widget, event):
-    '''
-    Handle `key-release-event` signal of poplist_grab_window.
-
-    @param widget: Poplist widget.
-    @param event: Key release event.
-    '''
-    global root_poplists
-    
-    if event and event.window:
-        for poplist in root_poplists:
-            poplist.event(event)
-
-def poplist_grab_window_button_release(widget, event):
-    '''
-    Handle `button-release-event` signal of poplist_grab_window.
-
-    @param widget: Poplist widget.
-    @param event: Button release event.
-    '''
-    global root_poplists
-    global poplist_grab_window_press_flag
-
-    poplist_grab_window_press_flag = False
-    
-    if event and event.window:
-        event_widget = event.window.get_user_data()
-        if isinstance(event_widget, ScrolledWindow) and hasattr(event_widget, "belong_to_polist"):        
-            event_widget.event(event)
-        else:
-            # Make scrolledbar smaller if release out of scrolled_window area.
-            for poplist in root_poplists:
-                poplist.treeview.scrolled_window.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
-                poplist.treeview.scrolled_window.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
-    
-def poplist_grab_window_motion_notify(widget, event):
-    '''
-    Handle `motion-notify` signal of poplist_grab_window.
-
-    @param widget: Poplist widget.
-    @param event: Motion notify signal.
-    '''
-    
-    global poplist_active_item
-    global poplist_grab_window_press_flag
-    
-    if event and event.window:
-        event_widget = event.window.get_user_data()
-        if isinstance(event_widget, ScrolledWindow) and hasattr(event_widget, "belong_to_polist"):        
-            event_widget.event(event)
-        else:
-            if poplist_grab_window_press_flag:
-                for poplist in root_poplists:
-                    motion_notify_event = gtk.gdk.Event(gtk.gdk.MOTION_NOTIFY)
-                    motion_notify_event.window = poplist.treeview.scrolled_window.vwindow
-                    motion_notify_event.send_event = True
-                    motion_notify_event.time = event.time
-                    motion_notify_event.x = event.x
-                    motion_notify_event.y = event.y
-                    motion_notify_event.x_root = event.x_root
-                    motion_notify_event.y_root = event.y_root
-                    motion_notify_event.state = event.state
-                        
-                    poplist.treeview.scrolled_window.event(motion_notify_event)
-            else:
-                if isinstance(event_widget.get_toplevel(), Poplist):
-                    event_widget.event(event)
-                
-poplist_grab_window.connect("button-press-event", poplist_grab_window_button_press)
-poplist_grab_window.connect("button-release-event", poplist_grab_window_button_release)
-poplist_grab_window.connect("motion-notify-event", poplist_grab_window_motion_notify)
-poplist_grab_window.connect("enter-notify-event", poplist_grab_window_enter_notify)
-poplist_grab_window.connect("leave-notify-event", poplist_grab_window_leave_notify)
-poplist_grab_window.connect("scroll-event", poplist_grab_window_scroll_event)
-poplist_grab_window.connect("key-press-event", poplist_grab_window_key_press)
-poplist_grab_window.connect("key-release-event", poplist_grab_window_key_release)
+from popup_grab_window import PopupGrabWindow, wrap_grab_window
 
 class Poplist(Window):
     '''
@@ -273,14 +71,18 @@ class Poplist(Window):
                                  enable_highlight=False,
                                  enable_multiple_select=False,
                                  enable_drag_drop=False)
-        self.treeview.scrolled_window.belong_to_polist = True # tag scrolled_window with poplist type
         
         # Connect widgets.
         self.treeview_align.add(self.treeview)
         self.window_frame.pack_start(self.treeview_align, True, False)
         
         self.connect("realize", self.realize_poplist)
-        self.connect_after("show", self.init_poplist)
+        
+        # Wrap self in poup grab window.
+        wrap_grab_window(poplist_grab_window, self)
+        
+    def get_scrolledwindow(self):
+        return self.treeview.scrolled_window
         
     def realize_poplist(self, widget):
         treeview_width = self.min_width
@@ -318,21 +120,6 @@ class Poplist(Window):
             -1, -1, -1, -1, -1, -1
             )
         
-    def init_poplist(self, widget):
-        '''
-        Callback after `show` signal.
-        
-        @param widget: Poplist widget.
-        '''
-        global root_poplists
-        poplist_grab_window_focus_out()
-        
-        if not gtk.gdk.pointer_is_grabbed():
-            poplist_grab_window_focus_in()
-        
-        if not self in root_poplists:
-            root_poplists.append(self)
-            
     def show(self, (expect_x, expect_y), (offset_x, offset_y)=(0, 0)):
         (screen_width, screen_height) = get_screen_size(self)
         
@@ -509,3 +296,5 @@ class IconTextItem(TreeItem):
             self.redraw_request_callback(self)
     
 gobject.type_register(IconTextItem)
+
+poplist_grab_window = PopupGrabWindow(Poplist)
