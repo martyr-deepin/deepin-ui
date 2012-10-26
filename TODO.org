@@ -3,6 +3,7 @@
 
 * TODO Deepin-UI
 ** TODO ComboBox 的菜单在 Slider 里面会出现问题
+    Q: 继承Slider的Wizard模仿slideshow展示图片，是否能添加一个在Slider里使用ComboBox（有哪个“场合”会在Slider里放ComboBox）的用例呢？
 ** TODO ComboBox 在 Plug 里面作为控件， 菜单是无法显示的
 ** TODO new_treeview.py 里面的 TreeView 像 IconView 添加 gc 垃圾回收功能, 在Item超出视窗外后进行 GC 回收
 ** TODO Bug: TabWindow 反复点击多次以后就标签消失

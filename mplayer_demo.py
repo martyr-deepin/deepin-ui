@@ -20,6 +20,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+'''
+FIXME: KeyError: 'button_default_font'
+没有初始化皮肤
+'''
+from dtk.ui.init_skin import init_skin
+from dtk.ui.utils import get_parent_dir
+import os
+app_theme = init_skin(
+    "deepin-ui-demo", 
+    "1.0",
+    "01",
+    os.path.join(get_parent_dir(__file__), "skin"),
+    os.path.join(get_parent_dir(__file__), "app_theme"),
+    )
+
 import gtk
 from dtk.ui.application import Application
 from dtk.ui.constant import DEFAULT_WINDOW_HEIGHT, DEFAULT_WINDOW_WIDTH
@@ -28,6 +43,10 @@ from dtk.ui.utils import run_command
 from dtk.ui.frame import HorizontalFrame, VerticalFrame
 from dtk.ui.mplayer_view import MplayerView
 from dtk.ui.statusbar import Statusbar
+'''
+FIXME: ImportError: No module named dragbar
+dragbar木有了？
+'''
 from dtk.ui.dragbar import Dragbar
 
 def show_video(widget, xid):
