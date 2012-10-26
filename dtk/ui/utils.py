@@ -34,6 +34,7 @@ import time
 import traceback
 import commands
 import sys
+import dbus
 from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, 
                       WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, 
                       WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, 
@@ -1365,3 +1366,15 @@ def is_network_connected():
         
         return True
     
+def is_dbus_name_exists(dbus_name, request_session_bus=True):
+    if request_session_bus:
+        bus = dbus.SessionBus()
+    else:
+        bus = dbus.SystemBus()
+        
+    dbus_object = bus.get_object('org.freedesktop.DBus', '/org/freedesktop/DBus')
+    
+    dbus_iface = dbus.Interface(dbus_object, 'org.freedesktop.DBus')
+    
+    return dbus_name in dbus_iface.ListNames()
+
