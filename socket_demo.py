@@ -3,7 +3,7 @@
 
 '''
 python socket_demo.py 46137376
-¸ÃIDÊÇpython plug_demo.py²úÉúµÄ
+è¯¥IDæ˜¯python plug_demo.pyäº§ç”Ÿçš„
 '''
 
 import string

@@ -26,6 +26,7 @@ from contextlib import contextmanager
 import gtk
 import gobject
 import cairo
+import gc
 from threads import post_gui
 from draw import draw_vlinear, draw_pixbuf, draw_text
 from theme import ui_theme
@@ -193,6 +194,8 @@ class TreeView(gtk.VBox):
         self.pack_start(self.scrolled_window, True, True)
         
         # Handle signals.
+        self.draw_area.connect("realize", self.realize_tree_view)
+        self.draw_area.connect("realize", lambda w: self.grab_focus())
         self.draw_area.connect("expose-event", lambda w, e: self.expose_tree_view(w))
         self.draw_area.connect("button-press-event", self.button_press_tree_view)
         self.draw_area.connect("button-release-event", self.button_release_tree_view)
@@ -221,7 +224,23 @@ class TreeView(gtk.VBox):
             "Ctrl + a" : self.select_all_items,
             "Delete" : self.delete_select_items,
             }
-        
+
+    def realize_tree_view(self, widget):
+        self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
+   
+    def button_release_scrolled_window(self, widget, event):
+        need_gc_collect = False
+        '''
+        TODO: how to check the item is out of window?
+        out_of_window_items = self.items - self.visible_items
+        '''
+        for item in [i for i in self.items if i not in self.visible_items]:
+            if hasattr(item, "tree_item_release_resource") and item.tree_item_release_resource():
+                need_gc_collect = True
+
+        if need_gc_collect:
+            gc.collect()
+
     def expand_item(self):
         if len(self.select_rows) == 1:
             self.visible_items[self.select_rows[0]].expand()
@@ -1397,11 +1416,11 @@ class TreeItem(gobject.GObject):
         pass
     
     def get_height(self):
-        pass
+        return 1
     
     def get_column_widths(self):
         pass
-    
+
     def get_column_renders(self):
         pass
     
@@ -1428,5 +1447,10 @@ class TreeItem(gobject.GObject):
     
     def draw_drag_line(self, drag_line, drag_line_at_bottom=False):
         pass
+
+    def tree_item_release_resource(self):
+        del self.pixbuf
+        self.pixbuf = None
+        return True
     
 gobject.type_register(TreeItem)
