@@ -161,7 +161,12 @@ class TabBox(gtk.VBox):
         press_index = self.get_close_button_at_event(event)
         
         if press_index != None:
-            self.delete_items([self.tab_items[press_index]])
+            #self.delete_items([self.tab_items[press_index]])
+            '''
+            FIXME: why delete the press item?
+            see TODO.org about Bug: TabWindow 反复点击多次以后就标签消失
+            '''
+            return
         else:
             for (index, item) in enumerate(self.tab_items):
                 if is_in_rect((event.x, event.y), 
