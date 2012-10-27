@@ -2,6 +2,7 @@
 
 
 * TODO Deepin-UI
+** TODO thread_pool.py 添加暂停线程的功能
 ** TODO ComboBox 的菜单在 Slider 里面会出现问题
 ** TODO ComboBox 在 Plug 里面作为控件， 菜单是无法显示的
 ** TODO new_treeview.py 里面的 TreeView 像 IconView 添加 gc 垃圾回收功能, 在Item超出视窗外后进行 GC 回收
