@@ -230,16 +230,12 @@ class TreeView(gtk.VBox):
     def realize_tree_view(self, widget):
         self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
   
-    '''
-    FIXME: release expose bound pixbuf, but when the bound re-in the window, the
-    icons pixbuf disappeared
-    '''
     def button_release_scrolled_window(self, widget, event):
         (start_index, end_index, item_height_count) = self.get_expose_bound()
         
         need_gc_collect = False
         for item in self.visible_items[0:start_index] + self.items[end_index:-1]:
-            if hasattr(item, "icon_item_release_resource") and item.icon_item_release_resource():
+            if hasattr(item, "tree_item_release_resource") and item.tree_item_release_resource():
                 need_gc_collect = True
 
         if need_gc_collect:
@@ -1452,9 +1448,7 @@ class TreeItem(gobject.GObject):
     def draw_drag_line(self, drag_line, drag_line_at_bottom=False):
         pass
 
-    def icon_item_release_resource(self):
-        del self.pixbuf
-        self.pixbuf = None
-        return True
+    def tree_item_release_resource(self):
+        return False
     
 gobject.type_register(TreeItem)
