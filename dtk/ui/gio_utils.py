@@ -79,11 +79,12 @@ def get_dir_child_num(gfile):
                 
         return child_num            
         
-def get_dir_child_infos(dir_path, sort=None, reverse=False):
+def get_dir_child_infos(dir_path, sort=None, reverse=False, show_hidden=False):
     '''
     Get children FileInfos with given directory path.
     
     @param dir_path: Directory path.
+    @param show_hidden: Show hidden file or not
     @return: Return a list of gio.Fileinfo.
     '''
     # Get gio file.
@@ -97,7 +98,6 @@ def get_dir_child_infos(dir_path, sort=None, reverse=False):
         if gfile_info.get_file_type() == gio.FILE_TYPE_DIRECTORY:
             try:
                 gfile_enumerator = gfile.enumerate_children("standard::*")
-                
                 # Return empty list if enumerator is None.
                 if gfile_enumerator == None:
                     return []
@@ -108,6 +108,8 @@ def get_dir_child_infos(dir_path, sort=None, reverse=False):
                         if file_info == None:
                             break
                         else:
+                            if show_hidden == False and file_info.get_name()[0] == '.':
+                                continue
                             file_infos.append(file_info)
                             
                     if sort:
@@ -133,15 +135,16 @@ def get_dir_child_names(dir_path):
     '''
     return map(lambda info: info.get_name(), get_dir_child_infos(dir_path))
 
-def get_dir_child_files(dir_path, sort_files=None, reverse=False):
+def get_dir_child_files(dir_path, sort_files=None, reverse=False, show_hidden=False):
     '''
     Get children gio.File with given directory path.
 
     @param dir_path: Directory path.
+    @param show_hidden: Show hidden file or not
     @return: Return a list of gio.File.
     '''
     gfiles = []
-    file_infos = get_dir_child_infos(dir_path, sort_files, reverse)
+    file_infos = get_dir_child_infos(dir_path, sort_files, reverse, show_hidden)
     for (index, file_info) in enumerate(file_infos):
         gfile = gio.File(os.path.join(dir_path, file_infos[index].get_name()))
         gfiles.append(gfile)

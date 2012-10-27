@@ -639,7 +639,7 @@ class EmptyItem(TreeItem):
     
 gobject.type_register(EmptyItem)
 
-def get_dir_items(dir_path, column_index=0):
+def get_dir_items(dir_path, column_index=0, show_hidden=False):
     '''
     Get children items with given directory path.
     '''
