@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011 ~ 2012 Deepin, Inc.
-#               2011 ~ 2012 Wang Yong
+# Copyright (C) 2012 Deepin, Inc.
+#               2012 Zhai Xiang
 # 
-# Author:     Wang Yong <lazycat.manatee@gmail.com>
-# Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+# Author:     Zhai Xiang <xiangzhai83@gmail.com>
+# Maintainer: Zhai Xiang <xiangzhai83@gmail.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,10 +33,8 @@ app_theme = init_skin(
     )
 
 from dtk.ui.application import Application
-from dtk.ui.new_treeview import TreeView
+from dtk.ui.file_manager import FileManager
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
-from dtk.ui.file_treeview import (get_dir_items, sort_by_name, sort_by_size,
-                                  sort_by_type, sort_by_mtime)
 import gtk
 
 if __name__ == "__main__":
@@ -56,22 +54,17 @@ if __name__ == "__main__":
     application.add_titlebar(
         ["theme", "max", "min", "close"], 
         app_theme.get_pixbuf("logo.png"), 
-        "TreeView demo",
-        "TreeView demo",
+        "FileManager demo",
+        "FileManager demo",
         )
     
-    # Add TreeView.
-    print os.path.expanduser("~")
-    treeview = TreeView(get_dir_items(os.path.expanduser("~")))
-    # treeview = TreeView(get_dir_items("/"))
-    treeview_align = gtk.Alignment()
-    treeview_align.set(0.5, 0.5, 1, 1)
-    treeview_align.set_padding(0, 2, 2, 2)
+    # Add FileManager.
+    filemanager = FileManager()
+    filemanager_align = gtk.Alignment()
+    filemanager_align.set(0.5, 0.5, 1, 1)
+    filemanager_align.set_padding(0, 2, 2, 2)
     
-    treeview.set_column_titles(["文件名", "大小", "类型", "修改时间"],
-                               [sort_by_name, sort_by_size, sort_by_type, sort_by_mtime])
-    
-    treeview_align.add(treeview)
-    application.main_box.pack_start(treeview_align)
+    filemanager_align.add(filemanager)
+    application.main_box.pack_start(filemanager_align)
 
     application.run()
