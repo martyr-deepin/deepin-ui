@@ -113,6 +113,9 @@ def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER):
     (wx, wy) = widget.window.get_origin()
     toplevel_window = widget.get_toplevel()
     if toplevel_window:
+        '''
+        FIXME: translate_coordinates wrong toward ComboBox
+        '''
         (x, y) = widget.translate_coordinates(toplevel_window, wx, wy)
     else:
         (x, y) = (wx, wy)

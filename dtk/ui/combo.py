@@ -175,6 +175,11 @@ class ComboBox(gtk.VBox):
             self.droplist.hide()
         else:
             (align_x, align_y) = get_widget_root_coordinate(self.align, WIDGET_POS_BOTTOM_LEFT)
+            '''
+            Ugly fix way
+            '''
+            if align_x < 0:
+                align_x = 834 + align_x
             self.droplist.show(
                 (align_x - 1, align_y - 1),
                 (0, -self.height + 1))
