@@ -158,10 +158,10 @@ class TabBox(gtk.VBox):
         '''
         Internal callback for `button-press-event` signal.
         '''
-        press_index = self.get_close_button_at_event(event)
+        close_tab_index = self.get_close_button_at_event(event)
         
-        if press_index != None:
-            self.delete_items([self.tab_items[press_index]])
+        if close_tab_index != None:
+            self.delete_items([self.tab_items[close_tab_index]])
         else:
             for (index, item) in enumerate(self.tab_items):
                 if is_in_rect((event.x, event.y), 
@@ -173,15 +173,19 @@ class TabBox(gtk.VBox):
                     break
             
     def get_close_button_at_event(self, event):
-        hover_index = None
-        for (index, item) in enumerate(self.tab_items):
-            button_x = sum(self.tab_title_widths[0:index + 1]) - self.close_button_padding_x - self.close_button_size
-            button_y = self.close_button_padding_y
-            if is_in_rect((event.x, event.y), (button_x, button_y, self.close_button_size, self.close_button_size)):
-                hover_index = index
-                break
-            
-        return hover_index    
+        if self.can_close_tab:
+            hover_index = None
+            for (index, item) in enumerate(self.tab_items):
+                button_x = sum(self.tab_title_widths[0:index + 1]) - self.close_button_padding_x - self.close_button_size
+                button_y = self.close_button_padding_y
+                if is_in_rect((event.x, event.y), (button_x, button_y, self.close_button_size, self.close_button_size)):
+                    hover_index = index
+                    break
+                
+            return hover_index    
+        # Return None if option can_close_tab is False.
+        else:
+            return None
             
     def motion_notify_tab_title_box(self, widget, event):
         hover_index = self.get_close_button_at_event(event)

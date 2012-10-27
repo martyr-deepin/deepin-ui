@@ -5,7 +5,6 @@
 ** TODO ComboBox 的菜单在 Slider 里面会出现问题
 ** TODO ComboBox 在 Plug 里面作为控件， 菜单是无法显示的
 ** TODO new_treeview.py 里面的 TreeView 像 IconView 添加 gc 垃圾回收功能, 在Item超出视窗外后进行 GC 回收
-** TODO Bug: TabWindow 反复点击多次以后就标签消失
 ** TODO IconView 渐变上下都有一个像素绘制Bug, TreeView 也有, 应该是计算上下渐变时坐标算的有问题
 ** TODO 资源管理器, 一个完整的文件管理器， 但是可以自定义一些功能作为其他应用程序打开文件的对话框来调用
 ** TODO 首次运行提示气泡, 用于提示软件的新功能
