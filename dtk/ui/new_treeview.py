@@ -142,6 +142,7 @@ class TreeView(gtk.VBox):
         '''
         # Init.
         gtk.VBox.__init__(self)
+        self.items = []
         self.visible_items = []
         self.titles = None
         self.sort_methods = None
@@ -205,6 +206,7 @@ class TreeView(gtk.VBox):
         self.draw_area.connect("size-allocate", self.size_allocated_tree_view)
         
         # Add items.
+        self.items = items
         self.add_items(items)
         
         # Init keymap.
@@ -227,15 +229,17 @@ class TreeView(gtk.VBox):
 
     def realize_tree_view(self, widget):
         self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
-   
+  
+    '''
+    FIXME: release expose bound pixbuf, but when the bound re-in the window, the
+    icons pixbuf disappeared
+    '''
     def button_release_scrolled_window(self, widget, event):
+        (start_index, end_index, item_height_count) = self.get_expose_bound()
+        
         need_gc_collect = False
-        '''
-        TODO: how to check the item is out of window?
-        out_of_window_items = self.items - self.visible_items
-        '''
-        for item in [i for i in self.items if i not in self.visible_items]:
-            if hasattr(item, "tree_item_release_resource") and item.tree_item_release_resource():
+        for item in self.visible_items[0:start_index] + self.items[end_index:-1]:
+            if hasattr(item, "icon_item_release_resource") and item.icon_item_release_resource():
                 need_gc_collect = True
 
         if need_gc_collect:
@@ -1416,7 +1420,7 @@ class TreeItem(gobject.GObject):
         pass
     
     def get_height(self):
-        return 1
+        pass
     
     def get_column_widths(self):
         pass
@@ -1448,7 +1452,7 @@ class TreeItem(gobject.GObject):
     def draw_drag_line(self, drag_line, drag_line_at_bottom=False):
         pass
 
-    def tree_item_release_resource(self):
+    def icon_item_release_resource(self):
         del self.pixbuf
         self.pixbuf = None
         return True
