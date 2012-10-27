@@ -161,13 +161,7 @@ class TabBox(gtk.VBox):
         press_index = self.get_close_button_at_event(event)
         
         if press_index != None:
-            #self.delete_items([self.tab_items[press_index]])
-            '''
-            FIXME: why delete the press item?
-            see TODO.org about Bug: TabWindow`s tab disappeard after clicked
-            several times
-            '''
-            return
+            self.delete_items([self.tab_items[press_index]])
         else:
             for (index, item) in enumerate(self.tab_items):
                 if is_in_rect((event.x, event.y), 
@@ -180,6 +174,10 @@ class TabBox(gtk.VBox):
             
     def get_close_button_at_event(self, event):
         hover_index = None
+
+        if self.can_close_tab == False:
+            return hover_index
+
         for (index, item) in enumerate(self.tab_items):
             button_x = sum(self.tab_title_widths[0:index + 1]) - self.close_button_padding_x - self.close_button_size
             button_y = self.close_button_padding_y
