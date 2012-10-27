@@ -164,7 +164,8 @@ class TabBox(gtk.VBox):
             #self.delete_items([self.tab_items[press_index]])
             '''
             FIXME: why delete the press item?
-            see TODO.org about Bug: TabWindow 反复点击多次以后就标签消失
+            see TODO.org about Bug: TabWindow`s tab disappeard after clicked
+            several times
             '''
             return
         else:

@@ -3,15 +3,20 @@
 
 * TODO Deepin-UI
 ** TODO ComboBox 的菜单在 Slider 里面会出现问题
-    Q: 继承Slider的Wizard模仿slideshow展示图片，是否能添加一个在Slider里使用ComboBox（有哪个“场合”会在Slider里放ComboBox）的用例呢？
+Q: 继承Slider的Wizard模仿slideshow展示图片，是否能添加一个在Slider里使用ComboBox（有哪个“场合”会在Slider里放ComboBox）的用例呢？
 ** TODO ComboBox 在 Plug 里面作为控件， 菜单是无法显示的
 ** TODO new_treeview.py 里面的 TreeView 像 IconView 添加 gc 垃圾回收功能, 在Item超出视窗外后进行 GC 回收
+** TODO new_treeview 里面的 TreeItem 还木有实现完
 ** TODO Bug: TabWindow 反复点击多次以后就标签消失
+Q: 为什么要删除掉点击的 tab 呢？self.delete_items([self.tab_items[press_index]])
 ** TODO IconView 渐变上下都有一个像素绘制Bug, TreeView 也有, 应该是计算上下渐变时坐标算的有问题
+Q: 这个需要截图＋批注，不然在 demo.py 的“专辑封面”里很难察觉这个BUG
 ** TODO 资源管理器, 一个完整的文件管理器， 但是可以自定义一些功能作为其他应用程序打开文件的对话框来调用
 ** TODO 首次运行提示气泡, 用于提示软件的新功能
+Q: 这个需要美工设计出来效果图
 ** TODO 滚动条要临时显示当前的页面索引, 像QQ的设计一样
-** TODO Entry 这个控件要重新实现， 用Pango计算， 实现 Buffer 和 View 分离， 这样可以把 Entry 潜入其他控件显示， 比如 TreeView
+同上
+** TODO Entry 这个控件要重新实现， 用Pango计算， 实现 Buffer 和 View 分离，这样可以把 Entry 嵌入其他控件显示， 比如 TreeView
 ** TODO DropList, Menu, Poplist 提供ESC按键的支持, keyboard_grab 函数实现
 ** TODO TabWindow: 标签的宽度可以压缩
 ** TODO Label 里面的文字可以滚动, Label 也要实现 Buffer 和 View 分开
