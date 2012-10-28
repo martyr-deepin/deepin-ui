@@ -3,20 +3,16 @@
 
 * TODO Deepin-UI
 ** TODO ComboBox 的菜单在 Slider 里面会出现问题
-deepin-system-settings 这个项目， 是深度桌面环境的系统设置模块
-执行命令 cd ~/deepin-system-settings/dss && ./main.py
-后会看到很多系统设置模块， 点击第一排的 ”个性化“， 会出现主题选择， 然后 双击， 会进入”主题设置“， 这时候底部有图片位置的ComboBox, 点击以后菜单显示不出来
 ** TODO ComboBox 在 Plug 里面作为控件， 菜单是无法显示的
 ** TODO IconView 渐变上下都有一个像素绘制Bug, TreeView 也有, 应该是计算上下渐变时坐标算的有问题
 ** TODO 资源管理器, 一个完整的文件管理器， 但是可以自定义一些功能作为其他应用程序打开文件的对话框来调用
 ** TODO 首次运行提示气泡, 用于提示软件的新功能
-Q: 这个需要美工设计出来效果图
 ** TODO 滚动条要临时显示当前的页面索引, 像QQ的设计一样
-同上
 ** TODO Entry 这个控件要重新实现， 用Pango计算， 实现 Buffer 和 View 分离，这样可以把 Entry 嵌入其他控件显示， 比如 TreeView
 ** TODO DropList, Menu, Poplist 提供ESC按键的支持, keyboard_grab 函数实现
 ** TODO TabWindow: 标签的宽度可以压缩
 ** TODO Label 里面的文字可以滚动, Label 也要实现 Buffer 和 View 分开
 ** TODO 降低Deepin UI的CPU使用率: queue_draw_area 能减少重新绘制的区域
+** TODO gdb python, r demo.py 会创建6个线程
 ** TODO Entry 控件第一次切换输入法的时候光标不跟随
 ** TODO 动画库
