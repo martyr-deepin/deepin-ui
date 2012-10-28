@@ -75,38 +75,48 @@ class HSlider(gtk.Viewport):
         if self.active_widget == None:
             self.active_widget = widget
         
-    def slide_to_page(self, widget, direction):
-        if self.active_widget != widget:
+    def slide_to_page(self, target_widget, direction):
+        if self.active_widget != target_widget:
             if not direction in ["left", "right"]:
                 raise Exception, "slide_to_page: please pass valid value of direction `left` or `right`"
 
             active_index = self.layout.get_children().index(self.active_widget)
-            if direction == "left":
-                reoreder_index = max(active_index - 1, 0)
-            elif direction == "right":
-                reoreder_index = active_index + 1
-                
-            self.layout.reorder_child(widget, reoreder_index)    
+            target_index = self.layout.get_children().index(target_widget)
+
+            if active_index > target_index:
+                if direction == "left":
+                    reoreder_index = active_index - 1
+                else:
+                    reoreder_index = active_index
+            else:
+                if direction == "left":
+                    reoreder_index = active_index
+                else:
+                    reoreder_index = active_index + 1
+            
+            self.layout.reorder_child(target_widget, reoreder_index)    
             self.set_to_page(self.active_widget)
             
             start_index = self.layout.get_children().index(self.active_widget)
-            end_index = self.layout.get_children().index(widget)
+            end_index = self.layout.get_children().index(target_widget)
             start_position = start_index * self.page_width
             end_position = end_index * self.page_width
             
             if start_position != end_position:
-                self.active_widget = widget
-                
                 timeline = Timeline(500, CURVE_SINE)
                 timeline.connect('update', lambda source, status: 
                                  self.update(source,
                                              status, 
                                              start_position,
                                              end_position - start_position))
+                timeline.connect("completed", lambda source: self.completed(target_widget))
                 timeline.run()
                 
     def update(self, source, status, start_position, pos):
         self.get_hadjustment().set_value(start_position + int(round(status * pos)))
+        
+    def completed(self, widget):    
+        self.active_widget = widget
     
     def set_to_page(self, widget):
         self.active_widget = widget
