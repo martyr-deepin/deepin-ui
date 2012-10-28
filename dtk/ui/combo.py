@@ -129,7 +129,12 @@ class ComboBox(gtk.VBox):
         self.droplist = Droplist(items, max_width=max_width)
         self.droplist.connect("item-selected", self.update_select_content)
         self.droplist.connect("key-release", lambda dl, s, o, i: self.emit("key-release", s, o, i))
-        self.width = self.droplist.get_droplist_width() 
+        self.width = self.droplist.get_droplist_width()
+        '''
+        FIXME: when ComboBox`s items is empty, then self.width < max_width
+        '''
+        if (self.width < max_width):
+            self.width = max_width
 
         # Create label when first time build combo widget.
         if create_label:

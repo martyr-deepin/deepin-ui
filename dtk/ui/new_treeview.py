@@ -142,7 +142,6 @@ class TreeView(gtk.VBox):
         '''
         # Init.
         gtk.VBox.__init__(self)
-        self.items = []
         self.visible_items = []
         self.titles = None
         self.sort_methods = None
@@ -206,7 +205,6 @@ class TreeView(gtk.VBox):
         self.draw_area.connect("size-allocate", self.size_allocated_tree_view)
         
         # Add items.
-        self.items = items
         self.add_items(items)
         
         # Init keymap.
@@ -234,7 +232,7 @@ class TreeView(gtk.VBox):
         (start_index, end_index, item_height_count) = self.get_expose_bound()
         
         need_gc_collect = False
-        for item in self.visible_items[0:start_index] + self.items[end_index:-1]:
+        for item in self.visible_items[0:start_index] + self.visible_items[end_index:-1]:
             if hasattr(item, "tree_item_release_resource") and item.tree_item_release_resource():
                 need_gc_collect = True
 
