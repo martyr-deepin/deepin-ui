@@ -133,7 +133,7 @@ class ComboBox(gtk.VBox):
         '''
         FIXME: when ComboBox`s items is empty, then self.width < max_width
         '''
-        if (self.width < max_width):
+        if (max_width != None and self.width < max_width):
             self.width = max_width
 
         # Create label when first time build combo widget.
