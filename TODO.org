@@ -2,6 +2,7 @@
 
 
 * TODO Deepin-UI
+** TODO demo.py 启动的时候会有线程启动， 调查一下?
 ** TODO thread_pool.py 添加暂停线程的功能
 ** TODO ComboBox 的菜单在 Slider 里面会出现问题
 ** TODO ComboBox 在 Plug 里面作为控件， 菜单是无法显示的
