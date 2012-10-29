@@ -29,13 +29,16 @@ class PopupGrabWindow(gtk.Window):
     class docs
     '''
 	
-    def __init__(self, wrap_window_type):
+    def __init__(self, 
+                 wrap_window_type,
+                 focus_out_callback=None):
         '''
         init docs
         '''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         self.wrap_window_type = wrap_window_type
+        self.focus_out_callback = focus_out_callback
         self.popup_windows = []
         self.press_flag = False
         
@@ -77,6 +80,9 @@ class PopupGrabWindow(gtk.Window):
         self.grab_remove()
         
         self.press_flag = False
+        
+        if self.focus_out_callback:
+            self.focus_out_callback()
         
     def is_press_on_popup_grab_window(self, window):
         '''
