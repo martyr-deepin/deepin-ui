@@ -1133,6 +1133,7 @@ class TreeView(gtk.VBox):
                             self.visible_items[self.hover_row].unhover(hover_column, offset_x, offset_y)
                             
                         self.hover_row = hover_row    
+                        
                         if self.hover_row != None:
                             self.visible_items[self.hover_row].hover(hover_column, offset_x, offset_y)
                             
@@ -1229,6 +1230,11 @@ class TreeView(gtk.VBox):
             
     def size_allocated_tree_view(self, widget, rect):
         self.update_item_widths()
+        
+    def unhover_row(self):
+        if self.hover_row != None:
+            self.visible_items[self.hover_row].unhover(0, 0, 0)
+            self.hover_row = None
             
     def get_event_row(self, event, offset_index=0):
         '''
