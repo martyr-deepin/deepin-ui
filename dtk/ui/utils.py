@@ -1118,6 +1118,9 @@ def get_pixbuf_support_foramts():
         
     return support_formats    
 
+def get_current_dir(filepath):
+    return os.path.dirname(os.path.realpath(filepath))
+
 def get_parent_dir(filepath, level=1):
     '''
     Get parent directory with given return level.

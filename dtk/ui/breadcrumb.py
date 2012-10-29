@@ -249,6 +249,11 @@ class Bread(gtk.HBox):
         self.item_list[index:] = []
         self.add(crumbs)
         
+    def remove_node_after_index(self, index):
+        for i in self.hbox.get_children()[(index + 1): -1]:
+            i.destroy()
+        self.item_list[(index + 1):] = []
+        
     def click_cb(self, widget, index, label):
         """
         Internal callback function to "clicked" signal
