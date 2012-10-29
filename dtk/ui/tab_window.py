@@ -173,21 +173,6 @@ class TabBox(gtk.VBox):
                     break
             
     def get_close_button_at_event(self, event):
-<<<<<<< HEAD
-        hover_index = None
-
-        if self.can_close_tab == False:
-            return hover_index
-
-        for (index, item) in enumerate(self.tab_items):
-            button_x = sum(self.tab_title_widths[0:index + 1]) - self.close_button_padding_x - self.close_button_size
-            button_y = self.close_button_padding_y
-            if is_in_rect((event.x, event.y), (button_x, button_y, self.close_button_size, self.close_button_size)):
-                hover_index = index
-                break
-            
-        return hover_index    
-=======
         if self.can_close_tab:
             hover_index = None
             for (index, item) in enumerate(self.tab_items):
@@ -201,7 +186,6 @@ class TabBox(gtk.VBox):
         # Return None if option can_close_tab is False.
         else:
             return None
->>>>>>> 845cc4c5595dfbe89d5ea02f099d32faef355acf
             
     def motion_notify_tab_title_box(self, widget, event):
         hover_index = self.get_close_button_at_event(event)
@@ -473,4 +457,4 @@ class TabWindow(DialogBox):
         
         self.destroy()
         
-gobject.type_register(TabWindow)               
+gobject.type_register(TabWindow) 
