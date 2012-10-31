@@ -227,7 +227,12 @@ class TreeView(gtk.VBox):
 
     def realize_tree_view(self, widget):
         self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
-  
+    
+    '''
+    FIXME: the items out of window view might collected wrong
+    DirItem, FileItem and EmptyItem widget in file_treeview call tree_item_release_resource
+    the pixbuf will disappeared when scroll in the window view
+    '''
     def button_release_scrolled_window(self, widget, event):
         (start_index, end_index, item_height_count) = self.get_expose_bound()
         

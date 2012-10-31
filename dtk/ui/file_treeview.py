@@ -350,6 +350,14 @@ class DirItem(TreeItem):
 
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
+
+    def tree_item_release_resource(self):
+        '''
+        FIXME: button_release_scrolled_window issue 
+        del self.pixbuf
+        self.pixbuf = None
+        '''
+        return True
     
 gobject.type_register(DirItem)
 
@@ -534,6 +542,14 @@ class FileItem(TreeItem):
 
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
+
+    def tree_item_release_resource(self):
+        '''
+        FIXME: button_release_scrolled_window issue
+        del self.pixbuf
+        self.pixbuf = None
+        '''
+        return True
             
 gobject.type_register(DirItem)
 
@@ -636,6 +652,14 @@ class EmptyItem(TreeItem):
         
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
+
+    def tree_item_release_resource(self):
+        '''
+        FIXME: button_release_scrolled_window issue
+        del self.pixbuf
+        self.pixbuf = None
+        '''
+        return True
     
 gobject.type_register(EmptyItem)
 
