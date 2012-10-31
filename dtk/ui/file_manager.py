@@ -27,39 +27,10 @@ from locales import _
 from theme import ui_theme
 from dtk.ui.paned import HPaned
 from dtk.ui.categorybar import Categorybar
-from dtk.ui.scrolled_window import ScrolledWindow
-from dtk.ui.iconview import IconView
-from dtk.ui.file_iconview import (iconview_get_dir_items)
+from dtk.ui.file_iconview import (FileIconView, iconview_get_dir_items)
 from dtk.ui.new_treeview import TreeView
 from dtk.ui.file_treeview import (get_dir_items, sort_by_name, sort_by_size,
                                   sort_by_type, sort_by_mtime)
-
-class FileIconView(ScrolledWindow):
-    def __init__(self, items):
-        ScrolledWindow.__init__(self, 0, 0)
-        self.file_iconview = IconView()
-        self.file_iconview.draw_mask = self.draw_mask
-        self.file_iconview.add_items(items)
-        self.file_scrolledwindow = ScrolledWindow()
-        self.file_scrolledwindow.add_child(self.file_iconview)
-        self.add_child(self.file_scrolledwindow)
-
-    def draw_mask(self, cr, x, y, w, h): 
-        '''
-        Draw mask interface.
-        
-        @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
-        @param w: Width of draw area.
-        @param h: Height of draw area.
-        '''
-        cr.set_source_rgb(1, 1, 1)
-        cr.rectangle(x, y, w, h)
-        cr.fill()
-
-
-gobject.type_register(FileIconView)
 
 class FileManager(HPaned):
     HOME_DIR = os.getenv("HOME", "") + "/"
@@ -83,7 +54,8 @@ class FileManager(HPaned):
             (ui_theme.get_pixbuf("filemanager/user-trash.png"), _("Trash"), lambda : self.open_dir("trash:///"))
             ])
         self.icon_size = 48
-        self.iconview = FileIconView(iconview_get_dir_items(dir, self.icon_size))
+        self.iconview = FileIconView()
+        self.iconview.add_items(iconview_get_dir_items(dir, self.icon_size))
         self.treeview = TreeView(get_dir_items(dir))
         '''
         FIXME: add set_column_titles then blocked
@@ -97,6 +69,7 @@ class FileManager(HPaned):
             self.add2(self.treeview)
 
     def open_dir(self, dir):
+        self.iconview.add_items(iconview_get_dir_items(dir), True)
         self.treeview.add_items(get_dir_items(dir), None, True)
 
 gobject.type_register(FileManager)

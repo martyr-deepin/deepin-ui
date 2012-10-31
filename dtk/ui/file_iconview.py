@@ -33,6 +33,8 @@ import gobject
 import gio
 import threading as td
 from utils import cairo_disable_antialias, get_content_size, format_file_size
+from dtk.ui.scrolled_window import ScrolledWindow
+from dtk.ui.iconview import IconView
 from dtk.ui.constant import COLOR_NAME_DICT, DEFAULT_FONT_SIZE
 import traceback
 import sys
@@ -68,6 +70,37 @@ def sort_by_type(items, sort_reverse):
 
 def sort_by_mtime(items, sort_reverse):
     return sort_by_key(items, sort_reverse, lambda i: i.modification_time)
+
+class FileIconView(ScrolledWindow):
+    def __init__(self, items=None):
+        ScrolledWindow.__init__(self, 0, 0)
+        self.file_iconview = IconView()
+        self.file_iconview.draw_mask = self.draw_mask
+        if items != None:
+            self.file_iconview.add_items(items)
+        self.file_scrolledwindow = ScrolledWindow()
+        self.file_scrolledwindow.add_child(self.file_iconview)
+        self.add_child(self.file_scrolledwindow)
+
+    def draw_mask(self, cr, x, y, w, h): 
+        '''
+        Draw mask interface.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
+        cr.set_source_rgb(1, 1, 1)
+        cr.rectangle(x, y, w, h)
+        cr.fill()
+
+    def add_items(self, items, clear=False):
+        self.file_iconview.clear()
+        self.file_iconview.add_items(items)
+
+gobject.type_register(FileIconView)
 
 class DirItem(gobject.GObject):
     '''
@@ -213,7 +246,7 @@ class DirItem(gobject.GObject):
         '''
         Handle double click event.
         
-        Here need Slider
+        Here is slider rule
         '''
         pass
     
