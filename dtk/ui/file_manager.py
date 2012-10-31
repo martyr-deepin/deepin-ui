@@ -26,15 +26,19 @@ from locales import _
 from theme import ui_theme
 from dtk.ui.paned import HPaned
 from dtk.ui.categorybar import Categorybar
+from dtk.ui.scrolled_window import ScrolledWindow
 from new_treeview import TreeView
 from dtk.ui.file_treeview import (get_dir_items, sort_by_name, sort_by_size,
                                   sort_by_type, sort_by_mtime)
 
 class FileManager(HPaned):
     HOME_DIR = os.getenv("HOME", "") + "/"
+    ICONVIEW = 0
+    TREEVIEW = 1
 
     def __init__(self, 
-                 dir=HOME_DIR
+                 dir=HOME_DIR, 
+                 view_mode=ICONVIEW
                 ):
         HPaned.__init__(self)
         self.categorybar = Categorybar([
