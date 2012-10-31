@@ -668,7 +668,7 @@ def get_dir_items(dir_path, column_index=0, show_hidden=False):
     Get children items with given directory path.
     '''
     items = []
-    for gfile in get_dir_child_files(dir_path, sort_file_by_name):
+    for gfile in get_dir_child_files(dir_path, sort_file_by_name, False, show_hidden):
         if is_directory(gfile):
             items.append(DirItem(gfile, column_index))
         else:
