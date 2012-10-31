@@ -69,6 +69,7 @@ from dtk.ui.unique_service import UniqueService, is_exists
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.breadcrumb import Bread, Crumb
+from dtk.ui.dialog import OpenFileDialog
 import dbus
 import dbus.service
 import gtk
@@ -125,6 +126,9 @@ def create_tab_window_item(name):
     align.add(gtk.Button(name))
     
     return (name, align)
+
+def open_file_dlg_click_ok(filename):
+    print "opened %s" % filename
 
 if __name__ == "__main__":
     # Build DBus name.
@@ -258,7 +262,7 @@ if __name__ == "__main__":
                                                                                   max_height=300
                                                                                 ).show((450, 250))),
          (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
-         (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", None),
+         (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", lambda : OpenFileDialog("打开文件", application.window, open_file_dlg_click_ok)),
          (app_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
          (app_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
          (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),

@@ -4,8 +4,8 @@
 # Copyright (C) 2012 Deepin, Inc.
 #               2012 Zhai Xiang
 # 
-# Author:     Zhai Xiang <xiangzhai83@gmail.com>
-# Maintainer: Zhai Xiang <xiangzhai83@gmail.com>
+# Author:     Zhai Xiang <zhaixiang@linuxdeepin.com>
+# Maintainer: Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
