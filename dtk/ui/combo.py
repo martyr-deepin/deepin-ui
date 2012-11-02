@@ -82,8 +82,6 @@ class ComboBox(gtk.VBox):
         
         self.set_items(items, select_index, max_width, fixed_width, True)
         
-        if self.droplist_height:
-            self.droplist.set_size_request(-1, self.droplist_height)
         self.height = 22
         
         self.label.text_color = ui_theme.get_color("menu_font")
@@ -127,10 +125,12 @@ class ComboBox(gtk.VBox):
         self.select_index = select_index
         
         # Build droplist and update width.
-        self.droplist = Droplist(items, max_width=max_width, fixed_width=fixed_width)
+        self.droplist = Droplist(items, max_width=max_width, fixed_width=fixed_width, max_height=self.droplist_height)
         self.droplist.connect("item-selected", self.update_select_content)
         self.droplist.connect("key-release", lambda dl, s, o, i: self.emit("key-release", s, o, i))
         self.width = self.droplist.get_droplist_width() 
+        if self.droplist_height:
+            self.droplist.set_size_request(-1, self.droplist_height)
 
         # Create label when first time build combo widget.
         if create_label:
