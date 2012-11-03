@@ -129,6 +129,9 @@ class ComboBox(gtk.VBox):
         self.droplist.connect("item-selected", self.update_select_content)
         self.droplist.connect("key-release", lambda dl, s, o, i: self.emit("key-release", s, o, i))
         self.width = self.droplist.get_droplist_width()
+        if self.width < max_width:
+            self.width = max_width
+        
         if self.droplist_height:
             self.droplist.set_size_request(-1, self.droplist_height)
 

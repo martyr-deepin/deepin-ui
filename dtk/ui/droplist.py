@@ -794,8 +794,12 @@ class Droplist(gtk.Window):
                 
             droplist_height += droplist_item.item_box_height    
         droplist_width += self.padding_x * 2    
-        droplist_height = min(self.max_height, droplist_height + self.padding_y * 2)
-        
+        '''
+        FIXME: if do not set max_height, then ...
+        '''
+        if self.max_height != None:
+            droplist_height = min(self.max_height, droplist_height + self.padding_y * 2)
+
         if self.x_align == ALIGN_START:
             dx = self.expect_x
         elif self.x_align == ALIGN_MIDDLE:
@@ -818,8 +822,9 @@ class Droplist(gtk.Window):
         if droplist_height != None:
             if self.expect_y + droplist_height > screen_height:
                 dy = self.expect_y - droplist_height + self.offset_y
-            
-        self.window.move_resize(dx, dy, droplist_width, droplist_height)
+        
+        if droplist_height != None:
+            self.window.move_resize(dx, dy, droplist_width, droplist_height)
             
     def hide(self):
         '''
