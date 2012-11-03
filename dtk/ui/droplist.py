@@ -813,7 +813,7 @@ class Droplist(gtk.Window):
         if self.expect_x + droplist_width > screen_width:
             dx = self.expect_x - droplist_width + self.offset_x
         '''
-        FIXME: TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'
+        TODO: Fix TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'
         '''
         if droplist_height != None:
             if self.expect_y + droplist_height > screen_height:
