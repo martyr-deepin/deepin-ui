@@ -318,7 +318,9 @@ class Droplist(gtk.Window):
                  item_padding_left=6, 
                  item_padding_right=32,
                  item_padding_y=3,
-                 max_width=None):
+                 max_width=None,
+                 fixed_width=None,
+                 max_height=None):
         '''
         Initialize Droplist class.
         
@@ -355,6 +357,8 @@ class Droplist(gtk.Window):
         self.item_padding_right = item_padding_right
         self.item_padding_y = item_padding_y
         self.max_width = max_width
+        self.max_height = max_height
+        self.fixed_width = fixed_width
         self.item_select_index = 0
         
         # Init droplist window.
@@ -373,6 +377,7 @@ class Droplist(gtk.Window):
         self.item_align.set_padding(padding_y, padding_y, padding_x, padding_x)
         self.item_align.add(self.item_box)
         self.item_scrolled_window = DroplistScrolledWindow(0, 0)
+        self.item_scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         self.add(self.droplist_frame)
         self.droplist_frame.add(self.item_scrolled_window)
         self.item_scrolled_window.add_child(self.item_align)
@@ -384,7 +389,7 @@ class Droplist(gtk.Window):
                 self.droplist_items.append(droplist_item)
                 self.item_box.pack_start(droplist_item.item_box, False, False)
                 
-        self.connect_after("show", self.adjust_droplist_position)        
+        self.connect_after("show", lambda w: self.adjust_droplist_position())        
         self.droplist_frame.connect("expose-event", self.expose_droplist_frame)
         self.item_align.connect("expose-event", self.expose_item_align)
         self.connect("key-press-event", self.droplist_key_press)
@@ -414,19 +419,24 @@ class Droplist(gtk.Window):
             self.item_padding_left, 
             self.item_padding_right, 
             self.item_padding_y, 
-            self.max_width)
+            self.max_width,
+            self.fixed_width)
         
     def get_droplist_width(self):
         '''
         Get droplist width.
         '''
-        item_content_width = max(map(lambda item: get_content_size(item.item[0], self.font_size)[0], 
-                                     filter(lambda item: isinstance(item.item_box, gtk.Button), self.droplist_items)))
-        if self.max_width != None:
-            return self.padding_x * 2 + min(self.max_width,
-                                            self.item_padding_left + self.item_padding_right + int(item_content_width))
+        if self.fixed_width != None:
+            return self.padding_x * 2 + self.fixed_width
         else:
-            return self.padding_x * 2 + self.item_padding_left + self.item_padding_right + int(item_content_width)
+            item_content_width = max(map(lambda item: get_content_size(item.item[0], self.font_size)[0], 
+                                         filter(lambda item: isinstance(item.item_box, gtk.Button), self.droplist_items)))
+
+            if self.max_width != None:
+                return self.padding_x * 2 + min(self.max_width,
+                                                self.item_padding_left + self.item_padding_right + int(item_content_width))
+            else:
+                return self.padding_x * 2 + self.item_padding_left + self.item_padding_right + int(item_content_width)
         
     def expose_item_align(self, widget, event):
         '''
@@ -767,7 +777,7 @@ class Droplist(gtk.Window):
         # Show.
         self.show_all()
         
-    def adjust_droplist_position(self, widget):
+    def adjust_droplist_position(self):
         '''
         Internal function to adjust droplist position after `realize` signal.
         
@@ -777,11 +787,14 @@ class Droplist(gtk.Window):
         (screen_width, screen_height) = get_screen_size(self)
         
         droplist_width = 0
+        droplist_height = 0
         for droplist_item in self.droplist_items:
             if droplist_width == 0 and isinstance(droplist_item.item_box, gtk.Button):
                 droplist_width = droplist_item.item_box_width
+                
+            droplist_height += droplist_item.item_box_height    
         droplist_width += self.padding_x * 2    
-        droplist_height = self.allocation.height
+        droplist_height = min(self.max_height, droplist_height + self.padding_y * 2)
         
         if self.x_align == ALIGN_START:
             dx = self.expect_x
@@ -799,10 +812,14 @@ class Droplist(gtk.Window):
 
         if self.expect_x + droplist_width > screen_width:
             dx = self.expect_x - droplist_width + self.offset_x
-        if self.expect_y + droplist_height > screen_height:
-            dy = self.expect_y - droplist_height + self.offset_y
+        '''
+        FIXME: TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'
+        '''
+        if droplist_height != None:
+            if self.expect_y + droplist_height > screen_height:
+                dy = self.expect_y - droplist_height + self.offset_y
             
-        self.move(dx, dy)
+        self.window.move_resize(dx, dy, droplist_width, droplist_height)
             
     def hide(self):
         '''
@@ -838,7 +855,8 @@ class DroplistItem(object):
                  item_padding_left, 
                  item_padding_right, 
                  item_padding_y, 
-                 max_width):
+                 max_width,
+                 fixed_width):
         '''
         Initialize DroplistItem class.
         
@@ -865,6 +883,7 @@ class DroplistItem(object):
         self.item_padding_y = item_padding_y
         self.subdroplist_active = False
         self.max_width = max_width
+        self.fixed_width = fixed_width
         self.arrow_padding_x = 5
 
         # Create.
@@ -916,7 +935,9 @@ class DroplistItem(object):
         self.item_box_height = self.item_padding_y * 2 + int(height)
         self.item_box_width = self.item_padding_left + self.item_padding_right + int(width)
 
-        if self.max_width != None:
+        if self.fixed_width != None:
+            self.item_box_width = self.fixed_width
+        elif self.max_width != None:
             self.item_box_width = min(self.item_box_width, self.max_width)        
         else:
             self.item_box_width = self.item_box_width        

@@ -54,7 +54,8 @@ class ComboBox(gtk.VBox):
                  items, 
                  droplist_height=None, 
                  select_index=0, 
-                 max_width=None):
+                 max_width=None,
+                 fixed_width=None):
         '''
         Initialize ComboBox class.
         
@@ -79,10 +80,8 @@ class ComboBox(gtk.VBox):
              ui_theme.get_pixbuf("combo/dropbutton_disable.png")),
             )
         
-        self.set_items(items, select_index, max_width, True)
+        self.set_items(items, select_index, max_width, fixed_width, True)
         
-        if self.droplist_height:
-            self.droplist.set_size_request(-1, self.droplist_height)
         self.height = 22
         
         self.label.text_color = ui_theme.get_color("menu_font")
@@ -112,7 +111,7 @@ class ComboBox(gtk.VBox):
             "Up" : self.select_prev_item,
             "Down" : self.select_next_item}
         
-    def set_items(self, items, select_index=0, max_width=None, create_label=False):
+    def set_items(self, items, select_index=0, max_width=None, fixed_width=None, create_label=False):
         '''
         Update combo's items in runtime.
         
@@ -126,15 +125,12 @@ class ComboBox(gtk.VBox):
         self.select_index = select_index
         
         # Build droplist and update width.
-        self.droplist = Droplist(items, max_width=max_width)
+        self.droplist = Droplist(items, max_width=max_width, fixed_width=fixed_width, max_height=self.droplist_height)
         self.droplist.connect("item-selected", self.update_select_content)
         self.droplist.connect("key-release", lambda dl, s, o, i: self.emit("key-release", s, o, i))
         self.width = self.droplist.get_droplist_width()
-        '''
-        FIXME: when ComboBox`s items is empty, then self.width < max_width
-        '''
-        if (max_width != None and self.width < max_width):
-            self.width = max_width
+        if self.droplist_height:
+            self.droplist.set_size_request(-1, self.droplist_height)
 
         # Create label when first time build combo widget.
         if create_label:
