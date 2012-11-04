@@ -943,7 +943,10 @@ class DroplistItem(object):
         if self.fixed_width != None:
             self.item_box_width = self.fixed_width
         elif self.max_width != None:
-            self.item_box_width = min(self.item_box_width, self.max_width)        
+            '''
+            when max_width > item_box_width, it might choosing the max one
+            '''
+            self.item_box_width = max(self.item_box_width, self.max_width)
         else:
             self.item_box_width = self.item_box_width        
             
