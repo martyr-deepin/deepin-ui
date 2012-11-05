@@ -35,7 +35,7 @@ class Application(object):
     This is the base class of every program based on deepin-ui.
     Every program should realize it.
     """
-    def __init__(self, app_support_colormap=True):
+    def __init__(self, app_support_colormap=True, resizable=True):
         """
         Initialize the Application class.
         
@@ -43,6 +43,7 @@ class Application(object):
         """
         # Init.
         self.app_support_colormap = app_support_colormap
+        self.resizable = resizable
         self.close_callback = self.close_window
 
         # Start application.
@@ -68,6 +69,7 @@ class Application(object):
             self.window = Window(True)
         else:
             self.window = MplayerWindow(True)
+        self.window.set_resizable(self.resizable)
         self.window.set_position(gtk.WIN_POS_CENTER)
         self.window.connect("destroy", self.destroy)
         
@@ -106,7 +108,8 @@ class Application(object):
             self.titlebar.max_button.connect("clicked", lambda w: self.window.toggle_max_window())
         if "close" in button_mask:
             self.titlebar.close_button.connect("clicked", self.close_callback)
-        self.window.add_toggle_event(self.titlebar)
+        if self.resizable:
+            self.window.add_toggle_event(self.titlebar)
         self.window.add_move_event(self.titlebar)
 
         # Show titlebar.
