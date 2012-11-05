@@ -23,7 +23,6 @@ cairo_mod = Extension('dtk_cairo_blur',
                 include_dirs = pkg_config_cflags(['cairo', 'pygobject-2.0']),
                 libraries = ['cairo', 'pthread', 'glib-2.0'],
                 sources = ['./dtk/ui/cairo_blur.c'])
-
 webkit_mod = Extension('dtk_webkit_cookie',
                 include_dirs = pkg_config_cflags(['gtk+-2.0', 'webkit-1.0', 'pygobject-2.0']),
                 libraries = ['webkitgtk-1.0', 'soup-2.4', 'pthread', 'glib-2.0'],

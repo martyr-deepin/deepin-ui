@@ -561,7 +561,7 @@ class ListView(gtk.DrawingArea):
         # Draw background.
         with cairo_state(cr):
             scrolled_window = get_match_parent(self, ["ScrolledWindow"])
-            cr.translate(-scrolled_window.allocation.x, -scrolled_window.allocation.y)
+	    cr.translate(-scrolled_window.allocation.x, -scrolled_window.allocation.y)
             cr.rectangle(offset_x, offset_y, 
                          scrolled_window.allocation.x + scrolled_window.allocation.width, 
                          scrolled_window.allocation.y + scrolled_window.allocation.height)
@@ -629,7 +629,7 @@ class ListView(gtk.DrawingArea):
                     draw_pixbuf(cr, sort_pixbuf,
                                 cell_offset_x + cell_width - sort_pixbuf.get_width() - self.SORT_PADDING_X,
                                 offset_y + (self.title_height - sort_pixbuf.get_height()) / 2)    
-
+        
         # Draw drag reference row.
         if self.drag_reference_row != None:
             drag_pixbuf = ui_theme.get_pixbuf("listview/drag_line.png").get_pixbuf()
@@ -645,6 +645,9 @@ class ListView(gtk.DrawingArea):
             
         return False
     
+    '''
+    FIXME: ListView Draw alpha mask on top surface issue
+    '''
     def draw_items(self, cr, rect, offset_x, offset_y, viewport, cell_widths):
         if len(self.items) > 0:
             # Init.
@@ -679,7 +682,7 @@ class ListView(gtk.DrawingArea):
                     
                     self.draw_items_row(top_surface_cr, offset_x, viewport, 
                                         int(vadjust.get_value()))
-                    
+                
                 if bottom_surface_cr:
                     bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
                     bottom_surface_cr.clip()
@@ -716,13 +719,14 @@ class ListView(gtk.DrawingArea):
                     end_index = min(end_y / self.item_height + 2, len(self.items))        
                     
                 # Draw list item.
+                top_surface_render_y = -1
                 for (row, item) in enumerate(self.items[start_index:end_index]):
                     renders = item.get_renders()
+                    render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
                     for (column, render) in enumerate(renders):
                         cell_width = cell_widths[column]
                         cell_x = sum(cell_widths[0:column])
                         render_x = rect.x + cell_x
-                        render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
                         render_width = cell_width
                         render_height = self.item_height
                         
@@ -732,6 +736,7 @@ class ListView(gtk.DrawingArea):
                                 top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
                                 top_surface_cr.clip()
                                 
+                                top_surface_render_y = render_y - int(vadjust.get_value())
                                 render(
                                     top_surface_cr,
                                     gtk.gdk.Rectangle(render_x, 
@@ -757,14 +762,18 @@ class ListView(gtk.DrawingArea):
                                     (start_index + row) in self.select_rows,
                                     item == self.highlight_item
                                     )
-                                
+                            
                         with cairo_state(cr):
+                            other_render_y = render_y
                             # Don't allowed list item draw out of cell rectangle.
-                            cr.rectangle(render_x, render_y, render_width, render_height)
+                            if top_surface_render_y != -1:
+                                other_render_y = render_y + top_surface_render_y + DEFAULT_FONT_SIZE
+                            cr.rectangle(render_x, other_render_y, render_width, render_height)
                             cr.clip()
                             
                             # Render cell.
-                            render(cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height),
+                            render(cr, 
+                                   gtk.gdk.Rectangle(render_x, other_render_y, render_width, render_height),
                                    (start_index + row) in self.select_rows,
                                    item == self.highlight_item)
             
@@ -772,18 +781,21 @@ class ListView(gtk.DrawingArea):
             if top_surface:
                 i = 0
                 while (i <= self.mask_bound_height):
+                    alpha = math.sin(i * math.pi / 2 / self.mask_bound_height)
+                    if alpha < 0:
+                        continue
                     with cairo_state(cr):
-                        cr.rectangle(rect.x, vadjust.get_value() + self.title_offset_y + i, rect.width, 1)
+                        cr.rectangle(rect.x, vadjust.get_value() + self.title_offset_y + i, rect.width, 0.5)
                         cr.clip()
                         cr.set_source_surface(
                             top_surface, 
                             0, 
                             vadjust.get_value() + self.title_offset_y
                             )
-                        cr.paint_with_alpha(math.sin(i * math.pi / 2 / self.mask_bound_height))
+                        cr.paint_with_alpha(alpha)
                         
                     i += 1    
-                
+            
             # Draw alpha mask on bottom surface.
             if bottom_surface:
                 i = 0
