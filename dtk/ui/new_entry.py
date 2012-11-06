@@ -38,17 +38,42 @@ import pangocairo
 from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
                    get_content_size, is_double_click, is_right_button, 
                    is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias)
-from threads import post_gui
+import time
 import threading as td
 
+'''
+TODO: The last character could be saw when inputting then disappeared for a while
+'''
 class PasswordThread(td.Thread):
-    def __init__(self, password_str):
+    
+    def __init__(self, entry_buffer):
         td.Thread.__init__(self)
         self.setDaemon(True)
-        self.password_str = password_str
+        self.entry_buffer = entry_buffer
+        self.password_str = ""
+        self.password_pre_str = ""
 
     def run(self):
-        pass
+        try:
+            origin_text = self.entry_buffer.get_text()
+            origin_text_len = len(origin_text)
+            i = origin_text_len
+            while i:
+                self.password_str = self.password_str + "*"
+                self.password_pre_str = self.password_pre_str + "*"
+                i = i - 1
+            '''
+            TODO: preview password string such as ****s
+            '''
+            self.draw_entry_password()
+        except Exception, e:
+            print "class LoadingThread got error: %s" % (e)
+            traceback.print_exc(file=sys.stdout)
+
+    def draw_entry_password(self):
+        self.entry_buffer._layout.set_text(self.password_pre_str)
+        time.sleep(1)
+        self.entry_buffer._layout.set_text(self.password_str)
 
 class EntryBuffer(gobject.GObject):
     '''
@@ -391,13 +416,9 @@ class EntryBuffer(gobject.GObject):
         # Draw text
         with cairo_state(cr):
             length = self.get_length()
-            #if length == 0:
-                #return
             if self.get_visibility():
                 if self.password_mode:
-                    self._layout.set_text(password_str)
-                    #time.sleep(1)
-                    self._layout.set_text("DEBUG")
+                    PasswordThread(self).start()
                 else:
                     self._layout.set_text(self.get_text())
             else:
