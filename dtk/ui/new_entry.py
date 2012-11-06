@@ -6,6 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +38,16 @@ import pangocairo
 from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
                    get_content_size, is_double_click, is_right_button, 
                    is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias)
+from threads import post_gui
+import threading as td
 
+class PasswordThread(td.Thread):
+    def __init__(self, password_str):
+        td.Thread.__init__(self)
+        self.setDaemon(True)
+        self.password_str = password_str
+
+    def run(self):
 
 class EntryBuffer(gobject.GObject):
     '''
@@ -63,7 +73,8 @@ class EntryBuffer(gobject.GObject):
                  font_weight='normal',
                  text_color=ui_theme.get_color("entry_text").get_color(),
                  text_select_color=ui_theme.get_color("entry_select_text").get_color(),
-                 background_select_color=ui_theme.get_shadow_color("entry_select_background")):
+                 background_select_color=ui_theme.get_shadow_color("entry_select_background"), 
+                 password_mode=False):
         '''
         text: the buffer content
         @param text: Entry initialize content, default is \"\".
@@ -83,6 +94,7 @@ class EntryBuffer(gobject.GObject):
         self.text_color = text_color
         self.text_select_color = text_select_color
         self.background_select_color = background_select_color
+        self.password_mode = password_mode
         #
         self.__prop_dict = {}
         self.__prop_dict['cursor-visible'] = True
@@ -372,6 +384,7 @@ class EntryBuffer(gobject.GObject):
         '''render. Used by widget'''
         # Clip text area first.
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        password_str = self.setup_password_str(self.get_text())
         cr.rectangle(x, y, w, h)
         cr.clip()
         # Draw text
@@ -380,7 +393,12 @@ class EntryBuffer(gobject.GObject):
             #if length == 0:
                 #return
             if self.get_visibility():
-                self._layout.set_text(self.get_text())
+                if self.password_mode:
+                    self._layout.set_text(password_str)
+                    #time.sleep(1)
+                    self._layout.set_text("DEBUG")
+                else:
+                    self._layout.set_text(self.get_text())
             else:
                 self._layout.set_text(self.get_invisible_char()*length)
             layout = self._layout.copy()
@@ -394,7 +412,10 @@ class EntryBuffer(gobject.GObject):
             if self.get_has_selection() and self.get_property("select-area-visible"):
                 (left_pos, right_pos)= self.get_selection_bounds()
                 if self.get_visibility():
-                    layout.set_text(self.get_text()[left_pos:right_pos])
+                    if self.password_mode:
+                        layout.set_text(password_str[left_pos:right_pos])
+                    else:
+                        layout.set_text(self.get_text()[left_pos:right_pos])
                 else:
                     layout.set_text(self.get_invisible_char()*(right_pos-left_pos))
                 # draw selection background
@@ -668,7 +689,8 @@ class Entry(gtk.EventBox):
             text_select_color = text_select_color.get_color()
         self.entry_buffer = EntryBuffer(
             content, DEFAULT_FONT, font_size,
-            'noraml', text_color, text_select_color, background_select_color)
+            'noraml', text_color, text_select_color, background_select_color, 
+            password_mode)
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
