@@ -44,7 +44,7 @@ class TabBox(gtk.VBox):
     @undocumented: expose_tab_content_box
     '''
 	
-    def __init__(self, can_close_tab=False):
+    def __init__(self, can_close_tab=False, tab_window_width=-1):
         '''
         Initialize TabBox class.
         '''
@@ -66,7 +66,11 @@ class TabBox(gtk.VBox):
         self.close_button_select_foreground_color = "#FFFFFF"
         self.close_button_color = "#666666"
         self.hover_close_button_index = None
-        
+        '''
+        TODO: Dock Fill for tab items
+        '''
+        self.tab_window_width = tab_window_width
+
         self.tab_title_box = gtk.DrawingArea()
         self.tab_title_box.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.tab_title_box.set_size_request(-1, self.tab_height)
@@ -119,7 +123,10 @@ class TabBox(gtk.VBox):
         self.tab_items += items
         
         for item in items:
-            self.tab_title_widths.append(get_content_size(item[0], DEFAULT_FONT_SIZE)[0] + self.tab_padding_x * 2)
+            if self.tab_window_width:
+                self.tab_title_widths.append(self.tab_window_width / len(items))
+            else:
+                self.tab_title_widths.append(get_content_size(item[0], DEFAULT_FONT_SIZE)[0] + self.tab_padding_x * 2)
             
         self.switch_content(default_index)
         
@@ -397,7 +404,8 @@ class TabWindow(DialogBox):
                  confirm_callback=None, 
                  cancel_callback=None,
                  window_width=458,
-                 window_height=472):
+                 window_height=472, 
+                 dockfill=False):
         '''
         Initialize TabWindow clas.
         
@@ -407,6 +415,7 @@ class TabWindow(DialogBox):
         @param cancel_callback: Callback when user click cancel button.
         @param window_width: Default window width.
         @param window_height: Default window height.
+        @param dockfill: Fill the tab items
         '''
         DialogBox.__init__(self, 
                            title, 
@@ -420,7 +429,10 @@ class TabWindow(DialogBox):
         
         self.tab_window_width = window_width
         self.tab_window_height = window_height
-        self.tab_box = TabBox()
+        if dockfill:
+            self.tab_box = TabBox(tab_window_width=self.tab_window_width)
+        else:
+            self.tab_box = TabBox()
         self.tab_box.add_items(items)
         self.tab_align = gtk.Alignment()
         self.tab_align.set(0.5, 0.5, 1.0, 1.0)

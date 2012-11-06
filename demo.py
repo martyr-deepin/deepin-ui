@@ -262,7 +262,7 @@ if __name__ == "__main__":
                                                                                                           ), str(text)), range(0, 300)),
                                                                                   max_height=300
                                                                                 ).show((450, 250))),
-         (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items).show_all()),
+         (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items, dockfill=True).show_all()),
          (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", lambda : OpenFileDialog("打开文件", application.window, open_file_dlg_click_ok)),
          (app_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
          (app_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
