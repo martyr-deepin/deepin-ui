@@ -135,7 +135,9 @@ class TreeView(gtk.VBox):
                  start_drag_offset=50,
                  mask_bound_height=24,
                  right_space=0,
-                 top_bottom_space=3
+                 top_bottom_space=3,
+                 padding_x=0,
+                 padding_y=0
                  ):
         '''
         Initialize TreeView class.
@@ -153,6 +155,8 @@ class TreeView(gtk.VBox):
         self.drag_icon_pixbuf = drag_icon_pixbuf
         self.start_drag_offset = start_drag_offset
         self.mask_bound_height = mask_bound_height
+        self.padding_x = padding_x
+        self.padding_y = padding_y
         self.start_drag = False
         self.start_select_row = None
         self.select_rows = []
@@ -184,6 +188,10 @@ class TreeView(gtk.VBox):
         self.draw_area.set_can_focus(True)
         self.draw_align = gtk.Alignment()
         self.draw_align.set(0.5, 0.5, 1, 1)
+        # FIXME
+        # Add padding will make all coordinate calculation failed, 
+        # we need review all code after uncomment below line.
+        # self.draw_align.set_padding(self.padding_y, self.padding_y, self.padding_x, self.padding_x)
         
         self.scrolled_window = ScrolledWindow(right_space, top_bottom_space)
         
