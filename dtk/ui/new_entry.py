@@ -48,6 +48,7 @@ class PasswordThread(td.Thread):
         self.password_str = password_str
 
     def run(self):
+        pass
 
 class EntryBuffer(gobject.GObject):
     '''
