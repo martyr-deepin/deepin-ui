@@ -48,7 +48,8 @@ from dtk.ui.color_selection import ColorButton
 from dtk.ui.combo import ComboBox
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
 from dtk.ui.droplist import Droplist
-from dtk.ui.entry import ShortcutKeyEntry, InputEntry, PasswordEntry
+from dtk.ui.entry import ShortcutKeyEntry, InputEntry
+from dtk.ui.new_entry import PasswordEntry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.label import Label

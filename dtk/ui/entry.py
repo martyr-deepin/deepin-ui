@@ -602,11 +602,20 @@ class Entry(gtk.EventBox):
                          h - self.padding_y * 2,
                          self.background_select_color.get_color_info())
 
+    def setup_password_str(self, str):
+        ret = ""
+        i = len(str)
+        while i:
+            ret = ret + "*"
+            i = i - 1
+        return ret
+    
     def draw_entry_text(self, cr, rect):
         '''
         Internal function to draw entry text.
         '''
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        password_str = self.setup_password_str(self.content)
         with cairo_state(cr):
             # Clip text area first.
             draw_x = x + self.padding_x
@@ -625,7 +634,10 @@ class Entry(gtk.EventBox):
             
             if not self.get_sensitive():
                 # Set text.
-                layout.set_text(self.content)
+                if self.password_mode:
+                    layout.set_text(password_str)
+                else:
+                    layout.set_text(self.content)
                 
                 # Get text size.
                 (text_width, text_height) = layout.get_pixel_size()
@@ -640,9 +652,15 @@ class Entry(gtk.EventBox):
                 context.show_layout(layout)
             elif self.select_start_index != self.select_end_index and self.select_area_visible_flag:
                 # Get string.
-                before_select_str = self.content[0:self.select_start_index]
-                select_str = self.content[self.select_start_index:self.select_end_index]
-                after_select_str = self.content[self.select_end_index::]
+                if self.password_mode:
+                    before_select_str = password_str[0:self.select_start_index]
+                    select_str = password_str[self.select_start_index:self.select_end_index]
+                    after_select_str = ""
+                    #after_select_str = password_str[self.select_end_index]
+                else:
+                    before_select_str = self.content[0:self.select_start_index]
+                    select_str = self.content[self.select_start_index:self.select_end_index]
+                    after_select_str = self.content[self.select_end_index::]
                 
                 # Build render list.
                 render_list = []
@@ -668,15 +686,7 @@ class Entry(gtk.EventBox):
                     context.update_layout(layout)
                     context.show_layout(layout)
             else:
-                '''
-                TODO: password mode
-                '''
                 if self.password_mode:
-                    i = len(self.content)
-                    password_str = ""
-                    while i:
-                        password_str = password_str + "*"
-                        i = i - 1
                     layout.set_text(password_str)
                 else:
                     layout.set_text(self.content)
