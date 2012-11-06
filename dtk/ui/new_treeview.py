@@ -32,7 +32,7 @@ from draw import draw_vlinear, draw_pixbuf, draw_text
 from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
 from cache_pixbuf import CachePixbuf
-from utils import (cairo_state, get_window_shadow_size, get_event_coords,
+from utils import (cairo_state, get_window_shadow_size, get_event_coords, is_in_rect,
                    container_remove_all, get_same_level_widgets, get_disperse_index,
                    is_left_button, is_double_click, is_single_click, remove_timeout_id)
 from skin_config import skin_config
@@ -203,6 +203,7 @@ class TreeView(gtk.VBox):
         self.draw_area.connect("key-press-event", self.key_press_tree_view)
         self.draw_area.connect("key-release-event", self.key_release_tree_view)
         self.draw_area.connect("size-allocate", self.size_allocated_tree_view)
+        self.draw_area.connect("leave-notify-event", self.leave_tree_view)
         
         # Add items.
         self.add_items(items)
@@ -1252,6 +1253,14 @@ class TreeView(gtk.VBox):
             
     def size_allocated_tree_view(self, widget, rect):
         self.update_item_widths()
+        
+    def leave_tree_view(self, widget, event):
+        # Hide hover row when cursor out of viewport area.
+        vadjust = self.scrolled_window.get_vadjustment()
+        hadjust = self.scrolled_window.get_hadjustment()
+        if not is_in_rect((event.x, event.y), 
+                          (hadjust.get_value(), vadjust.get_value(), hadjust.get_page_size(), vadjust.get_page_size())):
+            self.unhover_row()
         
     def unhover_row(self):
         if self.hover_row != None:
