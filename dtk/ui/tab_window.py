@@ -32,7 +32,7 @@ import gtk
 from utils import (container_remove_all, get_content_size, 
                    color_hex_to_cairo, alpha_color_hex_to_cairo, 
                    cairo_disable_antialias, is_in_rect, cairo_state, 
-                   get_window_shadow_size)
+                   get_window_shadow_size, get_screen_size)
 
 class TabBox(gtk.VBox):
     '''
@@ -44,7 +44,7 @@ class TabBox(gtk.VBox):
     @undocumented: expose_tab_content_box
     '''
 	
-    def __init__(self, can_close_tab=False, tab_window_width=-1):
+    def __init__(self, can_close_tab=False, dockfill=False):
         '''
         Initialize TabBox class.
         '''
@@ -69,7 +69,8 @@ class TabBox(gtk.VBox):
         '''
         TODO: Dock Fill for tab items
         '''
-        self.tab_window_width = tab_window_width
+        self.dockfill = dockfill
+        self.tab_box_width = -1
 
         self.tab_title_box = gtk.DrawingArea()
         self.tab_title_box.add_events(gtk.gdk.ALL_EVENTS_MASK)
@@ -121,12 +122,9 @@ class TabBox(gtk.VBox):
         @param default_index: Initialize index, default is 0.
         '''
         self.tab_items += items
-        
+       
         for item in items:
-            if self.tab_window_width:
-                self.tab_title_widths.append(self.tab_window_width / len(items))
-            else:
-                self.tab_title_widths.append(get_content_size(item[0], DEFAULT_FONT_SIZE)[0] + self.tab_padding_x * 2)
+            self.tab_title_widths.append(get_content_size(item[0], DEFAULT_FONT_SIZE)[0] + self.tab_padding_x * 2)
             
         self.switch_content(default_index)
         
@@ -150,7 +148,7 @@ class TabBox(gtk.VBox):
 
         @param index: Tab index.
         '''
-        if self.tab_index != index:
+        if self.tab_index != index and len(self.tab_items):
             self.tab_index = index
             widget = self.tab_items[index][1]
                 
@@ -201,13 +199,22 @@ class TabBox(gtk.VBox):
             self.hover_close_button_index = hover_index
             widget.queue_draw()
 
+    def update_tab_title_widths(self, width):
+        i = 0
+        tab_title_len = len(self.tab_title_widths)
+        for new_width in self.tab_title_widths:
+            self.tab_title_widths[i] = width / tab_title_len
+            i = i + 1
+
     def expose_tab_title_box(self, widget, event):
         '''
         Internal callback for `expose-event` signal.
         '''
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        
+        if self.dockfill:
+            self.update_tab_title_widths(rect.width)
+
         # Draw background.
         (offset_x, offset_y) = widget.translate_coordinates(self.get_toplevel(), 0, 0)
         with cairo_state(cr):
@@ -372,7 +379,8 @@ class TabBox(gtk.VBox):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        
+        self.tab_box_width = rect.width
+
         # Draw background.
         toplevel = widget.get_toplevel()
         coordinate = widget.translate_coordinates(toplevel, 0, 0)
@@ -429,10 +437,7 @@ class TabWindow(DialogBox):
         
         self.tab_window_width = window_width
         self.tab_window_height = window_height
-        if dockfill:
-            self.tab_box = TabBox(tab_window_width=self.tab_window_width)
-        else:
-            self.tab_box = TabBox()
+        self.tab_box = TabBox(dockfill=dockfill)
         self.tab_box.add_items(items)
         self.tab_align = gtk.Alignment()
         self.tab_align.set(0.5, 0.5, 1.0, 1.0)
