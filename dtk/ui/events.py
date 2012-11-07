@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2012 smallevilbeast
+# Copyright (C) 2011 ~ 2012 Deepin, Inc.
+#               2012 smallevilbeast
 #
 # Author:     smallevilbeast <houshao55@gmail.com>
 # Maintainer: smallevilbeast <houshao55@gmail.com>
@@ -135,7 +136,7 @@ class EventRegister(object):
         elif self.strict and event not in self.__events__:    
             raise InvalidEvent(event)
         else:
-            self.event[event].append(callback)
+            self.events[event].append(callback)
             
     def emit(self, event, *args, **kwargs):
         '''
