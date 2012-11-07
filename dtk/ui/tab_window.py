@@ -46,10 +46,10 @@ class TabBox(gtk.VBox):
     '''
 	
     '''
-    TODO: add clicked-item signal to show tab index
+    TODO: add switch-tab signal to show tab index
     '''
     __gsignals__ = { 
-        "clicked-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),
+        "switch-tab" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),
     }
 
     def __init__(self, can_close_tab=False, dockfill=False):
@@ -183,7 +183,7 @@ class TabBox(gtk.VBox):
                                self.tab_title_widths[index],
                                self.tab_height)):
                     self.switch_content(index)
-                    self.emit("clicked-item", index)
+                    self.emit("switch-tab", index)
                     break
 
     def get_close_button_at_event(self, event):
@@ -448,7 +448,7 @@ class TabWindow(DialogBox):
         self.tab_window_height = window_height
         self.tab_box = TabBox(dockfill=dockfill)
         self.tab_box.add_items(items)
-        self.tab_box.connect("clicked-item", self.tab_item_clicked)
+        self.tab_box.connect("switch-tab", self.switched_tab)
         self.tab_align = gtk.Alignment()
         self.tab_align.set(0.5, 0.5, 1.0, 1.0)
         self.tab_align.set_padding(8, 0, 0, 0)
@@ -467,10 +467,9 @@ class TabWindow(DialogBox):
         self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
     
     '''
-    TODO: it is easy to get the index clicked the tab item
+    TODO: it is easy to get the index switched the tab item
     '''
-    def tab_item_clicked(self, widget, index):
-        #print widget, index
+    def switched_tab(self, widget, index):
         pass
     
     def click_confirm_button(self):
