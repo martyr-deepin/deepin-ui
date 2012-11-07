@@ -41,40 +41,6 @@ from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo,
 import time
 import threading as td
 
-'''
-TODO: The last character could be saw when inputting then disappeared for a while
-'''
-class PasswordThread(td.Thread):
-    
-    def __init__(self, entry_buffer):
-        td.Thread.__init__(self)
-        self.setDaemon(True)
-        self.entry_buffer = entry_buffer
-        self.password_str = ""
-        self.password_pre_str = ""
-
-    def run(self):
-        try:
-            origin_text = self.entry_buffer.get_text()
-            origin_text_len = len(origin_text)
-            i = origin_text_len
-            while i:
-                self.password_str = self.password_str + "*"
-                self.password_pre_str = self.password_pre_str + "*"
-                i = i - 1
-            '''
-            TODO: preview password string such as ****s
-            '''
-            self.draw_entry_password()
-        except Exception, e:
-            print "class LoadingThread got error: %s" % (e)
-            traceback.print_exc(file=sys.stdout)
-
-    def draw_entry_password(self):
-        self.entry_buffer._layout.set_text(self.password_pre_str)
-        time.sleep(1)
-        self.entry_buffer._layout.set_text(self.password_str)
-
 class EntryBuffer(gobject.GObject):
     '''
     EntryBuffer
@@ -99,8 +65,8 @@ class EntryBuffer(gobject.GObject):
                  font_weight='normal',
                  text_color=ui_theme.get_color("entry_text").get_color(),
                  text_select_color=ui_theme.get_color("entry_select_text").get_color(),
-                 background_select_color=ui_theme.get_shadow_color("entry_select_background"), 
-                 password_mode=False):
+                 background_select_color=ui_theme.get_shadow_color("entry_select_background"),
+                ):
         '''
         text: the buffer content
         @param text: Entry initialize content, default is \"\".
@@ -120,8 +86,9 @@ class EntryBuffer(gobject.GObject):
         self.text_color = text_color
         self.text_select_color = text_select_color
         self.background_select_color = background_select_color
-        self.password_mode = password_mode
-        #
+        '''
+        property
+        '''
         self.__prop_dict = {}
         self.__prop_dict['cursor-visible'] = True
         self.__prop_dict['select-area-visible'] = True
@@ -140,6 +107,9 @@ class EntryBuffer(gobject.GObject):
         self.set_text(text)
         self.buffer.connect("changed", lambda bf: self.emit("changed"))
     
+    def key_released_buffer(self, widget):
+        print widget
+
     def do_set_property(self, pspec, value):
         if pspec.name in self.__prop_dict:
             self.__prop_dict[pspec.name] = value
@@ -395,32 +365,17 @@ class EntryBuffer(gobject.GObject):
         first_line = self.buffer.get_iter_at_line(0)
         return first_line.get_chars_in_line()
    
-    def setup_password_str(self, str):
-        ret = ""
-        i = len(str)
-        while i:
-            ret = ret + "*"
-            i = i - 1
-        return ret
-
-    '''
-    TODO: Act like Mac password style
-    '''
     def render(self, cr, rect, im=None, offset_x=0):
         '''render. Used by widget'''
         # Clip text area first.
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        password_str = self.setup_password_str(self.get_text())
         cr.rectangle(x, y, w, h)
         cr.clip()
         # Draw text
         with cairo_state(cr):
             length = self.get_length()
             if self.get_visibility():
-                if self.password_mode:
-                    PasswordThread(self).start()
-                else:
-                    self._layout.set_text(self.get_text())
+                self._layout.set_text(self.get_text())
             else:
                 self._layout.set_text(self.get_invisible_char()*length)
             layout = self._layout.copy()
@@ -434,10 +389,7 @@ class EntryBuffer(gobject.GObject):
             if self.get_has_selection() and self.get_property("select-area-visible"):
                 (left_pos, right_pos)= self.get_selection_bounds()
                 if self.get_visibility():
-                    if self.password_mode:
-                        layout.set_text(password_str[left_pos:right_pos])
-                    else:
-                        layout.set_text(self.get_text()[left_pos:right_pos])
+                    layout.set_text(self.get_text()[left_pos:right_pos])
                 else:
                     layout.set_text(self.get_invisible_char()*(right_pos-left_pos))
                 # draw selection background
@@ -683,7 +635,6 @@ class Entry(gtk.EventBox):
     
     def __init__(self, 
                  content="", 
-                 password_mode=False,
                  padding_x=5, 
                  padding_y=2,
                  text_color=ui_theme.get_color("entry_text"),
@@ -711,12 +662,10 @@ class Entry(gtk.EventBox):
             text_select_color = text_select_color.get_color()
         self.entry_buffer = EntryBuffer(
             content, DEFAULT_FONT, font_size,
-            'noraml', text_color, text_select_color, background_select_color, 
-            password_mode)
+            'noraml', text_color, text_select_color, background_select_color)
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
-        self.password_mode = password_mode
         self.padding_x = padding_x
         self.padding_y = padding_y
         self.move_direction = self.MOVE_NONE
@@ -1807,6 +1756,35 @@ class ShortcutKeyEntry(gtk.VBox):
 gobject.type_register(ShortcutKeyEntry)
 
 '''
+TODO: Act like Mac password style
+'''
+class PasswordThread(td.Thread):
+    def __init__(self, entry):
+        td.Thread.__init__(self)
+        self.setDaemon(True)
+        self.entry = entry
+        self.password_str = ""
+
+    def run(self):
+        try:
+            self.password_str = self.entry.get_text()
+            '''
+            FIXME: How to directly change the last character to *
+            origin_password_len = len(origin_password_str)
+            i = origin_password_len
+            while i:
+                self.password_str = self.password_str + "*"
+                i = i - 1
+            '''
+            self.draw_entry_password()
+        except Exception, e:
+            print "class PasswordThread got error: %s" % (e)
+            traceback.print_exc(file=sys.stdout)
+    
+    def draw_entry_password(self):
+        self.entry.set_text(self.password_str)
+
+'''
 TODO: Act like Mac style
       The last character when inputting is visible then disappeared for a while
 '''
@@ -1833,6 +1811,7 @@ class PasswordEntry(gtk.VBox):
         self.action_button = action_button
         self.h_box = gtk.HBox()
         self.entry = Entry(content, True)
+        self.entry.connect("key-release-event", self.key_released_entry)
         self.background_color = background_color
         self.acme_color = acme_color
         self.point_color = point_color
@@ -1857,6 +1836,9 @@ class PasswordEntry(gtk.VBox):
         '''
         self.align.connect("expose-event", self.expose_password_entry)
 
+    def key_released_entry(self, widget, argv):
+        PasswordThread(self.entry).start()
+    
     def emit_action_active_signal(self):
         pass
 
