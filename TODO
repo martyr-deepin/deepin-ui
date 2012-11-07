@@ -1,0 +1,60 @@
+* TODO 现在我做的事情
+** TODO Deepin-UI
+*** TODO 修复已有控件Bug
+**** TODO Entry
+***** TODO Entry 控件添加密码输入效果， 类似于苹果那样， 最后一个字符输入的时候是可以看到的， 一会就消失掉
+***** TODO Entry 支持 hlint
+***** TODO Entry 控件第一次切换输入法的时候光标不跟随
+***** TODO Entry 控件右边添加一个小 x 按钮, 点击后直接就可以删除输入内容了
+**** TODO 主题背景可以支持背景颜色的自定义
+**** TODO Menu.py 改成 Poplist 的框架一样， 用 TreeView 来绘制菜单项， 而不是用控件堆砌， 提高性能
+**** TODO 菜单移动加延时, 越过菜单项的时候不选中
+**** TODO ComboBox 在 Plug 里面作为控件， 菜单是无法显示的
+**** TODO TreeView 添加 gc 垃圾回收功能, UninstallItem 需要添加支持
+**** TODO 标签的宽度可以填充满整个区域
+**** TODO IconView 渐变上下都有一个像素绘制Bug, TreeView 也有
+**** TODO 资源管理器
+**** TODO 首次运行提示气泡, 用于提示软件的新功能
+**** TODO 滚动条要临时显示当前的页面索引
+**** TODO breadcrumb
+***** TODO Gtk.Entry 换成 InputEntry
+***** TODO Use other effect instead two side arrow
+***** TODO 重构简化代码
+**** TODO TreeView highlight interface: set_highlight, enable_highlight
+**** TODO Poplist
+***** TODO 用PopList替代 Menu 和 Droplist
+**** TODO DropList, Menu 提供ESC按键的支持
+**** TODO ListView Hover 的时候顶部渐变有Bug
+**** TODO 窗口阴影渐变效果需要根据设计进行调整
+**** TODO 进度条颜色重新搭配
+**** TODO 标签的宽度可以填充
+**** TODO 基于TreeView的衍生控件
+***** TODO 打开文件对话框
+***** TODO ListView
+***** TODO TreeView 及衍生控件的文档完善
+**** TODO iconview 的 redraw-request 信号改为 callback 的形式, 防止过多的重新绘制
+**** TODO Label 可以滚动
+**** TODO 降低Deepin UI的CPU使用率
+***** TODO queue_draw_area 能减少重新绘制的区域
+**** TODO CheckButton padding_x 改为 padding_left, padding_right
+**** TODO 完善动画库
+***** TODO 窗口关闭
+***** TODO 菜单关闭
+** TODO 软件中心后端服务
+*** TODO 软件推荐数据二进制同步服务
+*** TODO 截图上传和下载
+*** TODO 评分， 评论上传和下载
+*** TODO 评论区域要和新版网站论坛互通
+** TODO 系统设置模块
+*** TODO 系统设置多进程框架
+*** TODO 整体界面根据UI设计优化
+*** TODO 未完成模块
+**** TODO 声音、个性化、日期和时间、 打印机、蓝牙、驱动、用户账户、 辅助功能、 设置默认项、 系统信息
+** TODO 登陆画面
+*** TODO 用 LightDM 的原理登陆
+*** TODO 用 WebKit 来实现交互动画
+** TODO 锁屏界面
+*** TODO xtrlock 的锁屏原理
+*** TODO 用 Webkit 界面绘制
+*** TODO 解锁页面和登陆都支持图片密码
+
