@@ -38,7 +38,7 @@ class StarBuffer(gobject.GObject):
         init docs
         '''
         gobject.GObject.__init__(self)
-        self.star_level = star_level
+        self.star_level = int(star_level)
         
     def render(self, cr, rect):
         for (star_index, star_pixbuf) in enumerate(self.get_star_pixbufs()):
