@@ -457,7 +457,8 @@ class TabWindow(DialogBox):
         
         self.tab_window_width = window_width
         self.tab_window_height = window_height
-        self.tab_box = TabBox(dockfill=dockfill, 
+        self.tab_box = TabBox(can_close_tab=True, 
+                              dockfill=dockfill, 
                               current_tab_index=current_tab_index)
         self.tab_box.add_items(items)
         self.tab_box.connect("switch-tab", self.switched_tab)

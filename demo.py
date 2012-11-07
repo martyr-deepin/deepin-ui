@@ -48,7 +48,7 @@ from dtk.ui.color_selection import ColorButton
 from dtk.ui.combo import ComboBox
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
 from dtk.ui.droplist import Droplist
-from dtk.ui.entry import ShortcutKeyEntry, InputEntry
+from dtk.ui.new_entry import ShortcutKeyEntry, InputEntry
 from dtk.ui.new_entry import PasswordEntry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.iconview import IconView, IconItem
@@ -362,7 +362,7 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("entry/search_press.png"),
         )
     # entry = TextEntry("Linux Deepin")
-    entry = InputEntry("Linux Deepin")
+    entry = InputEntry("Linux Deepin", show_delete_button=True)
     entry.connect("action-active", print_entry_action)
     entry.set_size(150, 24)
     password_entry = PasswordEntry("")

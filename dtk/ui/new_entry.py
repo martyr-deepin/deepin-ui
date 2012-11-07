@@ -22,7 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
-from draw import draw_hlinear
+from draw import draw_hlinear, draw_round_rectangle
 from keymap import get_keyevent_name
 from locales import _
 from menu import Menu
@@ -641,6 +641,7 @@ class Entry(gtk.EventBox):
                  text_select_color=ui_theme.get_color("entry_select_text"),
                  background_select_color=ui_theme.get_shadow_color("entry_select_background"),
                  font_size=DEFAULT_FONT_SIZE, 
+                 show_delete_button=False,
                  ):
         '''
         Initialize Entry class.
@@ -663,6 +664,10 @@ class Entry(gtk.EventBox):
         self.entry_buffer = EntryBuffer(
             content, DEFAULT_FONT, font_size,
             'noraml', text_color, text_select_color, background_select_color)
+        '''
+        TODO: Add delete button
+        '''
+        self.show_delete_button = show_delete_button
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
@@ -1171,6 +1176,49 @@ class Entry(gtk.EventBox):
     
 gobject.type_register(Entry)
 
+'''
+TODO: Add x button beside XXXEntry
+'''
+class DeleteButton(gtk.VBox):
+    def __init__(self, 
+                 width=0, 
+                ):
+        gtk.VBox.__init__(self)
+        self.button_size = 6
+        self.button_frame_size = 3
+        self.button_padding_x = 30
+        self.button_padding_y = -4
+        self.button_select_background_color = "#EE0000"
+        self.button_select_foreground_color = "#FFFFFF"
+        self.button_color = "#666666"
+        self.connect("expose-event", self.expose_delete_button)
+
+    def expose_delete_button(self, widget, event):
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        with cairo_disable_antialias(cr):
+            cr.set_source_rgb(*color_hex_to_cairo(self.button_select_background_color))
+            draw_round_rectangle(cr, 
+                                 x - self.button_padding_x, 
+                                 y - self.button_padding_y, 
+                                 self.button_size + self.button_frame_size * 2, 
+                                 self.button_size + self.button_frame_size * 2, 
+                                 2)
+            cr.fill()
+
+            cr.set_line_width(1.5)
+            cr.set_source_rgb(*color_hex_to_cairo(self.button_select_foreground_color))
+            cr.move_to(x, y)
+            cr.line_to(x + self.button_size, y + self.button_size)
+            cr.stroke()
+
+            cr.move_to(x + self.button_size, y)
+            cr.line_to(x, y + self.button_size)
+            cr.stroke()
+
+gobject.type_register(DeleteButton)
+
 class TextEntry(gtk.VBox):
     '''
     Text entry.
@@ -1194,7 +1242,7 @@ class TextEntry(gtk.VBox):
                  frame_color = ui_theme.get_alpha_color("text_entry_frame"),
                  ):
         '''
-        Initialize InputEntry class.
+        Initialize TextEntry class.
         
         @param content: Initialize entry text, default is \"\".
         @param action_button: Extra button add at right side of text entry, default is None.
@@ -1396,6 +1444,7 @@ class InputEntry(gtk.VBox):
                  point_color = ui_theme.get_alpha_color("text_entry_point"),
                  frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point"),
                  frame_color = ui_theme.get_alpha_color("text_entry_frame"),
+                 show_delete_button=False,
                  ):
         '''
 
@@ -1416,15 +1465,22 @@ class InputEntry(gtk.VBox):
         self.action_button = action_button
         self.h_box = gtk.HBox()
         self.entry = Entry(content)
+        self.delete_button = DeleteButton()
         self.background_color = background_color
         self.acme_color = acme_color
         self.point_color = point_color
         self.frame_point_color = frame_point_color
         self.frame_color = frame_color
+        '''
+        TODO: Add x button, when clicked delete the content
+        '''
+        self.show_delete_button = show_delete_button
         
         self.pack_start(self.align, False, False)
         self.align.add(self.h_box)
         self.h_box.pack_start(self.entry)
+        if self.show_delete_button:
+            self.h_box.pack_start(self.delete_button)
         if action_button:
             self.action_align = gtk.Alignment()
             self.action_align.set(0.0, 0.5, 0, 0)
@@ -1767,15 +1823,14 @@ class PasswordThread(td.Thread):
 
     def run(self):
         try:
-            self.password_str = self.entry.get_text()
+            password_len = len(self.entry.get_text())
             '''
             FIXME: How to directly change the last character to *
-            origin_password_len = len(origin_password_str)
-            i = origin_password_len
+            '''
+            i = password_len
             while i:
                 self.password_str = self.password_str + "*"
                 i = i - 1
-            '''
             self.draw_entry_password()
         except Exception, e:
             print "class PasswordThread got error: %s" % (e)
