@@ -52,7 +52,7 @@ class TabBox(gtk.VBox):
         "switch-tab" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),
     }
 
-    def __init__(self, can_close_tab=False, dockfill=False):
+    def __init__(self, can_close_tab=False, dockfill=False, current_tab_index=-1):
         '''
         Initialize TabBox class.
         '''
@@ -79,7 +79,11 @@ class TabBox(gtk.VBox):
         '''
         self.dockfill = dockfill
         self.tab_box_width = -1
-
+        '''
+        TODO: It can be setting the current tab index at object construct
+        '''
+        self.current_tab_index = current_tab_index
+        
         self.tab_title_box = gtk.DrawingArea()
         self.tab_title_box.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.tab_title_box.set_size_request(-1, self.tab_height)
@@ -134,7 +138,10 @@ class TabBox(gtk.VBox):
         for item in items:
             self.tab_title_widths.append(get_content_size(item[0], DEFAULT_FONT_SIZE)[0] + self.tab_padding_x * 2)
             
-        self.switch_content(default_index)
+        if self.current_tab_index < 0:
+            self.switch_content(default_index)
+        else:
+            self.switch_content(self.current_tab_index)
         
     def delete_items(self, items):
         item_indexs = map(lambda item: self.tab_items.index(item), items)
@@ -149,6 +156,9 @@ class TabBox(gtk.VBox):
             self.show_default_page()
             
         print self.tab_items    
+    
+    def set_current_tab(self, index):
+        self.switch_content(index)
     
     def switch_content(self, index):
         '''
@@ -422,7 +432,8 @@ class TabWindow(DialogBox):
                  cancel_callback=None,
                  window_width=458,
                  window_height=472, 
-                 dockfill=False):
+                 dockfill=False, 
+                 current_tab_index=-1):
         '''
         Initialize TabWindow clas.
         
@@ -446,9 +457,14 @@ class TabWindow(DialogBox):
         
         self.tab_window_width = window_width
         self.tab_window_height = window_height
-        self.tab_box = TabBox(dockfill=dockfill)
+        self.tab_box = TabBox(dockfill=dockfill, 
+                              current_tab_index=current_tab_index)
         self.tab_box.add_items(items)
         self.tab_box.connect("switch-tab", self.switched_tab)
+        '''
+        TODO: Test set_current_tab for TabBox
+        self.tab_box.set_current_tab(2)
+        '''
         self.tab_align = gtk.Alignment()
         self.tab_align.set(0.5, 0.5, 1.0, 1.0)
         self.tab_align.set_padding(8, 0, 0, 0)
@@ -465,6 +481,9 @@ class TabWindow(DialogBox):
         
         self.body_box.pack_start(self.window_box, True, True)
         self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
+    
+    def set_current_tab(self, index):
+        self.tab_box.switch_content(index)
     
     '''
     TODO: it is easy to get the index switched the tab item
