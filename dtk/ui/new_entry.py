@@ -641,7 +641,7 @@ class Entry(gtk.EventBox):
                  text_select_color=ui_theme.get_color("entry_select_text"),
                  background_select_color=ui_theme.get_shadow_color("entry_select_background"),
                  font_size=DEFAULT_FONT_SIZE, 
-                 clear_button=False,
+                 enable_clear_button=False,
                  ):
         '''
         Initialize Entry class.
@@ -667,7 +667,8 @@ class Entry(gtk.EventBox):
         '''
         TODO: Add clear button
         '''
-        self.clear_button = clear_button
+        self.clear_button = ClearButton(False)
+        self.enable_clear_button = enable_clear_button
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
@@ -724,7 +725,7 @@ class Entry(gtk.EventBox):
         self.connect("focus-out-event", self.focus_out_entry)
         
         self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
-        
+    
     def set_editable(self, editable):
         '''
         Set entry editable status.
@@ -988,13 +989,22 @@ class Entry(gtk.EventBox):
         rect = widget.allocation
         rect.x += self.padding_x
         rect.y += self.padding_y
-        rect.width -= 2 * self.padding_x
+        if self.enable_clear_button:
+            rect.width -= (2 * self.padding_x + ClearButton.button_padding_x)
+        else:
+            rect.width -= 2 * self.padding_x
         rect.height -= 2 * self.padding_y
         
         # Draw background.
         if not self.get_sensitive():
             self.entry_buffer.set_property("select-area-visible", False)
-        
+
+        '''
+        TODO: Draw clear button
+        '''
+        if self.enable_clear_button and len(self.get_text()):
+            self.clear_button.render(cr, rect)
+
         self.entry_buffer.render(cr, rect, self.im, self.offset_x)
         
         # Propagate expose.
@@ -1177,43 +1187,24 @@ class Entry(gtk.EventBox):
 gobject.type_register(Entry)
 
 '''
-TODO: Add x button (Clear Button) beside XXXEntry
+TODO: Add x button (Clear Button)
 '''
-class ClearButton(gtk.VBox):
-    button_padding_x = 33
+class ClearButton(gtk.EventBox):
+    button_padding_x = 18
     
-    def __init__(self, 
-                 width=0, 
+    def __init__(self,
+                 visible=False, 
                 ):
-        gtk.VBox.__init__(self)
-        self.button_size = 6
-        self.button_frame_size = 3
-        self.button_padding_y = -3
-        self.button_select_background_color = "#EE0000"
-        self.button_select_foreground_color = "#FFFFFF"
-        self.button_color = "#666666"
-        self.connect("expose-event", self.expose_clear_button)
+        gtk.EventBox.__init__(self)
+        self.button_margin_x = 4
+        self.button_padding_y = 1
         self.clear_pixbuf = ui_theme.get_pixbuf("entry/gtk-cancel.png")
 
-    def expose_clear_button(self, widget, event):
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        with cairo_disable_antialias(cr):
-            draw_pixbuf(cr, 
-                        self.clear_pixbuf.get_pixbuf(), 
-                        x - ClearButton.button_padding_x, 
-                        y - self.button_padding_y)
-            '''
-            cr.set_source_rgb(*color_hex_to_cairo(self.button_select_background_color))
-            draw_round_rectangle(cr, 
-                                 x - ClearButton.button_padding_x, 
-                                 y - self.button_padding_y, 
-                                 self.button_size + self.button_frame_size * 2, 
-                                 self.button_size + self.button_frame_size * 2, 
-                                 2)
-            cr.fill()
-            '''
+    def render(self, cr, rect):
+        draw_pixbuf(cr, 
+                    self.clear_pixbuf.get_pixbuf(), 
+                    rect.x + rect.width + self.button_margin_x, 
+                    rect.y + self.button_padding_y)
 
 gobject.type_register(ClearButton)
 
@@ -1462,24 +1453,16 @@ class InputEntry(gtk.VBox):
         self.align.set(0.5, 0.5, 1.0, 1.0)
         self.action_button = action_button
         self.h_box = gtk.HBox()
-        self.entry = Entry(content)
-        self.clear_button = ClearButton()
-        self.clear_button.connect("button-press-event", self.press_clear_button)
+        self.entry = Entry(content, enable_clear_button=enable_clear_button)
         self.background_color = background_color
         self.acme_color = acme_color
         self.point_color = point_color
         self.frame_point_color = frame_point_color
         self.frame_color = frame_color
-        '''
-        TODO: Add x button, when clicked clear all the content
-        '''
-        self.enable_clear_button = enable_clear_button
         
         self.pack_start(self.align, False, False)
         self.align.add(self.h_box)
         self.h_box.pack_start(self.entry)
-        if self.enable_clear_button:
-            self.h_box.pack_start(self.clear_button)
         if action_button:
             self.action_align = gtk.Alignment()
             self.action_align.set(0.0, 0.5, 0, 0)
@@ -1493,10 +1476,6 @@ class InputEntry(gtk.VBox):
         # Handle signal.
         self.align.connect("expose-event", self.expose_input_entry)
             
-    def press_clear_button(self, widget, event):
-        if self.enable_clear_button:
-            self.entry.set_text("")
-    
     def set_sensitive(self, sensitive):
         '''
         Internal function to wrap function `set_sensitive`.
