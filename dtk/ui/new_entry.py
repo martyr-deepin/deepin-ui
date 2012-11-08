@@ -112,9 +112,6 @@ class EntryBuffer(gobject.GObject):
         self.set_text(text)
         self.buffer.connect("changed", lambda bf: self.emit("changed"))
     
-    def key_released_buffer(self, widget):
-        print widget
-
     def do_set_property(self, pspec, value):
         if pspec.name in self.__prop_dict:
             self.__prop_dict[pspec.name] = value
@@ -1005,6 +1002,9 @@ class Entry(gtk.EventBox):
         rect = widget.allocation
         rect.x += self.padding_x
         rect.y += self.padding_y
+        '''
+        TODO: keep some space for clear button
+        '''
         if self.enable_clear_button:
             rect.width -= (2 * self.padding_x + ClearButton.button_padding_x)
             self.clear_button_x = rect.width
@@ -1021,6 +1021,10 @@ class Entry(gtk.EventBox):
         ''' 
         if self.enable_clear_button and len(self.get_text()):
             self.clear_button.render(cr, rect)
+        
+        '''
+        Draw entry
+        '''
         self.entry_buffer.render(cr, rect, self.im, self.offset_x)
         
         # Propagate expose.
