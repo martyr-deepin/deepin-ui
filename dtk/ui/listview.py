@@ -721,7 +721,6 @@ class ListView(gtk.DrawingArea):
                 
                 '''
                 TODO: Draw list item.
-                FIXME: re-render top_surface && bottom_surface
                 '''
                 for (row, item) in enumerate(self.items[start_index:end_index]):
                     renders = item.get_renders()
@@ -782,18 +781,15 @@ class ListView(gtk.DrawingArea):
             if top_surface:
                 i = 0
                 while (i <= self.mask_bound_height):
-                    alpha = math.sin(i * math.pi / 2 / self.mask_bound_height)
-                    if alpha < 0:
-                        continue
                     with cairo_state(cr):
-                        cr.rectangle(rect.x, vadjust.get_value() + self.title_offset_y + i, rect.width, 0.5)
+                        cr.rectangle(rect.x, vadjust.get_value() + self.title_offset_y + i, rect.width, 1)
                         cr.clip()
                         cr.set_source_surface(
                             top_surface, 
                             0, 
                             vadjust.get_value() + self.title_offset_y
                             )
-                        cr.paint_with_alpha(alpha)
+                        cr.paint_with_alpha(math.sin(i * math.pi / 2 / self.mask_bound_height))
                         
                     i += 1    
             
