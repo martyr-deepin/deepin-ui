@@ -669,6 +669,7 @@ class Entry(gtk.EventBox):
         '''
         self.clear_button = ClearButton(False)
         self.enable_clear_button = enable_clear_button
+        self.clear_button_x = -1
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
@@ -991,6 +992,7 @@ class Entry(gtk.EventBox):
         rect.y += self.padding_y
         if self.enable_clear_button:
             rect.width -= (2 * self.padding_x + ClearButton.button_padding_x)
+            self.clear_button_x = rect.width
         else:
             rect.width -= 2 * self.padding_x
         rect.height -= 2 * self.padding_y
@@ -1016,6 +1018,8 @@ class Entry(gtk.EventBox):
         '''
         Internal callback for `button-press-event` signal.
         '''
+        if self.enable_clear_button and not event.x < self.clear_button_x:
+            self.set_text("")
         self.handle_button_press(widget, event)
         
     def handle_button_press(self, widget, event):
