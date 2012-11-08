@@ -38,46 +38,26 @@ class StarBuffer(gobject.GObject):
         init docs
         '''
         gobject.GObject.__init__(self)
-        self.star_level = star_level
+        self.star_level = int(star_level)
         
     def render(self, cr, rect):
-        for i in range(0, 5):
-            pixbuf = self.get_star_path(i + 1)
+        for (star_index, star_pixbuf) in enumerate(self.get_star_pixbufs()):
             draw_pixbuf(cr,
-                        pixbuf,
-                        rect.x + i * STAR_SIZE,
-                        rect.y + (rect.height - pixbuf.get_height()) / 2,
+                        star_pixbuf,
+                        rect.x + star_index * STAR_SIZE,
+                        rect.y + (rect.height - star_pixbuf.get_height()) / 2,
                         )
-    
-    def get_star_path(self, star_index):
-        '''Get star path.'''
-        if star_index == 1:
-            if self.star_level > 8:
-                pixbuf_path = "star_green.png"
-            elif self.star_level > 2:
-                pixbuf_path = "star_yellow.png"
-            elif self.star_level == 2:
-                pixbuf_path = "star_red.png"
-            else:
-                pixbuf_path = "halfstar_red.png"
-        elif star_index in [2, 3, 4]:
-            if self.star_level > 8:
-                pixbuf_path = "star_green.png"
-            elif self.star_level >= star_index * 2:
-                pixbuf_path = "star_yellow.png"
-            elif self.star_level == star_index * 2 - 1:
-                pixbuf_path = "halfstar_yellow.png"
-            else:
-                pixbuf_path = "star_gray.png"
-        elif star_index == 5:
-            if self.star_level >= star_index * 2:
-                pixbuf_path = "star_green.png"
-            elif self.star_level == star_index * 2 - 1:
-                pixbuf_path = "halfstar_green.png"
-            else:
-                pixbuf_path = "star_gray.png"
+            
+    def get_star_pixbufs(self):
+        star_paths = ["star_background.png"] * 5
+
+        for index in range(0, self.star_level / 2):
+            star_paths[index] = "star_foreground.png"
+            
+        if self.star_level % 2 == 1:
+            star_paths[self.star_level / 2] = "halfstar_background.png"
                 
-        return ui_theme.get_pixbuf("star/%s" % pixbuf_path).get_pixbuf()        
+        return map(lambda path: ui_theme.get_pixbuf("star/%s" % path).get_pixbuf(), star_paths)        
         
 gobject.type_register(StarBuffer)        
 
