@@ -362,7 +362,7 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("entry/search_press.png"),
         )
     # entry = TextEntry("Linux Deepin")
-    entry = InputEntry("Linux Deepin", show_delete_button=True)
+    entry = InputEntry("Linux Deepin", enable_clear_button=True)
     entry.connect("action-active", print_entry_action)
     entry.set_size(150, 24)
     password_entry = PasswordEntry("")

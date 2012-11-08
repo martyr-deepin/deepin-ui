@@ -6,6 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -717,9 +718,13 @@ class ListView(gtk.DrawingArea):
                     end_index = min(end_y / self.item_height + 1, len(self.items))
                 else:
                     end_index = min(end_y / self.item_height + 2, len(self.items))        
-                    
-                # Draw list item.
-                top_surface_render_y = -1
+                
+                '''
+                TODO: Draw list item.
+                FIXME: re-render top_surface && bottom_surface
+                '''
+                top_surface_rendered = False
+                bottom_surface_rendered = False
                 for (row, item) in enumerate(self.items[start_index:end_index]):
                     renders = item.get_renders()
                     render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
@@ -731,12 +736,11 @@ class ListView(gtk.DrawingArea):
                         render_height = self.item_height
                         
                         # Draw on top surface.
-                        if top_surface_cr:
+                        if top_surface_cr and not top_surface_rendered:
                             if (not render_y > vadjust.get_value() + self.mask_bound_height) and (not render_y + render_height < vadjust.get_value()):
                                 top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
                                 top_surface_cr.clip()
                                 
-                                top_surface_render_y = render_y - int(vadjust.get_value())
                                 render(
                                     top_surface_cr,
                                     gtk.gdk.Rectangle(render_x, 
@@ -764,18 +768,17 @@ class ListView(gtk.DrawingArea):
                                     )
                             
                         with cairo_state(cr):
-                            other_render_y = render_y
-                            # Don't allowed list item draw out of cell rectangle.
-                            if top_surface_render_y != -1:
-                                other_render_y = render_y + top_surface_render_y + DEFAULT_FONT_SIZE
-                            cr.rectangle(render_x, other_render_y, render_width, render_height)
+                            cr.rectangle(render_x, render_y, render_width, render_height)
                             cr.clip()
                             
                             # Render cell.
                             render(cr, 
-                                   gtk.gdk.Rectangle(render_x, other_render_y, render_width, render_height),
-                                   (start_index + row) in self.select_rows,
+                                   gtk.gdk.Rectangle(render_x, render_y, render_width, render_height), 
+                                   (start_index + row) in self.select_rows, 
                                    item == self.highlight_item)
+
+                    top_surface_rendered = True
+                    bottom_surface_rendered = True
             
             # Draw alpha mask on top surface.
             if top_surface:

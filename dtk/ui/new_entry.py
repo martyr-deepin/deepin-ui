@@ -22,7 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
-from draw import draw_hlinear, draw_round_rectangle
+from draw import draw_hlinear, draw_round_rectangle, draw_pixbuf
 from keymap import get_keyevent_name
 from locales import _
 from menu import Menu
@@ -665,7 +665,7 @@ class Entry(gtk.EventBox):
             content, DEFAULT_FONT, font_size,
             'noraml', text_color, text_select_color, background_select_color)
         '''
-        TODO: Add delete button
+        TODO: Add clear button
         '''
         self.clear_button = clear_button
         self.set_visible_window(False)
@@ -1177,10 +1177,10 @@ class Entry(gtk.EventBox):
 gobject.type_register(Entry)
 
 '''
-TODO: Add x button beside XXXEntry
+TODO: Add x button (Clear Button) beside XXXEntry
 '''
 class ClearButton(gtk.VBox):
-    button_padding_x = 30
+    button_padding_x = 33
     
     def __init__(self, 
                  width=0, 
@@ -1188,17 +1188,23 @@ class ClearButton(gtk.VBox):
         gtk.VBox.__init__(self)
         self.button_size = 6
         self.button_frame_size = 3
-        self.button_padding_y = -4
+        self.button_padding_y = -3
         self.button_select_background_color = "#EE0000"
         self.button_select_foreground_color = "#FFFFFF"
         self.button_color = "#666666"
         self.connect("expose-event", self.expose_clear_button)
+        self.clear_pixbuf = ui_theme.get_pixbuf("entry/gtk-cancel.png")
 
     def expose_clear_button(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         with cairo_disable_antialias(cr):
+            draw_pixbuf(cr, 
+                        self.clear_pixbuf.get_pixbuf(), 
+                        x - ClearButton.button_padding_x, 
+                        y - self.button_padding_y)
+            '''
             cr.set_source_rgb(*color_hex_to_cairo(self.button_select_background_color))
             draw_round_rectangle(cr, 
                                  x - ClearButton.button_padding_x, 
@@ -1207,6 +1213,7 @@ class ClearButton(gtk.VBox):
                                  self.button_size + self.button_frame_size * 2, 
                                  2)
             cr.fill()
+            '''
 
 gobject.type_register(ClearButton)
 
@@ -1809,6 +1816,9 @@ gobject.type_register(ShortcutKeyEntry)
 
 '''
 TODO: Act like Mac password style
+      when key input 123, then key released, it became
+                     **3
+                     ***
 '''
 class PasswordThread(td.Thread):
     def __init__(self, entry):
