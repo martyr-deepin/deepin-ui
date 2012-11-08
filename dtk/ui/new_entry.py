@@ -66,6 +66,7 @@ class EntryBuffer(gobject.GObject):
                  text_color=ui_theme.get_color("entry_text").get_color(),
                  text_select_color=ui_theme.get_color("entry_select_text").get_color(),
                  background_select_color=ui_theme.get_shadow_color("entry_select_background"),
+                 enable_clear_button=False,
                 ):
         '''
         text: the buffer content
@@ -86,6 +87,10 @@ class EntryBuffer(gobject.GObject):
         self.text_color = text_color
         self.text_select_color = text_select_color
         self.background_select_color = background_select_color
+        '''
+        TODO: Add clear button
+        '''
+        self.enable_clear_button = enable_clear_button
         '''
         property
         '''
@@ -371,6 +376,9 @@ class EntryBuffer(gobject.GObject):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         cr.rectangle(x, y, w, h)
         cr.clip()
+        '''
+        FIXME: when enabled clear button, draw text layout is out of ClearButton range
+        '''
         # Draw text
         with cairo_state(cr):
             length = self.get_length()
@@ -381,7 +389,7 @@ class EntryBuffer(gobject.GObject):
             layout = self._layout.copy()
             # Create pangocairo context.
             context = pangocairo.CairoContext(cr)
-            cr.move_to(x-offset_x, y)
+            cr.move_to(x - offset_x, y)
             cr.set_source_rgb(*color_hex_to_cairo(self.text_color))
             context.update_layout(layout)
             context.show_layout(layout)
@@ -412,7 +420,13 @@ class EntryBuffer(gobject.GObject):
                 cursor_pos = self.get_cursor_pos(cursor_index)[0]
                 # Draw cursor.
                 cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entry_cursor").get_color()))
-                cr.rectangle(cursor_pos[0]+x-offset_x, cursor_pos[1]+y, 1, cursor_pos[3])
+                cursor_pos_x = cursor_pos[0] + x - offset_x
+                '''
+                TODO: re-calc cursor pos when enabled clear button
+                '''
+                if self.enable_clear_button and x + w < cursor_pos_x:
+                    cursor_pos_x = x + w - 1
+                cr.rectangle(cursor_pos_x, cursor_pos[1] + y, 1, cursor_pos[3])
                 cr.fill()
                 if im:
                     im.set_cursor_location(gtk.gdk.Rectangle(cursor_pos[0]+x-offset_x, cursor_pos[1]+y, 1, cursor_pos[3]))
@@ -663,7 +677,8 @@ class Entry(gtk.EventBox):
             text_select_color = text_select_color.get_color()
         self.entry_buffer = EntryBuffer(
             content, DEFAULT_FONT, font_size,
-            'noraml', text_color, text_select_color, background_select_color)
+            'noraml', text_color, text_select_color, 
+            background_select_color, enable_clear_button)
         '''
         TODO: Add clear button
         '''
@@ -1003,10 +1018,9 @@ class Entry(gtk.EventBox):
 
         '''
         TODO: Draw clear button
-        '''
+        ''' 
         if self.enable_clear_button and len(self.get_text()):
             self.clear_button.render(cr, rect)
-
         self.entry_buffer.render(cr, rect, self.im, self.offset_x)
         
         # Propagate expose.
@@ -1194,7 +1208,7 @@ gobject.type_register(Entry)
 TODO: Add x button (Clear Button)
 '''
 class ClearButton(gtk.EventBox):
-    button_padding_x = 18
+    button_padding_x = 20
     
     def __init__(self,
                  visible=False, 
