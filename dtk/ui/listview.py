@@ -734,20 +734,6 @@ class ListView(gtk.DrawingArea):
                         
                         # Draw on top surface.
                         if top_surface_cr:
-                            '''
-                            if (not float(render_y + render_height) > vadjust.get_value() + float(self.mask_bound_height)) and (not float(render_y + render_height) < vadjust.get_value()):
-                                top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
-                                top_surface_cr.clip()
-                                
-                                render(
-                                    top_surface_cr,
-                                    gtk.gdk.Rectangle(render_x, 
-                                                      render_y - int(vadjust.get_value()), 
-                                                      render_width, 
-                                                      render_height),
-                                    (start_index + row) in self.select_rows,
-                                    item == self.highlight_item)
-                            '''
                             if (not float(render_y) > vadjust.get_value() + float(self.mask_bound_height)) and (not float(render_y + render_height) < vadjust.get_value()):
                                 top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
                                 top_surface_cr.clip()
