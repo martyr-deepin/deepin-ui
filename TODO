@@ -2,22 +2,22 @@
 ** TODO Deepin-UI
 *** TODO 修复已有控件Bug
 **** TODO Entry
-***** TODO Entry 控件添加密码输入效果， 类似于苹果那样， 最后一个字符输入的时候是可以看到的， 一会就消失掉
+***** TODO Entry 控件添加密码输入效果， 类似于苹果那样， 最后一个字符输入的时候是可以看到的， 一会就消失掉 DONE
 ***** TODO Entry 支持 hlint
 ***** TODO Entry 控件第一次切换输入法的时候光标不跟随
-***** TODO Entry 控件右边添加一个小 x 按钮, 点击后直接就可以删除输入内容了
+***** TODO Entry 控件右边添加一个小 x 按钮, 点击后直接就可以删除输入内容了 DONE
 **** TODO 主题背景可以支持背景颜色的自定义
 **** TODO Menu.py 改成 Poplist 的框架一样， 用 TreeView 来绘制菜单项， 而不是用控件堆砌， 提高性能
 **** TODO 菜单移动加延时, 越过菜单项的时候不选中
 **** TODO ComboBox 在 Plug 里面作为控件， 菜单是无法显示的
 **** TODO TreeView 添加 gc 垃圾回收功能, UninstallItem 需要添加支持
-**** TODO 标签的宽度可以填充满整个区域
+**** TODO 标签的宽度可以填充满整个区域 DONE
 **** TODO IconView 渐变上下都有一个像素绘制Bug, TreeView 也有
 **** TODO 资源管理器
 **** TODO 首次运行提示气泡, 用于提示软件的新功能
 **** TODO 滚动条要临时显示当前的页面索引
 **** TODO breadcrumb
-***** TODO Gtk.Entry 换成 InputEntry
+***** TODO Gtk.Entry 换成 InputEntry ?
 ***** TODO Use other effect instead two side arrow
 ***** TODO 重构简化代码
 **** TODO TreeView highlight interface: set_highlight, enable_highlight

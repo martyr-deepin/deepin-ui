@@ -646,9 +646,6 @@ class ListView(gtk.DrawingArea):
             
         return False
     
-    '''
-    FIXME: ListView Draw alpha mask on top surface issue
-    '''
     def draw_items(self, cr, rect, offset_x, offset_y, viewport, cell_widths):
         if len(self.items) > 0:
             # Init.
@@ -720,21 +717,25 @@ class ListView(gtk.DrawingArea):
                     end_index = min(end_y / self.item_height + 2, len(self.items))        
                 
                 '''
-                TODO: Draw list item.
+                TODO: Draw rows
                 '''
                 for (row, item) in enumerate(self.items[start_index:end_index]):
                     renders = item.get_renders()
                     render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
+                    render_height = self.item_height
+                    '''
+                    TODO: Draw columns in a row
+                    '''
                     for (column, render) in enumerate(renders):
                         cell_width = cell_widths[column]
                         cell_x = sum(cell_widths[0:column])
                         render_x = rect.x + cell_x
                         render_width = cell_width
-                        render_height = self.item_height
                         
                         # Draw on top surface.
                         if top_surface_cr:
-                            if (not render_y > vadjust.get_value() + self.mask_bound_height) and (not render_y + render_height < vadjust.get_value()):
+                            '''
+                            if (not float(render_y + render_height) > vadjust.get_value() + float(self.mask_bound_height)) and (not float(render_y + render_height) < vadjust.get_value()):
                                 top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
                                 top_surface_cr.clip()
                                 
@@ -745,13 +746,24 @@ class ListView(gtk.DrawingArea):
                                                       render_width, 
                                                       render_height),
                                     (start_index + row) in self.select_rows,
-                                    item == self.highlight_item
-                                    )
-                                top_surface_cr.translate(float(render_x), float(render_y) - vadjust.get_value())
-                        
+                                    item == self.highlight_item)
+                            '''
+                            if (not float(render_y) > vadjust.get_value() + float(self.mask_bound_height)) and (not float(render_y + render_height) < vadjust.get_value()):
+                                top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
+                                top_surface_cr.clip()
+                                
+                                render(
+                                    top_surface_cr, 
+                                    gtk.gdk.Rectangle(render_x, 
+                                                      render_y - int(vadjust.get_value()), 
+                                                      render_width, 
+                                                      render_height), 
+                                    (start_index + row) in self.select_rows, 
+                                    item == self.highlight_item)
+
                         # Draw on bottom surface.
                         if bottom_surface_cr:
-                            if (not render_y > vadjust.get_value() + vadjust.get_page_size()) and (not render_y + render_height < vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height):
+                            if (not float(render_y) > vadjust.get_value() + vadjust.get_page_size()) and (not float(render_y + render_height) < vadjust.get_value() + vadjust.get_page_size() - float(self.mask_bound_height)):
                                 bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
                                 bottom_surface_cr.clip()
                                 
@@ -762,18 +774,24 @@ class ListView(gtk.DrawingArea):
                                                       render_width, 
                                                       render_height),
                                     (start_index + row) in self.select_rows,
-                                    item == self.highlight_item
-                                    )
-                                bottom_surface_cr.translate(float(render_x), 
-                                                            float(render_y) - vadjust.get_value() - vadjust.get_page_size() - float(self.mask_bound_height))
-                            
+                                    item == self.highlight_item)
+                        
+                        '''
+                        TODO: other items need considering about float to int issue?
+                        '''
                         with cairo_state(cr):
-                            cr.rectangle(render_x, render_y, render_width, render_height)
+                            cr.rectangle(render_x, 
+                                         render_y, 
+                                         render_width, 
+                                         render_height)
                             cr.clip()
                             
                             # Render cell.
                             render(cr, 
-                                   gtk.gdk.Rectangle(render_x, render_y, render_width, render_height), 
+                                   gtk.gdk.Rectangle(render_x, 
+                                                     render_y, 
+                                                     render_width, 
+                                                     render_height), 
                                    (start_index + row) in self.select_rows, 
                                    item == self.highlight_item)
             
@@ -2009,7 +2027,7 @@ class ListItem(gobject.GObject):
         rect.x += self.title_padding_x
         rect.width -= self.title_padding_x * 2
         render_text(cr, rect, self.title, in_select, in_highlight)
-    
+
     def render_artist(self, cr, rect, in_select, in_highlight):
         '''
         Render artist.
@@ -2022,7 +2040,7 @@ class ListItem(gobject.GObject):
         rect.x += self.artist_padding_x
         rect.width -= self.title_padding_x * 2
         render_text(cr, rect, self.artist, in_select, in_highlight)
-    
+
     def render_length(self, cr, rect, in_select, in_highlight):
         '''
         Render length.
@@ -2034,7 +2052,7 @@ class ListItem(gobject.GObject):
         '''
         rect.width -= self.length_padding_x * 2
         render_text(cr, rect, self.length, in_select, in_highlight, align=ALIGN_END)
-        
+
     def get_column_sizes(self):
         '''
         Get column sizes.
