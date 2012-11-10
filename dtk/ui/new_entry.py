@@ -111,9 +111,6 @@ class EntryBuffer(gobject.GObject):
         self._layout.set_single_paragraph_mode(True)
         self.set_text(text)
         self.buffer.connect("changed", lambda bf: self.emit("changed"))
-    
-    def key_released_buffer(self, widget):
-        print widget
 
     def do_set_property(self, pspec, value):
         if pspec.name in self.__prop_dict:
@@ -376,9 +373,6 @@ class EntryBuffer(gobject.GObject):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         cr.rectangle(x, y, w, h)
         cr.clip()
-        '''
-        FIXME: when enabled clear button, draw text layout is out of ClearButton range
-        '''
         # Draw text
         with cairo_state(cr):
             length = self.get_length()
@@ -1005,6 +999,9 @@ class Entry(gtk.EventBox):
         rect = widget.allocation
         rect.x += self.padding_x
         rect.y += self.padding_y
+        '''
+        TODO: keep some space for clear button
+        '''
         if self.enable_clear_button:
             rect.width -= (2 * self.padding_x + ClearButton.button_padding_x)
             self.clear_button_x = rect.width
@@ -1021,6 +1018,10 @@ class Entry(gtk.EventBox):
         ''' 
         if self.enable_clear_button and len(self.get_text()):
             self.clear_button.render(cr, rect)
+        
+        '''
+        Draw entry
+        '''
         self.entry_buffer.render(cr, rect, self.im, self.offset_x)
         
         # Propagate expose.
@@ -1812,37 +1813,6 @@ class ShortcutKeyEntry(gtk.VBox):
 gobject.type_register(ShortcutKeyEntry)
 
 '''
-TODO: Act like Mac password style
-      when key input 123, then key released, it became
-                     **3
-                     ***
-'''
-class PasswordThread(td.Thread):
-    def __init__(self, entry):
-        td.Thread.__init__(self)
-        self.setDaemon(True)
-        self.entry = entry
-        self.password_str = ""
-
-    def run(self):
-        try:
-            password_len = len(self.entry.get_text())
-            '''
-            FIXME: How to directly change the last character to *
-            '''
-            i = password_len
-            while i:
-                self.password_str = self.password_str + "*"
-                i = i - 1
-            self.draw_entry_password()
-        except Exception, e:
-            print "class PasswordThread got error: %s" % (e)
-            traceback.print_exc(file=sys.stdout)
-    
-    def draw_entry_password(self):
-        self.entry.set_text(self.password_str)
-
-'''
 TODO: Act like Mac style
       The last character when inputting is visible then disappeared for a while
 '''
@@ -1869,6 +1839,7 @@ class PasswordEntry(gtk.VBox):
         self.action_button = action_button
         self.h_box = gtk.HBox()
         self.entry = Entry(content, True)
+        self.entry.connect("key-press-event", self.key_press_entry)
         self.entry.connect("key-release-event", self.key_released_entry)
         self.background_color = background_color
         self.acme_color = acme_color
@@ -1894,9 +1865,28 @@ class PasswordEntry(gtk.VBox):
         '''
         self.align.connect("expose-event", self.expose_password_entry)
 
+    def key_press_entry(self, widget, argv):
+        old_str = self.entry.get_text()
+        str_len = len(old_str)
+        new_str = ""
+        if str_len < 2:
+            return
+        new_str = old_str[0:str_len - 2] + "*" + old_str[str_len - 1]
+        self.entry.set_text(new_str)
+
     def key_released_entry(self, widget, argv):
-        PasswordThread(self.entry).start()
-    
+        old_str = self.entry.get_text()
+        str_len = len(old_str)
+        new_str = ""
+        if str_len == 1:
+            new_str = "*"
+        else:
+            new_str = old_str[0:str_len - 1] + "*"
+        timer = gobject.timeout_add(200, self.reset_password_entry, new_str)
+
+    def reset_password_entry(self, argv):
+        self.entry.set_text(argv)
+
     def emit_action_active_signal(self):
         pass
 
