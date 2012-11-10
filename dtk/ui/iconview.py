@@ -980,8 +980,11 @@ class IconItem(gobject.GObject):
 
         If you have pixbuf in item, you should release memory resource like below code:
 
-        >>> del self.pixbuf
-        >>> self.pixbuf = None
+        >>> if self.pixbuf:
+        >>>     del self.pixbuf
+        >>>     self.pixbuf = None
+        >>>
+        >>> return True
 
         This is IconView interface, you should implement it.
         
