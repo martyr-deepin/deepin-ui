@@ -29,6 +29,10 @@ class HSlider(gtk.Viewport):
     class docs
     '''
 	
+    __gsignals__ = {
+        "completed_slide" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+    }
+    
     def __init__(self):
         '''
         init docs
@@ -117,6 +121,8 @@ class HSlider(gtk.Viewport):
         
     def completed(self, widget):    
         self.active_widget = widget
+        
+        self.emit("completed_slide")
     
     def set_to_page(self, widget):
         self.active_widget = widget
