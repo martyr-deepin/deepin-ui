@@ -93,6 +93,7 @@ class ListView(gtk.DrawingArea):
                  drag_icon_pixbuf=ui_theme.get_pixbuf("listview/drag_preview.png"),
                  drag_out_offset=50,
                  mask_bound_height=24,
+                 hide_columns=[],
                  ):
         '''
         Initialize ListView widget.
@@ -144,6 +145,10 @@ class ListView(gtk.DrawingArea):
         self.mask_bound_height = mask_bound_height
         self.auto_scroll_id = None
         self.auto_scroll_delay = 70 # milliseconds
+        '''
+        TODO: hiding columns
+        '''
+        self.hide_columns = hide_columns
         
         # Signal.
         self.connect("realize", self.realize_list_view)
@@ -182,7 +187,13 @@ class ListView(gtk.DrawingArea):
             "Shift + End" : self.select_to_last_item,
             "Ctrl + a" : self.select_all_items,
             }
-        
+    
+    '''
+    TODO: It is able to hide columns
+    '''
+    def hide_column(self, hide_columns=[]):
+        self.hide_columns = hide_columns
+    
     def set_expand_column(self, column):
         '''
         Set expand column.
@@ -259,7 +270,7 @@ class ListView(gtk.DrawingArea):
                 (title_width, title_height) = get_content_size(title, DEFAULT_FONT_SIZE)
                 widths.append(title_width + self.TITLE_PADDING * 2)
                 heights.append(title_height)
-            
+        
         return (widths, heights)    
         
     def add_items(self, items, insert_pos=None, sort_list=False):
@@ -579,7 +590,18 @@ class ListView(gtk.DrawingArea):
                     
         # Draw titles.
         if self.titles:
+            i = 0
             for (column, width) in enumerate(cell_widths):
+                '''
+                TODO: update the width in the hide_columns pos
+                '''
+                for hide_column in self.hide_columns:
+                    width += cell_widths[hide_column]
+                '''
+                TODO: without drawing the column out of column_count
+                '''
+                if column in self.hide_columns:
+                    continue
                 # Get offset x coordinate.
                 cell_offset_x = sum(cell_widths[0:column])
                 
@@ -629,7 +651,9 @@ class ListView(gtk.DrawingArea):
                         
                     draw_pixbuf(cr, sort_pixbuf,
                                 cell_offset_x + cell_width - sort_pixbuf.get_width() - self.SORT_PADDING_X,
-                                offset_y + (self.title_height - sort_pixbuf.get_height()) / 2)    
+                                offset_y + (self.title_height - sort_pixbuf.get_height()) / 2)
+
+                i += 1
         
         # Draw drag reference row.
         if self.drag_reference_row != None:
@@ -720,7 +744,7 @@ class ListView(gtk.DrawingArea):
                 TODO: Draw rows
                 '''
                 for (row, item) in enumerate(self.items[start_index:end_index]):
-                    renders = item.get_renders()
+                    renders = item.get_renders(self.hide_columns)
                     render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
                     render_height = self.item_height
                     '''
@@ -2055,7 +2079,7 @@ class ListItem(gobject.GObject):
                  self.length_height + self.length_padding_y * 2),
                 ]    
     
-    def get_renders(self):
+    def get_renders(self, hide_columns):
         '''
         Get render callbacks.
         
@@ -2063,10 +2087,11 @@ class ListItem(gobject.GObject):
         
         @return: Return render functions.
         '''
-        return [self.render_title,
-                self.render_artist,
-                self.render_length]
-    
+        ret_renders = [self.render_title, self.render_artist, self.render_length]
+        for index in hide_columns:
+            ret_renders.remove(ret_renders[index - 1])
+        return ret_renders
+
 def render_text(cr, rect, content, in_select, in_highlight, align=ALIGN_START, font_size=DEFAULT_FONT_SIZE):
     '''
     Helper render text function for ListItem, you should implement your own.

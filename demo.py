@@ -338,6 +338,7 @@ if __name__ == "__main__":
     list_view.set_expand_column(0)
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
+    list_view.hide_column([2])
     list_view.connect("double-click-item", lambda listview, item, i, x, y: list_view.set_highlight(item))
     
     # list_view.connect("button-press-item", print_button_press)
@@ -363,6 +364,7 @@ if __name__ == "__main__":
         )
     # entry = TextEntry("Linux Deepin")
     entry = InputEntry("Linux Deepin", enable_clear_button=True)
+    entry.set_text("DEBUG")
     entry.connect("action-active", print_entry_action)
     entry.set_size(150, 24)
     password_entry = PasswordEntry("")
