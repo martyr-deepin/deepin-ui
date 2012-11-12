@@ -6,6 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state
+from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state, draw_line
 from theme import ui_theme
 from skin_config import skin_config
 from utils import get_window_shadow_size
@@ -144,3 +145,50 @@ class BackgroundBox(gtk.VBox):
         
 gobject.type_register(BackgroundBox)
 
+class ResizableBox(gtk.VBox):
+    def __init__(self, padding_x, width):
+        gtk.VBox.__init__(self)
+        self.padding_x = padding_x
+        self.width = width
+        self.height = 200
+        self.connect("expose-event", self.expose_resizable_box)
+        self.connect("button-press-event", self.press_resizable_box)
+        self.connect("button-release-event", self.release_resizable_box)
+
+    def press_resizable_box(self, widget, event):
+        pass
+
+    def release_resizable_box(self, widget, event):
+        pass
+
+    def expose_resizable_box(self, widget, event):
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        (x, y) = (rect.x, rect.y)
+
+        with cairo_state(cr):
+            '''
+            stroke
+            '''
+            draw_line(cr, 
+                      x + self.padding_x, 
+                      y, 
+                      x + self.padding_x + self.width, 
+                      y)
+            draw_line(cr, 
+                      x + self.padding_x + self.width, 
+                      y, 
+                      x + self.padding_x + self.width, 
+                      y + self.height)
+            draw_line(cr, 
+                      x + self.padding_x + self.width, 
+                      y + self.height, 
+                      x + self.padding_x, 
+                      y + self.height)
+            draw_line(cr, 
+                      x + self.padding_x, 
+                      y + self.height, 
+                      x + self.padding_x, 
+                      y)
+
+gobject.type_register(ResizableBox)
