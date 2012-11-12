@@ -145,27 +145,40 @@ class BackgroundBox(gtk.VBox):
         
 gobject.type_register(BackgroundBox)
 
-class ResizableBox(gtk.VBox):
-    def __init__(self, padding_x, width):
-        gtk.VBox.__init__(self)
+'''
+TODO: Resizable can be drag toward downward
+'''
+class ResizableEventBox(gtk.EventBox):
+    def __init__(self, padding_x, width, height):
+        gtk.EventBox.__init__(self)
         self.padding_x = padding_x
+        self.padding_y = 20
         self.width = width
-        self.height = 200
-        self.connect("expose-event", self.expose_resizable_box)
-        self.connect("button-press-event", self.press_resizable_box)
-        self.connect("button-release-event", self.release_resizable_box)
+        self.height = height
+        self.button_pressed = False
+        self.connect("button-press-event", self.m_button_press)
+        self.connect("button-release-event", self.m_button_release)
+        self.connect("motion-notify-event", self.m_motion_notify)
+        self.connect("expose-event", self.m_expose)
 
-    def press_resizable_box(self, widget, event):
-        pass
+    def m_button_press(self, widget, event):
+        self.button_pressed = True
 
-    def release_resizable_box(self, widget, event):
-        pass
+    def m_button_release(self, widget, event):
+        self.button_pressed = False
 
-    def expose_resizable_box(self, widget, event):
+    def m_motion_notify(self, widget, event):
+        if not self.button_pressed:
+            return
+        self.height = event.y - self.padding_y
+        # redraw the widget
+        self.window.invalidate_rect(self.allocation, True)
+
+    def m_expose(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        (x, y) = (rect.x, rect.y)
-
+        x, y = rect.x, rect.y
+        
         with cairo_state(cr):
             '''
             stroke
@@ -190,5 +203,33 @@ class ResizableBox(gtk.VBox):
                       y + self.height, 
                       x + self.padding_x, 
                       y)
+
+        propagate_expose(widget, event)
+
+        return True
+
+gobject.type_register(ResizableEventBox)
+
+class ResizableBox(gtk.VBox):
+    def __init__(self, padding_x, width):
+        gtk.VBox.__init__(self)
+        self.padding_x = padding_x
+        self.width = width
+        self.height = 200
+        self.align = gtk.Alignment()
+        self.align.set(0.5, 0.5, 1.0, 1.0)
+        self.resizable_eventbox = ResizableEventBox(self.padding_x, self.width, self.height)
+        self.pack_start(self.align)
+        self.align.add(self.resizable_eventbox)
+        self.align.connect("expose-event", self.m_expose)
+
+    def m_expose(self, widget, event):
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        x, y = rect.x, rect.y
+
+        propagate_expose(widget, event)
+
+        return True
 
 gobject.type_register(ResizableBox)
