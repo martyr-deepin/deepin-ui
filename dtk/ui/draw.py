@@ -366,6 +366,9 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
     @param alignment: Font alignment option, default is pango.ALIGN_LEFT. You can set pango.ALIGN_MIDDLE or pango.ALIGN_RIGHT.
     @param wrap_width: Wrap width of text, default is None.
     '''
+    # Set color.
+    cr.set_source_rgb(*color_hex_to_cairo(text_color))
+    
     # Create pangocairo context.
     context = pangocairo.CairoContext(cr)
     
@@ -382,16 +385,15 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
         layout.set_width(wrap_width * pango.SCALE)
         layout.set_wrap(pango.WRAP_WORD)
         
-    if underline:
-        attr_underline = pango.AttrUnderline(pango.UNDERLINE_SINGLE, 0, -1)
-        attr_list = pango.AttrList()
-        attr_list.insert(attr_underline)
-        layout.set_attributes(attr_list)        
     (text_width, text_height) = layout.get_pixel_size()
     
+    if underline:
+        (ink_width, ink_height) = layout.get_pixel_extents()[0][2:4]
+        cr.rectangle(x, y + ink_height, text_width, 1)
+        cr.fill()
+        
     # Draw text.
     cr.move_to(x, y + (h - text_height) / 2)
-    cr.set_source_rgb(*color_hex_to_cairo(text_color))
     context.update_layout(layout)
     context.show_layout(layout)
         
