@@ -148,12 +148,11 @@ gobject.type_register(BackgroundBox)
 '''
 TODO: Resizable can be drag toward downward
 '''
-class ResizableEventBox(gtk.EventBox):
-    def __init__(self, padding_x, width, height):
+class ResizableBox(gtk.EventBox):
+    def __init__(self, height=200):
         gtk.EventBox.__init__(self)
-        self.padding_x = padding_x
-        self.padding_y = 20
-        self.width = width
+        self.padding_x = 10
+        self.padding_y = 10
         self.height = height
         self.bottom_right_corner_pixbuf = ui_theme.get_pixbuf("box/bottom_right_corner.png")
         self.button_pressed = False
@@ -161,7 +160,7 @@ class ResizableEventBox(gtk.EventBox):
         self.connect("button-release-event", self.m_button_release)
         self.connect("motion-notify-event", self.m_motion_notify)
         self.connect("expose-event", self.m_expose)
-
+    
     def m_button_press(self, widget, event):
         self.button_pressed = True
 
@@ -183,69 +182,26 @@ class ResizableEventBox(gtk.EventBox):
         '''
         if self.button_pressed:
             # redraw the widget
-            self.window.invalidate_rect(self.allocation, True)
-
+            self.window.invalidate_rect(self.allocation, True)        
+    
     def m_expose(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        x, y = rect.x, rect.y
-        
+        x, y, w = rect.x, rect.y, rect.width
+        line_width = 1
+
+        x += self.padding_x
+        w -= (self.padding_x + line_width) * 2
         with cairo_state(cr):
-            '''
-            stroke
-            '''
-            cr.set_source_rgba(153, 153, 153, 1.0)
-            draw_line(cr, 
-                      x + self.padding_x, 
-                      y, 
-                      x + self.padding_x + self.width, 
-                      y)
-            draw_line(cr, 
-                      x + self.padding_x + self.width, 
-                      y, 
-                      x + self.padding_x + self.width, 
-                      y + self.height)
-            draw_line(cr, 
-                      x + self.padding_x + self.width, 
-                      y + self.height, 
-                      x + self.padding_x, 
-                      y + self.height)
-            draw_line(cr, 
-                      x + self.padding_x, 
-                      y + self.height, 
-                      x + self.padding_x, 
-                      y)
+            cr.set_line_width(line_width)
+            cr.set_source_rgb(153, 153, 153)
+            cr.rectangle(x, y, w, self.height)
+            cr.stroke()
 
             draw_pixbuf(cr, 
                         self.bottom_right_corner_pixbuf.get_pixbuf(), 
-                        x + self.width - self.padding_x, 
-                        y + self.height - self.padding_y)
-
-        propagate_expose(widget, event)
-
-        return True
-
-gobject.type_register(ResizableEventBox)
-
-class ResizableBox(gtk.VBox):
-    def __init__(self, padding_x, width):
-        gtk.VBox.__init__(self)
-        self.padding_x = padding_x
-        self.width = width
-        self.height = 200
-        self.align = gtk.Alignment()
-        self.align.set(0.5, 0.5, 1.0, 1.0)
-        self.resizable_eventbox = ResizableEventBox(self.padding_x, self.width, self.height)
-        self.pack_start(self.align)
-        self.align.add(self.resizable_eventbox)
-        self.align.connect("expose-event", self.m_expose)
-
-    def m_expose(self, widget, event):
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        x, y = rect.x, rect.y
-
-        propagate_expose(widget, event)
+                        x + w - self.padding_x * 2, 
+                        y + self.height - self.padding_y * 2)
 
         return True
 
