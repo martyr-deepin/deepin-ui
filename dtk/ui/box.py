@@ -155,6 +155,7 @@ class ResizableEventBox(gtk.EventBox):
         self.padding_y = 20
         self.width = width
         self.height = height
+        self.bottom_right_corner_pixbuf = ui_theme.get_pixbuf("box/bottom_right_corner.png")
         self.button_pressed = False
         self.connect("button-press-event", self.m_button_press)
         self.connect("button-release-event", self.m_button_release)
@@ -168,11 +169,21 @@ class ResizableEventBox(gtk.EventBox):
         self.button_pressed = False
 
     def m_motion_notify(self, widget, event):
-        if not self.button_pressed:
-            return
         self.height = event.y - self.padding_y
-        # redraw the widget
-        self.window.invalidate_rect(self.allocation, True)
+        cursor_changable = False
+        
+        '''
+        FIXME: change cursor style wrong
+        if self.height - event.y < 20:
+            cursor_changable = True
+            self.get_window().set_cursor(gtk.gdk.Cursor(gtk.gdk.BOTTOM_SIDE))
+        else:
+            cursor_changable = False
+            self.get_window().set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW))
+        '''
+        if self.button_pressed:
+            # redraw the widget
+            self.window.invalidate_rect(self.allocation, True)
 
     def m_expose(self, widget, event):
         cr = widget.window.cairo_create()
@@ -183,6 +194,7 @@ class ResizableEventBox(gtk.EventBox):
             '''
             stroke
             '''
+            cr.set_source_rgba(153, 153, 153, 1.0)
             draw_line(cr, 
                       x + self.padding_x, 
                       y, 
@@ -203,6 +215,11 @@ class ResizableEventBox(gtk.EventBox):
                       y + self.height, 
                       x + self.padding_x, 
                       y)
+
+            draw_pixbuf(cr, 
+                        self.bottom_right_corner_pixbuf.get_pixbuf(), 
+                        x + self.width - self.padding_x, 
+                        y + self.height - self.padding_y)
 
         propagate_expose(widget, event)
 
