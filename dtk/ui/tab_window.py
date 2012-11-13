@@ -225,15 +225,10 @@ class TabBox(gtk.VBox):
             self.tab_title_widths[i] = width / tab_title_len
             i = i + 1
 
-    def expose_tab_title_box(self, widget, event):
-        '''
-        Internal callback for `expose-event` signal.
-        '''
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        if self.dockfill:
-            self.update_tab_title_widths(rect.width)
-
+    '''
+    TODO: it is able to overload the rendering tab_title_box style
+    '''
+    def render_tab_title_box(self, cr, rect):
         # Draw background.
         (offset_x, offset_y) = widget.translate_coordinates(self.get_toplevel(), 0, 0)
         with cairo_state(cr):
@@ -371,6 +366,17 @@ class TabBox(gtk.VBox):
             cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_select_bg_color.get_color(), 0.93)))
             cr.rectangle(0, 0, rect.width, rect.height)
             cr.fill()
+
+    def expose_tab_title_box(self, widget, event):
+        '''
+        Internal callback for `expose-event` signal.
+        '''
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        if self.dockfill:
+            self.update_tab_title_widths(rect.width)
+
+        self.render_tab_title_box(cr, rect)
             
     def expose_tab_content_align(self, widget, event):
         '''
