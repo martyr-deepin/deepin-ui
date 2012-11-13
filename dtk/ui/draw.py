@@ -388,8 +388,7 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
     (text_width, text_height) = layout.get_pixel_size()
     
     if underline:
-        (ink_width, ink_height) = layout.get_pixel_extents()[0][2:4]
-        cr.rectangle(x, y + ink_height, text_width, 1)
+        cr.rectangle(x, y + text_height + (h - text_height) / 2, text_width, 1)
         cr.fill()
         
     # Draw text.
