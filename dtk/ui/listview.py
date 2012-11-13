@@ -744,7 +744,7 @@ class ListView(gtk.DrawingArea):
                 TODO: Draw rows
                 '''
                 for (row, item) in enumerate(self.items[start_index:end_index]):
-                    renders = item.get_renders(self.hide_columns)
+                    renders = map(lambda (index, render): not index in self.hide_columns, enumerate(item.get_renders()))
                     render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
                     render_height = self.item_height
                     '''
@@ -2079,7 +2079,7 @@ class ListItem(gobject.GObject):
                  self.length_height + self.length_padding_y * 2),
                 ]    
     
-    def get_renders(self, hide_columns):
+    def get_renders(self):
         '''
         Get render callbacks.
         
@@ -2087,10 +2087,7 @@ class ListItem(gobject.GObject):
         
         @return: Return render functions.
         '''
-        ret_renders = [self.render_title, self.render_artist, self.render_length]
-        for index in hide_columns:
-            ret_renders.remove(ret_renders[index - 1])
-        return ret_renders
+        return [self.render_title, self.render_artist, self.render_length]
 
 def render_text(cr, rect, content, in_select, in_highlight, align=ALIGN_START, font_size=DEFAULT_FONT_SIZE):
     '''
