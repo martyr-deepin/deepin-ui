@@ -39,6 +39,12 @@ from dtk.ui.file_treeview import (get_dir_items, sort_by_name, sort_by_size,
                                   sort_by_type, sort_by_mtime)
 import gtk
 
+def m_button_press_item(widget, event, argv1, argv2, argv3):
+    print widget, event, argv1, argv2, argv3
+
+def m_double_click_item(widget, event, argv1, argv2, argv3):
+    print widget, event, argv1, argv2, argv3
+
 if __name__ == "__main__":
     # Init application.
     application = Application()
@@ -63,6 +69,8 @@ if __name__ == "__main__":
     # Add TreeView.
     print os.path.expanduser("~")
     treeview = TreeView(get_dir_items(os.path.expanduser("~")))
+    treeview.connect("button-press-item", m_button_press_item)
+    treeview.connect("double-click-item", m_double_click_item)
     # treeview = TreeView(get_dir_items("/"))
     treeview_align = gtk.Alignment()
     treeview_align.set(0.5, 0.5, 1, 1)

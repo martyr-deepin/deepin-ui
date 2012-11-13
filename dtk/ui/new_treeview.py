@@ -6,6 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,7 +35,8 @@ from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
 from cache_pixbuf import CachePixbuf
 from utils import (cairo_state, get_window_shadow_size, get_event_coords, is_in_rect,
                    container_remove_all, get_same_level_widgets, get_disperse_index,
-                   is_left_button, is_double_click, is_single_click, remove_timeout_id)
+                   is_left_button, is_double_click, is_single_click, remove_timeout_id, 
+                   last_index)
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
 import copy
@@ -123,6 +125,15 @@ class TreeView(gtk.VBox):
     '''
     
     AUTO_SCROLL_HEIGHT = 24
+    
+    __gsignals__ = {
+        "delete-select-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+        "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
+        "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
+        "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
+        "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
+        "right-press-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int, int, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)),
+    }    
 	
     def __init__(self,
                  items=[],
@@ -174,6 +185,8 @@ class TreeView(gtk.VBox):
         self.drag_reference_row = None
         self.column_widths = []
         self.sort_action_id = 0
+        self.title_offset_y = -1
+        self.item_height = -1
         
         # Init redraw.
         self.redraw_request_list = []
@@ -233,6 +246,27 @@ class TreeView(gtk.VBox):
             "Ctrl + a" : self.select_all_items,
             "Delete" : self.delete_select_items,
             }
+
+    '''
+    TODO: PLEASE double check the argv[]
+    '''
+    def emit_item_event(self, event_name, event):
+        '''
+        Wrap method for emit event signal.
+        
+        @param event_name: Event name.
+        @param event: Event.
+        '''
+        if self.title_offset_y == -1 or self.item_height == -1:
+            return
+
+        (event_x, event_y) = get_event_coords(event)
+        event_row = (event_y - self.title_offset_y) / self.item_height
+        if 0 <= event_row <= last_index(self.visible_items):
+            offset_y = event_y - event_row * self.item_height - self.title_offset_y
+            (event_column, offset_x) = get_disperse_index(self.column_widths, event_x)
+     
+            self.emit(event_name, self.visible_items[event_row], event_column, offset_x, offset_y)
 
     def realize_tree_view(self, widget):
         self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
@@ -697,6 +731,8 @@ class TreeView(gtk.VBox):
         self.start_select_row = None
         self.select_rows = []
         
+        self.emit("delete-select-items", delete_items)
+
         self.delete_items(delete_items)
         
     def update_item_index(self):
@@ -719,6 +755,7 @@ class TreeView(gtk.VBox):
             title_boxs = self.title_box.get_children()
             fixed_width_count = sum(filter(lambda w: w != -1, self.column_widths))
             title_height = ui_theme.get_pixbuf("listview/header_press.png").get_pixbuf().get_height()
+            self.title_offset_y = title_height
             for (index, column_width) in enumerate(self.column_widths):
                 if column_width == -1:
                     title_boxs[index].set_size_request(self.draw_area.allocation.width - fixed_width_count, title_height)
@@ -852,6 +889,7 @@ class TreeView(gtk.VBox):
                 render_x = rect.x + item_width_count
                 render_y = rect.y + item_height_count
                 render_width = column_width
+                self.item_height = item.get_height()
                 render_height = item.get_height()
                 
                 # Draw on top surface.
@@ -982,6 +1020,7 @@ class TreeView(gtk.VBox):
                             self.start_drag = False
                             self.start_select_row = click_row
                             self.set_select_rows([click_row])
+                            self.emit_item_event("button-press-item", event)
                             
                             self.visible_items[click_row].button_press(click_column, offset_x, offset_y)
                             
@@ -989,7 +1028,37 @@ class TreeView(gtk.VBox):
                     self.double_click_row = copy.deepcopy(click_row)
                 elif is_single_click(event):
                     self.single_click_row = copy.deepcopy(click_row)                
-                
+            else:
+                '''
+                TODO: right_button press
+                '''
+                right_press_row = self.get_event_row(event)
+                if right_press_row == None:
+                    self.start_select_row = None
+                    self.select_rows = []
+                    self.queue_draw()
+                elif not right_press_row in self.select_rows:
+                    self.start_select_row = right_press_row
+                    self.select_rows = [right_press_row]
+                    self.queue_draw()
+
+                if self.start_select_row == None:
+                    current_item = None
+                else:
+                    current_item = self.visible_items[self.start_select_row]
+
+                select_items = []
+                for row in self.select_rows:
+                    select_items.append(self.items[row])
+
+                (wx, wy) = self.window.get_root_origin()
+                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+                self.emit("right-press-items",
+                          event.x_root,
+                          event.y_root,
+                          current_item,
+                          select_items)
+
     def shift_click(self, click_row):
         if self.select_rows == [] or self.start_select_row == None:
             self.start_select_row = click_row
@@ -1036,8 +1105,10 @@ class TreeView(gtk.VBox):
                 if release_row != None:
                     if self.double_click_row == release_row:
                         self.visible_items[release_row].double_click(release_column, offset_x, offset_y)
+                        self.emit_item_event("double-click-item", event)
                     elif self.single_click_row == release_row:
                         self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
+                        self.emit_item_event("single-click-item", event)
                 
                 if self.start_drag and self.is_in_visible_area(event):
                     self.drag_select_items_at_cursor()
@@ -1167,6 +1238,8 @@ class TreeView(gtk.VBox):
                         
                         if self.hover_row != None:
                             self.visible_items[self.hover_row].hover(hover_column, offset_x, offset_y)
+
+                self.emit_item_event("motion-notify-item", event)
                             
     def auto_scroll_tree_view(self, event):
         '''
