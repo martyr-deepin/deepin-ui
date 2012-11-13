@@ -744,7 +744,7 @@ class ListView(gtk.DrawingArea):
                 TODO: Draw rows
                 '''
                 for (row, item) in enumerate(self.items[start_index:end_index]):
-                    renders = map(lambda (index, render): not index in self.hide_columns, enumerate(item.get_renders()))
+                    renders = map(lambda (index, render): render, filter(lambda (index, render): not index in self.hide_columns, enumerate(item.get_renders())))
                     render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
                     render_height = self.item_height
                     '''
