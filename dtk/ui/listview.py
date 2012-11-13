@@ -149,6 +149,13 @@ class ListView(gtk.DrawingArea):
         TODO: hiding columns
         '''
         self.hide_columns = hide_columns
+        '''
+        TODO: hide or show column flag
+        '''
+        if len(self.hide_columns):
+            self.hide_column_flag = True
+        else:
+            self.hide_column_flag = False
         
         # Signal.
         self.connect("realize", self.realize_list_view)
@@ -193,7 +200,14 @@ class ListView(gtk.DrawingArea):
     '''
     def hide_column(self, hide_columns=[]):
         self.hide_columns = hide_columns
-    
+        if len(self.hide_columns):
+            self.hide_column_flag = True
+        else:
+            self.hide_column_flag = False
+   
+    def set_hide_column_flag(self, hide_column_flag):
+        self.hide_column_flag = hide_column_flag
+
     def set_expand_column(self, column):
         '''
         Set expand column.
@@ -595,12 +609,13 @@ class ListView(gtk.DrawingArea):
                 '''
                 TODO: update the width in the hide_columns pos
                 '''
-                for hide_column in self.hide_columns:
-                    width += cell_widths[hide_column]
+                if self.hide_column_flag:
+                    for hide_column in self.hide_columns:
+                        width += cell_widths[hide_column]
                 '''
                 TODO: without drawing the column out of column_count
                 '''
-                if column in self.hide_columns:
+                if self.hide_column_flag and column in self.hide_columns:
                     continue
                 # Get offset x coordinate.
                 cell_offset_x = sum(cell_widths[0:column])
@@ -744,7 +759,10 @@ class ListView(gtk.DrawingArea):
                 TODO: Draw rows
                 '''
                 for (row, item) in enumerate(self.items[start_index:end_index]):
-                    renders = map(lambda (index, render): render, filter(lambda (index, render): not index in self.hide_columns, enumerate(item.get_renders())))
+                    if self.hide_column_flag:
+                        renders = map(lambda (index, render): render, filter(lambda (index, render): not index in self.hide_columns, enumerate(item.get_renders())))
+                    else:
+                        renders = item.get_renders()
                     render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
                     render_height = self.item_height
                     '''
