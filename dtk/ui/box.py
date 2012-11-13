@@ -149,10 +149,13 @@ gobject.type_register(BackgroundBox)
 TODO: Resizable can be drag toward downward
 '''
 class ResizableBox(gtk.EventBox):
-    def __init__(self, height=200):
+    def __init__(self, 
+                 width=600, 
+                 height=200):
         gtk.EventBox.__init__(self)
         self.padding_x = 10
         self.padding_y = 10
+        self.width = width
         self.height = height
         self.bottom_right_corner_pixbuf = ui_theme.get_pixbuf("box/bottom_right_corner.png")
         self.button_pressed = False
@@ -187,22 +190,20 @@ class ResizableBox(gtk.EventBox):
     def m_expose(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        x, y, w = rect.x, rect.y, rect.width
+        x, y = rect.x, rect.y
         line_width = 1
 
-        x += self.padding_x
-        w -= (self.padding_x + line_width) * 2
         with cairo_state(cr):
             cr.set_line_width(line_width)
             cr.set_source_rgb(153, 153, 153)
-            cr.rectangle(x, y, w, self.height)
+            cr.rectangle(x, y, self.width, self.height)
             cr.stroke()
 
             draw_pixbuf(cr, 
                         self.bottom_right_corner_pixbuf.get_pixbuf(), 
-                        x + w - self.padding_x * 2, 
+                        x + self.width - self.padding_x * 2, 
                         y + self.height - self.padding_y * 2)
+        
+        propagate_expose(widget, event)
 
         return True
-
-gobject.type_register(ResizableBox)
