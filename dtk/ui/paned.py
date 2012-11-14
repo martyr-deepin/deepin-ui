@@ -46,13 +46,16 @@ class Paned(gtk.Paned):
     def __init__(self, 
                  shrink_first,
                  enable_animation=False,
-                 handle_color=ui_theme.get_color("paned_line")):
+                 always_show_button=False,
+                 handle_color=ui_theme.get_color("paned_line")
+                 ):
         '''
         Initialize Paned class.
         '''
         gtk.Paned.__init__(self)
         self.shrink_first = shrink_first
         self.enable_animation = enable_animation
+        self.always_show_button = always_show_button
         self.handle_color = handle_color
         self.bheight = ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf().get_width()
         self.saved_position = -1
@@ -101,7 +104,7 @@ class Paned(gtk.Paned):
                 cr.rectangle(0, 0, line_width, height)
                 cr.fill()
 
-                if self.show_button:
+                if self.always_show_button or self.show_button:
                     draw_pixbuf(cr, 
                                 ui_theme.get_pixbuf("paned/paned_left_normal.png").get_pixbuf(),
                                 0,
@@ -110,7 +113,7 @@ class Paned(gtk.Paned):
                 cr.rectangle(width - line_width, 0, line_width, height)
                 cr.fill()
                 
-                if self.show_button:
+                if self.always_show_button or self.show_button:
                     draw_pixbuf(cr, 
                                 ui_theme.get_pixbuf("paned/paned_right_normal.png").get_pixbuf(),
                                 0,
@@ -120,7 +123,7 @@ class Paned(gtk.Paned):
                 cr.rectangle(0, 0, width, line_width)
                 cr.fill()
                 
-                if self.show_button:
+                if self.always_show_button or self.show_button:
                     draw_pixbuf(cr, 
                                 ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf(),
                                 (width - self.bheight) / 2,
@@ -129,7 +132,7 @@ class Paned(gtk.Paned):
                 cr.rectangle(0, height - line_width, width, line_width)
                 cr.fill()
 
-                if self.show_button:
+                if self.always_show_button or self.show_button:
                     draw_pixbuf(cr, 
                                 ui_theme.get_pixbuf("paned/paned_down_normal.png").get_pixbuf(),
                                 (width - self.bheight) / 2,
@@ -284,14 +287,24 @@ class Paned(gtk.Paned):
         child.size_allocate(rect)
 
 class HPaned(Paned):
-    def __init__(self, shrink_first=True):
-        Paned.__init__(self, shrink_first)
+    def __init__(self, 
+                 shrink_first=True,
+                 enable_animation=False,
+                 always_show_button=False,
+                 handle_color=ui_theme.get_color("paned_line")
+                 ):
+        Paned.__init__(self, shrink_first, enable_animation, always_show_button, handle_color)
         self.set_orientation(gtk.ORIENTATION_HORIZONTAL)
         self.cursor_type = gtk.gdk.Cursor(gtk.gdk.SB_H_DOUBLE_ARROW)
 
 class VPaned(Paned):
-    def __init__(self, shrink_first=True):
-        Paned.__init__(self, shrink_first)
+    def __init__(self, 
+                 shrink_first=True,
+                 enable_animation=False,
+                 always_show_button=False,
+                 handle_color=ui_theme.get_color("paned_line")
+                 ):
+        Paned.__init__(self, shrink_first, enable_animation, always_show_button, handle_color)
         self.set_orientation(gtk.ORIENTATION_VERTICAL)
         self.cursor_type = gtk.gdk.Cursor(gtk.gdk.SB_V_DOUBLE_ARROW)
         
