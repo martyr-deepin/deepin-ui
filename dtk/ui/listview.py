@@ -613,13 +613,12 @@ class ListView(gtk.DrawingArea):
                     for hide_column in self.hide_columns:
                         width += cell_widths[hide_column]
                 '''
-                TODO: without drawing the column out of column_count
+                TODO: without drawing the column in hide_columns
                 '''
                 if self.hide_column_flag and column in self.hide_columns:
                     continue
                 # Get offset x coordinate.
                 cell_offset_x = sum(cell_widths[0:column])
-                
                 # Calcuate current cell width.
                 if column == last_index(cell_widths):
                     if sum(cell_widths) < rect.width:
@@ -757,20 +756,29 @@ class ListView(gtk.DrawingArea):
                 
                 '''
                 TODO: Draw rows
+                      filter_renders hold the filter_column index such as 0, 2
                 '''
+                filter_renders = []
                 for (row, item) in enumerate(self.items[start_index:end_index]):
                     if self.hide_column_flag:
                         renders = map(lambda (index, render): render, filter(lambda (index, render): not index in self.hide_columns, enumerate(item.get_renders())))
+                        filter_renders = filter(lambda (index, render): not index in self.hide_columns, enumerate(item.get_renders()))
                     else:
                         renders = item.get_renders()
                     render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
                     render_height = self.item_height
                     '''
                     TODO: Draw columns in a row
+                          renders mapped hold new column[] such as 0, 1
+                          but filter_renders without mapping hold  0, 2
+                          it is important to look for the original column index
                     '''
                     for (column, render) in enumerate(renders):
-                        cell_width = cell_widths[column]
-                        cell_x = sum(cell_widths[0:column])
+                        index = column
+                        if self.hide_column_flag:
+                            index = filter_renders[column][0]
+                        cell_width = cell_widths[index]
+                        cell_x = sum(cell_widths[0:index])
                         render_x = rect.x + cell_x
                         render_width = cell_width
                         
