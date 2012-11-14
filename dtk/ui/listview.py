@@ -545,7 +545,12 @@ class ListView(gtk.DrawingArea):
         @param h: Height of draw area.
         '''
         draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_highlight").get_color_info())
-        
+    
+    def m_update_expand_cell_width(self, rect_width):
+        #print rect_width, self.cell_widths
+        expand_cell_width = rect_width - (sum(self.cell_widths) - self.cell_widths[self.expand_column])
+        return expand_cell_width
+
     def realize_list_view(self, widget):
         '''
         Internal fucntion for realize listview.
@@ -555,9 +560,12 @@ class ListView(gtk.DrawingArea):
         self.grab_focus()       # focus key after realize
 
         rect = widget.allocation
+        '''
+        TODO: expand_cell_width is rect.width - other noexpand columns width
+        '''
         if 0 <= self.expand_column < len(self.cell_widths):
-            self.set_cell_width(self.expand_column, rect.width - (sum(self.cell_widths) - self.cell_widths[self.expand_column]))
-            
+            self.set_cell_width(self.expand_column, self.m_update_expand_cell_width(rect.width))
+    
     def size_allocate_list_view(self, widget, allocation):
         '''
         Internal callback for `size_allocated` signal.
@@ -567,7 +575,7 @@ class ListView(gtk.DrawingArea):
         '''
         rect = widget.allocation
         if 0 <= self.expand_column < len(self.cell_widths):
-            self.set_cell_width(self.expand_column, rect.width - (sum(self.cell_widths) - self.cell_widths[self.expand_column]))
+            self.set_cell_width(self.expand_column, self.m_update_expand_cell_width(rect.width))
             
     def expose_list_view(self, widget, event):
         '''
@@ -579,6 +587,9 @@ class ListView(gtk.DrawingArea):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
+        '''
+        TODO: when rect.width changed, cell_width need to consider about rect.width
+        '''
         cell_widths = self.get_cell_widths()
         
         # Get offset.
@@ -619,6 +630,7 @@ class ListView(gtk.DrawingArea):
                     continue
                 # Get offset x coordinate.
                 cell_offset_x = sum(cell_widths[0:column])
+                
                 # Calcuate current cell width.
                 if column == last_index(cell_widths):
                     if sum(cell_widths) < rect.width:
@@ -912,8 +924,14 @@ class ListView(gtk.DrawingArea):
                 cell_min_end_x = sum(self.cell_widths[0:self.title_adjust_column]) + self.cell_min_widths[self.title_adjust_column]
                 # Adjust column width.
                 (ex, ey) = get_event_coords(event)
+                adjust_cell_width = ex - sum(self.cell_widths[0:self.title_adjust_column])
+                '''
+                if self.hide_column_flag:
+                    for hide_column in self.hide_columns:
+                        adjust_cell_width -= self.cell_widths[hide_column]
+                '''
                 if ex >= cell_min_end_x:
-                    self.set_cell_width(self.title_adjust_column, ex - sum(self.cell_widths[0:self.title_adjust_column]))
+                    self.set_cell_width(self.title_adjust_column, adjust_cell_width)
             else:
                 if offset_y <= event.y <= offset_y + self.title_height:
                     cell_widths = self.get_cell_widths()
