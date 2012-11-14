@@ -45,13 +45,15 @@ class Paned(gtk.Paned):
     '''
     def __init__(self, 
                  shrink_first,
-                 enable_animation=False):
+                 enable_animation=False,
+                 handle_color=ui_theme.get_color("paned_line")):
         '''
         Initialize Paned class.
         '''
         gtk.Paned.__init__(self)
         self.shrink_first = shrink_first
         self.enable_animation = enable_animation
+        self.handle_color = handle_color
         self.bheight = ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf().get_width()
         self.saved_position = -1
         self.handle_size = PANED_HANDLE_SIZE - 1
@@ -92,7 +94,7 @@ class Paned(gtk.Paned):
         handle = self.get_handle_window()
         line_width = 1
         cr = handle.cairo_create()
-        cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("paned_line").get_color()))
+        cr.set_source_rgb(*color_hex_to_cairo(self.handle_color.get_color()))
         (width, height) = handle.get_size()
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
             if self.shrink_first:
