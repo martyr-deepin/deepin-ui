@@ -78,7 +78,6 @@ class Entry(gtk.EventBox):
     
     def __init__(self, 
                  content="", 
-                 password_mode=False,
                  padding_x=5, 
                  padding_y=2,
                  text_color=ui_theme.get_color("entry_text"),
@@ -106,7 +105,6 @@ class Entry(gtk.EventBox):
         self.text_color = text_color
         self.text_select_color = text_select_color
         self.background_select_color = background_select_color
-        self.password_mode = password_mode
         self.padding_x = padding_x
         self.padding_y = padding_y
         self.move_direction = self.MOVE_NONE
@@ -601,21 +599,12 @@ class Entry(gtk.EventBox):
                          min(select_end_width, self.offset_x + w - self.padding_x * 2) - max(select_start_width, self.offset_x),
                          h - self.padding_y * 2,
                          self.background_select_color.get_color_info())
-
-    def setup_password_str(self, str):
-        ret = ""
-        i = len(str)
-        while i:
-            ret = ret + "*"
-            i = i - 1
-        return ret
     
     def draw_entry_text(self, cr, rect):
         '''
         Internal function to draw entry text.
         '''
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        password_str = self.setup_password_str(self.content)
         with cairo_state(cr):
             # Clip text area first.
             draw_x = x + self.padding_x
@@ -634,10 +623,7 @@ class Entry(gtk.EventBox):
             
             if not self.get_sensitive():
                 # Set text.
-                if self.password_mode:
-                    layout.set_text(password_str)
-                else:
-                    layout.set_text(self.content)
+                layout.set_text(self.content)
                 
                 # Get text size.
                 (text_width, text_height) = layout.get_pixel_size()
@@ -652,15 +638,9 @@ class Entry(gtk.EventBox):
                 context.show_layout(layout)
             elif self.select_start_index != self.select_end_index and self.select_area_visible_flag:
                 # Get string.
-                if self.password_mode:
-                    before_select_str = password_str[0:self.select_start_index]
-                    select_str = password_str[self.select_start_index:self.select_end_index]
-                    after_select_str = ""
-                    #after_select_str = password_str[self.select_end_index]
-                else:
-                    before_select_str = self.content[0:self.select_start_index]
-                    select_str = self.content[self.select_start_index:self.select_end_index]
-                    after_select_str = self.content[self.select_end_index::]
+                before_select_str = self.content[0:self.select_start_index]
+                select_str = self.content[self.select_start_index:self.select_end_index]
+                after_select_str = self.content[self.select_end_index::]
                 
                 # Build render list.
                 render_list = []
@@ -686,10 +666,7 @@ class Entry(gtk.EventBox):
                     context.update_layout(layout)
                     context.show_layout(layout)
             else:
-                if self.password_mode:
-                    layout.set_text(password_str)
-                else:
-                    layout.set_text(self.content)
+                layout.set_text(self.content)
                 
                 # Get text size.
                 (text_width, text_height) = layout.get_pixel_size()
@@ -1507,90 +1484,6 @@ class ShortcutKeyEntry(gtk.VBox):
         self.entry.grab_focus()
         
 gobject.type_register(ShortcutKeyEntry)
-
-'''
-TODO: Act like Mac style
-      The last character when inputting is visible then disappeared for a while
-'''
-class PasswordEntry(gtk.VBox):
-    
-    '''
-    Perhaps it need more signals
-    '''
-    __gsignals__ = {
-        "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),    
-    }
-    
-    def __init__(self, 
-                 content="", 
-                 action_button=None, 
-                 background_color=ui_theme.get_alpha_color("text_entry_background"), 
-                 acme_color=ui_theme.get_alpha_color("text_entry_acme"), 
-                 point_color=ui_theme.get_alpha_color("text_entry_point"), 
-                 frame_point_color=ui_theme.get_alpha_color("text_entry_frame_point"), 
-                 frame_color=ui_theme.get_alpha_color("text_entry_frame")):
-        gtk.VBox.__init__(self)
-        self.align = gtk.Alignment()
-        self.align.set(0.5, 0.5, 1.0, 1.0)
-        self.action_button = action_button
-        self.h_box = gtk.HBox()
-        self.entry = Entry(content, True)
-        self.background_color = background_color
-        self.acme_color = acme_color
-        self.point_color = point_color
-        self.frame_point_color = frame_point_color
-        self.frame_color = frame_color
-
-        self.pack_start(self.align, False, False)
-        self.align.add(self.h_box)
-        self.h_box.pack_start(self.entry)
-        if action_button:
-            self.action_align = gtk.Alignment()
-            self.action_align.set(0.0, 0.5, 0, 0)
-            self.action_align.set_padding(0, 0, 0, self.entry.padding_x)
-            self.action_align.add(self.action_button)
-
-            self.h_box.pack_start(self.action_align, False, False)
-
-            self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
-
-        '''
-        signal callback
-        '''
-        self.align.connect("expose-event", self.expose_password_entry)
-
-    def emit_action_active_signal(self):
-        pass
-
-    def expose_password_entry(self, widget, event):
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        x, y, w, h = rect.x, rect.y, rect.width, rect.height
-
-        with cairo_disable_antialias(cr):
-            cr.set_line_width(1)
-            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("combo_entry_frame").get_color()))
-            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
-            cr.stroke()
-            
-            cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
-            cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
-            cr.fill()
-
-        propagate_expose(widget, event)
-
-        return True
-
-    def set_size(self, width, height):
-        self.set_size_request(width, height)
-
-        action_button_width = 0
-        if self.action_button:
-            action_button_width = self.action_button.get_size_request()[-1] + self.entry.padding_x
-
-        self.entry.set_size_request(width - 2 - action_button_width, height - 2)
-
-gobject.type_register(PasswordEntry)
 
 if __name__ == "__main__":
     window = gtk.Window()
