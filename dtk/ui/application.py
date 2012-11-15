@@ -164,12 +164,22 @@ class Application(object):
         @param default_height: Default height in pixels of the application, once set, application don't allow smaller than height.
         """
         self.window.set_default_size(default_width, default_height)
-        self.window.set_geometry_hints(
-            None,
-            default_width,       # minimum width
-            default_height       # minimum height
-            -1, -1, -1, -1, -1, -1, -1, -1
-            )
+        if self.resizable:
+            self.window.set_geometry_hints(
+                None,
+                default_width,       # minimum width
+                default_height       # minimum height
+                -1, -1, -1, -1, -1, -1, -1, -1
+                )
+        else:
+            self.window.set_geometry_hints(
+                None,
+                default_width,       # minimum width
+                default_height,       # minimum height
+                default_width,
+                default_height,
+                -1, -1, -1, -1, -1, -1
+                )
         
         # Pass application size to skin config.
         skin_config.set_application_window_size(default_width, default_height)
