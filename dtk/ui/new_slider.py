@@ -33,11 +33,12 @@ class HSlider(gtk.Viewport):
         "completed_slide" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
-    def __init__(self):
+    def __init__(self, slide_time=500):
         '''
         init docs
         '''
         gtk.Viewport.__init__(self)
+        self.slide_time = slide_time
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.page_width = 0
         self.page_height = 0
@@ -107,7 +108,7 @@ class HSlider(gtk.Viewport):
             end_position = end_index * self.page_width
             
             if start_position != end_position:
-                timeline = Timeline(500, CURVE_SINE)
+                timeline = Timeline(self.slide_time, CURVE_SINE)
                 timeline.connect('update', lambda source, status: 
                                  self.update(source,
                                              status, 
