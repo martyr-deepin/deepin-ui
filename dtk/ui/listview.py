@@ -94,7 +94,7 @@ class ListView(gtk.DrawingArea):
                  drag_out_offset=50,
                  mask_bound_height=24,
                  hide_columns=[],
-                 hide_column_resize=True,
+                 hide_column_resize=False,
                  ):
         '''
         Initialize ListView widget.
