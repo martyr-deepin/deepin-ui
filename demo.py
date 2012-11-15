@@ -342,8 +342,9 @@ if __name__ == "__main__":
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
     list_view.hide_column([1])
-    #list_view.set_hide_column_flag(False)
-    #list_view.set_hide_column_resize(False)
+    list_view.set_hide_column_flag(False)
+    list_view.set_hide_column_resize(False)
+    #list_view.set_highlight(items[6])
     list_view.connect("double-click-item", lambda listview, item, i, x, y: list_view.set_highlight(item))
     
     # list_view.connect("button-press-item", print_button_press)
@@ -520,7 +521,7 @@ if __name__ == "__main__":
     tree_view = TreeView()
     tree_view_scrolled_window = ScrolledWindow()
     tree_view_scrolled_window.add_child(tree_view)
-    tree_view.connect("single-click-item", tree_view_single_click_cb)    
+    tree_view.connect("single-click-item", tree_view_single_click_cb)
     
     tab_5_box.pack_start(tree_view_scrolled_window)
 
@@ -547,6 +548,8 @@ if __name__ == "__main__":
     beijing_node = tree_view.add_item(None, TreeViewItem("深度 Linux"))    
     tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
     tree_view.set_index_text(1, "深度测试改名")
+    #tree_view.expand()
+    tree_view.set_highlight_index(3)
     # text_view = TextView("this is line one\nline break is awesome\nblahblahlooooooooooooooooooooooooooooooooooooooooooooooooooooooooog")
     # sw = ScrolledWindow()
     # text_viewport = gtk.Viewport()

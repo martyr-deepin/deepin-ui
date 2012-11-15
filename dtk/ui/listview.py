@@ -609,13 +609,9 @@ class ListView(gtk.DrawingArea):
         # Draw background.
         with cairo_state(cr):
             scrolled_window = get_match_parent(self, ["ScrolledWindow"])
-            scrolled_window_width = scrolled_window.allocation.width
-            if self.hide_column_flag and self.hide_column_resize:
-                for hide_column in self.hide_columns:
-                    scrolled_window_width -= self.cell_widths[hide_column]
             cr.translate(-scrolled_window.allocation.x, -scrolled_window.allocation.y)
             cr.rectangle(offset_x, offset_y, 
-                         scrolled_window.allocation.x + scrolled_window_width, 
+                         scrolled_window.allocation.x + scrolled_window.allocation.width, 
                          scrolled_window.allocation.y + scrolled_window.allocation.height)
             cr.clip()
             
@@ -2004,7 +2000,10 @@ class ListView(gtk.DrawingArea):
         else:
             # Scroll viewport make sure highlight row in visible area.
             (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-            vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
+            scrolled_window = get_match_parent(self, ["ScrolledWindow"])
+            if scrolled_window == None:
+                raise Exception, "parent container is not ScrolledWindow"
+            vadjust = scrolled_window.get_vadjustment()
             highlight_index = self.highlight_item.get_index()
             if offset_y > highlight_index * self.item_height:
                 vadjust.set_value(highlight_index * self.item_height)            
