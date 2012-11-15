@@ -609,13 +609,9 @@ class ListView(gtk.DrawingArea):
         # Draw background.
         with cairo_state(cr):
             scrolled_window = get_match_parent(self, ["ScrolledWindow"])
-            scrolled_window_width = scrolled_window.allocation.width
-            if self.hide_column_flag and self.hide_column_resize:
-                for hide_column in self.hide_columns:
-                    scrolled_window_width -= self.cell_widths[hide_column]
             cr.translate(-scrolled_window.allocation.x, -scrolled_window.allocation.y)
             cr.rectangle(offset_x, offset_y, 
-                         scrolled_window.allocation.x + scrolled_window_width, 
+                         scrolled_window.allocation.x + scrolled_window.allocation.width, 
                          scrolled_window.allocation.y + scrolled_window.allocation.height)
             cr.clip()
             
