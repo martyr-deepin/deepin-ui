@@ -114,6 +114,9 @@ class Application(object):
 
         # Show titlebar.
         self.show_titlebar()
+
+        if app_name != None:
+            self.window.set_title(app_name)
         
     def close_window(self, widget):
         """
