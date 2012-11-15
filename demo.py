@@ -6,6 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+#	      Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,9 +49,7 @@ from dtk.ui.color_selection import ColorButton
 from dtk.ui.combo import ComboBox
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
 from dtk.ui.droplist import Droplist
-from dtk.ui.new_entry import ShortcutKeyEntry
-from dtk.ui.new_entry import PasswordEntry
-from dtk.ui.entry import InputEntry
+from dtk.ui.new_entry import InputEntry, ShortcutKeyEntry, PasswordEntry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.label import Label
@@ -343,7 +342,8 @@ if __name__ == "__main__":
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
     list_view.hide_column([1])
-    list_view.set_hide_column_flag(False)
+    #list_view.set_hide_column_flag(False)
+    #list_view.set_hide_column_resize(False)
     list_view.connect("double-click-item", lambda listview, item, i, x, y: list_view.set_highlight(item))
     
     # list_view.connect("button-press-item", print_button_press)
@@ -368,9 +368,8 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("entry/search_hover.png"),
         app_theme.get_pixbuf("entry/search_press.png"),
         )
-    entry = InputEntry("Linux Deepin")
-    #entry = InputEntry("Linux Deepin", enable_clear_button=True)
-    entry.set_text("DEBUG")
+    #entry = TextEntry("Linux Deepin")
+    entry = InputEntry("Linux Deepin", enable_clear_button=True)
     entry.connect("action-active", print_entry_action)
     entry.set_size(150, 24)
     password_entry = PasswordEntry("")

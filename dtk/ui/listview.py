@@ -94,6 +94,7 @@ class ListView(gtk.DrawingArea):
                  drag_out_offset=50,
                  mask_bound_height=24,
                  hide_columns=[],
+                 hide_column_resize=True,
                  ):
         '''
         Initialize ListView widget.
@@ -149,6 +150,7 @@ class ListView(gtk.DrawingArea):
         TODO: hiding columns
         '''
         self.hide_columns = hide_columns
+        self.hide_column_resize = hide_column_resize
         '''
         TODO: hide or show column flag
         '''
@@ -208,6 +210,9 @@ class ListView(gtk.DrawingArea):
     def set_hide_column_flag(self, hide_column_flag):
         self.hide_column_flag = hide_column_flag
 
+    def set_hide_column_resize(self, hide_column_resize):
+        self.hide_column_resize = hide_column_resize
+    
     def set_expand_column(self, column):
         '''
         Set expand column.
@@ -587,10 +592,16 @@ class ListView(gtk.DrawingArea):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
+        
         '''
         TODO: when rect.width changed, cell_width need to consider about rect.width
         '''
         cell_widths = self.get_cell_widths()
+        resize_width = rect.width
+        for hide_column in self.hide_columns:
+            resize_width -= cell_widths[hide_column]
+        if self.hide_column_resize:
+            self.set_size_request(rect.width, rect.height)
         
         # Get offset.
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
@@ -598,9 +609,13 @@ class ListView(gtk.DrawingArea):
         # Draw background.
         with cairo_state(cr):
             scrolled_window = get_match_parent(self, ["ScrolledWindow"])
-	    cr.translate(-scrolled_window.allocation.x, -scrolled_window.allocation.y)
+            scrolled_window_width = scrolled_window.allocation.width
+            if self.hide_column_flag and self.hide_column_resize:
+                for hide_column in self.hide_columns:
+                    scrolled_window_width -= self.cell_widths[hide_column]
+            cr.translate(-scrolled_window.allocation.x, -scrolled_window.allocation.y)
             cr.rectangle(offset_x, offset_y, 
-                         scrolled_window.allocation.x + scrolled_window.allocation.width, 
+                         scrolled_window.allocation.x + scrolled_window_width, 
                          scrolled_window.allocation.y + scrolled_window.allocation.height)
             cr.clip()
             
@@ -620,7 +635,7 @@ class ListView(gtk.DrawingArea):
                 '''
                 TODO: update the width in the hide_columns pos
                 '''
-                if self.hide_column_flag:
+                if self.hide_column_flag and column == self.expand_column:
                     for hide_column in self.hide_columns:
                         width += cell_widths[hide_column]
                 '''
@@ -630,6 +645,9 @@ class ListView(gtk.DrawingArea):
                     continue
                 # Get offset x coordinate.
                 cell_offset_x = sum(cell_widths[0:column])
+                if self.hide_column_flag and self.hide_column_resize:
+                    for hide_column in self.hide_columns:
+                        cell_offset_x -= cell_widths[hide_column]
                 
                 # Calcuate current cell width.
                 if column == last_index(cell_widths):
@@ -791,6 +809,9 @@ class ListView(gtk.DrawingArea):
                             index = filter_renders[column][0]
                         cell_width = cell_widths[index]
                         cell_x = sum(cell_widths[0:index])
+                        if column != 0 and self.hide_column_flag and self.hide_column_resize:
+                            for hide_column in self.hide_columns:
+                                cell_x -= cell_widths[hide_column]
                         render_x = rect.x + cell_x
                         render_width = cell_width
                         
