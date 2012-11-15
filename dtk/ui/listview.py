@@ -2002,7 +2002,7 @@ class ListView(gtk.DrawingArea):
             (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
             scrolled_window = get_match_parent(self, ["ScrolledWindow"])
             if scrolled_window == None:
-                return
+                raise Exception, "parent container is not ScrolledWindow"
             vadjust = scrolled_window.get_vadjustment()
             highlight_index = self.highlight_item.get_index()
             if offset_y > highlight_index * self.item_height:

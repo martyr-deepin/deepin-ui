@@ -187,6 +187,10 @@ class TreeView(gtk.VBox):
         self.sort_action_id = 0
         self.title_offset_y = -1
         self.item_height = -1
+        '''
+        TODO: highlight item
+        '''
+        self.highlight_item = None
         
         # Init redraw.
         self.redraw_request_list = []
@@ -246,6 +250,27 @@ class TreeView(gtk.VBox):
             "Ctrl + a" : self.select_all_items,
             "Delete" : self.delete_select_items,
             }
+
+    def set_highlight(self, index):
+        item = self.visible_items[index]
+        if hasattr(item, "highlight"):
+            self.highlight_item = item
+            self.visible_highlight()
+            self.queue_draw()
+
+    def clear_highlight(self):
+        self.highlight_item = None
+        self.queue_draw()
+
+    def visible_highlight(self):
+        if self.highlight_item != None:
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+            vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
+            highlight_index = self.highlight_item.get_index()
+            if offset_y > highlight_index * self.item_height:
+                vadjust.set_value(highlight_index * self.item_height)     
+            elif offset_y + vadjust.get_page_size() < (highlight_index + 1) * self.item_height:
+                vadjust.set_value((highlight_index + 1) * self.item_height - vadjust.get_page_size() + self.title_offset_y)
 
     '''
     TODO: PLEASE double check the argv[]
@@ -1491,7 +1516,9 @@ class TreeItem(gobject.GObject):
     '''
     Tree item template use for L{ I{TreeView} <TreeView>}.
     '''
-	
+    __gproperties__ = {
+        'highlight': (gobject.TYPE_BOOLEAN, 'highlight', 'highlight', True, gobject.PARAM_READWRITE)}
+
     def __init__(self):
         '''
         Initialize TreeItem class.
@@ -1509,7 +1536,30 @@ class TreeItem(gobject.GObject):
         self.is_expand = False
         self.drag_line = False
         self.drag_line_at_bottom = False
+        '''
+        property
+        '''
+        self.__prop_dict = {}
+        self.__prop_dict['highlight'] = True
         
+    def get_property(self, pspec):
+        if pspec.name in self.__prop_dict:
+            return self.__prop_dict[pspec.name]
+        else:
+            raise AttributeError, 'unknown property %s' % pspec.name
+
+    def set_property(self, pspec, value):
+        if pspec.name in self.__prop_dict:
+            self.__prop_dict[pspec.name] = value
+        else:
+            raise AttributeError, 'unknown property %s' % pspec.name
+    
+    def get_highlight(self):
+        return self.get_property("highlight")
+
+    def set_highlight(self, highlight):
+        self.set_property("highlight", highlight)
+    
     def expand(self):
         pass
     

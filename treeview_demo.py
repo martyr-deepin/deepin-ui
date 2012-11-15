@@ -72,6 +72,7 @@ if __name__ == "__main__":
     # Add TreeView.
     print os.path.expanduser("~")
     treeview = TreeView(get_dir_items(os.path.expanduser("~")))
+    treeview.set_highlight(1)
     treeview.connect("button-press-item", m_button_press_item)
     treeview.connect("double-click-item", m_double_click_item)
     treeview.connect("right-press-items", m_right_press_items)
