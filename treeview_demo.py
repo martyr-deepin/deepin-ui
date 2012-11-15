@@ -45,6 +45,9 @@ def m_button_press_item(widget, event, argv1, argv2, argv3):
 def m_double_click_item(widget, event, argv1, argv2, argv3):
     print widget, event, argv1, argv2, argv3
 
+def m_right_press_items(widget, event, argv1, argv2, argv3):
+    print widget, event, argv1, argv2, argv3
+
 if __name__ == "__main__":
     # Init application.
     application = Application()
@@ -71,6 +74,7 @@ if __name__ == "__main__":
     treeview = TreeView(get_dir_items(os.path.expanduser("~")))
     treeview.connect("button-press-item", m_button_press_item)
     treeview.connect("double-click-item", m_double_click_item)
+    treeview.connect("right-press-items", m_right_press_items)
     # treeview = TreeView(get_dir_items("/"))
     treeview_align = gtk.Alignment()
     treeview_align.set(0.5, 0.5, 1, 1)

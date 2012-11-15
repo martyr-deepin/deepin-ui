@@ -80,6 +80,9 @@ import time
 
 print time.time() - start_time
 
+def print_right_press(list_view, list_item, column, offset_x, offset_y):
+    print column, offset_x, offset_y
+
 def print_button_press(list_view, list_item, column, offset_x, offset_y):
     '''Print button press.'''
     print "* Button press: %s" % (str((list_item.title, list_item.artist, list_item.length)))
@@ -340,14 +343,15 @@ if __name__ == "__main__":
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
     list_view.hide_column([1])
-    #list_view.set_hide_column_flag(False)
+    list_view.set_hide_column_flag(False)
     list_view.connect("double-click-item", lambda listview, item, i, x, y: list_view.set_highlight(item))
     
     # list_view.connect("button-press-item", print_button_press)
     # list_view.connect("double-click-item", print_double_click)
     # list_view.connect("single-click-item", print_single_click)
     # list_view.connect("motion-notify-item", print_motion_notify)
-        
+    list_view.connect("right-press-items", print_right_press)
+
     scrolled_window.add_child(list_view)
     
     # Add volume button.

@@ -36,7 +36,7 @@ from cache_pixbuf import CachePixbuf
 from utils import (cairo_state, get_window_shadow_size, get_event_coords, is_in_rect,
                    container_remove_all, get_same_level_widgets, get_disperse_index,
                    is_left_button, is_double_click, is_single_click, remove_timeout_id, 
-                   last_index)
+                   last_index, is_right_button)
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
 import copy
@@ -731,7 +731,7 @@ class TreeView(gtk.VBox):
         self.start_select_row = None
         self.select_rows = []
         
-        self.emit("delete-select-items", delete_items)
+        self.draw_area.emit("delete-select-items", delete_items)
 
         self.delete_items(delete_items)
         
@@ -994,7 +994,9 @@ class TreeView(gtk.VBox):
         
         if is_left_button(event):
             self.left_button_press = True
-            
+            self.click_item(event)
+        elif is_right_button(event):
+            self.left_button_press = False
             self.click_item(event)
             
     def click_item(self, event):
@@ -1049,7 +1051,7 @@ class TreeView(gtk.VBox):
 
                 select_items = []
                 for row in self.select_rows:
-                    select_items.append(self.items[row])
+                    select_items.append(self.visible_items[row])
 
                 (wx, wy) = self.window.get_root_origin()
                 (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
@@ -1092,7 +1094,7 @@ class TreeView(gtk.VBox):
         if is_left_button(event):
             self.left_button_press = False
             self.release_item(event)
-            
+        
         # Remove auto scroll handler.
         remove_timeout_id(self.auto_scroll_id)    
         
