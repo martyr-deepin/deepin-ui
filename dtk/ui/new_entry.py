@@ -454,14 +454,14 @@ class EntryBuffer(gobject.GObject):
                 if im:
                     im.set_cursor_location(gtk.gdk.Rectangle(cursor_pos[0]+x-offset_x, cursor_pos[1]+y, 1, cursor_pos[3]))
                 
-                self.m_draw_cursor(cr, cursor_pos_x, y, cursor_pos[1], cursor_pos[3])
-                '''
-                FIXME: it need to add cursor flash effect
                 self.cursor_cr = cr
                 self.cursor_x = cursor_pos_x
                 self.cursor_y = y
                 self.cursor_pos1 = cursor_pos[1]
                 self.cursor_pos2 = cursor_pos[3]
+                self.m_draw_cursor()
+                '''
+                FIXME: HOWTO flash cursor
                 CursorFlashThread(self).start()
                 '''
     
