@@ -617,26 +617,35 @@ class IconView(gtk.DrawingArea):
             else:
                 rows = int(len(self.items) / columns) + 1
                 
-            if event_x > columns * item_width:
+            if event_x > columns * item_width + self.padding_x:
                 return None
-            elif event_y > rows * item_height:
+            elif event_y > rows * item_height + self.padding_y:
                 return None
             else:
             
-                if event_x % item_width == 0:
-                    column_index = max(event_x / item_width - 1, 0)
+                '''
+                TODO: total_width % item_width is item count in the row, but when padding_x reduce the total_width, 
+                      event_x need to -self.padding_x
+                '''
+                padding_event_x = event_x - self.padding_x
+                padding_event_y = event_y - self.padding_y
+                if padding_event_x % item_width == 0:
+                    column_index = max(padding_event_x / item_width - 1, 0)
                 else:
-                    column_index = min(event_x / item_width, columns - 1)
+                    column_index = min(padding_event_x / item_width, columns - 1)
                 
-                if event_y % item_height == 0:
-                    row_index = max(event_y / item_height - 1, 0)
+                if padding_event_y % item_height == 0:
+                    row_index = max(padding_event_y / item_height - 1, 0)
                 else:
-                    row_index = min(event_y / item_height, rows - 1)
+                    row_index = min(padding_event_y / item_height, rows - 1)
                     
                 item_index = row_index * columns + column_index
                 if item_index > len(self.items) - 1:
                     return None
                 else:
+                    '''
+                    TODO: it need to use event_x NOT padding_event_x return the item pos_x
+                    '''
                     return (row_index, column_index, item_index,
                             event_x - column_index * item_width,
                             event_y - row_index * item_height)
