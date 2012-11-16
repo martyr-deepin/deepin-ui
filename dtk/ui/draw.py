@@ -392,7 +392,7 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
         cr.fill()
         
     # Draw text.
-    cr.move_to(x, y + (h - text_height) / 2)
+    cr.move_to(x, y + max(0, (h - text_height)) / 2)
     context.update_layout(layout)
     context.show_layout(layout)
         
