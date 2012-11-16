@@ -41,6 +41,29 @@ from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo,
 import time
 import threading as td
 
+class CursorFlashThread(td.Thread):
+    def __init__(self, argv):
+        td.Thread.__init__(self)
+        self.setDaemon(True)
+        self.ThisPtr = argv
+
+    def run(self):
+        try:
+            self.draw_flash_cursor()
+        except Exception, e:
+            print "class LoadingThread got error: %s" % (e)
+            traceback.print_exc(file=sys.stdout)
+
+    def draw_flash_cursor(self):
+        enable_flash = True
+        while (True):
+            if enable_flash:
+                self.ThisPtr.m_draw_cursor()
+            else:
+                self.ThisPtr.m_clear_cursor()
+            enable_flash = not enable_flash
+            time.sleep(1)
+
 class EntryBuffer(gobject.GObject):
     '''
     EntryBuffer
@@ -87,6 +110,11 @@ class EntryBuffer(gobject.GObject):
         self.text_color = text_color
         self.text_select_color = text_select_color
         self.background_select_color = background_select_color
+        self.cursor_cr = None
+        self.cursor_x = -1
+        self.cursor_y = -1
+        self.cursor_pos1 = -1
+        self.cursor_pos2 = -1
         '''
         TODO: Add clear button
         '''
@@ -420,11 +448,39 @@ class EntryBuffer(gobject.GObject):
                 '''
                 if self.enable_clear_button and x + w < cursor_pos_x:
                     cursor_pos_x = x + w - 1
-                cr.rectangle(cursor_pos_x, cursor_pos[1] + y, 1, cursor_pos[3])
-                cr.fill()
+                '''
+                FIXME: switched im at first time, cursor pos was wrong
+                '''
                 if im:
                     im.set_cursor_location(gtk.gdk.Rectangle(cursor_pos[0]+x-offset_x, cursor_pos[1]+y, 1, cursor_pos[3]))
+                
+                self.m_draw_cursor(cr, cursor_pos_x, y, cursor_pos[1], cursor_pos[3])
+                '''
+                FIXME: it need to add cursor flash effect
+                self.cursor_cr = cr
+                self.cursor_x = cursor_pos_x
+                self.cursor_y = y
+                self.cursor_pos1 = cursor_pos[1]
+                self.cursor_pos2 = cursor_pos[3]
+                CursorFlashThread(self).start()
+                '''
     
+    def m_draw_cursor(self):
+        self.cursor_cr.set_source_rgb(0, 0, 0)
+        self.cursor_cr.rectangle(self.cursor_x, 
+                                 self.cursor_pos1 + self.cursor_y, 
+                                 1, 
+                                 self.cursor_pos2)
+        self.cursor_cr.fill()
+
+    def m_clear_cursor(self):
+        self.cursor_cr.set_source_rgb(255, 255, 255)
+        self.cursor_cr.rectangle(self.cursor_x, 
+                                 self.cursor_pos1 + self.cursor_y, 
+                                 1, 
+                                 self.cursor_pos2)
+        self.cursor_cr.fill()
+
     def get_cursor_pos(self, cursor):
         '''
         get cursor pos
