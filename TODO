@@ -27,7 +27,7 @@
 **** TODO ListView Hover 的时候顶部渐变有Bug
 **** TODO 窗口阴影渐变效果需要根据设计进行调整
 **** TODO 进度条颜色重新搭配
-**** TODO 标签的宽度可以填充
+**** TODO 标签的宽度可以填充 DUPLICATE
 **** TODO 基于TreeView的衍生控件
 ***** TODO 打开文件对话框
 ***** TODO ListView

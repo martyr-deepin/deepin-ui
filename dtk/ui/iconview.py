@@ -596,8 +596,6 @@ class IconView(gtk.DrawingArea):
                 TODO: it need to consider about self.focus_index == None
                       otherwisese it acts like lian lian kan
                 '''
-                if self.focus_index == None:
-                    self.clear_focus_item()
                 if self.focus_index != item_index:
                     self.clear_focus_item()
                     
