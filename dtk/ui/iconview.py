@@ -592,6 +592,12 @@ class IconView(gtk.DrawingArea):
                 (row_index, column_index, item_index, offset_x, offset_y) = index_info
                 
                 # Don't clear focus item when motion index is current one.
+                '''
+                TODO: it need to consider about self.focus_index == None
+                      otherwisese it acts like lian lian kan
+                '''
+                if self.focus_index == None:
+                    self.clear_focus_item()
                 if self.focus_index != item_index:
                     self.clear_focus_item()
                     
