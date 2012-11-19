@@ -6,6 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,6 +27,9 @@ from utils import is_left_button
 import gobject
 import gtk
 
+'''
+TODO: It acts like gtk.HScale
+'''
 class HScalebar(gtk.HScale):
     '''
     HScalebar.
@@ -67,6 +71,7 @@ class HScalebar(gtk.HScale):
         self.point_dpixbuf = point_dpixbuf
         self.cache_bg_pixbuf = CachePixbuf()
         self.cache_fg_pixbuf = CachePixbuf()
+        self.button_pressed = False
         
         # Set size request.
         self.set_size_request(-1, self.point_dpixbuf.get_pixbuf().get_height())
@@ -74,7 +79,9 @@ class HScalebar(gtk.HScale):
         # Redraw.
         self.connect("expose-event", self.expose_h_scalebar)
         self.connect("button-press-event", self.press_volume_progressbar)
-        
+        self.connect("button-release-event", self.m_release_volume_progressbar)
+        self.connect("motion-notify-event", self.m_motion)
+
     def expose_h_scalebar(self, widget, event):
         '''
         Internal callback for `expose-event` signal.
@@ -122,22 +129,32 @@ class HScalebar(gtk.HScale):
                 
         return True        
 
+    def m_render(self, widget, event):
+        rect = widget.allocation
+        lower = self.get_adjustment().get_lower()
+        upper = self.get_adjustment().get_upper()
+        point_width = self.point_dpixbuf.get_pixbuf().get_width()
+
+        self.set_value(lower + ((event.x - point_width / 2)  / (rect.width - point_width)) * (upper - lower))
+        self.queue_draw()
+    
     def press_volume_progressbar(self, widget, event):
         '''
         Internal callback for `button-press-event` signal.
         '''
         # Init.
         if is_left_button(event):
-            rect = widget.allocation
-            lower = self.get_adjustment().get_lower()
-            upper = self.get_adjustment().get_upper()
-            point_width = self.point_dpixbuf.get_pixbuf().get_width()
-            
-            # Set value.
-            self.set_value(lower + ((event.x - point_width / 2)  / (rect.width - point_width)) * (upper - lower))
-            self.queue_draw()
-        
+            self.button_pressed = True
+            self.m_render(widget, event)
+
         return False
+
+    def m_release_volume_progressbar(self, widget, event):
+        self.button_pressed = False
+
+    def m_motion(self, widget, event):
+        if self.button_pressed:
+            self.m_render(widget, event)
     
 gobject.type_register(HScalebar)
 
