@@ -35,6 +35,7 @@ class Timeline(gobject.GObject):
     __gtype_name__ = 'Timeline'
     __gsignals__ = {
         'update': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_FLOAT,)),
+        'stop': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         'completed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
         }
 
@@ -76,7 +77,7 @@ class Timeline(gobject.GObject):
         Update.
         '''
         if self._stopped:
-            self.emit('completed')
+            self.emit('stop')
             return False
         else:
             self.emit('update', self._states.pop())
