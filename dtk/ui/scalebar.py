@@ -22,8 +22,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from cache_pixbuf import CachePixbuf
-from draw import draw_pixbuf
-from utils import is_left_button
+from draw import draw_pixbuf, draw_text
+from utils import is_left_button, get_content_size
+from constant import DEFAULT_FONT_SIZE
 import gobject
 import gtk
 
@@ -37,6 +38,12 @@ class HScalebar(gtk.HScale):
     @undocumented: expose_h_scalebar
     @undocumented: press_volume_progressbar
     '''
+
+    '''
+    enum
+    '''
+    POS_TOP = 0
+    POS_BOTTOM = 1
 	
     def __init__(self,
                  left_fg_dpixbuf,
@@ -72,6 +79,13 @@ class HScalebar(gtk.HScale):
         self.cache_bg_pixbuf = CachePixbuf()
         self.cache_fg_pixbuf = CachePixbuf()
         self.button_pressed = False
+        self.mark_list = []
+        '''
+        enum
+        '''
+        self.MARK_VALUE = 0
+        self.MARK_POS = 1
+        self.MARK_MARKUP = 2
         
         # Set size request.
         self.set_size_request(-1, self.point_dpixbuf.get_pixbuf().get_height())
@@ -81,7 +95,17 @@ class HScalebar(gtk.HScale):
         self.connect("button-press-event", self.press_volume_progressbar)
         self.connect("button-release-event", self.m_release_volume_progressbar)
         self.connect("motion-notify-event", self.m_motion)
-
+    
+    '''
+    Adds a mark at value
+    @param value: the value at which the mark is placed, must be between the lower and upper limits of the scales' adjustment.
+    @param position: where to draw the mark. For a horizontal scale, gtk.POS_TOP is drawn above the scale, anything else below.
+    @param markup: text to be shown at the mark.
+    '''
+    def add_mark(self, value, position, markup):
+        self.mark_list.append([value, position, markup])
+        self.queue_draw()
+    
     def expose_h_scalebar(self, widget, event):
         '''
         Internal callback for `expose-event` signal.
@@ -107,9 +131,28 @@ class HScalebar(gtk.HScale):
         point_width = point_pixbuf.get_width()
         point_height = point_pixbuf.get_height()
         x, y, w, h = rect.x + point_width / 2, rect.y, rect.width - point_width, rect.height
+        value = int((self.get_value() - lower) / total_length * w)
+        '''
+        TODO: Draw mark
+        '''
+        has_top_markup = False
+        text_height = DEFAULT_FONT_SIZE
+        if len(self.mark_list):
+            for mark in self.mark_list:
+                mark_y = y
+                mark_markup_text = mark[self.MARK_MARKUP]
+                (text_width, text_height) = get_content_size(mark_markup_text)
+                if mark[self.MARK_POS] == HScalebar.POS_TOP:
+                    has_top_markup = True
+                else:
+                    mark_y += text_height * 2
+                mark_value = int((mark[self.MARK_VALUE] - lower) / total_length * w)
+                draw_text(cr, mark_markup_text, x + mark_value - text_height / 2, mark_y, text_width, text_height)
+        
         line_height = left_bg_pixbuf.get_height()
         line_y = y + (point_height - line_height) / 2
-        value = int((self.get_value() - lower) / total_length * w)
+        if has_top_markup:
+            line_y += text_height
 
         # Draw background.
         self.cache_bg_pixbuf.scale(middle_bg_pixbuf, w - side_width * 2, line_height)
@@ -125,7 +168,10 @@ class HScalebar(gtk.HScale):
             draw_pixbuf(cr, right_fg_pixbuf, x + value, line_y)
             
         # Draw drag point.
-        draw_pixbuf(cr, point_pixbuf, x + value - point_pixbuf.get_width() / 2, y)    
+        point_y = y
+        if has_top_markup:
+            point_y += text_height
+        draw_pixbuf(cr, point_pixbuf, x + value - point_pixbuf.get_width() / 2, point_y)
                 
         return True        
 

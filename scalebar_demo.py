@@ -67,6 +67,10 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("scalebar/r_fg.png"), 
         app_theme.get_pixbuf("scalebar/r_bg.png"), 
         app_theme.get_pixbuf("scalebar/point.png"))
+    adjust = gtk.Adjustment(0, -1.0, 1.0)
+    hscale.set_adjustment(adjust)
+    hscale.add_mark(0, HScalebar.POS_TOP, "0")
+    hscale.add_mark(adjust.get_lower(), HScalebar.POS_BOTTOM, "左")
     hscale_align = gtk.Alignment()
     hscale_align.set(0.5, 0.5, 1, 1)
     hscale_align.set_padding(0, 2, 2, 2)
