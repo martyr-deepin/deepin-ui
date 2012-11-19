@@ -1249,6 +1249,16 @@ def layout_set_markup(layout, markup):
     else:
         layout.set_markup(markup)
 
+def get_resize_pixbuf_with_height(filepath, expect_height):
+    pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
+    if pixbuf.get_height() > expect_height:
+        return pixbuf.scale_simple(
+            int(float(expect_height) / pixbuf.get_height() * pixbuf.get_width()),
+            expect_height,
+            gtk.gdk.INTERP_BILINEAR)
+    else:
+        return pixbuf
+        
 def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_middle_area=True):
     '''
     Get optimum size pixbuf from file.
