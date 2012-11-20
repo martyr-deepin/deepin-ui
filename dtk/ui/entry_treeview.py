@@ -29,11 +29,11 @@ import gtk
 import gobject
 
 class EntryTreeView(TreeView):
-    ''' '''
     __gsignals__ = {
         "select"  : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.GObject, int)),
         "unselect": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        "clicked" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.GObject, int))}
+        "double-click" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.GObject, int))}
+    
     def __init__(self, 
             items=[],
             drag_data=None,
@@ -52,20 +52,18 @@ class EntryTreeView(TreeView):
             enable_drag_drop, drag_icon_pixbuf,
             start_drag_offset, mask_bound_height,
             right_space, top_bottom_space)
-        #self.keymap.clear()
     
     def release_item(self, event):
         if is_left_button(event):
             cell = self.get_cell_with_event(event)
             if cell is not None:
                 (release_row, release_column, offset_x, offset_y) = cell
-                #print "release item:", offset_x, offset_y, event
                 
                 if release_row is not None:
                     if self.double_click_row == release_row:
                         self.visible_items[release_row].double_click(release_column, offset_x, offset_y)
+                        self.emit("double-click", self.visible_items[release_row], release_column)
                     elif self.single_click_row == release_row:
-                        self.emit("clicked", self.visible_items[release_row], release_column)
                         self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
                 
                 if self.start_drag and self.is_in_visible_area(event):
@@ -84,11 +82,8 @@ class EntryTreeView(TreeView):
                 self.set_drag_row(None)
         
 class EntryTreeItem(TreeItem):
-    __gsignals__ = {
-        "select" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        "clicked" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,))}
+    
     def __init__(self, title, content):
-        #super(EntryTreeItem, self).__init__()
         TreeItem.__init__(self)
         self.title = title
         self.entry = None
@@ -112,7 +107,6 @@ class EntryTreeItem(TreeItem):
         return [-1, 200]
     
     def get_column_renders(self):
-        ''' '''
         return [self.render_title, self.render_content]
     
     def render_title(self, cr, rect):
@@ -143,7 +137,6 @@ class EntryTreeItem(TreeItem):
             offset = 0
         rect.y += offset
         if self.entry and self.entry.allocation.width == self.get_column_widths()[1]-4:
-            #print "offset :", self.entry.offset_x, self.entry.allocation, self.get_column_widths()
             self.entry.calculate()
             rect.x += 2
             rect.width -= 4
@@ -153,35 +146,25 @@ class EntryTreeItem(TreeItem):
             self.entry_buffer.render(cr, rect)
     
     def unselect(self):
-        print "unselect", self.title
         self.is_select = False
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
     
     def select(self):
-        #print "select"
-        #self.emit("select")
         self.is_select = True
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
     
     def hover(self, column, offset_x, offset_y):
-        ''' '''
-        print "hover:", column, offset_x, offset_y
-    
+        pass
+
     def unhover(self, column, offset_x, offset_y):
-        ''' '''
-        print 'unhover:', column, offset_x, offset_y
-    
+        pass
+
     def single_click(self, column, offset_x, offset_y):
-        #print "single_click:", column, offset_x, offset_y
-        #self.emit("clicked", column)
-        #if self.is_expand:
-            #self.unexpand()
-        #else:
-            #self.expand()
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
+    
     def expand(self):
         if self.is_expand:
             return
@@ -189,161 +172,13 @@ class EntryTreeItem(TreeItem):
         self.add_items_callback(self.child_items, self.row_index+1)
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
+    
     def unexpand(self):
         self.is_expand = False
         self.delete_items_callback(self.child_items)
+
 gobject.type_register(EntryTreeItem)
 
-def button_press_tree_view(widget, event, tv):
-    if tv.get_data("entry_widget") is None:
-        return
-    cell = tv.get_cell_with_event(event)
-    entry = tv.get_data("entry_widget")
-    item = entry.get_data("item")
-    # if pressed outside entry column area, destroy entry
-    if cell is None:
-        entry.get_parent().destroy()
-        return
-    (row, column, offset_x, offset_y) = cell
-    if tv.visible_items[row] != item or column != item.ENTRY_COLUMN:
-        entry.get_parent().destroy()
-        return
-    # right button the show menu
-    if is_right_button(event):
-        entry.right_menu.show((int(event.x_root), int(event.y_root)))
-        return
-    entry.set_data("button_press", True)
-    send_event = event.copy()
-    send_event.send_event = True
-    send_event.x = float(offset_x)
-    send_event.y = 1.0
-    send_event.window = entry.window
-    entry.event(send_event)
-    send_event.free()
-
-
-def button_release_tree_view(widget, event, tv):
-    if tv.get_data("entry_widget") is None:
-        return
-    entry = tv.get_data("entry_widget")
-    # has not been pressed
-    if not entry.get_data("button_press"):
-        return
-    cell = tv.get_cell_with_event(event)
-    if cell is None:
-        offset_x = 1
-    else:
-        (row, column, offset_x, offset_y) = cell
-    entry.grab_focus()
-    entry.set_data("button_press", False)
-    send_event = event.copy()
-    send_event.send_event = True
-    send_event.x = float(offset_x)
-    send_event.y = 1.0
-    send_event.window = entry.window
-    entry.event(send_event)
-    send_event.free()
-
-def motion_tree_view(widget, event, tv):
-    if tv.get_data("entry_widget") is None:
-        return
-    entry = tv.get_data("entry_widget")
-    # has not been pressed
-    if not entry.get_data("button_press"):
-        #print "motion has not pressed"
-        return
-    cell = tv.get_cell_with_event(event)
-    item = entry.get_data("item")
-    if cell is None:
-        offset_x = 1
-    else:
-        (row, column, offset_x, offset_y) = cell
-        if column != item.ENTRY_COLUMN:
-            offset_x = 1
-    send_event = event.copy()
-    send_event.send_event = True
-    send_event.x = float(offset_x)
-    send_event.y = 1.0
-    send_event.window = entry.window
-    entry.event(send_event)
-    send_event.free()
-    #print "button motion:", event.x, event.y, event.x_root, event.y_root
-    #print "cell:", cell
-
-def edit_done(entry, box, item, tv):
-    print "edit done"
-    item.entry = None
-    item.entry_buffer.set_property('cursor-visible', False)
-    item.entry_buffer.move_to_start()
-    item.redraw_request_callback(item)
-    tv.draw_area.grab_focus()
-    tv.set_data("entry_widget", None)
-
-def entry_focus_changed(entry, event, item):
-    #print "focus %d", event.in_, item.is_select, item.title
-    if event.in_:
-        item.entry_buffer.set_property('cursor-visible', True)
-    else:
-        item.entry_buffer.set_property('cursor-visible', False)
-
-def select_click(treeview, item, column):
-    if column == item.ENTRY_COLUMN:
-        if item.entry:
-            item.entry.grab_focus()
-            return
-        item.entry_buffer.set_property('cursor-visible', True)
-        hbox = gtk.HBox(False)
-        align = gtk.Alignment(0, 0, 1, 1)
-        entry = Entry()
-        entry.set_data("item", item)
-        entry.set_data("button_press", False)
-        entry.set_buffer(item.entry_buffer)
-        entry.set_size_request(item.get_column_widths()[column]-4, 0)
-        entry.connect("press-return", lambda w: hbox.destroy())
-        entry.connect("destroy", edit_done, hbox, item, treeview)
-        entry.connect_after("focus-in-event", entry_focus_changed, item)
-        entry.connect_after("focus-out-event", entry_focus_changed, item)
-        treeview.pack_start(hbox, False, False)
-        treeview.set_data("entry_widget", entry)
-        hbox.pack_start(entry, False, False)
-        hbox.pack_start(align)
-        hbox.show_all()
-        entry.set_can_focus(True)
-        entry.grab_focus()
-        item.entry = entry
-
-if __name__ == '__main__':
-    win = gtk.Window()
-    win.set_size_request(300, 290)
-    win.connect("destroy", gtk.main_quit)
-
-    item1 = EntryTreeItem("item1", "this is a tree item test")
-    item2 = EntryTreeItem("item2", "item2 test")
-    item3 = EntryTreeItem("item3", "third item test")
-    item4 = EntryTreeItem("item4", "third item test")
-    item5 = EntryTreeItem("item5", "third item test")
-    item6 = EntryTreeItem("item6", "third item test")
-    item7 = EntryTreeItem("item7", "third item test")
-    item8 = EntryTreeItem("item8", "third item test")
-    item9 = EntryTreeItem("item9", "third item test")
-    item10 = EntryTreeItem("item10", "third item test")
-    item11 = EntryTreeItem("item11", "third item test")
-    item12 = EntryTreeItem("item12", "third item test")
-    item13 = EntryTreeItem("item13", "third item test")
-    item14 = EntryTreeItem("item14", "third item test")
-    item = [item1, item2, item3, item4, item5,
-            item6, item7, item8, item9, item10,
-            item11, item12, item13, item14]
-    tree_view = EntryTreeView(item)
-    #tree_view = TreeView(item,
-        #enable_hover=False, 
-        #enable_multiple_select=False,
-        #enable_drag_drop=False)
-    tree_view.connect("clicked", select_click)
-    tree_view.draw_area.connect("button-press-event", button_press_tree_view, tree_view)
-    tree_view.draw_area.connect("button-release-event", button_release_tree_view, tree_view)
-    tree_view.draw_area.connect("motion-notify-event", motion_tree_view, tree_view)
-
-    win.add(tree_view)
-    win.show_all()
-    gtk.main()
+'''
+Please play with the demo entry_treeview_demo.py
+'''
