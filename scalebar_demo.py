@@ -59,7 +59,7 @@ if __name__ == "__main__":
         )
     
     # Add Scalebar.
-    hscale = HScalebar(
+    hscale1 = HScalebar(
         app_theme.get_pixbuf("scalebar/l_fg.png"), 
         app_theme.get_pixbuf("scalebar/l_bg.png"), 
         app_theme.get_pixbuf("scalebar/m_fg.png"), 
@@ -67,15 +67,35 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("scalebar/r_fg.png"), 
         app_theme.get_pixbuf("scalebar/r_bg.png"), 
         app_theme.get_pixbuf("scalebar/point.png"))
-    adjust = gtk.Adjustment(0, -1.0, 1.0)
-    hscale.set_adjustment(adjust)
-    hscale.add_mark(0, HScalebar.POS_TOP, "0")
-    hscale.add_mark(adjust.get_lower(), HScalebar.POS_BOTTOM, "左")
-    hscale_align = gtk.Alignment()
-    hscale_align.set(0.5, 0.5, 1, 1)
-    hscale_align.set_padding(0, 2, 2, 2)
+    adjust1 = gtk.Adjustment(0, -1.0, 1.0)
+    hscale1.set_adjustment(adjust1)
+    hscale1.add_mark(0, HScalebar.POS_TOP, "0")
+    hscale1.add_mark(adjust1.get_lower(), HScalebar.POS_BOTTOM, "左")
+    hscale1.add_mark(adjust1.get_upper(), HScalebar.POS_BOTTOM, "右")
+    hscale1_align = gtk.Alignment()
+    hscale1_align.set(0.5, 0.5, 1, 1)
+    hscale1_align.set_padding(0, 2, 2, 2)
+    hscale1_align.add(hscale1)
     
-    hscale_align.add(hscale)
-    application.main_box.pack_start(hscale_align)
+    hscale2 = HScalebar(
+        app_theme.get_pixbuf("scalebar/l_fg.png"), 
+        app_theme.get_pixbuf("scalebar/l_bg.png"), 
+        app_theme.get_pixbuf("scalebar/m_fg.png"), 
+        app_theme.get_pixbuf("scalebar/m_bg.png"), 
+        app_theme.get_pixbuf("scalebar/r_fg.png"), 
+        app_theme.get_pixbuf("scalebar/r_bg.png"), 
+        app_theme.get_pixbuf("scalebar/point.png"), 
+        True, 
+        " %")
+    hscale2.connect("format-value", lambda w, v: "%d%%" % (v))
+    adjust2 = gtk.Adjustment(0, 0, 150)
+    hscale2.set_adjustment(adjust2)
+    hscale2_align = gtk.Alignment()
+    hscale2_align.set(0.5, 0.5, 1, 1)
+    hscale2_align.set_padding(0, 2, 2, 2)
+    hscale2_align.add(hscale2)
+    
+    application.main_box.pack_start(hscale1_align)
+    application.main_box.pack_start(hscale2_align)
 
     application.run()

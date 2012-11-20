@@ -52,7 +52,9 @@ class HScalebar(gtk.HScale):
                  middle_bg_dpixbuf,
                  right_fg_dpixbuf,
                  right_bg_dpixbuf,
-                 point_dpixbuf
+                 point_dpixbuf,
+                 show_value=False,
+                 format_value=None
                  ):
         '''
         Init HScalebar class.
@@ -78,6 +80,8 @@ class HScalebar(gtk.HScale):
         self.point_dpixbuf = point_dpixbuf
         self.cache_bg_pixbuf = CachePixbuf()
         self.cache_fg_pixbuf = CachePixbuf()
+        self.show_value = show_value
+        self.format_value = format_value
         self.button_pressed = False
         self.mark_list = []
         '''
@@ -136,6 +140,7 @@ class HScalebar(gtk.HScale):
         TODO: Draw mark
         '''
         has_top_markup = False
+        text_width = DEFAULT_FONT_SIZE
         text_height = DEFAULT_FONT_SIZE
         if len(self.mark_list):
             for mark in self.mark_list:
@@ -153,6 +158,8 @@ class HScalebar(gtk.HScale):
         line_y = y + (point_height - line_height) / 2
         if has_top_markup:
             line_y += text_height
+        if self.show_value:
+            line_y += text_height * 2
 
         # Draw background.
         self.cache_bg_pixbuf.scale(middle_bg_pixbuf, w - side_width * 2, line_height)
@@ -171,8 +178,25 @@ class HScalebar(gtk.HScale):
         point_y = y
         if has_top_markup:
             point_y += text_height
+        if self.show_value:
+            point_y += text_height * 2
         draw_pixbuf(cr, point_pixbuf, x + value - point_pixbuf.get_width() / 2, point_y)
-                
+
+        '''
+        TODO: Draw self.get_value
+        '''
+        if self.show_value:
+            value_text = str(int(self.get_value()))
+            if self.format_value != None:
+                value_text += self.format_value
+            (text_width, text_height) = get_content_size(value_text)
+            draw_text(cr, 
+                      value_text, 
+                      min(x + value - point_pixbuf.get_width() / 2, w - text_width), 
+                      point_y - text_height, 
+                      text_width, 
+                      text_height)
+
         return True        
 
     def m_render(self, widget, event):
