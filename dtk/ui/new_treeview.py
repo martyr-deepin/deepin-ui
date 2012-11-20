@@ -188,7 +188,7 @@ class TreeView(gtk.VBox):
         self.title_offset_y = -1
         self.item_height = -1
         '''
-        TODO: highlight item
+        TODO: highlight index && item
         '''
         self.highlight_item = None
         
@@ -251,19 +251,43 @@ class TreeView(gtk.VBox):
             "Delete" : self.delete_select_items,
             }
 
-    def set_highlight(self, index):
+    def get_items(self):
+        return self.visible_items
+    
+    def set_highlight_index(self, index):
         item = self.visible_items[index]
-        if hasattr(item, "highlight"):
+        if True:
+        #if hasattr(item, "highlight"):
+            self.highlight_index = index
             self.highlight_item = item
+            self.visible_highlight()
             self.queue_draw()
     
-    def get_highlight(self):
+    def get_highlight_index(self):
+        return self.highlight_item.row_index
+
+    def get_highlight_item(self):
         return self.highlight_item
 
     def clear_highlight(self):
         self.highlight_item = None
         self.queue_draw()
 
+    def visible_highlight(self):
+        if self.highlight_item == None:
+            print "visible_highlight: highlight item is None."
+        else:
+            # Scroll viewport make sure highlight row in visible area.
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+            if self.scrolled_window == None:
+                raise Exception, "parent container is not ScrolledWindow"
+            vadjust = self.scrolled_window.get_vadjustment()
+            highlight_index = self.highlight_item.row_index
+            if offset_y > highlight_index * self.item_height:
+                vadjust.set_value(highlight_index * self.item_height)
+            elif offset_y + vadjust.get_page_size() < (highlight_index + 1) * self.item_height:
+                vadjust.set_value((highlight_index + 1) * self.item_height - vadjust.get_page_size() + self.title_offset_y)
+    
     '''
     TODO: PLEASE double check the argv[]
     '''
@@ -791,7 +815,6 @@ class TreeView(gtk.VBox):
         self.redraw_request_list = []
         
         return True
-
     
     def add_items(self, items, insert_pos=None, clear_first=False):
         '''
@@ -819,6 +842,12 @@ class TreeView(gtk.VBox):
                 
             self.update_vadjustment()
         
+    def delete_item_by_index(self, index):
+        item = self.visible_items[index]
+        items_delete = []
+        items_delete.append(item)
+        self.delete_items(items_delete)
+    
     def delete_items(self, items):
         with self.keep_select_status():
             for item in items:
@@ -943,9 +972,18 @@ class TreeView(gtk.VBox):
                     with cairo_state(cr):
                         cr.rectangle(render_x, render_y, render_width, render_height)
                         cr.clip()
-                
+                        '''
+                        TODO: Draw highlight row
+                        '''
+                        if self.highlight_item:
+                            self.draw_item_highlight(cr, 
+                                                     rect.x, 
+                                                     rect.y + self.highlight_item.row_index * self.item_height, 
+                                                     rect.width, 
+                                                     render_height)
+
                         item.get_column_renders()[index](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
-                    
+                
                 item_width_count += column_width
                 
             item_height_count += item.get_height()    
@@ -973,6 +1011,9 @@ class TreeView(gtk.VBox):
                     cr.paint_with_alpha(1.0 - (math.sin(i * math.pi / 2 / self.mask_bound_height)))
                     
                 i += 1    
+    
+    def draw_item_highlight(self, cr, x, y, w, h):
+        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_highlight").get_color_info())
     
     def get_expose_bound(self):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)

@@ -344,7 +344,6 @@ if __name__ == "__main__":
     list_view.hide_column([1])
     list_view.set_hide_column_flag(False)
     list_view.set_hide_column_resize(False)
-    #list_view.set_highlight(items[6])
     list_view.connect("double-click-item", lambda listview, item, i, x, y: list_view.set_highlight(item))
     
     # list_view.connect("button-press-item", print_button_press)
@@ -354,7 +353,7 @@ if __name__ == "__main__":
     list_view.connect("right-press-items", print_right_press)
 
     scrolled_window.add_child(list_view)
-    
+    list_view.set_highlight(list_view.items[6])
     # Add volume button.
     volume_button = VolumeButton(100, 50)
     volume_frame = gtk.Alignment()

@@ -75,7 +75,7 @@ if __name__ == "__main__":
     # Add TreeView.
     print os.path.expanduser("~")
     treeview = TreeView(get_dir_items(os.path.expanduser("~")))
-    treeview.set_highlight(1)
+    treeview.set_highlight_index(1)
     treeview.connect("button-press-item", m_button_press_item)
     treeview.connect("double-click-item", m_double_click_item)
     treeview.connect("right-press-items", m_right_press_items)
@@ -86,6 +86,7 @@ if __name__ == "__main__":
     
     treeview.set_column_titles(["文件名", "大小", "类型", "修改时间"],
                                [sort_by_name, sort_by_size, sort_by_type, sort_by_mtime])
+    treeview.set_highlight_index(1)
     
     treeview_align.add(treeview)
     application.main_box.pack_start(treeview_align)
