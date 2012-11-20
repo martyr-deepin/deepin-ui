@@ -192,7 +192,7 @@ class HScalebar(gtk.HScale):
             (text_width, text_height) = get_content_size(value_text)
             draw_text(cr, 
                       value_text, 
-                      min(x + value - point_pixbuf.get_width() / 2, w - text_width), 
+                      min(x + value - point_pixbuf.get_width() / 2, x + w - text_width),
                       point_y - text_height, 
                       text_width, 
                       text_height)
