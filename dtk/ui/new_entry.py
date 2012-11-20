@@ -841,8 +841,10 @@ class Entry(gtk.EventBox):
             with self.monitor_entry_content():
                 if text is not None:
                     self.entry_buffer.set_text(text)
-                    
-                    self.__calculate_cursor_offset()
+                    '''
+                    FIXME: if call set_text then cursor offset is wrong
+                    '''
+                    #self.__calculate_cursor_offset()
             self.queue_draw()
         
     def get_text(self):
