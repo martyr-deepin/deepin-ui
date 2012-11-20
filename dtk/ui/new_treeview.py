@@ -256,12 +256,10 @@ class TreeView(gtk.VBox):
     
     def set_highlight_index(self, index):
         item = self.visible_items[index]
-        if True:
-        #if hasattr(item, "highlight"):
-            self.highlight_index = index
-            self.highlight_item = item
-            self.visible_highlight()
-            self.queue_draw()
+        self.highlight_index = index
+        self.highlight_item = item
+        self.visible_highlight()
+        self.queue_draw()
     
     def get_highlight_index(self):
         return self.highlight_item.row_index
