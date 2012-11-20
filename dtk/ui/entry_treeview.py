@@ -6,6 +6,7 @@
 # 
 # Author:     Long Changjin <admin@longchangjin.cn>
 # Maintainer: Long Changjin <admin@longchangjin.cn>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,19 +21,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from dtk.ui.init_skin import init_skin
-from dtk.ui.utils import get_parent_dir
-import os
-
-app_theme = init_skin(
-    "deepin-ui-demo", 
-    "1.0",
-    "01",
-    os.path.join(get_parent_dir(__file__), "skin"),
-    os.path.join(get_parent_dir(__file__), "app_theme"),
-    )
-
 from dtk.ui.new_treeview import TreeView, TreeItem
 from dtk.ui.draw import draw_text
 from dtk.ui.utils import color_hex_to_cairo, is_left_button, is_right_button
@@ -40,7 +28,7 @@ from dtk.ui.new_entry import EntryBuffer, Entry
 import gtk
 import gobject
 
-class MyTreeView(TreeView):
+class EntryTreeView(TreeView):
     ''' '''
     __gsignals__ = {
         "select"  : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.GObject, int)),
@@ -58,7 +46,7 @@ class MyTreeView(TreeView):
             mask_bound_height=24,
             right_space=0,
             top_bottom_space=3):
-        super(MyTreeView, self).__init__(
+        super(EntryTreeView, self).__init__(
             items, drag_data, enable_hover,
             enable_highlight, enable_multiple_select,
             enable_drag_drop, drag_icon_pixbuf,
@@ -95,12 +83,12 @@ class MyTreeView(TreeView):
                 
                 self.set_drag_row(None)
         
-class MyTreeItem(TreeItem):
+class EntryTreeItem(TreeItem):
     __gsignals__ = {
         "select" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "clicked" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,))}
     def __init__(self, title, content):
-        #super(MyTreeItem, self).__init__()
+        #super(EntryTreeItem, self).__init__()
         TreeItem.__init__(self)
         self.title = title
         self.entry = None
@@ -204,7 +192,7 @@ class MyTreeItem(TreeItem):
     def unexpand(self):
         self.is_expand = False
         self.delete_items_callback(self.child_items)
-gobject.type_register(MyTreeItem)
+gobject.type_register(EntryTreeItem)
 
 def button_press_tree_view(widget, event, tv):
     if tv.get_data("entry_widget") is None:
@@ -329,24 +317,24 @@ if __name__ == '__main__':
     win.set_size_request(300, 290)
     win.connect("destroy", gtk.main_quit)
 
-    item1 = MyTreeItem("item1", "this is a tree item test")
-    item2 = MyTreeItem("item2", "item2 test")
-    item3 = MyTreeItem("item3", "third item test")
-    item4 = MyTreeItem("item4", "third item test")
-    item5 = MyTreeItem("item5", "third item test")
-    item6 = MyTreeItem("item6", "third item test")
-    item7 = MyTreeItem("item7", "third item test")
-    item8 = MyTreeItem("item8", "third item test")
-    item9 = MyTreeItem("item9", "third item test")
-    item10 = MyTreeItem("item10", "third item test")
-    item11 = MyTreeItem("item11", "third item test")
-    item12 = MyTreeItem("item12", "third item test")
-    item13 = MyTreeItem("item13", "third item test")
-    item14 = MyTreeItem("item14", "third item test")
+    item1 = EntryTreeItem("item1", "this is a tree item test")
+    item2 = EntryTreeItem("item2", "item2 test")
+    item3 = EntryTreeItem("item3", "third item test")
+    item4 = EntryTreeItem("item4", "third item test")
+    item5 = EntryTreeItem("item5", "third item test")
+    item6 = EntryTreeItem("item6", "third item test")
+    item7 = EntryTreeItem("item7", "third item test")
+    item8 = EntryTreeItem("item8", "third item test")
+    item9 = EntryTreeItem("item9", "third item test")
+    item10 = EntryTreeItem("item10", "third item test")
+    item11 = EntryTreeItem("item11", "third item test")
+    item12 = EntryTreeItem("item12", "third item test")
+    item13 = EntryTreeItem("item13", "third item test")
+    item14 = EntryTreeItem("item14", "third item test")
     item = [item1, item2, item3, item4, item5,
             item6, item7, item8, item9, item10,
             item11, item12, item13, item14]
-    tree_view = MyTreeView(item)
+    tree_view = EntryTreeView(item)
     #tree_view = TreeView(item,
         #enable_hover=False, 
         #enable_multiple_select=False,

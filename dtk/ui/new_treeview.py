@@ -1114,7 +1114,7 @@ class TreeView(gtk.VBox):
         
         # Remove auto scroll handler.
         remove_timeout_id(self.auto_scroll_id)    
-        
+    
     def release_item(self, event):
         if is_left_button(event):
             cell = self.get_cell_with_event(event)
@@ -1510,7 +1510,7 @@ class TreeItem(gobject.GObject):
     '''
     __gproperties__ = {
         'highlight': (gobject.TYPE_BOOLEAN, 'highlight', 'highlight', True, gobject.PARAM_READWRITE)}
-
+    
     def __init__(self):
         '''
         Initialize TreeItem class.

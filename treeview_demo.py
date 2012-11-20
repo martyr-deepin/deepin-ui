@@ -6,6 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,10 +41,12 @@ from dtk.ui.file_treeview import (get_dir_items, sort_by_name, sort_by_size,
 import gtk
 
 def m_button_press_item(widget, event, argv1, argv2, argv3):
-    print widget, event, argv1, argv2, argv3
+    pass
+    #print widget, event, argv1, argv2, argv3
 
 def m_double_click_item(widget, event, argv1, argv2, argv3):
-    print widget, event, argv1, argv2, argv3
+    pass
+    #print widget, event, argv1, argv2, argv3
 
 def m_right_press_items(widget, event, argv1, argv2, argv3):
     print widget, event, argv1, argv2, argv3
