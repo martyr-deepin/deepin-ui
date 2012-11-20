@@ -6,6 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,6 +43,12 @@ from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT,
                       WIDGET_POS_CENTER, DEFAULT_FONT, COLOR_NAME_DICT, 
                       BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED, SIMILAR_COLOR_SEQUENCE,
                       DEFAULT_FONT_SIZE)
+
+'''
+TODO: repeat("*", 6)
+'''
+def repeat(msg, num):
+    return ' '.join([msg] * num)
 
 def get_entry_text(entry):
     '''

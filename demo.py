@@ -376,6 +376,7 @@ if __name__ == "__main__":
     password_entry = PasswordEntry("")
     password_entry.connect("action-active", print_entry_action)
     password_entry.set_size(150, 24)
+    password_entry.show_password(True)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容")
     entry_label.set_size_request(100, 30)

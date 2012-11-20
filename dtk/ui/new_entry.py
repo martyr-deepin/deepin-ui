@@ -35,7 +35,7 @@ import gtk
 import pango
 import cairo
 import pangocairo
-from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
+from dtk.ui.utils import (repeat, propagate_expose, cairo_state, color_hex_to_cairo, 
                    get_content_size, is_double_click, is_right_button, 
                    is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias)
 import time
@@ -1888,7 +1888,8 @@ class PasswordEntry(gtk.VBox):
                  acme_color=ui_theme.get_alpha_color("text_entry_acme"), 
                  point_color=ui_theme.get_alpha_color("text_entry_point"), 
                  frame_point_color=ui_theme.get_alpha_color("text_entry_frame_point"), 
-                 frame_color=ui_theme.get_alpha_color("text_entry_frame")):
+                 frame_color=ui_theme.get_alpha_color("text_entry_frame"), 
+                 shown_password=False):
         gtk.VBox.__init__(self)
         self.align = gtk.Alignment()
         self.align.set(0.5, 0.5, 1.0, 1.0)
@@ -1902,6 +1903,7 @@ class PasswordEntry(gtk.VBox):
         self.point_color = point_color
         self.frame_point_color = frame_point_color
         self.frame_color = frame_color
+        self.shown_password = shown_password
 
         self.pack_start(self.align, False, False)
         self.align.add(self.h_box)
@@ -1921,7 +1923,12 @@ class PasswordEntry(gtk.VBox):
         '''
         self.align.connect("expose-event", self.expose_password_entry)
 
+    def show_password(self, shown_password=False):
+        self.shown_password = shown_password
+
     def key_press_entry(self, widget, argv):
+        if self.shown_password:
+            return
         old_str = self.entry.get_text()
         str_len = len(old_str)
         new_str = ""
@@ -1931,6 +1938,8 @@ class PasswordEntry(gtk.VBox):
         self.entry.set_text(new_str)
 
     def key_released_entry(self, widget, argv):
+        if self.shown_password:
+            return
         old_str = self.entry.get_text()
         str_len = len(old_str)
         new_str = ""
