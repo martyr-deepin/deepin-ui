@@ -256,10 +256,11 @@ class TreeView(gtk.VBox):
     
     def set_highlight_index(self, index):
         item = self.visible_items[index]
-        self.highlight_index = index
-        self.highlight_item = item
-        self.visible_highlight()
-        self.queue_draw()
+        if hasattr(item, "highlight"):
+            self.highlight_index = index
+            self.highlight_item = item
+            self.visible_highlight()
+            self.queue_draw()
     
     def get_highlight_index(self):
         return self.highlight_item.row_index
@@ -974,11 +975,19 @@ class TreeView(gtk.VBox):
                         TODO: Draw highlight row
                         '''
                         if self.highlight_item:
+                            '''
+                            Let user overload highlight && unhighlight
                             self.draw_item_highlight(cr, 
                                                      rect.x, 
                                                      rect.y + self.highlight_item.row_index * self.item_height, 
                                                      rect.width, 
                                                      render_height)
+                            '''
+                            if hasattr(self.highlight_item, "highlight"):
+                                self.highlight_item.highlight()
+                        else:
+                            if hasattr(self.highlight_item, "highlight"):
+                                self.highlight_item.unhighlight()
 
                         item.get_column_renders()[index](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
                 
@@ -1590,6 +1599,12 @@ class TreeItem(gobject.GObject):
 
     def set_highlight(self, highlight):
         self.set_property("highlight", highlight)
+    
+    def highlight(self):
+        pass
+
+    def unhighlight(self):
+        pass
     
     def expand(self):
         pass
