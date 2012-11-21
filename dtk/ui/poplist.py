@@ -79,7 +79,8 @@ class Poplist(Window):
         self.connect("realize", self.realize_poplist)
         
         # Wrap self in poup grab window.
-        wrap_grab_window(poplist_grab_window, self)
+        self.poplist_grab_window = PopupGrabWindow(Poplist)
+        wrap_grab_window(self.poplist_grab_window, self)
         
     def get_scrolledwindow(self):
         return self.treeview.scrolled_window
@@ -296,5 +297,3 @@ class IconTextItem(TreeItem):
             self.redraw_request_callback(self)
     
 gobject.type_register(IconTextItem)
-
-poplist_grab_window = PopupGrabWindow(Poplist)
