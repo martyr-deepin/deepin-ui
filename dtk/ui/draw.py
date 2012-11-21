@@ -375,7 +375,7 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
     # Set layout.
     layout = context.create_layout()
     layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
-    layout.set_markup(markup)
+    layout.set_markup(markup.replace("&", "&amp;"))
     layout.set_alignment(alignment)
     if wrap_width == None:
         layout.set_single_paragraph_mode(True)
