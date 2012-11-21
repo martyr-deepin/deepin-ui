@@ -99,7 +99,7 @@ def set_hover_cursor(widget, cursor_type):
     widget.connect("enter-notify-event", lambda w, e: set_cursor(w, cursor_type))
     widget.connect("leave-notify-event", lambda w, e: set_cursor(w))
 
-def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER):
+def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER, translate_coordinate=True):
     '''
     Get root coordinate with given widget.
     
@@ -119,7 +119,7 @@ def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER):
     # Get coordinate.
     (wx, wy) = widget.window.get_origin()
     toplevel_window = widget.get_toplevel()
-    if toplevel_window:
+    if translate_coordinate and toplevel_window:
         '''
         FIXME: translate_coordinates wrong toward ComboBox
         '''
