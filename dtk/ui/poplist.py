@@ -184,9 +184,9 @@ class TextItem(TreeItem):
         draw_text(cr, 
                   self.text,
                   rect.x + self.padding_x, 
-                  rect.y + self.padding_y, 
+                  rect.y,
                   rect.width - self.padding_x * 2, 
-                  rect.height - self.padding_y * 2,
+                  rect.height,
                   text_color=font_color)
         
     def get_width(self):
@@ -268,9 +268,9 @@ class IconTextItem(TreeItem):
         draw_text(cr, 
                   self.text,
                   rect.x + self.padding_x * 2 + self.icon_width, 
-                  rect.y + self.padding_y, 
+                  rect.y,
                   rect.width - self.padding_x * 2, 
-                  rect.height - self.padding_y * 2,
+                  rect.height,
                   text_color=font_color)
         
     def get_width(self):
