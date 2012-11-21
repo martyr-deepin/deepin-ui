@@ -30,7 +30,7 @@ import pango
 import pangocairo
 from utils import (cairo_state, cairo_disable_antialias, color_hex_to_cairo, 
                    add_color_stop_rgba, propagate_expose, 
-                   alpha_color_hex_to_cairo, layout_set_markup)
+                   alpha_color_hex_to_cairo)
 
 def draw_radial_ring(cr, x, y, outer_radius, inner_radius, color_infos):
     '''
@@ -375,7 +375,7 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
     # Set layout.
     layout = context.create_layout()
     layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
-    layout_set_markup(layout, markup)
+    layout.set_markup(markup)
     layout.set_alignment(alignment)
     if wrap_width == None:
         layout.set_single_paragraph_mode(True)
