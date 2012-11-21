@@ -114,7 +114,9 @@ class Titlebar(EventBox):
         self.button_align.set(1.0, 0.0, 0.0, 0.0)
         self.button_align.set_padding(0, 0, 0, 0)
         self.button_align.add(self.button_box)
-        self.h_layout_box.pack_start(self.button_align, False, False)
+        self.right_box = gtk.VBox()
+        self.right_box.pack_start(self.button_align, False, False)
+        self.h_layout_box.pack_start(self.right_box, False, False)
         
         # Add theme button.
         if "theme" in button_mask:
