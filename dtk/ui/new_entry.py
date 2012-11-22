@@ -978,7 +978,6 @@ class Entry(gtk.EventBox):
         FIXME: wrong cursor offset
         '''
         #self.__calculate_cursor_offset()
-        self.offset_x = 0
         self.queue_draw()
         
     def cut_to_clipboard(self):
