@@ -6,7 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
-#	      Zhai Xiang <zhaixiang@linuxdeepin.com>
+#	          Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,6 +78,9 @@ import sys
 import time
 
 print time.time() - start_time
+
+def m_motion_item(widget, item, x, y):
+    print widget, item, x, y
 
 def print_right_press(list_view, list_item, column, offset_x, offset_y):
     print column, offset_x, offset_y
@@ -486,7 +489,8 @@ if __name__ == "__main__":
     icon_items = map(lambda icon_file_path: IconItem(icon_file_path, 96, 96), icon_files * 100)
     only_one_icon_items = []
     only_one_icon_items.append(icon_items[0])
-    icon_view.add_items(only_one_icon_items)
+    icon_view.add_items(icon_items)
+    icon_view.connect("motion-item", m_motion_item)
     
     tab_4_box.pack_start(icon_view_vframe, True, True)
     

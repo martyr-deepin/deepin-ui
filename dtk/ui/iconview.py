@@ -53,9 +53,13 @@ class IconView(gtk.DrawingArea):
     @undocumented: get_render_item_indexes
     '''
 	
+    '''
+    TODO: emit motion-item signal, return IconItem left top corner`s (x, y)
+    '''
     __gsignals__ = {
         "lost-focus-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
+        "motion-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
         "highlight-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "normal-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
@@ -605,6 +609,10 @@ class IconView(gtk.DrawingArea):
                 '''
                 if self.focus_index >= 0:
                     self.emit("motion-notify-item", self.items[self.focus_index], offset_x - self.padding_x, offset_y - self.padding_y)
+                    self.emit("motion-item", 
+                              self.items[self.focus_index], 
+                              event.x - (offset_x - self.padding_x), 
+                              event.y - (offset_y - self.padding_y))
                     
     def icon_view_get_event_index(self, event):
         '''
