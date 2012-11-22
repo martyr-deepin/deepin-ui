@@ -394,7 +394,7 @@ def get_content_size(text, text_size=DEFAULT_FONT_SIZE, text_font=DEFAULT_FONT, 
         context = pangocairo.CairoContext(cr)
         layout = context.create_layout()
         layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
-        layout.set_markup(text.replace("&", "&amp;"))
+        layout.set_markup(text)
         if wrap_width == None:
             layout.set_single_paragraph_mode(True)
         else:
