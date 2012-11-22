@@ -860,6 +860,9 @@ class TreeView(gtk.VBox):
             self.update_vadjustment()
             
     def delete_all_items(self):
+        self.start_select_row = None
+        self.select_rows = []
+        
         self.visible_items = []
         
         self.update_item_index()    
