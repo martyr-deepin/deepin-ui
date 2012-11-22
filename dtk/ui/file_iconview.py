@@ -22,22 +22,16 @@
 
 import collections
 from gio_utils import (get_file_icon_pixbuf, is_directory, get_dir_child_files, 
-                       get_gfile_modification_time, get_gfile_size,
-                       get_gfile_type,get_file_type_dict,
-                       get_gfile_name, get_gfile_content_type, sort_file_by_name)
+                       get_file_type_dict,
+                       get_gfile_name, sort_file_by_name)
 from draw import draw_pixbuf, draw_text, draw_vlinear
-from threads import post_gui
 from theme import ui_theme
 import pango
 import gobject
 import gio
-import threading as td
-from utils import cairo_disable_antialias, get_content_size, format_file_size
 from dtk.ui.scrolled_window import ScrolledWindow
 from dtk.ui.iconview import IconView
-from dtk.ui.constant import COLOR_NAME_DICT, DEFAULT_FONT_SIZE
-import traceback
-import sys
+from dtk.ui.constant import DEFAULT_FONT_SIZE
 
 ITEM_PADDING_Y = 10
 
