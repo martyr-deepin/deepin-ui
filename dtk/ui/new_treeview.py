@@ -770,11 +770,6 @@ class TreeView(gtk.VBox):
         delete_items = map(lambda row: self.visible_items[row], self.select_rows)
         self.start_select_row = None
         self.select_rows = []
-        
-        '''
-        FIXME: could not convert type list to PyObject required for parameter 0 
-        '''
-        #self.emit("delete-select-items", delete_items)
 
         self.delete_items(delete_items)
         
@@ -851,11 +846,21 @@ class TreeView(gtk.VBox):
         self.delete_items(items_delete)
     
     def delete_items(self, items):
+        cache_remove_items = []
         with self.keep_select_status():
             for item in items:
                 if item in self.visible_items:
+                    cache_remove_items.append(item)
                     self.visible_items.remove(item)
-                    
+            
+            '''
+            TODO: some app based on TreeView might emit delete-select-items wrong
+            '''
+            try:
+                self.emit("delete-select-items", cache_remove_items)
+            except Exception, e:
+                pass
+
             self.update_item_index()    
             
             self.update_item_widths()

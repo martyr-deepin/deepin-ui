@@ -82,6 +82,9 @@ print time.time() - start_time
 def m_motion_item(widget, item, x, y):
     print widget, item, x, y
 
+def print_delete_select_items(list_view, items):
+    print items
+
 def print_right_press(list_view, list_item, column, offset_x, offset_y):
     print column, offset_x, offset_y
 
@@ -348,7 +351,7 @@ if __name__ == "__main__":
     list_view.set_hide_column_flag(False)
     list_view.set_hide_column_resize(False)
     list_view.connect("double-click-item", lambda listview, item, i, x, y: list_view.set_highlight(item))
-    
+    list_view.connect("delete-select-items", print_delete_select_items)
     # list_view.connect("button-press-item", print_button_press)
     # list_view.connect("double-click-item", print_double_click)
     # list_view.connect("single-click-item", print_single_click)
