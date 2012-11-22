@@ -36,7 +36,7 @@ app_theme = init_skin(
 from dtk.ui.new_treeview import TreeView, TreeItem
 from dtk.ui.draw import draw_text
 from dtk.ui.utils import color_hex_to_cairo, is_left_button, is_right_button
-from dtk.ui.new_entry import EntryBuffer, Entry
+from dtk.ui.new_entry import Entry
 from dtk.ui.entry_treeview import EntryTreeView, EntryTreeItem
 import gtk
 import gobject
@@ -151,6 +151,7 @@ def select_click(treeview, item, column):
         hbox.show_all()
         entry.set_can_focus(True)
         entry.grab_focus()
+        entry.select_all()
         item.entry = entry
 
 if __name__ == '__main__':

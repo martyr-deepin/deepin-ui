@@ -95,6 +95,7 @@ class EntryTreeItem(TreeItem):
         self.child_items = []
         self.height = 24
         self.ENTRY_COLUMN = 1
+        self.is_double_click = False
     
     def entry_buffer_changed(self, bf):
         if self.redraw_request_callback:
@@ -124,9 +125,10 @@ class EntryTreeItem(TreeItem):
         if self.is_select:
             text_color = "#FFFFFF"
             bg_color = "#3399FF"
-            cr.set_source_rgb(*color_hex_to_cairo(bg_color))
-            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
-            cr.paint()
+            if not self.is_double_click:
+                cr.set_source_rgb(*color_hex_to_cairo(bg_color))
+                cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+                cr.paint()
         else:
             text_color = "#000000"
             self.entry_buffer.move_to_start()
@@ -162,9 +164,13 @@ class EntryTreeItem(TreeItem):
         pass
 
     def single_click(self, column, offset_x, offset_y):
+        self.is_double_click = False
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
     
+    def double_click(self, column, offset_x, offset_y):
+        self.is_double_click = True
+
     def expand(self):
         if self.is_expand:
             return
