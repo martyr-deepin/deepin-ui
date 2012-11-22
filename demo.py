@@ -353,7 +353,8 @@ if __name__ == "__main__":
     list_view.connect("right-press-items", print_right_press)
 
     scrolled_window.add_child(list_view)
-    list_view.set_highlight(list_view.items[6])
+    if len(list_view.items):
+        list_view.set_highlight(list_view.items[6])
     # Add volume button.
     volume_button = VolumeButton(100, 50)
     volume_frame = gtk.Alignment()
