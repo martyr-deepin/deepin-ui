@@ -611,8 +611,8 @@ class IconView(gtk.DrawingArea):
                     self.emit("motion-notify-item", self.items[self.focus_index], offset_x - self.padding_x, offset_y - self.padding_y)
                     self.emit("motion-item", 
                               self.items[self.focus_index], 
-                              event.x - (offset_x - self.padding_x), 
-                              event.y - (offset_y - self.padding_y))
+                              event.x_root - (offset_x - self.padding_x), 
+                              event.y_root - (offset_y - self.padding_y))
                     
     def icon_view_get_event_index(self, event):
         '''
