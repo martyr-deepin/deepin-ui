@@ -771,7 +771,10 @@ class TreeView(gtk.VBox):
         self.start_select_row = None
         self.select_rows = []
         
-        self.draw_area.emit("delete-select-items", delete_items)
+        '''
+        FIXME: could not convert type list to PyObject required for parameter 0 
+        '''
+        #self.emit("delete-select-items", delete_items)
 
         self.delete_items(delete_items)
         
