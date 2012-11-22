@@ -484,7 +484,9 @@ if __name__ == "__main__":
     
     icon_files = map(lambda index: os.path.join(os.path.dirname(__file__), "cover/%s.jpg" % (index)), range(1, 33))
     icon_items = map(lambda icon_file_path: IconItem(icon_file_path, 96, 96), icon_files * 100)
-    icon_view.add_items(icon_items)
+    only_one_icon_items = []
+    only_one_icon_items.append(icon_items[0])
+    icon_view.add_items(only_one_icon_items)
     
     tab_4_box.pack_start(icon_view_vframe, True, True)
     

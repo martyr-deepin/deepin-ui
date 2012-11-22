@@ -600,8 +600,11 @@ class IconView(gtk.DrawingArea):
                     self.clear_focus_item()
                     
                 self.focus_index = item_index
-                
-                self.emit("motion-notify-item", self.items[self.focus_index], offset_x - self.padding_x, offset_y - self.padding_y)
+                '''
+                TODO: get rid of list index out of range when self.focus_index < 0
+                '''
+                if self.focus_index >= 0:
+                    self.emit("motion-notify-item", self.items[self.focus_index], offset_x - self.padding_x, offset_y - self.padding_y)
                     
     def icon_view_get_event_index(self, event):
         '''
