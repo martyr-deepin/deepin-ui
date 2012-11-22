@@ -368,11 +368,11 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("entry/search_hover.png"),
         app_theme.get_pixbuf("entry/search_press.png"),
         )
-    #entry = InputEntry("Linux Deepin")
     entry = InputEntry("Linux Deepin", enable_clear_button=True)
     entry.set_text("DEBUG")
     entry.connect("action-active", print_entry_action)
-    entry.set_size(150, 24)
+    entry.set_size(150, 48)
+    entry.entry.select_all()
     password_entry = PasswordEntry("")
     password_entry.connect("action-active", print_entry_action)
     password_entry.set_size(150, 24)

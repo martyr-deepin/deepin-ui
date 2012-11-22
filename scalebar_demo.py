@@ -89,7 +89,7 @@ if __name__ == "__main__":
         " %")
     adjust2 = gtk.Adjustment(0, 0, 150)
     hscale2.set_adjustment(adjust2)
-    hscale2.set_size_request(355, 0)
+    #hscale2.set_size_request(100, 0)
     hscale2_align = gtk.Alignment()
     hscale2_align.set(0.5, 0.5, 1, 1)
     hscale2_align.set_padding(0, 2, 2, 2)

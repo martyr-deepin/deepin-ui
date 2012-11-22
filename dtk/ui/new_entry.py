@@ -395,7 +395,7 @@ class EntryBuffer(gobject.GObject):
         first_line = self.buffer.get_iter_at_line(0)
         return first_line.get_chars_in_line()
    
-    def render(self, cr, rect, im=None, offset_x=0):
+    def render(self, cr, rect, im=None, offset_x=0, offset_y=0):
         '''render. Used by widget'''
         # Clip text area first.
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
@@ -411,7 +411,7 @@ class EntryBuffer(gobject.GObject):
             layout = self._layout.copy()
             # Create pangocairo context.
             context = pangocairo.CairoContext(cr)
-            cr.move_to(x - offset_x, y)
+            cr.move_to(x - offset_x, y + offset_y)
             cr.set_source_rgb(*color_hex_to_cairo(self.text_color))
             context.update_layout(layout)
             context.show_layout(layout)
@@ -426,12 +426,12 @@ class EntryBuffer(gobject.GObject):
                 mid_begin_pos = self.get_cursor_pos(left_pos)[0]
                 mid_end_pos = self.get_cursor_pos(right_pos)[0]
                 draw_hlinear(cr, 
-                             x+mid_begin_pos[0]-offset_x,
-                             y+mid_begin_pos[1],
-                             mid_end_pos[0]-mid_begin_pos[0],
+                             x + mid_begin_pos[0] - offset_x,
+                             y + mid_begin_pos[1] + offset_y,
+                             mid_end_pos[0] - mid_begin_pos[0],
                              mid_begin_pos[3],
                              self.background_select_color.get_color_info())
-                cr.move_to(x+mid_begin_pos[0]-offset_x, y)
+                cr.move_to(x + mid_begin_pos[0] - offset_x, y + offset_y)
                 cr.set_source_rgb(*color_hex_to_cairo(self.text_select_color))
                 context.update_layout(layout)
                 context.show_layout(layout)
@@ -456,7 +456,7 @@ class EntryBuffer(gobject.GObject):
                 
                 self.cursor_cr = cr
                 self.cursor_x = cursor_pos_x
-                self.cursor_y = y
+                self.cursor_y = y + offset_y
                 self.cursor_pos1 = cursor_pos[1]
                 self.cursor_pos2 = cursor_pos[3]
                 self.m_draw_cursor()
@@ -753,6 +753,10 @@ class Entry(gtk.EventBox):
         self.entry_buffer.set_property("select-area-visible", self.select_area_visible_flag)
         
         self.offset_x = 0
+        '''
+        TODO: it need to consider about offset in y axis
+        '''
+        self.offset_y = 0
         
         # Add keymap.
         self.keymap = {
@@ -1077,14 +1081,16 @@ class Entry(gtk.EventBox):
 
         '''
         TODO: Draw clear button
-        ''' 
+        '''
+        # FIXME: when self.get_text() == "" the content_height is not correct 
+        self.offset_y = (rect.height - get_content_size("DEBUG", DEFAULT_FONT_SIZE)[1]) / 2
         if self.enable_clear_button and len(self.get_text()):
-            self.clear_button.render(cr, rect)
+            self.clear_button.render(cr, rect, self.offset_y)
         
         '''
         Draw entry
         '''
-        self.entry_buffer.render(cr, rect, self.im, self.offset_x)
+        self.entry_buffer.render(cr, rect, self.im, self.offset_x, self.offset_y)
         
         # Propagate expose.
         propagate_expose(widget, event)
@@ -1281,11 +1287,11 @@ class ClearButton(gtk.EventBox):
         self.button_padding_y = 1
         self.clear_pixbuf = ui_theme.get_pixbuf("entry/gtk-cancel.png")
 
-    def render(self, cr, rect):
+    def render(self, cr, rect, offset_y=0):
         draw_pixbuf(cr, 
                     self.clear_pixbuf.get_pixbuf(), 
                     rect.x + rect.width + self.button_margin_x, 
-                    rect.y + self.button_padding_y)
+                    rect.y + self.button_padding_y + offset_y)
 
 gobject.type_register(ClearButton)
 
