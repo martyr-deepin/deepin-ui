@@ -287,9 +287,6 @@ class TreeView(gtk.VBox):
             elif offset_y + vadjust.get_page_size() < (highlight_index + 1) * self.item_height:
                 vadjust.set_value((highlight_index + 1) * self.item_height - vadjust.get_page_size() + self.title_offset_y)
     
-    '''
-    TODO: PLEASE double check the argv[]
-    '''
     def emit_item_event(self, event_name, event):
         '''
         Wrap method for emit event signal.
@@ -297,7 +294,8 @@ class TreeView(gtk.VBox):
         @param event_name: Event name.
         @param event: Event.
         '''
-        if self.title_offset_y == -1 or self.item_height == -1:
+        # TODO: removed the checking of self.title_offset_y, some app might not render title
+        if self.item_height == -1:
             return
 
         (event_x, event_y) = get_event_coords(event)
