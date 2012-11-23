@@ -23,9 +23,8 @@
 
 from dtk.ui.new_treeview import TreeView, TreeItem
 from dtk.ui.draw import draw_text
-from dtk.ui.utils import color_hex_to_cairo, is_left_button, is_right_button
-from dtk.ui.new_entry import EntryBuffer, Entry
-import gtk
+from dtk.ui.utils import color_hex_to_cairo, is_left_button
+from dtk.ui.new_entry import EntryBuffer
 import gobject
 
 class EntryTreeView(TreeView):

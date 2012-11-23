@@ -22,7 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
-from draw import draw_hlinear, draw_round_rectangle, draw_pixbuf
+from draw import draw_hlinear, draw_pixbuf
 from keymap import get_keyevent_name
 from locales import _
 from menu import Menu
@@ -35,9 +35,9 @@ import gtk
 import pango
 import cairo
 import pangocairo
-from dtk.ui.utils import (repeat, propagate_expose, cairo_state, color_hex_to_cairo, 
-                   get_content_size, is_double_click, is_right_button, 
-                   is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias)
+from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
+                          get_content_size, is_double_click, is_right_button, 
+                          is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias)
 import time
 import threading as td
 
