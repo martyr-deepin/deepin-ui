@@ -23,7 +23,7 @@
 
 from dtk.ui.new_treeview import TreeView, TreeItem
 from dtk.ui.draw import draw_text
-from dtk.ui.utils import color_hex_to_cairo, is_left_button
+from dtk.ui.utils import color_hex_to_cairo, is_left_button, is_right_button
 from dtk.ui.new_entry import EntryBuffer, Entry
 import gobject
 import gtk
@@ -280,7 +280,7 @@ class EntryTreeItem(TreeItem):
 
     def unhover(self, column, offset_x, offset_y):
         pass
-
+    
     def single_click(self, column, offset_x, offset_y):
         self.is_double_click = False
         if self.redraw_request_callback:
