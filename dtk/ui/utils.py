@@ -397,8 +397,9 @@ def get_content_size(text, text_size=DEFAULT_FONT_SIZE, text_font=DEFAULT_FONT, 
         '''
         FIXME: where bring in the "<"?!
         '''
-        if not text == "<":
-            layout.set_markup(text)
+        if text == "<":
+            text = "&lt;"
+        layout.set_markup(text)
         if wrap_width == None:
             layout.set_single_paragraph_mode(True)
         else:

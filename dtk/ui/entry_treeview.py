@@ -24,8 +24,9 @@
 from dtk.ui.new_treeview import TreeView, TreeItem
 from dtk.ui.draw import draw_text
 from dtk.ui.utils import color_hex_to_cairo, is_left_button
-from dtk.ui.new_entry import EntryBuffer
+from dtk.ui.new_entry import EntryBuffer, Entry
 import gobject
+import gtk
 
 class EntryTreeView(TreeView):
     __gsignals__ = {
@@ -51,7 +52,126 @@ class EntryTreeView(TreeView):
             enable_drag_drop, drag_icon_pixbuf,
             start_drag_offset, mask_bound_height,
             right_space, top_bottom_space)
-    
+
+        self.connect("double-click", self.double_click)
+        self.draw_area.connect("button-press-event", self.button_press)
+        self.draw_area.connect("button-release-event", self.button_release)
+        self.draw_area.connect("motion-notify-event", self.motion_notify)
+
+    def button_press(self, widget, event):
+        if self.get_data("entry_widget") is None:
+            return
+        cell = self.get_cell_with_event(event)
+        entry = self.get_data("entry_widget")
+        item = entry.get_data("item")
+        # if pressed outside entry column area, destroy entry
+        if cell is None:
+            entry.get_parent().destroy()
+            return
+        (row, column, offset_x, offset_y) = cell
+        if self.visible_items[row] != item or column != item.ENTRY_COLUMN:
+            entry.get_parent().destroy()
+            return
+        # right button the show menu
+        if is_right_button(event):
+            entry.right_menu.show((int(event.x_root), int(event.y_root)))
+            return
+        entry.set_data("button_press", True)
+        send_event = event.copy()
+        send_event.send_event = True
+        send_event.x = float(offset_x)
+        send_event.y = 1.0
+        send_event.window = entry.window
+        entry.event(send_event)
+        send_event.free()
+
+    def button_release(self, widget, event):
+        if self.get_data("entry_widget") is None:
+            return
+        entry = self.get_data("entry_widget")
+        # has not been pressed
+        if not entry.get_data("button_press"):
+            return
+        cell = self.get_cell_with_event(event)
+        if cell is None:
+            offset_x = 1
+        else:
+            (row, column, offset_x, offset_y) = cell
+        entry.grab_focus()
+        entry.set_data("button_press", False)
+        send_event = event.copy()
+        send_event.send_event = True
+        send_event.x = float(offset_x)
+        send_event.y = 1.0
+        send_event.window = entry.window
+        entry.event(send_event)
+        send_event.free()
+
+    def motion_notify(self, widget, event):
+        if self.get_data("entry_widget") is None:
+            return
+        entry = self.get_data("entry_widget")
+        # has not been pressed
+        if not entry.get_data("button_press"):
+            return
+        cell = self.get_cell_with_event(event)
+        item = entry.get_data("item")
+        if cell is None:
+            offset_x = 1
+        else:
+            (row, column, offset_x, offset_y) = cell
+            if column != item.ENTRY_COLUMN:
+                offset_x = 1
+        send_event = event.copy()
+        send_event.send_event = True
+        send_event.x = float(offset_x)
+        send_event.y = 1.0
+        send_event.window = entry.window
+        entry.event(send_event)
+        send_event.free()
+
+    def double_click(self, widget, item, column):
+        if not column == item.ENTRY_COLUMN:
+            return
+        if item.entry:
+            item.entry.grab_focus()
+            return
+        item.entry_buffer.set_property('cursor-visible', True)
+        hbox = gtk.HBox(False)
+        align = gtk.Alignment(0, 0, 1, 1)
+        entry = Entry()
+        entry.set_data("item", item)
+        entry.set_data("button_press", False)
+        entry.set_buffer(item.entry_buffer)
+        entry.set_size_request(item.get_column_widths()[column]-4, 0)
+        entry.connect("press-return", lambda w: hbox.destroy())
+        entry.connect("destroy", self.edit_done, hbox, item)
+        entry.connect_after("focus-in-event", self.entry_focus_changed, item)
+        entry.connect_after("focus-out-event", self.entry_focus_changed, item)
+        self.pack_start(hbox, False, False)
+        self.set_data("entry_widget", entry)
+        hbox.pack_start(entry, False, False)
+        hbox.pack_start(align)
+        hbox.show_all()
+        entry.set_can_focus(True)
+        entry.grab_focus()
+        entry.select_all()
+        item.entry = entry
+
+    def edit_done(self, entry, box, item):
+        item.entry = None
+        item.entry_buffer.set_property('cursor-visible', False)
+        item.entry_buffer.move_to_start()
+        item.redraw_request_callback(item)
+        self.draw_area.grab_focus()
+        self.set_data("entry_widget", None)
+   
+    def entry_focus_changed(self, entry, event, item):
+        if event.in_:
+            item.entry_buffer.set_property('cursor-visible', True)
+        else:
+            item.entry_buffer.set_property('cursor-visible', False)
+
     def release_item(self, event):
         if is_left_button(event):
             cell = self.get_cell_with_event(event)
@@ -81,7 +201,6 @@ class EntryTreeView(TreeView):
                 self.set_drag_row(None)
         
 class EntryTreeItem(TreeItem):
-    
     def __init__(self, title, content):
         TreeItem.__init__(self)
         self.title = title
