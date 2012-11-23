@@ -24,7 +24,7 @@ from keymap import get_keyevent_name
 from button import Button
 from constant import ALIGN_MIDDLE
 from draw import draw_vlinear, draw_blank_mask
-from entry import InputEntry
+from new_entry import InputEntry
 from label import Label
 from locales import _
 from mask import draw_mask

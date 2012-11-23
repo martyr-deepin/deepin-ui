@@ -40,6 +40,10 @@ from dtk.ui.file_treeview import (get_dir_items, sort_by_name, sort_by_size,
                                   sort_by_type, sort_by_mtime)
 import gtk
 
+def m_single_click_item(widget, event, argv1, argv2, argv3):
+    pass
+    #print widget, event, argv1, argv2, argv3
+
 def m_delete_select_items(widget, items):
     print widget, items
 
@@ -78,11 +82,12 @@ if __name__ == "__main__":
     # Add TreeView.
     print os.path.expanduser("~")
     treeview = TreeView(get_dir_items(os.path.expanduser("~")))
-    treeview.set_highlight_index(1)
+    treeview.set_highlight_item(treeview.get_items()[1])
     treeview.connect("delete-select-items", m_delete_select_items)
     treeview.connect("button-press-item", m_button_press_item)
     treeview.connect("double-click-item", m_double_click_item)
     treeview.connect("right-press-items", m_right_press_items)
+    treeview.connect("single-click-item", m_single_click_item)
     # treeview = TreeView(get_dir_items("/"))
     treeview_align = gtk.Alignment()
     treeview_align.set(0.5, 0.5, 1, 1)
@@ -90,7 +95,6 @@ if __name__ == "__main__":
     
     treeview.set_column_titles(["文件名", "大小", "类型", "修改时间"],
                                [sort_by_name, sort_by_size, sort_by_type, sort_by_mtime])
-    treeview.set_highlight_index(1)
     
     treeview_align.add(treeview)
     application.main_box.pack_start(treeview_align)
