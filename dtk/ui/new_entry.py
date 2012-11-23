@@ -849,7 +849,7 @@ class Entry(gtk.EventBox):
                     '''
                     FIXME: if call set_text then cursor offset is wrong
                     '''
-                    #self.__calculate_cursor_offset()
+                    self.__calculate_cursor_offset()
             self.queue_draw()
         
     def get_text(self):
@@ -978,7 +978,7 @@ class Entry(gtk.EventBox):
         '''
         FIXME: wrong cursor offset
         '''
-        #self.__calculate_cursor_offset()
+        self.__calculate_cursor_offset()
         self.queue_draw()
         
     def cut_to_clipboard(self):
