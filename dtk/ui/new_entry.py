@@ -396,7 +396,7 @@ class EntryBuffer(gobject.GObject):
         first_line = self.buffer.get_iter_at_line(0)
         return first_line.get_chars_in_line()
    
-    def render(self, cr, rect, im=None, offset_x=0, offset_y=0):
+    def render(self, cr, rect, im=None, offset_x=0, offset_y=0, grab_focus_flag=False):
         '''render. Used by widget'''
         # Clip text area first.
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
@@ -437,7 +437,7 @@ class EntryBuffer(gobject.GObject):
                 context.update_layout(layout)
                 context.show_layout(layout)
             # Draw cursor
-            if self.get_cursor_visible():
+            if self.get_cursor_visible() and grab_focus_flag:
                 # Init.
                 cursor_index = self.get_insert_index()
                 cursor_pos = self.get_cursor_pos(cursor_index)[0]
@@ -1090,7 +1090,7 @@ class Entry(gtk.EventBox):
         '''
         Draw entry
         '''
-        self.entry_buffer.render(cr, rect, self.im, self.offset_x, self.offset_y)
+        self.entry_buffer.render(cr, rect, self.im, self.offset_x, self.offset_y, self.grab_focus_flag)
         
         # Propagate expose.
         propagate_expose(widget, event)
