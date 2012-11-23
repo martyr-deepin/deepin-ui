@@ -254,16 +254,13 @@ class TreeView(gtk.VBox):
     def get_items(self):
         return self.visible_items
     
-    def set_highlight_index(self, index):
-        item = self.visible_items[index]
+    def set_highlight_item(self, item):
         if hasattr(item, "highlight"):
-            self.highlight_index = index
+            if self.highlight_item is not None:
+                self.highlight_item.unhighlight()
             self.highlight_item = item
             self.visible_highlight()
             self.queue_draw()
-    
-    def get_highlight_index(self):
-        return self.highlight_item.row_index
 
     def get_highlight_item(self):
         return self.highlight_item
@@ -854,11 +851,8 @@ class TreeView(gtk.VBox):
             '''
             TODO: some app based on TreeView might emit delete-select-items wrong
             '''
-            try:
-                self.emit("delete-select-items", cache_remove_items)
-            except Exception, e:
-                pass
-
+            self.emit("delete-select-items", cache_remove_items)
+            
             self.update_item_index()    
             
             self.update_item_widths()
