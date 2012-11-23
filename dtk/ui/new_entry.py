@@ -37,7 +37,8 @@ import cairo
 import pangocairo
 from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
                           get_content_size, is_double_click, is_right_button, 
-                          is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias)
+                          is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias, 
+                          repeat)
 import time
 import threading as td
 
@@ -1915,6 +1916,14 @@ class PasswordEntry(gtk.VBox):
         self.frame_point_color = frame_point_color
         self.frame_color = frame_color
         self.shown_password = shown_password
+        if not self.shown_password:
+            str_len = len(self.entry.get_text())
+            new_str = ""
+            if str_len:
+                while str_len:
+                    new_str += "*"
+                    str_len -= 1
+                self.entry.set_text(new_str)
 
         self.pack_start(self.align, False, False)
         self.align.add(self.h_box)
@@ -1954,7 +1963,9 @@ class PasswordEntry(gtk.VBox):
         old_str = self.entry.get_text()
         str_len = len(old_str)
         new_str = ""
-        if str_len == 1:
+        if str_len == 0:
+            return
+        elif str_len == 1:
             new_str = "*"
         else:
             new_str = old_str[0:str_len - 1] + "*"
