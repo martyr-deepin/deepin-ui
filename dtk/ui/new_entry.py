@@ -1254,11 +1254,11 @@ class Entry(gtk.EventBox):
     
     def __calculate_cursor_offset(self):
         '''calculate the cursor offset'''
-        if not self.get_realized():
+        rect = self.allocation
+        if not self.get_realized() or (rect.x == -1 or rect.y == -1):
             self.offset_x = self.offset_y = 0
             return
         # comput coord offset
-        rect = self.allocation
         cursor_index = self.entry_buffer.get_insert_index()
         cursor_pos = self.entry_buffer.get_cursor_pos(cursor_index)[0]
         if cursor_pos[0] - self.offset_x > rect.width - self.padding_x * 2 :
