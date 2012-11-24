@@ -846,9 +846,8 @@ class Entry(gtk.EventBox):
             with self.monitor_entry_content():
                 if text is not None:
                     self.entry_buffer.set_text(text)
-                    '''
-                    FIXME: if call set_text then cursor offset is wrong
-                    '''
+                    # reset the offset
+                    self.offset_x = self.offset_y = 0
                     self.__calculate_cursor_offset()
             self.queue_draw()
         
@@ -975,9 +974,8 @@ class Entry(gtk.EventBox):
         Select all text of entry.
         '''
         self.entry_buffer.select_all()
-        '''
-        FIXME: wrong cursor offset
-        '''
+        # reset the offset
+        self.offset_x = self.offset_y = 0
         self.__calculate_cursor_offset()
         self.queue_draw()
         
@@ -1256,6 +1254,9 @@ class Entry(gtk.EventBox):
     
     def __calculate_cursor_offset(self):
         '''calculate the cursor offset'''
+        if not self.get_realized():
+            self.offset_x = self.offset_y = 0
+            return
         # comput coord offset
         rect = self.allocation
         cursor_index = self.entry_buffer.get_insert_index()
