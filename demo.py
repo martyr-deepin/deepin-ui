@@ -376,7 +376,7 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("entry/search_press.png"),
         )
     entry = InputEntry("Linux Deepin", enable_clear_button=True)
-    entry.set_text("DEBUG")
+    #entry.set_text("DEBUG")
     entry.connect("action-active", print_entry_action)
     entry.set_size(150, 48)
     entry.entry.select_all()
@@ -392,8 +392,10 @@ if __name__ == "__main__":
     entry_box.pack_start(entry, True, True)
     entry_box.pack_start(password_entry, True, True)
     
-    shortcust_entry = ShortcutKeyEntry("Ctrl + Alt + Q")
+    #shortcust_entry = ShortcutKeyEntry("Ctrl + Alt + Q")
+    shortcust_entry = ShortcutKeyEntry("")
     shortcust_entry.set_size(150, 24)
+    shortcust_entry.set_shortcut_key("Ctrl + Alt + Q")
     entry_box.pack_start(shortcust_entry, False, False)
     
     test_button = Button("测试")

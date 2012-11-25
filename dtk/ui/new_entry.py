@@ -846,10 +846,9 @@ class Entry(gtk.EventBox):
             with self.monitor_entry_content():
                 if text is not None:
                     self.entry_buffer.set_text(text)
-                    '''
-                    FIXME: if call set_text then cursor offset is wrong
-                    '''
-                    #self.__calculate_cursor_offset()
+                    # reset the offset
+                    self.offset_x = self.offset_y = 0
+                    self.__calculate_cursor_offset()
             self.queue_draw()
         
     def get_text(self):
@@ -975,10 +974,9 @@ class Entry(gtk.EventBox):
         Select all text of entry.
         '''
         self.entry_buffer.select_all()
-        '''
-        FIXME: wrong cursor offset
-        '''
-        #self.__calculate_cursor_offset()
+        # reset the offset
+        self.offset_x = self.offset_y = 0
+        self.__calculate_cursor_offset()
         self.queue_draw()
         
     def cut_to_clipboard(self):
@@ -1256,8 +1254,11 @@ class Entry(gtk.EventBox):
     
     def __calculate_cursor_offset(self):
         '''calculate the cursor offset'''
-        # comput coord offset
         rect = self.allocation
+        if not self.get_realized() or (rect.x == -1 or rect.y == -1):
+            self.offset_x = self.offset_y = 0
+            return
+        # comput coord offset
         cursor_index = self.entry_buffer.get_insert_index()
         cursor_pos = self.entry_buffer.get_cursor_pos(cursor_index)[0]
         if cursor_pos[0] - self.offset_x > rect.width - self.padding_x * 2 :
