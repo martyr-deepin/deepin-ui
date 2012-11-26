@@ -1141,7 +1141,8 @@ class TreeView(gtk.VBox):
             '''
             TODO: some app wanna know the blank area right click x && y value
             '''
-            self.emit("right-press-items", event.x_root, event.y_root, None, None)
+            if not self.left_button_press:
+                self.emit("right-press-items", event.x_root, event.y_root, None, None)
 
     def shift_click(self, click_row):
         if self.select_rows == [] or self.start_select_row == None:
