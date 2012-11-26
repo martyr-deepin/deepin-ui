@@ -1389,3 +1389,7 @@ def is_dbus_name_exists(dbus_name, request_session_bus=True):
     
     return dbus_name in dbus_iface.ListNames()
 
+def get_unused_port(address="localhost"):
+    s = socket.socket()
+    s.bind((address, 0))
+    return s.getsockname()[1]
