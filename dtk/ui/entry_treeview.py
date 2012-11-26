@@ -184,6 +184,7 @@ class EntryTreeView(TreeView):
                         self.emit("double-click", self.visible_items[release_row], release_column)
                     elif self.single_click_row == release_row:
                         self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
+                        self.emit("single-click-item", self.visible_items[release_row], release_column)
                 
                 if self.start_drag and self.is_in_visible_area(event):
                     self.drag_select_items_at_cursor()
