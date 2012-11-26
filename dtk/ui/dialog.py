@@ -449,7 +449,7 @@ class InputDialog(DialogBox):
         self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
         self.connect("show", self.focus_input)
-        self.connect("key-press-event", self.m_key_press)
+        self.entry.connect("key-press-event", self.m_key_press)
 
         self.keymap = {
             "Return" : self.m_press_return,

@@ -67,7 +67,7 @@ if __name__ == '__main__':
             item6, item7, item8, item9, item10,
             item11, item12, item13, item14]
     tree_view = EntryTreeView(item)
-    tree_view.connect("single-click-item", m_single_click)
+    #tree_view.connect("single-click-item", m_single_click)
 
     win.add(tree_view)
     win.show_all()
