@@ -141,6 +141,9 @@ class EntryBuffer(gobject.GObject):
         self.set_text(text)
         self.buffer.connect("changed", lambda bf: self.emit("changed"))
 
+    def get_content_size(self):
+        return get_content_size(self.get_text(), self.font_size)
+    
     def do_set_property(self, pspec, value):
         if pspec.name in self.__prop_dict:
             self.__prop_dict[pspec.name] = value
