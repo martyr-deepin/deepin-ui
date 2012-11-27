@@ -261,7 +261,7 @@ class TreeView(gtk.VBox):
             '''
             TODO: some app do the visible_highlight by itself
             '''
-            self.visible_highlight()
+            #self.visible_highlight()
             self.queue_draw()
 
     def get_highlight_item(self):
@@ -290,7 +290,7 @@ class TreeView(gtk.VBox):
                 up_items_height += item.get_height()
             down_items_height += (up_items_height + self.visible_items[highlight_index].get_height())
 
-            if offset_y > up_items_height:
+            if offset_y + vadjust.get_page_size() > up_items_height:
                 vadjust.set_value(up_items_height)
             elif offset_y + vadjust.get_page_size() < down_items_height:
                 vadjust.set_value(down_items_height - vadjust.get_page_size() + self.title_offset_y)
