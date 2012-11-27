@@ -52,8 +52,7 @@ def m_button_press_item(widget, event, argv1, argv2, argv3):
     #print widget, event, argv1, argv2, argv3
 
 def m_double_click_item(widget, event, argv1, argv2, argv3):
-    pass
-    #print widget, event, argv1, argv2, argv3
+    print widget, event, argv1, argv2, argv3
 
 def m_right_press_items(widget, event, argv1, argv2, argv3):
     print widget, event, argv1, argv2, argv3

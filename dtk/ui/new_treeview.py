@@ -186,7 +186,6 @@ class TreeView(gtk.VBox):
         self.column_widths = []
         self.sort_action_id = 0
         self.title_offset_y = -1
-        self.item_height = -1
         '''
         TODO: highlight index && item
         '''
@@ -282,29 +281,14 @@ class TreeView(gtk.VBox):
                 raise Exception, "parent container is not ScrolledWindow"
             vadjust = self.scrolled_window.get_vadjustment()
             highlight_index = self.get_items().index(self.highlight_item)
-            if offset_y > highlight_index * self.item_height:
-                vadjust.set_value(highlight_index * self.item_height)
-            elif offset_y + vadjust.get_page_size() < (highlight_index + 1) * self.item_height:
-                vadjust.set_value((highlight_index + 1) * self.item_height - vadjust.get_page_size() + self.title_offset_y)
-    
-    def emit_item_event(self, event_name, event):
-        '''
-        Wrap method for emit event signal.
-        
-        @param event_name: Event name.
-        @param event: Event.
-        '''
-        # TODO: removed the checking of self.title_offset_y, some app might not render title
-        if self.item_height == -1:
-            return
+            other_items_height = -1
+            for item in self.visible_items[0:highlight_index]:
+                other_items_height += item.get_height()
 
-        (event_x, event_y) = get_event_coords(event)
-        event_row = (event_y - self.title_offset_y) / self.item_height
-        if 0 <= event_row <= last_index(self.visible_items):
-            offset_y = event_y - event_row * self.item_height - self.title_offset_y
-            (event_column, offset_x) = get_disperse_index(self.column_widths, event_x)
-     
-            self.emit(event_name, self.visible_items[event_row], event_column, offset_x, offset_y)
+            if offset_y > other_items_height:
+                vadjust.set_value(other_items_height)
+            elif offset_y + vadjust.get_page_size() < other_items_height:
+                vadjust.set_value(other_items_height - vadjust.get_page_size() + self.title_offset_y)
 
     def realize_tree_view(self, widget):
         self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
@@ -949,7 +933,6 @@ class TreeView(gtk.VBox):
                 render_x = rect.x + item_width_count
                 render_y = rect.y + item_height_count
                 render_width = column_width
-                self.item_height = item.get_height()
                 render_height = item.get_height()
                 
                 # Draw on top surface.
@@ -990,14 +973,6 @@ class TreeView(gtk.VBox):
                         TODO: Draw highlight row
                         '''
                         if self.highlight_item:
-                            '''
-                            Let user overload highlight && unhighlight
-                            self.draw_item_highlight(cr, 
-                                                     rect.x, 
-                                                     rect.y + self.highlight_item.row_index * self.item_height, 
-                                                     rect.width, 
-                                                     render_height)
-                            '''
                             if hasattr(self.highlight_item, "highlight"):
                                 self.highlight_item.highlight()
                         else:
@@ -1102,8 +1077,7 @@ class TreeView(gtk.VBox):
                             self.start_drag = False
                             self.start_select_row = click_row
                             self.set_select_rows([click_row])
-                            self.emit_item_event("button-press-item", event)
-                            
+                            self.emit("button-press-item", self.visible_items[click_row], click_column, offset_x, offset_y)
                             self.visible_items[click_row].button_press(click_column, offset_x, offset_y)
                             
                 if is_double_click(event):
@@ -1192,11 +1166,11 @@ class TreeView(gtk.VBox):
                 
                 if release_row != None:
                     if self.double_click_row == release_row:
+                        self.emit("double-click-item", self.visible_items[release_row], release_column, offset_x, offset_y)
                         self.visible_items[release_row].double_click(release_column, offset_x, offset_y)
-                        self.emit_item_event("double-click-item", event)
                     elif self.single_click_row == release_row:
+                        self.emit("single-click-item", self.visible_items[release_row], release_column, offset_x, offset_y)
                         self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
-                        self.emit_item_event("single-click-item", event)
                 
                 if self.start_drag and self.is_in_visible_area(event):
                     self.drag_select_items_at_cursor()
@@ -1327,7 +1301,7 @@ class TreeView(gtk.VBox):
                         if self.hover_row != None:
                             self.visible_items[self.hover_row].hover(hover_column, offset_x, offset_y)
 
-                self.emit_item_event("motion-notify-item", event)
+                    self.emit("motion-notify-item", self.visible_items[hover_row], hover_column, offset_x, offset_y)
                             
     def auto_scroll_tree_view(self, event):
         '''

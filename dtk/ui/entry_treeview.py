@@ -131,6 +131,7 @@ class EntryTreeView(TreeView):
         send_event.free()
 
     def double_click(self, widget, item, column):
+        print "DEBUG double_click"
         if not column == item.ENTRY_COLUMN:
             return
         if item.entry:
@@ -181,12 +182,10 @@ class EntryTreeView(TreeView):
                 if release_row is not None:
                     if self.double_click_row == release_row:
                         self.visible_items[release_row].double_click(release_column, offset_x, offset_y)
-                        if is_right_button(event):
-                            self.emit("double-click", self.visible_items[release_row], release_column)
+                        self.emit("double-click", self.visible_items[release_row], release_column)
                     elif self.single_click_row == release_row:
                         self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
-                        if is_left_button(event):
-                            self.emit_item_event("single-click-item", event)
+                        self.emit("single-click-item", self.visible_items[release_row], release_column, offset_x, offset_y)
                 
                 if self.start_drag and self.is_in_visible_area(event):
                     self.drag_select_items_at_cursor()
