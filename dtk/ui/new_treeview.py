@@ -293,7 +293,7 @@ class TreeView(gtk.VBox):
             if offset_y + vadjust.get_page_size() > up_items_height:
                 vadjust.set_value(up_items_height)
             elif offset_y + vadjust.get_page_size() < down_items_height:
-                vadjust.set_value(down_items_height - vadjust.get_page_size() + self.title_offset_y)
+                vadjust.set_value(down_items_height - vadjust.get_page_size())
 
     def realize_tree_view(self, widget):
         self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
