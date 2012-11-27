@@ -270,6 +270,9 @@ class TreeView(gtk.VBox):
         self.queue_draw()
 
     def visible_highlight(self):
+        if self.highlight_item not in self.get_items():
+            return
+        
         if self.highlight_item == None:
             print "visible_highlight: highlight item is None."
         else:
@@ -278,7 +281,7 @@ class TreeView(gtk.VBox):
             if self.scrolled_window == None:
                 raise Exception, "parent container is not ScrolledWindow"
             vadjust = self.scrolled_window.get_vadjustment()
-            highlight_index = self.highlight_item.row_index
+            highlight_index = self.get_items().index(self.highlight_item)
             if offset_y > highlight_index * self.item_height:
                 vadjust.set_value(highlight_index * self.item_height)
             elif offset_y + vadjust.get_page_size() < (highlight_index + 1) * self.item_height:

@@ -343,7 +343,7 @@ if __name__ == "__main__":
     list_view = ListView(
         [(lambda item: item.title, cmp),
          (lambda item: item.artist, cmp),
-         (lambda item: item.length, cmp)])
+         (lambda item: item.length, cmp)], drag_data=([("text/deepin-webcasts", gtk.TARGET_SAME_APP, 1),], gtk.gdk.ACTION_COPY, 1))
     list_view.set_expand_column(0)
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
@@ -359,8 +359,10 @@ if __name__ == "__main__":
     list_view.connect("right-press-items", print_right_press)
 
     scrolled_window.add_child(list_view)
+    '''
     if len(list_view.items):
         list_view.set_highlight(list_view.items[6])
+    '''
     # Add volume button.
     volume_button = VolumeButton(100, 50)
     volume_frame = gtk.Alignment()
