@@ -261,7 +261,7 @@ class TreeView(gtk.VBox):
             '''
             TODO: some app do the visible_highlight by itself
             '''
-            #self.visible_highlight()
+            self.visible_highlight()
             self.queue_draw()
 
     def get_highlight_item(self):
@@ -284,14 +284,16 @@ class TreeView(gtk.VBox):
                 raise Exception, "parent container is not ScrolledWindow"
             vadjust = self.scrolled_window.get_vadjustment()
             highlight_index = self.get_items().index(self.highlight_item)
-            other_items_height = -1
-            for item in self.visible_items[0:highlight_index+1]:
-                other_items_height += item.get_height()
+            up_items_height = 0
+            down_items_height = 0
+            for item in self.visible_items[0:highlight_index]:
+                up_items_height += item.get_height()
+            down_items_height += (up_items_height + self.visible_items[highlight_index].get_height())
 
-            if offset_y > other_items_height:
-                vadjust.set_value(other_items_height)
-            elif offset_y + vadjust.get_page_size() < other_items_height:
-                vadjust.set_value(other_items_height - vadjust.get_page_size() + self.title_offset_y)
+            if offset_y > up_items_height:
+                vadjust.set_value(up_items_height)
+            elif offset_y + vadjust.get_page_size() < down_items_height:
+                vadjust.set_value(down_items_height - vadjust.get_page_size() + self.title_offset_y)
 
     def realize_tree_view(self, widget):
         self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
