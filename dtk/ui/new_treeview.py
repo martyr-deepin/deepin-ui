@@ -878,6 +878,8 @@ class TreeView(gtk.VBox):
         rect = widget.allocation
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
 
+        self.update_vadjustment()
+
         # Draw background.
         self.draw_background(widget, cr, offset_x, offset_y)
             
