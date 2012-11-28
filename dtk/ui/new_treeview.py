@@ -867,7 +867,8 @@ class TreeView(gtk.VBox):
         vadjust_height = sum(map(lambda i: i.get_height(), self.visible_items))
         self.draw_area.set_size_request(-1, vadjust_height)
         vadjust = self.scrolled_window.get_vadjustment()
-        vadjust.set_upper(vadjust_height)
+        if vadjust.get_upper() != vadjust_height and self.scrolled_window.allocation.height < vadjust_height:
+            vadjust.set_upper(vadjust_height)
         
     def expose_tree_view(self, widget):
         '''
