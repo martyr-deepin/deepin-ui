@@ -23,7 +23,7 @@
 
 from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
 from draw import draw_hlinear, draw_pixbuf
-from keymap import get_keyevent_name
+from keymap import get_keyevent_name, get_key_name
 from locales import _
 from menu import Menu
 from theme import ui_theme
@@ -1961,8 +1961,8 @@ class PasswordEntry(gtk.VBox):
         self.align.queue_draw()
 
     def key_press_entry(self, widget, argv):
+        self.ori_content += get_key_name(argv.keyval)
         if self.shown_password:
-            self.ori_content = self.entry.get_text()
             return
         old_str = self.entry.get_text()
         str_len = len(old_str)
