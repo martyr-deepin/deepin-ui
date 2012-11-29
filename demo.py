@@ -388,6 +388,9 @@ if __name__ == "__main__":
     password_check_button = CheckButton("Shown")
     password_check_button.set_active(shown_password)
     password_check_button.connect("toggled", lambda widget: password_entry.show_password(widget.get_active()))
+    password_check_button_align = gtk.Alignment()
+    password_check_button_align.set(0.0, 0.5, 0, 0)
+    password_check_button_align.add(password_check_button)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容")
     entry_label.set_size_request(100, 30)
@@ -395,7 +398,7 @@ if __name__ == "__main__":
     entry_box.pack_start(entry_label, False, False)
     entry_box.pack_start(entry, True, True)
     entry_box.pack_start(password_entry, True, True)
-    entry_box.pack_start(password_check_button, True, True)
+    entry_box.pack_start(password_check_button_align, True, True)
     
     #shortcust_entry = ShortcutKeyEntry("Ctrl + Alt + Q")
     shortcust_entry = ShortcutKeyEntry("")
