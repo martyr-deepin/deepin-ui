@@ -392,8 +392,8 @@ if __name__ == "__main__":
     entry_label.set_text("标签的内容")
     entry_label.set_size_request(100, 30)
     entry_box = gtk.HBox(spacing=10)
-    #entry_box.pack_start(entry_label, False, False)
-    #entry_box.pack_start(entry, True, True)
+    entry_box.pack_start(entry_label, False, False)
+    entry_box.pack_start(entry, True, True)
     entry_box.pack_start(password_entry, True, True)
     entry_box.pack_start(password_check_button, True, True)
     
