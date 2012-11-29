@@ -78,6 +78,7 @@ class EntryBuffer(gobject.GObject):
         'select-area-visible': (gobject.TYPE_BOOLEAN, 'select_area_visible', 'select area visible',
             True, gobject.PARAM_READWRITE),
         'invisible-char': (gobject.TYPE_CHAR, 'invisible_char', 'invisible char', ' ', '~', '*', gobject.PARAM_READWRITE)}
+    
     __gsignals__ = {
         "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "insert-pos-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
@@ -1889,7 +1890,6 @@ TODO: Act like Mac style
       The last character when inputting is visible then disappeared for a while
 '''
 class PasswordEntry(gtk.VBox):
-    
     '''
     Perhaps it need more signals
     '''
@@ -1919,7 +1919,9 @@ class PasswordEntry(gtk.VBox):
         self.point_color = point_color
         self.frame_point_color = frame_point_color
         self.frame_color = frame_color
+        self.ori_content = self.entry.get_text()
         self.shown_password = shown_password
+        self.set_show_password = False
         if not self.shown_password:
             str_len = len(self.entry.get_text())
             new_str = ""
@@ -1947,11 +1949,17 @@ class PasswordEntry(gtk.VBox):
         '''
         self.align.connect("expose-event", self.expose_password_entry)
 
+    def get_ori_content(self):
+        return self.ori_content
+    
     def show_password(self, shown_password=False):
+        self.set_show_password = True
         self.shown_password = shown_password
+        self.align.queue_draw()
 
     def key_press_entry(self, widget, argv):
         if self.shown_password:
+            self.ori_content = self.entry.get_text()
             return
         old_str = self.entry.get_text()
         str_len = len(old_str)
@@ -1985,6 +1993,10 @@ class PasswordEntry(gtk.VBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
+
+        if self.shown_password and self.set_show_password:
+            self.entry.set_text(self.ori_content)
+            self.set_show_password = False
 
         with cairo_disable_antialias(cr):
             cr.set_line_width(1)
