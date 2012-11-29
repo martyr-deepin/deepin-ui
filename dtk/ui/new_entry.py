@@ -1923,13 +1923,7 @@ class PasswordEntry(gtk.VBox):
         self.shown_password = shown_password
         self.set_show_password = False
         if not self.shown_password:
-            str_len = len(self.entry.get_text())
-            new_str = ""
-            if str_len:
-                while str_len:
-                    new_str += "*"
-                    str_len -= 1
-                self.entry.set_text(new_str)
+            self.__setup_start()
 
         self.pack_start(self.align, False, False)
         self.align.add(self.h_box)
@@ -1949,6 +1943,15 @@ class PasswordEntry(gtk.VBox):
         '''
         self.align.connect("expose-event", self.expose_password_entry)
 
+    def __setup_start(self):
+        str_len = len(self.entry.get_text())                                 
+        new_str = ""                                                         
+        if str_len:                                                          
+            while str_len:                                                   
+                new_str += "*"                                               
+                str_len -= 1                                                 
+            self.entry.set_text(new_str) 
+    
     def get_ori_content(self):
         return self.ori_content
     
@@ -1996,6 +1999,9 @@ class PasswordEntry(gtk.VBox):
 
         if self.shown_password and self.set_show_password:
             self.entry.set_text(self.ori_content)
+            self.set_show_password = False
+        if not self.shown_password and self.set_show_password:
+            self.__setup_start()
             self.set_show_password = False
 
         with cairo_disable_antialias(cr):
