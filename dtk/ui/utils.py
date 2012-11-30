@@ -1393,3 +1393,19 @@ def get_unused_port(address="localhost"):
     s = socket.socket()
     s.bind((address, 0))
     return s.getsockname()[1]
+
+def invisible_window(window):
+    def shape_window(widget, rect):
+        w, h = rect.width, rect.height
+        bitmap = gtk.gdk.Pixmap(None, w, h, 1)
+        cr = bitmap.cairo_create()
+        
+        cr.set_source_rgb(0.0, 0.0, 0.0)
+        cr.set_operator(cairo.OPERATOR_CLEAR)
+        cr.paint()
+        
+        widget.shape_combine_mask(bitmap, 0, 0)
+    
+    window.move(0, 0)
+    window.set_default_size(0, 0)
+    window.connect("size-allocate", shape_window)
