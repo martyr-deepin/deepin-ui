@@ -43,6 +43,8 @@ class HSlider(gtk.Viewport):
         self.page_width = 0
         self.page_height = 0
         self.active_widget = None
+        self.pre_widget = None
+        self.pages = []
         
         self.layout = gtk.HBox(True)
         self.event_box = gtk.EventBox()
@@ -54,80 +56,59 @@ class HSlider(gtk.Viewport):
         self.connect("size-allocate", self.slider_allocate)
         
     def slider_realize(self, widget):
-        self.update_size(self.get_allocation())        
-        
+        self.update_size()
+
     def slider_allocate(self, widget, rect):
-        self.update_size(rect)
+        self.update_size()
         
-    def update_size(self, rect):
+    def update_size(self):
+        rect = self.get_allocation()
         self.page_width = rect.width
         self.page_height = rect.height
         
-        width = self.page_width * len(self.layout.get_children())
-        self.event_box.set_size_request(width, self.page_height)
-        self.layout.set_size_request(width, self.page_height)
-        self.get_hadjustment().set_upper(width)
-        
-        for (index, child) in enumerate(self.layout.get_children()):
-            child.set_size_request(self.page_width, self.page_height)
-        
-        if self.active_widget:
-            self.set_to_page(self.active_widget)
-            
+        self.get_hadjustment().set_upper(rect.width*2)
+        for c in self.pages:
+            c.set_size_request(self.page_width, self.page_height)
+
     def append_page(self, widget):
-        self.layout.pack_start(widget, True, True, 0)
+        self.pages.append(widget)
         
-        if self.active_widget == None:
-            self.active_widget = widget
+        #if self.active_widget == None:
+            #self.active_widget = widget
         
     def slide_to_page(self, target_widget, direction):
         if self.active_widget != target_widget:
-            if not direction in ["left", "right"]:
-                raise Exception, "slide_to_page: please pass valid value of direction `left` or `right`"
-
-            active_index = self.layout.get_children().index(self.active_widget)
-            target_index = self.layout.get_children().index(target_widget)
-
-            if active_index > target_index:
-                if direction == "left":
-                    reoreder_index = active_index - 1
-                else:
-                    reoreder_index = active_index
-            else:
-                if direction == "left":
-                    reoreder_index = active_index
-                else:
-                    reoreder_index = active_index + 1
-            
-            self.layout.reorder_child(target_widget, reoreder_index)    
-            self.set_to_page(self.active_widget)
-            
-            start_index = self.layout.get_children().index(self.active_widget)
-            end_index = self.layout.get_children().index(target_widget)
-            start_position = start_index * self.page_width
-            end_position = end_index * self.page_width
-            
-            if start_position != end_position:
-                timeline = Timeline(self.slide_time, CURVE_SINE)
+            self.set_to_page(target_widget)
+            timeline = Timeline(self.slide_time, CURVE_SINE)
+            if direction == "right":
                 timeline.connect('update', lambda source, status: 
-                                 self.update(source,
-                                             status, 
-                                             start_position,
-                                             end_position - start_position))
-                timeline.connect("completed", lambda source: self.completed(target_widget))
-                timeline.run()
-                
-    def update(self, source, status, start_position, pos):
-        self.get_hadjustment().set_value(start_position + int(round(status * pos)))
+                                self.get_hadjustment().set_value(int(round(status*self.page_width))))
+            else:
+                self.layout.reorder_child(self.active_widget, 0)
+                timeline.connect('update', lambda source, status: 
+                                self.get_hadjustment().set_value(self.page_width - int(round(status*self.page_width))))
+
+            timeline.connect("completed", lambda source: self.completed(target_widget))
+            timeline.run()
         
     def completed(self, widget):    
-        self.active_widget = widget
+        if self.pre_widget:
+            self.layout.remove(self.pre_widget)
         
         self.emit("completed_slide")
     
     def set_to_page(self, widget):
-        self.active_widget = widget
-        widget_index = self.layout.get_children().index(widget)
-        self.get_hadjustment().set_value(widget_index * self.page_width)
+        if self.pre_widget == None:
+            self.pre_widget = widget
+            self.active_widget = widget
+        elif self.pre_widget != self.active_widget:
+            self.pre_widget = self.active_widget
+            self.active_widget = widget
+        else:
+            self.active_widget = widget
+
+        if not self.active_widget.parent:
+            self.layout.pack_start(self.active_widget, True, True, 0)
+        self.layout.show_all()
 
 gobject.type_register(HSlider)
