@@ -57,8 +57,8 @@ class HSlider(gtk.Viewport):
         
     def slider_realize(self, widget):
         self.update_size()
-        if self.active_widget:
-            self.set_to_page(self.active_widget)
+        #if self.active_widget:
+            #self.set_to_page(self.active_widget)
 
     def slider_allocate(self, widget, rect):
         self.update_size()
@@ -69,40 +69,39 @@ class HSlider(gtk.Viewport):
         self.page_height = rect.height
         
         self.get_hadjustment().set_upper(rect.width*2)
-        
         for c in self.pages:
             c.set_size_request(self.page_width, self.page_height)
 
     def append_page(self, widget):
         self.pages.append(widget)
         
-        if self.active_widget == None:
-            self.active_widget = widget
+        #if self.active_widget == None:
+            #self.active_widget = widget
         
     def slide_to_page(self, target_widget, direction):
         if self.active_widget != target_widget:
             self.set_to_page(target_widget)
             timeline = Timeline(self.slide_time, CURVE_SINE)
-            timeline.connect('update', lambda source, status: 
-                             self.update(source,
-                                         status, 
-                                         0,
-                                         self.page_width))
+            if direction == "right":
+                timeline.connect('update', lambda source, status: 
+                                self.get_hadjustment().set_value(int(round(status*self.page_width))))
+            else:
+                self.layout.reorder_child(self.active_widget, 0)
+                timeline.connect('update', lambda source, status: 
+                                self.get_hadjustment().set_value(self.page_width - int(round(status*self.page_width))))
+
             timeline.connect("completed", lambda source: self.completed(target_widget))
             timeline.run()
-                
-    def update(self, source, status, start_position, pos):
-        self.get_hadjustment().set_value(start_position + int(round(status * pos)))
         
     def completed(self, widget):    
         if self.pre_widget:
             self.layout.remove(self.pre_widget)
             self.layout.queue_resize()
+        self.get_hadjustment().set_value(0)
         
         self.emit("completed_slide")
     
     def set_to_page(self, widget):
-        assert(widget != None)
         if self.pre_widget == None:
             self.pre_widget = widget
             self.active_widget = widget
@@ -114,6 +113,7 @@ class HSlider(gtk.Viewport):
 
         if not self.active_widget.parent:
             self.layout.pack_start(self.active_widget, True, True, 0)
+        self.layout.queue_resize()
         self.layout.show_all()
 
 gobject.type_register(HSlider)
