@@ -57,8 +57,6 @@ class HSlider(gtk.Viewport):
         
     def slider_realize(self, widget):
         self.update_size()
-        #if self.active_widget:
-            #self.set_to_page(self.active_widget)
 
     def slider_allocate(self, widget, rect):
         self.update_size()
@@ -96,8 +94,6 @@ class HSlider(gtk.Viewport):
     def completed(self, widget):    
         if self.pre_widget:
             self.layout.remove(self.pre_widget)
-            self.layout.queue_resize()
-        self.get_hadjustment().set_value(0)
         
         self.emit("completed_slide")
     
@@ -113,7 +109,6 @@ class HSlider(gtk.Viewport):
 
         if not self.active_widget.parent:
             self.layout.pack_start(self.active_widget, True, True, 0)
-        self.layout.queue_resize()
         self.layout.show_all()
 
 gobject.type_register(HSlider)
