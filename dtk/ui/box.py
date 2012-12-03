@@ -162,34 +162,28 @@ class ResizableBox(gtk.EventBox):
         self.height = height
         self.bottom_right_corner_pixbuf = ui_theme.get_pixbuf("box/bottom_right_corner.png")
         self.button_pressed = False
-        self.connect("button-press-event", self.m_button_press)
-        self.connect("button-release-event", self.m_button_release)
-        self.connect("motion-notify-event", self.m_motion_notify)
-        self.connect("expose-event", self.m_expose)
+        self.connect("button-press-event", self.__button_press)
+        self.connect("button-release-event", self.__button_release)
+        self.connect("motion-notify-event", self.__motion_notify)
+        self.connect("expose-event", self.__expose)
     
-    def m_button_press(self, widget, event):
+    def __button_press(self, widget, event):
         self.button_pressed = True
 
-    def m_button_release(self, widget, event):
+    def __button_release(self, widget, event):
         self.button_pressed = False
 
-    def m_motion_notify(self, widget, event):
+    def __motion_notify(self, widget, event):
+        if event.y < self.bottom_right_corner_pixbuf.get_pixbuf().get_height():
+            return
+
         self.height = event.y
         
-        '''
-        FIXME: change cursor style wrong
-        if self.height - event.y < 20:
-            cursor_changable = True
-            self.get_window().set_cursor(gtk.gdk.Cursor(gtk.gdk.BOTTOM_SIDE))
-        else:
-            cursor_changable = False
-            self.get_window().set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW))
-        '''
         if self.button_pressed:
             # redraw the widget
             self.window.invalidate_rect(self.allocation, True)        
     
-    def m_expose(self, widget, event):
+    def __expose(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y = rect.x, rect.y
