@@ -44,7 +44,6 @@ class HSlider(gtk.Viewport):
         self.page_height = 0
         self.active_widget = None
         self.pre_widget = None
-        self.pages = []
         
         self.layout = gtk.HBox(True)
         self.event_box = gtk.EventBox()
@@ -67,11 +66,10 @@ class HSlider(gtk.Viewport):
         self.page_height = rect.height
         
         self.get_hadjustment().set_upper(rect.width*2)
-        for c in self.pages:
-            c.set_size_request(self.page_width, self.page_height)
 
     def append_page(self, widget):
-        self.pages.append(widget)
+        pass
+        #self.pages.append(widget)
         
         #if self.active_widget == None:
             #self.active_widget = widget
@@ -109,6 +107,7 @@ class HSlider(gtk.Viewport):
 
         if not self.active_widget.parent:
             self.layout.pack_start(self.active_widget, True, True, 0)
+        self.active_widget.set_size_request(self.page_width, self.page_height)
         self.layout.show_all()
 
 gobject.type_register(HSlider)
