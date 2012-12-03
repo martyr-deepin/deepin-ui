@@ -6,7 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
-#	      Zhai Xiang <zhaixiang@linuxdeepin.com>
+#	          Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,6 +78,12 @@ import sys
 import time
 
 print time.time() - start_time
+
+def m_motion_item(widget, item, x, y):
+    print widget, item, x, y
+
+def print_delete_select_items(list_view, items):
+    print items
 
 def print_right_press(list_view, list_item, column, offset_x, offset_y):
     print column, offset_x, offset_y
@@ -337,16 +343,15 @@ if __name__ == "__main__":
     list_view = ListView(
         [(lambda item: item.title, cmp),
          (lambda item: item.artist, cmp),
-         (lambda item: item.length, cmp)])
+         (lambda item: item.length, cmp)], drag_data=([("text/deepin-webcasts", gtk.TARGET_SAME_APP, 1),], gtk.gdk.ACTION_COPY, 1))
     list_view.set_expand_column(0)
     list_view.add_titles(["歌名", "歌手", "时间"])
     list_view.add_items(items)
     list_view.hide_column([1])
     list_view.set_hide_column_flag(False)
     list_view.set_hide_column_resize(False)
-    #list_view.set_highlight(items[6])
     list_view.connect("double-click-item", lambda listview, item, i, x, y: list_view.set_highlight(item))
-    
+    list_view.connect("delete-select-items", print_delete_select_items)
     # list_view.connect("button-press-item", print_button_press)
     # list_view.connect("double-click-item", print_double_click)
     # list_view.connect("single-click-item", print_single_click)
@@ -354,7 +359,10 @@ if __name__ == "__main__":
     list_view.connect("right-press-items", print_right_press)
 
     scrolled_window.add_child(list_view)
-    
+    '''
+    if len(list_view.items):
+        list_view.set_highlight(list_view.items[6])
+    '''
     # Add volume button.
     volume_button = VolumeButton(100, 50)
     volume_frame = gtk.Alignment()
@@ -369,13 +377,20 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("entry/search_hover.png"),
         app_theme.get_pixbuf("entry/search_press.png"),
         )
-    #entry = TextEntry("Linux Deepin")
     entry = InputEntry("Linux Deepin", enable_clear_button=True)
+    #entry.set_text("DEBUG")
     entry.connect("action-active", print_entry_action)
-    entry.set_size(150, 24)
+    entry.set_size(150, 48)
     password_entry = PasswordEntry("")
-    password_entry.connect("action-active", print_entry_action)
     password_entry.set_size(150, 24)
+    shown_password = False
+    password_entry.show_password(shown_password)
+    password_check_button = CheckButton("Shown")
+    password_check_button.set_active(shown_password)
+    password_check_button.connect("toggled", lambda widget: password_entry.show_password(widget.get_active()))
+    password_check_button_align = gtk.Alignment()
+    password_check_button_align.set(0.0, 0.5, 0, 0)
+    password_check_button_align.add(password_check_button)
     entry_label = Label("标签测试， 内容非常长")
     entry_label.set_text("标签的内容")
     entry_label.set_size_request(100, 30)
@@ -383,9 +398,12 @@ if __name__ == "__main__":
     entry_box.pack_start(entry_label, False, False)
     entry_box.pack_start(entry, True, True)
     entry_box.pack_start(password_entry, True, True)
+    entry_box.pack_start(password_check_button_align, True, True)
     
-    shortcust_entry = ShortcutKeyEntry("Ctrl + Alt + Q")
+    #shortcust_entry = ShortcutKeyEntry("Ctrl + Alt + Q")
+    shortcust_entry = ShortcutKeyEntry("")
     shortcust_entry.set_size(150, 24)
+    shortcust_entry.set_shortcut_key("Ctrl + Alt + Q")
     entry_box.pack_start(shortcust_entry, False, False)
     
     test_button = Button("测试")
@@ -482,7 +500,10 @@ if __name__ == "__main__":
     
     icon_files = map(lambda index: os.path.join(os.path.dirname(__file__), "cover/%s.jpg" % (index)), range(1, 33))
     icon_items = map(lambda icon_file_path: IconItem(icon_file_path, 96, 96), icon_files * 100)
+    only_one_icon_items = []
+    only_one_icon_items.append(icon_items[0])
     icon_view.add_items(icon_items)
+    icon_view.connect("motion-item", m_motion_item)
     
     tab_4_box.pack_start(icon_view_vframe, True, True)
     

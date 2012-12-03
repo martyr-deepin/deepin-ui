@@ -28,14 +28,13 @@ from window import Window
 import gobject
 import gtk
 from utils import (is_in_rect, get_content_size, propagate_expose,
-                   get_widget_root_coordinate, get_screen_size, 
+                   get_widget_root_coordinate, get_screen_size, invisible_window,
                    alpha_color_hex_to_cairo, get_window_shadow_size)
 
 __all__ = ["Menu", "MenuItem"]
 
 menu_grab_window = gtk.Window(gtk.WINDOW_POPUP)
-menu_grab_window.move(0, 0)
-menu_grab_window.set_default_size(0, 0)
+invisible_window(menu_grab_window)
 menu_grab_window.show()
 menu_active_item = None
 

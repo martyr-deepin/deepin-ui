@@ -186,9 +186,8 @@ class TreeView(gtk.VBox):
         self.column_widths = []
         self.sort_action_id = 0
         self.title_offset_y = -1
-        self.item_height = -1
         '''
-        TODO: highlight item
+        TODO: highlight index && item
         '''
         self.highlight_item = None
         
@@ -251,39 +250,51 @@ class TreeView(gtk.VBox):
             "Delete" : self.delete_select_items,
             }
 
-    def set_highlight(self, index):
-        item = self.visible_items[index]
-        if hasattr(item, "highlight"):
-            self.highlight_item = item
-            self.queue_draw()
+    def get_items(self):
+        return self.visible_items
     
-    def get_highlight(self):
+    def set_highlight_item(self, item):
+        if hasattr(item, "highlight"):
+            if self.highlight_item is not None:
+                self.highlight_item.unhighlight()
+            self.highlight_item = item
+            '''
+            TODO: some app do the visible_highlight by itself
+            '''
+            #self.visible_highlight()
+            self.queue_draw()
+
+    def get_highlight_item(self):
         return self.highlight_item
 
     def clear_highlight(self):
+        self.highlight_item.unhighlight()
         self.highlight_item = None
         self.queue_draw()
 
-    '''
-    TODO: PLEASE double check the argv[]
-    '''
-    def emit_item_event(self, event_name, event):
-        '''
-        Wrap method for emit event signal.
-        
-        @param event_name: Event name.
-        @param event: Event.
-        '''
-        if self.title_offset_y == -1 or self.item_height == -1:
+    def visible_highlight(self):
+        if self.highlight_item not in self.get_items():
             return
+        
+        if self.highlight_item == None:
+            print "visible_highlight: highlight item is None."
+        else:
+            # Scroll viewport make sure highlight row in visible area.
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
+            if self.scrolled_window == None:
+                raise Exception, "parent container is not ScrolledWindow"
+            vadjust = self.scrolled_window.get_vadjustment()
+            highlight_index = self.get_items().index(self.highlight_item)
+            up_items_height = 0
+            down_items_height = 0
+            for item in self.visible_items[0:highlight_index]:
+                up_items_height += item.get_height()
+            down_items_height += (up_items_height + self.visible_items[highlight_index].get_height())
 
-        (event_x, event_y) = get_event_coords(event)
-        event_row = (event_y - self.title_offset_y) / self.item_height
-        if 0 <= event_row <= last_index(self.visible_items):
-            offset_y = event_y - event_row * self.item_height - self.title_offset_y
-            (event_column, offset_x) = get_disperse_index(self.column_widths, event_x)
-     
-            self.emit(event_name, self.visible_items[event_row], event_column, offset_x, offset_y)
+            if offset_y + vadjust.get_page_size() > up_items_height:
+                vadjust.set_value(up_items_height)
+            elif offset_y + vadjust.get_page_size() < down_items_height:
+                vadjust.set_value(down_items_height - vadjust.get_page_size())
 
     def realize_tree_view(self, widget):
         self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
@@ -747,8 +758,6 @@ class TreeView(gtk.VBox):
         delete_items = map(lambda row: self.visible_items[row], self.select_rows)
         self.start_select_row = None
         self.select_rows = []
-        
-        self.draw_area.emit("delete-select-items", delete_items)
 
         self.delete_items(delete_items)
         
@@ -791,7 +800,6 @@ class TreeView(gtk.VBox):
         self.redraw_request_list = []
         
         return True
-
     
     def add_items(self, items, insert_pos=None, clear_first=False):
         '''
@@ -819,23 +827,52 @@ class TreeView(gtk.VBox):
                 
             self.update_vadjustment()
         
+    def delete_item_by_index(self, index):
+        item = self.visible_items[index]
+        items_delete = []
+        items_delete.append(item)
+        self.delete_items(items_delete)
+    
     def delete_items(self, items):
+        cache_remove_items = []
         with self.keep_select_status():
             for item in items:
                 if item in self.visible_items:
+                    cache_remove_items.append(item)
                     self.visible_items.remove(item)
                     
+                if item == self.highlight_item:
+                    self.clear_highlight()
+            
+            '''
+            TODO: some app based on TreeView might emit delete-select-items wrong
+            '''
+            self.emit("delete-select-items", cache_remove_items)
+            
             self.update_item_index()    
             
             self.update_item_widths()
             
             self.update_vadjustment()
+            
+    def delete_all_items(self):
+        self.start_select_row = None
+        self.select_rows = []
+        
+        self.visible_items = []
+        
+        self.update_item_index()    
+            
+        self.update_item_widths()
+            
+        self.update_vadjustment()
         
     def update_vadjustment(self):
         vadjust_height = sum(map(lambda i: i.get_height(), self.visible_items))
         self.draw_area.set_size_request(-1, vadjust_height)
         vadjust = self.scrolled_window.get_vadjustment()
-        vadjust.set_upper(vadjust_height)
+        if vadjust.get_upper() != vadjust_height and self.scrolled_window.allocation.height < vadjust_height:
+            vadjust.set_upper(vadjust_height)
         
     def expose_tree_view(self, widget):
         '''
@@ -845,6 +882,8 @@ class TreeView(gtk.VBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
+
+        self.update_vadjustment()
 
         # Draw background.
         self.draw_background(widget, cr, offset_x, offset_y)
@@ -906,7 +945,6 @@ class TreeView(gtk.VBox):
                 render_x = rect.x + item_width_count
                 render_y = rect.y + item_height_count
                 render_width = column_width
-                self.item_height = item.get_height()
                 render_height = item.get_height()
                 
                 # Draw on top surface.
@@ -943,9 +981,18 @@ class TreeView(gtk.VBox):
                     with cairo_state(cr):
                         cr.rectangle(render_x, render_y, render_width, render_height)
                         cr.clip()
-                
+                        '''
+                        TODO: Draw highlight row
+                        '''
+                        if self.highlight_item:
+                            if hasattr(self.highlight_item, "highlight"):
+                                self.highlight_item.highlight()
+                        else:
+                            if hasattr(self.highlight_item, "highlight"):
+                                self.highlight_item.unhighlight()
+
                         item.get_column_renders()[index](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
-                    
+                
                 item_width_count += column_width
                 
             item_height_count += item.get_height()    
@@ -973,6 +1020,9 @@ class TreeView(gtk.VBox):
                     cr.paint_with_alpha(1.0 - (math.sin(i * math.pi / 2 / self.mask_bound_height)))
                     
                 i += 1    
+    
+    def draw_item_highlight(self, cr, x, y, w, h):
+        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_highlight").get_color_info())
     
     def get_expose_bound(self):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
@@ -1039,8 +1089,7 @@ class TreeView(gtk.VBox):
                             self.start_drag = False
                             self.start_select_row = click_row
                             self.set_select_rows([click_row])
-                            self.emit_item_event("button-press-item", event)
-                            
+                            self.emit("button-press-item", self.visible_items[click_row], click_column, offset_x, offset_y)
                             self.visible_items[click_row].button_press(click_column, offset_x, offset_y)
                             
                 if is_double_click(event):
@@ -1077,6 +1126,12 @@ class TreeView(gtk.VBox):
                           event.y_root,
                           current_item,
                           select_items)
+        else:
+            '''
+            TODO: some app wanna know the blank area right click x && y value
+            '''
+            if not self.left_button_press:
+                self.emit("right-press-items", event.x_root, event.y_root, None, None)
 
     def shift_click(self, click_row):
         if self.select_rows == [] or self.start_select_row == None:
@@ -1114,7 +1169,7 @@ class TreeView(gtk.VBox):
         
         # Remove auto scroll handler.
         remove_timeout_id(self.auto_scroll_id)    
-        
+    
     def release_item(self, event):
         if is_left_button(event):
             cell = self.get_cell_with_event(event)
@@ -1123,11 +1178,11 @@ class TreeView(gtk.VBox):
                 
                 if release_row != None:
                     if self.double_click_row == release_row:
+                        self.emit("double-click-item", self.visible_items[release_row], release_column, offset_x, offset_y)
                         self.visible_items[release_row].double_click(release_column, offset_x, offset_y)
-                        self.emit_item_event("double-click-item", event)
                     elif self.single_click_row == release_row:
+                        self.emit("single-click-item", self.visible_items[release_row], release_column, offset_x, offset_y)
                         self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
-                        self.emit_item_event("single-click-item", event)
                 
                 if self.start_drag and self.is_in_visible_area(event):
                     self.drag_select_items_at_cursor()
@@ -1258,7 +1313,7 @@ class TreeView(gtk.VBox):
                         if self.hover_row != None:
                             self.visible_items[self.hover_row].hover(hover_column, offset_x, offset_y)
 
-                self.emit_item_event("motion-notify-item", event)
+                    self.emit("motion-notify-item", self.visible_items[hover_row], hover_column, offset_x, offset_y)
                             
     def auto_scroll_tree_view(self, event):
         '''
@@ -1510,7 +1565,7 @@ class TreeItem(gobject.GObject):
     '''
     __gproperties__ = {
         'highlight': (gobject.TYPE_BOOLEAN, 'highlight', 'highlight', True, gobject.PARAM_READWRITE)}
-
+    
     def __init__(self):
         '''
         Initialize TreeItem class.
@@ -1551,6 +1606,12 @@ class TreeItem(gobject.GObject):
 
     def set_highlight(self, highlight):
         self.set_property("highlight", highlight)
+    
+    def highlight(self):
+        pass
+
+    def unhighlight(self):
+        pass
     
     def expand(self):
         pass

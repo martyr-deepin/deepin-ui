@@ -20,10 +20,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from keymap import get_keyevent_name
 from button import Button
 from constant import ALIGN_MIDDLE
 from draw import draw_vlinear, draw_blank_mask
-from entry import InputEntry
+from new_entry import InputEntry
 from label import Label
 from locales import _
 from mask import draw_mask
@@ -448,7 +449,25 @@ class InputDialog(DialogBox):
         self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
         self.connect("show", self.focus_input)
-        
+        self.entry.connect("key-press-event", self.m_key_press)
+
+        self.keymap = {
+            "Return" : self.m_press_return,
+            }
+    
+    def m_key_press(self, widget, event):
+        key_name = get_keyevent_name(event)
+        if self.keymap.has_key(key_name):
+            self.keymap[key_name]()
+
+        return True
+    
+    '''
+    TODO: Add press 'Enter' key binding to confirm_button
+    '''
+    def m_press_return(self):
+        self.click_confirm_button()
+
     def focus_input(self, widget):
         '''
         Grab focus on input entry.

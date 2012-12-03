@@ -22,8 +22,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
-from draw import draw_hlinear, draw_round_rectangle, draw_pixbuf
-from keymap import get_keyevent_name
+from draw import draw_hlinear, draw_pixbuf
+from keymap import get_keyevent_name, get_key_name
 from locales import _
 from menu import Menu
 from theme import ui_theme
@@ -36,10 +36,34 @@ import pango
 import cairo
 import pangocairo
 from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
-                   get_content_size, is_double_click, is_right_button, 
-                   is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias)
+                          get_content_size, is_double_click, is_right_button, 
+                          is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias, 
+                          repeat)
 import time
 import threading as td
+
+class CursorFlashThread(td.Thread):
+    def __init__(self, argv):
+        td.Thread.__init__(self)
+        self.setDaemon(True)
+        self.ThisPtr = argv
+
+    def run(self):
+        try:
+            self.draw_flash_cursor()
+        except Exception, e:
+            print "class LoadingThread got error: %s" % (e)
+            traceback.print_exc(file=sys.stdout)
+
+    def draw_flash_cursor(self):
+        enable_flash = True
+        while (True):
+            if enable_flash:
+                self.ThisPtr.m_draw_cursor()
+            else:
+                self.ThisPtr.m_clear_cursor()
+            enable_flash = not enable_flash
+            time.sleep(1)
 
 class EntryBuffer(gobject.GObject):
     '''
@@ -54,6 +78,7 @@ class EntryBuffer(gobject.GObject):
         'select-area-visible': (gobject.TYPE_BOOLEAN, 'select_area_visible', 'select area visible',
             True, gobject.PARAM_READWRITE),
         'invisible-char': (gobject.TYPE_CHAR, 'invisible_char', 'invisible char', ' ', '~', '*', gobject.PARAM_READWRITE)}
+    
     __gsignals__ = {
         "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "insert-pos-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
@@ -67,6 +92,8 @@ class EntryBuffer(gobject.GObject):
                  text_select_color=ui_theme.get_color("entry_select_text").get_color(),
                  background_select_color=ui_theme.get_shadow_color("entry_select_background"),
                  enable_clear_button=False,
+                 is_password_entry=False,
+                 shown_password=False,
                 ):
         '''
         text: the buffer content
@@ -87,10 +114,20 @@ class EntryBuffer(gobject.GObject):
         self.text_color = text_color
         self.text_select_color = text_select_color
         self.background_select_color = background_select_color
+        self.cursor_cr = None
+        self.cursor_x = -1
+        self.cursor_y = -1
+        self.cursor_pos1 = -1
+        self.cursor_pos2 = -1
         '''
         TODO: Add clear button
         '''
         self.enable_clear_button = enable_clear_button
+        '''
+        TODO: shown password or not
+        '''
+        self.is_password_entry = is_password_entry
+        self.shown_password = shown_password
         '''
         property
         '''
@@ -111,7 +148,10 @@ class EntryBuffer(gobject.GObject):
         self._layout.set_single_paragraph_mode(True)
         self.set_text(text)
         self.buffer.connect("changed", lambda bf: self.emit("changed"))
-
+    
+    def get_content_size(self):
+        return get_content_size(self.get_text(), self.font_size)
+    
     def do_set_property(self, pspec, value):
         if pspec.name in self.__prop_dict:
             self.__prop_dict[pspec.name] = value
@@ -366,49 +406,96 @@ class EntryBuffer(gobject.GObject):
         '''
         first_line = self.buffer.get_iter_at_line(0)
         return first_line.get_chars_in_line()
-   
-    def render(self, cr, rect, im=None, offset_x=0):
+  
+    def __reset_password(self):
+        ori_str = self.get_text()
+        str_len = len(ori_str)
+        new_str = ""
+
+        if not str_len:
+            return
+
+        if not self.shown_password:
+            i = str_len
+            while i:
+                new_str += "*"
+                i -= 1
+            self._layout.set_text(new_str)
+
+    def __draw_text(self, cr, layout, context, x, y, offset_x, offset_y):
+        cr.move_to(x - offset_x, y + offset_y)                               
+        cr.set_source_rgb(*color_hex_to_cairo(self.text_color))              
+        context.update_layout(layout)                                        
+        context.show_layout(layout)
+
+    def __draw_select_text(self, layout, left_pos, right_pos):
+        if not self.is_password_entry:
+            layout.set_text(self.get_text()[left_pos:right_pos])
+        else:
+            if self.shown_password:
+                layout.set_text(self.get_text()[left_pos:right_pos])
+            else:
+                layout.set_text(self._layout.get_text()[left_pos:right_pos])
+    
+    def render(self, cr, rect, im=None, offset_x=0, offset_y=0, grab_focus_flag=False, shown_password=False):
         '''render. Used by widget'''
         # Clip text area first.
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        layout = None
+        context = pangocairo.CairoContext(cr)
+        
+        self.shown_password = shown_password
+        
         cr.rectangle(x, y, w, h)
         cr.clip()
+        
         # Draw text
         with cairo_state(cr):
             length = self.get_length()
+            
             if self.get_visibility():
                 self._layout.set_text(self.get_text())
             else:
                 self._layout.set_text(self.get_invisible_char()*length)
             layout = self._layout.copy()
-            # Create pangocairo context.
-            context = pangocairo.CairoContext(cr)
-            cr.move_to(x - offset_x, y)
-            cr.set_source_rgb(*color_hex_to_cairo(self.text_color))
-            context.update_layout(layout)
-            context.show_layout(layout)
+
+            if not self.is_password_entry:
+                self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
+            else:
+                if self.shown_password:
+                    self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
+                else:
+                    '''
+                    FIXME: HOWTO act like Mac password style
+                    self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
+                    timer = gobject.timeout_add(200, self.__reset_password)
+                    '''
+                    self.__reset_password()
+                    layout = self._layout.copy()
+                    self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
+            
             # Draw selected text.
             if self.get_has_selection() and self.get_property("select-area-visible"):
                 (left_pos, right_pos)= self.get_selection_bounds()
                 if self.get_visibility():
-                    layout.set_text(self.get_text()[left_pos:right_pos])
+                    self.__draw_select_text(layout, left_pos, right_pos)
                 else:
                     layout.set_text(self.get_invisible_char()*(right_pos-left_pos))
                 # draw selection background
                 mid_begin_pos = self.get_cursor_pos(left_pos)[0]
                 mid_end_pos = self.get_cursor_pos(right_pos)[0]
                 draw_hlinear(cr, 
-                             x+mid_begin_pos[0]-offset_x,
-                             y+mid_begin_pos[1],
-                             mid_end_pos[0]-mid_begin_pos[0],
+                             x + mid_begin_pos[0] - offset_x,
+                             y + mid_begin_pos[1] + offset_y,
+                             mid_end_pos[0] - mid_begin_pos[0],
                              mid_begin_pos[3],
                              self.background_select_color.get_color_info())
-                cr.move_to(x+mid_begin_pos[0]-offset_x, y)
+                cr.move_to(x + mid_begin_pos[0] - offset_x, y + offset_y)
                 cr.set_source_rgb(*color_hex_to_cairo(self.text_select_color))
                 context.update_layout(layout)
                 context.show_layout(layout)
             # Draw cursor
-            if self.get_cursor_visible():
+            if self.get_cursor_visible() and grab_focus_flag:
                 # Init.
                 cursor_index = self.get_insert_index()
                 cursor_pos = self.get_cursor_pos(cursor_index)[0]
@@ -420,11 +507,39 @@ class EntryBuffer(gobject.GObject):
                 '''
                 if self.enable_clear_button and x + w < cursor_pos_x:
                     cursor_pos_x = x + w - 1
-                cr.rectangle(cursor_pos_x, cursor_pos[1] + y, 1, cursor_pos[3])
-                cr.fill()
+                '''
+                FIXME: switched im at first time, cursor pos was wrong
+                '''
                 if im:
                     im.set_cursor_location(gtk.gdk.Rectangle(cursor_pos[0]+x-offset_x, cursor_pos[1]+y, 1, cursor_pos[3]))
+                
+                self.cursor_cr = cr
+                self.cursor_x = cursor_pos_x
+                self.cursor_y = y + offset_y
+                self.cursor_pos1 = cursor_pos[1]
+                self.cursor_pos2 = cursor_pos[3]
+                self.m_draw_cursor()
+                '''
+                FIXME: HOWTO flash cursor
+                CursorFlashThread(self).start()
+                '''
     
+    def m_draw_cursor(self):
+        self.cursor_cr.set_source_rgb(0, 0, 0)
+        self.cursor_cr.rectangle(self.cursor_x, 
+                                 self.cursor_pos1 + self.cursor_y, 
+                                 1, 
+                                 self.cursor_pos2)
+        self.cursor_cr.fill()
+
+    def m_clear_cursor(self):
+        self.cursor_cr.set_source_rgb(255, 255, 255)
+        self.cursor_cr.rectangle(self.cursor_x, 
+                                 self.cursor_pos1 + self.cursor_y, 
+                                 1, 
+                                 self.cursor_pos2)
+        self.cursor_cr.fill()
+
     def get_cursor_pos(self, cursor):
         '''
         get cursor pos
@@ -650,6 +765,8 @@ class Entry(gtk.EventBox):
                  background_select_color=ui_theme.get_shadow_color("entry_select_background"),
                  font_size=DEFAULT_FONT_SIZE, 
                  enable_clear_button=False,
+                 is_password_entry=False,
+                 shown_password=False
                  ):
         '''
         Initialize Entry class.
@@ -669,16 +786,22 @@ class Entry(gtk.EventBox):
             text_color = text_color.get_color()
         if not isinstance(text_select_color, str):
             text_select_color = text_select_color.get_color()
+        self.is_password_entry = is_password_entry
         self.entry_buffer = EntryBuffer(
             content, DEFAULT_FONT, font_size,
             'noraml', text_color, text_select_color, 
-            background_select_color, enable_clear_button)
+            background_select_color, enable_clear_button, 
+            is_password_entry = is_password_entry)
         '''
         TODO: Add clear button
         '''
         self.clear_button = ClearButton(False)
         self.enable_clear_button = enable_clear_button
         self.clear_button_x = -1
+        '''
+        TODO: Shown password or not
+        '''
+        self.shown_password = shown_password
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
@@ -697,6 +820,10 @@ class Entry(gtk.EventBox):
         self.entry_buffer.set_property("select-area-visible", self.select_area_visible_flag)
         
         self.offset_x = 0
+        '''
+        TODO: it need to consider about offset in y axis
+        '''
+        self.offset_y = 0
         
         # Add keymap.
         self.keymap = {
@@ -735,6 +862,10 @@ class Entry(gtk.EventBox):
         self.connect("focus-out-event", self.focus_out_entry)
         
         self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
+    
+    def show_password(self, shown_password):
+        self.shown_password = shown_password
+        self.queue_draw()
     
     def set_editable(self, editable):
         '''
@@ -785,7 +916,8 @@ class Entry(gtk.EventBox):
             with self.monitor_entry_content():
                 if text is not None:
                     self.entry_buffer.set_text(text)
-                    
+                    # reset the offset
+                    self.offset_x = self.offset_y = 0
                     self.__calculate_cursor_offset()
             self.queue_draw()
         
@@ -912,6 +1044,8 @@ class Entry(gtk.EventBox):
         Select all text of entry.
         '''
         self.entry_buffer.select_all()
+        # reset the offset
+        self.offset_x = self.offset_y = 0
         self.__calculate_cursor_offset()
         self.queue_draw()
         
@@ -1015,14 +1149,15 @@ class Entry(gtk.EventBox):
 
         '''
         TODO: Draw clear button
-        ''' 
+        '''
+        self.offset_y = (rect.height - get_content_size("DEBUG", DEFAULT_FONT_SIZE)[1]) / 2
         if self.enable_clear_button and len(self.get_text()):
-            self.clear_button.render(cr, rect)
+            self.clear_button.render(cr, rect, self.offset_y)
         
         '''
         Draw entry
         '''
-        self.entry_buffer.render(cr, rect, self.im, self.offset_x)
+        self.entry_buffer.render(cr, rect, self.im, self.offset_x, self.offset_y, self.grab_focus_flag, self.shown_password)
         
         # Propagate expose.
         propagate_expose(widget, event)
@@ -1188,8 +1323,11 @@ class Entry(gtk.EventBox):
     
     def __calculate_cursor_offset(self):
         '''calculate the cursor offset'''
-        # comput coord offset
         rect = self.allocation
+        if not self.get_realized() or (rect.x == -1 or rect.y == -1):
+            self.offset_x = self.offset_y = 0
+            return
+        # comput coord offset
         cursor_index = self.entry_buffer.get_insert_index()
         cursor_pos = self.entry_buffer.get_cursor_pos(cursor_index)[0]
         if cursor_pos[0] - self.offset_x > rect.width - self.padding_x * 2 :
@@ -1219,11 +1357,11 @@ class ClearButton(gtk.EventBox):
         self.button_padding_y = 1
         self.clear_pixbuf = ui_theme.get_pixbuf("entry/gtk-cancel.png")
 
-    def render(self, cr, rect):
+    def render(self, cr, rect, offset_y=0):
         draw_pixbuf(cr, 
                     self.clear_pixbuf.get_pixbuf(), 
                     rect.x + rect.width + self.button_margin_x, 
-                    rect.y + self.button_padding_y)
+                    rect.y + self.button_padding_y + offset_y)
 
 gobject.type_register(ClearButton)
 
@@ -1817,7 +1955,6 @@ TODO: Act like Mac style
       The last character when inputting is visible then disappeared for a while
 '''
 class PasswordEntry(gtk.VBox):
-    
     '''
     Perhaps it need more signals
     '''
@@ -1832,13 +1969,14 @@ class PasswordEntry(gtk.VBox):
                  acme_color=ui_theme.get_alpha_color("text_entry_acme"), 
                  point_color=ui_theme.get_alpha_color("text_entry_point"), 
                  frame_point_color=ui_theme.get_alpha_color("text_entry_frame_point"), 
-                 frame_color=ui_theme.get_alpha_color("text_entry_frame")):
+                 frame_color=ui_theme.get_alpha_color("text_entry_frame"), 
+                 shown_password=False):
         gtk.VBox.__init__(self)
         self.align = gtk.Alignment()
         self.align.set(0.5, 0.5, 1.0, 1.0)
         self.action_button = action_button
         self.h_box = gtk.HBox()
-        self.entry = Entry(content, True)
+        self.entry = Entry(content, True, is_password_entry=True)
         self.entry.connect("key-press-event", self.key_press_entry)
         self.entry.connect("key-release-event", self.key_released_entry)
         self.background_color = background_color
@@ -1846,6 +1984,7 @@ class PasswordEntry(gtk.VBox):
         self.point_color = point_color
         self.frame_point_color = frame_point_color
         self.frame_color = frame_color
+        self.shown_password = shown_password
 
         self.pack_start(self.align, False, False)
         self.align.add(self.h_box)
@@ -1864,28 +2003,16 @@ class PasswordEntry(gtk.VBox):
         signal callback
         '''
         self.align.connect("expose-event", self.expose_password_entry)
+    
+    def show_password(self, shown_password=False):
+        self.shown_password = shown_password
+        self.entry.show_password(self.shown_password)
 
     def key_press_entry(self, widget, argv):
-        old_str = self.entry.get_text()
-        str_len = len(old_str)
-        new_str = ""
-        if str_len < 2:
-            return
-        new_str = old_str[0:str_len - 2] + "*" + old_str[str_len - 1]
-        self.entry.set_text(new_str)
+        pass
 
     def key_released_entry(self, widget, argv):
-        old_str = self.entry.get_text()
-        str_len = len(old_str)
-        new_str = ""
-        if str_len == 1:
-            new_str = "*"
-        else:
-            new_str = old_str[0:str_len - 1] + "*"
-        timer = gobject.timeout_add(200, self.reset_password_entry, new_str)
-
-    def reset_password_entry(self, argv):
-        self.entry.set_text(argv)
+        pass
 
     def emit_action_active_signal(self):
         pass

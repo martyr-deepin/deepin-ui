@@ -53,9 +53,13 @@ class IconView(gtk.DrawingArea):
     @undocumented: get_render_item_indexes
     '''
 	
+    '''
+    TODO: emit motion-item signal, return IconItem left top corner`s (x, y)
+    '''
     __gsignals__ = {
         "lost-focus-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
+        "motion-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
         "highlight-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "normal-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
@@ -596,14 +600,19 @@ class IconView(gtk.DrawingArea):
                 TODO: it need to consider about self.focus_index == None
                       otherwisese it acts like lian lian kan
                 '''
-                if self.focus_index == None:
-                    self.clear_focus_item()
                 if self.focus_index != item_index:
                     self.clear_focus_item()
                     
                 self.focus_index = item_index
-                
-                self.emit("motion-notify-item", self.items[self.focus_index], offset_x - self.padding_x, offset_y - self.padding_y)
+                '''
+                TODO: get rid of list index out of range when self.focus_index < 0
+                '''
+                if self.focus_index >= 0:
+                    self.emit("motion-notify-item", self.items[self.focus_index], offset_x - self.padding_x, offset_y - self.padding_y)
+                    self.emit("motion-item", 
+                              self.items[self.focus_index], 
+                              event.x_root - (offset_x - self.padding_x), 
+                              event.y_root - (offset_y - self.padding_y))
                     
     def icon_view_get_event_index(self, event):
         '''
@@ -619,26 +628,35 @@ class IconView(gtk.DrawingArea):
             else:
                 rows = int(len(self.items) / columns) + 1
                 
-            if event_x > columns * item_width:
+            if event_x > columns * item_width + self.padding_x:
                 return None
-            elif event_y > rows * item_height:
+            elif event_y > rows * item_height + self.padding_y:
                 return None
             else:
             
-                if event_x % item_width == 0:
-                    column_index = max(event_x / item_width - 1, 0)
+                '''
+                TODO: total_width % item_width is item count in the row, but when padding_x reduce the total_width, 
+                      event_x need to -self.padding_x
+                '''
+                padding_event_x = event_x - self.padding_x
+                padding_event_y = event_y - self.padding_y
+                if padding_event_x % item_width == 0:
+                    column_index = max(padding_event_x / item_width - 1, 0)
                 else:
-                    column_index = min(event_x / item_width, columns - 1)
+                    column_index = min(padding_event_x / item_width, columns - 1)
                 
-                if event_y % item_height == 0:
-                    row_index = max(event_y / item_height - 1, 0)
+                if padding_event_y % item_height == 0:
+                    row_index = max(padding_event_y / item_height - 1, 0)
                 else:
-                    row_index = min(event_y / item_height, rows - 1)
+                    row_index = min(padding_event_y / item_height, rows - 1)
                     
                 item_index = row_index * columns + column_index
                 if item_index > len(self.items) - 1:
                     return None
                 else:
+                    '''
+                    TODO: it need to use event_x NOT padding_event_x return the item pos_x
+                    '''
                     return (row_index, column_index, item_index,
                             event_x - column_index * item_width,
                             event_y - row_index * item_height)

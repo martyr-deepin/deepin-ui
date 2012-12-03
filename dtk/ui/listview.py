@@ -552,7 +552,6 @@ class ListView(gtk.DrawingArea):
         draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_highlight").get_color_info())
     
     def m_update_expand_cell_width(self, rect_width):
-        #print rect_width, self.cell_widths
         expand_cell_width = rect_width - (sum(self.cell_widths) - self.cell_widths[self.expand_column])
         return expand_cell_width
 
@@ -597,9 +596,6 @@ class ListView(gtk.DrawingArea):
         TODO: when rect.width changed, cell_width need to consider about rect.width
         '''
         cell_widths = self.get_cell_widths()
-        resize_width = rect.width
-        for hide_column in self.hide_columns:
-            resize_width -= cell_widths[hide_column]
         if self.hide_column_resize:
             self.set_size_request(rect.width, rect.height)
         
@@ -627,6 +623,11 @@ class ListView(gtk.DrawingArea):
         # Draw titles.
         if self.titles:
             i = 0
+            '''
+            TODO: if len(items) = 0, cell_widths[0] >> rect.width, wired!
+            '''
+            if cell_widths[0] > rect.width:
+                cell_widths[0] = rect.width - sum(cell_widths[1:len(cell_widths)])
             for (column, width) in enumerate(cell_widths):
                 '''
                 TODO: update the width in the hide_columns pos
@@ -653,7 +654,7 @@ class ListView(gtk.DrawingArea):
                         cell_width = width
                 else:
                     cell_width = width
-                    
+
                 # Draw title column background.
                 if self.title_select_column == column:
                     if self.left_button_press:
@@ -942,11 +943,6 @@ class ListView(gtk.DrawingArea):
                 # Adjust column width.
                 (ex, ey) = get_event_coords(event)
                 adjust_cell_width = ex - sum(self.cell_widths[0:self.title_adjust_column])
-                '''
-                if self.hide_column_flag:
-                    for hide_column in self.hide_columns:
-                        adjust_cell_width -= self.cell_widths[hide_column]
-                '''
                 if ex >= cell_min_end_x:
                     self.set_cell_width(self.title_adjust_column, adjust_cell_width)
             else:

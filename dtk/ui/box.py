@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state, draw_line
+from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state
 from theme import ui_theme
 from skin_config import skin_config
 from utils import get_window_shadow_size
@@ -149,8 +149,11 @@ gobject.type_register(BackgroundBox)
 TODO: Resizable can be drag toward downward
 '''
 class ResizableBox(gtk.EventBox):
+    __gsignals__ = {
+        "resize" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),}
+    
     def __init__(self, 
-                 width=600, 
+                 width=790, 
                  height=200):
         gtk.EventBox.__init__(self)
         self.padding_x = 10
@@ -171,8 +174,7 @@ class ResizableBox(gtk.EventBox):
         self.button_pressed = False
 
     def m_motion_notify(self, widget, event):
-        self.height = event.y - self.padding_y
-        cursor_changable = False
+        self.height = event.y
         
         '''
         FIXME: change cursor style wrong
@@ -195,15 +197,21 @@ class ResizableBox(gtk.EventBox):
 
         with cairo_state(cr):
             cr.set_line_width(line_width)
-            cr.set_source_rgb(153, 153, 153)
-            cr.rectangle(x, y, self.width, self.height)
+            '''
+            FIXME: it is not clear to identify the color via UE
+            '''
+            #cr.set_source_rgb(153, 153, 153)
+            cr.rectangle(x, 
+                         y, 
+                         self.width, 
+                         self.height - self.bottom_right_corner_pixbuf.get_pixbuf().get_height())
             cr.stroke()
 
             draw_pixbuf(cr, 
                         self.bottom_right_corner_pixbuf.get_pixbuf(), 
-                        x + self.width - self.padding_x * 2, 
-                        y + self.height - self.padding_y * 2)
-        
-        propagate_expose(widget, event)
+                        x + self.width - self.bottom_right_corner_pixbuf.get_pixbuf().get_width(), 
+                        y + self.height - self.bottom_right_corner_pixbuf.get_pixbuf().get_height() * 2)
+
+            self.emit("resize", y + self.height)
 
         return True

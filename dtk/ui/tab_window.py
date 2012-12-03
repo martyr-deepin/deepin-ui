@@ -33,7 +33,7 @@ import gtk
 from utils import (container_remove_all, get_content_size, 
                    color_hex_to_cairo, alpha_color_hex_to_cairo, 
                    cairo_disable_antialias, is_in_rect, cairo_state, 
-                   get_window_shadow_size, get_screen_size)
+                   get_window_shadow_size)
 
 class TabBox(gtk.VBox):
     '''

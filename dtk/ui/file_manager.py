@@ -20,7 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gtk
 import os
 import gobject
 from locales import _
@@ -29,8 +28,7 @@ from dtk.ui.paned import HPaned
 from dtk.ui.categorybar import Categorybar
 from dtk.ui.file_iconview import (FileIconView, iconview_get_dir_items)
 from dtk.ui.new_treeview import TreeView
-from dtk.ui.file_treeview import (get_dir_items, sort_by_name, sort_by_size,
-                                  sort_by_type, sort_by_mtime)
+from dtk.ui.file_treeview import get_dir_items
 
 class FileManager(HPaned):
     HOME_DIR = os.getenv("HOME", "") + "/"

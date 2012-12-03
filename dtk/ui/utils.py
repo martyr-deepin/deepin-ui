@@ -6,6 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -42,6 +43,12 @@ from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT,
                       WIDGET_POS_CENTER, DEFAULT_FONT, COLOR_NAME_DICT, 
                       BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED, SIMILAR_COLOR_SEQUENCE,
                       DEFAULT_FONT_SIZE)
+
+'''
+TODO: repeat("*", 6)
+'''
+def repeat(msg, num):
+    return ' '.join([msg] * num)
 
 def get_entry_text(entry):
     '''
@@ -92,7 +99,7 @@ def set_hover_cursor(widget, cursor_type):
     widget.connect("enter-notify-event", lambda w, e: set_cursor(w, cursor_type))
     widget.connect("leave-notify-event", lambda w, e: set_cursor(w))
 
-def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER):
+def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER, translate_coordinate=True):
     '''
     Get root coordinate with given widget.
     
@@ -112,7 +119,7 @@ def get_widget_root_coordinate(widget, pos_type=WIDGET_POS_BOTTOM_CENTER):
     # Get coordinate.
     (wx, wy) = widget.window.get_origin()
     toplevel_window = widget.get_toplevel()
-    if toplevel_window:
+    if translate_coordinate and toplevel_window:
         '''
         FIXME: translate_coordinates wrong toward ComboBox
         '''
@@ -387,7 +394,7 @@ def get_content_size(text, text_size=DEFAULT_FONT_SIZE, text_font=DEFAULT_FONT, 
         context = pangocairo.CairoContext(cr)
         layout = context.create_layout()
         layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
-        layout_set_markup(layout, text)
+        layout.set_markup(text)
         if wrap_width == None:
             layout.set_single_paragraph_mode(True)
         else:
@@ -1237,18 +1244,16 @@ def get_window_shadow_size(window):
     else:
         return (0, 0)
 
-def layout_set_markup(layout, markup):
-    '''
-    Set layout markup.
-    
-    @param layout: Pango layout.
-    @param markup: Markup string.
-    '''
-    if "&" in markup or "<" in markup or ">" in markup:
-        layout.set_markup(markup.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+def get_resize_pixbuf_with_height(filepath, expect_height):
+    pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
+    if pixbuf.get_height() > expect_height:
+        return pixbuf.scale_simple(
+            int(float(expect_height) / pixbuf.get_height() * pixbuf.get_width()),
+            expect_height,
+            gtk.gdk.INTERP_BILINEAR)
     else:
-        layout.set_markup(markup)
-
+        return pixbuf
+        
 def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_middle_area=True):
     '''
     Get optimum size pixbuf from file.
@@ -1384,3 +1389,23 @@ def is_dbus_name_exists(dbus_name, request_session_bus=True):
     
     return dbus_name in dbus_iface.ListNames()
 
+def get_unused_port(address="localhost"):
+    s = socket.socket()
+    s.bind((address, 0))
+    return s.getsockname()[1]
+
+def invisible_window(window):
+    def shape_window(widget, rect):
+        w, h = rect.width, rect.height
+        bitmap = gtk.gdk.Pixmap(None, w, h, 1)
+        cr = bitmap.cairo_create()
+        
+        cr.set_source_rgb(0.0, 0.0, 0.0)
+        cr.set_operator(cairo.OPERATOR_CLEAR)
+        cr.paint()
+        
+        widget.shape_combine_mask(bitmap, 0, 0)
+    
+    window.move(0, 0)
+    window.set_default_size(0, 0)
+    window.connect("size-allocate", shape_window)

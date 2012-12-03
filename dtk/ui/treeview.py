@@ -237,7 +237,7 @@ class TreeView(gtk.DrawingArea):
                         font_color = ui_theme.get_color("tree_item_normal_font").get_color()
                     draw_text(cr, draw_widget.text, 
                                 self.font_x_padding + draw_widget.width,
-                                temp_height + self.height/2, 
+                                temp_height + (self.height / 2 - self.font_height) / 2, 
                                 self.font_width, 
                                 self.font_height,
                                 self.font_size,

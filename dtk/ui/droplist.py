@@ -30,14 +30,13 @@ import gobject
 import gtk
 from utils import (is_in_rect, get_content_size, propagate_expose, 
                    get_widget_root_coordinate, get_screen_size, 
-                   alpha_color_hex_to_cairo, 
+                   alpha_color_hex_to_cairo, invisible_window,
                    cairo_disable_antialias, color_hex_to_cairo)
 
 __all__ = ["DroplistScrolledWindow", "Droplist", "DroplistItem"]
 
 droplist_grab_window = gtk.Window(gtk.WINDOW_POPUP)
-droplist_grab_window.move(0, 0)
-droplist_grab_window.set_default_size(0, 0)
+invisible_window(droplist_grab_window)
 droplist_grab_window.show()
 droplist_active_item = None
 droplist_grab_window_press_flag = False

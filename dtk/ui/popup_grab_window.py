@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from utils import invisible_window
 from scrolled_window import ScrolledWindow
 import gtk
 import gobject
@@ -43,8 +44,7 @@ class PopupGrabWindow(gtk.Window):
         self.popup_windows = []
         self.press_flag = False
         
-        self.move(0, 0)
-        self.set_default_size(0, 0)
+        invisible_window(self)
         
         self.connect("button-press-event", self.popup_grab_window_button_press)
         self.connect("button-release-event", self.popup_grab_window_button_release)
