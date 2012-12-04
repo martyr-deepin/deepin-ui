@@ -623,7 +623,7 @@ class IconView(gtk.DrawingArea):
             item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
             scrolled_window = get_match_parent(self, ["ScrolledWindow"])
             columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
-            if len(self.items) % columns == 0:
+            if len(self.items) % max(columns, 1) == 0:
                 rows = int(len(self.items) / columns)
             else:
                 rows = int(len(self.items) / columns) + 1

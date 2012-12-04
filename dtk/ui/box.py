@@ -183,6 +183,9 @@ class ResizableBox(gtk.EventBox):
             # redraw the widget
             self.window.invalidate_rect(self.allocation, True)        
     
+    def expose_override(self, cr, rect):
+        pass
+    
     def __expose(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -191,21 +194,20 @@ class ResizableBox(gtk.EventBox):
 
         with cairo_state(cr):
             cr.set_line_width(line_width)
-            '''
-            FIXME: it is not clear to identify the color via UE
-            '''
-            #cr.set_source_rgb(153, 153, 153)
+            cr.set_source_rgb(153, 153, 153)
             cr.rectangle(x, 
                          y, 
                          self.width, 
                          self.height - self.bottom_right_corner_pixbuf.get_pixbuf().get_height())
-            cr.stroke()
-
+            cr.fill()
+            
             draw_pixbuf(cr, 
                         self.bottom_right_corner_pixbuf.get_pixbuf(), 
                         x + self.width - self.bottom_right_corner_pixbuf.get_pixbuf().get_width(), 
                         y + self.height - self.bottom_right_corner_pixbuf.get_pixbuf().get_height() * 2)
 
             self.emit("resize", y + self.height)
+
+        self.expose_override(cr, rect)
 
         return True
