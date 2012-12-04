@@ -1382,12 +1382,7 @@ def is_dbus_name_exists(dbus_name, request_session_bus=True):
         bus = dbus.SessionBus()
     else:
         bus = dbus.SystemBus()
-        
-    dbus_object = bus.get_object('org.freedesktop.DBus', '/org/freedesktop/DBus')
-    
-    dbus_iface = dbus.Interface(dbus_object, 'org.freedesktop.DBus')
-    
-    return dbus_name in dbus_iface.ListNames()
+    return bus.name_has_owner(dbus_name)
 
 def get_unused_port(address="localhost"):
     s = socket.socket()
