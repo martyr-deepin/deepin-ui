@@ -1306,7 +1306,8 @@ class TreeView(gtk.VBox):
                     
                     if self.hover_row != hover_row:
                         if self.hover_row != None:
-                            self.visible_items[self.hover_row].unhover(hover_column, offset_x, offset_y)
+                            if self.visible_items[self.hover_row] != None:
+                                self.visible_items[self.hover_row].unhover(hover_column, offset_x, offset_y)
                             
                         self.hover_row = hover_row    
                         
