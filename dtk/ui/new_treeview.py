@@ -788,9 +788,12 @@ class TreeView(gtk.VBox):
                 else:
                     title_boxs[index].set_size_request(column_width, title_height)
             
-    def redraw_request(self, item):
+    def redraw_request(self, item, immediately=False):
         if not item in self.redraw_request_list:
             self.redraw_request_list.append(item)
+            
+        if immediately:
+            self.update_redraw_request_list()
     
     def update_redraw_request_list(self):
         if len(self.redraw_request_list) > 0:
@@ -1184,8 +1187,12 @@ class TreeView(gtk.VBox):
                         self.emit("single-click-item", self.visible_items[release_row], release_column, offset_x, offset_y)
                         self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
                 
-                if self.start_drag and self.is_in_visible_area(event):
-                    self.drag_select_items_at_cursor()
+                if self.start_drag:
+                    if self.is_in_visible_area(event):
+                        self.drag_select_items_at_cursor()
+                else:
+                    if hasattr(self.visible_items[release_row], "button_release"):
+                        self.visible_items[release_row].button_release(release_column, offset_x, offset_y)
                     
                 self.double_click_row = None    
                 self.single_click_row = None    
@@ -1314,7 +1321,14 @@ class TreeView(gtk.VBox):
                         if self.hover_row != None:
                             self.visible_items[self.hover_row].hover(hover_column, offset_x, offset_y)
 
-                    self.emit("motion-notify-item", self.visible_items[hover_row], hover_column, offset_x, offset_y)
+        cell = self.get_cell_with_event(event)
+        if cell != None:
+            (motion_row, motion_column, offset_x, offset_y) = cell
+                    
+        if hasattr(self.visible_items[motion_row], "motion_notify"):
+            self.visible_items[motion_row].motion_notify(motion_column, offset_x, offset_y)
+                            
+        self.emit("motion-notify-item", self.visible_items[motion_row], motion_column, offset_x, offset_y)
                             
     def auto_scroll_tree_view(self, event):
         '''
@@ -1641,7 +1655,13 @@ class TreeItem(gobject.GObject):
     def hover(self, column, offset_x, offset_y):
         pass
     
+    def motion_notify(self, column, offset_x, offset_y):
+        pass
+    
     def button_press(self, column, offset_x, offset_y):
+        pass        
+    
+    def button_release(self, column, offset_x, offset_y):
         pass        
     
     def single_click(self, column, offset_x, offset_y):
