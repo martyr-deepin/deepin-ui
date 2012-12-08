@@ -36,7 +36,7 @@ from cache_pixbuf import CachePixbuf
 from utils import (cairo_state, get_window_shadow_size, get_event_coords, is_in_rect,
                    container_remove_all, get_same_level_widgets, get_disperse_index,
                    is_left_button, is_double_click, is_single_click, remove_timeout_id, 
-                   last_index, is_right_button)
+                   is_right_button)
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
 import copy
