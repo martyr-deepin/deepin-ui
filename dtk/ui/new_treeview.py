@@ -1325,10 +1325,10 @@ class TreeView(gtk.VBox):
         if cell != None:
             (motion_row, motion_column, offset_x, offset_y) = cell
                     
-        if hasattr(self.visible_items[motion_row], "motion_notify"):
-            self.visible_items[motion_row].motion_notify(motion_column, offset_x, offset_y)
-                            
-        self.emit("motion-notify-item", self.visible_items[motion_row], motion_column, offset_x, offset_y)
+            if hasattr(self.visible_items[motion_row], "motion_notify"):
+                self.visible_items[motion_row].motion_notify(motion_column, offset_x, offset_y)
+                                
+            self.emit("motion-notify-item", self.visible_items[motion_row], motion_column, offset_x, offset_y)
                             
     def auto_scroll_tree_view(self, event):
         '''
