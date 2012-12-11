@@ -80,6 +80,9 @@ class Config(gobject.GObject):
         '''
         self.config_parser.read(self.config_file)
     
+    def has_option(self, section, option):
+        return self.config_parser.has_option(section, option)
+    
     def get(self, section, option, default=None):
         ''' 
         Get specified the section for read the option value. 

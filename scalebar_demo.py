@@ -36,6 +36,19 @@ from dtk.ui.application import Application
 from dtk.ui.scalebar import HScalebar
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
 import gtk
+import deepin_gsettings
+
+dg = deepin_gsettings.new("org.gnome.desktop.interface")
+
+def __changed():
+    dg.get_int(key)
+    print "DEBUG xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", settings, key
+
+dg.connect("changed", __changed)
+
+def __value_changed(widget):
+    #print widget
+    dg.set_int("cursor-blink-time", int(widget.get_value()))
 
 if __name__ == "__main__":
     # Init application.
@@ -87,7 +100,8 @@ if __name__ == "__main__":
         app_theme.get_pixbuf("scalebar/point.png"), 
         True, 
         " %")
-    adjust2 = gtk.Adjustment(0, 0, 150)
+    adjust2 = gtk.Adjustment(100, 100, 2500)
+    adjust2.connect("value-changed", __value_changed)
     hscale2.set_adjustment(adjust2)
     #hscale2.set_size_request(100, 0)
     hscale2_align = gtk.Alignment()
