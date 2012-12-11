@@ -34,6 +34,8 @@ from dtk.ui.iconview import IconView
 from dtk.ui.constant import DEFAULT_FONT_SIZE
 
 ITEM_PADDING_Y = 10
+ITEM_HEIGHT = 22
+COLUMN_OFFSET = 10
 
 def sort_by_key(items, sort_reverse, sort_key):
     if len(items) == 1 and (isinstance(items[0], EmptyItem)):

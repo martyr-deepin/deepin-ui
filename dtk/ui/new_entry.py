@@ -23,7 +23,7 @@
 
 from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
 from draw import draw_hlinear, draw_pixbuf
-from keymap import get_keyevent_name, get_key_name
+from keymap import get_keyevent_name
 from locales import _
 from menu import Menu
 from theme import ui_theme
@@ -37,8 +37,8 @@ import cairo
 import pangocairo
 from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
                           get_content_size, is_double_click, is_right_button, 
-                          is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias, 
-                          repeat)
+                          is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias
+                          )
 import time
 import threading as td
 
