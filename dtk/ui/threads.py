@@ -47,7 +47,7 @@ class AnonymityThread(td.Thread):
     Anonymity thread.
     '''
 
-    def __init__(self, long_time_func, render_func):
+    def __init__(self, long_time_func, render_func=None):
         '''
         Initialize AnonymityThread class.
         
@@ -61,5 +61,8 @@ class AnonymityThread(td.Thread):
         
     def run(self):
         '''Run.'''
-        self.render_func(self.long_time_func())
+        result = self.long_time_func()
+        
+        if self.render_func != None:
+            self.render_func(result)
         
