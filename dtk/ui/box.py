@@ -177,6 +177,9 @@ class ResizableBox(gtk.EventBox):
         if event.y < self.bottom_right_corner_pixbuf.get_pixbuf().get_height():
             return
 
+        if event.x < self.width - self.bottom_right_corner_pixbuf.get_pixbuf().get_width():
+            return
+
         self.height = event.y
         
         if self.button_pressed:
@@ -198,13 +201,13 @@ class ResizableBox(gtk.EventBox):
             cr.rectangle(x, 
                          y, 
                          self.width, 
-                         self.height - self.bottom_right_corner_pixbuf.get_pixbuf().get_height())
+                         self.height)
             cr.fill()
             
             draw_pixbuf(cr, 
                         self.bottom_right_corner_pixbuf.get_pixbuf(), 
                         x + self.width - self.bottom_right_corner_pixbuf.get_pixbuf().get_width(), 
-                        y + self.height - self.bottom_right_corner_pixbuf.get_pixbuf().get_height() * 2)
+                        self.height - self.bottom_right_corner_pixbuf.get_pixbuf().get_height())
 
             self.emit("resize", y + self.height)
 
