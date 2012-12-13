@@ -1426,12 +1426,13 @@ class TreeView(gtk.VBox):
         self.update_item_widths()
         
     def leave_tree_view(self, widget, event):
-        # Hide hover row when cursor out of viewport area.
-        vadjust = self.scrolled_window.get_vadjustment()
-        hadjust = self.scrolled_window.get_hadjustment()
-        if not is_in_rect((event.x, event.y), 
-                          (hadjust.get_value(), vadjust.get_value(), hadjust.get_page_size(), vadjust.get_page_size())):
-            self.unhover_row()
+        if len(self.visible_items) > 0:
+            # Hide hover row when cursor out of viewport area.
+            vadjust = self.scrolled_window.get_vadjustment()
+            hadjust = self.scrolled_window.get_hadjustment()
+            if not is_in_rect((event.x, event.y), 
+                              (hadjust.get_value(), vadjust.get_value(), hadjust.get_page_size(), vadjust.get_page_size())):
+                self.unhover_row()
         
     def unhover_row(self):
         if self.hover_row != None:
