@@ -39,15 +39,15 @@ import gtk
 import deepin_gsettings
 
 dg = deepin_gsettings.new("org.gnome.desktop.interface")
+dg1 = deepin_gsettings.new("org.gnome.settings-daemon.peripherals.keyboard")
 
-def __changed():
-    dg.get_int(key)
-    print "DEBUG xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", settings, key
+def __changed(key):
+    print "DEBUG key", key, dg.get_int(key)
 
 dg.connect("changed", __changed)
 
-def __value_changed(widget):
-    #print widget
+def __value_changed(widget, argv):
+    print "DEBUG argv", argv
     dg.set_int("cursor-blink-time", int(widget.get_value()))
 
 if __name__ == "__main__":
@@ -101,7 +101,7 @@ if __name__ == "__main__":
         True, 
         " %")
     adjust2 = gtk.Adjustment(100, 100, 2500)
-    adjust2.connect("value-changed", __value_changed)
+    adjust2.connect("value-changed", __value_changed, "xxx")
     hscale2.set_adjustment(adjust2)
     #hscale2.set_size_request(100, 0)
     hscale2_align = gtk.Alignment()
