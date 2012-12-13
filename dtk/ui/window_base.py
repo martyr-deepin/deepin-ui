@@ -173,30 +173,33 @@ class WindowBase(gtk.Window):
         pass
     
     def get_cursor_type_with_coordinate(self, ex, ey, wx, wy, ww, wh):
-        if wx <= ex <= wx + self.shadow_padding:
-            if wy <= ey <= wy + self.shadow_padding * 2:
-                return gtk.gdk.TOP_LEFT_CORNER
-            elif wy + wh - (self.shadow_padding * 2) <= ey <= wy + wh:
-                return gtk.gdk.BOTTOM_LEFT_CORNER
-            elif wy + self.shadow_padding < ey < wy + wh - self.shadow_padding:
-                return gtk.gdk.LEFT_SIDE
+        if self.get_resizable():
+            if wx <= ex <= wx + self.shadow_padding:
+                if wy <= ey <= wy + self.shadow_padding * 2:
+                    return gtk.gdk.TOP_LEFT_CORNER
+                elif wy + wh - (self.shadow_padding * 2) <= ey <= wy + wh:
+                    return gtk.gdk.BOTTOM_LEFT_CORNER
+                elif wy + self.shadow_padding < ey < wy + wh - self.shadow_padding:
+                    return gtk.gdk.LEFT_SIDE
+                else:
+                    return None
+            elif wx + ww - self.shadow_padding <= ex <= wx + ww:
+                if wy <= ey <= wy + self.shadow_padding * 2:
+                    return gtk.gdk.TOP_RIGHT_CORNER
+                elif wy + wh - (self.shadow_padding * 2) <= ey <= wy + wh:
+                    return gtk.gdk.BOTTOM_RIGHT_CORNER
+                elif wy + self.shadow_padding < ey < wy + wh - self.shadow_padding:
+                    return gtk.gdk.RIGHT_SIDE
+                else:
+                    return None
+            elif wx + self.shadow_padding < ex < wx + ww - self.shadow_padding:
+                if wy <= ey <= wy + self.shadow_padding:
+                    return gtk.gdk.TOP_SIDE
+                elif wy + wh - self.shadow_padding <= ey <= wy + wh:
+                    return gtk.gdk.BOTTOM_SIDE
+                else: 
+                    return None
             else:
-                return None
-        elif wx + ww - self.shadow_padding <= ex <= wx + ww:
-            if wy <= ey <= wy + self.shadow_padding * 2:
-                return gtk.gdk.TOP_RIGHT_CORNER
-            elif wy + wh - (self.shadow_padding * 2) <= ey <= wy + wh:
-                return gtk.gdk.BOTTOM_RIGHT_CORNER
-            elif wy + self.shadow_padding < ey < wy + wh - self.shadow_padding:
-                return gtk.gdk.RIGHT_SIDE
-            else:
-                return None
-        elif wx + self.shadow_padding < ex < wx + ww - self.shadow_padding:
-            if wy <= ey <= wy + self.shadow_padding:
-                return gtk.gdk.TOP_SIDE
-            elif wy + wh - self.shadow_padding <= ey <= wy + wh:
-                return gtk.gdk.BOTTOM_SIDE
-            else: 
                 return None
         else:
             return None
