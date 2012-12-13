@@ -37,6 +37,8 @@ class TimeZone(gtk.EventBox):
         
         self.width = width
         self.height = height
+        self.__const_width = 800
+        self.__const_height = 409
 
         self.bg_pixbuf = ui_theme.get_pixbuf("timezone/bg.png")
         self.timezone_pixbuf = []
@@ -63,9 +65,26 @@ class TimeZone(gtk.EventBox):
         x, y = rect.x, rect.y
 
         with cairo_state(cr):
-            draw_pixbuf(cr, self.bg_pixbuf.get_pixbuf(), x, y)
+            bg_dpixbuf = self.bg_pixbuf.get_pixbuf()
+            timezone_dpixbuf = []
+            i = 0
+            while i < len(self.timezone_pixbuf):
+                timezone_dpixbuf.append(self.timezone_pixbuf[i].get_pixbuf())
+
+                i += 1
+
+            if self.width < self.__const_width or self.height < self.__const_height:
+                bg_dpixbuf = bg_dpixbuf.scale_simple(self.width, self.height, gtk.gdk.INTERP_BILINEAR)
+
+                i = 0
+                while i < len(timezone_dpixbuf):
+                    timezone_dpixbuf[i] = timezone_dpixbuf[i].scale_simple(self.width, self.height, gtk.gdk.INTERP_BILINEAR)
+
+                    i += 1
+            
+            draw_pixbuf(cr, bg_dpixbuf, x, y)
             draw_pixbuf(cr, 
-                        self.timezone_pixbuf[self.timezone].get_pixbuf(), 
+                        timezone_dpixbuf[self.timezone], 
                         x, y)
 
         return True
