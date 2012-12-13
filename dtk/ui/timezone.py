@@ -26,9 +26,6 @@ from skin_config import skin_config
 import gobject
 import gtk
 
-'''
-TODO: Resizable can be drag toward downward
-'''
 class TimeZone(gtk.EventBox):
     def __init__(self, timezone=11, width=800, height=409):
         gtk.EventBox.__init__(self)
@@ -37,6 +34,8 @@ class TimeZone(gtk.EventBox):
         
         self.width = width
         self.height = height
+        self.set_size_request(self.width, self.height)
+
         self.__const_width = 800
         self.__const_height = 409
 

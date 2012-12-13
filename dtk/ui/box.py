@@ -156,12 +156,17 @@ class ResizableBox(gtk.EventBox):
                  width=790, 
                  height=200):
         gtk.EventBox.__init__(self)
+        
         self.padding_x = 10
         self.padding_y = 10
+        
         self.width = width
         self.height = height
+        self.set_size_request(self.width, self.height)
+
         self.bottom_right_corner_pixbuf = ui_theme.get_pixbuf("box/bottom_right_corner.png")
         self.button_pressed = False
+        
         self.connect("button-press-event", self.__button_press)
         self.connect("button-release-event", self.__button_release)
         self.connect("motion-notify-event", self.__motion_notify)

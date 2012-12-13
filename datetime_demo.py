@@ -33,7 +33,7 @@ app_theme = init_skin(
     )
 
 from dtk.ui.application import Application
-from dtk.ui.timezone import TimeZone
+from dtk.ui.datetime import DateTime
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
 import gtk
 
@@ -54,15 +54,15 @@ if __name__ == "__main__":
     application.add_titlebar(
         ["theme", "max", "min", "close"], 
         app_theme.get_pixbuf("logo.png"), 
-        "TimeZone demo",
-        "TimeZone demo",
+        "DateTime demo",
+        "DateTime demo",
         )
     
-    timezone = TimeZone(width = 800 / 2, height = 409 / 2)
+    datetime = DateTime(7, 30)
     align = gtk.Alignment()                                             
     align.set(0.5, 0.5, 1, 1)                                           
     align.set_padding(0, 2, 2, 2)
-    align.add(timezone)
+    align.add(datetime)
     application.main_box.pack_start(align)
 
     application.run()

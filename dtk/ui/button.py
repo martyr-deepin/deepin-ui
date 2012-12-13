@@ -93,7 +93,7 @@ class Button(gtk.Button):
         key_name = get_keyevent_name(event)
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
-        
+    
     def expose_button(self, widget, event):
         '''
         Callback for `expose-event` signal.
