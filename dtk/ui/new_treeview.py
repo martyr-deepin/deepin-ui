@@ -305,15 +305,16 @@ class TreeView(gtk.VBox):
     the pixbuf will disappeared when scroll in the window view
     '''
     def button_release_scrolled_window(self, widget, event):
-        (start_index, end_index, item_height_count) = self.get_expose_bound()
-        
-        need_gc_collect = False
-        for item in self.visible_items[0:start_index] + self.visible_items[end_index:-1]:
-            if hasattr(item, "tree_item_release_resource") and item.tree_item_release_resource():
-                need_gc_collect = True
-
-        if need_gc_collect:
-            gc.collect()
+        if len(self.visible_items) > 0:
+            (start_index, end_index, item_height_count) = self.get_expose_bound()
+            
+            need_gc_collect = False
+            for item in self.visible_items[0:start_index] + self.visible_items[end_index:-1]:
+                if hasattr(item, "tree_item_release_resource") and item.tree_item_release_resource():
+                    need_gc_collect = True
+            
+            if need_gc_collect:
+                gc.collect()
 
     def expand_item(self):
         if len(self.select_rows) == 1:
