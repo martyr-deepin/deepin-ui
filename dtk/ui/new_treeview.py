@@ -838,26 +838,27 @@ class TreeView(gtk.VBox):
         self.delete_items(items_delete)
     
     def delete_items(self, items):
-        cache_remove_items = []
-        with self.keep_select_status():
-            for item in items:
-                if item in self.visible_items:
-                    cache_remove_items.append(item)
-                    self.visible_items.remove(item)
-                    
-                if item == self.highlight_item:
-                    self.clear_highlight()
-            
-            '''
-            TODO: some app based on TreeView might emit delete-select-items wrong
-            '''
-            self.emit("delete-select-items", cache_remove_items)
-            
-            self.update_item_index()    
-            
-            self.update_item_widths()
-            
-            self.update_vadjustment()
+        if len(items) > 0:
+            cache_remove_items = []
+            with self.keep_select_status():
+                for item in items:
+                    if item in self.visible_items:
+                        cache_remove_items.append(item)
+                        self.visible_items.remove(item)
+                        
+                    if item == self.highlight_item:
+                        self.clear_highlight()
+                
+                '''
+                TODO: some app based on TreeView might emit delete-select-items wrong
+                '''
+                self.emit("delete-select-items", cache_remove_items)
+                
+                self.update_item_index()    
+                
+                self.update_item_widths()
+                
+                self.update_vadjustment()
             
     def delete_all_items(self):
         self.start_select_row = None
