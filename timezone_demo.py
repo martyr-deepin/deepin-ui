@@ -58,7 +58,7 @@ if __name__ == "__main__":
         "TreeView demo",
         )
     
-    timezone = TimeZone()
+    timezone = TimeZone(width = 800 / 2, height = 409 / 2)
     align = gtk.Alignment()                                             
     align.set(0.5, 0.5, 1, 1)                                           
     align.set_padding(0, 2, 2, 2)
