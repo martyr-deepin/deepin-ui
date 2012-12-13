@@ -214,3 +214,5 @@ class ResizableBox(gtk.EventBox):
         self.expose_override(cr, rect)
 
         return True
+
+gobject.type_register(ResizableBox)
