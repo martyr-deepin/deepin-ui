@@ -110,6 +110,12 @@ class MissionThreadPool(td.Thread):
         """
         self.mission_lock.put(missions)
         
+    def remove_from_wait_missions(self, missions):
+        with self.sync():
+            for mission in missions:
+                if mission in self.wait_mission_list:
+                    self.wait_mission_list.remove(mission)
+        
     def start_missions(self, missions):
         """
         Internal function to start missions in the thread pool.
