@@ -47,7 +47,7 @@ class Label(gtk.EventBox):
     '''
 	
     def __init__(self, 
-                 text, 
+                 text="", 
                  text_color=None,
                  text_size=DEFAULT_FONT_SIZE,
                  text_x_align=ALIGN_START,
