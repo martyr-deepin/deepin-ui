@@ -20,10 +20,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import pseudo_skin
 import gtk
 from color_selection import ColorButton
 from gtk import gdk
-import pseudo_skin
 import tooltip as TT
 
 __all__ = []
