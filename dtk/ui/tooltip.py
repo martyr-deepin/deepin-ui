@@ -31,7 +31,7 @@ import gtk
 
 
 __all__ = ["text", "custom", "show_delay", "hide_delay", "hide_duration",
-        "background", "padding", "has_shadow", "disable", "always_update",
+        "background", "padding", "show_tooltip", "has_shadow", "disable", "always_update",
         "disable_all"]
 
 class ChildLocation:
