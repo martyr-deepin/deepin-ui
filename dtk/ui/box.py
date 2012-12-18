@@ -24,7 +24,7 @@
 from draw import draw_pixbuf, propagate_expose, draw_vlinear, cairo_state
 from theme import ui_theme
 from skin_config import skin_config
-from utils import get_window_shadow_size
+from utils import get_window_shadow_size, color_hex_to_cairo
 import gobject
 import gtk
 
@@ -154,14 +154,17 @@ class ResizableBox(gtk.EventBox):
     
     def __init__(self, 
                  width=790, 
-                 height=200):
+                 height=150, 
+                 min_height=150):
         gtk.EventBox.__init__(self)
         
         self.padding_x = 10
         self.padding_y = 10
+        self.line_width = 1
         
         self.width = width
         self.height = height
+        self.min_height = min_height
         self.set_size_request(self.width, self.height)
 
         self.bottom_right_corner_pixbuf = ui_theme.get_pixbuf("box/bottom_right_corner.png")
@@ -179,7 +182,7 @@ class ResizableBox(gtk.EventBox):
         self.button_pressed = False
 
     def __motion_notify(self, widget, event):
-        if event.y < self.bottom_right_corner_pixbuf.get_pixbuf().get_height():
+        if event.y < self.min_height or event.y < self.bottom_right_corner_pixbuf.get_pixbuf().get_height():
             return
 
         if event.x < self.width - self.bottom_right_corner_pixbuf.get_pixbuf().get_width():
@@ -198,21 +201,25 @@ class ResizableBox(gtk.EventBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y = rect.x, rect.y
-        line_width = 1
 
         with cairo_state(cr):
-            cr.set_line_width(line_width)
-            cr.set_source_rgb(153, 153, 153)
+            cr.set_line_width(self.line_width)
+
+            cr.set_source_rgb(*color_hex_to_cairo("#999999"))
+            cr.rectangle(x, y, self.width, self.height - self.padding_y)
+            cr.fill()
+
+            cr.set_source_rgb(*color_hex_to_cairo("#797979"))
             cr.rectangle(x, 
                          y, 
                          self.width, 
-                         self.height)
-            cr.fill()
+                         self.height - self.padding_y)
+            cr.stroke()
             
             draw_pixbuf(cr, 
                         self.bottom_right_corner_pixbuf.get_pixbuf(), 
-                        x + self.width - self.bottom_right_corner_pixbuf.get_pixbuf().get_width(), 
-                        self.height - self.bottom_right_corner_pixbuf.get_pixbuf().get_height())
+                        x + self.width - self.line_width - self.bottom_right_corner_pixbuf.get_pixbuf().get_width(), 
+                        self.height - self.padding_y / 2 - self.bottom_right_corner_pixbuf.get_pixbuf().get_height())
 
             self.emit("resize", y + self.height)
 
