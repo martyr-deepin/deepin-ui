@@ -79,6 +79,8 @@ import time
 
 print time.time() - start_time
 
+list_view = None
+
 def m_motion_item(widget, item, x, y):
     print widget, item, x, y
 
@@ -110,7 +112,18 @@ def print_entry_action(entry, entry_text):
     '''Print entry action.'''
     print entry_text
     
+'''
+TODO: test add_items dynamically to listview
+'''
 def clicked_test(button):
+    items = map(lambda index: ListItem(                                          
+        "豆浆油条 测试标题 %04d" % index,                                    
+        "林俊杰 %04d" % index,                                               
+        "10:%02d" % index,                                                   
+        ), range(0, items_length))
+    
+    list_view.add_items(items)
+    
     print "clicked"
     
 def simulate_redraw_request(items, items_length):
@@ -344,12 +357,13 @@ if __name__ == "__main__":
         [(lambda item: item.title, cmp),
          (lambda item: item.artist, cmp),
          (lambda item: item.length, cmp)], drag_data=([("text/deepin-webcasts", gtk.TARGET_SAME_APP, 1),], gtk.gdk.ACTION_COPY, 1))
+    list_view.cell_widths = [600, 100, 100]
     list_view.set_expand_column(0)
     list_view.add_titles(["歌名", "歌手", "时间"])
-    list_view.add_items(items)
-    list_view.hide_column([1])
-    list_view.set_hide_column_flag(False)
-    list_view.set_hide_column_resize(False)
+    #list_view.add_items(items)
+    #list_view.hide_column([1])
+    #list_view.set_hide_column_flag(False)
+    #list_view.set_hide_column_resize(False)
     list_view.connect("double-click-item", lambda listview, item, i, x, y: list_view.set_highlight(item))
     list_view.connect("delete-select-items", print_delete_select_items)
     # list_view.connect("button-press-item", print_button_press)

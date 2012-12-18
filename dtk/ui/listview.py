@@ -551,7 +551,7 @@ class ListView(gtk.DrawingArea):
         '''
         draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_highlight").get_color_info())
     
-    def m_update_expand_cell_width(self, rect_width):
+    def __update_expand_cell_width(self, rect_width):
         expand_cell_width = rect_width - (sum(self.cell_widths) - self.cell_widths[self.expand_column])
         return expand_cell_width
 
@@ -568,7 +568,7 @@ class ListView(gtk.DrawingArea):
         TODO: expand_cell_width is rect.width - other noexpand columns width
         '''
         if 0 <= self.expand_column < len(self.cell_widths):
-            self.set_cell_width(self.expand_column, self.m_update_expand_cell_width(rect.width))
+            self.set_cell_width(self.expand_column, self.__update_expand_cell_width(rect.width))
     
     def size_allocate_list_view(self, widget, allocation):
         '''
@@ -579,7 +579,7 @@ class ListView(gtk.DrawingArea):
         '''
         rect = widget.allocation
         if 0 <= self.expand_column < len(self.cell_widths):
-            self.set_cell_width(self.expand_column, self.m_update_expand_cell_width(rect.width))
+            self.set_cell_width(self.expand_column, self.__update_expand_cell_width(rect.width))
             
     def expose_list_view(self, widget, event):
         '''
