@@ -30,7 +30,7 @@ import gobject
 import gtk
 
 
-__all__ = ["text", "custom", "show_delay", "hide_delay", "hide_duration",
+__all__ = ["text", "custom", "show_tooltip", "show_delay", "hide_delay", "hide_duration",
         "background", "padding", "show_tooltip", "has_shadow", "disable", "always_update",
         "disable_all"]
 
@@ -128,7 +128,7 @@ def find_at_coords(gdkwindow, window_x, window_y):
     return (None, cl.x, cl.y)
 
 
-def update_tooltip(display):
+def update_tooltip():
     '''
     this function will be invoked every gdk event has received.
     so reduce the time as possible as we can.
@@ -167,8 +167,38 @@ def update_tooltip(display):
         else:
             show_delay = TooltipInfo.winfo.show_delay
         TooltipInfo.pos_info = (int(rx+x), int(ry+y))
-        TooltipInfo.show_id = gobject.timeout_add(show_delay, lambda : show_tooltip(*TooltipInfo.pos_info))
+        if show_delay == 0:
+            show_tooltip(*TooltipInfo.pos_info)
+        else:
+            TooltipInfo.show_id = gobject.timeout_add(show_delay, lambda : show_tooltip(*TooltipInfo.pos_info))
 
+def show_now():
+    try :
+        (window, x, y) = display.get_window_at_pointer()
+    except:
+        return True
+
+    (widget, tx, ty) = find_at_coords(window, x, y)
+    if widget == None:
+        pass
+    if not widget \
+            or tx < 0 or tx >= widget.allocation.width \
+            or ty < 0 or ty >= widget.allocation.height:
+        hide_tooltip()
+        return True
+
+    if TooltipInfo.widget != widget:
+        TooltipInfo.prewidget = widget
+        TooltipInfo.winfo = WidgetInfo.get_info(widget)
+        TooltipInfo.show_delay = TooltipInfo.winfo.show_delay
+
+    TooltipInfo.tmpwidget = widget
+    (rx, ry) = window.get_origin()
+
+    if TooltipInfo.pos_info != (int(rx+x), int(ry+y)) and TooltipInfo.show_id != 0:
+        hide_tooltip()
+
+    show_tooltip(int(rx+x), int(ry+y))
 
 class TooltipInfo:
     widget = None
@@ -431,6 +461,7 @@ def init_widget(widget):
     if not display:
         init_tooltip(widget)
     return w_info
+
 def init_tooltip(win):
     global display
     if not display:
@@ -677,7 +708,7 @@ def tooltip_handler(event):
     gtk.main_do_event(event)
     if event.type == gdk.MOTION_NOTIFY:
         # print "leave", time.time()
-        update_tooltip(display)
+        update_tooltip()
     elif event.type == gdk.LEAVE_NOTIFY:
         # print "leave", time.time()
         hide_tooltip()
