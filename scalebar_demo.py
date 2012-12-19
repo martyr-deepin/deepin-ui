@@ -49,6 +49,9 @@ def __value_changed(widget, argv):
     print "DEBUG argv", argv
     dg.set_double("brightness", widget.get_value() / 100)
 
+def __resized(widget):
+    print widget
+
 if __name__ == "__main__":
     # Init application.
     application = Application()
@@ -110,5 +113,6 @@ if __name__ == "__main__":
     
     application.main_box.pack_start(hscale1_align)
     application.main_box.pack_start(hscale2_align)
+    application.window.connect("check-resize", __resized)
 
     application.run()

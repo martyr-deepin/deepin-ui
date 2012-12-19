@@ -194,6 +194,9 @@ class ResizableBox(gtk.EventBox):
             # redraw the widget
             self.window.invalidate_rect(self.allocation, True)        
     
+    def invalidate(self):
+        self.window.invalidate_rect(self.allocation, True)
+    
     def expose_override(self, cr, rect):
         pass
     
