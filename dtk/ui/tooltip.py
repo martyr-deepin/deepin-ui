@@ -54,7 +54,7 @@ def window_to_alloc(widget, x, y):
 def child_location_foreach(widget, cl): #cl = child_location
     if not widget.is_drawable():
         return
-    if widget and not cl.child :
+    if widget.get_realized() and not cl.child :
         #TODO: may invalid to untuple!.
         (x, y) = cl.container.translate_coordinates(widget, int(cl.x), int(cl.y))
         if x >= 0 and x < widget.allocation.width and \
