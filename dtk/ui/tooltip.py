@@ -31,7 +31,7 @@ import gtk
 
 
 __all__ = ["text", "custom", "show_tooltip", "show_delay", "hide_delay", "hide_duration",
-        "background", "padding", "show_tooltip", "has_shadow", "disable", "always_update",
+        "background", "padding", "show_now", "has_shadow", "disable", "always_update",
         "disable_all"]
 
 class ChildLocation:
@@ -54,7 +54,8 @@ def window_to_alloc(widget, x, y):
 def child_location_foreach(widget, cl): #cl = child_location
     if not widget.is_drawable():
         return
-    if not cl.child :
+    if widget and not cl.child :
+        #TODO: may invalid to untuple!.
         (x, y) = cl.container.translate_coordinates(widget, int(cl.x), int(cl.y))
         if x >= 0 and x < widget.allocation.width and \
             y >=0 and y < widget.allocation.height:
@@ -167,10 +168,7 @@ def update_tooltip():
         else:
             show_delay = TooltipInfo.winfo.show_delay
         TooltipInfo.pos_info = (int(rx+x), int(ry+y))
-        if show_delay == 0:
-            show_tooltip(*TooltipInfo.pos_info)
-        else:
-            TooltipInfo.show_id = gobject.timeout_add(show_delay, lambda : show_tooltip(*TooltipInfo.pos_info))
+        TooltipInfo.show_id = gobject.timeout_add(show_delay, lambda : show_tooltip(*TooltipInfo.pos_info))
 
 def show_now():
     try :
