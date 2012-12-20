@@ -546,8 +546,10 @@ class Crumb(gtk.Button):
 
         if widget.state == gtk.STATE_NORMAL:
             text_color = ui_theme.get_color("button_font").get_color()
-            button_color = button_normal            
-            menu_color = button_normal
+            #button_color = button_normal            
+            #menu_color = button_normal
+            button_color = None
+            menu_color = None
             arrow_pixbuf = arrow_right
             
         elif widget.state == gtk.STATE_PRELIGHT:
@@ -586,16 +588,18 @@ class Crumb(gtk.Button):
                             (1, (disable_bg, 1.0))]
         
         ''' Draw background. '''
-        draw_vlinear(
-            cr,
-            x , y  , self.button_width, h ,
-            button_color)
-        
-        if self.menu != None:
+        if button_color:
             draw_vlinear(
                 cr,
-                x + self.button_width, y , self.menu_min, h,
-                menu_color)
+                x , y  , self.button_width, h ,
+                button_color)
+        
+        if self.menu != None:
+            if menu_color:
+                draw_vlinear(
+                    cr,
+                    x + self.button_width, y , self.menu_min, h,
+                    menu_color)
 
         if not widget.state == gtk.STATE_NORMAL:
             # Draw button border.
