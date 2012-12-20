@@ -26,7 +26,7 @@ from theme import ui_theme
 from draw import draw_pixbuf
 from utils import propagate_expose, get_event_coords
 
-STAR_SIZE = 16
+STAR_SIZE = 13
 
 class StarBuffer(gobject.GObject):
     '''
