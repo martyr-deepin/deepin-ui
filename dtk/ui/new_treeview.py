@@ -785,7 +785,10 @@ class TreeView(gtk.VBox):
             self.title_offset_y = title_height
             for (index, column_width) in enumerate(self.column_widths):
                 if column_width == -1:
-                    title_boxs[index].set_size_request(self.draw_area.allocation.width - fixed_width_count, title_height)
+                    '''
+                    FIXME: why width or height < 0 in set_size_request
+                    '''
+                    title_boxs[index].set_size_request(max(self.draw_area.allocation.width - fixed_width_count, 0), max(title_height, 0))
                 else:
                     title_boxs[index].set_size_request(column_width, title_height)
             
