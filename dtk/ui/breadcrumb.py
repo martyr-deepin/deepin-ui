@@ -52,6 +52,7 @@ class Bread(gtk.HBox):
                  arrow_down=ui_theme.get_pixbuf("treeview/arrow_down.png"),
                  show_others=False, 
                  show_entry=False,
+                 show_left_right_box=True
                  ):
         """
         Initialize Bread class.
@@ -74,10 +75,17 @@ class Bread(gtk.HBox):
         self.in_event_box = False
 
         # Init left button and right button
+        self.show_left_right_box = show_left_right_box
         left_box = gtk.HBox(spacing = 0)
-        left_box.set_size_request(self.button_width, -1)
         right_box = gtk.HBox(spacing = 0)
-        right_box.set_size_request(self.button_width, -1)
+        '''
+        FIXME: left && right box static setting size
+               it is better to consider whether or not shown left && right box 
+               at runtime
+        '''
+        if self.show_left_right_box:
+            left_box.set_size_request(self.button_width, -1)
+            right_box.set_size_request(self.button_width, -1)
         self.left_btn = Button("&lt;")
         self.right_btn = Button("&gt;")
         self.left_btn.set_no_show_all(True)
@@ -576,12 +584,13 @@ class Crumb(gtk.Button):
                             (1, (disable_bg, 1.0))]
             menu_color = [(0, (disable_bg, 1.0)),
                             (1, (disable_bg, 1.0))]
-        # Draw background.
+        
+        ''' Draw background. '''
         draw_vlinear(
             cr,
             x , y  , self.button_width, h ,
             button_color)
-
+        
         if self.menu != None:
             draw_vlinear(
                 cr,
