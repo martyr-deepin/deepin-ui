@@ -357,7 +357,7 @@ if __name__ == "__main__":
         [(lambda item: item.title, cmp),
          (lambda item: item.artist, cmp),
          (lambda item: item.length, cmp)], drag_data=([("text/deepin-webcasts", gtk.TARGET_SAME_APP, 1),], gtk.gdk.ACTION_COPY, 1))
-    list_view.cell_widths = [600, 100, 100]
+    #list_view.cell_widths = [600, 100, 100]
     list_view.set_expand_column(0)
     list_view.add_titles(["歌名", "歌手", "时间"])
     #list_view.add_items(items)

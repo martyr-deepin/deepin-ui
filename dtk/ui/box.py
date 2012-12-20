@@ -153,7 +153,7 @@ class ResizableBox(gtk.EventBox):
         "resize" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),}
     
     def __init__(self, 
-                 width=790, 
+                 width=740, 
                  height=150, 
                  min_height=150):
         gtk.EventBox.__init__(self)
