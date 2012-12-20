@@ -862,7 +862,13 @@ class TreeView(gtk.VBox):
                 self.update_item_widths()
                 
                 self.update_vadjustment()
-            
+    
+    '''
+    TODO: houge wanna clear style :)
+    '''
+    def clear(self):
+        self.delete_all_items()
+    
     def delete_all_items(self):
         self.start_select_row = None
         self.select_rows = []
