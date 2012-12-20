@@ -22,15 +22,17 @@
 
 from draw import draw_pixbuf, cairo_state
 from theme import ui_theme
-from skin_config import skin_config
 import gobject
 import gtk
 
 class TimeZone(gtk.EventBox):
-    def __init__(self, timezone=11, width=800, height=409):
+    __gsignals__ = {
+        "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),}
+    
+    def __init__(self, timezone=0, width=800, height=409):
         gtk.EventBox.__init__(self)
         
-        self.timezone = timezone
+        self.__timezone = timezone + 9
         
         self.width = width
         self.height = height
@@ -41,8 +43,8 @@ class TimeZone(gtk.EventBox):
 
         self.bg_pixbuf = ui_theme.get_pixbuf("timezone/bg.png")
         self.timezone_pixbuf = []
-        i = -11
-        while i < 14:
+        i = -9
+        while i <= 13:
             self.timezone_pixbuf.append(ui_theme.get_pixbuf("timezone/timezone_%d.png" % i))
 
             i += 1
@@ -50,11 +52,28 @@ class TimeZone(gtk.EventBox):
         self.connect("button-press-event", self.__button_press)
         self.connect("expose-event", self.__expose)
    
+    def set_timezone(self, timezone):
+        self.__timezone = timezone + 9
+        if self.__timezone < 0:
+            self.__timezone = 0
+
+        if self.__timezone > 23:
+            self.__timezone = 23
+
+        self.window.invalidate_rect(self.allocation, True)
+    
     def __button_press(self, widget, event):
         if event.x > self.width or event.y > self.height:
             return
 
-        self.timezone = int(event.x * 25 / self.width);
+        self.__timezone = int(event.x * 24 / self.width) - 2;
+        if self.__timezone < 0:
+            self.__timezone = 0
+
+        if self.__timezone > 23:
+            self.__timezone = 23
+
+        self.emit("changed", self.__timezone - 9)
 
         self.window.invalidate_rect(self.allocation, True)
 
@@ -83,7 +102,7 @@ class TimeZone(gtk.EventBox):
             
             draw_pixbuf(cr, bg_dpixbuf, x, y)
             draw_pixbuf(cr, 
-                        timezone_dpixbuf[self.timezone], 
+                        timezone_dpixbuf[self.__timezone], 
                         x, y)
 
         return True

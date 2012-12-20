@@ -37,6 +37,9 @@ from dtk.ui.timezone import TimeZone
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
 import gtk
 
+def __changed(widget, timezone):
+    print "DEBUG", timezone
+
 if __name__ == "__main__":
     # Init application.
     application = Application()
@@ -58,11 +61,8 @@ if __name__ == "__main__":
         "TimeZone demo",
         )
     
-    timezone = TimeZone(width = 800 / 2, height = 409 / 2)
-    align = gtk.Alignment()                                             
-    align.set(0.5, 0.5, 1, 1)                                           
-    align.set_padding(0, 2, 2, 2)
-    align.add(timezone)
-    application.main_box.pack_start(align)
+    timezone = TimeZone(width = 800, height = 409)
+    timezone.connect("changed", __changed)
+    application.main_box.pack_start(timezone)
 
     application.run()
