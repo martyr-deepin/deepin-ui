@@ -207,12 +207,19 @@ class Bread(gtk.HBox):
 
         """
         cr = widget.window.cairo_create()
-        win = get_match_parent(widget, ["ScrolledWindow"])
-        win_x, win_y = win.allocation.x, win.allocation.y
+        rect = widget.allocation
+        pixbuf = ui_theme.get_pixbuf("crumbs_bg.png")
 
-        cr.translate(-win_x, -win_y)
-        (shadow_x, shade_y) = get_window_shadow_size(self.get_toplevel())
-        skin_config.render_background(cr, widget, shadow_x, shade_y)
+        from dtk.ui.cache_pixbuf import CachePixbuf
+        self.cache_bg_pixbuf = CachePixbuf()
+        self.cache_bg_pixbuf.scale(pixbuf.get_pixbuf(), rect.width, rect.height)
+        draw_pixbuf(cr, self.cache_bg_pixbuf.get_cache(), rect.x, rect.y)
+        #win = get_match_parent(widget, ["ScrolledWindow"])
+        #win_x, win_y = win.allocation.x, win.allocation.y
+
+        #cr.translate(-win_x, -win_y)
+        #(shadow_x, shade_y) = get_window_shadow_size(self.get_toplevel())
+        #skin_config.render_background(cr, widget, shadow_x, shade_y)
         return False
 
     def add(self, crumbs):
