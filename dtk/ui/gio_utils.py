@@ -204,8 +204,8 @@ def is_directory(gfile):
 
 def start_desktop_file(desktop_name):
     desktop_path = None
-    for desktop_dir in os.environ.get("XDG_DATA_DIRS").split(":"):
-        path = os.path.join(desktop_dir, desktop_name)
+    for desktop_dir in os.environ.get("XDG_DATA_DIRS").split(":") + ["/usr/share/applications"]:
+        path = os.path.join(desktop_dir, "%s.desktop" % desktop_name)
         if os.path.exists(path):
             desktop_path = path
             break
