@@ -202,6 +202,30 @@ def is_directory(gfile):
     '''
     return gfile.query_info("standard::type").get_file_type() == gio.FILE_TYPE_DIRECTORY
 
+def start_desktop_file(desktop_name):
+    desktop_path = None
+    for desktop_dir in os.environ.get("XDG_DATA_DIRS").split(":"):
+        path = os.path.join(desktop_dir, desktop_name)
+        if os.path.exists(path):
+            desktop_path = path
+            break
+    
+    if desktop_path == None:
+        return "Desktop file not exists: %s" % desktop_path
+    else:
+        app_info = gio.unix.desktop_app_info_new_from_filename(desktop_path)
+        if app_info == None:
+            return "Desktop is not valid: %s" % desktop_path
+        else:
+            try:
+                app_info.launch()
+                
+                return True
+            except Exception, e:
+                traceback.print_exc(file=sys.stdout)
+            
+                return str(e)
+
 if __name__ == "__main__":
     print get_file_icon_pixbuf("/data/Picture/宝宝/ETB8227272-0003.JPG", 24)
     print get_dir_child_files("/")
