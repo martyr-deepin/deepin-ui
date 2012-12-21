@@ -152,11 +152,13 @@ class Paned(gtk.Paned):
         return is_in_rect((x, y), rect)
 
     def do_enter_notify_event(self, e):
+        print "enter"
         self.show_button = True
         
         self.queue_draw()
     
     def do_leave_notify_event(self, e):
+        print "leave"
         self.show_button = False
         self.init_button("normal")
         
@@ -179,8 +181,6 @@ class Paned(gtk.Paned):
             handle.set_cursor(self.cursor_type)
             
             self.init_button("normal")
-
-        self.queue_draw()
         
         gtk.Paned.do_motion_notify_event(self, e)
 
