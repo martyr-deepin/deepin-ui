@@ -388,7 +388,12 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
     (text_width, text_height) = layout.get_pixel_size()
     
     if underline:
-        cr.rectangle(x, y + text_height + (h - text_height) / 2, text_width, 1)
+        if alignment == pango.ALIGN_LEFT:
+            cr.rectangle(x, y + text_height + (h - text_height) / 2, text_width, 1)
+        elif alignment == pango.ALIGN_CENTER:
+            cr.rectangle(x + (w - text_width) / 2, y + text_height + (h - text_height) / 2, text_width, 1)
+        else:
+            cr.rectangle(x + w - text_width, y + text_height + (h - text_height) / 2, text_width, 1)
         cr.fill()
         
     # Draw text.
