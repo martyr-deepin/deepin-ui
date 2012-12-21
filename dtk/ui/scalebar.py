@@ -22,8 +22,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from cache_pixbuf import CachePixbuf
-from draw import draw_pixbuf, draw_text
-from utils import is_left_button, get_content_size
+from draw import draw_pixbuf, draw_text, cairo_state, draw_line
+from utils import is_left_button, get_content_size, color_hex_to_cairo
 from constant import DEFAULT_FONT_SIZE
 import gobject
 import gtk
@@ -45,14 +45,17 @@ class HScalebar(gtk.HScale):
     POS_TOP = 0
     POS_BOTTOM = 1
 	
+    '''
+    TODO: 
+    '''
     def __init__(self,
-                 left_fg_dpixbuf,
-                 left_bg_dpixbuf,
-                 middle_fg_dpixbuf,
-                 middle_bg_dpixbuf,
-                 right_fg_dpixbuf,
-                 right_bg_dpixbuf,
-                 point_dpixbuf,
+                 left_fg_dpixbuf=None,
+                 left_bg_dpixbuf=None,
+                 middle_fg_dpixbuf=None,
+                 middle_bg_dpixbuf=None,
+                 right_fg_dpixbuf=None,
+                 right_bg_dpixbuf=None,
+                 point_dpixbuf=None,
                  show_value=False,
                  format_value=None
                  ):
@@ -71,6 +74,18 @@ class HScalebar(gtk.HScale):
         gtk.HScale.__init__(self)
         self.set_draw_value(False)
         self.set_range(0, 100)
+        
+        self.line_width = 1
+        self.side_width = 1
+        self.h_scale_height = 6
+        self.fg_side_color = "#2670B2"
+        self.bg_side_color = "#BABABA"
+        self.fg_inner_color = "#59AFEE"
+        self.bg_inner1_color = "#DCDCDC"
+        self.bg_inner2_color = "#E6E6E6"
+        self.fg_corner_color = "#3F85B6"
+        self.bg_corner_color = "#C2C4C5"
+        
         self.left_fg_dpixbuf = left_fg_dpixbuf
         self.left_bg_dpixbuf = left_bg_dpixbuf
         self.middle_fg_dpixbuf = middle_fg_dpixbuf
@@ -78,6 +93,9 @@ class HScalebar(gtk.HScale):
         self.right_fg_dpixbuf = right_fg_dpixbuf
         self.right_bg_dpixbuf = right_bg_dpixbuf
         self.point_dpixbuf = point_dpixbuf
+        if self.point_dpixbuf == None:
+            raise Exception, "point pixbuf can not be None" 
+        
         self.cache_bg_pixbuf = CachePixbuf()
         self.cache_fg_pixbuf = CachePixbuf()
         self.show_value = show_value
@@ -119,22 +137,15 @@ class HScalebar(gtk.HScale):
         rect = widget.allocation
         
         # Init pixbuf.
-        left_fg_pixbuf = self.left_fg_dpixbuf.get_pixbuf()
-        left_bg_pixbuf = self.left_bg_dpixbuf.get_pixbuf()
-        middle_fg_pixbuf = self.middle_fg_dpixbuf.get_pixbuf()
-        middle_bg_pixbuf = self.middle_bg_dpixbuf.get_pixbuf()
-        right_fg_pixbuf = self.right_fg_dpixbuf.get_pixbuf()
-        right_bg_pixbuf = self.right_bg_dpixbuf.get_pixbuf()
         point_pixbuf = self.point_dpixbuf.get_pixbuf()
         
         # Init value.
         upper = self.get_adjustment().get_upper() 
         lower = self.get_adjustment().get_lower() 
         total_length = max(upper - lower, 1)
-        side_width = left_bg_pixbuf.get_width()
         point_width = point_pixbuf.get_width()
         point_height = point_pixbuf.get_height()
-        x, y, w, h = rect.x + point_width / 2, rect.y, rect.width - point_width, rect.height
+        x, y, w, h = rect.x + point_width, rect.y, rect.width - point_width * 2, rect.height
         value = int((self.get_value() - lower) / total_length * w)
         '''
         TODO: Draw mark
@@ -154,32 +165,62 @@ class HScalebar(gtk.HScale):
                 mark_value = int((mark[self.MARK_VALUE] - lower) / total_length * w)
                 draw_text(cr, mark_markup_text, x + mark_value - text_height / 2, mark_y, text_width, text_height)
         
-        line_height = left_bg_pixbuf.get_height()
+        line_height = self.h_scale_height
         line_y = y + (point_height - line_height) / 2
         if has_top_markup:
             line_y += text_height
         if self.show_value:
             line_y += text_height * 2
 
-        # Draw background.
-        self.cache_bg_pixbuf.scale(middle_bg_pixbuf, w - side_width * 2, line_height)
-        draw_pixbuf(cr, left_bg_pixbuf, x, line_y)
-        draw_pixbuf(cr, self.cache_bg_pixbuf.get_cache(), x + side_width, line_y)
-        draw_pixbuf(cr, right_bg_pixbuf, x + w - side_width, line_y)
-        
-        # Draw foreground.
-        if value > 0:
-            self.cache_fg_pixbuf.scale(middle_fg_pixbuf, value, line_height)
-            draw_pixbuf(cr, left_fg_pixbuf, x, line_y)
-            draw_pixbuf(cr, self.cache_fg_pixbuf.get_cache(), x + side_width, line_y)
-            draw_pixbuf(cr, right_fg_pixbuf, x + value, line_y)
-            
-        # Draw drag point.
         point_y = y
         if has_top_markup:
             point_y += text_height
         if self.show_value:
             point_y += text_height * 2
+
+        with cairo_state(cr):
+            '''
+            background y
+            '''
+            bg_y = point_y + (point_pixbuf.get_height() - self.h_scale_height) / 2
+            cr.set_line_width(self.line_width)
+            cr.set_source_rgb(*color_hex_to_cairo(self.bg_inner2_color))
+            cr.rectangle(x, bg_y, w, self.h_scale_height)
+            cr.fill()
+
+            cr.set_source_rgb(*color_hex_to_cairo(self.bg_side_color))
+            cr.rectangle(x, bg_y, w, self.h_scale_height)
+            cr.stroke()
+
+            cr.set_source_rgb(*color_hex_to_cairo(self.bg_corner_color))
+            draw_line(cr, x, bg_y, x + 1, bg_y)
+            draw_line(cr, x + w, bg_y, x + w - 1, bg_y)
+            draw_line(cr, x, bg_y + self.h_scale_height, x + 1, bg_y + self.h_scale_height)
+            draw_line(cr, x + w, bg_y + self.h_scale_height, x + w - 1, bg_y + self.h_scale_height)
+        
+            if value > 0:
+                '''
+                background
+                '''
+                cr.set_source_rgb(*color_hex_to_cairo(self.bg_inner1_color))
+                cr.rectangle(x, bg_y, value, self.h_scale_height)
+                cr.fill()
+                '''
+                foreground
+                '''
+                cr.set_source_rgb(*color_hex_to_cairo(self.fg_inner_color))
+                cr.rectangle(x, bg_y, value, self.h_scale_height)
+                cr.fill()
+
+                cr.set_source_rgb(*color_hex_to_cairo(self.fg_side_color))
+                cr.rectangle(x, bg_y, value, self.h_scale_height)
+                cr.stroke()
+
+                cr.set_source_rgb(*color_hex_to_cairo(self.fg_corner_color))         
+                draw_line(cr, x, bg_y, x + 1, bg_y)                                  
+                draw_line(cr, x, bg_y + self.h_scale_height, x + 1, bg_y + self.h_scale_height)
+
+        # Draw drag point.
         draw_pixbuf(cr, point_pixbuf, x + value - point_pixbuf.get_width() / 2, point_y)
 
         '''
