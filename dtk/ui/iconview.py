@@ -375,7 +375,7 @@ class IconView(gtk.DrawingArea):
             self.items = self.items[0:insert_pos] + items + self.items[insert_pos::]
             
         for item in items:
-            item.connect("redraw_request", self.redraw_item)
+            item.connect("redraw-request", self.redraw_item)
             
         self.queue_draw()    
         
