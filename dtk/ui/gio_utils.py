@@ -202,15 +202,8 @@ def is_directory(gfile):
     '''
     return gfile.query_info("standard::type").get_file_type() == gio.FILE_TYPE_DIRECTORY
 
-def start_desktop_file(desktop_name):
-    desktop_path = None
-    for desktop_dir in os.environ.get("XDG_DATA_DIRS").split(":") + ["/usr/share/applications"]:
-        path = os.path.join(desktop_dir, "%s.desktop" % desktop_name)
-        if os.path.exists(path):
-            desktop_path = path
-            break
-    
-    if desktop_path == None:
+def start_desktop_file(desktop_path):
+    if not os.path.exists(desktop_path):
         return "Desktop file not exists: %s" % desktop_path
     else:
         app_info = gio.unix.desktop_app_info_new_from_filename(desktop_path)
