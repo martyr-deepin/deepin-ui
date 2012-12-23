@@ -127,17 +127,19 @@ class BackgroundBox(gtk.VBox):
         @return: Always return False.        
         '''
         cr = widget.window.cairo_create()
-        rect = widget.allocation
-        toplevel = widget.get_toplevel()
-        coordinate = widget.translate_coordinates(toplevel, rect.x, rect.y)
-        (offset_x, offset_y) = coordinate
-        
         with cairo_state(cr):
+            rect = widget.allocation
+            toplevel = widget.get_toplevel()
+            (offset_x, offset_y) = widget.translate_coordinates(toplevel, 0, 0)
+            (shadow_x, shadow_y) = get_window_shadow_size(toplevel)
+            
+            x = shadow_x - offset_x
+            y = shadow_y - offset_y
+            
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.clip()
-            
-            (shadow_x, shadow_y) = get_window_shadow_size(toplevel)
-            skin_config.render_background(cr, widget, shadow_x, shadow_y)
+            cr.translate(x, y)
+            skin_config.render_background(cr, widget, 0, 0)
             
         self.draw_mask(cr, rect.x, rect.y, rect.width, rect.height)    
 
