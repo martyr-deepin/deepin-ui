@@ -153,13 +153,13 @@ class ResizableBox(gtk.EventBox):
         "resize" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),}
     
     def __init__(self, 
-                 width=740, 
-                 height=150, 
-                 min_height=150):
+                 width=750, 
+                 height=160, 
+                 min_height=160):
         gtk.EventBox.__init__(self)
         
         self.padding_x = 10
-        self.padding_y = 10
+        self.padding_y = 18
         self.line_width = 1
         
         self.width = width
@@ -206,6 +206,13 @@ class ResizableBox(gtk.EventBox):
         x, y = rect.x, rect.y
 
         with cairo_state(cr):
+            cr.set_source_rgb(*color_hex_to_cairo("#FFFFFF"))
+            cr.rectangle(x - self.padding_x, 
+                         y - self.padding_y, 
+                         rect.width + self.padding_x, 
+                         rect.height + self.padding_y)
+            cr.fill()
+
             cr.set_line_width(self.line_width)
 
             cr.set_source_rgb(*color_hex_to_cairo("#999999"))
