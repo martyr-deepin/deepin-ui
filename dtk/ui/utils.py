@@ -1404,3 +1404,14 @@ def invisible_window(window):
     window.move(0, 0)
     window.set_default_size(0, 0)
     window.connect("size-allocate", shape_window)
+
+def split_with(split_list, condition_func):
+    pass_list = []
+    rest_list = []
+    for element in split_list:
+        if condition_func(element):
+            pass_list.append(element)
+        else:
+            rest_list.append(element)
+            
+    return (pass_list, rest_list)
