@@ -48,7 +48,7 @@ class Button(gtk.Button):
     @undocumented: expose_button
     '''
 	
-    def __init__(self, label, font_size=DEFAULT_FONT_SIZE):
+    def __init__(self, label="", font_size=DEFAULT_FONT_SIZE):
         '''
         Initialize Button class.
         
