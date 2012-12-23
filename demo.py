@@ -517,7 +517,6 @@ if __name__ == "__main__":
     only_one_icon_items = []
     only_one_icon_items.append(icon_items[0])
     icon_view.add_items(icon_items)
-    icon_view.connect("motion-item", m_motion_item)
     
     tab_4_box.pack_start(icon_view_vframe, True, True)
     

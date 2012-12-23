@@ -20,15 +20,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import cairo
+import math
 from draw import draw_pixbuf, draw_vlinear
 from keymap import get_keyevent_name
 from skin_config import skin_config
 from theme import ui_theme
-import cairo
 import gc
 import gobject
 import gtk
-import math
 from utils import (get_match_parent, cairo_state, get_event_coords, 
                    is_in_rect, is_left_button, is_double_click, 
                    is_single_click, get_window_shadow_size)
@@ -39,6 +39,7 @@ class IconView(gtk.DrawingArea):
     
     @undocumented: realize_icon_view
     @undocumented: button_release_scrolled_window
+    @undocumented: size_allocated_icon_view
     @undocumented: expose_icon_view
     @undocumented: motion_icon_view
     @undocumented: icon_view_get_event_index
@@ -95,6 +96,7 @@ class IconView(gtk.DrawingArea):
         # Signal.
         self.connect("realize", self.realize_icon_view)
         self.connect("realize", lambda w: self.grab_focus()) # focus key after realize
+        self.connect("size-allocate", self.size_allocated_icon_view)
         self.connect("expose-event", self.expose_icon_view)    
         self.connect("motion-notify-event", self.motion_icon_view)
         self.connect("button-press-event", self.button_press_icon_view)
@@ -401,19 +403,11 @@ class IconView(gtk.DrawingArea):
         self.items = []            
         self.queue_draw()
             
-    def draw_mask(self, cr, x, y, w, h):
-        '''
-        Draw mask interface.
-        
-        @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
-        @param w: Width of draw area.
-        @param h: Height of draw area.
-        '''
-        draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("linear_background").get_color_info()
-                     )
+    def size_allocated_icon_view(self, widget, rect):
+        # Cairo render surface.
+        scrolled_window = get_match_parent(self, ["ScrolledWindow"])
+        self.render_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, scrolled_window.allocation.width, scrolled_window.allocation.height)
+        self.render_surface_cr = gtk.gdk.CairoContext(cairo.Context(self.render_surface))
         
     def expose_icon_view(self, widget, event):
         '''
@@ -430,93 +424,113 @@ class IconView(gtk.DrawingArea):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
             
         # Draw background.
-        with cairo_state(cr):
-            scrolled_window = get_match_parent(self, ["ScrolledWindow"])
-            cr.translate(-scrolled_window.allocation.x, -scrolled_window.allocation.y)
-            cr.rectangle(offset_x, offset_y, 
-                         scrolled_window.allocation.x + scrolled_window.allocation.width, 
-                         scrolled_window.allocation.y + scrolled_window.allocation.height)
-            cr.clip()
+        self.draw_background(widget, self.render_surface_cr)
             
-            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
-            skin_config.render_background(cr, self, offset_x + shadow_x, offset_y + shadow_y)
-            
-        # Draw mask.
-        self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
+        # # Draw mask.
+        self.draw_mask(self.render_surface_cr, 0, 0, viewport.allocation.width, viewport.allocation.height)
         
         # Draw items.
-        self.draw_items(cr, rect, offset_x, offset_y, viewport)
+        self.draw_items(self.render_surface_cr, rect)
             
-    def draw_items(self, cr, rect, offset_x, offset_y, viewport):
+        # Draw bound mask.
+        scrolled_window = get_match_parent(self, ["ScrolledWindow"])
+        width = scrolled_window.allocation.width
+        height = scrolled_window.allocation.height
+        vadjust_value = int(scrolled_window.get_vadjustment().get_value())
+        vadjust_upper = int(scrolled_window.get_vadjustment().get_upper())
+        vadjust_page_size = int(scrolled_window.get_vadjustment().get_page_size())
+        hadjust_value = int(scrolled_window.get_hadjustment().get_value())
+        
+        if vadjust_value == 0:
+            with cairo_state(cr):
+                cr.rectangle(hadjust_value, vadjust_value, width, self.mask_bound_height)
+                cr.clip()
+                cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
+                cr.paint()
+        else:
+            i = 0
+            while (i <= self.mask_bound_height):
+                with cairo_state(cr):
+                    cr.rectangle(hadjust_value, vadjust_value + i, width, 1)
+                    cr.clip()
+                    
+                    cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
+                    cr.paint_with_alpha(math.sin(i * math.pi / 2 / self.mask_bound_height))
+                    
+                i += 1    
+            
+        with cairo_state(cr):
+            cr.rectangle(hadjust_value, vadjust_value + self.mask_bound_height, width, height - self.mask_bound_height * 2)
+            cr.clip()
+            cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
+            cr.paint()
+            
+        if vadjust_value + vadjust_page_size == vadjust_upper:
+            with cairo_state(cr):
+                cr.rectangle(hadjust_value, vadjust_value + height - self.mask_bound_height, width, self.mask_bound_height)
+                cr.clip()
+                cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
+                cr.paint()
+        else:
+            i = 0        
+            while (i < self.mask_bound_height):
+                with cairo_state(cr):
+                    cr.rectangle(hadjust_value, vadjust_value + height - self.mask_bound_height + i, width, 1)
+                    cr.clip()
+                    cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
+                    cr.paint_with_alpha(1.0 - (math.sin(i * math.pi / 2 / self.mask_bound_height)))
+            
+                i += 1    
+                
+        return False
+    
+    def draw_background(self, widget, cr):
+        with cairo_state(cr):
+            scrolled_window = get_match_parent(self, ["ScrolledWindow"])
+            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
+            (offset_x, offset_y) = self.translate_coordinates(self.get_toplevel(), 0, 0)
+            vadjust = scrolled_window.get_vadjustment()    
+            vadjust_value = int(vadjust.get_value())
+            hadjust = scrolled_window.get_hadjustment()    
+            hadjust_value = int(hadjust.get_value())
+            
+            x = shadow_x - offset_x - hadjust_value
+            y = shadow_y - offset_y - vadjust_value
+            
+            cr.rectangle(0, 0, scrolled_window.allocation.width, scrolled_window.allocation.height)
+            cr.clip()
+            cr.translate(x, y)
+            skin_config.render_background(cr, widget, 0, 0)
+
+    def draw_mask(self, cr, x, y, w, h):
+        '''
+        Draw mask interface.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
+        draw_vlinear(cr, x, y, w, h,
+                     ui_theme.get_shadow_color("linear_background").get_color_info()
+                     )
+        
+    def draw_items(self, cr, rect):
         # Draw items.
         if len(self.items) > 0:
-            # Init.
-            vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
-            
-            # Init top surface.
-            if vadjust.get_value() != vadjust.get_lower():
-                top_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
-                top_surface_cr = gtk.gdk.CairoContext(cairo.Context(top_surface))
-                
-                clip_y = vadjust.get_value() + self.mask_bound_height
-            else:
-                top_surface = top_surface_cr = None
-                
-                clip_y = vadjust.get_value()
-                
-            # Init bottom surface.
-            if vadjust.get_value() + vadjust.get_page_size() != vadjust.get_upper():
-                bottom_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
-                bottom_surface_cr = gtk.gdk.CairoContext(cairo.Context(bottom_surface))
-                
-                clip_height = vadjust.get_page_size() - self.mask_bound_height - (clip_y - vadjust.get_value())
-            else:
-                bottom_surface = bottom_surface_cr = None
-                
-                clip_height = vadjust.get_page_size() - (clip_y - vadjust.get_value())
-            
             with cairo_state(cr):
+                scrolled_window = get_match_parent(self, ["ScrolledWindow"])
+                vadjust_value = int(scrolled_window.get_vadjustment().get_value())
+                hadjust_value = int(scrolled_window.get_hadjustment().get_value())
+                
                 # Draw on drawing area.
                 (item_width, item_height, columns, start_index, end_index) = self.get_render_item_info()
                 for (index, item) in enumerate(self.items[start_index:end_index]):
                     row = int((start_index + index) / columns)
                     column = (start_index + index) % columns
-                    render_x = rect.x + self.padding_x + column * item_width
-                    render_y = rect.y + self.padding_y + row * item_height
-                    render_width = item_width
-                    render_height = item_height
-                    
-                    # Draw on top surface.
-                    if top_surface_cr:
-                        if (not render_y > vadjust.get_value() + self.mask_bound_height) and (not render_y + render_height < vadjust.get_value()):
-                            top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
-                            top_surface_cr.clip()
-                            
-                            item.render(
-                                top_surface_cr,
-                                gtk.gdk.Rectangle(render_x, 
-                                                  render_y - int(vadjust.get_value()), 
-                                                  render_width, 
-                                                  render_height))
-                    
-                    # Draw on bottom surface.
-                    if bottom_surface_cr:
-                        if (not render_y > vadjust.get_value() + vadjust.get_page_size()) and (not render_y + render_height < vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height):
-                            bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
-                            bottom_surface_cr.clip()
-                            
-                            item.render(
-                                bottom_surface_cr,
-                                gtk.gdk.Rectangle(render_x, 
-                                                  render_y - int(vadjust.get_value()) - int(vadjust.get_page_size() - self.mask_bound_height), 
-                                                  render_width, 
-                                                  render_height))
-
-                    cr.rectangle(offset_x, 
-                                 offset_y + clip_y - vadjust.get_value(),
-                                 viewport.allocation.width,
-                                 clip_height + 1)
-                    cr.clip()
+                    render_x = self.padding_x + column * item_width - hadjust_value
+                    render_y = self.padding_y + row * item_height - vadjust_value
                     
                     with cairo_state(cr):
                         # Don't allow draw out of item area.
@@ -525,30 +539,6 @@ class IconView(gtk.DrawingArea):
                         
                         item.render(cr, gtk.gdk.Rectangle(render_x, render_y, item_width, item_height))
                         
-            # Draw alpha mask on top surface.
-            if top_surface:
-                i = 0
-                while (i <= self.mask_bound_height):
-                    with cairo_state(cr):
-                        cr.rectangle(rect.x, vadjust.get_value() + i, rect.width, 1)
-                        cr.clip()
-                        cr.set_source_surface(top_surface, 0, vadjust.get_value())
-                        cr.paint_with_alpha(math.sin(i * math.pi / 2 / self.mask_bound_height))
-                        
-                    i += 1    
-                
-            # Draw alpha mask on bottom surface.
-            if bottom_surface:
-                i = 0
-                while (i <= self.mask_bound_height):
-                    with cairo_state(cr):
-                        cr.rectangle(rect.x, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height + i, rect.width, 1)
-                        cr.clip()
-                        cr.set_source_surface(bottom_surface, 0, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height)
-                        cr.paint_with_alpha(1.0 - (math.sin(i * math.pi / 2 / self.mask_bound_height)))
-                        
-                    i += 1    
-                
     def get_render_item_info(self):
         '''
         Internal function to get information of render items.
