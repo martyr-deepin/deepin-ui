@@ -163,7 +163,7 @@ class DirItem(TreeItem):
         Render icon and name of DirItem.
         '''
         # Draw select background.
-        if self.is_select:
+        if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
@@ -204,7 +204,7 @@ class DirItem(TreeItem):
         Render type of DirItem.
         '''
         # Draw select background.
-        if self.is_select:
+        if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
@@ -229,7 +229,7 @@ class DirItem(TreeItem):
         Render type of DirItem.
         '''
         # Draw select background.
-        if self.is_select:
+        if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
@@ -254,7 +254,7 @@ class DirItem(TreeItem):
         Render size of DirItem.
         '''
         # Draw select background.
-        if self.is_select:
+        if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
@@ -360,6 +360,18 @@ class DirItem(TreeItem):
         '''
         return True
     
+    def highlight(self):
+        self.is_highlight = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+
+    def unhighlight(self):
+        self.is_highlight = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
 gobject.type_register(DirItem)
 
 class FileItem(TreeItem):
@@ -392,7 +404,7 @@ class FileItem(TreeItem):
         Render icon and name of DirItem.
         '''
         # Draw select background.
-        if self.is_select:
+        if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
@@ -426,7 +438,7 @@ class FileItem(TreeItem):
         Render type of DirItem.
         '''
         # Draw select background.
-        if self.is_select:
+        if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
@@ -451,7 +463,7 @@ class FileItem(TreeItem):
         Render type of DirItem.
         '''
         # Draw select background.
-        if self.is_select:
+        if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
@@ -476,7 +488,7 @@ class FileItem(TreeItem):
         Render size of DirItem.
         '''
         # Draw select background.
-        if self.is_select:
+        if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
@@ -552,6 +564,19 @@ class FileItem(TreeItem):
         '''
         return True
             
+    
+    def highlight(self):
+        self.is_highlight = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+
+    def unhighlight(self):
+        self.is_highlight = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
 gobject.type_register(DirItem)
 
 class LoadingItem(TreeItem):
@@ -581,7 +606,7 @@ class LoadingItem(TreeItem):
     
     def render(self, cr, rect):
         # Draw select background.
-        if self.is_select:
+        if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
@@ -603,6 +628,19 @@ class LoadingItem(TreeItem):
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
     
+    
+    def highlight(self):
+        self.is_highlight = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+
+    def unhighlight(self):
+        self.is_highlight = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
 gobject.type_register(LoadingItem)
 
 class EmptyItem(TreeItem):
@@ -632,7 +670,7 @@ class EmptyItem(TreeItem):
     
     def render(self, cr, rect):
         # Draw select background.
-        if self.is_select:
+        if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
                          ui_theme.get_shadow_color("listview_select").get_color_info())
         
@@ -662,6 +700,19 @@ class EmptyItem(TreeItem):
         '''
         return True
     
+    
+    def highlight(self):
+        self.is_highlight = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+
+    def unhighlight(self):
+        self.is_highlight = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
 gobject.type_register(EmptyItem)
 
 def get_dir_items(dir_path, column_index=0, show_hidden=False):

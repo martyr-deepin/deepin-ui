@@ -187,6 +187,8 @@ class TreeView(gtk.VBox):
         self.sort_action_id = 0
         self.title_offset_y = -1
         
+        self.highlight_item = None
+        
         # Init redraw.
         self.redraw_request_list = []
         self.redraw_delay = 100 # update redraw item delay, milliseconds
@@ -802,9 +804,6 @@ class TreeView(gtk.VBox):
                         cache_remove_items.append(item)
                         self.visible_items.remove(item)
                         
-                '''
-                TODO: some app based on TreeView might emit delete-select-items wrong
-                '''
                 self.emit("delete-select-items", cache_remove_items)
                 
                 self.update_item_index()    
@@ -813,9 +812,6 @@ class TreeView(gtk.VBox):
                 
                 self.update_vadjustment()
     
-    '''
-    TODO: houge wanna clear style :)
-    '''
     def clear(self):
         self.delete_all_items()
     
@@ -1510,6 +1506,28 @@ class TreeView(gtk.VBox):
                     # Stop loop when finish restore row status.
                     if select_items == [] and start_select_item == None:
                         break
+                    
+    def get_highlight_item(self):
+        return self.highlight_item
+                    
+    def set_highlight_item(self, item):
+        if self.enable_highlight and item != None:
+            if self.highlight_item:
+                if hasattr(self.highlight_item, "unhighlight"):
+                    self.highlight_item.unhighlight()
+                
+            if hasattr(item, "highlight"):        
+                self.highlight_item = item    
+                self.highlight_item.highlight()
+                
+                self.queue_draw()    
+                
+    def clear_highlight(self):
+        if self.highlight_item and hasattr(self.highlight_item, "unhighlight"):
+            self.highlight_item.unhighlight()
+            self.highlight_item = None
+
+            self.queue_draw()
         
 gobject.type_register(TreeView)
 
@@ -1533,21 +1551,10 @@ class TreeItem(gobject.GObject):
         self.is_select = False
         self.is_hover = False
         self.is_expand = False
+        self.is_highlight = False
         self.drag_line = False
         self.drag_line_at_bottom = False
         
-    def get_property(self, pspec):
-        if pspec.name in self.__prop_dict:
-            return self.__prop_dict[pspec.name]
-        else:
-            raise AttributeError, 'unknown property %s' % pspec.name
-
-    def set_property(self, pspec, value):
-        if pspec.name in self.__prop_dict:
-            self.__prop_dict[pspec.name] = value
-        else:
-            raise AttributeError, 'unknown property %s' % pspec.name
-    
     def expand(self):
         pass
     
@@ -1595,5 +1602,11 @@ class TreeItem(gobject.GObject):
 
     def tree_item_release_resource(self):
         return False
+    
+    def highlight(self):
+        pass
+    
+    def unhighlight(self):
+        pass
     
 gobject.type_register(TreeItem)
