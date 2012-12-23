@@ -186,10 +186,6 @@ class TreeView(gtk.VBox):
         self.column_widths = []
         self.sort_action_id = 0
         self.title_offset_y = -1
-        '''
-        TODO: highlight index && item
-        '''
-        self.highlight_item = None
         
         # Init redraw.
         self.redraw_request_list = []
@@ -253,49 +249,6 @@ class TreeView(gtk.VBox):
     def get_items(self):
         return self.visible_items
     
-    def set_highlight_item(self, item):
-        if hasattr(item, "highlight"):
-            if self.highlight_item is not None:
-                self.highlight_item.unhighlight()
-            self.highlight_item = item
-            '''
-            TODO: some app do the visible_highlight by itself
-            '''
-            #self.visible_highlight()
-            self.queue_draw()
-
-    def get_highlight_item(self):
-        return self.highlight_item
-
-    def clear_highlight(self):
-        self.highlight_item.unhighlight()
-        self.highlight_item = None
-        self.queue_draw()
-
-    def visible_highlight(self):
-        if self.highlight_item not in self.get_items():
-            return
-        
-        if self.highlight_item == None:
-            print "visible_highlight: highlight item is None."
-        else:
-            # Scroll viewport make sure highlight row in visible area.
-            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
-            if self.scrolled_window == None:
-                raise Exception, "parent container is not ScrolledWindow"
-            vadjust = self.scrolled_window.get_vadjustment()
-            highlight_index = self.get_items().index(self.highlight_item)
-            up_items_height = 0
-            down_items_height = 0
-            for item in self.visible_items[0:highlight_index]:
-                up_items_height += item.get_height()
-            down_items_height += (up_items_height + self.visible_items[highlight_index].get_height())
-
-            if offset_y + vadjust.get_page_size() > up_items_height:
-                vadjust.set_value(up_items_height)
-            elif offset_y + vadjust.get_page_size() < down_items_height:
-                vadjust.set_value(down_items_height - vadjust.get_page_size())
-
     def realize_tree_view(self, widget):
         self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
     
@@ -849,9 +802,6 @@ class TreeView(gtk.VBox):
                         cache_remove_items.append(item)
                         self.visible_items.remove(item)
                         
-                    if item == self.highlight_item:
-                        self.clear_highlight()
-                
                 '''
                 TODO: some app based on TreeView might emit delete-select-items wrong
                 '''
@@ -897,147 +847,134 @@ class TreeView(gtk.VBox):
         rect = widget.allocation
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
 
+        # Update adjustment.
         self.update_vadjustment()
-
+        
         # Draw background.
-        self.draw_background(widget, cr, offset_x, offset_y)
+        self.draw_background(widget, self.render_surface_cr)
             
-        # Draw mask.
-        self.draw_mask(cr, offset_x, offset_y, viewport.allocation.width, viewport.allocation.height)
+        # Draw background mask.
+        self.draw_mask(self.render_surface_cr, 0, 0, self.scrolled_window.allocation.width, self.scrolled_window.allocation.height)
         
         # Draw items.
         if len(self.visible_items) > 0:
-            self.draw_items(rect, cr)
+            self.draw_items(rect, self.render_surface_cr)
         
-        return False
-    
-    def draw_background(self, widget, cr, offset_x, offset_y):
-        with cairo_state(cr):
-            cr.translate(-self.scrolled_window.allocation.x, -self.scrolled_window.allocation.y)
-            cr.rectangle(offset_x, offset_y, 
-                         self.scrolled_window.allocation.x + self.scrolled_window.allocation.width, 
-                         self.scrolled_window.allocation.y + self.scrolled_window.allocation.height)
-            cr.clip()
-            
-            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
-            skin_config.render_background(cr, widget, offset_x + shadow_x, offset_y + shadow_y)
-            
-    def draw_items(self, rect, cr):
-        # Init.
-        vadjust = self.scrolled_window.get_vadjustment()
+        # Draw bound mask.
+        width = self.scrolled_window.allocation.width
+        height = self.scrolled_window.allocation.height
+        vadjust_value = int(self.scrolled_window.get_vadjustment().get_value())
+        vadjust_upper = int(self.scrolled_window.get_vadjustment().get_upper())
+        vadjust_page_size = int(self.scrolled_window.get_vadjustment().get_page_size())
+        hadjust_value = int(self.scrolled_window.get_hadjustment().get_value())
         
-        # Init top surface.
-        if vadjust.get_value() != vadjust.get_lower():
-            top_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
-            top_surface_cr = gtk.gdk.CairoContext(cairo.Context(top_surface))
-            
-            clip_y = vadjust.get_value() + self.mask_bound_height
+        if vadjust_value == 0:
+            with cairo_state(cr):
+                cr.rectangle(hadjust_value, vadjust_value, width, self.mask_bound_height)
+                cr.clip()
+                cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
+                cr.paint()
         else:
-            top_surface = top_surface_cr = None
-            
-            clip_y = vadjust.get_value()
-        
-        # Init bottom surface.
-        if vadjust.get_value() + vadjust.get_page_size() != vadjust.get_upper():
-            bottom_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, rect.width, self.mask_bound_height)
-            bottom_surface_cr = gtk.gdk.CairoContext(cairo.Context(bottom_surface))
-            
-            clip_height = vadjust.get_page_size() - self.mask_bound_height - (clip_y - vadjust.get_value())
-        else:
-            bottom_surface = bottom_surface_cr = None
-            
-            clip_height = vadjust.get_page_size() - (clip_y - vadjust.get_value())
-        
-        # Draw items.
-        (start_row, end_row, item_height_count) = self.get_expose_bound()
-        
-        column_widths = self.get_column_widths()
-            
-        for item in self.visible_items[start_row:end_row]:
-            item_width_count = 0
-            for (index, column_width) in enumerate(column_widths):
-                render_x = rect.x + item_width_count
-                render_y = rect.y + item_height_count
-                render_width = column_width
-                render_height = item.get_height()
-                
-                # Draw on top surface.
-                if top_surface_cr:
-                    if (not render_y > vadjust.get_value() + self.mask_bound_height) and (not render_y + render_height < vadjust.get_value()):
-                        top_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
-                        top_surface_cr.clip()
-                        
-                        item.get_column_renders()[index](
-                            top_surface_cr,
-                            gtk.gdk.Rectangle(render_x, 
-                                              render_y - int(vadjust.get_value()), 
-                                              render_width, 
-                                              render_height))
-                
-                # Draw on bottom surface.
-                if bottom_surface_cr:
-                    if (not render_y > vadjust.get_value() + vadjust.get_page_size()) and (not render_y + render_height < vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height):
-                        bottom_surface_cr.rectangle(rect.x, 0, rect.width, self.mask_bound_height)
-                        bottom_surface_cr.clip()
-                        
-                        item.get_column_renders()[index](
-                            bottom_surface_cr,
-                            gtk.gdk.Rectangle(render_x, 
-                                              render_y - int(vadjust.get_value()) - int(vadjust.get_page_size() - self.mask_bound_height), 
-                                              render_width, 
-                                              render_height))
-                
-                # Draw on drawing area cairo.
-                with cairo_state(cr):
-                    cr.rectangle(rect.x, clip_y, rect.width, clip_height)
-                    cr.clip()
-                    
-                    with cairo_state(cr):
-                        cr.rectangle(render_x, render_y, render_width, render_height)
-                        cr.clip()
-                        '''
-                        TODO: Draw highlight row
-                        '''
-                        if self.highlight_item:
-                            if hasattr(self.highlight_item, "highlight"):
-                                self.highlight_item.highlight()
-                        else:
-                            if hasattr(self.highlight_item, "highlight"):
-                                self.highlight_item.unhighlight()
-
-                        item.get_column_renders()[index](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
-                
-                item_width_count += column_width
-                
-            item_height_count += item.get_height()    
-            
-        # Draw alpha mask on top surface.
-        if top_surface:
             i = 0
             while (i <= self.mask_bound_height):
                 with cairo_state(cr):
-                    cr.rectangle(rect.x, vadjust.get_value() + i, rect.width, 1)
+                    cr.rectangle(hadjust_value, vadjust_value + i, width, 1)
                     cr.clip()
-                    cr.set_source_surface(top_surface, 0, vadjust.get_value())
+                    
+                    cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
                     cr.paint_with_alpha(math.sin(i * math.pi / 2 / self.mask_bound_height))
                     
                 i += 1    
             
-        # Draw alpha mask on bottom surface.
-        if bottom_surface:
-            i = 0
+        with cairo_state(cr):
+            cr.rectangle(hadjust_value, vadjust_value + self.mask_bound_height, width, height - self.mask_bound_height * 2)
+            cr.clip()
+            cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
+            cr.paint()
+            
+        if vadjust_value + vadjust_page_size == vadjust_upper:
+            with cairo_state(cr):
+                cr.rectangle(hadjust_value, vadjust_value + height - self.mask_bound_height, width, self.mask_bound_height)
+                cr.clip()
+                cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
+                cr.paint()
+        else:
+            i = 0        
             while (i < self.mask_bound_height):
                 with cairo_state(cr):
-                    cr.rectangle(rect.x, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height + i, rect.width, 1)
+                    cr.rectangle(hadjust_value, vadjust_value + height - self.mask_bound_height + i, width, 1)
                     cr.clip()
-                    cr.set_source_surface(bottom_surface, 0, vadjust.get_value() + vadjust.get_page_size() - self.mask_bound_height)
+                    cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
                     cr.paint_with_alpha(1.0 - (math.sin(i * math.pi / 2 / self.mask_bound_height)))
-                    
+            
                 i += 1    
+                
+        return False
     
-    def draw_item_highlight(self, cr, x, y, w, h):
-        draw_vlinear(cr, x, y, w, h, ui_theme.get_shadow_color("listview_highlight").get_color_info())
-    
+    def draw_background(self, widget, cr):
+        with cairo_state(cr):
+            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
+            (offset_x, offset_y) = self.draw_area.translate_coordinates(self.draw_area.get_toplevel(), 0, 0)
+            vadjust = self.scrolled_window.get_vadjustment()    
+            vadjust_value = int(vadjust.get_value())
+            hadjust = self.scrolled_window.get_hadjustment()    
+            hadjust_value = int(hadjust.get_value())
+            
+            x = shadow_x - offset_x - hadjust_value
+            y = shadow_y - offset_y - vadjust_value
+            
+            cr.rectangle(0, 0, self.scrolled_window.allocation.width, self.scrolled_window.allocation.height)
+            cr.clip()
+            cr.translate(x, y)
+            skin_config.render_background(cr, widget, 0, 0)
+            
+    def draw_mask(self, cr, x, y, w, h):
+        '''
+        Draw mask interface.
+        
+        @param cr: Cairo context.
+        @param x: X coordiante of draw area.
+        @param y: Y coordiante of draw area.
+        @param w: Width of draw area.
+        @param h: Height of draw area.
+        '''
+        draw_vlinear(cr, x, y, w, h,
+                     ui_theme.get_shadow_color("linear_background").get_color_info()
+                     )
+        
+    def draw_items(self, rect, cr):
+        with cairo_state(cr):
+            vadjust_value = int(self.scrolled_window.get_vadjustment().get_value())
+            hadjust_value = int(self.scrolled_window.get_hadjustment().get_value())
+            
+            # Draw items.
+            (start_row, end_row, item_height_count) = self.get_expose_bound()
+            
+            column_widths = self.get_column_widths()
+                
+            for item in self.visible_items[start_row:end_row]:
+                item_width_count = 0
+                for (index, column_width) in enumerate(column_widths):
+                    render_x = rect.x + item_width_count - hadjust_value
+                    render_y = rect.y + item_height_count - vadjust_value
+                    render_width = column_width
+                    render_height = item.get_height()
+                    
+                    # Draw on drawing area cairo.
+                    with cairo_state(cr):
+                        cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+                        cr.clip()
+                        
+                        with cairo_state(cr):
+                            cr.rectangle(render_x, render_y, render_width, render_height)
+                            cr.clip()
+                            
+                            item.get_column_renders()[index](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
+                    
+                    item_width_count += column_width
+                    
+                item_height_count += item.get_height()    
+            
     def get_expose_bound(self):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
         page_size = self.scrolled_window.get_vadjustment().get_page_size()
@@ -1435,6 +1372,10 @@ class TreeView(gtk.VBox):
     def size_allocated_tree_view(self, widget, rect):
         self.update_item_widths()
         
+        # Cairo temp surface.
+        self.render_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.scrolled_window.allocation.width, self.scrolled_window.allocation.height)
+        self.render_surface_cr = gtk.gdk.CairoContext(cairo.Context(self.render_surface))
+        
     def leave_tree_view(self, widget, event):
         if len(self.visible_items) > 0:
             # Hide hover row when cursor out of viewport area.
@@ -1501,20 +1442,6 @@ class TreeView(gtk.VBox):
             
         return None    
 
-    def draw_mask(self, cr, x, y, w, h):
-        '''
-        Draw mask interface.
-        
-        @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
-        @param w: Width of draw area.
-        @param h: Height of draw area.
-        '''
-        draw_vlinear(cr, x, y, w, h,
-                     ui_theme.get_shadow_color("linear_background").get_color_info()
-                     )
-        
     def get_offset_coordinate(self, widget):
         '''
         Get viewport offset coordinate and viewport.
@@ -1590,8 +1517,6 @@ class TreeItem(gobject.GObject):
     '''
     Tree item template use for L{ I{TreeView} <TreeView>}.
     '''
-    __gproperties__ = {
-        'highlight': (gobject.TYPE_BOOLEAN, 'highlight', 'highlight', True, gobject.PARAM_READWRITE)}
     
     def __init__(self):
         '''
@@ -1610,11 +1535,6 @@ class TreeItem(gobject.GObject):
         self.is_expand = False
         self.drag_line = False
         self.drag_line_at_bottom = False
-        '''
-        property
-        '''
-        self.__prop_dict = {}
-        self.__prop_dict['highlight'] = True
         
     def get_property(self, pspec):
         if pspec.name in self.__prop_dict:
@@ -1627,18 +1547,6 @@ class TreeItem(gobject.GObject):
             self.__prop_dict[pspec.name] = value
         else:
             raise AttributeError, 'unknown property %s' % pspec.name
-    
-    def get_highlight(self):
-        return self.get_property("highlight")
-
-    def set_highlight(self, highlight):
-        self.set_property("highlight", highlight)
-    
-    def highlight(self):
-        pass
-
-    def unhighlight(self):
-        pass
     
     def expand(self):
         pass
