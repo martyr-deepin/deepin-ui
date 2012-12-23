@@ -108,7 +108,8 @@ def draw_icon_view_mask(widget, x, y, w, h, render_callback):
     @param h: Height of draw area.
     @param render_callback: Render callback.
     '''
-    cr = widget.window.cairo_create()
+    # cr = widget.window.cairo_create()
+    cr = widget.render_surface_cr
     viewport = get_match_parent(widget, ["Viewport"])
     toplevel = widget.get_toplevel()
     (offset_x, offset_y) = viewport.translate_coordinates(toplevel, 0, 0)
@@ -120,8 +121,8 @@ def draw_icon_view_mask(widget, x, y, w, h, render_callback):
         
         render_callback(
             cr, 
-            x - offset_x + shadow_x, 
-            y - offset_y + shadow_y,
+            0 - offset_x + shadow_x, 
+            0 - offset_y + shadow_y,
             toplevel.allocation.width,
             toplevel.allocation.height)
 

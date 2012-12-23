@@ -175,7 +175,7 @@ class SkinPreviewPage(gtk.VBox):
         self.preview_align.set_padding(0, 0, 10, 2)
         self.preview_scrolled_window = ScrolledWindow()
         self.preview_scrolled_window.draw_mask = self.dialog.get_mask_func(self.preview_scrolled_window)
-        self.preview_view = IconView()
+        self.preview_view = IconView(mask_bound_height=0)
         self.preview_view.draw_mask = self.dialog.get_mask_func(self.preview_view)
         
         self.preview_align.add(self.preview_scrolled_window)

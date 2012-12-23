@@ -870,7 +870,7 @@ class TreeView(gtk.VBox):
                 cr.clip()
                 cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
                 cr.paint()
-        else:
+        elif self.mask_bound_height > 0:
             i = 0
             while (i <= self.mask_bound_height):
                 with cairo_state(cr):
@@ -894,7 +894,7 @@ class TreeView(gtk.VBox):
                 cr.clip()
                 cr.set_source_surface(self.render_surface, hadjust_value, vadjust_value)    
                 cr.paint()
-        else:
+        elif self.mask_bound_height > 0:
             i = 0        
             while (i < self.mask_bound_height):
                 with cairo_state(cr):
