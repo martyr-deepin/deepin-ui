@@ -26,6 +26,7 @@ from draw import draw_vlinear, draw_pixbuf, draw_line, draw_text
 from keymap import get_keyevent_name
 from label import Label
 from theme import ui_theme
+from utils import is_in_rect
 import gobject
 import gtk
 import pango
@@ -728,6 +729,114 @@ class CheckButton(ToggleButton):
             )
         
 gobject.type_register(CheckButton)
+
+class CheckButtonBuffer(gobject.GObject):
+    '''
+    class docs
+    '''
+
+    STATE_NORMAL = 1
+    STATE_PRELIGHT = 2
+    STATE_ACTIVE = 3
+	
+    def __init__(self,
+                 active=False,
+                 render_padding_x=0,
+                 render_padding_y=0):
+        '''
+        init docs
+        '''
+        gobject.GObject.__init__(self)
+        self.inactive_normal_dpixbuf = ui_theme.get_pixbuf("button/check_button_inactive_normal.png")
+        self.active_normal_dpixbuf = ui_theme.get_pixbuf("button/check_button_active_normal.png")
+        self.inactive_hover_dpixbuf = ui_theme.get_pixbuf("button/check_button_inactive_hover.png")
+        self.active_hover_dpixbuf = ui_theme.get_pixbuf("button/check_button_active_hover.png")
+        self.inactive_press_dpixbuf = ui_theme.get_pixbuf("button/check_button_inactive_press.png")
+        self.active_press_dpixbuf = ui_theme.get_pixbuf("button/check_button_active_press.png")
+        
+        self.render_padding_x = render_padding_x
+        self.render_padding_y = render_padding_y
+        pixbuf = self.inactive_normal_dpixbuf.get_pixbuf()
+        self.render_width = pixbuf.get_width()
+        self.render_height = pixbuf.get_height()
+        
+        self.active = active
+        self.button_state = self.STATE_NORMAL
+        
+    def get_active(self):
+        return self.active
+        
+    def is_in_button_area(self, x, y):
+        return is_in_rect((x, y), (self.render_padding_x, self.render_padding_y, self.render_width, self.render_height))
+    
+    def press_button(self, x, y):
+        if self.is_in_button_area(x, y):
+            self.button_state = self.STATE_ACTIVE
+            self.button_press_flag = True
+                
+            self.active = not self.active
+                
+            return True
+        else:
+            return False
+
+    def release_button(self, x, y):
+        if self.is_in_button_area(x, y):
+            self.button_state = self.STATE_ACTIVE
+            self.button_press_flag = False
+            
+            return True
+        else:
+            return False
+
+    def motion_button(self, x, y):
+        if self.is_in_button_area(x, y):
+            if self.button_state != self.STATE_PRELIGHT:
+                self.button_state = self.STATE_PRELIGHT
+                
+                return True
+            else:
+                return False
+        else:
+            if self.button_state != self.STATE_NORMAL:
+                self.button_state = self.STATE_NORMAL
+                
+                return True
+            else:
+                return False
+            
+    def render(self, cr, rect):
+        # Get pixbuf along with button's sate.
+        if self.button_state == self.STATE_NORMAL:
+            if self.active:
+                image = self.active_normal_dpixbuf.get_pixbuf()
+            else:
+                image = self.inactive_normal_dpixbuf.get_pixbuf()
+        elif self.button_state == self.STATE_PRELIGHT:
+            if self.active:
+                image = self.active_hover_dpixbuf.get_pixbuf()
+            else:    
+                image = self.inactive_hover_dpixbuf.get_pixbuf()
+        elif self.button_state == self.STATE_ACTIVE:
+            if self.button_press_flag:
+                if self.active:
+                    image = self.inactive_press_dpixbuf.get_pixbuf()
+                else:    
+                    image = self.active_press_dpixbuf.get_pixbuf()
+            else:
+                if self.active:
+                    image = self.active_normal_dpixbuf.get_pixbuf()
+                else:
+                    image = self.inactive_normal_dpixbuf.get_pixbuf()
+        
+        # Draw button.
+        draw_pixbuf(
+            cr, 
+            image, 
+            rect.x + self.render_padding_x,
+            rect.y + self.render_padding_y)
+            
+gobject.type_register(CheckButtonBuffer)
 
 class RadioButton(ToggleButton):
     '''
