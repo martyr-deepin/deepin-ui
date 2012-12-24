@@ -25,7 +25,8 @@
 from cache_pixbuf import CachePixbuf
 from draw import draw_pixbuf, draw_text, cairo_state, draw_line
 from utils import is_left_button, get_content_size, color_hex_to_cairo
-from constant import DEFAULT_FONT_SIZE
+from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
+from pango import FontDescription
 import gobject
 import gtk
 
@@ -215,6 +216,7 @@ class HScalebar(gtk.HScale):
             point_width, point_height, gtk.gdk.INTERP_BILINEAR)
         
         x, y, w, h = rect.x + point_width/2, rect.y, rect.width - point_width, rect.height
+        # draw mark
         with cairo_state(cr):
             for mark_value in self.mark_list:
                 mark = self.mark_list[mark_value]
@@ -222,7 +224,10 @@ class HScalebar(gtk.HScale):
                     mark_y = origin_y + markup_spacing / 2
                 elif mark[self.MARK_POS] == gtk.POS_BOTTOM:
                     mark_y = origin_y + top_space_height + hscale_height + markup_spacing / 2
-                mark_x = ((mark_value - lower) / total_length) * w + x - (mark[self.MARK_MARKUP_SIZE][0] / 2)
+                if self.get_inverted():
+                    mark_x = ((upper - mark_value) / total_length) * w + x - (mark[self.MARK_MARKUP_SIZE][0] / 2)
+                else:
+                    mark_x = ((mark_value - lower) / total_length) * w + x - (mark[self.MARK_MARKUP_SIZE][0] / 2)
                 if mark_x < 0:
                     mark_x = 0
                 elif (mark_x+mark[self.MARK_MARKUP_SIZE][0]) > x + w:
@@ -239,7 +244,10 @@ class HScalebar(gtk.HScale):
             point_y = line_y = origin_y + top_space_height + line_spacing
         point_y -= (point_height - line_height) / 2
 
-        value = ((self.get_value() - lower) / total_length * w)
+        if self.get_inverted():
+            value = ((upper - self.get_value()) / total_length * w)
+        else:
+            value = ((self.get_value() - lower) / total_length * w)
         with cairo_state(cr):
             '''
             background y
@@ -260,27 +268,40 @@ class HScalebar(gtk.HScale):
             draw_line(cr, x, bg_y + self.h_scale_height, x + 1, bg_y + self.h_scale_height)
             draw_line(cr, x + w, bg_y + self.h_scale_height, x + w - 1, bg_y + self.h_scale_height)
         
-            if value > 0:
+            if self.get_value() > lower:
+                if self.get_inverted():
+                    rect_x = value + point_width
+                    rect_width = x + w - value
+                    line_x0 = x + w - 1
+                    line_x1 = x + w
+                else:
+                    rect_x = x
+                    rect_width = value
+                    line_x0 = x
+                    line_x1 = x + 1
                 '''
                 background
                 '''
                 cr.set_source_rgb(*color_hex_to_cairo(self.bg_inner1_color))
-                cr.rectangle(x, bg_y, value, self.h_scale_height)
+                #cr.rectangle(x, bg_y, value, self.h_scale_height)
+                cr.rectangle(rect_x, bg_y, rect_width, self.h_scale_height)
                 cr.fill()
                 '''
                 foreground
                 '''
                 cr.set_source_rgb(*color_hex_to_cairo(self.fg_inner_color))
-                cr.rectangle(x, bg_y, value, self.h_scale_height)
+                #cr.rectangle(x, bg_y, value, self.h_scale_height)
+                cr.rectangle(rect_x, bg_y, rect_width, self.h_scale_height)
                 cr.fill()
 
                 cr.set_source_rgb(*color_hex_to_cairo(self.fg_side_color))
-                cr.rectangle(x, bg_y, value, self.h_scale_height)
+                #cr.rectangle(x, bg_y, value, self.h_scale_height)
+                cr.rectangle(rect_x, bg_y, rect_width, self.h_scale_height)
                 cr.stroke()
 
                 cr.set_source_rgb(*color_hex_to_cairo(self.fg_corner_color))         
-                draw_line(cr, x, bg_y, x + 1, bg_y)                                  
-                draw_line(cr, x, bg_y + self.h_scale_height, x + 1, bg_y + self.h_scale_height)
+                draw_line(cr, line_x0, bg_y, line_x1, bg_y)                                  
+                draw_line(cr, line_x0, bg_y + self.h_scale_height, line_x1, bg_y + self.h_scale_height)
 
         # Draw drag point.
         draw_pixbuf(cr, point_pixbuf, x + value - point_pixbuf.get_width() / 2, point_y)
@@ -288,6 +309,7 @@ class HScalebar(gtk.HScale):
         # draw value
         if self.get_draw_value():
             value_layout = widget.get_layout()
+            value_layout.set_font_description(FontDescription("%s %s" % (DEFAULT_FONT, DEFAULT_FONT_SIZE)))
             layout_offset = widget.get_layout_offsets()
             cr.set_source_rgb(*color_hex_to_cairo(self.value_text_color))
             cr.move_to(layout_offset[0], layout_offset[1])
