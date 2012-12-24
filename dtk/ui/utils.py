@@ -452,13 +452,17 @@ def touch_file(filepath):
     @param filepath: Target path to touch.
     '''
     # Create directory first.
+    touch_file_dir(filepath)
+        
+    # Touch file.
+    open(filepath, "w").close()
+    
+def touch_file_dir(filepath):
+    # Create directory first.
     dir = os.path.dirname(filepath)
     if not os.path.exists(dir):
         os.makedirs(dir)
         
-    # Touch file.
-    open(filepath, "w").close()
-
 def read_file(filepath, check_exists=False):
     '''
     Read file content.
