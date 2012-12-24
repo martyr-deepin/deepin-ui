@@ -111,8 +111,26 @@ if __name__ == "__main__":
     hscale2_align.set_padding(0, 2, 2, 2)
     hscale2_align.add(hscale2)
     
+    hscale3 = HScalebar(
+        app_theme.get_pixbuf("scalebar/l_fg.png"), 
+        app_theme.get_pixbuf("scalebar/l_bg.png"), 
+        app_theme.get_pixbuf("scalebar/m_fg.png"), 
+        app_theme.get_pixbuf("scalebar/m_bg.png"), 
+        app_theme.get_pixbuf("scalebar/r_fg.png"), 
+        app_theme.get_pixbuf("scalebar/r_bg.png"), 
+        app_theme.get_pixbuf("scalebar/point.png"))
+    adjust3 = gtk.Adjustment(10, 5, 50, 1, 3)
+    hscale3.set_adjustment(adjust3)
+    hscale3.add_mark(15, HScalebar.POS_TOP, "15")
+    hscale3.set_inverted(True)
+    hscale3_align = gtk.Alignment()
+    hscale3_align.set(0.5, 0.5, 1, 1)
+    hscale3_align.set_padding(0, 2, 2, 2)
+    hscale3_align.add(hscale3)
+    
     application.main_box.pack_start(hscale1_align)
     application.main_box.pack_start(hscale2_align)
+    application.main_box.pack_start(hscale3_align)
     application.window.connect("check-resize", __resized)
 
     application.run()

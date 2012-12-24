@@ -7,6 +7,7 @@
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
 #             Zhai Xiang <zhaixiang@linuxdeepin.com>
+#             Long Changjin <admin@longchangjin.cn>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +25,8 @@
 from cache_pixbuf import CachePixbuf
 from draw import draw_pixbuf, draw_text, cairo_state, draw_line
 from utils import is_left_button, get_content_size, color_hex_to_cairo
-from constant import DEFAULT_FONT_SIZE
+from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
+from pango import FontDescription
 import gobject
 import gtk
 
@@ -42,8 +44,8 @@ class HScalebar(gtk.HScale):
     '''
     enum
     '''
-    POS_TOP = 0
-    POS_BOTTOM = 1
+    POS_TOP = gtk.POS_TOP
+    POS_BOTTOM = gtk.POS_BOTTOM
 	
     '''
     TODO: 
@@ -69,11 +71,12 @@ class HScalebar(gtk.HScale):
         @param right_fg_dpixbuf: Right foreground pixbuf.
         @param right_bg_dpixbuf: Right background pixbuf.
         @param point_dpixbuf: Pointer pixbuf.
+        @param show_value: whether draw the current value
+        @param format_value: a string representing value for display
         '''
         # Init.
         gtk.HScale.__init__(self)
-        self.set_draw_value(False)
-        self.set_range(0, 100)
+        self.set_adjustment(gtk.Adjustment(0, 0, 100, 1, 5))
         
         self.line_width = 1
         self.side_width = 1
@@ -85,6 +88,7 @@ class HScalebar(gtk.HScale):
         self.bg_inner2_color = "#E6E6E6"
         self.fg_corner_color = "#3F85B6"
         self.bg_corner_color = "#C2C4C5"
+        self.value_text_color = "#000000"
         
         self.left_fg_dpixbuf = left_fg_dpixbuf
         self.left_bg_dpixbuf = left_bg_dpixbuf
@@ -98,25 +102,34 @@ class HScalebar(gtk.HScale):
         
         self.cache_bg_pixbuf = CachePixbuf()
         self.cache_fg_pixbuf = CachePixbuf()
+        #################
         self.show_value = show_value
         self.format_value = format_value
+        self.set_digits(0)
+        self.set_draw_value(show_value)
+        if format_value:
+            self.connect("format-value", self.on_format_value_cb, format_value)
         self.button_pressed = False
-        self.mark_list = []
+        self.mark_list = {}
+        self.has_top_markup_flag = False
+        self.has_bottom_markup_flag = False
+        self.top_markup_height = 0
+        self.bottom_markup_height = 0
         '''
         enum
         '''
-        self.MARK_VALUE = 0
-        self.MARK_POS = 1
-        self.MARK_MARKUP = 2
+        self.MARK_POS = 0
+        self.MARK_MARKUP = 1
+        self.MARK_MARKUP_SIZE = 2
         
         # Set size request.
-        self.set_size_request(-1, self.point_dpixbuf.get_pixbuf().get_height())
+        #self.set_size_request(-1, self.point_dpixbuf.get_pixbuf().get_height())
         
         # Redraw.
         self.connect("expose-event", self.expose_h_scalebar)
-        self.connect("button-press-event", self.press_volume_progressbar)
-        self.connect("button-release-event", self.m_release_volume_progressbar)
-        self.connect("motion-notify-event", self.m_motion)
+        #self.connect("button-press-event", self.press_volume_progressbar)
+        #self.connect("button-release-event", self.m_release_volume_progressbar)
+        #self.connect("motion-notify-event", self.m_motion)
     
     '''
     Adds a mark at value
@@ -125,8 +138,27 @@ class HScalebar(gtk.HScale):
     @param markup: text to be shown at the mark.
     '''
     def add_mark(self, value, position, markup):
-        self.mark_list.append([value, position, markup])
+        gtk.HScale.add_mark(self, value, position, markup)
+        size = get_content_size(markup)
+        self.mark_list[value] = [position, markup, size]
+        if position == gtk.POS_TOP:
+            self.has_top_markup_flag = True
+            if self.top_markup_height < size[1]:
+                self.top_markup_height = size[1]
+        if position == gtk.POS_BOTTOM:
+            self.has_bottom_markup_flag = True
+            if self.bottom_markup_height < size[1]:
+                self.bottom_markup_height = size[1]
         self.queue_draw()
+    
+    def on_format_value_cb(self, widget, value, format_value):
+        '''
+        Internal callback for `format-value` signal.
+        '''
+        if widget.get_digits() <= 0:
+            return "%d%s" % (value, format_value)
+        else:
+            return "%s%s" % (str(round(value, widget.get_digits())), format_value)
     
     def expose_h_scalebar(self, widget, event):
         '''
@@ -135,6 +167,8 @@ class HScalebar(gtk.HScale):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
+        cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+        cr.clip()
         
         # Init pixbuf.
         point_pixbuf = self.point_dpixbuf.get_pixbuf()
@@ -142,42 +176,78 @@ class HScalebar(gtk.HScale):
         # Init value.
         upper = self.get_adjustment().get_upper() 
         lower = self.get_adjustment().get_lower() 
+        point_pixbuf_max_width = 17
+        point_pixbuf_min_width = 8
+        point_pixbuf_max_height = 17
+        point_pixbuf_min_height = 12
+        ## these values be allocated by gtk
+        slider_height = 17
+        value_text_height = 20
+        markup_spacing = 8
+
+        # count the y-coordinate of the point begin to draw
+        if self.get_draw_value():
+            hscale_height = slider_height + value_text_height
+        else:
+            hscale_height = slider_height
+        if self.has_top_markup_flag:
+            top_space_height = self.top_markup_height + markup_spacing
+        else:
+            top_space_height = 0
+        if self.has_bottom_markup_flag:
+            bottom_space_height = self.bottom_markup_height + markup_spacing
+        else:
+            bottom_space_height = 0
+        origin_y = rect.y + ((rect.height - hscale_height - top_space_height - bottom_space_height) / 2)
         total_length = max(upper - lower, 1)
+        
+        # adjust point pixbuf to a fit size
         point_width = point_pixbuf.get_width()
         point_height = point_pixbuf.get_height()
-        x, y, w, h = rect.x + point_width, rect.y, rect.width - point_width * 2, rect.height
-        value = int((self.get_value() - lower) / total_length * w)
-        '''
-        TODO: Draw mark
-        '''
-        has_top_markup = False
-        text_width = DEFAULT_FONT_SIZE
-        text_height = DEFAULT_FONT_SIZE
-        if len(self.mark_list):
-            for mark in self.mark_list:
-                mark_y = y
-                mark_markup_text = mark[self.MARK_MARKUP]
-                (text_width, text_height) = get_content_size(mark_markup_text)
-                if mark[self.MARK_POS] == HScalebar.POS_TOP:
-                    has_top_markup = True
+        if point_width > point_pixbuf_max_width:
+            point_width = point_pixbuf_max_width
+        if point_width < point_pixbuf_min_width:
+            point_width = point_pixbuf_min_width
+        if point_height > point_pixbuf_max_height:
+            point_height = point_pixbuf_max_height
+        if point_height < point_pixbuf_min_height:
+            point_height = point_pixbuf_min_height
+        point_pixbuf = point_pixbuf.scale_simple(
+            point_width, point_height, gtk.gdk.INTERP_BILINEAR)
+        
+        x, y, w, h = rect.x + point_width/2, rect.y, rect.width - point_width, rect.height
+        # draw mark
+        with cairo_state(cr):
+            for mark_value in self.mark_list:
+                mark = self.mark_list[mark_value]
+                if mark[self.MARK_POS] == gtk.POS_TOP:
+                    mark_y = origin_y + markup_spacing / 2
+                elif mark[self.MARK_POS] == gtk.POS_BOTTOM:
+                    mark_y = origin_y + top_space_height + hscale_height + markup_spacing / 2
+                if self.get_inverted():
+                    mark_x = ((upper - mark_value) / total_length) * w + x - (mark[self.MARK_MARKUP_SIZE][0] / 2)
                 else:
-                    mark_y += text_height * 2
-                mark_value = int((mark[self.MARK_VALUE] - lower) / total_length * w)
-                draw_text(cr, mark_markup_text, x + mark_value - text_height / 2, mark_y, text_width, text_height)
+                    mark_x = ((mark_value - lower) / total_length) * w + x - (mark[self.MARK_MARKUP_SIZE][0] / 2)
+                if mark_x < 0:
+                    mark_x = 0
+                elif (mark_x+mark[self.MARK_MARKUP_SIZE][0]) > x + w:
+                    mark_x = x + w - mark[self.MARK_MARKUP_SIZE][0]
+                draw_text(cr, mark[self.MARK_MARKUP], mark_x, mark_y, *mark[self.MARK_MARKUP_SIZE])
         
         line_height = self.h_scale_height
-        line_y = y + (point_height - line_height) / 2
-        if has_top_markup:
-            line_y += text_height
-        if self.show_value:
-            line_y += text_height * 2
+        line_spacing = (slider_height - line_height) / 2
+        if line_spacing < 0:
+            line_spacing = 0
+        if self.get_draw_value() and self.get_value_pos() == gtk.POS_TOP:
+            point_y = line_y = origin_y + top_space_height + value_text_height + line_spacing
+        else:
+            point_y = line_y = origin_y + top_space_height + line_spacing
+        point_y -= (point_height - line_height) / 2
 
-        point_y = y
-        if has_top_markup:
-            point_y += text_height
-        if self.show_value:
-            point_y += text_height * 2
-
+        if self.get_inverted():
+            value = ((upper - self.get_value()) / total_length * w)
+        else:
+            value = ((self.get_value() - lower) / total_length * w)
         with cairo_state(cr):
             '''
             background y
@@ -198,46 +268,54 @@ class HScalebar(gtk.HScale):
             draw_line(cr, x, bg_y + self.h_scale_height, x + 1, bg_y + self.h_scale_height)
             draw_line(cr, x + w, bg_y + self.h_scale_height, x + w - 1, bg_y + self.h_scale_height)
         
-            if value > 0:
+            if self.get_value() > lower:
+                if self.get_inverted():
+                    rect_x = value + point_width
+                    rect_width = x + w - value
+                    line_x0 = x + w - 1
+                    line_x1 = x + w
+                else:
+                    rect_x = x
+                    rect_width = value
+                    line_x0 = x
+                    line_x1 = x + 1
                 '''
                 background
                 '''
                 cr.set_source_rgb(*color_hex_to_cairo(self.bg_inner1_color))
-                cr.rectangle(x, bg_y, value, self.h_scale_height)
+                #cr.rectangle(x, bg_y, value, self.h_scale_height)
+                cr.rectangle(rect_x, bg_y, rect_width, self.h_scale_height)
                 cr.fill()
                 '''
                 foreground
                 '''
                 cr.set_source_rgb(*color_hex_to_cairo(self.fg_inner_color))
-                cr.rectangle(x, bg_y, value, self.h_scale_height)
+                #cr.rectangle(x, bg_y, value, self.h_scale_height)
+                cr.rectangle(rect_x, bg_y, rect_width, self.h_scale_height)
                 cr.fill()
 
                 cr.set_source_rgb(*color_hex_to_cairo(self.fg_side_color))
-                cr.rectangle(x, bg_y, value, self.h_scale_height)
+                #cr.rectangle(x, bg_y, value, self.h_scale_height)
+                cr.rectangle(rect_x, bg_y, rect_width, self.h_scale_height)
                 cr.stroke()
 
                 cr.set_source_rgb(*color_hex_to_cairo(self.fg_corner_color))         
-                draw_line(cr, x, bg_y, x + 1, bg_y)                                  
-                draw_line(cr, x, bg_y + self.h_scale_height, x + 1, bg_y + self.h_scale_height)
+                draw_line(cr, line_x0, bg_y, line_x1, bg_y)                                  
+                draw_line(cr, line_x0, bg_y + self.h_scale_height, line_x1, bg_y + self.h_scale_height)
 
         # Draw drag point.
         draw_pixbuf(cr, point_pixbuf, x + value - point_pixbuf.get_width() / 2, point_y)
 
-        '''
-        TODO: Draw self.get_value
-        '''
-        if self.show_value:
-            value_text = str(int(self.get_value()))
-            if self.format_value != None:
-                value_text += self.format_value
-            (text_width, text_height) = get_content_size(value_text)
-            draw_text(cr, 
-                      value_text, 
-                      min(x + value - point_pixbuf.get_width() / 2, x + w - text_width),
-                      point_y - text_height, 
-                      text_width, 
-                      text_height)
-
+        # draw value
+        if self.get_draw_value():
+            value_layout = widget.get_layout()
+            value_layout.set_font_description(FontDescription("%s %s" % (DEFAULT_FONT, DEFAULT_FONT_SIZE)))
+            layout_offset = widget.get_layout_offsets()
+            cr.set_source_rgb(*color_hex_to_cairo(self.value_text_color))
+            cr.move_to(layout_offset[0], layout_offset[1])
+            cr.update_layout(value_layout)
+            cr.show_layout(value_layout)
+        
         return True        
 
     def m_render(self, widget, event):
