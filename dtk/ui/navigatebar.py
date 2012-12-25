@@ -24,7 +24,7 @@ from box import EventBox
 from constant import DEFAULT_FONT_SIZE
 from draw import draw_line, draw_pixbuf, draw_text
 from theme import ui_theme
-from utils import widget_fix_cycle_destroy_bug, propagate_expose
+from utils import widget_fix_cycle_destroy_bug, propagate_expose, get_content_size
 import gobject
 import gtk
 import pango
@@ -181,9 +181,11 @@ class NavItem(object):
         
         # Init item box.
         self.item_box = gtk.Alignment()
-        self.item_box.set(0.0, 0.0, 0.0, 0.0)
+        self.item_box.set(0.5, 0.5, 1.0, 1.0)
         self.item_box.set_padding(padding_y, padding_y, padding_x, padding_x)
         self.item_box.add(self.item_button)
+        
+        (self.text_width, self.text_height) = get_content_size(self.content, self.font_size)
 
     def wrap_nav_item_clicked_action(self):
         '''
@@ -242,20 +244,22 @@ class NavItem(object):
                       border_radious=1, border_color="#000000", 
                       )
         else:
+            padding_x = (rect.width - nav_item_pixbuf.get_width() - self.text_width) / 2
+            
             draw_pixbuf(
-                cr, nav_item_pixbuf, 
-                rect.x,
+                cr, 
+                nav_item_pixbuf, 
+                rect.x + padding_x,
                 rect.y + (rect.height - nav_item_pixbuf.get_height()) / 2)
         
             draw_text(cr, 
                       self.content, 
-                      rect.x + nav_item_pixbuf.get_width() - 3, 
+                      rect.x + nav_item_pixbuf.get_width() + padding_x,
                       rect.y,
-                      rect.width - nav_item_pixbuf.get_width(), 
+                      rect.width,
                       rect.height,
                       text_size=self.font_size,
                       text_color="#FFFFFF",
-                      alignment=pango.ALIGN_CENTER,
                       gaussian_radious=2, gaussian_color="#000000",
                       border_radious=1, border_color="#000000", 
                       )
