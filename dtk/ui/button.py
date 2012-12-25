@@ -1054,3 +1054,43 @@ class ComboButton(gtk.Button):
                       self.height)
 
 gobject.type_register(ComboButton)
+
+class OffButton(gtk.Button):     
+    def __init__(self,
+                 state = False,
+                 inactive_normal_pixbuf = ui_theme.get_pixbuf("offbutton/off.png"), 
+                 active_normal_pixbuf = ui_theme.get_pixbuf("offbutton/on.png")):
+        gtk.Button.__init__(self)
+        self.active_state = state
+        self.inactive_normal_pixbuf = inactive_normal_pixbuf
+        self.active_normal_pixbuf = active_normal_pixbuf
+        self.set_size_request(self.active_normal_pixbuf.get_pixbuf().get_width(),
+                              self.active_normal_pixbuf.get_pixbuf().get_height()
+                              )
+        self.add_events(gtk.gdk.ALL_EVENTS_MASK)
+        self.connect("clicked", self.off_button_press_event)
+        self.connect("expose-event", self.off_button_expose_event)
+        
+    def off_button_press_event(self, widget):
+        self.set_state(not self.draw_state)
+        print self.get_state()
+        
+    def set_state(self, state):
+        self.draw_state = state
+        self.queue_draw()
+        
+    def get_state(self):    
+        return self.draw_state
+    
+    def off_button_expose_event(self, widget, event):
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        #
+        if not self.active_state:
+            __pixbuf = self.inactive_normal_pixbuf
+        else:    
+            __pixbuf = self.active_normal_pixbuf        
+        #    
+        draw_pixbuf(cr, __pixbuf.get_pixbuf(), rect.x, rect.y)        
+        return True
+        
