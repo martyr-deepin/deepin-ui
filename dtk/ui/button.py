@@ -1072,15 +1072,15 @@ class OffButton(gtk.Button):
         self.connect("expose-event", self.off_button_expose_event)
         
     def off_button_press_event(self, widget):
-        self.set_state(not self.draw_state)
+        self.set_state(not self.active_state)
         print self.get_state()
         
     def set_state(self, state):
-        self.draw_state = state
+        self.active_state = state
         self.queue_draw()
         
     def get_state(self):    
-        return self.draw_state
+        return self.active_state
     
     def off_button_expose_event(self, widget, event):
         cr = widget.window.cairo_create()
