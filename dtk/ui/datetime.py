@@ -22,14 +22,39 @@
 
 from draw import draw_pixbuf, cairo_state
 from theme import ui_theme
-from skin_config import skin_config
 import gobject
 import gtk
-from button import Button
-from label import Label
-from constant import ALIGN_START, ALIGN_MIDDLE
+from math import radians
 import threading as td
 import time
+
+class HourThread(td.Thread):
+    def __init__(self, ThisPtr):
+        td.Thread.__init__(self)
+        self.setDaemon(True)
+        self.ThisPtr = ThisPtr
+
+    def run(self):
+        try:
+            while True:
+                self.ThisPtr.queue_draw()
+                time.sleep(3600)
+        except Exception, e:
+            print "class HourThread got error %s" % e
+
+class MinuteThread(td.Thread):
+    def __init__(self, ThisPtr):
+        td.Thread.__init__(self)
+        self.setDaemon(True)
+        self.ThisPtr = ThisPtr
+
+    def run(self):
+        try:
+            while True:
+                self.ThisPtr.queue_draw()
+                time.sleep(60)
+        except Exception, e:
+            print "class MinuteThread got error %s" % e
 
 class SecondThread(td.Thread):
     def __init__(self, ThisPtr):
@@ -47,52 +72,76 @@ class SecondThread(td.Thread):
 
 class DateTime(gtk.VBox):
     def __init__(self, 
-                 hour_value, 
-                 minute_value, 
-                 second_value = None, 
-                 width=200, 
-                 height=100, 
-                 box_spacing=100):
+                 width=180, 
+                 height=180):
         gtk.VBox.__init__(self)
         
-        self.hour_value = hour_value
-        self.minute_value = minute_value
-        self.second_value = second_value
-        
+        self.hour_value = time.localtime().tm_hour                               
+        self.minute_value = time.localtime().tm_min                              
+        self.second_value = time.localtime().tm_sec
+
         self.width = width
         self.height = height
         self.set_size_request(self.width, self.height)
 
         self.clockface = ui_theme.get_pixbuf("datetime/clockface.png")
+        self.clockface_width = self.clockface.get_pixbuf().get_width()
+        self.clockface_height = self.clockface.get_pixbuf().get_height()
         self.hourhand = ui_theme.get_pixbuf("datetime/hourhand.png")
+        self.hourhand_width = self.hourhand.get_pixbuf().get_width()
+        self.hourhand_height = self.hourhand.get_pixbuf().get_height()
         self.minhand = ui_theme.get_pixbuf("datetime/minhand.png")
+        self.minhand_width = self.minhand.get_pixbuf().get_width()
+        self.minhand_height = self.minhand.get_pixbuf().get_height()
         self.sechand = ui_theme.get_pixbuf("datetime/sechand.png")
+        self.sechand_width = self.sechand.get_pixbuf().get_width()
+        self.sechand_height = self.sechand.get_pixbuf().get_height()
 
         self.connect("expose-event", self.__expose)
-
+        
         SecondThread(self).start()
+        MinuteThread(self).start()
+        HourThread(self).start()
 
     def __expose(self, widget, event):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
+        ox = x + self.clockface_width * 0.5
+
         self.hour_value = time.localtime().tm_hour
         self.minute_value = time.localtime().tm_min
         self.second_value = time.localtime().tm_sec
 
         with cairo_state(cr):
             draw_pixbuf(cr, self.clockface.get_pixbuf(), x, y)
-            draw_pixbuf(cr, 
-                        self.hourhand.get_pixbuf(), 
-                        x + (self.clockface.get_pixbuf().get_width() - self.hourhand.get_pixbuf().get_width()) / 2, 
-                        y)
-            draw_pixbuf(cr, 
-                        self.minhand.get_pixbuf(), 
-                        x + (self.clockface.get_pixbuf().get_width() - self.minhand.get_pixbuf().get_width()) / 2, 
-                        y)
-            draw_pixbuf(cr, 
-                        self.sechand.get_pixbuf(), 
-                        x + (self.clockface.get_pixbuf().get_width() - self.sechand.get_pixbuf().get_width()) / 2, 
-                        y)
+        '''
+        hour
+        '''
+        with cairo_state(cr):
+            oy = y + self.hourhand_height * 0.5
+            cr.translate(ox, oy)
+            cr.rotate(radians(360 * self.hour_value / 12))
+            cr.translate(-self.hourhand_width * 0.5, -self.hourhand_height * 0.5)
+            draw_pixbuf(cr, self.hourhand.get_pixbuf(), 0, 0)
+        '''
+        minute
+        '''
+        with cairo_state(cr):
+            oy = y + self.minhand_height * 0.5
+            cr.translate(ox, oy)
+            cr.rotate(radians(360 * self.minute_value / 60))
+            cr.translate(-self.minhand_width * 0.5, -self.minhand_height * 0.5)
+            draw_pixbuf(cr, self.minhand.get_pixbuf(), 0, 0)
+        '''
+        second
+        '''
+        with cairo_state(cr):
+            oy = y + self.sechand_height * 0.5
+            cr.translate(ox, oy) 
+            cr.rotate(radians(360 * self.second_value / 60))
+            cr.translate(-self.sechand_width * 0.5, -self.sechand_height * 0.5)
+            draw_pixbuf(cr, self.sechand.get_pixbuf(), 0, 0)
 
 gobject.type_register(DateTime)

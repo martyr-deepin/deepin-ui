@@ -228,11 +228,12 @@ class HScalebar(gtk.HScale):
                     mark_x = ((upper - mark_value) / total_length) * w + x - (mark[self.MARK_MARKUP_SIZE][0] / 2)
                 else:
                     mark_x = ((mark_value - lower) / total_length) * w + x - (mark[self.MARK_MARKUP_SIZE][0] / 2)
-                if mark_x < 0:
-                    mark_x = 0
+                if mark_x < x:
+                    mark_x = x
                 elif (mark_x+mark[self.MARK_MARKUP_SIZE][0]) > x + w:
                     mark_x = x + w - mark[self.MARK_MARKUP_SIZE][0]
-                draw_text(cr, mark[self.MARK_MARKUP], mark_x, mark_y, *mark[self.MARK_MARKUP_SIZE])
+                draw_text(cr, mark[self.MARK_MARKUP], mark_x, mark_y,
+                          mark[self.MARK_MARKUP_SIZE][0]+2, mark[self.MARK_MARKUP_SIZE][1])
         
         line_height = self.h_scale_height
         line_spacing = (slider_height - line_height) / 2

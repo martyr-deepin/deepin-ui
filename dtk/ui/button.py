@@ -472,7 +472,8 @@ class ToggleButton(gtk.ToggleButton):
                  inactive_disable_dpixbuf=None, 
                  active_disable_dpixbuf=None,
                  button_label=None, 
-                 padding_x=0):
+                 padding_x=0, 
+                 font_size=DEFAULT_FONT_SIZE):
         '''
         Initialize ToggleButton class.
         
@@ -488,7 +489,7 @@ class ToggleButton(gtk.ToggleButton):
         @param padding_x: Padding x, default is 0.
         '''
         gtk.ToggleButton.__init__(self)
-        font_size = DEFAULT_FONT_SIZE
+        self.font_size = font_size
         label_dcolor = ui_theme.get_color("button_default_font")
         self.button_press_flag = False
         
@@ -507,7 +508,7 @@ class ToggleButton(gtk.ToggleButton):
         button_width = inactive_normal_dpixbuf.get_pixbuf().get_width()
         button_height = inactive_normal_dpixbuf.get_pixbuf().get_height()
         if button_label:
-            label_width = get_content_size(button_label, font_size)[0]
+            label_width = get_content_size(button_label, self.font_size)[0]
         self.set_size_request(button_width + label_width + padding_x * 2,
                               button_height)
         
@@ -517,7 +518,7 @@ class ToggleButton(gtk.ToggleButton):
         # Expose button.
         self.connect("expose-event", lambda w, e : self.expose_toggle_button(
                 w, e,
-                button_label, padding_x, font_size, label_dcolor))
+                button_label, padding_x, self.font_size, label_dcolor))
         
     def press_toggle_button(self, widget, event):    
         '''
@@ -708,7 +709,7 @@ class CheckButton(ToggleButton):
     CheckButton class.
     '''
 	
-    def __init__(self, label_text=None, padding_x=8):
+    def __init__(self, label_text=None, padding_x=8, font_size=DEFAULT_FONT_SIZE):
         '''
         Initialize CheckButton class.
         
@@ -725,7 +726,7 @@ class CheckButton(ToggleButton):
             ui_theme.get_pixbuf("button/check_button_active_press.png"),
             ui_theme.get_pixbuf("button/check_button_inactive_disable.png"),
             ui_theme.get_pixbuf("button/check_button_active_disable.png"),
-            label_text, padding_x
+            label_text, padding_x, font_size
             )
         
 gobject.type_register(CheckButton)
@@ -845,7 +846,7 @@ class RadioButton(ToggleButton):
     @undocumented: click_radio_button
     '''
 	
-    def __init__(self, label_text=None, padding_x=8):
+    def __init__(self, label_text=None, padding_x=8, font_size=DEFAULT_FONT_SIZE):
         '''
         Initialize RadioButton class.
         
@@ -863,7 +864,8 @@ class RadioButton(ToggleButton):
             ui_theme.get_pixbuf("button/radio_button_inactive_disable.png"),
             ui_theme.get_pixbuf("button/radio_button_active_disable.png"),
             label_text,
-            padding_x
+            padding_x, 
+            font_size
             )
 
         self.switch_lock = False    
