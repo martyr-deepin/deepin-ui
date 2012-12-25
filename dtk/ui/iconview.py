@@ -532,6 +532,11 @@ class IconView(gtk.DrawingArea):
                     render_x = self.padding_x + column * item_width - hadjust_value
                     render_y = self.padding_y + row * item_height - vadjust_value
                     
+                    # Draw row background.
+                    self.draw_row_mask(cr, gtk.gdk.Rectangle(render_x, render_y, rect.width, item_height), row)
+                    
+                    item.row_index = row
+                    
                     with cairo_state(cr):
                         # Don't allow draw out of item area.
                         cr.rectangle(render_x, render_y, item_width, item_height)
@@ -539,6 +544,9 @@ class IconView(gtk.DrawingArea):
                         
                         item.render(cr, gtk.gdk.Rectangle(render_x, render_y, item_width, item_height))
                         
+    def draw_row_mask(self, cr, rect, row):
+        pass
+        
     def get_render_item_info(self):
         '''
         Internal function to get information of render items.
