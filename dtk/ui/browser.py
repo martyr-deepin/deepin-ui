@@ -22,6 +22,7 @@
 
 import webkit
 import dtk_webkit_cookie
+from utils import touch_file_dir
 from gtk import gdk
 
 class WebView(webkit.WebView):
@@ -40,6 +41,7 @@ class WebView(webkit.WebView):
         webkit.WebView.__init__(self)
         self.cookie_filepath = cookie_filepath
         if self.cookie_filepath != None:
+            touch_file_dir(cookie_filepath)
             dtk_webkit_cookie.add_cookie(cookie_filepath)
         settings = self.get_settings()
         settings.set_property("enable-default-context-menu", False)

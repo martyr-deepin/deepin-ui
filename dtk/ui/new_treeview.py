@@ -1507,6 +1507,25 @@ class TreeView(gtk.VBox):
                     if select_items == [] and start_select_item == None:
                         break
                     
+    def visible_highlight(self):
+        self.visible_highlight_item()
+        
+    def visible_highlight_item(self):
+        if self.highlight_item != None and self.highlight_item in self.visible_items:
+            # Get bound index.
+            (start_index, end_index, item_height_count) = self.get_expose_bound()
+            
+            # Get highlight item index.
+            highlight_item_index = self.highlight_item.row_index
+            
+            # Scroll viewport make sure preview row in visible area.
+            (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
+            vadjust = self.scrolled_window.get_vadjustment()
+            highlight_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:highlight_item_index])) 
+            if offset_y > highlight_row_height_count or offset_y + vadjust.get_page_size() < highlight_row_height_count:
+                vadjust.set_value(max(vadjust.get_lower(), 
+                                      highlight_row_height_count - self.visible_items[highlight_item_index].get_height()))
+                    
     def get_highlight_item(self):
         return self.highlight_item
                     
