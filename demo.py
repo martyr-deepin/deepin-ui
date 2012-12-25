@@ -399,7 +399,7 @@ if __name__ == "__main__":
     password_entry.set_size(150, 24)
     shown_password = False
     password_entry.show_password(shown_password)
-    password_check_button = CheckButton("Shown")
+    password_check_button = CheckButton(label_text = "Shown", font_size = 8)
     password_check_button.set_active(shown_password)
     password_check_button.connect("toggled", lambda widget: password_entry.show_password(widget.get_active()))
     password_check_button_align = gtk.Alignment()
@@ -522,7 +522,7 @@ if __name__ == "__main__":
     
     # Tab 5.
     button_box = gtk.VBox()
-    check_button = CheckButton("Check Button")
+    check_button = CheckButton(label_text = "Check Button")
     radio_button_1 = RadioButton("Radio Button1")
     radio_button_2 = RadioButton("Radio Button2")
     button_box.pack_start(check_button, False, False, 4)
