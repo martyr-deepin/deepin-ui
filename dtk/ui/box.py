@@ -157,11 +157,13 @@ class ResizableBox(gtk.EventBox):
     def __init__(self, 
                  width=690, 
                  height=160, 
-                 min_height=160):
+                 min_height=160, 
+                 padding_x = 50, 
+                 padding_y = 18):
         gtk.EventBox.__init__(self)
         
-        self.padding_x = 50
-        self.padding_y = 18
+        self.padding_x = padding_x
+        self.padding_y = padding_y
         self.line_width = 1
         
         self.width = width
@@ -194,10 +196,10 @@ class ResizableBox(gtk.EventBox):
         
         if self.button_pressed:
             # redraw the widget
-            self.window.invalidate_rect(self.allocation, True)        
+            self.queue_draw() 
     
     def invalidate(self):
-        self.window.invalidate_rect(self.allocation, True)
+        self.queue_draw()
     
     def expose_override(self, cr, rect):
         pass

@@ -63,7 +63,7 @@ class TimeZone(gtk.EventBox):
         if self.__timezone > 23:
             self.__timezone = 23
 
-        self.window.invalidate_rect(self.allocation, True)
+        self.queue_draw()
     
     def __button_press(self, widget, event):
         if event.x > self.width or event.y > self.height:
