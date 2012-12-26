@@ -1500,7 +1500,7 @@ class ListView(gtk.DrawingArea):
             
             self.emit(event_name, self.items[event_row], event_column, offset_x, offset_y)
         else:    
-            if event_name == "motion-noitfy-item":
+            if event_name == "motion-notify-item":
                 self.emit(event_name, None, 0, 0, 0)
         
     def get_coordinate_row(self, y):
