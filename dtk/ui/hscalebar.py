@@ -101,7 +101,7 @@ class HScalebar(gtk.Button):
             self.draw_value(cr, rect,  "%s%s" % (int(self.value + self.value_min), self.format_value), self.value, self.show_value_type)
             
         for position in self.position_list:    
-            self.draw_value(cr, rect,  "%s" % (str(position[2])), position[0], position[1])
+            self.draw_value(cr, rect,  "%s" % (str(position[2])), position[0] - self.value_min, position[1])
         return True
         
     def draw_bg_and_fg(self, cr, rect):    
