@@ -1056,6 +1056,9 @@ class ComboButton(gtk.Button):
 gobject.type_register(ComboButton)
 
 class OffButton(gtk.Button):     
+    __gsignals__ = {
+        "toggled" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+    }    
     def __init__(self,
                  state = False,
                  inactive_normal_pixbuf = ui_theme.get_pixbuf("offbutton/off.png"), 
@@ -1068,12 +1071,19 @@ class OffButton(gtk.Button):
                               self.active_normal_pixbuf.get_pixbuf().get_height()
                               )
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
-        self.connect("clicked", self.off_button_press_event)
+        self.connect("clicked", self.off_button_clicked)
         self.connect("expose-event", self.off_button_expose_event)
         
-    def off_button_press_event(self, widget):
+    def off_button_clicked(self, widget):
         self.set_state(not self.active_state)
-        print self.get_state()
+        # print self.get_state()
+        self.emit("toggled")
+        
+    def set_active(self, state):    
+        self.set_state(state)
+        
+    def get_active(self, state):    
+        self.get_state()
         
     def set_state(self, state):
         self.active_state = state
@@ -1094,3 +1104,4 @@ class OffButton(gtk.Button):
         draw_pixbuf(cr, __pixbuf.get_pixbuf(), rect.x, rect.y)        
         return True
         
+gobject.type_register(OffButton)
