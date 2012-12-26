@@ -1088,6 +1088,7 @@ class OffButton(gtk.Button):
     def set_state(self, state):
         self.active_state = state
         self.queue_draw()
+        self.emit("toggled")
         
     def get_state(self):    
         return self.active_state
