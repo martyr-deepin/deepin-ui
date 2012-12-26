@@ -406,8 +406,12 @@ class IconView(gtk.DrawingArea):
     def size_allocated_icon_view(self, widget, rect):
         # Cairo render surface.
         scrolled_window = get_match_parent(self, ["ScrolledWindow"])
-        self.render_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, scrolled_window.allocation.width, scrolled_window.allocation.height)
-        self.render_surface_cr = gtk.gdk.CairoContext(cairo.Context(self.render_surface))
+        
+        try:
+            self.render_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, scrolled_window.allocation.width, scrolled_window.allocation.height)
+            self.render_surface_cr = gtk.gdk.CairoContext(cairo.Context(self.render_surface))
+        except Exception:
+            pass
         
     def expose_icon_view(self, widget, event):
         '''

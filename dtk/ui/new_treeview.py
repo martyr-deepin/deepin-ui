@@ -1369,8 +1369,11 @@ class TreeView(gtk.VBox):
         self.update_item_widths()
         
         # Cairo temp surface.
-        self.render_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.scrolled_window.allocation.width, self.scrolled_window.allocation.height)
-        self.render_surface_cr = gtk.gdk.CairoContext(cairo.Context(self.render_surface))
+        try:
+            self.render_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.scrolled_window.allocation.width, self.scrolled_window.allocation.height)
+            self.render_surface_cr = gtk.gdk.CairoContext(cairo.Context(self.render_surface))
+        except Exception:
+            pass
         
     def leave_tree_view(self, widget, event):
         if len(self.visible_items) > 0:
