@@ -82,25 +82,18 @@ class MissionThreadPool(td.Thread):
         """
         The thread function.
         """
-        self.loop()
-        
-    def loop(self):
-        """
-        Internal function to do loop.
-
-        It is called recusivly to start new mission and monitor the missions' status.
-        """
-        result = self.mission_lock.get()
-        if result == self.FINISH_SIGNAL:
-            print ">>> Finish missions."
-            if self.exit_when_finish:
-                print ">>> Exit thread pool %s" % (self)
+        continue_run = True
+        while continue_run:
+            result = self.mission_lock.get()
+            if result == self.FINISH_SIGNAL:
+                print ">>> Finish missions."
+                if self.exit_when_finish:
+                    print ">>> Exit thread pool %s" % (self)
+                    continue_run = False
+                else:
+                    print ">>> Wait new missions."
             else:
-                print ">>> Wait new missions."
-                self.loop()
-        else:
-            self.start_missions(result)
-            self.loop()
+                self.start_missions(result)
             
     def add_missions(self, missions):
         """
