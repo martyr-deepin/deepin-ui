@@ -128,6 +128,7 @@ class TreeView(gtk.VBox):
     
     __gsignals__ = {
         "delete-select-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+        "press-return" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
@@ -246,6 +247,7 @@ class TreeView(gtk.VBox):
             "Shift + End" : self.select_to_last_item,
             "Ctrl + a" : self.select_all_items,
             "Delete" : self.delete_select_items,
+            "Return" : self.press_return,
             }
 
     def get_items(self):
@@ -716,6 +718,9 @@ class TreeView(gtk.VBox):
         self.select_rows = []
 
         self.delete_items(delete_items)
+        
+    def press_return(self):
+        self.emit("press-return", map(lambda row: self.visible_items[row], self.select_rows))
         
     def update_item_index(self):
         '''
