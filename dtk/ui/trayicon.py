@@ -84,7 +84,8 @@ class TrayIcon(Window):
             None, 
             None, 
             gtk.gdk.CURRENT_TIME) 
-                    
+        gtk.gdk.keyboard_grab(self.window, owner_events=False, time=gtk.gdk.CURRENT_TIME)
+        
     def menu_grab_window_button_press(self, widget, event):        
         if not ((0 <= event.x <= widget.allocation.width)
             and (0 <= event.y <= widget.allocation.height)):
