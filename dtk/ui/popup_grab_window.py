@@ -30,9 +30,15 @@ class PopupGrabWindow(gtk.Window):
     class docs
     '''
 	
+    __gsignals__ = {
+        "input-method-focus-in" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+        "input-method-commit" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)),
+        }
+    
     def __init__(self, 
                  wrap_window_type,
-                 focus_out_callback=None):
+                 focus_out_callback=None,
+                 handle_input_method=False):
         '''
         init docs
         '''
@@ -40,9 +46,14 @@ class PopupGrabWindow(gtk.Window):
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
         self.wrap_window_type = wrap_window_type
         self.focus_out_callback = focus_out_callback
+        self.handle_input_method = handle_input_method
         self.in_focus_out_callbacking = False
         self.popup_windows = []
         self.press_flag = False
+        
+        if self.handle_input_method:
+            self.im = gtk.IMMulticontext()
+            self.im.connect("commit", self.input_method_commit)
         
         invisible_window(self)
         
@@ -56,6 +67,9 @@ class PopupGrabWindow(gtk.Window):
         self.connect("key-release-event", self.popup_grab_window_key_release)
         
         self.show()
+        
+    def input_method_commit(self, im, input_text):
+        self.emit("input-method-commit", im, input_text)
 
     def popup_grab_window_focus_in(self):
         '''
@@ -67,6 +81,12 @@ class PopupGrabWindow(gtk.Window):
             True,
             gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.ENTER_NOTIFY_MASK | gtk.gdk.LEAVE_NOTIFY_MASK,
             None, None, gtk.gdk.CURRENT_TIME)
+        
+        if self.handle_input_method:
+            self.im.set_client_window(self.window)
+            self.im.focus_in()
+        
+            self.emit("input-method-focus-in", self.im)
         
     def popup_grab_window_focus_out(self):
         '''
@@ -86,6 +106,9 @@ class PopupGrabWindow(gtk.Window):
             self.in_focus_out_callbacking = True
             self.focus_out_callback()
             self.in_focus_out_callbacking = False
+        
+        if self.handle_input_method:    
+            self.im.focus_out()
         
     def is_press_on_popup_grab_window(self, window):
         '''
