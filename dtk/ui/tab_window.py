@@ -225,6 +225,14 @@ class TabBox(gtk.VBox):
             self.tab_title_widths[i] = width / tab_title_len
             i = i + 1
 
+    def draw_title_background(self, cr, widget):
+        (offset_x, offset_y) = widget.translate_coordinates(self.get_toplevel(), 0, 0)
+        with cairo_state(cr):
+            cr.translate(-offset_x, -offset_y)
+            
+            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
+            skin_config.render_background(cr, widget, shadow_x, shadow_y)
+            
     def expose_tab_title_box(self, widget, event):
         '''
         Internal callback for `expose-event` signal.
@@ -235,13 +243,8 @@ class TabBox(gtk.VBox):
             self.update_tab_title_widths(rect.width)
 
         # Draw background.
-        (offset_x, offset_y) = widget.translate_coordinates(self.get_toplevel(), 0, 0)
-        with cairo_state(cr):
-            cr.translate(-offset_x, -offset_y)
+        self.draw_title_background(cr, widget)
             
-            (shadow_x, shadow_y) = get_window_shadow_size(self.get_toplevel())
-            skin_config.render_background(cr, widget, shadow_x, shadow_y)
-        
         if len(self.tab_items) > 0:    
             # Draw title unselect tab.
             tab_title_width = sum(self.tab_title_widths)
