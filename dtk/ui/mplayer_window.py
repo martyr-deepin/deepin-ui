@@ -150,12 +150,10 @@ class MplayerWindow(WindowBase):
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
-        # Clear color to transparent window.
-        cr.set_source_rgba(*self.background_color)
-        cr.set_operator(cairo.OPERATOR_SOURCE)
-        cr.paint()
-        
         # Draw background.
+        self.draw_background(cr, rect.x, rect.y, rect.width, rect.height)
+        
+        # Draw skin and mask.
         with cairo_state(cr):
             if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
                 cr.rectangle(x + 2, y, w - 4, 1)
@@ -166,7 +164,7 @@ class MplayerWindow(WindowBase):
                 
                 cr.clip()
             
-            skin_config.render_background(cr, self, x, y)
+            self.draw_skin(cr, x, y, w, h)    
         
             # Draw mask.
             self.draw_mask(cr, x, y, w, h)

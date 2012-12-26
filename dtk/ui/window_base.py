@@ -20,7 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import cairo
 from constant import EDGE_DICT
+from skin_config import skin_config
 import gtk
 from utils import (resize_window, is_double_click, move_window)
 
@@ -160,6 +162,14 @@ class WindowBase(gtk.Window):
         else:
             return None
 
+    def draw_background(self, cr, x, y, w, h):
+        cr.set_source_rgba(*self.background_color)
+        cr.set_operator(cairo.OPERATOR_SOURCE)
+        cr.paint()
+        
+    def draw_skin(self, cr, x, y, w, h):
+        skin_config.render_background(cr, self, x, y)
+        
     def draw_mask(self, cr, x, y, w, h):
         '''
         Draw mask interface, you should implement this function own.

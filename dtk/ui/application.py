@@ -83,7 +83,8 @@ class Application(object):
 
     def add_titlebar(self,
                      button_mask=["theme", "menu", "max", "min", "close"],
-                     icon_dpixbuf=None, app_name=None, title=None, add_separator=False, show_title=True):
+                     icon_dpixbuf=None, app_name=None, title=None, 
+		     add_separator=False, show_title=True, enable_gaussian=True,):
         """
         Add titlebar to the application.
         
@@ -97,7 +98,8 @@ class Application(object):
         @param show_title: If False, the titlebar will not be displayed. By default, it's True.
         """
         # Init titlebar.
-        self.titlebar = Titlebar(button_mask, icon_dpixbuf, app_name, title, add_separator, show_title=show_title)
+        self.titlebar = Titlebar(button_mask, icon_dpixbuf, app_name, title, add_separator, show_title=show_title, 
+				 enable_gaussian=enable_gaussian)
         if "theme" in button_mask:
             self.titlebar.theme_button.connect("clicked", self.theme_callback)
         if "menu" in button_mask:
