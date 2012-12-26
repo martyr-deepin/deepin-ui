@@ -41,6 +41,7 @@ class HScalebar(gtk.Button):
                  show_value_type=gtk.POS_TOP,
                  format_value="",                         
                  text_x_padding=-15,
+                 value_min = 0,
                  value_max = 100,  
                  line_height=6
                  ):
@@ -49,7 +50,8 @@ class HScalebar(gtk.Button):
         self.position_list = []
         self.__value = 0
         self.show_value_type = show_value_type
-        self.value_max = value_max
+        self.value_max = value_max - value_min
+        self.value_min = value_min
         self.drag = False
         # init color.
         self.fg_side_color = "#2670B2"
@@ -58,7 +60,7 @@ class HScalebar(gtk.Button):
         self.bg_inner1_color = "#DCDCDC"
         self.bg_inner2_color = "#E6E6E6"
         self.fg_corner_color = "#3F85B6"
-        self.bg_corner_color = "#C2C4C5"        
+        self.bg_corner_color = "#C2C4C5"
         #
         self.point_pixbuf = point_dpixbuf
         self.line_height = line_height
@@ -66,6 +68,9 @@ class HScalebar(gtk.Button):
         self.text_x_padding = text_x_padding
         self.trg_by_grab = False
         self.show_value = show_value
+        #
+        self.set_size_request(-1, 
+                               line_height + get_content_size("0")[1]*2 + get_content_size("0")[1]/2)
         #
         if self.point_pixbuf:
             # 
@@ -93,7 +98,7 @@ class HScalebar(gtk.Button):
         self.draw_point(cr, rect)
         # draw value.
         if self.show_value:
-            self.draw_value(cr, rect,  "%s%s" % (int(self.value), self.format_value), self.value, self.show_value_type)
+            self.draw_value(cr, rect,  "%s%s" % (int(self.value + self.value_min), self.format_value), self.value, self.show_value_type)
             
         for position in self.position_list:    
             self.draw_value(cr, rect,  "%s" % (str(position[2])), position[0], position[1])
@@ -204,7 +209,7 @@ class HScalebar(gtk.Button):
         temp_value = ((float((event.x - self.point_width/2)) / temp_value) * self.value_max) # get value.
         self.value = max(min(self.value_max, temp_value), 0)
         self.drag = True        
-        self.emit("value-changed", self.value)
+        self.emit("value-changed", self.value + self.value_min)
         
     def __progressbar_release_event(self, widget, event):    
         self.drag = False
@@ -214,7 +219,7 @@ class HScalebar(gtk.Button):
             width = float(widget.allocation.width - self.point_width)
             temp_value = (float((event.x - self.point_width/2)) /  width) * self.value_max
             self.value = max(min(self.value_max, temp_value), 0) # get value.
-            self.emit("value-changed", self.value)
+            self.emit("value-changed", self.value + self.value_min)
             
     def add_mark(self, value, position_type, markup):
         self.position_list.append((value, position_type, markup))
