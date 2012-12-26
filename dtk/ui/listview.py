@@ -1499,6 +1499,9 @@ class ListView(gtk.DrawingArea):
             (event_column, offset_x) = get_disperse_index(self.cell_widths, event_x)
             
             self.emit(event_name, self.items[event_row], event_column, offset_x, offset_y)
+        else:    
+            if event_name == "motion-noitfy-item":
+                self.emit(event_name, None, 0, 0, 0)
         
     def get_coordinate_row(self, y):
         '''
