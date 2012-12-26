@@ -33,7 +33,7 @@ from draw import draw_vlinear, draw_pixbuf, draw_text
 from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
 from cache_pixbuf import CachePixbuf
-from utils import (cairo_state, get_window_shadow_size, get_event_coords, is_in_rect,
+from utils import (cairo_state, get_window_shadow_size, get_event_coords,
                    container_remove_all, get_same_level_widgets, get_disperse_index,
                    is_left_button, is_double_click, is_single_click, remove_timeout_id, 
                    is_right_button)
@@ -1377,12 +1377,7 @@ class TreeView(gtk.VBox):
         
     def leave_tree_view(self, widget, event):
         if len(self.visible_items) > 0:
-            # Hide hover row when cursor out of viewport area.
-            vadjust = self.scrolled_window.get_vadjustment()
-            hadjust = self.scrolled_window.get_hadjustment()
-            if not is_in_rect((event.x, event.y), 
-                              (hadjust.get_value(), vadjust.get_value(), hadjust.get_page_size(), vadjust.get_page_size())):
-                self.unhover_row()
+            self.unhover_row()
         
     def unhover_row(self):
         if self.hover_row != None:

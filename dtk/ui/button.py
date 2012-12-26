@@ -1075,9 +1075,7 @@ class OffButton(gtk.Button):
         self.connect("expose-event", self.off_button_expose_event)
         
     def off_button_clicked(self, widget):
-        self.set_state(not self.active_state)
-        # print self.get_state()
-        self.emit("toggled")
+        self.set_state(not self.active_state) 
         
     def set_active(self, state):    
         self.set_state(state)
@@ -1088,6 +1086,7 @@ class OffButton(gtk.Button):
     def set_state(self, state):
         self.active_state = state
         self.queue_draw()
+        self.emit("toggled")
         
     def get_state(self):    
         return self.active_state
