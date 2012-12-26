@@ -48,6 +48,9 @@ class HScalebar(gtk.Button):
         gtk.Button.__init__(self)
         #        
         self.position_list = []
+        self.mark_check = False
+        self.new_mark_x = 0
+        self.next_mark_x = 0
         self.__value = 0
         self.show_value_type = show_value_type
         self.value_max = value_max - value_min
@@ -220,6 +223,26 @@ class HScalebar(gtk.Button):
             temp_value = (float((event.x - self.point_width/2)) /  width) * self.value_max
             self.value = max(min(self.value_max, temp_value), 0) # get value.
             self.emit("value-changed", self.value + self.value_min)
+            # mark set.
+            for mark in self.position_list:
+                mark_value = ((mark[0]) + (self.value_min))
+                if (mark_value) == int(self.value) and (round(int(self.value) - self.value, 1) in [0.0, -0.1, -0.2, -0.2]):
+                    if not self.mark_check:
+                        self.mark_check = True
+                        self.new_mark_x = event.x                                                
+                if self.mark_check:
+                    self.next_mark_x = event.x
+                    if self.next_mark_x > self.new_mark_x: # right.
+                        if self.new_mark_x + 10 >= self.next_mark_x >= self.new_mark_x:
+                            self.value = mark_value
+                        else:    
+                            self.mark_check = False                            
+                    else:
+                        if self.new_mark_x - 10 <= self.next_mark_x <= self.new_mark_x:
+                            self.value = mark_value
+                        else:
+                            self.mark_check = False
+                            
             
     def add_mark(self, value, position_type, markup):
         self.position_list.append((value, position_type, markup))
