@@ -45,7 +45,8 @@ class Titlebar(EventBox):
                  add_separator=False,
                  height=26,
                  show_title=True,
-                 ):
+                 enable_gaussian=True,
+		):
         """
         Initialize the title bar.
 
@@ -92,7 +93,7 @@ class Titlebar(EventBox):
                         
             # Add app name.
             if app_name != None:
-                self.app_name_box = Label(app_name, enable_gaussian=True)
+                self.app_name_box = Label(app_name, enable_gaussian=enable_gaussian)
                 self.app_name_align = gtk.Alignment()
                 self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
                 self.app_name_align.set_padding(2, 0, 5, 0)
@@ -101,7 +102,7 @@ class Titlebar(EventBox):
             
             # Add title.
             if title != None:
-                self.title_box = Label(title, enable_gaussian=True, text_x_align=pango.ALIGN_CENTER)
+                self.title_box = Label(title, enable_gaussian=enable_gaussian, text_x_align=pango.ALIGN_CENTER)
                 self.title_align = gtk.Alignment()
                 self.title_align.set(0.5, 0.5, 0.0, 0.0)
                 self.title_align.set_padding(2, 0, 30, 30)
