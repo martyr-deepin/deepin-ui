@@ -499,6 +499,7 @@ class EntryBuffer(gobject.GObject):
                 # Init.
                 cursor_index = self.get_insert_index()
                 cursor_pos = self.get_cursor_pos(cursor_index)[0]
+
                 # Draw cursor.
                 cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entry_cursor").get_color()))
                 cursor_pos_x = cursor_pos[0] + x - offset_x
@@ -523,7 +524,7 @@ class EntryBuffer(gobject.GObject):
                 FIXME: HOWTO flash cursor
                 CursorFlashThread(self).start()
                 '''
-    
+                
     def m_draw_cursor(self):
         self.cursor_cr.set_source_rgb(0, 0, 0)
         self.cursor_cr.rectangle(self.cursor_x, 
@@ -1124,6 +1125,13 @@ class Entry(gtk.EventBox):
                 self.__calculate_cursor_offset()
             self.queue_draw()
                             
+    def get_input_method_cursor_rect(self):
+        rect = self.allocation
+        
+        cursor_index = self.entry_buffer.get_insert_index()
+        cursor_pos = self.entry_buffer.get_cursor_pos(cursor_index)[0]
+        return gtk.gdk.Rectangle(cursor_pos[0] + rect.x - self.offset_x, cursor_pos[1] + rect.y, 1, cursor_pos[3])
+    
     def expose_entry(self, widget, event):
         '''
         Internal callback for `expose-event` signal.
