@@ -45,7 +45,7 @@ from utils import (map_value, mix_list_max, get_content_size,
                    remove_file, remove_timeout_id,
                    cairo_state, get_event_coords, is_left_button, 
                    is_right_button, is_double_click, is_single_click, 
-                   is_in_rect, get_disperse_index, get_window_shadow_size)
+                   get_disperse_index, get_window_shadow_size)
 
 class ListView(gtk.DrawingArea):
     '''
@@ -1438,12 +1438,7 @@ class ListView(gtk.DrawingArea):
         if not self.left_button_press:
             self.reset_cursor()
         
-        # Hide hover row when cursor out of viewport area.
-        vadjust = get_match_parent(self, ["ScrolledWindow"]).get_vadjustment()
-        hadjust = get_match_parent(self, ["ScrolledWindow"]).get_hadjustment()
-        if not is_in_rect((event.x, event.y), 
-                          (hadjust.get_value(), vadjust.get_value(), hadjust.get_page_size(), vadjust.get_page_size())):
-            self.hover_row = None
+        self.hover_row = None
         
         # Redraw.
         self.queue_draw()
