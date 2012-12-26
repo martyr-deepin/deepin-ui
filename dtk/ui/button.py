@@ -1083,7 +1083,7 @@ class OffButton(gtk.Button):
         self.set_state(state)
         
     def get_active(self):    
-        self.get_state()
+        return self.get_state()
         
     def set_state(self, state):
         self.active_state = state
