@@ -250,6 +250,10 @@ class HScalebar(gtk.Button):
     def add_mark(self, value, position_type, markup):
         self.position_list.append((value, position_type, markup))
         
+    def set_value(self, value):    
+        self.__value = max(min(self.value_max, value), 0) 
+        self.queue_draw()     
+        
     @property
     def value(self):
         return self.__value
