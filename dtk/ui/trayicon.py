@@ -56,10 +56,24 @@ class TrayIcon(Window):
         self.init_tray_icon()        
         # Init frame.
         self.init_tray_alignment()
+        # create event window.
+        self.create_event_window()
         # Init root and screen.
         self.root = self.get_root_window()
         self.screen = self.root.get_screen()        
-        self.hide_all()
+        self.hide_all()        
+        
+    def create_event_window(self):    
+        self.event_window = gtk.Window(gtk.WINDOW_TOPLEVEL)        
+        self.event_window.set_decorated(False)
+        self.event_window.set_opacity(0.0)
+        
+    def show_event_window(self):
+        self.event_window.maximize()
+        self.event_window.show_all()
+        
+    def hide_event_window(self):    
+        self.event_window.hide_all()
         
     def init_tray_alignment(self):    
         self.main_ali = gtk.Alignment(0, 0, 1, 1)
@@ -91,6 +105,7 @@ class TrayIcon(Window):
             and (0 <= event.y <= widget.allocation.height)):
             gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
             self.grab_remove()
+            self.hide_event_window()
             self.hide_all()
                                     
     def init_tray_icon(self):
@@ -136,6 +151,7 @@ class TrayIcon(Window):
             x -= self.set_max_show_menu(x)
             self.move(x, y)                      
         #   
+        self.show_event_window()    
         self.show_all()
         
     def set_max_show_menu(self, x):        
