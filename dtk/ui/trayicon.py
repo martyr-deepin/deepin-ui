@@ -24,14 +24,54 @@ from theme import ui_theme
 from dtk.ui.window import Window
 import gtk
 
+def menu_grab_transfer_window_get(menu):
+    event_window = gtk.gdk.Window(
+        parent=menu.get_root_window(),
+        x = -100,
+        y = -100,
+        width = 10,
+        height = 10,
+        window_type = gtk.gdk.WINDOW_TEMP,
+        wclass = gtk.gdk.INPUT_ONLY,
+        override_redirect = True,
+        event_mask = 0
+        )
+    event_window.set_user_data(menu)
+    event_window.show()
+    return event_window
+
+def menu_grab_transfer_window_destroy(gdk_window):
+    if gdk_window:
+        gdk_window.set_user_data(None);
+        gdk_window.destroy()    
+
+def popup_grab_on_window (gdk_window, activate_time, grab_keyboard=False):
+    if (gtk.gdk.pointer_grab(gdk_window, 
+                             True,
+                             gtk.gdk.POINTER_MOTION_MASK 
+                             | gtk.gdk.BUTTON_PRESS_MASK 
+                             | gtk.gdk.BUTTON_RELEASE_MASK 
+                             | gtk.gdk.ENTER_NOTIFY_MASK 
+                             | gtk.gdk.LEAVE_NOTIFY_MASK, 
+                             None, 
+                             None, 
+                             activate_time)):
+
+        if ((not grab_keyboard) 
+            or gdk_window.keyboard_grab(True, activate_time) == 0):
+            return True
+        else:
+            gdk_window.pointer_ungrab(activate_time)
+            return False
+    return False
+    
 class TrayIcon(Window):
     def __init__(self,
                  y_padding=15,
                  tray_icon_to_screen_width=10,
                  align_size=10,
                  show_pixbuf=None,
-                 hide_pixbuf=None,
-                 event_window=False,
+                 hide_pixbuf=None
                  ):
         Window.__init__(self, 
                         window_type=gtk.WINDOW_POPUP
@@ -57,29 +97,25 @@ class TrayIcon(Window):
         self.init_tray_icon()        
         # Init frame.
         self.init_tray_alignment()
-        # create event window.
-        self.event_window = None
-        if event_window:
-            self.create_event_window()
         # Init root and screen.
         self.root = self.get_root_window()
         self.screen = self.root.get_screen()        
         self.hide_all()        
-        
-    def create_event_window(self):    
-        self.event_window = gtk.Window(gtk.WINDOW_TOPLEVEL)        
-        self.event_window.set_decorated(False)
-        self.event_window.set_skip_taskbar_hint(True)
-        self.event_window.set_opacity(0.0)
-        
-    def show_event_window(self):
-        if self.event_window:
-            self.event_window.maximize()
-            self.event_window.show_all()
-        
-    def hide_event_window(self):    
-        if self.event_window:
-            self.event_window.hide_all()
+            
+    def init_menu(self, widget):
+        gtk.gdk.pointer_grab(
+            self.window,
+            True,
+            gtk.gdk.POINTER_MOTION_MASK
+            | gtk.gdk.BUTTON_PRESS_MASK
+            | gtk.gdk.BUTTON_RELEASE_MASK
+            | gtk.gdk.ENTER_NOTIFY_MASK
+            | gtk.gdk.LEAVE_NOTIFY_MASK,
+            None,
+            None,
+            gtk.gdk.CURRENT_TIME)
+        gtk.gdk.keyboard_grab(self.window, owner_events=False, time=gtk.gdk.CURRENT_TIME)
+        self.grab_add()        
         
     def init_tray_alignment(self):    
         self.main_ali = gtk.Alignment(0, 0, 1, 1)
@@ -91,30 +127,16 @@ class TrayIcon(Window):
         
     def add_widget(self, widget):    
         self.main_ali.add(widget)
-        
-    def init_menu(self, widget): 
-        gtk.gdk.pointer_grab(
-            self.window, 
-            True,
-            gtk.gdk.POINTER_MOTION_MASK 
-            | gtk.gdk.BUTTON_PRESS_MASK 
-            | gtk.gdk.BUTTON_RELEASE_MASK 
-            | gtk.gdk.ENTER_NOTIFY_MASK 
-            | gtk.gdk.LEAVE_NOTIFY_MASK, 
-            None, 
-            None, 
-            gtk.gdk.CURRENT_TIME) 
-        gtk.gdk.keyboard_grab(self.window, owner_events=False, time=gtk.gdk.CURRENT_TIME)
-        self.grab_add()
-        
+                        
     def menu_grab_window_button_press(self, widget, event):        
-        if not ((0 <= event.x <= widget.allocation.width)
-            and (0 <= event.y <= widget.allocation.height)):
-            gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
-            self.grab_remove()
-            self.hide_event_window()
-            self.hide_all()
-                                    
+        self.hide_all()
+        #
+        self.destroy_event_window(event)
+        
+    def destroy_event_window(self, event):    
+        popup_grab_on_window(self.event_window, event.time, True)
+        menu_grab_transfer_window_destroy(self.event_window)
+        
     def init_tray_icon(self):
         self.tray_icon = gtk.StatusIcon()
         self.tray_icon.set_visible(True)
@@ -139,13 +161,18 @@ class TrayIcon(Window):
                              activate_time
                              ):
         self.show_menu()
+        #
+        self.create_event_window(activate_time)
+        
+    def create_event_window(self, activate_time):    
+        self.event_window = menu_grab_transfer_window_get(self)
+        popup_grab_on_window(self.event_window, activate_time)
         
     def show_menu(self):    
         metry = self.tray_icon.get_geometry()
         tray_icon_rect = metry[1]        
         # get screen height and width. 
-        screen_h = self.screen.get_height()
-            
+        screen_h = self.screen.get_height()            
         # tray_icon_rect[0]: x tray_icon_rect[1]: y t...t[2]: width t...t[3]: height
         if (screen_h / 2) <= tray_icon_rect[1] <= screen_h: # bottom trayicon show.
             y_padding = 10 + self.y_padding
@@ -158,7 +185,6 @@ class TrayIcon(Window):
             x -= self.set_max_show_menu(x)
             self.move(x, y)                      
         #   
-        self.show_event_window()    
         self.show_all()
         
     def set_max_show_menu(self, x):        
