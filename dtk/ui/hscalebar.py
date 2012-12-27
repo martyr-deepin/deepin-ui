@@ -30,6 +30,17 @@ from utils import color_hex_to_cairo, get_content_size, cairo_state
 import gtk
 import gobject
 
+#/* HScalebar
+# * @ point_dpixbuf : 设置图标 -> point_dpixbuf=app_theme.get_pixbuf("文件夹名字/图标名字.png")
+# * @ show_value : 是否显示 value.
+# * @ show_value_type : 显示 value 的位置[ gtk.POS_TOP 上面 | gtk.POS_BOTTOM 下面].
+# * @ show_point_num : 取小数点位数, 0 为整形.
+# * @ format_value : 跟在 value 后面的参数. 如果 format_value = "%%" value%%
+# * @ text_x_padding=-15 : 暂停大家用不到
+# * @ value_min: 最小值
+# * @ value_max: 最大值
+# * @ line_height: 进度条的前景和背景的线高.
+#*/
 
 class HScalebar(gtk.Button):    
     __gsignals__ = {
@@ -39,7 +50,8 @@ class HScalebar(gtk.Button):
                  point_dpixbuf=None,
                  show_value=False,
                  show_value_type=gtk.POS_TOP,
-                 format_value="",                         
+                 show_point_num=0,
+                 format_value="",
                  text_x_padding=-15,
                  value_min = 0,
                  value_max = 100,  
@@ -53,6 +65,7 @@ class HScalebar(gtk.Button):
         self.next_mark_x = 0
         self.value = 0
         self.show_value_type = show_value_type
+        self.show_point_num = show_point_num
         self.value_max = value_max - value_min
         self.value_min = value_min
         self.drag = False
@@ -101,7 +114,15 @@ class HScalebar(gtk.Button):
         self.draw_point(cr, rect)
         # draw value.
         if self.show_value:
-            self.draw_value(cr, rect,  "%s%s" % (int(self.value + self.value_min), self.format_value), self.value, self.show_value_type)
+            if self.show_point_num:
+                draw_value_temp = round(self.value + self.value_min, self.show_point_num)
+            else:    
+                draw_value_temp = int(round(self.value + self.value_min, self.show_point_num))
+                
+            self.draw_value(cr, rect,  
+                            "%s%s" % (draw_value_temp, self.format_value), 
+                            self.value, 
+                            self.show_value_type)
             
         for position in self.position_list:    
             self.draw_value(cr, rect,  "%s" % (str(position[2])), position[0] - self.value_min, position[1])
