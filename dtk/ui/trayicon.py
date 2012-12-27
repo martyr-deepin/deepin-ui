@@ -66,6 +66,7 @@ class TrayIcon(Window):
     def create_event_window(self):    
         self.event_window = gtk.Window(gtk.WINDOW_TOPLEVEL)        
         self.event_window.set_decorated(False)
+        self.event_window.set_skip_taskbar_hint(True)
         self.event_window.set_opacity(0.0)
         
     def show_event_window(self):
