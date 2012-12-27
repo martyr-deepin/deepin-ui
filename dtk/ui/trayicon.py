@@ -58,13 +58,16 @@ def popup_grab_on_window (gdk_window, activate_time, grab_keyboard=False):
                              activate_time)):
 
         if ((not grab_keyboard) 
-            or gdk_window.keyboard_grab(True, activate_time) == 0):
+            or gtk.gdk.keyboard_grab(gdk_window, True, activate_time) == 0):
             return True
         else:
-            gdk_window.pointer_ungrab(activate_time)
+            gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
             return False
     return False
     
+
+
+
 class TrayIcon(Window):
     def __init__(self,
                  y_padding=15,
@@ -129,9 +132,11 @@ class TrayIcon(Window):
         self.main_ali.add(widget)
                         
     def menu_grab_window_button_press(self, widget, event):        
-        self.hide_all()
-        #
-        self.destroy_event_window(event)
+        if not ((widget.allocation.x <= event.x <= widget.allocation.width) 
+           and (widget.allocation.y <= event.y <= widget.allocation.height)):
+            self.hide_all()
+            self.grab_remove()
+            # self.destroy_event_window(event)
         
     def destroy_event_window(self, event):    
         popup_grab_on_window(self.event_window, event.time, True)
@@ -162,7 +167,7 @@ class TrayIcon(Window):
                              ):
         self.show_menu()
         #
-        self.create_event_window(activate_time)
+        # self.create_event_window(activate_time)
         
     def create_event_window(self, activate_time):    
         self.event_window = menu_grab_transfer_window_get(self)
