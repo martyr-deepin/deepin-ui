@@ -44,8 +44,8 @@ def menu_grab_transfer_window_destroy(gdk_window):
     if gdk_window:
         gdk_window.set_user_data(None);
         gdk_window.destroy()    
-
-def popup_grab_on_window (gdk_window, activate_time, grab_keyboard=False):
+        
+def popup_grab_on_window (gdk_window, activate_time, grab_keyboard=True):
     if (gtk.gdk.pointer_grab(gdk_window, 
                              True,
                              gtk.gdk.POINTER_MOTION_MASK 
@@ -55,7 +55,7 @@ def popup_grab_on_window (gdk_window, activate_time, grab_keyboard=False):
                              | gtk.gdk.LEAVE_NOTIFY_MASK, 
                              None, 
                              None, 
-                             activate_time)):
+                             activate_time) == 0):
 
         if ((not grab_keyboard) 
             or gtk.gdk.keyboard_grab(gdk_window, True, activate_time) == 0):
@@ -104,7 +104,7 @@ class TrayIcon(Window):
         self.root = self.get_root_window()
         self.screen = self.root.get_screen()        
         self.hide_all()        
-            
+           
     def init_menu(self, widget):
         gtk.gdk.pointer_grab(
             self.window,
@@ -132,14 +132,14 @@ class TrayIcon(Window):
         self.main_ali.add(widget)
                         
     def menu_grab_window_button_press(self, widget, event):        
-        if not ((widget.allocation.x <= event.x <= widget.allocation.width) 
-           and (widget.allocation.y <= event.y <= widget.allocation.height)):
+        # if not ((widget.allocation.x <= event.x <= widget.allocation.width) 
+        #    and (widget.allocation.y <= event.y <= widget.allocation.height)):
             self.hide_all()
             self.grab_remove()
             # self.destroy_event_window(event)
         
     def destroy_event_window(self, event):    
-        popup_grab_on_window(self.event_window, event.time, True)
+        popup_grab_on_window(self.event_window, event.time, False)
         menu_grab_transfer_window_destroy(self.event_window)
         
     def init_tray_icon(self):
@@ -165,9 +165,10 @@ class TrayIcon(Window):
                              button, 
                              activate_time
                              ):
-        self.show_menu()
+        self.show_menu()        
         #
         # self.create_event_window(activate_time)
+        # self.grab_add()
         
     def create_event_window(self, activate_time):    
         self.event_window = menu_grab_transfer_window_get(self)
