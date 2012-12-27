@@ -36,7 +36,6 @@ import gobject
 # * @ show_value_type : 显示 value 的位置[ gtk.POS_TOP 上面 | gtk.POS_BOTTOM 下面].
 # * @ show_point_num : 取小数点位数, 0 为整形.
 # * @ format_value : 跟在 value 后面的参数. 如果 format_value = "%%" value%%
-# * @ text_x_padding=-15 : 暂停大家用不到
 # * @ value_min: 最小值
 # * @ value_max: 最大值
 # * @ line_height: 进度条的前景和背景的线高.
@@ -52,7 +51,6 @@ class HScalebar(gtk.Button):
                  show_value_type=gtk.POS_TOP,
                  show_point_num=0,
                  format_value="",
-                 text_x_padding=-15,
                  value_min = 0,
                  value_max = 100,  
                  line_height=6
@@ -81,7 +79,6 @@ class HScalebar(gtk.Button):
         self.point_pixbuf = point_dpixbuf
         self.line_height = line_height
         self.format_value = format_value
-        self.text_x_padding = text_x_padding
         self.trg_by_grab = False
         self.show_value = show_value
         #
@@ -210,7 +207,8 @@ class HScalebar(gtk.Button):
                     rect.y + rect.height/2 - self.point_pixbuf.get_pixbuf().get_height()/2)
         
     def draw_value(self, cr, rect, text, value, type_=None):
-        y_padding = rect.y + rect.height/2 - self.point_pixbuf.get_pixbuf().get_height()/2 + self.text_x_padding
+        text_x_padding = -15
+        y_padding = rect.y + rect.height/2 - self.point_pixbuf.get_pixbuf().get_height()/2 + text_x_padding
         if gtk.POS_TOP == type_:
             y_padding = y_padding
         if gtk.POS_BOTTOM == type_:
