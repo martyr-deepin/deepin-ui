@@ -138,8 +138,8 @@ class HScalebar(gtk.Button):
                       bg_y, 
                       x + w - self.point_width/2- 1, 
                       bg_y)
-            draw_line(cr, x, bg_y + self.line_height, x + 1, bg_y + self.line_height)
-            draw_line(cr, x + w, bg_y + self.line_height, x + w - 1, bg_y + self.line_height)        
+            draw_line(cr, x + self.point_width/2, bg_y + self.line_height, x + self.point_width/2 + 1, bg_y + self.line_height)
+            draw_line(cr, x + w - self.point_width/2, bg_y + self.line_height, x + w - self.point_width/2 - 1, bg_y + self.line_height)        
             '''
             background
             '''
