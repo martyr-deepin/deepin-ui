@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from cache_pixbuf import CachePixbuf
 from draw import draw_pixbuf, cairo_state
 from theme import ui_theme
 import gobject
@@ -44,7 +45,9 @@ class TimeZone(gtk.EventBox):
         self.__const_width = 800
         self.__const_height = 409
 
+        self.cache_bg_pixbuf = CachePixbuf()
         self.bg_pixbuf = ui_theme.get_pixbuf("timezone/bg.png")
+        self.cache_timezone_pixbuf = CachePixbuf()
         self.timezone_pixbuf = []
         i = -9
         while i <= 13:
@@ -88,27 +91,22 @@ class TimeZone(gtk.EventBox):
         y -= self.padding_top
 
         with cairo_state(cr):
-            bg_dpixbuf = self.bg_pixbuf.get_pixbuf()
-            timezone_dpixbuf = []
-            i = 0
-            while i < len(self.timezone_pixbuf):
-                timezone_dpixbuf.append(self.timezone_pixbuf[i].get_pixbuf())
-
-                i += 1
-
             if self.width < self.__const_width or self.height < self.__const_height:
-                bg_dpixbuf = bg_dpixbuf.scale_simple(self.width, self.height, gtk.gdk.INTERP_BILINEAR)
+                self.cache_bg_pixbuf.scale(self.bg_pixbuf.get_pixbuf(), 
+                                           self.width, 
+                                           self.height)
+                self.cache_timezone_pixbuf.scale(self.timezone_pixbuf[self.__timezone].get_pixbuf(), 
+                                                 self.width, 
+                                                 self.height)
 
-                i = 0
-                while i < len(timezone_dpixbuf):
-                    timezone_dpixbuf[i] = timezone_dpixbuf[i].scale_simple(self.width, self.height, gtk.gdk.INTERP_BILINEAR)
-
-                    i += 1
-            
-            draw_pixbuf(cr, bg_dpixbuf, x, y)
-            draw_pixbuf(cr, 
-                        timezone_dpixbuf[self.__timezone], 
-                        x, y)
+                draw_pixbuf(cr, self.cache_bg_pixbuf.get_cache(), x, y)
+                draw_pixbuf(cr, self.cache_timezone_pixbuf.get_cache(), x, y)
+            else:
+                draw_pixbuf(cr, self.bg_pixbuf.get_pixbuf(), x, y)
+                draw_pixbuf(cr, 
+                            self.timezone_pixbuf[self.__timezone].get_pixbuf(), 
+                            x, 
+                            y)
 
         return True
 

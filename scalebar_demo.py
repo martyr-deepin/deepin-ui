@@ -33,7 +33,7 @@ app_theme = init_skin(
     )
 
 from dtk.ui.application import Application
-from dtk.ui.scalebar import HScalebar
+from dtk.ui.hscalebar import HScalebar
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
 import gtk
 import deepin_gsettings
@@ -74,63 +74,13 @@ if __name__ == "__main__":
         )
     
     # Add Scalebar.
-    hscale1 = HScalebar(
-        app_theme.get_pixbuf("scalebar/l_fg.png"), 
-        app_theme.get_pixbuf("scalebar/l_bg.png"), 
-        app_theme.get_pixbuf("scalebar/m_fg.png"), 
-        app_theme.get_pixbuf("scalebar/m_bg.png"), 
-        app_theme.get_pixbuf("scalebar/r_fg.png"), 
-        app_theme.get_pixbuf("scalebar/r_bg.png"), 
-        app_theme.get_pixbuf("scalebar/point.png"))
-    adjust1 = gtk.Adjustment(0, -1.0, 1.0)
-    hscale1.set_adjustment(adjust1)
-    hscale1.add_mark(0, HScalebar.POS_TOP, "0")
-    hscale1.add_mark(adjust1.get_lower(), HScalebar.POS_BOTTOM, "左")
-    hscale1.add_mark(adjust1.get_upper(), HScalebar.POS_BOTTOM, "右")
+    hscale1 = HScalebar(app_theme.get_pixbuf("scalebar/point.png"))
     hscale1_align = gtk.Alignment()
     hscale1_align.set(0.5, 0.5, 1, 1)
     hscale1_align.set_padding(0, 2, 2, 2)
     hscale1_align.add(hscale1)
     
-    hscale2 = HScalebar(
-        app_theme.get_pixbuf("scalebar/l_fg.png"), 
-        app_theme.get_pixbuf("scalebar/l_bg.png"), 
-        app_theme.get_pixbuf("scalebar/m_fg.png"), 
-        app_theme.get_pixbuf("scalebar/m_bg.png"), 
-        app_theme.get_pixbuf("scalebar/r_fg.png"), 
-        app_theme.get_pixbuf("scalebar/r_bg.png"), 
-        app_theme.get_pixbuf("scalebar/point.png"), 
-        True, 
-        " %")
-    adjust2 = gtk.Adjustment(5, 5, 100)
-    adjust2.connect("value-changed", __value_changed, "xxx")
-    hscale2.set_adjustment(adjust2)
-    #hscale2.set_size_request(100, 0)
-    hscale2_align = gtk.Alignment()
-    hscale2_align.set(0.5, 0.5, 1, 1)
-    hscale2_align.set_padding(0, 2, 2, 2)
-    hscale2_align.add(hscale2)
-    
-    hscale3 = HScalebar(
-        app_theme.get_pixbuf("scalebar/l_fg.png"), 
-        app_theme.get_pixbuf("scalebar/l_bg.png"), 
-        app_theme.get_pixbuf("scalebar/m_fg.png"), 
-        app_theme.get_pixbuf("scalebar/m_bg.png"), 
-        app_theme.get_pixbuf("scalebar/r_fg.png"), 
-        app_theme.get_pixbuf("scalebar/r_bg.png"), 
-        app_theme.get_pixbuf("scalebar/point.png"))
-    adjust3 = gtk.Adjustment(10, 5, 50, 1, 3)
-    hscale3.set_adjustment(adjust3)
-    hscale3.add_mark(15, HScalebar.POS_TOP, "15")
-    hscale3.set_inverted(True)
-    hscale3_align = gtk.Alignment()
-    hscale3_align.set(0.5, 0.5, 1, 1)
-    hscale3_align.set_padding(0, 2, 2, 2)
-    hscale3_align.add(hscale3)
-    
     application.main_box.pack_start(hscale1_align)
-    application.main_box.pack_start(hscale2_align)
-    application.main_box.pack_start(hscale3_align)
     application.window.connect("check-resize", __resized)
 
     application.run()
