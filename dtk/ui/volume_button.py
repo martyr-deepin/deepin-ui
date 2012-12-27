@@ -203,7 +203,8 @@ class VolumeButton(gtk.Button):
                 self.__mouse_state = MOUSE_VOLUME_STATE_PRESS
                 self.temp_mute_bool = True
                 self.press_bool = True
-                
+        widget.grab_add()        
+        
     def __release_mouse_set_point(self, widget, event):        
         # Set mouse state normal.
         self.__mouse_state = MOUSE_VOLUME_STATE_NORMAL        
@@ -230,6 +231,7 @@ class VolumeButton(gtk.Button):
             self.emit("volume-state-changed", self.__current_value, self.__volume_state)        
         
         self.queue_draw()    
+        widget.grab_remove()
         
     def __motion_mouse_set_point(self, widget, event):
         temp_x = int(event.x)
