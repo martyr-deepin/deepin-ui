@@ -51,7 +51,7 @@ class HScalebar(gtk.Button):
         self.mark_check = False
         self.new_mark_x = 0
         self.next_mark_x = 0
-        self.__value = 0
+        self.value = 0
         self.show_value_type = show_value_type
         self.value_max = value_max - value_min
         self.value_min = value_min
@@ -212,6 +212,7 @@ class HScalebar(gtk.Button):
         temp_value = ((float((event.x - self.point_width/2)) / temp_value) * self.value_max) # get value.
         self.value = max(min(self.value_max, temp_value), 0)
         self.drag = True        
+        self.set_value(self.value)
         self.emit("value-changed", self.value + self.value_min)
         widget.grab_add()
         
@@ -224,6 +225,7 @@ class HScalebar(gtk.Button):
             width = float(widget.allocation.width - self.point_width)
             temp_value = (float((event.x - self.point_width/2)) /  width) * self.value_max
             self.value = max(min(self.value_max, temp_value), 0) # get value.
+            self.set_value(self.value)
             self.emit("value-changed", self.value + self.value_min)
             # mark set.
             mark_x_padding = 10
@@ -251,24 +253,10 @@ class HScalebar(gtk.Button):
         self.position_list.append((value, position_type, markup))
         
     def set_value(self, value):    
-        self.__value = max(min(self.value_max, value), 0) 
+        self.value = max(min(self.value_max, value), 0) 
         self.queue_draw()     
         
-    @property
-    def value(self):
-        return self.__value
-    
-    @value.setter
-    def value(self, value):
-        self.__value = value
-        self.queue_draw()     
-        
-    @value.getter        
-    def value(self):
-        return self.__value
-        
-    @value.deleter
-    def value(self):
-        del self.__value 
+    def get_value(self):    
+        self.value
         
 gobject.type_register(HScalebar)
