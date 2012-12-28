@@ -67,25 +67,31 @@ def popup_grab_on_window (gdk_window, activate_time, grab_keyboard=True):
     
 
 
+#/* TrayIcon
+# * 参数值:
+# * @ menu_to_icon_y_padding : 菜单到图标的y_padding
+# * @ tray_icon_to_screen_width : 托盘出来的菜单，如果超过右边屏幕，会不让它过去，离屏幕距离.
+# * @ align_size : 托盘菜单四周上，下，左，右的的size. [alignment].
+# * 方法:
+# * @ set_from_pixbuf: 设置图片gtk.gdk.pixbuf. ui库: app_theme.get_pixbuf("....png").get_pixbuf()
+# * @ set_from_file  : 设置图片路径 , 比如: /home/long/logo.png
+# */
 
 class TrayIcon(Window):
     def __init__(self,
-                 x_padding=0,
-                 y_padding=15,
+                 menu_to_icon_y_padding=0,
                  tray_icon_to_screen_width=10,
-                 align_size=10,
-                 show_pixbuf=None,
-                 hide_pixbuf=None
+                 align_size=10
                  ):
         Window.__init__(self, 
                         window_type=gtk.WINDOW_POPUP
                         )
         # Init values.        
-        self.y_padding = y_padding
         self.tray_icon_to_screen_width = tray_icon_to_screen_width
         self.align_size = align_size
-        self.show_pixbuf = show_pixbuf
-        self.hide_pixbuf = hide_pixbuf
+        self.menu_to_icon_y_padding = menu_to_icon_y_padding
+        # self.show_pixbuf = show_pixbuf
+        # self.hide_pixbuf = hide_pixbuf
         # Init setting.
         self.set_title("Linux Deepin Desktop Trayicon")
         self.set_can_focus(True)
@@ -156,7 +162,7 @@ class TrayIcon(Window):
          
     def set_from_pixbuf(self, icon_pixbuf=None):
         if icon_pixbuf:
-            self.tray_icon.set_from_pixbuf(icon_pixbuf.get_pixbuf())
+            self.tray_icon.set_from_pixbuf(icon_pixbuf)
         
     def set_from_file(self, icon_path=None):    
         if icon_path:
@@ -183,21 +189,25 @@ class TrayIcon(Window):
         
     def show_menu(self):    
         metry = self.tray_icon.get_geometry()
+        # tray_icon_rect[0]: x tray_icon_rect[1]: y t...t[2]: width t...t[3]: height
         tray_icon_rect = metry[1]        
         # get screen height and width. 
         screen_h = self.screen.get_height()            
-        screen_w = self.screen.get_width()
-        #
+        screen_w = self.screen.get_width()        
+        # get x.
         x = tray_icon_rect[0] + tray_icon_rect[2]/2 - self.get_size_request()[0]/2
-        x -= self.set_max_show_menu(x)
-        # tray_icon_rect[0]: x tray_icon_rect[1]: y t...t[2]: width t...t[3]: height
+        x -= self.set_max_show_menu(x)        
+        # get y.
+        y_padding_to_creen = self.allocation.height             
+        if self.allocation.height <= 1:
+            y_padding_to_creen = self.get_size_request()[1]
+        # 
         if (screen_h / 2) <= tray_icon_rect[1] <= screen_h: # bottom trayicon show.
-            y_padding_to_creen = self.allocation.height
-            if self.allocation.height <= 1:
-                y_padding_to_creen = self.get_size_request()[1]
-            self.move(x, screen_h - self.y_padding - y_padding_to_creen)
+            y = tray_icon_rect[1]
+            self.move(x, y - y_padding_to_creen)
         else: # top trayicon show.
-            self.move(x, self.y_padding)
+            y = tray_icon_rect[1]
+            self.move(x, y + tray_icon_rect[3])
         #
                    
     def set_max_show_menu(self, x):        
