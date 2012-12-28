@@ -23,8 +23,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
+from theme import ui_theme
 from draw import draw_pixbuf, draw_text, draw_line
 from utils import color_hex_to_cairo, get_content_size, cairo_state
 import gtk
@@ -46,7 +45,7 @@ class HScalebar(gtk.Button):
         "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
     }        
     def __init__(self,
-                 point_dpixbuf=None,
+                 point_dpixbuf=ui_theme.get_pixbuf("hscalebar/point.png"),
                  show_value=False,
                  show_value_type=gtk.POS_TOP,
                  show_point_num=0,
@@ -85,12 +84,10 @@ class HScalebar(gtk.Button):
         self.set_size_request(-1, 
                                line_height + get_content_size("0")[1]*2 + get_content_size("0")[1]/2)
         #
-        if self.point_pixbuf:
-            # 
-            self.point_width = self.point_pixbuf.get_pixbuf().get_width()
-            self.point_height = self.point_pixbuf.get_pixbuf().get_height()
-            # init events.
-            self.init_events()
+        self.point_width = self.point_pixbuf.get_pixbuf().get_width()
+        self.point_height = self.point_pixbuf.get_pixbuf().get_height()
+        # init events.
+        self.init_events()
                 
     def init_events(self):     
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)        
