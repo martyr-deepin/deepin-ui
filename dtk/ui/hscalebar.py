@@ -38,6 +38,7 @@ import gobject
 # * @ value_min: 最小值
 # * @ value_max: 最大值
 # * @ line_height: 进度条的前景和背景的线高.
+# * @ add_mark: 添加标记位置 value(位置), position_type(显示类型,gtk.POS_TOP, gtk.POS_BOTTOM), mar(显示文本).
 #*/
 
 class HScalebar(gtk.Button):    
@@ -106,22 +107,23 @@ class HScalebar(gtk.Button):
         self.draw_bg_and_fg(cr, rect)
         # draw point.
         self.draw_point(cr, rect)
+        # draw mark.
+        for position in self.position_list:
+            self.draw_value(cr, rect,  "%s" % (str(position[2])), position[0] - self.value_min, position[1])
         # draw value.
         if self.show_value:
             if self.show_point_num:
                 draw_value_temp = round(self.value + self.value_min, self.show_point_num)
             else:    
                 draw_value_temp = int(round(self.value + self.value_min, self.show_point_num))
-                
-            self.draw_value(cr, rect,  
+            #
+            self.draw_value(cr, rect, 
                             "%s%s" % (draw_value_temp, self.format_value), 
                             self.value, 
                             self.show_value_type)
             
-        for position in self.position_list:    
-            self.draw_value(cr, rect,  "%s" % (str(position[2])), position[0] - self.value_min, position[1])
         return True
-        
+                    
     def draw_bg_and_fg(self, cr, rect):    
         with cairo_state(cr):
             '''
@@ -244,29 +246,32 @@ class HScalebar(gtk.Button):
             self.set_value(self.value)
             self.emit("value-changed", self.value + self.value_min)
             # mark set.
-            mark_x_padding = 10
-            for mark in self.position_list:
-                mark_value = ((mark[0]) + (self.value_min))
-                if (mark_value) == int(self.value) and (round(int(self.value) - self.value, 1) in [0.0, -0.1, -0.2, -0.2]):
-                    if not self.mark_check:
-                        self.mark_check = True
-                        self.new_mark_x = event.x                                                
-                if self.mark_check:
-                    self.next_mark_x = event.x
-                    if self.next_mark_x > self.new_mark_x: # right.
-                        if self.new_mark_x + mark_x_padding >= self.next_mark_x >= self.new_mark_x:
-                            self.value = mark_value
-                        else:    
-                            self.mark_check = False                            
-                    else:
-                        if self.new_mark_x - mark_x_padding <= self.next_mark_x <= self.new_mark_x:
-                            self.value = mark_value
-                        else:
-                            self.mark_check = False
+            # mark_x_padding = 10
+            # for mark in self.position_list:
+            #     mark_value = ((mark[0]) + (self.value_min))
+            #     if (mark_value) == int(self.value) and (round(int(self.value) - self.value, 1) in [0.0, -0.1, -0.2, -0.2]):
+            #         if not self.mark_check:
+            #             self.mark_check = True
+            #             self.new_mark_x = event.x                                                
+            #     if self.mark_check:
+            #         self.next_mark_x = event.x
+            #         if self.next_mark_x > self.new_mark_x: # right.
+            #             if self.new_mark_x + mark_x_padding >= self.next_mark_x >= self.new_mark_x:
+            #                 self.value = mark_value
+            #             else:    
+            #                 self.mark_check = False                            
+            #         else:
+            #             if self.new_mark_x - mark_x_padding <= self.next_mark_x <= self.new_mark_x:
+            #                 self.value = mark_value
+            #             else:
+            #                 self.mark_check = False
                             
             
     def add_mark(self, value, position_type, markup):
-        self.position_list.append((value, position_type, markup))
+        if self.value_min <= value <= self.value_max:
+            self.position_list.append((value, position_type, markup))
+        else:    
+            print "error:input value_min <= value <= value_max!!"
         
     def set_value(self, value):    
         self.value = max(min(self.value_max, value), 0) 

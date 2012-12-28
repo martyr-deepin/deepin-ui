@@ -81,7 +81,7 @@ if __name__ == "__main__":
     # Add TreeView.
     print os.path.expanduser("~")
     treeview = TreeView(get_dir_items(os.path.expanduser("~")))
-    treeview.set_highlight_item(treeview.get_items()[35])
+    #treeview.set_highlight_item(treeview.get_items()[35])
     treeview.connect("delete-select-items", m_delete_select_items)
     treeview.connect("button-press-item", m_button_press_item)
     treeview.connect("double-click-item", m_double_click_item)
