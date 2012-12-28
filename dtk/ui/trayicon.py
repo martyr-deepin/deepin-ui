@@ -70,6 +70,7 @@ def popup_grab_on_window (gdk_window, activate_time, grab_keyboard=True):
 
 class TrayIcon(Window):
     def __init__(self,
+                 x_padding=0,
                  y_padding=15,
                  tray_icon_to_screen_width=10,
                  align_size=10,
@@ -94,6 +95,7 @@ class TrayIcon(Window):
         # Init event.
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.connect("show", self.init_menu)
+        self.connect("configure-event", self.menu_configure_event)
         self.connect("destroy", lambda w : gtk.main_quit()) 
         self.connect("button-press-event", self.menu_grab_window_button_press)
         # Init trayicon.
@@ -131,9 +133,12 @@ class TrayIcon(Window):
     def add_widget(self, widget):    
         self.main_ali.add(widget)
                         
+    def menu_configure_event(self, widget, event):    
+        self.show_menu()
+        
     def menu_grab_window_button_press(self, widget, event):        
-        # if not ((widget.allocation.x <= event.x <= widget.allocation.width) 
-        #    and (widget.allocation.y <= event.y <= widget.allocation.height)):
+        if not ((widget.allocation.x <= event.x <= widget.allocation.width) 
+           and (widget.allocation.y <= event.y <= widget.allocation.height)):
             self.hide_all()
             self.grab_remove()
             # self.destroy_event_window(event)
@@ -159,6 +164,7 @@ class TrayIcon(Window):
         
     def tray_icon_activate(self, status_icon):
         self.show_menu()
+        self.show_all()
         
     def tray_icon_popup_menu(self, 
                              status_icon, 
@@ -166,6 +172,7 @@ class TrayIcon(Window):
                              activate_time
                              ):
         self.show_menu()        
+        self.show_all()
         #
         # self.create_event_window(activate_time)
         # self.grab_add()
@@ -179,20 +186,20 @@ class TrayIcon(Window):
         tray_icon_rect = metry[1]        
         # get screen height and width. 
         screen_h = self.screen.get_height()            
+        screen_w = self.screen.get_width()
+        #
+        x = tray_icon_rect[0] + tray_icon_rect[2]/2 - self.get_size_request()[0]/2
+        x -= self.set_max_show_menu(x)
         # tray_icon_rect[0]: x tray_icon_rect[1]: y t...t[2]: width t...t[3]: height
         if (screen_h / 2) <= tray_icon_rect[1] <= screen_h: # bottom trayicon show.
-            y_padding = 10 + self.y_padding
-            self.move(tray_icon_rect[0] + tray_icon_rect[2]/2 - self.get_size_request()[0]/2, 
-                      tray_icon_rect[1] - tray_icon_rect[3]  + y_padding - self.get_size_request()[1])
+            y_padding_to_creen = self.allocation.height
+            if self.allocation.height <= 1:
+                y_padding_to_creen = self.get_size_request()[1]
+            self.move(x, screen_h - self.y_padding - y_padding_to_creen)
         else: # top trayicon show.
-            y_padding = 15 - self.y_padding
-            x = tray_icon_rect[0] + tray_icon_rect[2]/2 - self.get_size_request()[0]/2
-            y = tray_icon_rect[1] + tray_icon_rect[3] + y_padding
-            x -= self.set_max_show_menu(x)
-            self.move(x, y)                      
-        #   
-        self.show_all()
-        
+            self.move(x, self.y_padding)
+        #
+                   
     def set_max_show_menu(self, x):        
         screen_w = self.screen.get_width()        
         screen_rect_width = x + self.get_size_request()[0]
