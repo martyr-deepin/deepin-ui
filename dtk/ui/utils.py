@@ -529,13 +529,16 @@ def eval_file(filepath, check_exists=False):
             
             return None
 
-def write_file(filepath, content):
+def write_file(filepath, content, mkdir=False):
     '''
     Write file with given content.
 
     @param filepath: Target filepath to write.
     @param content: File content to write.
     '''
+    if mkdir:
+        touch_file_dir(filepath)
+    
     f = open(filepath, "w")
     f.write(content)
     f.close()
