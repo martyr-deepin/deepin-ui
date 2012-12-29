@@ -20,53 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from theme import ui_theme
 from dtk.ui.window import Window
 import gtk
-
-def menu_grab_transfer_window_get(menu):
-    event_window = gtk.gdk.Window(
-        parent=menu.get_root_window(),
-        x = -100,
-        y = -100,
-        width = 10,
-        height = 10,
-        window_type = gtk.gdk.WINDOW_TEMP,
-        wclass = gtk.gdk.INPUT_ONLY,
-        override_redirect = True,
-        event_mask = 0
-        )
-    event_window.set_user_data(menu)
-    event_window.show()
-    return event_window
-
-def menu_grab_transfer_window_destroy(gdk_window):
-    if gdk_window:
-        gdk_window.set_user_data(None);
-        gdk_window.destroy()    
-        
-def popup_grab_on_window (gdk_window, activate_time, grab_keyboard=True):
-    if (gtk.gdk.pointer_grab(gdk_window, 
-                             True,
-                             gtk.gdk.POINTER_MOTION_MASK 
-                             | gtk.gdk.BUTTON_PRESS_MASK 
-                             | gtk.gdk.BUTTON_RELEASE_MASK 
-                             | gtk.gdk.ENTER_NOTIFY_MASK 
-                             | gtk.gdk.LEAVE_NOTIFY_MASK, 
-                             None, 
-                             None, 
-                             activate_time) == 0):
-
-        if ((not grab_keyboard) 
-            or gtk.gdk.keyboard_grab(gdk_window, True, activate_time) == 0):
-            return True
-        else:
-            gtk.gdk.pointer_ungrab(gtk.gdk.CURRENT_TIME)
-            return False
-    return False
     
-
-
 #/* TrayIcon
 # * 参数值:
 # * @ menu_to_icon_y_padding : 菜单到图标的y_padding
@@ -104,14 +60,26 @@ class TrayIcon(Window):
         self.connect("destroy", lambda w : gtk.main_quit()) 
         self.connect("button-press-event", self.menu_grab_window_button_press)
         # Init trayicon.
-        self.init_tray_icon()        
+        self.init_tray_icon()
         # Init frame.
         self.init_tray_alignment()
         # Init root and screen.
         self.root = self.get_root_window()
-        self.screen = self.root.get_screen()        
+        self.screen = self.root.get_screen()
         self.hide_all()        
-           
+        self.init_event_window()
+        
+    def init_event_window(self):    
+        self.event_window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.event_window.maximize()
+        self.event_window.set_opacity(0.0)
+        
+    def show_event_window(self):    
+        self.event_window.show_all()
+        
+    def hide_event_window(self):        
+        self.event_window.hide_all()
+        
     def draw_menu_mask(self, cr, x, y, w, h):        
         cr.set_source_rgba(1, 1, 1, 0.9)
         cr.rectangle(x, y, w, h)
@@ -144,19 +112,13 @@ class TrayIcon(Window):
         self.main_ali.add(widget)
                         
     def menu_configure_event(self, widget, event):    
-        self.show_menu()
+        self.move_menu()
         
     def menu_grab_window_button_press(self, widget, event):        
         if not ((widget.allocation.x <= event.x <= widget.allocation.width) 
            and (widget.allocation.y <= event.y <= widget.allocation.height)):
-            self.hide_all()
-            self.grab_remove()
-            # self.destroy_event_window(event)
-        
-    def destroy_event_window(self, event):    
-        popup_grab_on_window(self.event_window, event.time, False)
-        menu_grab_transfer_window_destroy(self.event_window)
-        
+            self.hide_menu()
+                    
     def init_tray_icon(self):
         self.tray_icon = gtk.StatusIcon()
         self.tray_icon.set_visible(True)
@@ -170,39 +132,52 @@ class TrayIcon(Window):
         
     def set_from_file(self, icon_path=None):    
         if icon_path:
-            self.tray_icon.set_from_file(icon_path)                
+            self.tray_icon.set_from_file(icon_path)
+        
+    def set_tooltip_text(self, text=None):      
+        if text:
+            self.tray_icon.set_tooltip_text(text)
+            
+    def set_tooltip_markup(self, markup=None):        
+        if markup:
+            self.set_tooltip_markup(markup)
+            
+    def set_visible(self, visible):        
+        self.tray_icon.set_visible(visible)
         
     def tray_icon_activate(self, status_icon):
         self.show_menu()
-        self.show_all()
         
     def tray_icon_popup_menu(self, 
                              status_icon, 
                              button, 
                              activate_time
                              ):
-        self.show_menu()        
+        self.show_menu()
+        
+    def show_menu(self):
+        self.move_menu()
+        self.show_event_window()
         self.show_all()
-        #
-        # self.create_event_window(activate_time)
-        # self.grab_add()
+        self.grab_add()
         
-    def create_event_window(self, activate_time):    
-        self.event_window = menu_grab_transfer_window_get(self)
-        popup_grab_on_window(self.event_window, activate_time)
+    def hide_menu(self):    
+        self.hide_all()
+        self.hide_event_window()
+        self.grab_remove()
         
-    def show_menu(self):    
+    def move_menu(self):        
         metry = self.tray_icon.get_geometry()
         # tray_icon_rect[0]: x tray_icon_rect[1]: y t...t[2]: width t...t[3]: height
         tray_icon_rect = metry[1]        
         # get screen height and width. 
-        screen_h = self.screen.get_height()            
-        screen_w = self.screen.get_width()        
+        screen_h = self.screen.get_height()
+        screen_w = self.screen.get_width()       
         # get x.
         x = tray_icon_rect[0] + tray_icon_rect[2]/2 - self.get_size_request()[0]/2
-        x -= self.set_max_show_menu(x)        
+        x -= self.set_max_show_menu(x)
         # get y.
-        y_padding_to_creen = self.allocation.height             
+        y_padding_to_creen = self.allocation.height
         if self.allocation.height <= 1:
             y_padding_to_creen = self.get_size_request()[1]
         # 
