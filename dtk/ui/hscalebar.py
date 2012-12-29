@@ -232,11 +232,9 @@ class HScalebar(gtk.Button):
         self.drag = True        
         self.set_value(self.value)
         self.emit("value-changed", self.value + self.value_min)
-        widget.grab_add()
         
     def __progressbar_release_event(self, widget, event):    
         self.drag = False
-        widget.grab_remove()
         
     def __progressbar_motion_notify_event(self, widget, event):    
         if self.drag:
