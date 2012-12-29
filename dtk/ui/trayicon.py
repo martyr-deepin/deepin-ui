@@ -90,8 +90,7 @@ class TrayIcon(Window):
         self.tray_icon_to_screen_width = tray_icon_to_screen_width
         self.align_size = align_size
         self.menu_to_icon_y_padding = menu_to_icon_y_padding
-        # self.show_pixbuf = show_pixbuf
-        # self.hide_pixbuf = hide_pixbuf
+        self.draw_mask = self.draw_menu_mask # Draw background.
         # Init setting.
         self.set_title("Linux Deepin Desktop Trayicon")
         self.set_can_focus(True)
@@ -113,6 +112,11 @@ class TrayIcon(Window):
         self.screen = self.root.get_screen()        
         self.hide_all()        
            
+    def draw_menu_mask(self, cr, x, y, w, h):        
+        cr.set_source_rgba(1, 1, 1, 0.9)
+        cr.rectangle(x, y, w, h)
+        cr.fill()
+                
     def init_menu(self, widget):
         gtk.gdk.pointer_grab(
             self.window,
