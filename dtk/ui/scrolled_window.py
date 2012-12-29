@@ -518,6 +518,8 @@ class ScrolledWindow(gtk.Bin):
                     )
                 )
         self.vwindow.set_user_data(self)
+        #sefl.vwindow.get_
+        #self.vwindow.set_background(self.bar_background)
 
         self.hwindow = gtk.gdk.Window(self.binwindow,
                 x=self.hallocation.x,
@@ -536,6 +538,7 @@ class ScrolledWindow(gtk.Bin):
                     )
                 )
         self.hwindow.set_user_data(self)
+        #self.hwindow.set_background(self.bar_background)
 
         if self.child:
             self.child.set_parent_window(self.binwindow)
