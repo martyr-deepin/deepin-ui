@@ -71,6 +71,8 @@ class TrayIcon(Window):
         
     def init_event_window(self):    
         self.event_window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.event_window.set_skip_pager_hint(True)
+        self.event_window.set_skip_taskbar_hint(True)        
         self.event_window.maximize()
         self.event_window.set_opacity(0.0)
         
@@ -162,8 +164,8 @@ class TrayIcon(Window):
         self.grab_add()
         
     def hide_menu(self):    
-        self.hide_all()
         self.hide_event_window()
+        self.hide_all()        
         self.grab_remove()
         
     def move_menu(self):        
