@@ -84,8 +84,7 @@ class ScrolledWindow(gtk.Bin):
 
     def __init__(self,
                  right_space=2,
-                 top_bottom_space=3,
-                 bar_background_color=None):
+                 top_bottom_space=3):
         '''
         Init scrolled window.
 
@@ -96,10 +95,7 @@ class ScrolledWindow(gtk.Bin):
         self.bar_min_length = 50  #scrollbar smallest height
         self.bar_small_width = 7
         self.bar_width = 14  #normal scrollbar width
-        if bar_background_color:
-            self.bar_background_color = bar_background_color
-        else:
-            self.bar_background_color = ui_theme.get_color("scrolledbar").get_color()
+        self.bar_background = ui_theme.get_color("scrolledbar")
         self.right_space = right_space
         self.top_bottom_space = top_bottom_space
 
@@ -147,13 +143,13 @@ class ScrolledWindow(gtk.Bin):
     def draw_vbar(self):
         #img = cairo.ImageSurface(cairo.FORMAT_ARGB32, 100, 100)
         cr = self.vwindow.cairo_create()
-        cr.set_source_rgb(*color_hex_to_cairo(self.bar_background_color))
+        cr.set_source_rgb(*color_hex_to_cairo(self.bar_background.get_color()))
         cr.rectangle(0, 0, self.vallocation.width, self.vallocation.height)
         cr.fill()
 
     def draw_hbar(self):
         cr = self.hwindow.cairo_create()
-        cr.set_source_rgb(*color_hex_to_cairo(self.bar_background_color))
+        cr.set_source_rgb(*color_hex_to_cairo(self.bar_background.get_color()))
         cr.rectangle(0, 0, self.hallocation.width, self.hallocation.height)
         cr.fill()
 
@@ -522,6 +518,8 @@ class ScrolledWindow(gtk.Bin):
                     )
                 )
         self.vwindow.set_user_data(self)
+        #sefl.vwindow.get_
+        #self.vwindow.set_background(self.bar_background)
 
         self.hwindow = gtk.gdk.Window(self.binwindow,
                 x=self.hallocation.x,
@@ -540,6 +538,7 @@ class ScrolledWindow(gtk.Bin):
                     )
                 )
         self.hwindow.set_user_data(self)
+        #self.hwindow.set_background(self.bar_background)
 
         if self.child:
             self.child.set_parent_window(self.binwindow)
