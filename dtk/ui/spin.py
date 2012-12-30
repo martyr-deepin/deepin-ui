@@ -6,6 +6,7 @@
 # 
 # Author:     Hou Shaohui <houshao55@gmail.com>
 # Maintainer: Hou Shaohui <houshao55@gmail.com>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +26,8 @@ from entry import Entry
 from theme import ui_theme
 import gobject
 import gtk
+import threading as td
+import time
 from utils import (alpha_color_hex_to_cairo, cairo_disable_antialias,
                    color_hex_to_cairo,
                    propagate_expose, is_float, remove_timeout_id)
@@ -330,4 +333,197 @@ class SpinBox(gtk.VBox):
             button.connect("button-release-event", self.handle_key_release)
         return button
 
-gobject.type_register(SpinBox)    
+gobject.type_register(SpinBox)   
+
+class SecondThread(td.Thread):
+    def __init__(self, ThisPtr):
+        td.Thread.__init__(self)
+        self.setDaemon(True)
+        self.ThisPtr = ThisPtr
+
+    def run(self):
+        try:
+            while True:
+                self.ThisPtr.refresh_time()
+                time.sleep(1)
+        except Exception:
+            pass
+
+class TimeSpinBox(gtk.VBox):
+    __gsignals__ = {
+        "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+        "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+        }
+    
+    def __init__(self, 
+                 width=55, 
+                 height=22):
+        gtk.VBox.__init__(self)
+        
+        # Init.
+        self.width = width
+        self.height = height
+        self.arrow_button_width = 19
+        self.background_color = ui_theme.get_alpha_color("text_entry_background")
+        self.acme_color = ui_theme.get_alpha_color("text_entry_acme")
+        self.point_color = ui_theme.get_alpha_color("text_entry_point")
+        self.frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point")
+        self.frame_color = ui_theme.get_alpha_color("text_entry_frame")
+        
+        # Widget.
+        arrow_up_button = self.create_simple_button("up", self.press_increase_button)
+        arrow_down_button = self.create_simple_button("down", self.press_decrease_button)
+        button_box = gtk.VBox()
+        button_box.pack_start(arrow_up_button, False, False)
+        button_box.pack_start(arrow_down_button, False, False)
+        self.value_entry = Entry()
+        self.value_entry.connect("changed", self.__time_changed)
+        
+        self.main_align = gtk.Alignment()
+        self.main_align.set(0.5, 0.5, 0, 0)
+        hbox = gtk.HBox()
+        hbox.pack_start(self.value_entry, False, False)        
+        hbox.pack_start(button_box, False, False)
+        hbox_align = gtk.Alignment()
+        hbox_align.set(0.5, 0.5, 1.0, 1.0)
+        hbox_align.set_padding(0, 1, 0, 0)
+        hbox_align.add(hbox)
+        self.main_align.add(hbox_align)
+        self.pack_start(self.main_align, False, False)
+        
+        # Signals.
+        self.connect("size-allocate", self.size_change_cb)
+        self.main_align.connect("expose-event", self.expose_spin_bg)
+
+        SecondThread(self).start()
+   
+    def refresh_time(self):
+        self.value_entry.set_text("%d : %d : %d" % (time.localtime().tm_hour, 
+                                                    time.localtime().tm_min, 
+                                                    time.localtime().tm_sec))
+
+    def __time_changed(self, widget, new_time):
+        pass
+            
+    def value_changed(self):        
+        '''
+        Emit `value-changed` signal.
+        '''
+        self.emit("value-changed")
+        
+    def size_change_cb(self, widget, rect):    
+        '''
+        Internal callback for `size-allocate` signal.
+        '''
+        if rect.width > self.width:
+            self.width = rect.width
+            
+        self.set_size_request(self.width, self.height)
+        self.value_entry.set_size_request(self.width - self.arrow_button_width, self.height - 2)
+        
+    def press_increase_button(self, widget, event):
+        '''
+        Internal callback when user press increase arrow.
+        '''
+        self.stop_update_value()
+        
+        self.increase_value()
+                
+    def press_decrease_button(self, widget, event):
+        '''
+        Internal callback when user press decrease arrow.
+        '''
+        self.stop_update_value()
+        
+        self.decrease_value()
+        
+    def handle_key_release(self, widget, event):
+        '''
+        Internal callback for `key-release-event` signal.
+        '''
+        self.stop_update_value()
+        
+        self.emit("key-release", self.value_entry.get_text())
+        
+    def stop_update_value(self):
+        '''
+        Internal function to stop update value.
+        '''
+        pass
+        
+    def increase_value(self):    
+        '''
+        Internal function to increase valule.
+        '''
+        pass
+            
+    def decrease_value(self):     
+        '''
+        Internal function to decrease valule.
+        '''
+        pass
+        
+    def adjust_value(self, value):        
+        '''
+        Internal function to adjust value.
+        '''
+        pass
+        
+    def update(self, new_value):
+        '''
+        Internal function to update value, just use when need avoid emit signal recursively.
+        '''
+        pass
+            
+    def update_and_emit(self, new_value):    
+        '''
+        Internal function to update new value and emit `value-changed` signal.
+        '''
+        self.emit("value-changed", self.value_entry.get_text())
+        
+    def expose_spin_bg(self, widget, event):    
+        '''
+        Internal callback for `expose-event` signal.
+        '''
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
+        # Draw frame.
+        with cairo_disable_antialias(cr):
+            cr.set_line_width(1)
+            if widget.state == gtk.STATE_INSENSITIVE:
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disable_frame").get_color()))
+            else:
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("combo_entry_frame").get_color()))
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.stroke()
+            
+            if widget.state == gtk.STATE_INSENSITIVE:
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("disable_background").get_color(), 0.9)))
+            else:
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
+            cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
+            cr.fill()
+        
+        propagate_expose(widget, event)
+        
+        return False
+        
+    def create_simple_button(self, name, callback=None):    
+        '''
+        Internal function to create simple button.
+        '''
+        button = DisableButton(
+            (ui_theme.get_pixbuf("spin/spin_arrow_%s_normal.png" % name),
+             ui_theme.get_pixbuf("spin/spin_arrow_%s_hover.png" % name),
+             ui_theme.get_pixbuf("spin/spin_arrow_%s_press.png" % name),
+             ui_theme.get_pixbuf("spin/spin_arrow_%s_disable.png" % name)),
+            )
+        if callback:
+            button.connect("button-press-event", callback)
+            button.connect("button-release-event", self.handle_key_release)
+        return button
+
+gobject.type_register(TimeSpinBox)
