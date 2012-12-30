@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from cache_pixbuf import CachePixbuf
+from utils import color_hex_to_cairo
 from draw import draw_pixbuf, cairo_state
 from theme import ui_theme
 import gobject
@@ -88,9 +89,16 @@ class TimeZone(gtk.EventBox):
         rect = widget.allocation
         x, y = rect.x, rect.y
         x -= self.padding_left
-        y -= self.padding_top
+        y -= self.padding_top * 2
 
         with cairo_state(cr):
+            cr.set_source_rgb(*color_hex_to_cairo("#FFFFFF"))                   
+            cr.rectangle(x,                                    
+                         y,                                    
+                         rect.width,                           
+                         rect.height + self.padding_top)                          
+            cr.fill()
+
             if self.width < self.__const_width or self.height < self.__const_height:
                 self.cache_bg_pixbuf.scale(self.bg_pixbuf.get_pixbuf(), 
                                            self.width, 
