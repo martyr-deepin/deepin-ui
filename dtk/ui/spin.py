@@ -23,13 +23,15 @@
 
 from button import DisableButton
 from entry import Entry
+from label import Label
 from theme import ui_theme
+from draw import draw_text
 import gobject
 import gtk
 import threading as td
 import time
 from utils import (alpha_color_hex_to_cairo, cairo_disable_antialias,
-                   color_hex_to_cairo,
+                   color_hex_to_cairo, get_content_size, 
                    propagate_expose, is_float, remove_timeout_id)
 
 
@@ -344,12 +346,20 @@ class SecondThread(td.Thread):
     def run(self):
         try:
             while True:
-                self.ThisPtr.refresh_time()
+                self.ThisPtr.queue_draw()
                 time.sleep(1)
         except Exception:
             pass
 
 class TimeSpinBox(gtk.VBox):
+    '''
+    enum for self.time_label button-press-event set hour, minute or second
+    '''
+    SET_NONE = 0
+    SET_HOUR = 1
+    SET_MIN = 2
+    SET_SEC = 3
+    
     __gsignals__ = {
         "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
         "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
@@ -357,12 +367,19 @@ class TimeSpinBox(gtk.VBox):
     
     def __init__(self, 
                  width=55, 
-                 height=22):
+                 height=22, 
+                 padding_x=20):
         gtk.VBox.__init__(self)
+
+        self.set_time = self.SET_NONE
+        self.set_time_bg_color = "#DCDCDC"
+        self.time_width = 0
+        self.time_comma_width = 0
         
         # Init.
         self.width = width
         self.height = height
+        self.padding_x = padding_x
         self.arrow_button_width = 19
         self.background_color = ui_theme.get_alpha_color("text_entry_background")
         self.acme_color = ui_theme.get_alpha_color("text_entry_acme")
@@ -376,14 +393,13 @@ class TimeSpinBox(gtk.VBox):
         button_box = gtk.VBox()
         button_box.pack_start(arrow_up_button, False, False)
         button_box.pack_start(arrow_down_button, False, False)
-        self.value_entry = Entry()
-        self.value_entry.connect("changed", self.__time_changed)
+        self.time_label = Label()
         
         self.main_align = gtk.Alignment()
         self.main_align.set(0.5, 0.5, 0, 0)
         hbox = gtk.HBox()
-        hbox.pack_start(self.value_entry, False, False)        
-        hbox.pack_start(button_box, False, False)
+        hbox.pack_start(self.time_label, False, False)        
+        hbox.pack_end(button_box, False, False)
         hbox_align = gtk.Alignment()
         hbox_align.set(0.5, 0.5, 1.0, 1.0)
         hbox_align.set_padding(0, 1, 0, 0)
@@ -393,17 +409,25 @@ class TimeSpinBox(gtk.VBox):
         
         # Signals.
         self.connect("size-allocate", self.size_change_cb)
-        self.main_align.connect("expose-event", self.expose_spin_bg)
-
+        self.time_label.connect("button-press-event", self.__time_label_press)
+        self.main_align.connect("expose-event", self.expose_time_spin)
         SecondThread(self).start()
    
-    def refresh_time(self):
-        self.value_entry.set_text("%d : %d : %d" % (time.localtime().tm_hour, 
-                                                    time.localtime().tm_min, 
-                                                    time.localtime().tm_sec))
+    def __time_label_press(self, widget, event):
+        (self.time_width, text_height) = get_content_size("12")
+        (self.time_comma_width, text_comma_height) = get_content_size(" : ")
+        
+        if event.x < self.padding_x + self.time_width:
+            self.set_time = self.SET_HOUR
+            return
 
-    def __time_changed(self, widget, new_time):
-        pass
+        if event.x > self.padding_x + self.time_width and event.x < self.padding_x + (self.time_width + self.time_comma_width) * 2:
+            self.set_time = self.SET_MIN
+            return
+
+        if event.x > self.padding_x + self.time_width + self.time_comma_width * 2:
+            self.set_time = self.SET_SEC
+            return
             
     def value_changed(self):        
         '''
@@ -419,7 +443,7 @@ class TimeSpinBox(gtk.VBox):
             self.width = rect.width
             
         self.set_size_request(self.width, self.height)
-        self.value_entry.set_size_request(self.width - self.arrow_button_width, self.height - 2)
+        self.time_label.set_size_request(self.width - self.arrow_button_width, self.height - 2)
         
     def press_increase_button(self, widget, event):
         '''
@@ -442,8 +466,6 @@ class TimeSpinBox(gtk.VBox):
         Internal callback for `key-release-event` signal.
         '''
         self.stop_update_value()
-        
-        self.emit("key-release", self.value_entry.get_text())
         
     def stop_update_value(self):
         '''
@@ -479,9 +501,9 @@ class TimeSpinBox(gtk.VBox):
         '''
         Internal function to update new value and emit `value-changed` signal.
         '''
-        self.emit("value-changed", self.value_entry.get_text())
-        
-    def expose_spin_bg(self, widget, event):    
+        pass
+
+    def expose_time_spin(self, widget, event):    
         '''
         Internal callback for `expose-event` signal.
         '''
@@ -497,18 +519,46 @@ class TimeSpinBox(gtk.VBox):
                 cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disable_frame").get_color()))
             else:
                 cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("combo_entry_frame").get_color()))
-            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.rectangle(x, y, w, h)
             cr.stroke()
             
             if widget.state == gtk.STATE_INSENSITIVE:
                 cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("disable_background").get_color(), 0.9)))
             else:
                 cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
-            cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
+            cr.rectangle(x, y, w - 1, h - 1)
+            cr.fill()
+
+        if self.set_time == self.SET_HOUR:
+            cr.set_source_rgba(*color_hex_to_cairo(self.set_time_bg_color))
+            cr.rectangle(x + self.padding_x, y, self.time_width, h)
             cr.fill()
         
+        if self.set_time == self.SET_MIN:
+            cr.set_source_rgba(*color_hex_to_cairo(self.set_time_bg_color))
+            cr.rectangle(x + self.padding_x + self.time_width + self.time_comma_width, 
+                         y, 
+                         self.time_width, 
+                         h)
+            cr.fill()
+
+        if self.set_time == self.SET_SEC:
+            cr.set_source_rgba(*color_hex_to_cairo(self.set_time_bg_color))
+            cr.rectangle(x + self.padding_x + (self.time_width + self.time_comma_width) * 2, 
+                         y, 
+                         self.time_width, 
+                         h)
+            cr.fill()
+
+        draw_text(cr, 
+                  "%02d : %02d : %02d" % (time.localtime().tm_hour, time.localtime().tm_min, time.localtime().tm_sec), 
+                  x + self.padding_x, 
+                  y, 
+                  w, 
+                  h)
+
         propagate_expose(widget, event)
-        
+
         return False
         
     def create_simple_button(self, name, callback=None):    
