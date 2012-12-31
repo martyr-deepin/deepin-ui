@@ -361,8 +361,8 @@ class TimeSpinBox(gtk.VBox):
     SET_SEC = 3
     
     __gsignals__ = {
-        "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
-        "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
+        "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT, gobject.TYPE_INT, gobject.TYPE_INT)),
+        "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT, gobject.TYPE_INT, gobject.TYPE_INT)),
         }
     
     def __init__(self, 
@@ -375,6 +375,20 @@ class TimeSpinBox(gtk.VBox):
         self.set_time_bg_color = "#DCDCDC"
         self.time_width = 0
         self.time_comma_width = 0
+        
+        '''
+        24 hour display
+        '''
+        self.__24hour = True
+
+        '''
+        press increase or decrease button
+        '''
+        self.__pressed_button = False
+
+        self.hour_value = time.localtime().tm_hour
+        self.min_value = time.localtime().tm_min
+        self.sec_value = time.localtime().tm_sec
         
         # Init.
         self.width = width
@@ -412,7 +426,14 @@ class TimeSpinBox(gtk.VBox):
         self.time_label.connect("button-press-event", self.__time_label_press)
         self.main_align.connect("expose-event", self.expose_time_spin)
         SecondThread(self).start()
-   
+  
+    def get_24hour(self):
+        return self.__24hour
+    
+    def set_24hour(self, value):
+        self.__24hour = value
+        self.queue_draw()
+
     def __time_label_press(self, widget, event):
         (self.time_width, text_height) = get_content_size("12")
         (self.time_comma_width, text_comma_height) = get_content_size(" : ")
@@ -433,7 +454,7 @@ class TimeSpinBox(gtk.VBox):
         '''
         Emit `value-changed` signal.
         '''
-        self.emit("value-changed")
+        self.emit("value-changed", self.hour_value, self.min_value, self.sec_value)
         
     def size_change_cb(self, widget, rect):    
         '''
@@ -449,59 +470,65 @@ class TimeSpinBox(gtk.VBox):
         '''
         Internal callback when user press increase arrow.
         '''
-        self.stop_update_value()
-        
-        self.increase_value()
+        if self.set_time == self.SET_HOUR:
+            self.__pressed_button = True
+            self.hour_value += 1
+            if self.__24hour:
+                if self.hour_value >= 24:
+                    self.hour_value = 0
+            else:
+                if self.hour_value >= 12:
+                    self.hour_value = 0
+        elif self.set_time == self.SET_MIN:
+            self.__pressed_button = True
+            self.min_value += 1
+            if self.min_value >= 60:
+                self.min_value = 0
+        elif self.set_time == self.SET_SEC:
+            self.__pressed_button = True
+            self.sec_value += 1
+            if self.sec_value >= 60:
+                self.sec_value = 0
+        else:
+            pass
+
+        self.value_changed()
+        self.queue_draw()
                 
     def press_decrease_button(self, widget, event):
         '''
         Internal callback when user press decrease arrow.
         '''
-        self.stop_update_value()
+        if self.set_time == self.SET_HOUR:
+            self.__pressed_button = True
+            self.hour_value -= 1
+            if self.__24hour:
+                if self.hour_value <= 0:
+                    self.hour_value = 24
+            else:
+                if self.hour_value <= 0:
+                    self.hour_value = 12
+        elif self.set_time == self.SET_MIN:
+            self.__pressed_button = True
+            self.min_value -= 1
+            if self.min_value <= 0:
+                self.min_value = 60
+        elif self.set_time == self.SET_SEC:
+            self.__pressed_button = True
+            self.sec_value -= 1
+            if self.sec_value <= 0:
+                self.sec_value = 60
+        else:
+            pass
         
-        self.decrease_value()
+        self.value_changed()
+        self.queue_draw()
         
     def handle_key_release(self, widget, event):
         '''
         Internal callback for `key-release-event` signal.
         '''
-        self.stop_update_value()
-        
-    def stop_update_value(self):
-        '''
-        Internal function to stop update value.
-        '''
-        pass
-        
-    def increase_value(self):    
-        '''
-        Internal function to increase valule.
-        '''
-        pass
-            
-    def decrease_value(self):     
-        '''
-        Internal function to decrease valule.
-        '''
-        pass
-        
-    def adjust_value(self, value):        
-        '''
-        Internal function to adjust value.
-        '''
-        pass
-        
-    def update(self, new_value):
-        '''
-        Internal function to update value, just use when need avoid emit signal recursively.
-        '''
-        pass
-            
-    def update_and_emit(self, new_value):    
-        '''
-        Internal function to update new value and emit `value-changed` signal.
-        '''
-        pass
+        self.emit("key-release", self.hour_value, self.min_value, self.sec_value)
 
     def expose_time_spin(self, widget, event):    
         '''
@@ -549,9 +576,14 @@ class TimeSpinBox(gtk.VBox):
                          self.time_width, 
                          h)
             cr.fill()
+        
+        if not self.__pressed_button:
+            self.hour_value = time.localtime().tm_hour
+            self.min_value = time.localtime().tm_min
+            self.sec_value = time.localtime().tm_sec
 
         draw_text(cr, 
-                  "%02d : %02d : %02d" % (time.localtime().tm_hour, time.localtime().tm_min, time.localtime().tm_sec), 
+                  "%02d : %02d : %02d" % (self.hour_value, self.min_value, self.sec_value), 
                   x + self.padding_x, 
                   y, 
                   w, 
