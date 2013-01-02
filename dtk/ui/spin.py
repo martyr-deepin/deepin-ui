@@ -28,8 +28,8 @@ from theme import ui_theme
 from draw import draw_text
 import gobject
 import gtk
-import threading as td
 import time
+import threading as td
 from utils import (alpha_color_hex_to_cairo, cairo_disable_antialias,
                    color_hex_to_cairo, get_content_size, 
                    propagate_expose, is_float, remove_timeout_id)
@@ -348,7 +348,7 @@ class SecondThread(td.Thread):
             while True:
                 self.ThisPtr.queue_draw()
                 time.sleep(1)
-        except Exception:
+        except Exception, e:
             pass
 
 class TimeSpinBox(gtk.VBox):

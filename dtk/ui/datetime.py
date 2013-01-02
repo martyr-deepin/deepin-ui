@@ -25,8 +25,8 @@ from theme import ui_theme
 import gobject
 import gtk
 from math import radians
-import threading as td
 import time
+import threading as td
 
 class HourThread(td.Thread):
     def __init__(self, ThisPtr):
