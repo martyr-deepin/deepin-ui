@@ -22,7 +22,7 @@
 
 import cairo
 import math
-from draw import draw_pixbuf, draw_vlinear
+from draw import draw_vlinear
 from keymap import get_keyevent_name
 from skin_config import skin_config
 from theme import ui_theme
@@ -851,19 +851,13 @@ class IconItem(gobject.GObject):
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
-    def __init__(self, pixbuf_path, image_width, image_height):
+    def __init__(self):
         '''
         Initialize ItemIcon class.
         
         @param pixbuf: Icon pixbuf.
         '''
         gobject.GObject.__init__(self)
-        self.pixbuf_path = pixbuf_path
-        self.image_width = image_width
-        self.image_height = image_height
-        self.pixbuf = None
-        self.padding_x = 21
-        self.padding_y = 21
         self.hover_flag = False
         self.highlight_flag = False
         
@@ -881,7 +875,7 @@ class IconItem(gobject.GObject):
         
         This is IconView interface, you should implement it.
         '''
-        return self.image_width + self.padding_x * 2
+        pass
         
     def get_height(self):
         '''
@@ -889,7 +883,7 @@ class IconItem(gobject.GObject):
         
         This is IconView interface, you should implement it.
         '''
-        return self.image_height + self.padding_y * 2
+        pass
     
     def render(self, cr, rect):
         '''
@@ -897,31 +891,7 @@ class IconItem(gobject.GObject):
         
         This is IconView interface, you should implement it.
         '''
-        # Draw cover border.
-        border_size = 4
-        
-        if self.hover_flag:
-            cr.set_source_rgb(1, 0, 0)
-        elif self.highlight_flag:
-            cr.set_source_rgb(0, 1, 0)
-        else:
-            cr.set_source_rgb(1, 1, 1)
-        cr.rectangle(
-            rect.x + (rect.width - self.image_width) / 2 - border_size,
-            rect.y + (rect.height - self.image_height) / 2 - border_size,
-            self.image_width + border_size * 2,
-            self.image_height + border_size * 2)
-        cr.fill()
-        
-        # Draw cover.
-        if not self.pixbuf:
-            self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.pixbuf_path)
-            
-        draw_pixbuf(
-            cr, 
-            self.pixbuf, 
-            rect.x + self.padding_x,
-            rect.y + self.padding_y)
+        pass
         
     def icon_item_motion_notify(self, x, y):
         '''
