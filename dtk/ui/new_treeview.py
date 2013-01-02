@@ -256,18 +256,13 @@ class TreeView(gtk.VBox):
     def realize_tree_view(self, widget):
         self.scrolled_window.connect("button-release-event", self.button_release_scrolled_window)
     
-    '''
-    FIXME: the items out of window view might collected wrong
-    DirItem, FileItem and EmptyItem widget in file_treeview call tree_item_release_resource
-    the pixbuf will disappeared when scroll in the window view
-    '''
     def button_release_scrolled_window(self, widget, event):
         if len(self.visible_items) > 0:
             (start_index, end_index, item_height_count) = self.get_expose_bound()
             
             need_gc_collect = False
             for item in self.visible_items[0:start_index] + self.visible_items[end_index:-1]:
-                if hasattr(item, "tree_item_release_resource") and item.tree_item_release_resource():
+                if hasattr(item, "release_resource") and item.release_resource():
                     need_gc_collect = True
             
             if need_gc_collect:
@@ -1622,13 +1617,30 @@ class TreeItem(gobject.GObject):
     def draw_drag_line(self, drag_line, drag_line_at_bottom=False):
         pass
 
-    def tree_item_release_resource(self):
-        return False
-    
     def highlight(self):
         pass
     
     def unhighlight(self):
         pass
+    
+    def release_resource(self):
+        '''
+        Release item resource.
+
+        If you have pixbuf in item, you should release memory resource like below code:
+
+        >>> if self.pixbuf:
+        >>>     del self.pixbuf
+        >>>     self.pixbuf = None
+        >>>
+        >>> return True
+
+        This is TreeView interface, you should implement it.
+        
+        @return: Return True if do release work, otherwise return False.
+        
+        When this function return True, TreeView will call function gc.collect() to release object to release memory.
+        '''
+        return False
     
 gobject.type_register(TreeItem)

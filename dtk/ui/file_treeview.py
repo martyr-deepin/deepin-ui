@@ -149,7 +149,7 @@ class DirItem(TreeItem):
         self.size = get_gfile_size(self.gfile)
         self.size_name = "%s 项" % (self.size)
         self.directory_path = gfile.get_path()
-        self.pixbuf = get_file_icon_pixbuf(self.directory_path, ICON_SIZE)
+        self.pixbuf = None
         self.column_index = column_index
         self.is_expand = False
         self.load_status = self.LOADING_INIT
@@ -162,6 +162,9 @@ class DirItem(TreeItem):
         '''
         Render icon and name of DirItem.
         '''
+        if self.pixbuf == None:
+            self.pixbuf = get_file_icon_pixbuf(self.directory_path, ICON_SIZE)
+            
         # Draw select background.
         if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
@@ -352,12 +355,14 @@ class DirItem(TreeItem):
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
 
-    def tree_item_release_resource(self):
+    def release_resource(self):
         '''
-        FIXME: button_release_scrolled_window issue 
-        del self.pixbuf
-        self.pixbuf = None
         '''
+        print "release dir: %s" % self.directory_path
+        if self.pixbuf:
+            del self.pixbuf
+            self.pixbuf = None
+            
         return True
     
     def highlight(self):
@@ -392,7 +397,7 @@ class FileItem(TreeItem):
         self.size = get_gfile_size(self.gfile)
         self.size_name = format_file_size(self.size)
         self.file_path = gfile.get_path()
-        self.pixbuf = get_file_icon_pixbuf(self.file_path, ICON_SIZE)
+        self.pixbuf = None
         self.column_index = column_index
         self.name_width = get_name_width(self.column_index, self.name)
         self.modification_time_width = get_modification_time_width(self.modification_time)
@@ -403,6 +408,9 @@ class FileItem(TreeItem):
         '''
         Render icon and name of DirItem.
         '''
+        if self.pixbuf == None:
+            self.pixbuf = get_file_icon_pixbuf(self.file_path, ICON_SIZE)
+            
         # Draw select background.
         if self.is_select or self.is_highlight:
             draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
@@ -556,14 +564,15 @@ class FileItem(TreeItem):
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
 
-    def tree_item_release_resource(self):
+    def release_resource(self):
         '''
-        FIXME: button_release_scrolled_window issue
-        del self.pixbuf
-        self.pixbuf = None
         '''
-        return True
+        print "release file: %s" % self.file_path
+        if self.pixbuf:
+            del self.pixbuf
+            self.pixbuf = None
             
+        return True
     
     def highlight(self):
         self.is_highlight = True
@@ -692,14 +701,10 @@ class EmptyItem(TreeItem):
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
 
-    def tree_item_release_resource(self):
+    def release_resource(self):
         '''
-        FIXME: button_release_scrolled_window issue
-        del self.pixbuf
-        self.pixbuf = None
         '''
-        return True
-    
+        return False
     
     def highlight(self):
         self.is_highlight = True
