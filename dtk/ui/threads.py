@@ -66,3 +66,14 @@ class AnonymityThread(td.Thread):
         if self.render_func != None:
             self.render_func(result)
         
+class Thread(td.Thread):
+    '''
+    class docs
+    '''
+	
+    def __init__(self):
+        '''
+        init docs
+        '''
+        td.Thread.__init__(self)
+        self.setDaemon(True)
