@@ -368,7 +368,8 @@ class TimeSpinBox(gtk.VBox):
     def __init__(self, 
                  width=55, 
                  height=22, 
-                 padding_x=20):
+                 padding_x=20, 
+                 is_24hour=True):
         gtk.VBox.__init__(self)
 
         self.set_time = self.SET_NONE
@@ -379,7 +380,7 @@ class TimeSpinBox(gtk.VBox):
         '''
         24 hour display
         '''
-        self.__24hour = True
+        self.__24hour = is_24hour
 
         '''
         press increase or decrease button
@@ -454,7 +455,10 @@ class TimeSpinBox(gtk.VBox):
         '''
         Emit `value-changed` signal.
         '''
-        self.emit("value-changed", self.hour_value, self.min_value, self.sec_value)
+        if self.__24hour:
+            self.emit("value-changed", self.hour_value, self.min_value, self.sec_value)
+        else:
+            self.emit("value-changed", self.hour_value + 12, self.min_value, self.sec_value)
         
     def size_change_cb(self, widget, rect):    
         '''
