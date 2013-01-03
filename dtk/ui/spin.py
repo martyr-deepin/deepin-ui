@@ -349,7 +349,7 @@ class SecondThread(td.Thread):
                 self.ThisPtr.queue_draw()
                 time.sleep(1)
         except Exception, e:
-            pass
+            print "class SecondThread got error %s" % e
 
 class TimeSpinBox(gtk.VBox):
     '''
