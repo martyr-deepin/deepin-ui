@@ -458,7 +458,10 @@ class TimeSpinBox(gtk.VBox):
         if self.__24hour:
             self.emit("value-changed", self.hour_value, self.min_value, self.sec_value)
         else:
-            self.emit("value-changed", self.hour_value + 12, self.min_value, self.sec_value)
+            if time.localtime().tm_hour <= 12:
+                self.emit("value-changed", self.hour_value, self.min_value, self.sec_value)
+            else:
+                self.emit("value-changed", self.hour_value + 12, self.min_value, self.sec_value)
         
     def size_change_cb(self, widget, rect):    
         '''
@@ -482,7 +485,7 @@ class TimeSpinBox(gtk.VBox):
                     self.hour_value = 0
             else:
                 if self.hour_value >= 12:
-                    self.hour_value = 0
+                    self.hour_value = 1
         elif self.set_time == self.SET_MIN:
             self.__pressed_button = True
             self.min_value += 1
@@ -582,7 +585,10 @@ class TimeSpinBox(gtk.VBox):
             cr.fill()
         
         if not self.__pressed_button:
-            self.hour_value = time.localtime().tm_hour
+            if self.__24hour:
+                self.hour_value = time.localtime().tm_hour
+            else:
+                self.hour_value = int(time.strftime('%I'))
             self.min_value = time.localtime().tm_min
             self.sec_value = time.localtime().tm_sec
 
