@@ -846,13 +846,22 @@ class TreeView(gtk.VBox):
         # Update adjustment.
         self.update_vadjustment()
         
-        # Draw background.
-        self.draw_background(widget, self.render_surface_cr)
+        # Draw background on widget cairo.
+        self.draw_background(widget, cr)
             
-        # Draw background mask.
-        self.draw_mask(self.render_surface_cr, 0, 0, self.scrolled_window.allocation.width, self.scrolled_window.allocation.height)
+        # # Draw background mask on widget cairo.
+        vadjust = self.scrolled_window.get_vadjustment()    
+        vadjust_value = int(vadjust.get_value())
+        hadjust = self.scrolled_window.get_hadjustment()    
+        hadjust_value = int(hadjust.get_value())
+        self.draw_mask(cr, hadjust_value, vadjust_value, self.scrolled_window.allocation.width, self.scrolled_window.allocation.height)
         
-        # Draw items.
+        # We need clear render surface every time.
+        with cairo_state(self.render_surface_cr):
+            self.render_surface_cr.set_operator(cairo.OPERATOR_CLEAR)
+            self.render_surface_cr.paint()
+        
+        # Draw items on render surface.
         if len(self.visible_items) > 0:
             self.draw_items(rect, self.render_surface_cr)
         
@@ -916,10 +925,10 @@ class TreeView(gtk.VBox):
             hadjust = self.scrolled_window.get_hadjustment()    
             hadjust_value = int(hadjust.get_value())
             
-            x = shadow_x - offset_x - hadjust_value
-            y = shadow_y - offset_y - vadjust_value
+            x = shadow_x - offset_x
+            y = shadow_y - offset_y
             
-            cr.rectangle(0, 0, self.scrolled_window.allocation.width, self.scrolled_window.allocation.height)
+            cr.rectangle(hadjust_value, vadjust_value, self.scrolled_window.allocation.width, self.scrolled_window.allocation.height)
             cr.clip()
             cr.translate(x, y)
             skin_config.render_background(cr, widget, 0, 0)

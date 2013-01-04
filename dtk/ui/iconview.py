@@ -427,13 +427,23 @@ class IconView(gtk.DrawingArea):
         # Get offset.
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(widget)
             
-        # Draw background.
-        self.draw_background(widget, self.render_surface_cr)
+        # Draw background on widget cairo.
+        self.draw_background(widget, cr)
             
-        # # Draw mask.
-        self.draw_mask(self.render_surface_cr, 0, 0, viewport.allocation.width, viewport.allocation.height)
+        # Draw mask on widget cairo.
+        scrolled_window = get_match_parent(self, ["ScrolledWindow"])
+        vadjust = scrolled_window.get_vadjustment()    
+        vadjust_value = int(vadjust.get_value())
+        hadjust = scrolled_window.get_hadjustment()    
+        hadjust_value = int(hadjust.get_value())
+        self.draw_mask(cr, hadjust_value, vadjust_value, viewport.allocation.width, viewport.allocation.height)
         
-        # Draw items.
+        # We need clear render surface every time.
+        with cairo_state(self.render_surface_cr):
+            self.render_surface_cr.set_operator(cairo.OPERATOR_CLEAR)
+            self.render_surface_cr.paint()
+        
+        # Draw items on surface cairo.
         self.draw_items(self.render_surface_cr, rect)
             
         # Draw bound mask.
@@ -498,10 +508,10 @@ class IconView(gtk.DrawingArea):
             hadjust = scrolled_window.get_hadjustment()    
             hadjust_value = int(hadjust.get_value())
             
-            x = shadow_x - offset_x - hadjust_value
-            y = shadow_y - offset_y - vadjust_value
+            x = shadow_x - offset_x
+            y = shadow_y - offset_y
             
-            cr.rectangle(0, 0, scrolled_window.allocation.width, scrolled_window.allocation.height)
+            cr.rectangle(hadjust_value, vadjust_value, scrolled_window.allocation.width, scrolled_window.allocation.height)
             cr.clip()
             cr.translate(x, y)
             skin_config.render_background(cr, widget, 0, 0)
