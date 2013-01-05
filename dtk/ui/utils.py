@@ -36,6 +36,7 @@ import traceback
 import commands
 import sys
 import dbus
+from hashlib import md5
 from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, 
                       WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, 
                       WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, 
@@ -1422,3 +1423,17 @@ def split_with(split_list, condition_func):
             rest_list.append(element)
             
     return (pass_list, rest_list)
+
+def md5_data(data):
+    m = md5()   
+    m.update(data)   
+    
+    return m.hexdigest() 
+
+def md5_file(name):
+    m = md5()
+    a_file = open(name, 'rb')
+    m.update(a_file.read())
+    a_file.close()
+    
+    return m.hexdigest()
