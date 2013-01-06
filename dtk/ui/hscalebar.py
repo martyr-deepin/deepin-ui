@@ -39,6 +39,7 @@ import gobject
 # * @ value_max: 最大值
 # * @ line_height: 进度条的前景和背景的线高.
 # * @ add_mark: 添加标记位置 value(位置), position_type(显示类型,gtk.POS_TOP, gtk.POS_BOTTOM), mar(显示文本).
+# * @ set_enable: True 启用 False 禁用.
 #*/
 
 class HScalebar(gtk.Button):    
