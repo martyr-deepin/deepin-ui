@@ -21,6 +21,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from deepin_utils import core
+from deepin_utils import file
 from contextlib import contextmanager 
 import cairo
 import gobject
@@ -36,7 +38,6 @@ import traceback
 import commands
 import sys
 import dbus
-from hashlib import md5
 from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, 
                       WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, 
                       WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, 
@@ -408,41 +409,16 @@ def get_content_size(text, text_size=DEFAULT_FONT_SIZE, text_font=DEFAULT_FONT, 
         return (0, 0)
     
 def create_directory(directory, remove_first=False):
-    '''
-    Create directory.
-    
-    @param directory: Target directory to create.
-    @param remove_first: If you want remove directory when directory has exist, set it as True.
-    '''
-    if remove_first and os.path.exists(directory):
-        remove_directory(directory)
-    
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    print "Please import deepin_utils.file.create_directory, this function will departed in next release version."
+    return file.create_directory(directory, remove_first=False)
     
 def remove_file(path):
-    '''
-    Remove file if file exist.
-    
-    @param path: Target path to remove.
-    '''
-    if os.path.exists(path):
-        os.remove(path)
+    print "Please import deepin_utils.file.remove_file, this function will departed in next release version."
+    return file.remove_file(path)
         
 def remove_directory(path):
-    """
-    Remove directory recursively, equivalent to command `rm -rf path`.
-
-    @param path: Target directory to remove.
-    """
-    if os.path.exists(path):
-        for i in os.listdir(path):
-            full_path = os.path.join(path, i)
-            if os.path.isdir(full_path):
-                remove_directory(full_path)
-            else:
-                os.remove(full_path)
-        os.rmdir(path)        
+    print "Please import deepin_utils.file.remove_directory, this function will departed in next release version."
+    return file.remove_directory(path)
 
 def touch_file(filepath):
     '''
@@ -459,30 +435,12 @@ def touch_file(filepath):
     open(filepath, "w").close()
     
 def touch_file_dir(filepath):
-    # Create directory first.
-    dir = os.path.dirname(filepath)
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+    print "Please import deepin_utils.file.touch_file_dir, this function will departed in next release version."
+    return file.touch_file_dir(filepath)
         
 def read_file(filepath, check_exists=False):
-    '''
-    Read file content.
-    
-    @param filepath: Target filepath.
-    @param check_exists: Whether check file is exist, default is False.
-    
-    @return: Return \"\" if check_exists is True and filepath not exist.
-    
-    Otherwise return file's content.
-    '''
-    if check_exists and not os.path.exists(filepath):
-        return ""
-    else:
-        r_file = open(filepath, "r")
-        content = r_file.read()
-        r_file.close()
-        
-        return content
+    print "Please import deepin_utils.file.read_file, this function will departed in next release version."
+    return file.read_file(filepath, check_exists=False)
 
 def read_first_line(filepath, check_exists=False):
     '''
@@ -531,18 +489,8 @@ def eval_file(filepath, check_exists=False):
             return None
 
 def write_file(filepath, content, mkdir=False):
-    '''
-    Write file with given content.
-
-    @param filepath: Target filepath to write.
-    @param content: File content to write.
-    '''
-    if mkdir:
-        touch_file_dir(filepath)
-    
-    f = open(filepath, "w")
-    f.write(content)
-    f.close()
+    print "Please import deepin_utils.file.write_file, this function will departed in next release version."
+    return file.write_file(filepath, content, mkdir=False)
 
 def kill_process(proc):
     '''
@@ -865,15 +813,10 @@ def mix_list_max(list_a, list_b):
         print "mix_list_max: two list's length not same."
         return []
 
-def unzip(unzip_list):
-    '''
-    Unzip [(1, 'a'), (2, 'b'), (3, 'c')] to ([1, 2, 3], ['a', 'b', 'c']).
+def unzip(*args):
+    print "Please import deepin_utils.core.unzip, this function will departed in next release version."
+    return core.unzip(args)
     
-    @param unzip_list: List to unzip.
-    @return: Return new unzip list.
-    '''
-    return tuple(map(list, zip(*unzip_list))) 
-
 def is_seriate_list(test_list):
     '''
     Whether is seriate list.
@@ -1134,23 +1077,12 @@ def get_pixbuf_support_foramts():
     return support_formats    
 
 def get_current_dir(filepath):
-    return os.path.dirname(os.path.realpath(filepath))
+    print "Please import deepin_utils.file.get_current_dir, this function will departed in next release version."
+    return file.get_current_dir(filepath)
 
 def get_parent_dir(filepath, level=1):
-    '''
-    Get parent directory with given return level.
-    
-    @param filepath: Filepath.
-    @param level: Return level, default is 1
-    @return: Return parent directory with given return level. 
-    '''
-    parent_dir = os.path.realpath(filepath)
-    
-    while(level > 0):
-        parent_dir = os.path.dirname(parent_dir)
-        level -= 1
-    
-    return parent_dir
+    print "Please import deepin_utils.file.get_parent_dir, this function will departed in next release version."
+    return file.get_parent_dir(filepath, level)
 
 def gdkcolor_to_string(gdkcolor):
     '''
@@ -1423,17 +1355,3 @@ def split_with(split_list, condition_func):
             rest_list.append(element)
             
     return (pass_list, rest_list)
-
-def md5_data(data):
-    m = md5()   
-    m.update(data)   
-    
-    return m.hexdigest() 
-
-def md5_file(name):
-    m = md5()
-    a_file = open(name, 'rb')
-    m.update(a_file.read())
-    a_file.close()
-    
-    return m.hexdigest()
