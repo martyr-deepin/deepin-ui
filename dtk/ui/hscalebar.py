@@ -59,6 +59,7 @@ class HScalebar(gtk.Button):
         #        
         self.position_list = []
         self.mark_check = False
+        self.enable_check = True
         self.new_mark_x = 0
         self.next_mark_x = 0
         self.value = 0
@@ -157,34 +158,34 @@ class HScalebar(gtk.Button):
                       bg_y)
             draw_line(cr, x + self.point_width/2, bg_y + self.line_height, x + self.point_width/2 + 1, bg_y + self.line_height)
             draw_line(cr, x + w - self.point_width/2, bg_y + self.line_height, x + w - self.point_width/2 - 1, bg_y + self.line_height)        
-            '''
-            background
-            '''
-            cr.set_source_rgb(*color_hex_to_cairo(self.bg_inner1_color))
-            cr.rectangle(x + self.point_width/2, 
-                         bg_y,
-                         w - self.point_width, 
-                         self.line_height)
-            cr.fill()
+
+            if self.enable_check:
+                fg_inner_color = self.fg_inner_color
+                fg_side_color  = self.fg_side_color
+                fg_corner_color = self.fg_corner_color
+            else:
+                fg_inner_color = self.bg_inner1_color 
+                fg_side_color  = self.bg_side_color 
+                fg_corner_color = self.bg_corner_color 
             '''
             foreground
             '''
             bg_w = int(float(self.value) / self.value_max * (rect.width - self.point_width/2))
-            cr.set_source_rgb(*color_hex_to_cairo(self.fg_inner_color))
+            cr.set_source_rgb(*color_hex_to_cairo(fg_inner_color))
             cr.rectangle(x + self.point_width/2, 
                          bg_y, 
                          bg_w, 
                          self.line_height)
             cr.fill()
 
-            cr.set_source_rgb(*color_hex_to_cairo(self.fg_side_color))
+            cr.set_source_rgb(*color_hex_to_cairo(fg_side_color))
             cr.rectangle(x + self.point_width/2, 
                          bg_y, 
                          bg_w, 
                          self.line_height)
             cr.stroke()
             
-            cr.set_source_rgb(*color_hex_to_cairo(self.fg_corner_color))         
+            cr.set_source_rgb(*color_hex_to_cairo(fg_corner_color))         
             draw_line(cr, 
                       x + self.point_width/2,
                       bg_y, 
@@ -195,7 +196,6 @@ class HScalebar(gtk.Button):
                       bg_y, 
                       x + self.line_height + 1, 
                       bg_y)
-                
     
     def draw_point(self, cr, rect):
         pixbuf_w_average = self.point_pixbuf.get_pixbuf().get_width()/2
@@ -228,7 +228,10 @@ class HScalebar(gtk.Button):
     def __progressbar_press_event(self, widget, event):
         temp_value = float(widget.allocation.width - self.point_width)
         temp_value = ((float((event.x - self.point_width/2)) / temp_value) * self.value_max) # get value.
-        self.value = max(min(self.value_max, temp_value), 0)
+        value = max(min(self.value_max, temp_value), 0)
+        if value != self.value:
+            self.set_enable(True)
+        self.value = value       
         self.drag = True        
         self.set_value(self.value)
         self.emit("value-changed", self.value + self.value_min)
@@ -240,6 +243,7 @@ class HScalebar(gtk.Button):
         
     def __progressbar_motion_notify_event(self, widget, event):    
         if self.drag:
+            self.set_enable(True)
             width = float(widget.allocation.width - self.point_width)
             temp_value = (float((event.x - self.point_width/2)) /  width) * self.value_max
             self.value = max(min(self.value_max, temp_value), 0) # get value.
@@ -280,4 +284,12 @@ class HScalebar(gtk.Button):
     def get_value(self):    
         self.value
         
+    def set_enable(self, enable_bool):
+        self.enable_check = enable_bool
+        self.queue_draw()
+
+    def get_enable(self, enable_bool):
+        return self.enable_check 
+
 gobject.type_register(HScalebar)
+
