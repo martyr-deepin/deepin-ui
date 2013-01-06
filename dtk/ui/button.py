@@ -30,8 +30,9 @@ from utils import is_in_rect
 import gobject
 import gtk
 import pango
+from deepin_utils.process import run_command
 from utils import (get_content_size, color_hex_to_cairo, propagate_expose, set_clickable_cursor,
-                   window_is_max, get_same_level_widgets, widget_fix_cycle_destroy_bug, run_command,
+                   window_is_max, get_same_level_widgets, widget_fix_cycle_destroy_bug, 
                    get_widget_root_coordinate, WIDGET_POS_BOTTOM_LEFT)
 
 __all__ = ["Button", "ImageButton", "ThemeButton",

@@ -24,7 +24,7 @@
 
 from skin_config import skin_config
 from theme import Theme, ui_theme
-from utils import get_parent_dir
+from deepin_utils.file import get_parent_dir
 import os
 
 # Init skin config.

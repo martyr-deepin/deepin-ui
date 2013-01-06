@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from skin_config import skin_config
-from utils import eval_file, get_parent_dir, create_directory
+from deepin_utils.file import create_directory, eval_file, get_parent_dir
 import gtk
 import os
 

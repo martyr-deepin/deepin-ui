@@ -41,7 +41,7 @@ def init_skin(project_name,
     @return: Return application theme.
     
     >>> from dtk.ui.init_skin import init_skin
-    >>> from dtk.ui.utils import get_parent_dir
+    >>> from deepin_utils.file import get_parent_dir
     >>> import os
     >>> 
     >>> app_theme = init_skin(
@@ -56,7 +56,7 @@ def init_skin(project_name,
 
     >>> from dtk.ui.skin_config import skin_config
     >>> from dtk.ui.theme import Theme, ui_theme
-    >>> from dtk.ui.utils import get_parent_dir
+    >>> from deepin_utils.file import get_parent_dir
     >>> import os
     >>> 
     >>> # Init skin config.

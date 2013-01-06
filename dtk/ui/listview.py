@@ -28,7 +28,7 @@ from draw import draw_pixbuf, draw_vlinear, draw_text
 from keymap import get_keyevent_name, has_ctrl_mask, has_shift_mask
 from skin_config import skin_config
 from theme import ui_theme
-from utils import get_parent_dir
+from deepin_utils.file import get_parent_dir
 import math
 import cairo
 import copy
@@ -40,12 +40,14 @@ import subprocess
 import tempfile
 import sys
 import traceback
-from utils import (map_value, mix_list_max, get_content_size, 
-                   unzip, last_index, set_cursor, get_match_parent, 
-                   remove_file, remove_timeout_id,
+from deepin_utils.core import last_index, map_value, mix_list_max, unzip, get_disperse_index
+from deepin_utils.file import remove_file
+from utils import (get_content_size, 
+                   set_cursor, get_match_parent, 
+                   remove_timeout_id,
                    cairo_state, get_event_coords, is_left_button, 
                    is_right_button, is_double_click, is_single_click, 
-                   get_disperse_index, get_window_shadow_size)
+                   get_window_shadow_size)
 
 class ListView(gtk.DrawingArea):
     '''

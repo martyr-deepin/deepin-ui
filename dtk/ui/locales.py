@@ -30,7 +30,7 @@
 # Read *.mo files from relative directory will make translation string 
 # can't work, at least i test it can't work in Debian-base system.
 
-from utils import get_parent_dir
+from deepin_utils.file import get_parent_dir
 import gettext
 import os
 import sys

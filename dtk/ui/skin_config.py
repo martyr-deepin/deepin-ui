@@ -24,7 +24,8 @@ from cache_pixbuf import CachePixbuf
 from config import Config
 from constant import SHADE_SIZE, COLOR_SEQUENCE
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
-from utils import color_hex_to_cairo, remove_file, touch_file, create_directory
+from deepin_utils.file import create_directory, remove_file, touch_file
+from utils import color_hex_to_cairo
 import gobject
 import gtk
 import os

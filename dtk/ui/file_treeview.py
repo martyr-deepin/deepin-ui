@@ -34,7 +34,8 @@ import pango
 import gobject
 import gio
 import threading as td
-from utils import cairo_disable_antialias, get_content_size, format_file_size
+from deepin_utils.file import format_file_size
+from utils import cairo_disable_antialias, get_content_size
 import traceback
 import sys
 

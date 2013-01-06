@@ -27,7 +27,7 @@ import time
 start_time = time.time()
 
 from dtk.ui.init_skin import init_skin
-from dtk.ui.utils import get_parent_dir
+from deepin_utils.file import get_parent_dir
 import os
 app_theme = init_skin(
     "deepin-ui-demo", 

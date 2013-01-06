@@ -33,8 +33,9 @@ from draw import draw_vlinear, draw_pixbuf, draw_text
 from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
 from cache_pixbuf import CachePixbuf
+from deepin_utils.core import get_disperse_index
 from utils import (cairo_state, get_window_shadow_size, get_event_coords,
-                   container_remove_all, get_same_level_widgets, get_disperse_index,
+                   container_remove_all, get_same_level_widgets,
                    is_left_button, is_double_click, is_single_click, remove_timeout_id, 
                    is_right_button)
 from skin_config import skin_config
