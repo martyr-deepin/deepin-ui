@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from deepin_utils import core, file, process, ipc, time, net
+from deepin_utils import core, file, process, ipc, date_time, net
 from contextlib import contextmanager 
 import cairo
 import gobject
@@ -31,6 +31,7 @@ import pango
 import pangocairo
 import traceback
 import sys
+import time
 from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, 
                       WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, 
                       WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, 
@@ -934,8 +935,8 @@ def run_command(command):
     return process.run_command(command)
     
 def get_current_time(time_format="%Y-%m-%d %H:%M:%S"):
-    print "Please import deepin_utils.time.get_current_time, this function will departed in next release version."
-    return time.get_current_time(time_format="%Y-%m-%d %H:%M:%S")
+    print "Please import deepin_utils.date_time.get_current_time, this function will departed in next release version."
+    return date_time.get_current_time(time_format="%Y-%m-%d %H:%M:%S")
 
 def add_in_list(e_list, element):
     print "Please import deepin_utils.core.add_in_list, this function will departed in next release version."
@@ -950,8 +951,8 @@ def get_dir_size(dirname):
     return file.get_dir_size(dirname)
 
 def print_exec_time(func):
-    print "Please import deepin_utils.time.print_exec_time, this function will departed in next release version."
-    return time.print_exec_time(func)
+    print "Please import deepin_utils.date_time.print_exec_time, this function will departed in next release version."
+    return date_time.print_exec_time(func)
 
 def format_file_size(bytes, precision=2):
     print "Please import deepin_utils.file.format_file_size, this function will departed in next release version."
