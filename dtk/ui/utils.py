@@ -982,8 +982,8 @@ def last_index(test_list):
     return core.last_index(test_list)
 
 def end_with_suffixs(filepath, suffixs):
-    print "Please import deepin_utils.core.end_with_suffixs, this function will departed in next release version."
-    return core.end_with_suffixs(filepath, suffixs)
+    print "Please import deepin_utils.file.end_with_suffixs, this function will departed in next release version."
+    return file.end_with_suffixs(filepath, suffixs)
 
 def get_current_dir(filepath):
     print "Please import deepin_utils.file.get_current_dir, this function will departed in next release version."
