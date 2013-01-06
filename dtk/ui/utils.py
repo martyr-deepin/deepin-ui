@@ -21,23 +21,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from deepin_utils import core
-from deepin_utils import file
+from deepin_utils import core, file, process, ipc, time, net
 from contextlib import contextmanager 
 import cairo
 import gobject
 import gtk
-import math
 import os
 import pango
 import pangocairo
-import socket
-import subprocess
-import time
 import traceback
-import commands
 import sys
-import dbus
 from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT, 
                       WIDGET_POS_TOP_CENTER, WIDGET_POS_BOTTOM_LEFT, 
                       WIDGET_POS_BOTTOM_CENTER, WIDGET_POS_BOTTOM_RIGHT, 
@@ -46,9 +39,6 @@ from constant import (WIDGET_POS_TOP_LEFT, WIDGET_POS_TOP_RIGHT,
                       BLACK_COLOR_MAPPED, WHITE_COLOR_MAPPED, SIMILAR_COLOR_SEQUENCE,
                       DEFAULT_FONT_SIZE)
 
-'''
-TODO: repeat("*", 6)
-'''
 def repeat(msg, num):
     return ' '.join([msg] * num)
 
@@ -408,133 +398,6 @@ def get_content_size(text, text_size=DEFAULT_FONT_SIZE, text_font=DEFAULT_FONT, 
     else:
         return (0, 0)
     
-def create_directory(directory, remove_first=False):
-    print "Please import deepin_utils.file.create_directory, this function will departed in next release version."
-    return file.create_directory(directory, remove_first=False)
-    
-def remove_file(path):
-    print "Please import deepin_utils.file.remove_file, this function will departed in next release version."
-    return file.remove_file(path)
-        
-def remove_directory(path):
-    print "Please import deepin_utils.file.remove_directory, this function will departed in next release version."
-    return file.remove_directory(path)
-
-def touch_file(filepath):
-    '''
-    Touch file, equivalent to command `touch filepath`.
-    
-    If filepath's parent directory is not exist, this function will create parent directory first.
-
-    @param filepath: Target path to touch.
-    '''
-    # Create directory first.
-    touch_file_dir(filepath)
-        
-    # Touch file.
-    open(filepath, "w").close()
-    
-def touch_file_dir(filepath):
-    print "Please import deepin_utils.file.touch_file_dir, this function will departed in next release version."
-    return file.touch_file_dir(filepath)
-        
-def read_file(filepath, check_exists=False):
-    print "Please import deepin_utils.file.read_file, this function will departed in next release version."
-    return file.read_file(filepath, check_exists=False)
-
-def read_first_line(filepath, check_exists=False):
-    '''
-    Read first line of file.
-    
-    @param filepath: Target filepath.
-    @param check_exists: Whether check file is exist, default is False.
-    @return: Return \"\" if check_exists is True and filepath not exist.
-    
-    Otherwise return file's first line.
-    '''
-    if check_exists and not os.path.exists(filepath):
-        return ""
-    else:
-        r_file = open(filepath, "r")
-        content = r_file.readline().split("\n")[0]
-        r_file.close()
-        
-        return content
-
-def eval_file(filepath, check_exists=False):
-    '''
-    Eval file content.
-    
-    @param filepath: Target filepath.
-    @param check_exists: Whether check file is exist, default is False.
-    @return: Return None if check_exists is True and file not exist.
-    
-    Return None if occur error when eval file.
-
-    Otherwise return file content as python structure.
-    '''
-    if check_exists and not os.path.exists(filepath):
-        return None
-    else:
-        try:
-            read_file = open(filepath, "r")
-            content = eval(read_file.read())
-            read_file.close()
-            
-            return content
-        except Exception, e:
-            print "function eval_file got error: %s" % e
-            traceback.print_exc(file=sys.stdout)
-            
-            return None
-
-def write_file(filepath, content, mkdir=False):
-    print "Please import deepin_utils.file.write_file, this function will departed in next release version."
-    return file.write_file(filepath, content, mkdir=False)
-
-def kill_process(proc):
-    '''
-    Kill process.
-
-    @param proc: Subprocess instance.
-    '''
-    try:
-        if proc != None:
-            proc.kill()
-    except Exception, e:
-        print "function kill_process got error: %s" % (e)
-        traceback.print_exc(file=sys.stdout)
-    
-def get_command_output_first_line(commands, in_shell=False):
-    '''
-    Run command and return first line of output.
-    
-    @param commands: Input commands.
-    @return: Return first line of command output.
-    '''
-    process = subprocess.Popen(commands, stdout=subprocess.PIPE, shell=in_shell)
-    process.wait()
-    return process.stdout.readline()
-
-def get_command_output(commands, in_shell=False):
-    '''
-    Run command and return output.
-    
-    @param commands: Input commands.
-    @return: Return command output.
-    '''
-    process = subprocess.Popen(commands, stdout=subprocess.PIPE, shell=in_shell)
-    process.wait()
-    return process.stdout.readlines()
-    
-def run_command(command):
-    '''
-    Run command silencely.
-    
-    @param command: Input command.
-    '''
-    subprocess.Popen("nohup %s > /dev/null 2>&1" % (command), shell=True)
-    
 def get_os_version():
     '''
     Get OS version with command `lsb_release -i`.
@@ -548,82 +411,12 @@ def get_os_version():
     else:
         return ""
 
-def get_current_time(time_format="%Y-%m-%d %H:%M:%S"):
-    '''
-    Get current time with given time format.
-
-    @param time_format: Time format, default is %Y-%m-%d %H:%M:%S
-    @return: Return current time with given time format.
-    '''
-    return time.strftime(time_format, time.localtime())
-
-def add_in_list(e_list, element):
-    '''
-    Add element in list, don't add if element has in list.
-    
-    @param e_list: List to insert.
-    @param element: Element will insert to list.
-    '''
-    if not element in e_list:
-        e_list.append(element)
-        
-def remove_from_list(e_list, element):
-    '''
-    Try remove element from list, do nothing if element not in list.
-    
-    @param e_list: List to remove.
-    @param element: Element try to remove from list.
-    '''
-    if element in e_list:
-        e_list.remove(element)
-        
-def sort_alpha(e_list):
-    '''
-    Sort list with alpha order.
-    
-    @param e_list: List to sort.
-    '''
-    return sorted(e_list, key=lambda e: e)
-
-def get_dir_size(dirname):
-    '''
-    Get size of given directory.
-    
-    @param dirname: Directory path.
-    @return: Return total size of directory.
-    '''
-    total_size = 0
-    for root, dirs, files in os.walk(dirname):
-        for filepath in files:
-            total_size += os.path.getsize(os.path.join(root, filepath))
-            
-    return total_size
-
 def print_env():
     '''
     Print environment variable.
     '''
     for param in os.environ.keys():
         print "*** %20s %s" % (param,os.environ[param])                
-
-def print_exec_time(func):
-    '''
-    Print execute time of function.
-    
-    @param func: Fucntion name.
-    
-    Usage:
-    
-    >>> @print_exec_time
-    >>> def function_to_test():
-    >>>     ...
-    '''
-    def wrap(*a, **kw):
-        start_time = time.time()
-        ret = func(*a, **kw)
-        print "%s time: %s" % (str(func), time.time() - start_time)
-        return ret
-    return wrap
 
 def get_font_families():
     '''
@@ -633,31 +426,6 @@ def get_font_families():
     '''
     fontmap = pangocairo.cairo_font_map_get_default()
     return map (lambda f: f.get_name(), fontmap.list_families())
-
-def format_file_size(bytes, precision=2):
-    '''
-    Returns a humanized string for a given amount of bytes.
-    
-    @param bytes: Bytes number to format.
-    @param precision: Number precision.
-    @return: Return a humanized string for a given amount of bytes.
-    '''
-    bytes = int(bytes)
-    if bytes is 0:
-        return '0 B'
-    else:
-        log = math.floor(math.log(bytes, 1024))
-        quotient = 1024 ** log
-        size = bytes / quotient
-        remainder = bytes % quotient
-        if remainder < 10 ** (-precision): 
-            prec = 0
-        else:
-            prec = precision
-        return "%.*f %s" % (prec,
-                            size,
-                            ['B', 'KB', 'MB', 'GB', 'TB','PB', 'EB', 'ZB', 'YB']
-                            [int(log)])
 
 def add_color_stop_rgba(pat, pos, color_info):
     '''
@@ -760,19 +528,6 @@ def widget_fix_cycle_destroy_bug(widget):
     # Otherwise, will got error : "NameError: free variable 'self' referenced before assignment in enclosing scope".
     widget.__dict__
 
-def map_value(value_list, get_value_callback):
-    '''
-    Return value with map list.
-    
-    @param value_list: A list to loop.
-    @param get_value_callback: Callback for element in list.
-    @return: Return a new list that every element is result of get_value_callback.
-    '''
-    if value_list == None:
-        return []
-    else:
-        return map(get_value_callback, value_list)
-
 def get_same_level_widgets(widget):
     '''
     Get same type widgets that in same hierarchy level.
@@ -785,67 +540,6 @@ def get_same_level_widgets(widget):
         return []
     else:
         return filter(lambda w:type(w).__name__ == type(widget).__name__, parent.get_children())
-
-def mix_list_max(list_a, list_b):
-    '''
-    Return new list that element is max value between list_a and list_b.
-
-    @param list_a: List a.
-    @param list_b: List b.
-    @return: Return new list that element is max value between two list.
-    
-    Return empty list if any input list is empty or two list's length is not same.
-    '''
-    if list_a == []:
-        return list_b
-    elif list_b == []:
-        return list_a
-    elif len(list_a) == len(list_b):
-        result = []
-        for (index, item_a) in enumerate(list_a):
-            if item_a > list_b[index]:
-                result.append(item_a)
-            else:
-                result.append(list_b[index])
-        
-        return result        
-    else:
-        print "mix_list_max: two list's length not same."
-        return []
-
-def unzip(*args):
-    print "Please import deepin_utils.core.unzip, this function will departed in next release version."
-    return core.unzip(args)
-    
-def is_seriate_list(test_list):
-    '''
-    Whether is seriate list.
-
-    @param test_list: Test list.
-    @return: Return True is test list is seriate list.
-    '''
-    for (index, item) in enumerate(test_list):
-        if item != test_list[0] + index:
-            return False
-    
-    return True
-
-def get_disperse_index(disperse_list, value):
-    '''
-    Get index in disperse list.
-    
-    @param disperse_list: Disperse list.
-    @param value: Match value.
-    @return: Return index in disperse list.
-    '''
-    for (index, _) in enumerate(disperse_list):
-        start_value = sum(disperse_list[0:index])
-        end_value = sum(disperse_list[0:index + 1])
-        if start_value <= value < end_value:
-            return (index, value - start_value)
-        
-    # Return last one.
-    return (last_index(disperse_list), disperse_list[-1])
 
 def window_is_max(widget):
     '''
@@ -860,15 +554,6 @@ def window_is_max(widget):
     else:
         return False
     
-def last_index(test_list):
-    '''
-    Return last index of list.
-    
-    @param test_list: Test list.
-    @return: Return last index of list.
-    '''
-    return len(test_list) - 1
-
 @contextmanager
 def cairo_state(cr):
     '''
@@ -1037,20 +722,6 @@ def find_similar_color(search_color):
     similar_color_value = COLOR_NAME_DICT[similar_color_name]
     return (similar_color_name, similar_color_value)
 
-def end_with_suffixs(filepath, suffixs):
-    '''
-    Whether file endswith given suffixs.
-    
-    @param filepath: Filepath to test.
-    @param suffixs: A list suffix to match.
-    @return: Return True if filepath endswith with given suffixs.
-    '''
-    for suffix in suffixs:
-        if filepath.endswith(suffix):
-            return True
-        
-    return False    
-
 def place_center(refer_window, place_window):
     '''
     Place place_window in center of refer_window.
@@ -1076,14 +747,6 @@ def get_pixbuf_support_foramts():
         
     return support_formats    
 
-def get_current_dir(filepath):
-    print "Please import deepin_utils.file.get_current_dir, this function will departed in next release version."
-    return file.get_current_dir(filepath)
-
-def get_parent_dir(filepath, level=1):
-    print "Please import deepin_utils.file.get_parent_dir, this function will departed in next release version."
-    return file.get_parent_dir(filepath, level)
-
 def gdkcolor_to_string(gdkcolor):
     '''
     Gdk color to string.
@@ -1093,85 +756,6 @@ def gdkcolor_to_string(gdkcolor):
     '''
     return "#%0.2X%0.2X%0.2X" % (gdkcolor.red / 256, gdkcolor.green / 256, gdkcolor.blue / 256)
 
-def is_long(string):
-    '''
-    Is string can convert to long type.
-    
-    @param string: Test string.
-    @return: Return True if string can convert to long type.
-    '''
-    if string == "":
-        return True
-    
-    try:
-        long(string)
-        return True
-    except ValueError:
-        return False
-
-def is_int(string):
-    '''
-    Is string can convert to int type.
-    
-    @param string: Test string.
-    @return: Return True if string can convert to int type.
-    '''
-    if string == "":
-        return True
-    
-    try:
-        int(string)
-        return True
-    except ValueError:
-        return False
-
-def is_float(string):
-    '''
-    Is string can convert to float type.
-    
-    @param string: Test string.
-    @return: Return True if string can convert to float type.
-    '''
-    if string == "":
-        return True
-    
-    try:
-        float(string)
-        return True
-    except ValueError:
-        return False
-
-def is_hex_color(string):
-    '''
-    Is string can convert to hex color type.
-    
-    @param string: Test string.
-    @return: Return True if string can convert to hex color type.
-    '''
-    HEX_CHAR = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-                "a", "b", "c", "d", "e", "f",
-                "A", "B", "C", "D", "E", "F",
-                "#"
-                ]
-    
-    if string == "":
-        return True
-    else:
-        for c in string:
-            if not c in HEX_CHAR:
-                return False
-            
-        if string.startswith("#"):
-            if len(string) > 7:
-                return False
-            else:
-                return True
-        else:            
-            if len(string) > 6:
-                return False
-            else:
-                return True    
-            
 def get_window_shadow_size(window):
     '''
     Get window shadow size.
@@ -1277,58 +861,6 @@ def unique_print(text):
     '''
     print "%s: %s" % (time.time(), text)
 
-def check_connect_by_port(port, retry_times=6, sleep_time=0.5):
-    """
-    Check connect has active with given port.
-    
-    @param port: Test port.
-    @param retry_times: Retry times.
-    @param sleep_time: Sleep time between retry, in seconds.
-    @return: Return True if given port is active.
-    """
-    ret_val = False
-    test_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    retry_time = 0
-    while (True):
-        try:
-            test_socket.connect(("localhost", port))
-            ret_val = True
-            break
-        except socket.error:
-            time.sleep(sleep_time)
-            retry_time += 1
-            if retry_time >= retry_times:
-                break
-            else:
-                continue
-    return ret_val
-
-def is_network_connected():
-    '''
-    Is network connected, if nothing output from command `arp -n`, network is disconnected.
-    
-    @return: Return True if network is connected or command `arp -n` failed.
-    '''
-    try:
-        return len(commands.getoutput("arp -n").split("\n")) > 1
-    except Exception, e:
-        print "function is_network_connected got error: %s" % e
-        traceback.print_exc(file=sys.stdout)
-        
-        return True
-    
-def is_dbus_name_exists(dbus_name, request_session_bus=True):
-    if request_session_bus:
-        bus = dbus.SessionBus()
-    else:
-        bus = dbus.SystemBus()
-    return bus.name_has_owner(dbus_name)
-
-def get_unused_port(address="localhost"):
-    s = socket.socket()
-    s.bind((address, 0))
-    return s.getsockname()[1]
-
 def invisible_window(window):
     def shape_window(widget, rect):
         w, h = rect.width, rect.height
@@ -1346,12 +878,150 @@ def invisible_window(window):
     window.connect("size-allocate", shape_window)
 
 def split_with(split_list, condition_func):
-    pass_list = []
-    rest_list = []
-    for element in split_list:
-        if condition_func(element):
-            pass_list.append(element)
-        else:
-            rest_list.append(element)
+    print "Please import deepin_utils.core.split_with, this function will departed in next release version."
+    return core.split_with(split_list, condition_func)
+
+def create_directory(directory, remove_first=False):
+    print "Please import deepin_utils.file.create_directory, this function will departed in next release version."
+    return file.create_directory(directory, remove_first=False)
+    
+def remove_file(path):
+    print "Please import deepin_utils.file.remove_file, this function will departed in next release version."
+    return file.remove_file(path)
+        
+def remove_directory(path):
+    print "Please import deepin_utils.file.remove_directory, this function will departed in next release version."
+    return file.remove_directory(path)
+
+def touch_file(filepath):
+    print "Please import deepin_utils.file.touch_file, this function will departed in next release version."
+    return file.touch_file(filepath)
+    
+def touch_file_dir(filepath):
+    print "Please import deepin_utils.file.touch_file_dir, this function will departed in next release version."
+    return file.touch_file_dir(filepath)
+        
+def read_file(filepath, check_exists=False):
+    print "Please import deepin_utils.file.read_file, this function will departed in next release version."
+    return file.read_file(filepath, check_exists=False)
+
+def read_first_line(filepath, check_exists=False):
+    print "Please import deepin_utils.file.read_first_line, this function will departed in next release version."
+    return file.read_first_line(filepath, check_exists=False)
+
+def eval_file(filepath, check_exists=False):
+    print "Please import deepin_utils.file.eval_file, this function will departed in next release version."
+    return file.eval_file(filepath, check_exists=False)
+
+def write_file(filepath, content, mkdir=False):
+    print "Please import deepin_utils.file.write_file, this function will departed in next release version."
+    return file.write_file(filepath, content, mkdir=False)
+
+def kill_process(proc):
+    print "Please import deepin_utils.process.kill_process, this function will departed in next release version."
+    return process.kill_process(proc)
+    
+def get_command_output_first_line(commands, in_shell=False):
+    print "Please import deepin_utils.process.get_command_output_first_line, this function will departed in next release version."
+    return process.get_command_output_first_line(commands, in_shell=False)
+
+def get_command_output(commands, in_shell=False):
+    print "Please import deepin_utils.process.get_command_output, this function will departed in next release version."
+    return process.get_command_output(commands, in_shell=False)
+    
+def run_command(command):
+    print "Please import deepin_utils.process.run_command, this function will departed in next release version."
+    return process.run_command(command)
+    
+def get_current_time(time_format="%Y-%m-%d %H:%M:%S"):
+    print "Please import deepin_utils.time.get_current_time, this function will departed in next release version."
+    return time.get_current_time(time_format="%Y-%m-%d %H:%M:%S")
+
+def add_in_list(e_list, element):
+    print "Please import deepin_utils.core.add_in_list, this function will departed in next release version."
+    return core.add_in_list(e_list, element)
+        
+def remove_from_list(e_list, element):
+    print "Please import deepin_utils.core.remove_from_list, this function will departed in next release version."
+    return core.remove_from_list(e_list, element)
+        
+def get_dir_size(dirname):
+    print "Please import deepin_utils.file.get_dir_size, this function will departed in next release version."
+    return file.get_dir_size(dirname)
+
+def print_exec_time(func):
+    print "Please import deepin_utils.time.print_exec_time, this function will departed in next release version."
+    return time.print_exec_time(func)
+
+def format_file_size(bytes, precision=2):
+    print "Please import deepin_utils.file.format_file_size, this function will departed in next release version."
+    return file.format_file_size(bytes, precision=2)
+
+def map_value(value_list, get_value_callback):
+    print "Please import deepin_utils.core.map_value, this function will departed in next release version."
+    return core.map_value(value_list, get_value_callback)
+
+def mix_list_max(list_a, list_b):
+    print "Please import deepin_utils.core.mix_list_max, this function will departed in next release version."
+    return core.mix_list_max(list_a, list_b)
+
+def unzip(unzip_list):
+    print "Please import deepin_utils.core.unzip, this function will departed in next release version."
+    return core.unzip(unzip_list)
+    
+def is_seriate_list(test_list):
+    print "Please import deepin_utils.core.is_seriate_list, this function will departed in next release version."
+    return core.is_seriate_list(test_list)
+
+def get_disperse_index(disperse_list, value):
+    print "Please import deepin_utils.core.get_disperse_index, this function will departed in next release version."
+    return core.get_disperse_index(disperse_list, value)
+
+def last_index(test_list):
+    print "Please import deepin_utils.core.last_index, this function will departed in next release version."
+    return core.last_index(test_list)
+
+def end_with_suffixs(filepath, suffixs):
+    print "Please import deepin_utils.core.end_with_suffixs, this function will departed in next release version."
+    return core.end_with_suffixs(filepath, suffixs)
+
+def get_current_dir(filepath):
+    print "Please import deepin_utils.file.get_current_dir, this function will departed in next release version."
+    return file.get_current_dir(filepath)
+
+def get_parent_dir(filepath, level=1):
+    print "Please import deepin_utils.file.get_parent_dir, this function will departed in next release version."
+    return file.get_parent_dir(filepath, level)
+
+def is_long(string):
+    print "Please import deepin_utils.core.is_long, this function will departed in next release version."
+    return core.is_long(string)
+
+def is_int(string):
+    print "Please import deepin_utils.core.is_int, this function will departed in next release version."
+    return core.is_int(string)
+
+def is_float(string):
+    print "Please import deepin_utils.core.is_float, this function will departed in next release version."
+    return core.is_float(string)
+
+def is_hex_color(string):
+    print "Please import deepin_utils.core.is_hex_color, this function will departed in next release version."
+    return core.is_hex_color(string)
             
-    return (pass_list, rest_list)
+def check_connect_by_port(port, retry_times=6, sleep_time=0.5):
+    print "Please import deepin_utils.net.check_connect_by_port, this function will departed in next release version."
+    return net.check_connect_by_port(port, retry_times=6, sleep_time=0.5)
+
+def is_network_connected():
+    print "Please import deepin_utils.net.is_network_connected, this function will departed in next release version."
+    return net.is_network_connected()
+    
+def is_dbus_name_exists(dbus_name, request_session_bus=True):
+    print "Please import deepin_utils.ipc.is_dbus_name_exists, this function will departed in next release version."
+    return ipc.is_dbus_name_exists(dbus_name, request_session_bus=True)
+
+def get_unused_port(address="localhost"):
+    print "Please import deepin_utils.net.get_unused_port, this function will departed in next release version."
+    return net.get_unused_port(address="localhost")
+
