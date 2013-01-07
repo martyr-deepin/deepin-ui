@@ -24,7 +24,7 @@ from constant import DEFAULT_FONT_SIZE, ALIGN_START, DEFAULT_FONT
 from draw import draw_text, draw_hlinear
 from keymap import get_keyevent_name
 from theme import ui_theme
-from utils import propagate_expose, get_content_size, is_double_click, is_left_button
+from utils import propagate_expose, get_content_size, is_double_click, is_left_button, set_clickable_cursor
 import gtk
 import pango 
 import pangocairo
@@ -59,6 +59,7 @@ class Label(gtk.EventBox):
                  border_radious=1,
                  wrap_width=None,
                  underline=False,
+                 hover_color=None,
                  ):
         '''
         Initialize Label class.
@@ -90,6 +91,8 @@ class Label(gtk.EventBox):
         self.drag_end_index = 0
         self.wrap_width = wrap_width
         self.underline = underline
+        self.hover_color = hover_color
+        self.is_hover = False
         
         self.text = text
         self.text_size = text_size
@@ -297,6 +300,8 @@ class Label(gtk.EventBox):
         '''
         if self.enable_gaussian:
             label_color = "#FFFFFF"
+        elif self.is_hover and self.hover_color:
+            label_color = self.hover_color.get_color()
         else:
             label_color = self.text_color.get_color()
 
@@ -406,3 +411,21 @@ class Label(gtk.EventBox):
             label_height += self.gaussian_radious * 2
             
         self.set_size_request(label_width, label_height)
+        
+    def set_clickable(self):
+        set_clickable_cursor(self)
+        
+        self.connect("enter-notify-event", lambda w, e: self.hover())
+        self.connect("leave-notify-event", lambda w, e: self.unhover())
+        
+    def hover(self):
+        self.is_hover = True
+        self.underline = True
+        
+        self.queue_draw()
+
+    def unhover(self):
+        self.is_hover = False
+        self.underline = False
+        
+        self.queue_draw()
