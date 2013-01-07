@@ -1391,7 +1391,8 @@ class TreeView(gtk.VBox):
         
     def unhover_row(self):
         if self.hover_row != None:
-            self.visible_items[self.hover_row].unhover(0, 0, 0)
+            if 0 <= self.hover_row < len(self.visible_items):
+                self.visible_items[self.hover_row].unhover(0, 0, 0)
             self.hover_row = None
             
     def get_event_row(self, event, offset_index=0):
