@@ -273,7 +273,7 @@ class HScalebar(gtk.Button):
                             
             
     def add_mark(self, value, position_type, markup):
-        if self.value_min <= value <= self.value_max:
+        if self.value_min <= value <= self.value_max+self.value_min:
             self.position_list.append((value, position_type, markup))
         else:    
             print "error:input value_min <= value <= value_max!!"
