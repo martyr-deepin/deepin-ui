@@ -74,11 +74,13 @@ class DateTimeHTCStyle(gtk.VBox):
     def __init__(self, 
                  width=180, 
                  height=180, 
-                 spacing=20, 
+                 pixbuf_spacing=10,
+                 comma_spacing=30, 
                  sec_visible=False):
         gtk.VBox.__init__(self)
 
-        self.spacing = spacing
+        self.pixbuf_spacing = pixbuf_spacing
+        self.comma_spacing = comma_spacing
         self.sec_visible = sec_visible
 
         self.time_pixbuf = []
@@ -109,17 +111,17 @@ class DateTimeHTCStyle(gtk.VBox):
         sec_ten, sec_bit = self.__time_split(time.localtime().tm_sec)
 
         draw_pixbuf(cr, self.time_pixbuf[hour_ten].get_pixbuf(), x, y)
-        time_pixbuf_width = self.time_pixbuf[hour_ten].get_pixbuf().get_width()
+        time_pixbuf_width = self.time_pixbuf[hour_ten].get_pixbuf().get_width() + self.pixbuf_spacing
         draw_pixbuf(cr, 
                     self.time_pixbuf[hour_bit].get_pixbuf(), 
                     x + time_pixbuf_width, 
                     y)
-        time_pixbuf_width += self.time_pixbuf[hour_bit].get_pixbuf().get_width() + self.spacing
+        time_pixbuf_width += self.time_pixbuf[hour_bit].get_pixbuf().get_width() + self.comma_spacing
         draw_pixbuf(cr, 
                     self.time_pixbuf[min_ten].get_pixbuf(), 
                     x + time_pixbuf_width, 
                     y)
-        time_pixbuf_width += self.time_pixbuf[min_ten].get_pixbuf().get_width()
+        time_pixbuf_width += self.time_pixbuf[min_ten].get_pixbuf().get_width() + self.pixbuf_spacing
         draw_pixbuf(cr, 
                     self.time_pixbuf[min_bit].get_pixbuf(), 
                     x + time_pixbuf_width, 
@@ -127,7 +129,7 @@ class DateTimeHTCStyle(gtk.VBox):
         if not self.sec_visible:
             return False
 
-        time_pixbuf_width += self.time_pixbuf[min_bit].get_pixbuf().get_width() + self.spacing
+        time_pixbuf_width += self.time_pixbuf[min_bit].get_pixbuf().get_width() + self.comma_spacing
         draw_pixbuf(cr, 
                     self.time_pixbuf[sec_ten].get_pixbuf(), 
                     x + time_pixbuf_width, 
