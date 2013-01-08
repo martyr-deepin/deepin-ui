@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2012 Deepin, Inc.
-#               2012 Zhai Xiang
+# Copyright (C) 2012 ~ 2013 Deepin, Inc.
+#               2012 @ 2013 Zhai Xiang
 # 
 # Author:     Zhai Xiang <zhaixiang@linuxdeepin.com>
 # Maintainer: Zhai Xiang <zhaixiang@linuxdeepin.com>
@@ -74,11 +74,13 @@ class DateTimeHTCStyle(gtk.VBox):
     def __init__(self, 
                  width=180, 
                  height=180, 
+                 is_24hour=True, 
                  pixbuf_spacing=10,
                  comma_spacing=30, 
                  sec_visible=False):
         gtk.VBox.__init__(self)
 
+        self.is_24hour = is_24hour
         self.pixbuf_spacing = pixbuf_spacing
         self.comma_spacing = comma_spacing
         self.sec_visible = sec_visible
@@ -90,15 +92,25 @@ class DateTimeHTCStyle(gtk.VBox):
 
             i += 1
 
-        self.connect("expose-event", self.__expose)
+        #self.connect("expose-event", self.__expose)
 
         SecondThread(self).start()
         MinuteThread(self).start()                                              
         HourThread(self).start()
 
+        self.connect("expose-event", self.__expose)
+
+    def get_is_24hour(self):
+        return self.is_24hour
+
+    def set_is_24hour(self, is_24hour):
+        self.is_24hour = is_24hour
+        self.queue_draw()
+
     def __time_split(self, value):
         ten = int(value / 10);
         bit = value - ten * 10;
+        
         return (ten, bit)
 
     def __expose(self, widget, event):
@@ -107,38 +119,46 @@ class DateTimeHTCStyle(gtk.VBox):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         hour_ten, hour_bit = self.__time_split(time.localtime().tm_hour)
+        if self.is_24hour:
+            hour_ten, hour_bit = self.__time_split(time.localtime().tm_hour - 12)
         min_ten, min_bit = self.__time_split(time.localtime().tm_min)
         sec_ten, sec_bit = self.__time_split(time.localtime().tm_sec)
 
-        draw_pixbuf(cr, self.time_pixbuf[hour_ten].get_pixbuf(), x, y)
-        time_pixbuf_width = self.time_pixbuf[hour_ten].get_pixbuf().get_width() + self.pixbuf_spacing
-        draw_pixbuf(cr, 
+        time_pixbuf_width = 0
+
+        with cairo_state(cr):
+            draw_pixbuf(cr, self.time_pixbuf[hour_ten].get_pixbuf(), x, y)
+            time_pixbuf_width = self.time_pixbuf[hour_ten].get_pixbuf().get_width() + self.pixbuf_spacing
+            draw_pixbuf(cr, 
                     self.time_pixbuf[hour_bit].get_pixbuf(), 
                     x + time_pixbuf_width, 
                     y)
-        time_pixbuf_width += self.time_pixbuf[hour_bit].get_pixbuf().get_width() + self.comma_spacing
-        draw_pixbuf(cr, 
+            time_pixbuf_width += self.time_pixbuf[hour_bit].get_pixbuf().get_width() + self.comma_spacing
+            draw_pixbuf(cr, 
                     self.time_pixbuf[min_ten].get_pixbuf(), 
                     x + time_pixbuf_width, 
                     y)
-        time_pixbuf_width += self.time_pixbuf[min_ten].get_pixbuf().get_width() + self.pixbuf_spacing
-        draw_pixbuf(cr, 
+            time_pixbuf_width += self.time_pixbuf[min_ten].get_pixbuf().get_width() + self.pixbuf_spacing
+            draw_pixbuf(cr, 
                     self.time_pixbuf[min_bit].get_pixbuf(), 
                     x + time_pixbuf_width, 
                     y)
-        if not self.sec_visible:
-            return False
+        
+            if not self.sec_visible:
+                return False
 
-        time_pixbuf_width += self.time_pixbuf[min_bit].get_pixbuf().get_width() + self.comma_spacing
-        draw_pixbuf(cr, 
+            time_pixbuf_width += self.time_pixbuf[min_bit].get_pixbuf().get_width() + self.comma_spacing
+            draw_pixbuf(cr, 
                     self.time_pixbuf[sec_ten].get_pixbuf(), 
                     x + time_pixbuf_width, 
                     y)
-        time_pixbuf_width += self.time_pixbuf[sec_ten].get_pixbuf().get_width()
-        draw_pixbuf(cr, 
-                    self.time_pixbuf[sec_bit].get_pixbuf(), 
-                    x + time_pixbuf_width, 
-                    y)
+            time_pixbuf_width += self.time_pixbuf[sec_ten].get_pixbuf().get_width()
+            draw_pixbuf(cr, 
+                        self.time_pixbuf[sec_bit].get_pixbuf(), 
+                        x + time_pixbuf_width, 
+                        y)
+
+        return True
 
 gobject.type_register(DateTimeHTCStyle)
 
@@ -188,27 +208,24 @@ class DateTime(gtk.VBox):
 
         with cairo_state(cr):
             draw_pixbuf(cr, self.clockface.get_pixbuf(), x, y)
-        '''
-        hour
-        '''
+        
+        #hour
         with cairo_state(cr):
             oy = y + self.hourhand_height * 0.5
             cr.translate(ox, oy)
             cr.rotate(radians(360 * self.hour_value / 12))
             cr.translate(-self.hourhand_width * 0.5, -self.hourhand_height * 0.5)
             draw_pixbuf(cr, self.hourhand.get_pixbuf(), 0, 0)
-        '''
-        minute
-        '''
+        
+        #minute
         with cairo_state(cr):
             oy = y + self.minhand_height * 0.5
             cr.translate(ox, oy)
             cr.rotate(radians(360 * self.minute_value / 60))
             cr.translate(-self.minhand_width * 0.5, -self.minhand_height * 0.5)
             draw_pixbuf(cr, self.minhand.get_pixbuf(), 0, 0)
-        '''
-        second
-        '''
+        
+        #second
         with cairo_state(cr):
             oy = y + self.sechand_height * 0.5
             cr.translate(ox, oy) 
