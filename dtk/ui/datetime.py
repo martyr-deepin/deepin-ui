@@ -70,6 +70,76 @@ class SecondThread(td.Thread):
         except Exception, e:
             print "class SecondThread got error %s" % e
 
+class DateTimeHTCStyle(gtk.VBox):
+    def __init__(self, 
+                 width=180, 
+                 height=180, 
+                 spacing=20, 
+                 sec_visible=False):
+        gtk.VBox.__init__(self)
+
+        self.spacing = spacing
+        self.sec_visible = sec_visible
+
+        self.time_pixbuf = []
+        i = 0
+        while i < 10:
+            self.time_pixbuf.append(ui_theme.get_pixbuf("datetime/%d.png" % i))
+
+            i += 1
+
+        self.connect("expose-event", self.__expose)
+
+        SecondThread(self).start()
+        MinuteThread(self).start()                                              
+        HourThread(self).start()
+
+    def __time_split(self, value):
+        ten = int(value / 10);
+        bit = value - ten * 10;
+        return (ten, bit)
+
+    def __expose(self, widget, event):
+        cr = widget.window.cairo_create()                                       
+        rect = widget.allocation                                                
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
+        hour_ten, hour_bit = self.__time_split(time.localtime().tm_hour)
+        min_ten, min_bit = self.__time_split(time.localtime().tm_min)
+        sec_ten, sec_bit = self.__time_split(time.localtime().tm_sec)
+
+        draw_pixbuf(cr, self.time_pixbuf[hour_ten].get_pixbuf(), x, y)
+        time_pixbuf_width = self.time_pixbuf[hour_ten].get_pixbuf().get_width()
+        draw_pixbuf(cr, 
+                    self.time_pixbuf[hour_bit].get_pixbuf(), 
+                    x + time_pixbuf_width, 
+                    y)
+        time_pixbuf_width += self.time_pixbuf[hour_bit].get_pixbuf().get_width() + self.spacing
+        draw_pixbuf(cr, 
+                    self.time_pixbuf[min_ten].get_pixbuf(), 
+                    x + time_pixbuf_width, 
+                    y)
+        time_pixbuf_width += self.time_pixbuf[min_ten].get_pixbuf().get_width()
+        draw_pixbuf(cr, 
+                    self.time_pixbuf[min_bit].get_pixbuf(), 
+                    x + time_pixbuf_width, 
+                    y)
+        if not self.sec_visible:
+            return False
+
+        time_pixbuf_width += self.time_pixbuf[min_bit].get_pixbuf().get_width() + self.spacing
+        draw_pixbuf(cr, 
+                    self.time_pixbuf[sec_ten].get_pixbuf(), 
+                    x + time_pixbuf_width, 
+                    y)
+        time_pixbuf_width += self.time_pixbuf[sec_ten].get_pixbuf().get_width()
+        draw_pixbuf(cr, 
+                    self.time_pixbuf[sec_bit].get_pixbuf(), 
+                    x + time_pixbuf_width, 
+                    y)
+
+gobject.type_register(DateTimeHTCStyle)
+
 class DateTime(gtk.VBox):
     def __init__(self, 
                  width=180, 

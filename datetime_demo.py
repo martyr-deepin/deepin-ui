@@ -33,7 +33,7 @@ app_theme = init_skin(
     )
 
 from dtk.ui.application import Application
-from dtk.ui.datetime import DateTime
+from dtk.ui.datetime import DateTimeHTCStyle, DateTime
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
 import gtk
 
@@ -58,10 +58,10 @@ if __name__ == "__main__":
         "DateTime demo",
         )
     
-    datetime = DateTime(7, 30)
+    datetime = DateTimeHTCStyle()
     align = gtk.Alignment()                                             
-    align.set(0.5, 0.5, 1, 1)                                           
-    align.set_padding(0, 2, 2, 2)
+    align.set(0, 0, 0, 0)                                           
+    align.set_padding(10, 10, 10, 10)
     align.add(datetime)
     application.main_box.pack_start(align)
 
