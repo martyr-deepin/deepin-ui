@@ -287,7 +287,7 @@ class HScalebar(gtk.Button):
         self.queue_draw()     
         
     def get_value(self):    
-        return self.value
+        return self.value + self.value_min
         
     def set_enable(self, enable_bool):
         self.enable_check = enable_bool
