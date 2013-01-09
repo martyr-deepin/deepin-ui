@@ -30,7 +30,7 @@ import gc
 import gobject
 import gtk
 from utils import (get_match_parent, cairo_state, get_event_coords, 
-                   is_left_button, is_double_click, 
+                   is_left_button, is_double_click, is_right_button,
                    is_single_click, get_window_shadow_size)
 
 class IconView(gtk.DrawingArea):
@@ -67,6 +67,7 @@ class IconView(gtk.DrawingArea):
         "button-release-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
         "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
+        "right-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
     }
 
     def __init__(self, 
@@ -92,6 +93,7 @@ class IconView(gtk.DrawingArea):
         self.highlight_item = None
         self.double_click_item = None
         self.single_click_item = None
+        self.right_click_item = None
         
         # Signal.
         self.connect("realize", self.realize_icon_view)
@@ -635,6 +637,8 @@ class IconView(gtk.DrawingArea):
             item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
             scrolled_window = get_match_parent(self, ["ScrolledWindow"])
             columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
+            if columns == 0:
+                return None
             if len(self.items) % max(columns, 1) == 0:
                 rows = int(len(self.items) / columns)
             else:
@@ -680,29 +684,40 @@ class IconView(gtk.DrawingArea):
         # Grab focus when button press, otherwise key-press signal can't response.
         self.grab_focus()
         
-        if len(self.items) > 0 and is_left_button(event):
+        if len(self.items) > 0:
+
             index_info = self.icon_view_get_event_index(event)
             
             if index_info:
                 (row_index, column_index, item_index, offset_x, offset_y) = index_info
-                self.emit("button-press-item", self.items[item_index], offset_x - self.padding_x, offset_y - self.padding_y)
                 
-                if is_double_click(event):
+                if is_left_button(event):
+                    self.emit("button-press-item", self.items[item_index], offset_x - self.padding_x, offset_y - self.padding_y)
+                    if is_double_click(event):
+                        if index_info:
+                            self.double_click_item = index_info[2]
+                        else:
+                            self.double_click_item = None
+                            
+                    elif is_single_click(event):
+                        if index_info:
+                            self.single_click_item = index_info[2]
+                        else:
+                            self.single_click_item = None
+                            
+                elif is_right_button(event):
                     if index_info:
-                        self.double_click_item = index_info[2]
-                    else:
-                        self.double_click_item = None
-                elif is_single_click(event):
-                    if index_info:
-                        self.single_click_item = index_info[2]
-                    else:
-                        self.single_click_item = None
+                        self.right_click_item = index_info[2]
+                    else:    
+                        self.right_click_item = None
                         
                 # Set highlight.
                 if index_info:
                     self.clear_highlight()
                         
                     self.set_highlight(self.items[index_info[2]])
+
+            
                 
     def set_highlight(self, item):
         '''
@@ -725,20 +740,25 @@ class IconView(gtk.DrawingArea):
         '''
         Internal callback for `button-release-event` signal.
         '''
-        if len(self.items) > 0 and is_left_button(event):
+        if len(self.items) > 0:
             index_info = self.icon_view_get_event_index(event)
             if index_info:
                 (row_index, column_index, item_index, offset_x, offset_y) = index_info
                 
-                self.emit("button-release-item", self.items[item_index], offset_x - self.padding_x, offset_y - self.padding_y)
-                
-                if self.double_click_item == item_index:
-                    self.emit("double-click-item", self.items[self.double_click_item], offset_x - self.padding_x, offset_y - self.padding_y)
-                elif self.single_click_item == item_index:
-                    self.emit("single-click-item", self.items[self.single_click_item], offset_x - self.padding_x, offset_y - self.padding_y)
+                if is_left_button(event):
+                    self.emit("button-release-item", self.items[item_index], offset_x - self.padding_x, offset_y - self.padding_y)
+                    
+                    if self.double_click_item == item_index:
+                        self.emit("double-click-item", self.items[self.double_click_item], offset_x - self.padding_x, offset_y - self.padding_y)
+                    elif self.single_click_item == item_index:
+                        self.emit("single-click-item", self.items[self.single_click_item], offset_x - self.padding_x, offset_y - self.padding_y)
+                elif is_right_button(event):        
+                    if self.right_click_item == item_index:    
+                        self.emit("right-click-item", self.items[self.right_click_item], event.x_root, event.y_root)
             
             self.double_click_item = None
             self.single_click_item = None
+            self.right_click_item = None
         
     def leave_icon_view(self, widget, event):
         '''
