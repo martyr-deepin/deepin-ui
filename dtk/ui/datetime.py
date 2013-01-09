@@ -92,13 +92,11 @@ class DateTimeHTCStyle(gtk.VBox):
 
             i += 1
 
-        #self.connect("expose-event", self.__expose)
+        self.connect("expose-event", self.__expose)
 
         SecondThread(self).start()
         MinuteThread(self).start()                                              
         HourThread(self).start()
-
-        self.connect("expose-event", self.__expose)
 
     def get_is_24hour(self):
         return self.is_24hour
@@ -119,7 +117,7 @@ class DateTimeHTCStyle(gtk.VBox):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         hour_ten, hour_bit = self.__time_split(time.localtime().tm_hour)
-        if self.is_24hour:
+        if not self.is_24hour:
             hour_ten, hour_bit = self.__time_split(time.localtime().tm_hour - 12)
         min_ten, min_bit = self.__time_split(time.localtime().tm_min)
         sec_ten, sec_bit = self.__time_split(time.localtime().tm_sec)
