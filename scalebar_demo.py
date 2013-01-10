@@ -47,7 +47,6 @@ dg.connect("changed", __changed)
 
 def __value_changed(widget, argv):
     print "DEBUG argv", argv
-    dg.set_double("brightness", widget.get_value() / 100)
 
 def __resized(widget):
     print widget
@@ -74,7 +73,10 @@ if __name__ == "__main__":
         )
     
     # Add Scalebar.
-    hscale1 = HScalebar(app_theme.get_pixbuf("scalebar/point.png"))
+    hscale1 = HScalebar(show_value = True)
+    hscale1.add_mark(50, gtk.POS_BOTTOM, "TOP")
+    hscale1.add_mark(0, gtk.POS_BOTTOM, "LEFT")
+    hscale1.add_mark(100, gtk.POS_BOTTOM, "RIGHT")
     hscale1_align = gtk.Alignment()
     hscale1_align.set(0.5, 0.5, 1, 1)
     hscale1_align.set_padding(0, 2, 2, 2)

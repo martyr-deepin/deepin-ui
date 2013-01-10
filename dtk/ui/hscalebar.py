@@ -80,6 +80,7 @@ class HScalebar(gtk.Button):
         #
         self.point_pixbuf = point_dpixbuf
         self.line_height = line_height
+        self.line_width = 1.0
         self.format_value = format_value
         self.trg_by_grab = False
         self.show_value = show_value
@@ -136,6 +137,7 @@ class HScalebar(gtk.Button):
             bg_y = rect.y + rect.height/2 - self.line_height/2
             bg_w = rect.width - self.point_width
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_inner2_color))
+            cr.set_line_width(self.line_width)
             cr.rectangle(bg_x, 
                          bg_y, 
                          bg_w, 
@@ -143,10 +145,12 @@ class HScalebar(gtk.Button):
             cr.fill()
             
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_side_color))
+            cr.set_line_width(self.line_width)
             cr.rectangle(bg_x, bg_y, bg_w, self.line_height)
             cr.stroke()
 
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_corner_color))
+            cr.set_line_width(self.line_width)
             draw_line(cr, 
                       x + self.point_width/2, 
                       bg_y, 
@@ -173,6 +177,7 @@ class HScalebar(gtk.Button):
             '''
             bg_w = int(float(self.value) / self.value_max * (rect.width - self.point_width/2))
             cr.set_source_rgb(*color_hex_to_cairo(fg_inner_color))
+            cr.set_line_width(self.line_width / 2.0)
             cr.rectangle(x + self.point_width/2, 
                          bg_y, 
                          bg_w, 
@@ -180,6 +185,7 @@ class HScalebar(gtk.Button):
             cr.fill()
 
             cr.set_source_rgb(*color_hex_to_cairo(fg_side_color))
+            cr.set_line_width(self.line_width / 2.0)
             cr.rectangle(x + self.point_width/2, 
                          bg_y, 
                          bg_w, 
@@ -187,6 +193,7 @@ class HScalebar(gtk.Button):
             cr.stroke()
             
             cr.set_source_rgb(*color_hex_to_cairo(fg_corner_color))         
+            cr.set_line_width(self.line_width)
             draw_line(cr, 
                       x + self.point_width/2,
                       bg_y, 
