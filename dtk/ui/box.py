@@ -196,9 +196,11 @@ class ResizableBox(gtk.EventBox):
 
     def __motion_notify(self, widget, event):
         if event.y < self.min_height:
+            set_cursor(widget, gtk.gdk.ARROW)
             return
 
         if event.x < self.width:
+            set_cursor(widget, gtk.gdk.ARROW)
             return
 
         if self.resizeable:

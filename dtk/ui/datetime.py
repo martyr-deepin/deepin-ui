@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2012 ~ 2013 Deepin, Inc.
-#               2012 @ 2013 Zhai Xiang
+#               2012 ~ 2013 Zhai Xiang
 # 
 # Author:     Zhai Xiang <zhaixiang@linuxdeepin.com>
 # Maintainer: Zhai Xiang <zhaixiang@linuxdeepin.com>
@@ -20,41 +20,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from draw import draw_pixbuf, cairo_state
+from draw import draw_pixbuf, propagate_expose, cairo_state
 from theme import ui_theme
 import gobject
 import gtk
 from math import radians
 import time
 import threading as td
-
-class HourThread(td.Thread):
-    def __init__(self, ThisPtr):
-        td.Thread.__init__(self)
-        self.setDaemon(True)
-        self.ThisPtr = ThisPtr
-
-    def run(self):
-        try:
-            while True:
-                self.ThisPtr.queue_draw()
-                time.sleep(3600)
-        except Exception, e:
-            print "class HourThread got error %s" % e
-
-class MinuteThread(td.Thread):
-    def __init__(self, ThisPtr):
-        td.Thread.__init__(self)
-        self.setDaemon(True)
-        self.ThisPtr = ThisPtr
-
-    def run(self):
-        try:
-            while True:
-                self.ThisPtr.queue_draw()
-                time.sleep(60)
-        except Exception, e:
-            print "class MinuteThread got error %s" % e
 
 class SecondThread(td.Thread):
     def __init__(self, ThisPtr):
@@ -65,20 +37,24 @@ class SecondThread(td.Thread):
     def run(self):
         try:
             while True:
-                self.ThisPtr.queue_draw()
+                self.ThisPtr.invalidate()
                 time.sleep(1)
         except Exception, e:
             print "class SecondThread got error %s" % e
 
 class DateTimeHTCStyle(gtk.VBox):
     def __init__(self, 
-                 width=180, 
-                 height=180, 
+                 width=500, 
+                 height=125, 
                  is_24hour=True, 
                  pixbuf_spacing=10,
                  comma_spacing=30, 
                  sec_visible=False):
         gtk.VBox.__init__(self)
+
+        self.width = width
+        self.height = height
+        self.set_size_request(self.width, self.height)
 
         self.is_24hour = is_24hour
         self.pixbuf_spacing = pixbuf_spacing
@@ -93,10 +69,11 @@ class DateTimeHTCStyle(gtk.VBox):
             i += 1
 
         self.connect("expose-event", self.__expose)
-
+        
         SecondThread(self).start()
-        MinuteThread(self).start()                                              
-        HourThread(self).start()
+
+    def invalidate(self):
+        self.queue_draw()
 
     def get_is_24hour(self):
         return self.is_24hour
@@ -105,6 +82,13 @@ class DateTimeHTCStyle(gtk.VBox):
         self.is_24hour = is_24hour
         self.queue_draw()
 
+    def get_sec_visible(self):
+        return self.sec_visible
+
+    def set_sec_visible(self, sec_visible):
+        self.sec_visible = sec_visible
+        self.queue_draw()
+    
     def __time_split(self, value):
         ten = int(value / 10);
         bit = value - ten * 10;
@@ -124,38 +108,39 @@ class DateTimeHTCStyle(gtk.VBox):
 
         time_pixbuf_width = 0
 
-        with cairo_state(cr):
-            draw_pixbuf(cr, self.time_pixbuf[hour_ten].get_pixbuf(), x, y)
-            time_pixbuf_width = self.time_pixbuf[hour_ten].get_pixbuf().get_width() + self.pixbuf_spacing
-            draw_pixbuf(cr, 
+        draw_pixbuf(cr, self.time_pixbuf[hour_ten].get_pixbuf(), x, y)
+        time_pixbuf_width = self.time_pixbuf[hour_ten].get_pixbuf().get_width() + self.pixbuf_spacing
+        draw_pixbuf(cr, 
                     self.time_pixbuf[hour_bit].get_pixbuf(), 
                     x + time_pixbuf_width, 
                     y)
-            time_pixbuf_width += self.time_pixbuf[hour_bit].get_pixbuf().get_width() + self.comma_spacing
-            draw_pixbuf(cr, 
+        time_pixbuf_width += self.time_pixbuf[hour_bit].get_pixbuf().get_width() + self.comma_spacing
+        draw_pixbuf(cr, 
                     self.time_pixbuf[min_ten].get_pixbuf(), 
                     x + time_pixbuf_width, 
                     y)
-            time_pixbuf_width += self.time_pixbuf[min_ten].get_pixbuf().get_width() + self.pixbuf_spacing
-            draw_pixbuf(cr, 
+        time_pixbuf_width += self.time_pixbuf[min_ten].get_pixbuf().get_width() + self.pixbuf_spacing
+        draw_pixbuf(cr, 
                     self.time_pixbuf[min_bit].get_pixbuf(), 
                     x + time_pixbuf_width, 
                     y)
-        
-            if not self.sec_visible:
-                return False
-
-            time_pixbuf_width += self.time_pixbuf[min_bit].get_pixbuf().get_width() + self.comma_spacing
-            draw_pixbuf(cr, 
+            
+        if not self.sec_visible:
+             return False
+            
+        time_pixbuf_width += self.time_pixbuf[min_bit].get_pixbuf().get_width() + self.comma_spacing
+        draw_pixbuf(cr, 
                     self.time_pixbuf[sec_ten].get_pixbuf(), 
                     x + time_pixbuf_width, 
                     y)
-            time_pixbuf_width += self.time_pixbuf[sec_ten].get_pixbuf().get_width()
-            draw_pixbuf(cr, 
-                        self.time_pixbuf[sec_bit].get_pixbuf(), 
-                        x + time_pixbuf_width, 
-                        y)
+        time_pixbuf_width += self.time_pixbuf[sec_ten].get_pixbuf().get_width() + self.pixbuf_spacing
+        draw_pixbuf(cr, 
+                    self.time_pixbuf[sec_bit].get_pixbuf(), 
+                    x + time_pixbuf_width, 
+                    y)
 
+        propagate_expose(widget, event)
+        
         return True
 
 gobject.type_register(DateTimeHTCStyle)
@@ -188,10 +173,11 @@ class DateTime(gtk.VBox):
         self.sechand_height = self.sechand.get_pixbuf().get_height()
 
         self.connect("expose-event", self.__expose)
-        
+
         SecondThread(self).start()
-        MinuteThread(self).start()
-        HourThread(self).start()
+
+    def invalidate(self):
+        self.queue_draw()
 
     def __expose(self, widget, event):
         cr = widget.window.cairo_create()
