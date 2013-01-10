@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2012 Deepin, Inc.
-#               2012 Hailong Qiu
+# Copyright (C) 2012 ~ 2013 Deepin, Inc.
+#               2012 ~ 2013 Hailong Qiu
 #
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
@@ -25,7 +25,8 @@
 
 from theme import ui_theme
 from draw import draw_pixbuf, draw_text, draw_line
-from utils import color_hex_to_cairo, get_content_size, cairo_state
+from utils import (color_hex_to_cairo, get_content_size, cairo_state, 
+                   cairo_disable_antialias)
 import gtk
 import gobject
 
@@ -128,7 +129,7 @@ class HScalebar(gtk.Button):
         return True
                     
     def draw_bg_and_fg(self, cr, rect):    
-        with cairo_state(cr):
+        with cairo_disable_antialias(cr):
             '''
             background y
             '''
@@ -177,7 +178,7 @@ class HScalebar(gtk.Button):
             '''
             bg_w = int(float(self.value) / self.value_max * (rect.width - self.point_width/2))
             cr.set_source_rgb(*color_hex_to_cairo(fg_inner_color))
-            cr.set_line_width(self.line_width / 2.0)
+            cr.set_line_width(self.line_width)
             cr.rectangle(x + self.point_width/2, 
                          bg_y, 
                          bg_w, 
@@ -185,7 +186,7 @@ class HScalebar(gtk.Button):
             cr.fill()
 
             cr.set_source_rgb(*color_hex_to_cairo(fg_side_color))
-            cr.set_line_width(self.line_width / 2.0)
+            cr.set_line_width(self.line_width)
             cr.rectangle(x + self.point_width/2, 
                          bg_y, 
                          bg_w, 
