@@ -58,6 +58,7 @@ if __name__ == "__main__":
         )
     
     deepin_lunar_handle = deepin_lunar.new()
+    deepin_lunar_handle.mark_day(11)
     application.main_box.pack_start(deepin_lunar_handle)
 
     application.run()
