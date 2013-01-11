@@ -34,7 +34,6 @@ from locales import _
 from scrolled_window import ScrolledWindow
 from skin_config import skin_config
 from theme import ui_theme
-from threads import post_gui
 import tooltip as Tooltip
 import gobject
 import gtk
@@ -62,35 +61,49 @@ class LoadSkinThread(td.Thread):
 	
     def __init__(self, 
                  skin_dirs, 
-                 add_skin_icon, 
+                 add_skin_icons, 
                  add_add_icon):
         '''
         Initialize LoadSkinThread class.
         
         @param skin_dirs: Skin directories.
-        @param add_skin_icon: Callback to add skin icon.
+        @param add_skin_icons: Callback to add skin icon.
         @param add_add_icon: Callback to add add icon.
         '''
         td.Thread.__init__(self)
         self.setDaemon(True) # make thread exit when main program exit
         
         self.skin_dirs = skin_dirs
-        self.add_skin_icon = add_skin_icon
+        self.add_skin_icons = add_skin_icons
         self.add_add_icon = add_add_icon
         
+        self.skin_icon_list = []
+        
+        self.in_loading = True
+        
+    def render_skin_icons(self):
+        if len(self.skin_icon_list) > 0:
+            self.add_skin_icons(self.skin_icon_list)
+            self.skin_icon_list = []
+            
+        if not self.in_loading:
+            self.add_add_icon()
+        return self.in_loading
+    
     def run(self):
         '''
         Run.
         '''
+        gtk.timeout_add(100, self.render_skin_icons)
         support_foramts = get_pixbuf_support_foramts()
         for skin_dir in self.skin_dirs:
             for root, dirs, files in os.walk(skin_dir):
                 dirs.sort()         # sort directory with alpha order
                 for filename in files:
                     if end_with_suffixs(filename, support_foramts):
-                        self.add_skin_icon(root, filename)
-
-        self.add_add_icon()                
+                        self.skin_icon_list.append((root, filename))
+                        
+        self.in_loading = False
 
 class SkinWindow(DialogBox):
     '''
@@ -184,7 +197,7 @@ class SkinPreviewPage(gtk.VBox):
         self.pack_start(self.preview_align, True, True)
         
         LoadSkinThread([skin_config.system_skin_dir, skin_config.user_skin_dir],
-                       self.add_skin_icon,
+                       self.add_skin_icons,
                        self.add_add_icon).start()
         
         # Add drag image support.
@@ -196,17 +209,19 @@ class SkinPreviewPage(gtk.VBox):
 
         self.connect("drag-data-received", self.drag_skin_file)
         
-    @post_gui    
-    def add_skin_icon(self, root, filename):
+    def add_skin_icons(self, skin_infos):
         '''Add skin icon.'''
-        self.preview_view.add_items([SkinPreviewIcon(
+        items = []
+        for (root, filename) in skin_infos:
+            items.append(
+                SkinPreviewIcon(
                     root, 
                     filename, 
                     self.change_skin_callback, 
                     self.switch_edit_page_callback,
-                    self.pop_delete_skin_dialog)])
+                    self.pop_delete_skin_dialog))
+        self.preview_view.add_items(items)
         
-    @post_gui
     def add_add_icon(self):
         '''Add add icon.'''
         self.preview_view.add_items([SkinAddIcon(self.create_skin_from_file)])
