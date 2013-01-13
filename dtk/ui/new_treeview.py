@@ -820,6 +820,8 @@ class TreeView(gtk.VBox):
                 
                 self.update_vadjustment()
                 
+                self.emit("items-change")
+                
     def clear(self):
         self.delete_all_items()
     
