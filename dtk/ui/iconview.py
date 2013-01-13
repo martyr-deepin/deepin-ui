@@ -58,6 +58,7 @@ class IconView(gtk.DrawingArea):
     TODO: emit motion-item signal, return IconItem left top corner`s (x, y)
     '''
     __gsignals__ = {
+        "items-change" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "lost-focus-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
         "motion-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int)),
@@ -366,6 +367,11 @@ class IconView(gtk.DrawingArea):
                 vadjust.set_value(min(vadjust.get_upper() - vadjust.get_page_size(),
                                       vadjust.get_value() + vadjust.get_page_size() - self.padding_y))
             
+    def set_items(self, items):
+        if items != self.items:
+            self.items = items
+            self.emit("items-change")
+                
     def add_items(self, items, insert_pos=None):
         '''
         Add items to iconview.
@@ -374,9 +380,9 @@ class IconView(gtk.DrawingArea):
         @param insert_pos: Insert position, default is None to insert new item at B{end} position.
         '''
         if insert_pos == None:
-            self.items += items
+            self.set_items(self.items + items)
         else:
-            self.items = self.items[0:insert_pos] + items + self.items[insert_pos::]
+            self.set_items(self.items[0:insert_pos] + items + self.items[insert_pos::])
             
         for item in items:
             item.connect("redraw-request", self.redraw_item)
@@ -389,20 +395,22 @@ class IconView(gtk.DrawingArea):
         
         @param items: Items need to remove.
         '''
-        match_item = False
-        for item in items:
-            if item in self.items:
-                self.items.remove(item)
-                match_item = True
-                
-        if match_item:        
-            self.queue_draw()
+        if len(items) > 0:
+            match_item = False
+            for item in items:
+                if item in self.items:
+                    self.items.remove(item)
+                    match_item = True
+                    
+            if match_item:        
+                self.emit("items-change")
+                self.queue_draw()
             
     def clear(self):
         '''
         Clear all items.
         '''
-        self.items = []            
+        self.set_items([])
         self.queue_draw()
             
     def size_allocated_icon_view(self, widget, rect):

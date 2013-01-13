@@ -128,6 +128,7 @@ class TreeView(gtk.VBox):
     AUTO_SCROLL_HEIGHT = 24
     
     __gsignals__ = {
+        "items-change" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "delete-select-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "press-return" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         "button-press-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
@@ -764,32 +765,38 @@ class TreeView(gtk.VBox):
         
         return True
     
+    def set_items(self, items):
+        if items != self.visible_items:
+            self.visible_items = items
+            self.emit("items-change")
+        
     def add_items(self, items, insert_pos=None, clear_first=False):
         '''
         Add items.
         '''
-        with self.keep_select_status():
-            if clear_first:
-                self.visible_items = []
-            
-            if insert_pos == None:
-                self.visible_items += items
-            else:
-                self.visible_items = self.visible_items[0:insert_pos] + items + self.visible_items[insert_pos::]
-            
-            # Update redraw callback.
-            # Callback is better way to avoid perfermance problem than gobject signal.
-            for item in items:
-                item.redraw_request_callback = self.redraw_request
-                item.add_items_callback = self.add_items
-                item.delete_items_callback = self.delete_items
-            
-            self.update_item_index()    
-            
-            self.update_item_widths()
+        if len(items) > 0:
+            with self.keep_select_status():
+                if clear_first:
+                    self.set_items([])
                 
-            self.update_vadjustment()
-        
+                if insert_pos == None:
+                    self.set_items(self.visible_items + items)
+                else:
+                    self.set_items(self.visible_items[0:insert_pos] + items + self.visible_items[insert_pos::])
+                
+                # Update redraw callback.
+                # Callback is better way to avoid perfermance problem than gobject signal.
+                for item in items:
+                    item.redraw_request_callback = self.redraw_request
+                    item.add_items_callback = self.add_items
+                    item.delete_items_callback = self.delete_items
+                
+                self.update_item_index()    
+                
+                self.update_item_widths()
+                    
+                self.update_vadjustment()
+                
     def delete_item_by_index(self, index):
         item = self.visible_items[index]
         items_delete = []
@@ -812,22 +819,23 @@ class TreeView(gtk.VBox):
                 self.update_item_widths()
                 
                 self.update_vadjustment()
-    
+                
     def clear(self):
         self.delete_all_items()
     
     def delete_all_items(self):
-        self.start_select_row = None
-        self.select_rows = []
-        
-        self.visible_items = []
-        
-        self.update_item_index()    
+        if len(self.visible_items) > 0:
+            self.start_select_row = None
+            self.select_rows = []
             
-        self.update_item_widths()
+            self.set_items([])
             
-        self.update_vadjustment()
-        
+            self.update_item_index()    
+                
+            self.update_item_widths()
+                
+            self.update_vadjustment()
+            
     def update_vadjustment(self):
         vadjust_height = sum(map(lambda i: i.get_height(), self.visible_items))
         self.draw_area.set_size_request(-1, vadjust_height)
@@ -1211,7 +1219,7 @@ class TreeView(gtk.VBox):
                 if item in after_items:
                     after_items.remove(item)
                     
-            self.visible_items = before_items + select_items + after_items        
+            self.set_items(before_items + select_items + after_items)        
             
             self.select_rows = range(len(before_items), len(before_items + select_items))
             
