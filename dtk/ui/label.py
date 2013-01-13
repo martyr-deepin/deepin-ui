@@ -420,12 +420,10 @@ class Label(gtk.EventBox):
         
     def hover(self):
         self.is_hover = True
-        self.underline = True
         
         self.queue_draw()
 
     def unhover(self):
         self.is_hover = False
-        self.underline = False
         
         self.queue_draw()
