@@ -732,6 +732,218 @@ class CheckButton(ToggleButton):
         
 gobject.type_register(CheckButton)
 
+class CheckAllButton(gtk.ToggleButton):
+    '''
+    class docs
+    '''
+	
+    __gsignals__ = {
+        "active-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+    }
+    
+    def __init__(self,
+                 inactive_normal_dpixbuf=ui_theme.get_pixbuf("button/check_button_inactive_normal.png"),
+                 active_normal_dpixbuf=ui_theme.get_pixbuf("button/check_button_active_normal.png"),
+                 inactive_hover_dpixbuf=ui_theme.get_pixbuf("button/check_button_inactive_hover.png"),
+                 active_hover_dpixbuf=ui_theme.get_pixbuf("button/check_button_active_hover.png"),
+                 inactive_press_dpixbuf=ui_theme.get_pixbuf("button/check_button_inactive_press.png"),
+                 active_press_dpixbuf=ui_theme.get_pixbuf("button/check_button_active_press.png"),
+                 inactive_disable_dpixbuf=ui_theme.get_pixbuf("button/check_button_inactive_disable.png"),
+                 active_disable_dpixbuf=ui_theme.get_pixbuf("button/check_button_active_disable.png"),
+                 button_label=None, 
+                 padding_x=8, 
+                 font_size=DEFAULT_FONT_SIZE,
+                 ):
+        '''
+        init docs
+        '''
+        gtk.ToggleButton.__init__(self)
+        self.font_size = font_size
+        label_dcolor = ui_theme.get_color("button_default_font")
+        self.button_press_flag = False
+        
+        self.inactive_pixbuf_group = (inactive_normal_dpixbuf,
+                                      inactive_hover_dpixbuf,
+                                      inactive_press_dpixbuf,
+                                      inactive_disable_dpixbuf)
+        
+        self.active_pixbuf_group = (active_normal_dpixbuf,
+                                    active_hover_dpixbuf,
+                                    active_press_dpixbuf,
+                                    active_disable_dpixbuf)
+        self.in_half_status = False
+
+        # Init request size.
+        label_width = 0
+        button_width = inactive_normal_dpixbuf.get_pixbuf().get_width()
+        button_height = inactive_normal_dpixbuf.get_pixbuf().get_height()
+        if button_label:
+            label_width = get_content_size(button_label, self.font_size)[0]
+        self.set_size_request(button_width + label_width + padding_x * 2,
+                              button_height)
+        
+        self.connect("button-press-event", self.press_toggle_button)
+        self.connect("button-release-event", self.release_toggle_button)
+        
+        # Expose button.
+        self.connect("expose-event", lambda w, e : self.expose_toggle_button(
+                w, e,
+                button_label, padding_x, self.font_size, label_dcolor))
+        
+        self.connect("clicked", self.handle_click_event)
+        
+    def update_status(self, actives):
+        if actives.count(True) == len(actives):
+            self.set_active(True)
+            self.set_half_status(False)
+        elif actives.count(False) == len(actives):
+            self.set_active(False)
+            self.set_half_status(False)
+        else:
+            self.set_half_status(True)
+        
+    def set_half_status(self, half_status):
+        self.in_half_status = half_status
+
+        self.queue_draw()
+        
+    def handle_click_event(self, widget):
+        if self.in_half_status:
+            self.set_active(False)
+            self.in_half_status = False
+            
+        self.emit("active-changed", self.get_active())    
+    
+    def press_toggle_button(self, widget, event):    
+        '''
+        Callback for `button-press-event` signal.
+        
+        @param widget: ToggleButton widget.
+        @param event: Button press event.
+        '''
+        self.button_press_flag = True
+        self.queue_draw()
+        
+    def release_toggle_button(self, widget, event):    
+        '''
+        Callback for `button-press-release` signal.
+        
+        @param widget: ToggleButton widget.
+        @param event: Button release event.
+        '''
+        self.button_press_flag = False
+        self.queue_draw()    
+        
+    def expose_toggle_button(self, widget, event, 
+                             button_label, padding_x, font_size, label_dcolor):
+        '''
+        Callback for `expose-event` signal.
+        
+        @param widget: ToggleButton widget.
+        @param event: Expose event.
+        @param button_label: Button label string.
+        @param padding_x: horticultural padding value.
+        @param font_size: Font size.
+        @param label_dcolor: Label DynamicColor.
+        '''
+        # Init.
+        inactive_normal_dpixbuf, inactive_hover_dpixbuf, inactive_press_dpixbuf, inactive_disable_dpixbuf = self.inactive_pixbuf_group
+        active_normal_dpixbuf, active_hover_dpixbuf, active_press_dpixbuf, active_disable_dpixbuf = self.active_pixbuf_group
+        rect = widget.allocation
+        image = inactive_normal_dpixbuf.get_pixbuf()
+        
+        # Get pixbuf along with button's sate.
+        if widget.state == gtk.STATE_INSENSITIVE:
+            if self.in_half_status:
+                image = inactive_disable_dpixbuf.get_pixbuf()
+            else:
+                if widget.get_active():
+                    image = active_disable_dpixbuf.get_pixbuf()
+                else:
+                    image = inactive_disable_dpixbuf.get_pixbuf()
+        elif widget.state == gtk.STATE_NORMAL:
+            image = inactive_normal_dpixbuf.get_pixbuf()
+        elif widget.state == gtk.STATE_PRELIGHT:
+            if not inactive_hover_dpixbuf and not active_hover_dpixbuf:
+                if self.in_half_status:
+                    image = inactive_normal_dpixbuf.get_pixbuf()
+                else:
+                    if widget.get_active():
+                        image = active_normal_dpixbuf.get_pixbuf()
+                    else:    
+                        image = inactive_normal_dpixbuf.get_pixbuf()
+            else:    
+                if inactive_hover_dpixbuf and active_hover_dpixbuf:
+                    if self.in_half_status:
+                        image = inactive_normal_dpixbuf.get_pixbuf()
+                    else:
+                        if widget.get_active():
+                            image = active_hover_dpixbuf.get_pixbuf()
+                        else:    
+                            image = inactive_hover_dpixbuf.get_pixbuf()
+                elif inactive_hover_dpixbuf:        
+                    image = inactive_hover_dpixbuf.get_pixbuf()
+                elif active_hover_dpixbuf:    
+                    if self.in_half_status:
+                        image = inactive_hover_dpixbuf.get_pixbuf()
+                    else:
+                        image = active_hover_dpixbuf.get_pixbuf()
+        elif widget.state == gtk.STATE_ACTIVE:
+            if inactive_press_dpixbuf and active_press_dpixbuf:
+                if self.button_press_flag:
+                    if self.in_half_status:
+                        image = inactive_normal_dpixbuf.get_pixbuf()
+                    else:
+                        if widget.get_active():
+                            image = active_press_dpixbuf.get_pixbuf()
+                        else:    
+                            image = inactive_press_dpixbuf.get_pixbuf()
+                else:    
+                    if self.in_half_status:
+                        image = inactive_normal_dpixbuf.get_pixbuf()
+                    else:
+                        image = active_normal_dpixbuf.get_pixbuf()
+            else:        
+                if self.in_half_status:
+                    image = inactive_normal_dpixbuf.get_pixbuf()
+                else:
+                    image = active_normal_dpixbuf.get_pixbuf()
+        
+        # Draw button.
+        cr = widget.window.cairo_create()
+        draw_pixbuf(cr, image, rect.x + padding_x, rect.y)
+        
+        if self.in_half_status:
+            cr.set_source_rgb(0.3, 0.3, 0.3)
+            cr.rectangle(rect.x + padding_x + 4,
+                         rect.y + 4,
+                         8, 
+                         8)
+            cr.fill()
+        
+        # Draw font.
+        if widget.state == gtk.STATE_INSENSITIVE:
+            label_color = ui_theme.get_color("disable_text").get_color()
+        else:
+            label_color = label_dcolor.get_color()
+        if button_label:
+            draw_text(cr, button_label, 
+                        rect.x + image.get_width() + padding_x * 2,
+                        rect.y, 
+                        rect.width - image.get_width() - padding_x * 2,
+                        rect.height,
+                        font_size, 
+                        label_color,
+                        alignment=pango.ALIGN_LEFT
+                        )
+    
+        # Propagate expose to children.
+        propagate_expose(widget, event)
+        
+        return True
+    
+gobject.type_register(CheckAllButton)        
+
 class CheckButtonBuffer(gobject.GObject):
     '''
     class docs
