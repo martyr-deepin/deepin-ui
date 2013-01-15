@@ -74,7 +74,7 @@ class IconView(gtk.DrawingArea):
     def __init__(self, 
                  padding_x=0, 
                  padding_y=0,
-                 mask_bound_height=24,
+                 mask_bound_height=12,
                  ):
         '''
         Initialize IconView class.

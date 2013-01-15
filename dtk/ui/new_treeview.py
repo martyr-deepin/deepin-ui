@@ -147,7 +147,7 @@ class TreeView(gtk.VBox):
                  enable_drag_drop=True,
                  drag_icon_pixbuf=None,
                  start_drag_offset=50,
-                 mask_bound_height=24,
+                 mask_bound_height=12,
                  right_space=0,
                  top_bottom_space=3,
                  padding_x=0,

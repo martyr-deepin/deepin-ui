@@ -43,7 +43,7 @@ class EntryTreeView(TreeView):
             enable_drag_drop=False,
             drag_icon_pixbuf=None,
             start_drag_offset=50,
-            mask_bound_height=24,
+            mask_bound_height=12,
             right_space=0,
             top_bottom_space=3):
         super(EntryTreeView, self).__init__(

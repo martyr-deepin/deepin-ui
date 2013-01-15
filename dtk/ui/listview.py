@@ -94,7 +94,7 @@ class ListView(gtk.DrawingArea):
                  enable_drag_drop=True,
                  drag_icon_pixbuf=ui_theme.get_pixbuf("listview/drag_preview.png"),
                  drag_out_offset=50,
-                 mask_bound_height=24,
+                 mask_bound_height=12,
                  hide_columns=[],
                  hide_column_resize=False,
                  ):
