@@ -794,18 +794,18 @@ class CheckAllButton(gtk.ToggleButton):
         
     def update_status(self, actives):
         if actives.count(True) == len(actives):
+            self.set_half_status(False)
             self.set_active(True)
-            self.set_half_status(False)
         elif actives.count(False) == len(actives):
-            self.set_active(False)
             self.set_half_status(False)
+            self.set_active(False)
         else:
             self.set_half_status(True)
         
+        self.queue_draw()
+        
     def set_half_status(self, half_status):
         self.in_half_status = half_status
-
-        self.queue_draw()
         
     def handle_click_event(self, widget):
         if self.in_half_status:
