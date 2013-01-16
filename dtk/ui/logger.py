@@ -24,41 +24,44 @@ import logging
 import re
 
 levelno = logging.INFO
-classfilter = []
 
 def set_level_no(n):
     global levelno
     levelno = ( 100 - (n * 10) )
-    
-def set_filter(filter_list):    
-    global classfilter
-    classfilter = filter_list
 
-class MyFilter(logging.Filter):
-    def __init__(self, name=""): 
-        pass
-    
-    def filter(self, record):
-        if record.levelno >= levelno: 
-            return True
-        
-        for filter in classfilter:
-            if record.name.startswith(filter): 
-                return True
-            
-        return False
+class FilterLogger(logging.Logger):
+    class Filter(logging.Filter):
+        def filter(self, record):
+            pass_record = True
 
-logger = logging.getLogger("")
-logger.setLevel(logging.DEBUG)
-logging.addLevelName(100,"DEPRECATED")
+            if FilterLogger.module is not None:
+                pass_record = record.name == self.module
 
-# formatter = logging.Formatter('%(levelname)-8s %(name)-30s %(message)s')
-formatter = logging.Formatter('%(levelname)-8s %(message)s')
+            if FilterLogger.level != logging.NOTSET and pass_record:
+                pass_record = record.levelno == self.level
 
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
-handler.addFilter(MyFilter())
-logger.addHandler(handler)
+            return pass_record
+
+    module = None
+    level = logging.NOTSET
+
+    def __init__(self, name):
+        logging.Logger.__init__(self, name)
+
+        log_filter = self.Filter(name)
+        log_filter.module = FilterLogger.module
+        log_filter.level = FilterLogger.level
+        self.addFilter(log_filter)
+
+# FilterLogger.module = ""        
+# FilterLogger.level = ""        
+logging.setLoggerClass(FilterLogger)
+
+levelno = logging.DEBUG
+logging.addLevelName(100, "DEPRECATED")
+# console_format = '%(asctime)s %(levelname)-8s %(name)-30s %(message)s'
+console_format = '%(levelname)-8s %(name)-30s %(message)s'
+logging.basicConfig(level=levelno, format=console_format, datafmt="%H:%M:%S")
 
 def objaddr(obj):
     string = object.__repr__(obj)
@@ -118,4 +121,3 @@ def new_logger(name):
     l.set_log_name(name)
     
     return l
-    
