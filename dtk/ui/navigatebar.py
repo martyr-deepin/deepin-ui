@@ -22,7 +22,8 @@
 
 from box import EventBox
 from constant import DEFAULT_FONT_SIZE
-from draw import draw_line, draw_pixbuf, draw_text
+from draw import draw_line, draw_pixbuf, draw_text, draw_round_rectangle
+from utils import color_hex_to_cairo
 from theme import ui_theme
 from utils import widget_fix_cycle_destroy_bug, propagate_expose, get_content_size
 import gobject
@@ -63,6 +64,7 @@ class Navigatebar(EventBox):
         self.nav_index = 0
         self.item_hover_pixbuf = item_hover_pixbuf
         self.item_press_pixbuf = item_press_pixbuf
+        self.nav_items = []
         
         # Init nav box.
         self.nav_box = gtk.VBox()
@@ -79,6 +81,7 @@ class Navigatebar(EventBox):
                                    self.set_index, self.get_index,
                                    self.item_hover_pixbuf,
                                    self.item_press_pixbuf)
+                self.nav_items.append(nav_item)
                 self.nav_item_box.pack_start(nav_item.item_box, False, False)
                 
         # Add separator.
@@ -124,6 +127,11 @@ class Navigatebar(EventBox):
         draw_line(cr, rect.x + 1, rect.y + 2, rect.x + rect.width - 1, rect.y + 2)
         
         return True
+    
+    def update_notify_num(self, item, notify_num):
+        item.notify_num = notify_num
+        
+        item.item_box.queue_draw()
 
 gobject.type_register(Navigatebar)
 
@@ -167,6 +175,7 @@ class NavItem(object):
         self.get_index = get_index
         self.item_hover_pixbuf = item_hover_pixbuf
         self.item_press_pixbuf = item_press_pixbuf
+        self.notify_num = 0
         (self.icon_dpixbuf, self.content, self.clicked_callback) = element
         pixbuf = self.item_hover_pixbuf.get_pixbuf()
         
@@ -263,6 +272,38 @@ class NavItem(object):
                       gaussian_radious=2, gaussian_color="#000000",
                       border_radious=1, border_color="#000000", 
                       )
+            
+        # Draw notify number.
+        text_size = 8
+        (number_width, number_height) = get_content_size(str(self.notify_num), text_size)    
+        padding_x = 2
+        padding_y = 0
+        radious = 3
+        draw_offset_x = -5
+        draw_offset_y = 8
+        draw_x = rect.x + nav_item_pixbuf.get_width() + padding_x + draw_offset_x
+        draw_y = rect.y + draw_offset_y
+        if self.notify_num > 0:
+            cr.set_source_rgb(*color_hex_to_cairo("#BF0000"))
+            draw_round_rectangle(
+                cr,
+                draw_x,
+                draw_y,
+                number_width + padding_x * 2,
+                number_height + padding_y * 2,
+                radious)
+            cr.fill()
+            
+            draw_text(
+                cr,
+                str(self.notify_num),
+                draw_x + padding_x,
+                draw_y + padding_y,
+                number_width,
+                number_height,
+                text_color="#FFFFFF",
+                text_size=text_size,
+                )
         
         # Propagate expose to children.
         propagate_expose(widget, event)
