@@ -60,6 +60,7 @@ if __name__ == "__main__":
         )
     
     datetime = DateTimeHTCStyle(sec_visible = True)
+    datetime.set_is_24hour(False)
     #datetime = DateTime()
     align = gtk.Alignment()                                             
     align.set(0, 0, 0, 0)                                           

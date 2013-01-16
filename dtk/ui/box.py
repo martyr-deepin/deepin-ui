@@ -180,6 +180,8 @@ class ResizableBox(gtk.EventBox):
         self.connect("button-release-event", self.__button_release)
         self.connect("motion-notify-event", self.__motion_notify)
         self.connect("expose-event", self.__expose)
+        
+        self.set_events(gtk.gdk.POINTER_MOTION_MASK)
   
     def get_resizable(self):
         return self.resizable
@@ -196,11 +198,10 @@ class ResizableBox(gtk.EventBox):
 
     def __motion_notify(self, widget, event):
         if event.y < self.min_height:
-            set_cursor(widget, gtk.gdk.ARROW)
-            return
-
-        if event.x < self.width:
-            set_cursor(widget, gtk.gdk.ARROW)
+            if event.y < self.min_height - 10:
+                set_cursor(widget, None)
+            else:
+                set_cursor(widget, gtk.gdk.SB_V_DOUBLE_ARROW)
             return
 
         if self.resizeable:

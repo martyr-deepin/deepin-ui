@@ -57,8 +57,8 @@ if __name__ == "__main__":
         "TimeZone demo",
         )
     
-    deepin_lunar_handle = deepin_lunar.new()
-    deepin_lunar_handle.mark_day(11)
-    application.main_box.pack_start(deepin_lunar_handle)
+    deepin_lunar_obj = deepin_lunar.new()
+    deepin_lunar_obj.mark_day(11)
+    application.main_box.pack_start(deepin_lunar_obj.get_handle())
 
     application.run()
