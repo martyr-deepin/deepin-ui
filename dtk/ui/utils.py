@@ -736,6 +736,18 @@ def place_center(refer_window, place_window):
         center_y - place_window.allocation.height / 2
         )
 
+def get_system_icon_info(icon_theme="Deepin", icon_name="NULL", size=48):
+    '''
+    Get system level icon info
+
+    @param icon_theme: Gtk Icon Theme, for example, Deepin
+    @param icon_name: the name of the icon to lookup, for example, preferences-power
+    @param size: desired icon size, for example, 48
+    '''
+    __icon_theme = gtk.IconTheme()
+    __icon_theme.set_custom_theme(icon_theme)
+    return __icon_theme.lookup_icon(icon_name, size, gtk.ICON_LOOKUP_NO_SVG)
+
 def get_pixbuf_support_foramts():
     '''
     Get formats that support by pixbuf.
