@@ -1054,15 +1054,17 @@ class Entry(gtk.EventBox):
         '''
         Cut selected text to clipboard.
         '''
-        with self.monitor_entry_content():
-            self.entry_buffer.cut_clipboard(gtk.Clipboard(), self.is_editable())
-        self.queue_draw()
+        if not self.is_password_entry:
+            with self.monitor_entry_content():
+                self.entry_buffer.cut_clipboard(gtk.Clipboard(), self.is_editable())
+            self.queue_draw()
 
     def copy_to_clipboard(self):
         '''
         Copy selected text to clipboard.
         '''
-        self.entry_buffer.copy_clipboard(gtk.Clipboard())
+        if not self.is_password_entry:
+            self.entry_buffer.copy_clipboard(gtk.Clipboard())
     
     def paste_from_clipboard(self):
         '''
