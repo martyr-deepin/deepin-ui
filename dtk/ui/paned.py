@@ -105,8 +105,12 @@ class Paned(gtk.Paned):
                 cr.fill()
 
                 if self.always_show_button or self.show_button:
+                    if self.get_position() == 0:
+                        pixbuf = ui_theme.get_pixbuf("paned/paned_right_normal.png").get_pixbuf()
+                    else:
+                        pixbuf = ui_theme.get_pixbuf("paned/paned_left_normal.png").get_pixbuf()
                     draw_pixbuf(cr, 
-                                ui_theme.get_pixbuf("paned/paned_left_normal.png").get_pixbuf(),
+                                pixbuf,
                                 0,
                                 (height - self.bheight)  / 2)
             else:
@@ -114,8 +118,12 @@ class Paned(gtk.Paned):
                 cr.fill()
                 
                 if self.always_show_button or self.show_button:
+                    if self.get_position() == 0:
+                        pixbuf = ui_theme.get_pixbuf("paned/paned_left_normal.png").get_pixbuf()
+                    else:
+                        pixbuf = ui_theme.get_pixbuf("paned/paned_right_normal.png").get_pixbuf()
                     draw_pixbuf(cr, 
-                                ui_theme.get_pixbuf("paned/paned_right_normal.png").get_pixbuf(),
+                                pixbuf,
                                 0,
                                 (height - self.bheight)  / 2)
         else:
@@ -124,8 +132,12 @@ class Paned(gtk.Paned):
                 cr.fill()
                 
                 if self.always_show_button or self.show_button:
+                    if self.get_position() == 0:
+                        pixbuf = ui_theme.get_pixbuf("paned/paned_down_normal.png").get_pixbuf()
+                    else:
+                        pixbuf = ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf()
                     draw_pixbuf(cr, 
-                                ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf(),
+                                pixbuf,
                                 (width - self.bheight) / 2,
                                 0)
             else:
@@ -133,8 +145,12 @@ class Paned(gtk.Paned):
                 cr.fill()
 
                 if self.always_show_button or self.show_button:
+                    if self.get_position() == 0:
+                        pixbuf = ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf()
+                    else:
+                        pixbuf = ui_theme.get_pixbuf("paned/paned_down_normal.png").get_pixbuf()
                     draw_pixbuf(cr, 
-                                ui_theme.get_pixbuf("paned/paned_down_normal.png").get_pixbuf(),
+                                pixbuf,
                                 (width - self.bheight) / 2,
                                 0)
 
