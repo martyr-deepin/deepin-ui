@@ -53,12 +53,18 @@ class HSlider(gtk.Viewport):
         self.show_all()
 
     def _to_right(self, percent):
-        self.offset = int(round(percent * self.page_width))
-        self.fixed.move(self.pre_widget, - self.offset, 0)
+        self.offset = int(round(percent * self.page_width)) 
+        
+        if self.pre_widget:
+            self.fixed.move(self.pre_widget, - self.offset, 0)
+        
         self.fixed.move(self.active_widget, self.page_width - self.offset, 0)
     def _to_left(self, percent):
         self.offset = int(round(percent * self.page_width))
-        self.fixed.move(self.pre_widget, self.offset, 0)
+        
+        if self.pre_widget:
+            self.fixed.move(self.pre_widget, self.offset, 0)
+        
         self.fixed.move(self.active_widget, self.offset - self.page_width, 0)
 
     def to_page(self, w, direction):
