@@ -750,6 +750,10 @@ class CheckAllButton(gtk.ToggleButton):
                  active_press_dpixbuf=ui_theme.get_pixbuf("button/check_button_active_press.png"),
                  inactive_disable_dpixbuf=ui_theme.get_pixbuf("button/check_button_inactive_disable.png"),
                  active_disable_dpixbuf=ui_theme.get_pixbuf("button/check_button_active_disable.png"),
+                 middle_disable_dpixbuf=ui_theme.get_pixbuf("button/check_button_middle_disable.png"),
+                 middle_hover_dpixbuf=ui_theme.get_pixbuf("button/check_button_middle_hover.png"),
+                 middle_normal_dpixbuf=ui_theme.get_pixbuf("button/check_button_middle_normal.png"),
+                 middle_press_dpixbuf=ui_theme.get_pixbuf("button/check_button_middle_press.png"),
                  button_label=None, 
                  padding_x=8, 
                  font_size=DEFAULT_FONT_SIZE,
@@ -771,6 +775,13 @@ class CheckAllButton(gtk.ToggleButton):
                                     active_hover_dpixbuf,
                                     active_press_dpixbuf,
                                     active_disable_dpixbuf)
+        
+        self.middle_pixbuf_group = (middle_normal_dpixbuf,
+                                    middle_hover_dpixbuf,
+                                    middle_press_dpixbuf,
+                                    middle_disable_dpixbuf,
+                                    )
+        
         self.in_half_status = False
 
         # Init request size.
@@ -849,13 +860,14 @@ class CheckAllButton(gtk.ToggleButton):
         # Init.
         inactive_normal_dpixbuf, inactive_hover_dpixbuf, inactive_press_dpixbuf, inactive_disable_dpixbuf = self.inactive_pixbuf_group
         active_normal_dpixbuf, active_hover_dpixbuf, active_press_dpixbuf, active_disable_dpixbuf = self.active_pixbuf_group
+        middle_normal_dpixbuf, middle_hover_dpixbuf, middle_press_dpixbuf, middle_disable_dpixbuf = self.middle_pixbuf_group
         rect = widget.allocation
         image = inactive_normal_dpixbuf.get_pixbuf()
         
         # Get pixbuf along with button's sate.
         if widget.state == gtk.STATE_INSENSITIVE:
             if self.in_half_status:
-                image = inactive_disable_dpixbuf.get_pixbuf()
+                image = middle_disable_dpixbuf.get_pixbuf()
             else:
                 if widget.get_active():
                     image = active_disable_dpixbuf.get_pixbuf()
@@ -866,7 +878,7 @@ class CheckAllButton(gtk.ToggleButton):
         elif widget.state == gtk.STATE_PRELIGHT:
             if not inactive_hover_dpixbuf and not active_hover_dpixbuf:
                 if self.in_half_status:
-                    image = inactive_normal_dpixbuf.get_pixbuf()
+                    image = middle_normal_dpixbuf.get_pixbuf()
                 else:
                     if widget.get_active():
                         image = active_normal_dpixbuf.get_pixbuf()
@@ -875,7 +887,7 @@ class CheckAllButton(gtk.ToggleButton):
             else:    
                 if inactive_hover_dpixbuf and active_hover_dpixbuf:
                     if self.in_half_status:
-                        image = inactive_normal_dpixbuf.get_pixbuf()
+                        image = middle_normal_dpixbuf.get_pixbuf()
                     else:
                         if widget.get_active():
                             image = active_hover_dpixbuf.get_pixbuf()
@@ -885,14 +897,14 @@ class CheckAllButton(gtk.ToggleButton):
                     image = inactive_hover_dpixbuf.get_pixbuf()
                 elif active_hover_dpixbuf:    
                     if self.in_half_status:
-                        image = inactive_hover_dpixbuf.get_pixbuf()
+                        image = middle_hover_dpixbuf.get_pixbuf()
                     else:
                         image = active_hover_dpixbuf.get_pixbuf()
         elif widget.state == gtk.STATE_ACTIVE:
             if inactive_press_dpixbuf and active_press_dpixbuf:
                 if self.button_press_flag:
                     if self.in_half_status:
-                        image = inactive_normal_dpixbuf.get_pixbuf()
+                        image = middle_normal_dpixbuf.get_pixbuf()
                     else:
                         if widget.get_active():
                             image = active_press_dpixbuf.get_pixbuf()
@@ -900,26 +912,18 @@ class CheckAllButton(gtk.ToggleButton):
                             image = inactive_press_dpixbuf.get_pixbuf()
                 else:    
                     if self.in_half_status:
-                        image = inactive_normal_dpixbuf.get_pixbuf()
+                        image = middle_normal_dpixbuf.get_pixbuf()
                     else:
                         image = active_normal_dpixbuf.get_pixbuf()
             else:        
                 if self.in_half_status:
-                    image = inactive_normal_dpixbuf.get_pixbuf()
+                    image = middle_normal_dpixbuf.get_pixbuf()
                 else:
                     image = active_normal_dpixbuf.get_pixbuf()
         
         # Draw button.
         cr = widget.window.cairo_create()
         draw_pixbuf(cr, image, rect.x + padding_x, rect.y)
-        
-        if self.in_half_status:
-            cr.set_source_rgb(0.3, 0.3, 0.3)
-            cr.rectangle(rect.x + padding_x + 4,
-                         rect.y + 4,
-                         8, 
-                         8)
-            cr.fill()
         
         # Draw font.
         if widget.state == gtk.STATE_INSENSITIVE:
