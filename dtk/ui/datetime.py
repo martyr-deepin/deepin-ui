@@ -100,9 +100,10 @@ class DateTimeHTCStyle(gtk.VBox):
         rect = widget.allocation                                                
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
-        hour_ten, hour_bit = self.__time_split(time.localtime().tm_hour)
-        if not self.is_24hour:
-            hour_ten, hour_bit = self.__time_split(time.localtime().tm_hour - 12)
+        hour = time.localtime().tm_hour
+        hour_ten, hour_bit = self.__time_split(hour)
+        if not self.is_24hour and hour > 12:
+            hour_ten, hour_bit = self.__time_split(hour - 12)
         min_ten, min_bit = self.__time_split(time.localtime().tm_min)
         sec_ten, sec_bit = self.__time_split(time.localtime().tm_sec)
 
