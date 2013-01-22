@@ -49,7 +49,7 @@ from dtk.ui.color_selection import ColorButton
 from dtk.ui.combo import ComboBox
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
 from dtk.ui.droplist import Droplist
-from dtk.ui.new_entry import InputEntry, ShortcutKeyEntry, PasswordEntry
+from dtk.ui.new_entry import InputEntry, ShortcutKeyEntry, PasswordEntry, TextEntry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.label import Label
@@ -386,48 +386,17 @@ if __name__ == "__main__":
     tab_1_box.pack_start(volume_frame, False, False)
     
     # Add entry widget.
-    entry_button = ImageButton(
-        app_theme.get_pixbuf("entry/search_normal.png"),
-        app_theme.get_pixbuf("entry/search_hover.png"),
-        app_theme.get_pixbuf("entry/search_press.png"),
-        )
-    entry = InputEntry("Linux Deepin", enable_clear_button=True)
-    #entry.set_text("DEBUG")
-    entry.connect("action-active", print_entry_action)
-    entry.set_size(150, 48)
-    password_entry = PasswordEntry("")
-    password_entry.set_size(150, 24)
-    shown_password = False
-    password_entry.show_password(shown_password)
-    password_check_button = CheckButton(label_text = "Shown", font_size = 8)
-    password_check_button.set_active(shown_password)
-    password_check_button.connect("toggled", lambda widget: password_entry.show_password(widget.get_active()))
-    password_check_button_align = gtk.Alignment()
-    password_check_button_align.set(0.0, 0.5, 0, 0)
-    password_check_button_align.add(password_check_button)
-    entry_label = Label("标签测试， 内容非常长")
-    entry_label.set_text("标签的内容")
-    entry_label.set_size_request(100, 30)
     entry_box = gtk.HBox(spacing=10)
-    entry_box.pack_start(entry_label, False, False)
-    entry_box.pack_start(entry, True, True)
-    entry_box.pack_start(password_entry, True, True)
-    entry_box.pack_start(password_check_button_align, True, True)
     
-    #shortcust_entry = ShortcutKeyEntry("Ctrl + Alt + Q")
-    shortcust_entry = ShortcutKeyEntry("")
-    shortcust_entry.set_size(150, 24)
-    shortcust_entry.set_shortcut_key("Ctrl + Alt + Q")
-    entry_box.pack_start(shortcust_entry, False, False)
+    text_entry = TextEntry()
+    text_entry.set_size(100, 22)
+    input_entry = InputEntry()
+    input_entry.set_size(100, 22)
+    shortcust_entry = ShortcutKeyEntry()
+    shortcust_entry.set_size(100, 22)
+    password_entry = PasswordEntry()
+    password_entry.set_size(100, 22)
     
-    test_button = Button("测试")
-    test_button.connect("clicked", clicked_test)
-    entry_box.pack_start(test_button, False, False)
-    
-    color_button = ColorButton()
-    entry_box.pack_start(color_button, False, False)
-    
-    # combobox
     combo_box = ComboBox(
         [("测试测试测试1", 1),
          ("测试测试测试2", 2),
@@ -441,8 +410,14 @@ if __name__ == "__main__":
          ],
         100
         )
-    entry_box.pack_start(combo_box, False, False)    
+    
     spin_box = SpinBox(3000, 0, 5000, 100)
+    
+    entry_box.pack_start(text_entry, False, False)
+    entry_box.pack_start(input_entry, False, False)
+    entry_box.pack_start(shortcust_entry, False, False)
+    entry_box.pack_start(password_entry, False, False)
+    entry_box.pack_start(combo_box, False, False)
     entry_box.pack_start(spin_box, False, False)
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
