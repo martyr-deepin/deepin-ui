@@ -281,11 +281,24 @@ def draw_window_rectangle(cr, sx, sy, ex, ey, r):
         cr.arc(sx + r, ey - r, r, pi / 2, pi) # bottom-left
         cr.stroke()
         
-def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#000000", 
-              text_font=DEFAULT_FONT, alignment=pango.ALIGN_LEFT,
-              gaussian_radious=None, gaussian_color=None,
-              border_radious=None, border_color=None, 
-              wrap_width=None, underline=False,
+TEXT_ALIGN_TOP = 1
+TEXT_ALIGN_MIDDLE = 2
+TEXT_ALIGN_BOTTOM = 3
+        
+def draw_text(cr, markup, 
+              x, y, w, h, 
+              text_size=DEFAULT_FONT_SIZE, 
+              text_color="#000000", 
+              text_font=DEFAULT_FONT, 
+              alignment=pango.ALIGN_LEFT,
+              gaussian_radious=None, 
+              gaussian_color=None,
+              border_radious=None, 
+              border_color=None, 
+              wrap_width=None, 
+              underline=False,
+              vertical_alignment=TEXT_ALIGN_MIDDLE,
+              clip_line_count=None,
               ):
     '''
     Standard function for draw text.
@@ -309,7 +322,10 @@ def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#
     if border_radious == None and border_color == None and gaussian_radious == None and gaussian_color == None:
         render_text(cr, markup, x, y, w, h, text_size, text_color, text_font, alignment,
                     wrap_width=wrap_width,
-                    underline=underline)
+                    underline=underline,
+                    vertical_alignment=vertical_alignment,
+                    clip_line_count=clip_line_count,
+                    )
     elif (border_radious != None and border_color != None) or (gaussian_radious != None and gaussian_color != None):
         # Create text cairo context.
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h)
@@ -322,7 +338,10 @@ def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#
                         gaussian_radious, w - gaussian_radious * 2, h - gaussian_radious * 2, 
                         text_size, gaussian_color, alignment=alignment,
                         wrap_width=wrap_width,
-                        underline=underline)
+                        underline=underline,
+                        vertical_alignment=vertical_alignment,
+                        clip_line_count=clip_line_count,
+                        )
             dtk_cairo_blur.gaussian_blur(surface, gaussian_radious)
             text_cr.restore()
         
@@ -335,22 +354,36 @@ def draw_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#
             render_text(text_cr, markup, gaussian_radious, gaussian_radious, w - gaussian_radious * 2, 
                         h - gaussian_radious * 2, text_size, border_color, alignment=alignment,
                         wrap_width=wrap_width,
-                        underline=underline)
+                        underline=underline,
+                        vertical_alignment=vertical_alignment,
+                        clip_line_count=clip_line_count,
+                        )
             dtk_cairo_blur.gaussian_blur(surface, border_radious)
         
         # Draw font.
         render_text(text_cr, markup, gaussian_radious, gaussian_radious, w - gaussian_radious * 2, 
                     h - gaussian_radious * 2, text_size, text_color, alignment=alignment,
                     wrap_width=wrap_width,
-                    underline=underline)
+                    underline=underline,
+                    vertical_alignment=vertical_alignment,
+                    clip_line_count=clip_line_count,
+                    )
         
         # Render gaussian text to target cairo context.
         cr.set_source_surface(surface, x, y)
         cr.paint()
     
-def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color="#000000", 
-                text_font=DEFAULT_FONT, alignment=pango.ALIGN_LEFT,
-                wrap_width=None, underline=False):
+def render_text(cr, markup, 
+                x, y, w, h, 
+                text_size=DEFAULT_FONT_SIZE, 
+                text_color="#000000", 
+                text_font=DEFAULT_FONT, 
+                alignment=pango.ALIGN_LEFT,
+                wrap_width=None, 
+                underline=False,
+                vertical_alignment=TEXT_ALIGN_MIDDLE,
+                clip_line_count=None,
+                ):
     '''
     Render text for function L{ I{draw_text} <draw_text>}, you can use this function individually.
     
@@ -366,40 +399,57 @@ def render_text(cr, markup, x, y, w, h, text_size=DEFAULT_FONT_SIZE, text_color=
     @param alignment: Font alignment option, default is pango.ALIGN_LEFT. You can set pango.ALIGN_MIDDLE or pango.ALIGN_RIGHT.
     @param wrap_width: Wrap width of text, default is None.
     '''
-    # Set color.
-    cr.set_source_rgb(*color_hex_to_cairo(text_color))
-    
-    # Create pangocairo context.
-    context = pangocairo.CairoContext(cr)
-    
-    # Set layout.
-    layout = context.create_layout()
-    layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
-    layout.set_markup(markup)
-    layout.set_alignment(alignment)
-    if wrap_width == None:
-        layout.set_single_paragraph_mode(True)
-        layout.set_width(w * pango.SCALE)
-        layout.set_ellipsize(pango.ELLIPSIZE_END)
-    else:
-        layout.set_width(wrap_width * pango.SCALE)
-        layout.set_wrap(pango.WRAP_WORD)
+    with cairo_state(cr):
+        # Set color.
+        cr.set_source_rgb(*color_hex_to_cairo(text_color))
         
-    (text_width, text_height) = layout.get_pixel_size()
-    
-    if underline:
-        if alignment == pango.ALIGN_LEFT:
-            cr.rectangle(x, y + text_height + (h - text_height) / 2, text_width, 1)
-        elif alignment == pango.ALIGN_CENTER:
-            cr.rectangle(x + (w - text_width) / 2, y + text_height + (h - text_height) / 2, text_width, 1)
+        # Create pangocairo context.
+        context = pangocairo.CairoContext(cr)
+        
+        # Set layout.
+        layout = context.create_layout()
+        layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
+        layout.set_markup(markup)
+        layout.set_alignment(alignment)
+        if wrap_width == None:
+            layout.set_single_paragraph_mode(True)
+            layout.set_width(w * pango.SCALE)
+            layout.set_ellipsize(pango.ELLIPSIZE_END)
         else:
-            cr.rectangle(x + w - text_width, y + text_height + (h - text_height) / 2, text_width, 1)
-        cr.fill()
+            layout.set_width(wrap_width * pango.SCALE)
+            layout.set_wrap(pango.WRAP_WORD)
+            
+        (text_width, text_height) = layout.get_pixel_size()
         
-    # Draw text.
-    cr.move_to(x, y + max(0, (h - text_height)) / 2)
-    context.update_layout(layout)
-    context.show_layout(layout)
+        if underline:
+            if alignment == pango.ALIGN_LEFT:
+                cr.rectangle(x, y + text_height + (h - text_height) / 2, text_width, 1)
+            elif alignment == pango.ALIGN_CENTER:
+                cr.rectangle(x + (w - text_width) / 2, y + text_height + (h - text_height) / 2, text_width, 1)
+            else:
+                cr.rectangle(x + w - text_width, y + text_height + (h - text_height) / 2, text_width, 1)
+            cr.fill()
+            
+        # Set render y coordinate.
+        if vertical_alignment == TEXT_ALIGN_TOP:
+            render_y = y
+        elif vertical_alignment == TEXT_ALIGN_MIDDLE:
+            render_y = y + max(0, (h - text_height) / 2)
+        else:
+            render_y = y + max(0, h - text_height)
+            
+        # Clip area.
+        if clip_line_count:
+            line_count = layout.get_line_count()
+            if line_count > 0:
+                line_height = text_height / line_count
+                cr.rectangle(x, render_y, text_width, line_height * clip_line_count)
+                cr.clip()
+            
+        # Draw text.
+        cr.move_to(x, render_y)
+        context.update_layout(layout)
+        context.show_layout(layout)
         
 def draw_line(cr, sx, sy, ex, ey, line_width=1, antialias_status=cairo.ANTIALIAS_NONE):
     '''
