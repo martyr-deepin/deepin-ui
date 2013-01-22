@@ -366,7 +366,7 @@ class TimeSpinBox(gtk.VBox):
         }
     
     def __init__(self, 
-                 width=85, 
+                 width=95, 
                  height=22, 
                  padding_x=5, 
                  is_24hour=True):
