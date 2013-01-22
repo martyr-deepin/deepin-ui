@@ -28,8 +28,9 @@ from skin_config import skin_config
 from menu import Menu
 from constant import  DEFAULT_FONT_SIZE
 from draw import (draw_vlinear, draw_line, draw_text, draw_pixbuf)
-from utils import (get_content_size, cairo_disable_antialias,
-                   color_hex_to_cairo, alpha_color_hex_to_cairo)
+from utils import (get_content_size,get_window_shadow_size, cairo_disable_antialias,
+                   color_hex_to_cairo, alpha_color_hex_to_cairo, get_match_parent,
+                   cairo_state)
 import gtk 
 import gobject
 import pango
@@ -208,9 +209,24 @@ class Bread(gtk.HBox):
         """
         cr = widget.window.cairo_create()
         rect = widget.allocation
-        cr.rectangle(rect.x, rect.y, rect.width, rect.height)
-        cr.clip()
-        skin_config.render_background(cr, widget, 0, 0)
+
+        # Draw backgroud
+        with cairo_state(cr):
+            cr.set_source_rgb(*color_hex_to_cairo("#ccefff"))
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
+        pixbuf = ui_theme.get_pixbuf("crumbs_bg.png")
+
+        from dtk.ui.cache_pixbuf import CachePixbuf
+        self.cache_bg_pixbuf = CachePixbuf()
+        self.cache_bg_pixbuf.scale(pixbuf.get_pixbuf(), rect.width, rect.height)
+        draw_pixbuf(cr, self.cache_bg_pixbuf.get_cache(), rect.x, rect.y)
+        #win = get_match_parent(widget, ["ScrolledWindow"])
+        #win_x, win_y = win.allocation.x, win.allocation.y
+
+        #cr.translate(-win_x, -win_y)
+        #(shadow_x, shade_y) = get_window_shadow_size(self.get_toplevel())
+        #skin_config.render_background(cr, widget, shadow_x, shade_y)
         return False
 
     def add(self, crumbs):
