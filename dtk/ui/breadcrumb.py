@@ -210,17 +210,17 @@ class Bread(gtk.HBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
 
-        # Draw backgroud
+         #Draw backgroud
         with cairo_state(cr):
-            cr.set_source_rgb(*color_hex_to_cairo("#ccefff"))
+            cr.set_source_rgba(*alpha_color_hex_to_cairo(("#def5ff", 1)))
             cr.rectangle(rect.x, rect.y, rect.width, rect.height)
             cr.fill()
-        pixbuf = ui_theme.get_pixbuf("crumbs_bg.png")
+        #pixbuf = ui_theme.get_pixbuf("crumbs_bg.png")
 
-        from dtk.ui.cache_pixbuf import CachePixbuf
-        self.cache_bg_pixbuf = CachePixbuf()
-        self.cache_bg_pixbuf.scale(pixbuf.get_pixbuf(), rect.width, rect.height)
-        draw_pixbuf(cr, self.cache_bg_pixbuf.get_cache(), rect.x, rect.y)
+        #from dtk.ui.cache_pixbuf import CachePixbuf
+        #self.cache_bg_pixbuf = CachePixbuf()
+        #self.cache_bg_pixbuf.scale(pixbuf.get_pixbuf(), rect.width, rect.height)
+        #draw_pixbuf(cr, self.cache_bg_pixbuf.get_cache(), rect.x, rect.y)
         #win = get_match_parent(widget, ["ScrolledWindow"])
         #win_x, win_y = win.allocation.x, win.allocation.y
 
@@ -425,7 +425,7 @@ class Crumb(gtk.Button):
         self.arrow_down = None
         self.menu_min = 18 # menu bar width
         self.btn_min = 50 # button width
-        self.height = 26 # crumb height
+        self.height = 24 # crumb height
         self.font_size = font_size
         self.padding_x = padding_x
         self.menu = self.create_menu(menu_items)
@@ -440,7 +440,13 @@ class Crumb(gtk.Button):
         self.connect("expose_event", self.expose_cb)
         self.connect("button_press_event", self.button_press_cb)
         self.connect("clicked", self.button_clicked)
+        self.connect("motion-notify-event", self.motion_notify_cb)
+        self.connect("enter-notify-event", self.enter_button)
         self.add_events(gtk.gdk.POINTER_MOTION_MASK)
+
+    def enter_button(self,widget, event):
+        in_menu = event.x > self.button_width
+        self.in_menu =in_menu
 
     def motion_notify_cb(self, widget, event):
         """
@@ -546,49 +552,49 @@ class Crumb(gtk.Button):
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         #!# should move this part to Bread class since app_theme is golobalized
-        arrow_right = self.arrow_right.get_pixbuf()
-        arrow_down = self.arrow_down.get_pixbuf()
-        arrow_width, arrow_height = arrow_right.get_width(), arrow_right.get_height()
+        arrow_right = self.arrow_right
+        arrow_down = self.arrow_down
+        arrow_width, arrow_height = arrow_right.get_pixbuf().get_width(), arrow_right.get_pixbuf().get_height()
         arrow_pixbuf = arrow_right
 
-        button_normal = [(0.5,("#effafc", 1)), (0.5,("#dbecf4",1))]
-        button_prelight = [(0.5,("#e7f4fa", 1)),(0.5,("#b2d2e0", 1))]
-        button_active = [(0.5,("#b2d2e0", 1)),(0.9,("#e7f4fa", 1 ))]
+        outside_border = alpha_color_hex_to_cairo(("#000000", 0.15))
+        inner_border = alpha_color_hex_to_cairo(("#ffffff", 0.5))
+        active_mask = alpha_color_hex_to_cairo(("#000000", 0.1))
 
         if self.menu_show: 
-            self.set_state(gtk.STATE_ACTIVE)
+            self.set_state(gtk.STATE_PRELIGHT)
 
         if widget.state == gtk.STATE_NORMAL:
             text_color = ui_theme.get_color("button_font").get_color()
-            #button_color = button_normal            
-            #menu_color = button_normal
             button_color = None
             menu_color = None
             arrow_pixbuf = arrow_right
             
         elif widget.state == gtk.STATE_PRELIGHT:
             text_color = ui_theme.get_color("button_font").get_color()
-            border_color = "#7ab2db"
-            arrow_pixbuf = arrow_right
-            self.connect("motion-notify-event", self.motion_notify_cb)
+            border_color = outside_border
+            if self.menu_show:
+                arrow_pixbuf = arrow_down
+            else:
+                arrow_pixbuf = arrow_right
 
             if self.in_menu:
-                button_color = button_prelight
-                menu_color = button_active
+                button_color = None
+                menu_color = inner_border
             else:
-                button_color = button_prelight
-                menu_color = button_prelight
+                button_color = inner_border
+                menu_color = None
 
         elif widget.state == gtk.STATE_ACTIVE:
             text_color = ui_theme.get_color("button_font").get_color()
-            border_color = "#7ab2db"
+            border_color = outside_border
             if self.in_button:
-                button_color = button_active
-                menu_color = button_normal
+                button_color = inner_border
+                menu_color = None
                 arrow_pixbuf = arrow_right
             else:
-                button_color = button_normal
-                menu_color = button_active
+                button_color = None
+                menu_color = inner_border
                 arrow_pixbuf = arrow_down
 
         elif widget.state == gtk.STATE_INSENSITIVE:
@@ -602,18 +608,6 @@ class Crumb(gtk.Button):
                             (1, (disable_bg, 1.0))]
         
         ''' Draw background. '''
-        if button_color:
-            draw_vlinear(
-                cr,
-                x , y  , self.button_width, h ,
-                button_color)
-        
-        if self.menu != None:
-            if menu_color:
-                draw_vlinear(
-                    cr,
-                    x + self.button_width, y , self.menu_min, h,
-                    menu_color)
 
         if not widget.state == gtk.STATE_NORMAL:
             # Draw button border.
@@ -625,33 +619,44 @@ class Crumb(gtk.Button):
                 # left
                 draw_line(cr, x , y , x , y + h)
                 # Right
-                draw_line(cr, x + w , y , x + w , y + h)
-                
-            cr.set_source_rgb(*color_hex_to_cairo(border_color))
-            #cr.set_source_rgb(0,0,0)
-            # Draw button border
-            draw_rectangle(cr, x + 1 , y + 1 , self.button_width -1 , h -1) 
-            
-            if self.menu != None:
-                # Draw menu border
-                draw_rectangle(cr, x + self.button_width , y + 1 , self.menu_min , h -1 )
+                draw_line(cr, x + w , y , x + w , y + h -1)
 
-            # Draw innner border
-            cr.set_source_rgb(1, 1, 1)
-            draw_rectangle(cr, x + 2, y + 2, self.button_width - 3, h -3)
+            cr.set_source_rgba(*outside_border)
+            if button_color:
+                draw_rectangle(cr, x + 1 , y + 1 , self.button_width -1 , h -1) 
+            elif menu_color:
+                draw_rectangle(cr, x + self.button_width, y + 1, self.menu_min, h - 1)
             
-            if self.menu != None:
-                draw_rectangle(cr, x + self.button_width + 2, y + 2, self.menu_min -3 , h -3)
+             #Draw innner border
+            cr.set_source_rgba(*inner_border)
+            if button_color:
+                draw_rectangle(cr, x + 2, y + 2, self.button_width - 3, h -3)
+            elif menu_color:
+                draw_rectangle(cr, x + self.button_width + 1, y + 2, self.menu_min - 2, h -3)
+
+            if widget.state == gtk.STATE_ACTIVE:
+                cr.set_source_rgba(*active_mask)
+                if button_color:
+                    cr.rectangle(x + 2, y + 2, self.button_width - 4, h -4)
+                    cr.fill()
+                elif menu_color:
+                    cr.rectangle( x + self.button_width + 1, y + 2, self.menu_min - 3, h -4)
+                    cr.fill()
 
         if self.menu != None:
             # Draw an arrow
-            draw_pixbuf(cr, arrow_pixbuf, x + self.button_width + (self.menu_min - arrow_width) / 2, y + (h - arrow_height) / 2)
+            draw_pixbuf(cr, arrow_pixbuf.get_pixbuf(), x + self.button_width + (self.menu_min - arrow_width) / 2, y + (h - arrow_height) / 2)
 
         # Draw text
         draw_text(cr, self.label, x, y , self.button_width, h, self.font_size, text_color,
                     alignment = pango.ALIGN_CENTER)
         
         return True
+
+
+    def draw_button(self, cr, rect):
+        pass 
+
 
 gobject.type_register(Crumb)
 
