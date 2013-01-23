@@ -204,6 +204,11 @@ class Wizard(Window):
         self.slider.connect("button-press-event", self.button_press_slider)    
         self.navigatebar.connect("button-press-event", self.button_press_navigatebar)        
         self.navigatebar.connect("expose-event", self.expose_navigatebar)
+        self.connect("destroy", self.destroy_wizard)
+        
+    def destroy_wizard(self, widget):
+        if self.finish_callback:
+            self.finish_callback()
         
     def button_press_slider(self, widget, event):
         '''
@@ -211,15 +216,11 @@ class Wizard(Window):
         '''
         rect = widget.allocation
         (window_x, window_y) = widget.get_toplevel().window.get_origin()
-        if (self.slide_index == self.slider_number - 1
-            and is_in_rect((event.x_root, event.y_root), 
+        if is_in_rect((event.x_root, event.y_root), 
                            (window_x + rect.width - self.close_area_width,
                             window_y,
                             self.close_area_width,
-                            self.close_area_height))):
-            if self.finish_callback:
-                self.finish_callback()
-                
+                            self.close_area_height)):
             self.destroy()    
         else:
             widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
