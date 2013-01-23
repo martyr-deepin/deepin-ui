@@ -115,7 +115,7 @@ class Slider(gtk.Viewport):
         '''
         try:
             gobject.source_remove(self.timeouts.pop(widget)[0])
-        except RuntimeError:
+        except Exception:
             pass
 
 gobject.type_register(Slider)
