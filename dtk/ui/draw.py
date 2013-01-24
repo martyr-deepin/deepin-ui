@@ -299,7 +299,6 @@ def draw_text(cr, markup,
               underline=False,
               vertical_alignment=TEXT_ALIGN_MIDDLE,
               clip_line_count=None,
-              line_spacing=None,
               ):
     '''
     Standard function for draw text.
@@ -326,7 +325,6 @@ def draw_text(cr, markup,
                     underline=underline,
                     vertical_alignment=vertical_alignment,
                     clip_line_count=clip_line_count,
-                    line_spacing=line_spacing,
                     )
     elif (border_radious != None and border_color != None) or (gaussian_radious != None and gaussian_color != None):
         # Create text cairo context.
@@ -343,7 +341,6 @@ def draw_text(cr, markup,
                         underline=underline,
                         vertical_alignment=vertical_alignment,
                         clip_line_count=clip_line_count,
-                        line_spacing=line_spacing,
                         )
             dtk_cairo_blur.gaussian_blur(surface, gaussian_radious)
             text_cr.restore()
@@ -360,7 +357,6 @@ def draw_text(cr, markup,
                         underline=underline,
                         vertical_alignment=vertical_alignment,
                         clip_line_count=clip_line_count,
-                        line_spacing=line_spacing,
                         )
             dtk_cairo_blur.gaussian_blur(surface, border_radious)
         
@@ -371,7 +367,6 @@ def draw_text(cr, markup,
                     underline=underline,
                     vertical_alignment=vertical_alignment,
                     clip_line_count=clip_line_count,
-                    line_spacing=line_spacing,
                     )
         
         # Render gaussian text to target cairo context.
@@ -388,7 +383,6 @@ def render_text(cr, markup,
                 underline=False,
                 vertical_alignment=TEXT_ALIGN_MIDDLE,
                 clip_line_count=None,
-                line_spacing=None,
                 ):
     '''
     Render text for function L{ I{draw_text} <draw_text>}, you can use this function individually.
@@ -417,10 +411,6 @@ def render_text(cr, markup,
         layout.set_font_description(pango.FontDescription("%s %s" % (text_font, text_size)))
         layout.set_markup(markup)
         layout.set_alignment(alignment)
-        
-        if line_spacing != None:
-            layout.set_spacing(line_spacing * pango.SCALE)
-        
         if wrap_width == None:
             layout.set_single_paragraph_mode(True)
             layout.set_width(w * pango.SCALE)
