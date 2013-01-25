@@ -956,14 +956,14 @@ class ColorIconItem(gobject.GObject):
             draw_pixbuf(
                 cr,
                 ui_theme.get_pixbuf("skin/color_frame_hover.png").get_pixbuf(),
-                draw_x,
-                draw_y)
+                draw_x - 2,
+                draw_y - 2)
         elif self.highlight_flag:
             draw_pixbuf(
                 cr,
                 ui_theme.get_pixbuf("skin/color_frame_highlight.png").get_pixbuf(),
-                draw_x,
-                draw_y)
+                draw_x - 2,
+                draw_y - 2)
             
     def icon_item_motion_notify(self, x, y):
         '''Handle `motion-notify-event` signal.'''
