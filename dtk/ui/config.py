@@ -21,7 +21,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from deepin_utils.config import Config as DConfig
-import gobject    
 
 class Config(DConfig):
     '''
@@ -38,6 +37,4 @@ class Config(DConfig):
         @param default_config: Default config value use when config file is empty.
         '''
         print "Please import deepin_utils.config instead dtk.ui.config, this module will remove in next version."
-        DConfig.__init__(config_file, default_config)
-        
-gobject.type_register(Config)
+        DConfig.__init__(self, config_file, default_config)
