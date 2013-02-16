@@ -579,7 +579,10 @@ class IconView(gtk.DrawingArea):
         (offset_x, offset_y, viewport) = self.get_offset_coordinate(self)
 
         # Get item size.
-        item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
+        item_width = 1
+        item_height = 1
+        if len(self.items):
+            item_width, item_height = self.items[0].get_width(), self.items[0].get_height()
         scrolled_window = get_match_parent(self, ["ScrolledWindow"])
         columns = int((scrolled_window.allocation.width - self.padding_x * 2) / item_width)
         
