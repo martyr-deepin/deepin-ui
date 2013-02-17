@@ -67,6 +67,13 @@ class HSlider(gtk.Viewport):
         
         self.fixed.move(self.active_widget, self.offset - self.page_width, 0)
 
+    def _no_effect(self):
+        self.offset = self.page_width
+
+        if self.pre_widget:
+            self.fixed.remove(self.pre_widget)
+        self.fixed.move(self.active_widget, 0, 0)
+
     def to_page(self, w, direction):
         if self.in_sliding:
             #TODO:  animation should continue in according to previous status. this can be done to record offset in 
@@ -83,8 +90,10 @@ class HSlider(gtk.Viewport):
             self.timeline = Timeline(self.slide_time, CURVE_SINE)
             if direction == "right":
                 self.timeline.connect('update', lambda source, status: self._to_right(status))
-            else:
+            elif direction == "left":
                 self.timeline.connect('update', lambda source, status: self._to_left(status))
+            else:
+                self._no_effect()
 
             self.timeline.connect("completed", lambda source: self._completed())
             self.timeline.run()
@@ -102,6 +111,7 @@ class HSlider(gtk.Viewport):
         self.emit("completed_slide")
 
     def to_page_now(self, w, d=None):
+        '''
         if self.pre_widget:
             self.fixed.remove(self.pre_widget)
         self.active_widget = w
@@ -111,6 +121,8 @@ class HSlider(gtk.Viewport):
             w.set_size_request(self.allocation.width, self.allocation.height)
             self.show_all()
         self.fixed.add(w)
+        '''
+        self.to_page(w, d)
 
 
 

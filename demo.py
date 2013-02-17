@@ -39,6 +39,7 @@ app_theme = init_skin(
 
 
 # Load other modules.
+import dtk.ui.new_entry
 from dtk.ui.application import Application
 from dtk.ui.browser import WebView
 from dtk.ui.button import CheckButton, RadioButton, ComboButton
@@ -71,6 +72,7 @@ from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.breadcrumb import Bread, Crumb
 from dtk.ui.dialog import OpenFileDialog
+from dtk.ui.new_slider import HSlider
 import dbus
 import dbus.service
 import gtk
@@ -286,8 +288,8 @@ if __name__ == "__main__":
                                                                                 ).show((450, 250))),
          (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航3", lambda : TabWindow("测试标签窗口", tab_window_items, dockfill=True, current_tab_index=2).show_all()),
          (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", lambda : OpenFileDialog("打开文件", application.window, open_file_dlg_click_ok)),
-         (app_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", None),
-         (app_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", None),
+         (app_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", lambda : slider.to_page(gtk.VBox(), None)),
+         (app_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", lambda : slider.to_page(notebook_c, None)),
          (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),
          (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航8", None),
          ])
@@ -310,9 +312,14 @@ if __name__ == "__main__":
          ])
     notebook_frame = HorizontalFrame(20)
     notebook_frame.add(notebook)
-    application.main_box.pack_start(notebook_frame, False, False)
+    slider = HSlider()
+    notebook_c = gtk.VBox()
+    notebook_c.pack_start(notebook_frame, False, False)
+    notebook_c.pack_start(notebook_box, True, True)
+    #application.main_box.pack_start(notebook_frame, False, False)
     
-    application.main_box.pack_start(notebook_box, True, True)
+    slider.to_page_now(notebook_c)
+    application.main_box.pack_start(slider, True, True)
     
     notebook_box.add(tab_1_box)
     
@@ -388,7 +395,7 @@ if __name__ == "__main__":
     # Add entry widget.
     entry_box = gtk.HBox(spacing=10)
     
-    text_entry = TextEntry()
+    text_entry = dtk.ui.new_entry.TextEntry()
     text_entry.set_size(100, 22)
     input_entry = InputEntry()
     input_entry.set_size(100, 22)
