@@ -20,21 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ConfigParser import RawConfigParser as ConfigParser
-from collections import OrderedDict
-import gobject    
-import sys
-import traceback
+from deepin_utils.config import Config as DConfig
 
-class Config(gobject.GObject):
+class Config(DConfig):
     '''
     Config module to read *.ini file.
     '''
-    
-    __gsignals__ = {
-        "config-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-                            (gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING))
-        }
     
     def __init__(self, 
                  config_file, 
@@ -45,120 +36,5 @@ class Config(gobject.GObject):
         @param config_file: Config filepath.
         @param default_config: Default config value use when config file is empty.
         '''
-        gobject.GObject.__init__(self)
-        self.config_parser = ConfigParser()
-        self.remove_option = self.config_parser.remove_option
-        self.has_option = self.config_parser.has_option
-        self.add_section = self.config_parser.add_section
-        self.getboolean = self.config_parser.getboolean
-        self.getint = self.config_parser.getint
-        self.getfloat = self.config_parser.getfloat
-        self.options = self.config_parser.options
-        self.config_file = config_file
-        self.default_config = default_config
-        
-        # Load default configure.
-        self.load_default()
-                
-    def load_default(self):            
-        '''
-        Load config items with default setting.
-        '''
-        # Convert config when config is list format.
-        if isinstance(self.default_config, list):
-            self.default_config = self.convert_from_list(self.default_config)
-            
-        if self.default_config:
-            for section, items in self.default_config.iteritems():
-                self.add_section(section)
-                for key, value in items.iteritems():
-                    self.config_parser.set(section, key, value)
-                
-    def load(self):            
-        ''' 
-        Load config items from the file.
-        '''
-        self.config_parser.read(self.config_file)
-    
-    def has_option(self, section, option):
-        return self.config_parser.has_option(section, option)
-    
-    def get(self, section, option, default=None):
-        ''' 
-        Get specified the section for read the option value. 
-        
-        @param section: Section to index item.
-        @param option: Option to index item.
-        @param default: Default value if item is not exist.
-        @return: Return item value with match in config file.
-        '''
-        try:
-            return self.config_parser.get(section, option)
-        except Exception, e:
-            print "function get got error: %s" % (e)
-            traceback.print_exc(file=sys.stdout)
-            
-            return default
-            
-    def set(self, section, option, value):  
-        '''
-        Set item given value.
-
-        @param section: Section to setting.
-        @param option: Option to setting.
-        @param value: Item value to save.
-        '''
-        if not self.config_parser.has_section(section):
-            print "Section \"%s\" not exist. create..." % (section)
-            self.add_section(section)
-            
-        self.config_parser.set(section, option, value)
-        self.emit("config-changed", section, option, value)
-        
-    def write(self, given_filepath=None):    
-        '''
-        Save configure to file. 
-        
-        @param given_filepath: If given_filepath is None, save to default filepath, otherwise save to given filepath.
-        '''
-        if given_filepath:
-            f = file(given_filepath, "w")
-        else:
-            f = file(self.config_file, "w")
-        self.config_parser.write(f)
-        f.close()
-        
-    def get_default(self):    
-        '''
-        Get default config value.
-        
-        @return: Return default config value.
-        '''
-        return self.default_config
-    
-    def set_default(self, default_config):
-        '''
-        Set default config value and load it.
-        
-        @param default_config: Default config value.
-        '''
-        self.default_config = default_config
-        self.load_default()
-        
-    def convert_from_list(self, config_list):
-        '''
-        Convert to dict from list format.
-        
-        @param config_list: Config value as List format.
-        @return: Return config value as Dict format.
-        '''
-        config_dict = OrderedDict()
-        for (section, option_list) in config_list:
-            option_dict = OrderedDict()
-            for (option, value) in option_list:
-                option_dict[option] = value
-            config_dict[section] = option_dict
-        
-        return config_dict    
-        
-gobject.type_register(Config)
+        print "Please import deepin_utils.config instead dtk.ui.config, this module will remove in next version."
+        DConfig.__init__(self, config_file, default_config)
