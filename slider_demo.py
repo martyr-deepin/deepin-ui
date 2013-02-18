@@ -20,58 +20,66 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import dtk.ui
+import dtk.ui.application
+import dtk.ui.new_slider
+import dtk.ui.new_entry
+import dtk.ui.button
+import dtk.ui.label 
+
 import gtk
 import gobject
-from dtk.ui.new_slider import HSlider
-from dtk.ui.utils import color_hex_to_cairo
 
-class TestWidget(gtk.DrawingArea):
-    '''
-    class docs
-    '''
-	
-    def __init__(self, color):
-        '''
-        init docs
-        '''
-        gtk.DrawingArea.__init__(self)
-        self.color = color
-        
-        self.connect("expose-event", self.expose)
-        
-    def expose(self, widget, event):
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        
-        cr.set_source_rgb(*color_hex_to_cairo(self.color))
-        cr.rectangle(0, 0, rect.width, rect.height)
-        cr.fill()
-        
-        return True
+def slider_loop(slider, widget_list):
+    global i
+    widget_num = len(widget_list)
+    slider.slide_to_page(widget_list[i % widget_num], None)
+    i += 1
+    return True
 
 if __name__ == "__main__":
-    window = gtk.Window()
-    window.set_size_request(400, 300)
-    
-    slider = HSlider()
-    
-    # widget1 = TestWidget("#FF0000")
-    # widget2 = TestWidget("#00FF00")
-    # widget3 = TestWidget("#0000FF")
 
-    widget1 = gtk.Button("Button1")
-    widget2 = gtk.Button("Button2")
-    widget3 = gtk.Button("Button3")
+    #win = gtk.Window()
+    #win.connect("destroy", gtk.main_quit)
+    #win.set_size_request(400, 250)
 
-    slider.append_page(widget1)
-    slider.append_page(widget2)
-    slider.append_page(widget3)
+    app = dtk.ui.application.Application()
+    app.set_default_size(400, 250)
+    app.add_titlebar(
+        ["theme", "menu", "max", "min", "close"], 
+        None, 
+        "深度图形库",
+        "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py",
+    )
     
-    window.add(slider)
+    slider = dtk.ui.new_slider.HSlider()
+    label = dtk.ui.label.Label("Slider Demo")
+    label_align = gtk.Alignment(0.5, 0.5, 0, 0)
+    label_align.add(label)
+    slider.to_page_now(label_align)
     
-    window.connect("destroy", lambda w: gtk.main_quit())
-    gobject.timeout_add(3000, lambda : slider.slide_to_page(widget3, "right"))
+    widget1 = gtk.Alignment(0.5, 0.5, 0, 0)
+    button1 = dtk.ui.button.Button()
+    button1.set_size_request(200, 22)
+    widget1.add(button1)
+
+    widget2 = gtk.Alignment(0.5, 0.5, 0, 0)
+    button2 = gtk.Button("Button2")
+    widget2.add(button2)
+
+    widget3 = gtk.Alignment(0.5, 0.5, 0, 0)
+    text_entry = dtk.ui.new_entry.InputEntry()
+    text_entry.set_size(100, 22)
+    widget3.add(text_entry)
+
+    widget_list = [label_align, widget1, widget2, widget3]
     
-    window.show_all()
-    
-    gtk.main()
+    global i
+    i = 1
+    gobject.timeout_add(3000, slider_loop, slider, widget_list)
+
+    #win.add(slider)
+    #win.show_all()
+    #gtk.main()
+    app.main_box.pack_start(slider)
+    app.run()

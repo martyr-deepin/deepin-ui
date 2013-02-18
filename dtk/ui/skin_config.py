@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from cache_pixbuf import CachePixbuf
-from config import Config
+from deepin_utils.config import Config
 from constant import SHADE_SIZE, COLOR_SEQUENCE
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from deepin_utils.file import create_directory, remove_file, touch_file
