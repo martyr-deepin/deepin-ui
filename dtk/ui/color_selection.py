@@ -23,7 +23,7 @@
 from button import Button
 from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
 from draw import draw_vlinear, draw_line, draw_pixbuf
-from entry import TextEntry
+from new_entry import InputEntry
 from iconview import IconView
 from label import Label
 from locales import _
@@ -32,10 +32,16 @@ from spin import SpinBox
 from theme import ui_theme
 import gobject
 import gtk
-from utils import (gdkcolor_to_string, color_hex_to_cairo, 
-                   propagate_expose, alpha_color_hex_to_cairo,
-                   color_hex_to_rgb, color_rgb_to_hex, cairo_disable_antialias,
-                   is_hex_color, place_center)
+from utils import (
+        gdkcolor_to_string, 
+        color_hex_to_cairo, 
+        propagate_expose, 
+        alpha_color_hex_to_cairo, 
+        color_hex_to_rgb, 
+        color_rgb_to_hex, 
+        cairo_disable_antialias,
+        place_center)
+from deepin_utils.core import is_hex_color
 
 class HSV(gtk.ColorSelection):
     '''
@@ -137,7 +143,7 @@ class ColorSelectDialog(DialogBox):
         self.color_hex_box = gtk.HBox()
         self.color_hex_label = Label(_("Color value"))
         self.color_hex_box.pack_start(self.color_hex_label, False, False, 5)
-        self.color_hex_entry = TextEntry(self.color_string)
+        self.color_hex_entry = InputEntry(self.color_string)
         self.color_hex_entry.entry.check_text = is_hex_color
         self.color_hex_entry.entry.connect("press-return", self.press_return_color_entry)
         self.color_hex_entry.set_size(70, 24)

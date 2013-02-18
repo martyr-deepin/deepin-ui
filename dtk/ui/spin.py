@@ -32,7 +32,8 @@ import time
 import threading as td
 from utils import (alpha_color_hex_to_cairo, cairo_disable_antialias,
                    color_hex_to_cairo, get_content_size, 
-                   propagate_expose, is_float, remove_timeout_id)
+                   propagate_expose, remove_timeout_id)
+from deepin_utils.core import is_float
 
 
 class SpinBox(gtk.VBox):
@@ -101,7 +102,7 @@ class SpinBox(gtk.VBox):
         button_box.pack_start(arrow_down_button, False, False)
         self.value_entry = Entry(str(value))
         self.value_entry.check_text = is_float
-        self.value_entry.connect("changed", lambda entry, value_string: self.update_and_emit(int(value_string)))
+        self.value_entry.connect("press-return", lambda entry: self.update_and_emit(int(entry.get_text())))
         
         self.main_align = gtk.Alignment()
         self.main_align.set(0.5, 0.5, 0, 0)
