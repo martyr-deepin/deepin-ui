@@ -222,12 +222,11 @@ class ScrolledWindow(gtk.Bin):
         #TODO: need handle other scrolltype? I can only capture below two scrolltype at the moment
         if e.direction == gdk.SCROLL_DOWN:
             self.vadjustment.set_value(min(upper-page_size-1, value+step))
-            return True
         elif e.direction == gdk.SCROLL_UP:
             self.vadjustment.set_value(max(0, value-step))
-            return True
-        else:
-            return False
+
+        # We need always return False here, otherwise nesting scrolled window can't work correctly.
+        return False
 
     def do_leave_notify_event(self, e):
         if e.window == self.hwindow :
