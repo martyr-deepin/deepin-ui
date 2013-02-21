@@ -28,7 +28,7 @@ class HSlider(gtk.Viewport):
     __gsignals__ = {
             "completed_slide" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
             }
-    def __init__(self, slide_time=500):
+    def __init__(self, slide_time=200):
         gtk.Viewport.__init__(self)
         self.set_shadow_type(gtk.SHADOW_NONE)
         self.fixed = gtk.Fixed()
