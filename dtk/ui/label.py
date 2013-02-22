@@ -93,6 +93,7 @@ class Label(gtk.EventBox):
         self.underline = underline
         self.hover_color = hover_color
         self.is_hover = False
+        self.ellipsize = pango.ELLIPSIZE_END
         
         self.text = text
         self.text_size = text_size
@@ -129,6 +130,11 @@ class Label(gtk.EventBox):
         self.keymap = {
             "Ctrl + c" : self.copy_to_clipboard,
             }
+        
+    def set_ellipsize(self, ellipsize):
+        self.ellipsize = ellipsize
+        
+        self.queue_draw()
         
     def copy_to_clipboard(self):
         '''
@@ -317,6 +323,7 @@ class Label(gtk.EventBox):
                       border_color=self.border_color,
                       wrap_width=self.wrap_width,
                       underline=self.underline,
+                      ellipsize=self.ellipsize,
                       )
         elif self.select_start_index == self.select_end_index:    
             draw_text(cr, self.text, 
@@ -330,6 +337,7 @@ class Label(gtk.EventBox):
                       border_color=self.border_color,
                       wrap_width=self.wrap_width,
                       underline=self.underline,
+                      ellipsize=self.ellipsize,
                       )
         else:
             select_start_width = self.get_content_width(self.text[0:self.select_start_index])
@@ -348,6 +356,7 @@ class Label(gtk.EventBox):
                           border_color=self.border_color,
                           wrap_width=self.wrap_width,
                           underline=self.underline,
+                          ellipsize=self.ellipsize,
                           )
 
             # Draw middle text.
@@ -363,6 +372,7 @@ class Label(gtk.EventBox):
                           border_color=self.border_color,
                           wrap_width=self.wrap_width,
                           underline=self.underline,
+                          ellipsize=self.ellipsize,
                           )
 
             # Draw right text.
@@ -378,6 +388,7 @@ class Label(gtk.EventBox):
                           border_color=self.border_color,
                           wrap_width=self.wrap_width,
                           underline=self.underline,
+                          ellipsize=self.ellipsize,
                           )
         
     def get_text(self):
