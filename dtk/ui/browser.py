@@ -22,7 +22,7 @@
 
 import webkit
 import dtk_webkit_cookie
-from utils import touch_file_dir
+from deepin_utils.file import touch_file_dir
 from gtk import gdk
 
 class WebView(webkit.WebView):
@@ -123,17 +123,18 @@ class WebView(webkit.WebView):
         self.hadjustment = hadj
 
     def do_scroll(self, w, e):
-        value = self.vadjustment.value
-        step = self.vadjustment.step_increment
-        page_size = self.vadjustment.page_size
-        upper = self.vadjustment.upper
-
-        if e.direction == gdk.SCROLL_DOWN:
-            self.vadjustment.set_value(min(upper-page_size-1, value+step))
-            return True
-        elif e.direction == gdk.SCROLL_UP:
-            self.vadjustment.set_value(max(0, value-step))
-            return True
-        else:
-            return False
+        if hasattr(self, "vadjustment"):
+            value = self.vadjustment.value
+            step = self.vadjustment.step_increment
+            page_size = self.vadjustment.page_size
+            upper = self.vadjustment.upper
+            
+            if e.direction == gdk.SCROLL_DOWN:
+                self.vadjustment.set_value(min(upper-page_size-1, value+step))
+                return True
+            elif e.direction == gdk.SCROLL_UP:
+                self.vadjustment.set_value(max(0, value-step))
+                return True
+            else:
+                return False
 
