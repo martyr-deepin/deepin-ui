@@ -94,6 +94,7 @@ class Label(gtk.EventBox):
         self.hover_color = hover_color
         self.is_hover = False
         self.ellipsize = pango.ELLIPSIZE_END
+        self.update_size_hook = None
         
         self.text = text
         self.text_size = text_size
@@ -411,10 +412,11 @@ class Label(gtk.EventBox):
         '''
         Internal function to update size.
         '''
-        if self.label_width == None:
-            (label_width, label_height) = get_content_size(self.text, self.text_size, wrap_width=self.wrap_width)
-        else:
-            (label_width, label_height) = get_content_size(self.text, self.text_size, wrap_width=self.wrap_width)
+        (label_width, label_height) = get_content_size(self.text, self.text_size, wrap_width=self.wrap_width)
+        if self.label_width != None:
+            if self.update_size_hook != None:
+                self.update_size_hook(self, label_width, self.label_width)
+            
             label_width = self.label_width
             
         if self.enable_gaussian:

@@ -665,11 +665,11 @@ def disable(widget, is_disable):
     '''
     winfo = WidgetInfo.get_info(widget)
     if is_disable:
-        if winfo.enable :
+        if winfo and winfo.enable:
             winfo.enable = False
             TooltipInfo.enable_count -= 1
     else:
-        if not winfo.enable :
+        if winfo and not winfo.enable:
             winfo.enable = True
             TooltipInfo.enable_count += 1
     return disable
