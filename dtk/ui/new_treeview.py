@@ -604,14 +604,25 @@ class TreeView(gtk.VBox):
         '''
         Select to preview item.
         '''
-        if self.select_rows == []:
-            self.select_first_item()
-        elif self.start_select_row != None:
-            if self.start_select_row == self.select_rows[-1]:
-                first_row = self.select_rows[0]
-                if first_row > 0:
-                    prev_row = first_row - 1
-                    self.set_select_rows([prev_row] + self.select_rows)
+        if self.enable_multiple_select:
+            if self.select_rows == []:
+                self.select_first_item()
+            elif self.start_select_row != None:
+                if self.start_select_row == self.select_rows[-1]:
+                    first_row = self.select_rows[0]
+                    if first_row > 0:
+                        prev_row = first_row - 1
+                        self.set_select_rows([prev_row] + self.select_rows)
+                        
+                        (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
+                        vadjust = self.scrolled_window.get_vadjustment()
+                        prev_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:prev_row])) 
+                        if offset_y > prev_row_height_count:
+                            vadjust.set_value(max(vadjust.get_lower(), 
+                                                  prev_row_height_count - self.visible_items[prev_row].get_height()))
+                elif self.start_select_row == self.select_rows[0]:
+                    last_row = self.select_rows[-1]
+                    self.set_select_rows(self.select_rows.remove(last_row))
                     
                     (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
                     vadjust = self.scrolled_window.get_vadjustment()
@@ -619,95 +630,89 @@ class TreeView(gtk.VBox):
                     if offset_y > prev_row_height_count:
                         vadjust.set_value(max(vadjust.get_lower(), 
                                               prev_row_height_count - self.visible_items[prev_row].get_height()))
-            elif self.start_select_row == self.select_rows[0]:
-                last_row = self.select_rows[-1]
-                self.set_select_rows(self.select_rows.remove(last_row))
-                
-                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
-                vadjust = self.scrolled_window.get_vadjustment()
-                prev_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:prev_row])) 
-                if offset_y > prev_row_height_count:
-                    vadjust.set_value(max(vadjust.get_lower(), 
-                                          prev_row_height_count - self.visible_items[prev_row].get_height()))
-        else:
-            print "select_to_prev_item : impossible!"
+            else:
+                print "select_to_prev_item : impossible!"
     
     def select_to_next_item(self):
         '''
         Select to next item.
         '''
-        if self.select_rows == []:
-            self.select_first_item()
-        elif self.start_select_row != None:
-            if self.start_select_row == self.select_rows[0]:
-                last_row = self.select_rows[-1]
-                if last_row < len(self.visible_items) - 1:
-                    next_row = last_row + 1
-                    self.set_select_rows(self.select_rows + [next_row])
+        if self.enable_multiple_select:
+            if self.select_rows == []:
+                self.select_first_item()
+            elif self.start_select_row != None:
+                if self.start_select_row == self.select_rows[0]:
+                    last_row = self.select_rows[-1]
+                    if last_row < len(self.visible_items) - 1:
+                        next_row = last_row + 1
+                        self.set_select_rows(self.select_rows + [next_row])
+                        
+                        (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
+                        vadjust = self.scrolled_window.get_vadjustment()
+                        next_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:(next_row + 1)])) 
+                        if offset_y + vadjust.get_page_size() < next_row_height_count:
+                            vadjust.set_value(max(vadjust.get_lower(),
+                                                  next_row_height_count + self.visible_items[next_row].get_height() - vadjust.get_page_size()))
+                elif self.start_select_row == self.select_rows[-1]:
+                    first_row = self.select_rows[0]
+                    self.set_select_rows(self.select_rows.remove(first_row))
                     
                     (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
                     vadjust = self.scrolled_window.get_vadjustment()
                     next_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:(next_row + 1)])) 
                     if offset_y + vadjust.get_page_size() < next_row_height_count:
                         vadjust.set_value(max(vadjust.get_lower(),
-                                              next_row_height_count + self.visible_items[next_row].get_height() - vadjust.get_page_size()))
-            elif self.start_select_row == self.select_rows[-1]:
-                first_row = self.select_rows[0]
-                self.set_select_rows(self.select_rows.remove(first_row))
-                
-                (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
-                vadjust = self.scrolled_window.get_vadjustment()
-                next_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:(next_row + 1)])) 
-                if offset_y + vadjust.get_page_size() < next_row_height_count:
-                    vadjust.set_value(max(vadjust.get_lower(),
-                                          next_row_height_count - vadjust.get_page_size()))
-        else:
-            print "select_to_next_item : impossible!"
+                                              next_row_height_count - vadjust.get_page_size()))
+            else:
+                print "select_to_next_item : impossible!"
     
     def select_to_first_item(self):
         '''
         Select to first item.
         '''
-        if self.select_rows == []:
-            self.select_first_item()
-        elif self.start_select_row != None:
-            if self.start_select_row == self.select_rows[-1]:
-                self.set_select_rows(range(0, self.select_rows[-1] + 1))
-                vadjust = self.scrolled_window.get_vadjustment()
-                vadjust.set_value(vadjust.get_lower())
-            elif self.start_select_row == self.select_rows[0]:
-                self.set_select_rows(range(0, self.select_rows[0] + 1))
-                vadjust = self.scrolled_window.get_vadjustment()
-                vadjust.set_value(vadjust.get_lower())
-        else:
-            print "select_to_first_item : impossible!"
+        if self.enable_multiple_select:
+            if self.select_rows == []:
+                self.select_first_item()
+            elif self.start_select_row != None:
+                if self.start_select_row == self.select_rows[-1]:
+                    self.set_select_rows(range(0, self.select_rows[-1] + 1))
+                    vadjust = self.scrolled_window.get_vadjustment()
+                    vadjust.set_value(vadjust.get_lower())
+                elif self.start_select_row == self.select_rows[0]:
+                    self.set_select_rows(range(0, self.select_rows[0] + 1))
+                    vadjust = self.scrolled_window.get_vadjustment()
+                    vadjust.set_value(vadjust.get_lower())
+            else:
+                print "select_to_first_item : impossible!"
             
     def select_to_last_item(self):
         '''
         Select to last item.
         '''
-        if self.select_rows == []:
-            self.select_first_item()
-        elif self.start_select_row != None:
-            if self.start_select_row == self.select_rows[0]:
-                self.set_select_rows(range(self.select_rows[0], len(self.visible_items)))
-                vadjust = self.scrolled_window.get_vadjustment()
-                vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
-            elif self.start_select_row == self.select_rows[-1]:
-                self.set_select_rows(range(self.select_rows[-1], len(self.visible_items)))
-                vadjust = self.scrolled_window.get_vadjustment()
-                vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
-        else:
-            print "select_to_end_item : impossible!"
+        if self.enable_multiple_select:
+            if self.select_rows == []:
+                self.select_first_item()
+            elif self.start_select_row != None:
+                if self.start_select_row == self.select_rows[0]:
+                    self.set_select_rows(range(self.select_rows[0], len(self.visible_items)))
+                    vadjust = self.scrolled_window.get_vadjustment()
+                    vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+                elif self.start_select_row == self.select_rows[-1]:
+                    self.set_select_rows(range(self.select_rows[-1], len(self.visible_items)))
+                    vadjust = self.scrolled_window.get_vadjustment()
+                    vadjust.set_value(vadjust.get_upper() - vadjust.get_page_size())
+            else:
+                print "select_to_end_item : impossible!"
     
     def select_all_items(self):
         '''
         Select all items.
         '''
-        if self.select_rows == []:
-            self.start_select_row = 0
-            
-        self.set_select_rows(range(0, len(self.visible_items)))    
+        if self.enable_multiple_select:
+            if self.select_rows == []:
+                self.start_select_row = 0
+                
+            self.set_select_rows(range(0, len(self.visible_items)))    
         
     def delete_select_items(self):
         delete_items = map(lambda row: self.visible_items[row], self.select_rows)
