@@ -20,12 +20,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from dominant_color import get_dominant_color
 from cache_pixbuf import CachePixbuf
 from deepin_utils.config import Config
 from constant import SHADE_SIZE, COLOR_SEQUENCE
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
-from deepin_utils.file import create_directory, remove_file, touch_file
-from utils import color_hex_to_cairo
+from deepin_utils.file import create_directory, remove_file, touch_file, remove_directory
+from utils import color_hex_to_cairo, find_similar_color
+import shutil
 import gobject
 import gtk
 import os
@@ -501,6 +503,96 @@ class SkinConfig(gobject.GObject):
         self.ui_theme_dir = ui_theme.user_theme_dir
         self.app_theme_dir = app_theme.user_theme_dir
             
+    def load_skin_from_image(self, filepath):
+        # Init.
+        skin_dir = os.path.join(self.user_skin_dir, str(uuid.uuid4()))
+        skin_image_file = os.path.basename(filepath)
+        config_file = os.path.join(skin_dir, "config.ini")
+        dominant_color = get_dominant_color(filepath)
+        similar_color = find_similar_color(dominant_color)[0]
+        default_config = [
+            ("theme", [("theme_name", similar_color)]),
+            ("application", [("app_id", self.app_given_id),
+                             ("app_version", self.app_given_version)]),
+            ("background", [("image", skin_image_file),
+                            ("x", "0"),
+                            ("y", "0"),
+                            ("scale_x", "1.0"),
+                            ("scale_y", "1.0"),
+                            ("dominant_color", dominant_color)]),
+            ("action", [("deletable", "True"),
+                        ("editable", "True"),
+                        ("vertical_mirror", "False"),
+                        ("horizontal_mirror", "False")])]
+        
+        # Create skin directory.
+        create_directory(skin_dir, True)
+        
+        # Copy skin image file.
+        shutil.copy(filepath, skin_dir)        
+        
+        # Touch skin config file.
+        touch_file(config_file)
+        
+        # Write default skin config information.
+        Config(config_file, default_config).write()
+        
+        if self.reload_skin(os.path.basename(skin_dir)):
+            self.apply_skin()
+            
+            return (True, skin_dir, skin_image_file)
+        else:
+            return (False, skin_dir, skin_image_file)
+        
+    def load_skin_from_package(self, filepath):
+        '''Create skin from package.'''
+        # Init.
+        skin_dir = os.path.join(self.user_skin_dir, str(uuid.uuid4()))
+        
+        # Create skin directory.
+        create_directory(skin_dir, True)
+        
+        # Extract skin package.
+        tar = tarfile.open(filepath, "r:gz")
+        tar.extractall(skin_dir)
+        
+        # Get skin image file.
+        config = Config(os.path.join(skin_dir, "config.ini"))
+        config.load()
+
+        # Move theme files to given directory if theme is not in default theme list.
+        skin_theme_name = config.get("theme", "theme_name")
+        if not skin_theme_name in COLOR_SEQUENCE:
+            # Check version when package have special theme that not include in standard themes.
+            app_id = config.get("application", "app_id")
+            app_version = config.get("application", "app_version")
+            if app_id == self.app_given_id and app_version == self.app_given_version:
+                # Remove same theme from given directories.
+                remove_directory(os.path.join(self.ui_theme_dir, skin_theme_name))
+                remove_directory(os.path.join(self.app_theme_dir, skin_theme_name))
+                
+                # Move new theme files to given directories.
+                shutil.move(os.path.join(skin_dir, "ui_theme", skin_theme_name), self.ui_theme_dir)
+                shutil.move(os.path.join(skin_dir, "app_theme", skin_theme_name), self.app_theme_dir)
+                
+                # Remove temp theme directories under skin directory.
+                remove_directory(os.path.join(skin_dir, "ui_theme"))        
+                remove_directory(os.path.join(skin_dir, "app_theme"))        
+            else:
+                # Remove skin directory if version mismatch.
+                remove_directory(skin_dir)
+                
+                return False
+        
+        # Apply new skin.
+        skin_image_file = config.get("background", "image")
+        if self.reload_skin(os.path.basename(skin_dir)):
+            self.apply_skin()
+            
+            return (True, skin_dir, skin_image_file)
+        else:
+            return (False, skin_dir, skin_image_file)
+        
 gobject.type_register(SkinConfig)
 
 skin_config = SkinConfig()

@@ -26,7 +26,6 @@ from deepin_utils.config import Config
 from constant import SHADE_SIZE, COLOR_SEQUENCE
 from dialog import ConfirmDialog, OpenFileDialog, SaveFileDialog
 from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
-from dominant_color import get_dominant_color
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from iconview import IconView
 from label import Label
@@ -39,17 +38,14 @@ import gobject
 import gtk
 import math
 import os
-import shutil
-import tarfile
 import threading as td
 import urllib
-import uuid
-from deepin_utils.file import create_directory, remove_directory, touch_file, end_with_suffixs
+from deepin_utils.file import remove_directory, end_with_suffixs
 from utils import (is_in_rect, set_cursor, remove_timeout_id,
                    color_hex_to_cairo, cairo_state, container_remove_all, 
                    cairo_disable_antialias, 
                    scroll_to_bottom, 
-                   place_center, get_pixbuf_support_foramts, find_similar_color, 
+                   place_center, get_pixbuf_support_foramts, 
                    get_optimum_pixbuf_from_file)
 
 __all__ = ["SkinWindow"]
@@ -240,99 +236,22 @@ class SkinPreviewPage(gtk.VBox):
         
     def create_skin_from_image(self, filepath):
         '''Create skin from image.'''
-        # Init.
-        skin_dir = os.path.join(skin_config.user_skin_dir, str(uuid.uuid4()))
-        skin_image_file = os.path.basename(filepath)
-        config_file = os.path.join(skin_dir, "config.ini")
-        dominant_color = get_dominant_color(filepath)
-        similar_color = find_similar_color(dominant_color)[0]
-        default_config = [
-            ("theme", [("theme_name", similar_color)]),
-            ("application", [("app_id", skin_config.app_given_id),
-                             ("app_version", skin_config.app_given_version)]),
-            ("background", [("image", skin_image_file),
-                            ("x", "0"),
-                            ("y", "0"),
-                            ("scale_x", "1.0"),
-                            ("scale_y", "1.0"),
-                            ("dominant_color", dominant_color)]),
-            ("action", [("deletable", "True"),
-                        ("editable", "True"),
-                        ("vertical_mirror", "False"),
-                        ("horizontal_mirror", "False")])]
+        (load_skin_status, skin_dir, skin_image_file) = skin_config.load_skin_from_image(filepath)
         
-        # Create skin directory.
-        create_directory(skin_dir, True)
-        
-        # Copy skin image file.
-        shutil.copy(filepath, skin_dir)        
-        
-        # Touch skin config file.
-        touch_file(config_file)
-        
-        # Write default skin config information.
-        Config(config_file, default_config).write()
-        
-        # Apply new skin.
-        self.preview_view.add_items([SkinPreviewIcon(
-                    skin_dir,
-                    skin_image_file,
-                    self.change_skin_callback,
-                    self.switch_edit_page_callback,
-                    self.pop_delete_skin_dialog
-                    )], -1)
-        if skin_config.reload_skin(os.path.basename(skin_dir)):
-            skin_config.apply_skin()
-            
-            self.highlight_skin()    
-            
-            # Scroll scrollbar to bottom.
-            scroll_to_bottom(self.preview_scrolled_window)            
+        if load_skin_status:
+            self.add_skin_preview_icon(skin_dir, skin_image_file)
         
     def create_skin_from_package(self, filepath):
         '''Create skin from package.'''
-        # Init.
-        skin_dir = os.path.join(skin_config.user_skin_dir, str(uuid.uuid4()))
+        (load_skin_status, skin_dir, skin_image_file) = skin_config.load_skin_from_image(filepath)
         
-        # Create skin directory.
-        create_directory(skin_dir, True)
-        
-        # Extract skin package.
-        tar = tarfile.open(filepath, "r:gz")
-        tar.extractall(skin_dir)
-        
-        # Get skin image file.
-        config = Config(os.path.join(skin_dir, "config.ini"))
-        config.load()
-
-        # Move theme files to given directory if theme is not in default theme list.
-        skin_theme_name = config.get("theme", "theme_name")
-        if not skin_theme_name in COLOR_SEQUENCE:
-            # Check version when package have special theme that not include in standard themes.
-            app_id = config.get("application", "app_id")
-            app_version = config.get("application", "app_version")
-            if app_id == skin_config.app_given_id and app_version == skin_config.app_given_version:
-                # Remove same theme from given directories.
-                remove_directory(os.path.join(skin_config.ui_theme_dir, skin_theme_name))
-                remove_directory(os.path.join(skin_config.app_theme_dir, skin_theme_name))
-                
-                # Move new theme files to given directories.
-                shutil.move(os.path.join(skin_dir, "ui_theme", skin_theme_name), skin_config.ui_theme_dir)
-                shutil.move(os.path.join(skin_dir, "app_theme", skin_theme_name), skin_config.app_theme_dir)
-                
-                # Remove temp theme directories under skin directory.
-                remove_directory(os.path.join(skin_dir, "ui_theme"))        
-                remove_directory(os.path.join(skin_dir, "app_theme"))        
-            else:
-                # Remove skin directory if version mismatch.
-                remove_directory(skin_dir)
-                
-                ConfirmDialog(_("Skin version mismatch"),
-                              _("Import skin version is mismatch with current one!")).show_all()
-                return 
-        
-        # Apply new skin.
-        skin_image_file = config.get("background", "image")
+        if load_skin_status:
+            self.add_skin_preview_icon(skin_dir, skin_image_file)
+        else:
+            ConfirmDialog(_("Skin version mismatch"),
+                          _("Import skin version is mismatch with current one!")).show_all()
+            
+    def add_skin_preview_icon(self, skin_dir, skin_image_file):
         self.preview_view.add_items([SkinPreviewIcon(
                     skin_dir,
                     skin_image_file,
@@ -340,13 +259,11 @@ class SkinPreviewPage(gtk.VBox):
                     self.switch_edit_page_callback,
                     self.pop_delete_skin_dialog
                     )], -1)
-        if skin_config.reload_skin(os.path.basename(skin_dir)):
-            skin_config.apply_skin()
             
-            self.highlight_skin()    
+        self.highlight_skin()    
             
-            # Scroll scrollbar to bottom.
-            scroll_to_bottom(self.preview_scrolled_window)            
+        # Scroll scrollbar to bottom.
+        scroll_to_bottom(self.preview_scrolled_window)            
                     
     def highlight_skin(self):
         '''Highlight skin.'''
