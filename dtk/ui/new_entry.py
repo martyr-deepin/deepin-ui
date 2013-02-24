@@ -39,31 +39,6 @@ from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo,
                           get_content_size, is_double_click, is_right_button, 
                           is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias
                           )
-import time
-import threading as td
-
-class CursorFlashThread(td.Thread):
-    def __init__(self, argv):
-        td.Thread.__init__(self)
-        self.setDaemon(True)
-        self.ThisPtr = argv
-
-    def run(self):
-        try:
-            self.draw_flash_cursor()
-        except Exception, e:
-            print "class LoadingThread got error: %s" % (e)
-            traceback.print_exc(file=sys.stdout)
-
-    def draw_flash_cursor(self):
-        enable_flash = True
-        while (True):
-            if enable_flash:
-                self.ThisPtr.m_draw_cursor()
-            else:
-                self.ThisPtr.m_clear_cursor()
-            enable_flash = not enable_flash
-            time.sleep(1)
 
 class EntryBuffer(gobject.GObject):
     '''
@@ -437,7 +412,7 @@ class EntryBuffer(gobject.GObject):
             else:
                 layout.set_text(self._layout.get_text()[left_pos:right_pos])
     
-    def render(self, cr, rect, im=None, offset_x=0, offset_y=0, grab_focus_flag=False, shown_password=False):
+    def render(self, cr, rect, alpha=1, im=None, offset_x=0, offset_y=0, grab_focus_flag=False, shown_password=False):
         '''render. Used by widget'''
         # Clip text area first.
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
@@ -519,14 +494,14 @@ class EntryBuffer(gobject.GObject):
                 self.cursor_y = y + offset_y
                 self.cursor_pos1 = cursor_pos[1]
                 self.cursor_pos2 = cursor_pos[3]
-                self.m_draw_cursor()
+                self.m_draw_cursor(alpha)
                 '''
                 FIXME: HOWTO flash cursor
                 CursorFlashThread(self).start()
                 '''
                 
-    def m_draw_cursor(self):
-        self.cursor_cr.set_source_rgb(0, 0, 0)
+    def m_draw_cursor(self, alpha):
+        self.cursor_cr.set_source_rgba(0, 0, 0, alpha)
         self.cursor_cr.rectangle(self.cursor_x, 
                                  self.cursor_pos1 + self.cursor_y, 
                                  1, 
@@ -863,6 +838,15 @@ class Entry(gtk.EventBox):
         self.connect("focus-out-event", self.focus_out_entry)
         
         self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
+        self.alpha = 1
+
+    def cursor_flash_tick(self):
+        self.window.invalidate_rect(self.allocation, True)
+        if self.alpha > 0:
+            self.alpha = 0
+        else:
+            self.alpha = 1
+        return self.grab_focus_flag
     
     def show_password(self, shown_password):
         self.shown_password = shown_password
@@ -1167,7 +1151,7 @@ class Entry(gtk.EventBox):
         '''
         Draw entry
         '''
-        self.entry_buffer.render(cr, rect, self.im, self.offset_x, self.offset_y, self.grab_focus_flag, self.shown_password)
+        self.entry_buffer.render(cr, rect, self.alpha, self.im, self.offset_x, self.offset_y, self.grab_focus_flag, self.shown_password)
         
         # Propagate expose.
         propagate_expose(widget, event)
@@ -1233,7 +1217,8 @@ class Entry(gtk.EventBox):
         '''
         self.grab_focus_flag = True
         self.im.focus_in()
-        self.queue_draw()
+        gobject.timeout_add(500, self.cursor_flash_tick)
+        #self.queue_draw()
             
     def focus_out_entry(self, widget, event):
         '''

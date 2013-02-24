@@ -20,6 +20,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from dtk.ui.init_skin import init_skin
+from deepin_utils.file import get_parent_dir
+import os
+app_theme = init_skin(
+    "deepin-ui-demo", 
+    "1.0",
+    "01",
+    os.path.join(get_parent_dir(__file__), "skin"),
+    os.path.join(get_parent_dir(__file__), "app_theme"),
+    )
+
+
 import gtk
 from dtk.ui.color_selection import ColorButton, ColorSelectDialog, ColorItem, HSV
 
