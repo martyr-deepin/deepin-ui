@@ -22,7 +22,7 @@
 
 from button import Button, ImageButton, ToggleButton, ActionButton
 from cache_pixbuf import CachePixbuf
-from config import Config
+from deepin_utils.config import Config
 from constant import SHADE_SIZE, COLOR_SEQUENCE
 from dialog import ConfirmDialog, OpenFileDialog, SaveFileDialog
 from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
