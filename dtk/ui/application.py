@@ -237,7 +237,7 @@ class Application(object):
         """
         skin_window = SkinWindow(self.skin_preview_pixbuf)
         skin_window.show_all()
-        skin_window.connect("show", lambda w: place_center(self.window, w))
+        place_center(self.window, skin_window)
 
         return False
 
