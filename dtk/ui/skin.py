@@ -364,7 +364,7 @@ class SkinPreviewPage(gtk.VBox):
             _("Are you sure delete this skin?"),
             confirm_callback = lambda : self.remove_skin(item))
         dialog.show_all()
-        dialog.connect("show", lambda w: place_center(self.get_toplevel(), w))
+        place_center(self.get_toplevel(), dialog)
             
     def remove_skin(self, item):
         '''Remove skin.'''
