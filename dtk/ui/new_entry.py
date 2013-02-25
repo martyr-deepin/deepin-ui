@@ -412,7 +412,7 @@ class EntryBuffer(gobject.GObject):
             else:
                 layout.set_text(self._layout.get_text()[left_pos:right_pos])
     
-    def render(self, cr, rect, alpha=1, im=None, offset_x=0, offset_y=0, grab_focus_flag=False, shown_password=False):
+    def render(self, cr, rect, cursor_alpha=1, im=None, offset_x=0, offset_y=0, grab_focus_flag=False, shown_password=False):
         '''render. Used by widget'''
         # Clip text area first.
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
@@ -494,14 +494,14 @@ class EntryBuffer(gobject.GObject):
                 self.cursor_y = y + offset_y
                 self.cursor_pos1 = cursor_pos[1]
                 self.cursor_pos2 = cursor_pos[3]
-                self.m_draw_cursor(alpha)
+                self.m_draw_cursor(cursor_alpha)
                 '''
                 FIXME: HOWTO flash cursor
                 CursorFlashThread(self).start()
                 '''
                 
-    def m_draw_cursor(self, alpha):
-        self.cursor_cr.set_source_rgba(0, 0, 0, alpha)
+    def m_draw_cursor(self, cursor_alpha):
+        self.cursor_cr.set_source_rgba(0, 0, 0, cursor_alpha)
         self.cursor_cr.rectangle(self.cursor_x, 
                                  self.cursor_pos1 + self.cursor_y, 
                                  1, 
@@ -726,7 +726,8 @@ class Entry(gtk.EventBox):
     MOVE_NONE = 3
     
     __gsignals__ = {
-        "edit-alarm" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "editing" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "edit-complete" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "press-return" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
         "invalid-value" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
@@ -838,14 +839,22 @@ class Entry(gtk.EventBox):
         self.connect("focus-out-event", self.focus_out_entry)
         
         self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
-        self.alpha = 1
+        self.connect("editing", self.__edit_going)
+        self.cursor_alpha = 1
+        self.edit_complete_flag = True
+        self.edit_timeout_id = None
 
     def cursor_flash_tick(self):
-        self.window.invalidate_rect(self.allocation, True)
-        if self.alpha > 0:
-            self.alpha = 0
+        #self.window.invalidate_rect(self.allocation, True)
+        
+        # redraw entry text and cursor
+        self.queue_draw()
+
+        # according edit status change cursor alpha color every 500 microsecond
+        if self.cursor_alpha == 1 and self.edit_complete_flag:
+            self.cursor_alpha = 0
         else:
-            self.alpha = 1
+            self.cursor_alpha = 1
         return self.grab_focus_flag
     
     def show_password(self, shown_password):
@@ -1151,7 +1160,7 @@ class Entry(gtk.EventBox):
         '''
         Draw entry
         '''
-        self.entry_buffer.render(cr, rect, self.alpha, self.im, self.offset_x, self.offset_y, self.grab_focus_flag, self.shown_password)
+        self.entry_buffer.render(cr, rect, self.cursor_alpha, self.im, self.offset_x, self.offset_y, self.grab_focus_flag, self.shown_password)
         
         # Propagate expose.
         propagate_expose(widget, event)
@@ -1295,7 +1304,19 @@ class Entry(gtk.EventBox):
                 
                 self.__calculate_cursor_offset()
             self.queue_draw()
+            self.emit("editing")
         
+    def __edit_going(self, widget):
+        self.cursor_alpha = 1
+        self.edit_complete_flag = False
+        if self.edit_timeout_id != None:
+            gobject.source_remove(self.edit_timeout_id)
+        self.edit_timeout_id = gobject.timeout_add(500, self.__wait_edit_complete)
+
+    def __wait_edit_complete(self):
+        self.edit_complete_flag = True
+        return False
+
     # this function maybe can be deleted
     def get_content_width(self, content):
         '''
