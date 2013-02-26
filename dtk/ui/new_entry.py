@@ -39,6 +39,15 @@ from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo,
                           get_content_size, is_double_click, is_right_button, 
                           is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias
                           )
+try:
+    import deepin_gsettings
+except ImportError:
+    print "----------Please Install Deepin GSettings Python Binding----------"
+    print "git clone git@github.com:linuxdeepin/deepin-gsettings.git"
+    print "------------------------------------------------------------------"
+
+DESKTOP_SETTINGS_CONF = "org.gnome.desktop.interface"
+DESKTOP_SETTINGS = deepin_gsettings.new(DESKTOP_SETTINGS_CONF)
 
 class EntryBuffer(gobject.GObject):
     '''
@@ -1226,7 +1235,11 @@ class Entry(gtk.EventBox):
         '''
         self.grab_focus_flag = True
         self.im.focus_in()
-        gobject.timeout_add(500, self.cursor_flash_tick)
+        try:
+            cursor_blink_time = int(DESKTOP_SETTINGS.get_int("cursor-blink-time") / 2)
+        except Exception:
+            cursor_blink_time = 600
+        gobject.timeout_add(cursor_blink_time, self.cursor_flash_tick)
         #self.queue_draw()
             
     def focus_out_entry(self, widget, event):
