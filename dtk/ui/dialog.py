@@ -415,7 +415,8 @@ class InputDialog(DialogBox):
                  default_width=330,
                  default_height=145,
                  confirm_callback=None, 
-                 cancel_callback=None):
+                 cancel_callback=None, 
+                 cancel_first=False):
         '''
         Initialize InputDialog class.
         
@@ -446,7 +447,10 @@ class InputDialog(DialogBox):
         self.entry_align.add(self.entry)
         self.body_box.pack_start(self.entry_align, True, True)
         
-        self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
+        if cancel_first:
+            self.right_button_box.set_buttons([self.cancel_button, self.confirm_button])
+        else:
+            self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
         self.connect("show", self.focus_input)
         self.entry.connect("key-press-event", self.m_key_press)
