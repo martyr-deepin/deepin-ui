@@ -22,10 +22,11 @@
 
 import cairo
 import math
-from draw import draw_vlinear
+from draw import draw_vlinear, draw_text
 from keymap import get_keyevent_name
 from skin_config import skin_config
 from theme import ui_theme
+from locales import _
 import gc
 import gobject
 import gtk
@@ -95,7 +96,8 @@ class IconView(gtk.DrawingArea):
         self.double_click_item = None
         self.single_click_item = None
         self.right_click_item = None
-        
+        self.is_loading = False
+
         # Signal.
         self.connect("realize", self.realize_icon_view)
         self.connect("realize", lambda w: self.grab_focus()) # focus key after realize
@@ -422,7 +424,11 @@ class IconView(gtk.DrawingArea):
             self.render_surface_cr = gtk.gdk.CairoContext(cairo.Context(self.render_surface))
         except Exception:
             pass
-        
+    
+    def set_loading(self, is_loading):
+        self.is_loading = is_loading
+        self.queue_draw()
+
     def expose_icon_view(self, widget, event):
         '''
         Internal callback for `expose-event` signal.
@@ -453,6 +459,11 @@ class IconView(gtk.DrawingArea):
             self.render_surface_cr.set_operator(cairo.OPERATOR_CLEAR)
             self.render_surface_cr.paint()
         
+        if self.is_loading:
+            draw_text(cr, _("Loading..."), 
+                      rect.x + 10, rect.y, rect.width, rect.height, 22)
+            return
+
         # Draw items on surface cairo.
         self.draw_items(self.render_surface_cr, rect)
             
