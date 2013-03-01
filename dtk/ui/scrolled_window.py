@@ -82,6 +82,10 @@ class ScrolledWindow(gtk.Bin):
     @undocumented: do_expose_event
     '''
 
+    __gsignals__ = {
+        "vscrollbar-state-changed":(gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,(gobject.TYPE_STRING,))
+        }
+
     def __init__(self,
                  right_space=2,
                  top_bottom_space=3):
@@ -103,6 +107,8 @@ class ScrolledWindow(gtk.Bin):
         self.h_change_id = None
         self.v_value_change_id = None
         self.v_change_id = None
+
+        self.vscrollbar_state = None
 
         class Record():
             def __init__(self):
@@ -218,6 +224,17 @@ class ScrolledWindow(gtk.Bin):
         step = self.vadjustment.step_increment
         page_size = self.vadjustment.page_size
         upper = self.vadjustment.upper
+
+        if upper != page_size:
+            if value == 0 and self.vscrollbar_state != "top":
+                self.vscrollbar_state = "top"
+                self.emit("vscrollbar-state-changed", self.vscrollbar_state)
+            elif value > 0 and value < upper-page_size-1 and self.vscrollbar_state != "center":
+                self.vscrollbar_state = "center"
+                self.emit("vscrollbar-state-changed", self.vscrollbar_state)
+            elif value == upper-page_size-1 and self.vscrollbar_state != "bottom":
+                self.vscrollbar_state = "bottom"
+                self.emit("vscrollbar-state-changed", self.vscrollbar_state)
 
         #TODO: need handle other scrolltype? I can only capture below two scrolltype at the moment
         if e.direction == gdk.SCROLL_DOWN:
