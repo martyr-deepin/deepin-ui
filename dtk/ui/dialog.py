@@ -348,7 +348,8 @@ class ConfirmDialog(DialogBox):
                  default_width=330,
                  default_height=145,
                  confirm_callback=None, 
-                 cancel_callback=None):
+                 cancel_callback=None, 
+                 cancel_first=False):
         '''
         Initialize ConfirmDialog class.
         
@@ -379,7 +380,10 @@ class ConfirmDialog(DialogBox):
         self.body_box.pack_start(self.label_align, True, True)
         self.label_align.add(self.label)
         
-        self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
+        if cancel_first:
+            self.right_button_box.set_buttons([self.cancel_button, self.confirm_button])
+        else:
+            self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         
     def click_confirm_button(self):
         '''
