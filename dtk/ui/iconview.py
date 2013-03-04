@@ -22,6 +22,7 @@
 
 import cairo
 import math
+from constant import DEFAULT_FONT_SIZE
 from draw import draw_vlinear, draw_text
 from keymap import get_keyevent_name
 from skin_config import skin_config
@@ -32,7 +33,7 @@ import gobject
 import gtk
 from utils import (get_match_parent, cairo_state, get_event_coords, 
                    is_left_button, is_double_click, is_right_button,
-                   is_single_click, get_window_shadow_size)
+                   is_single_click, get_window_shadow_size, get_content_size)
 
 class IconView(gtk.DrawingArea):
     '''
@@ -460,9 +461,14 @@ class IconView(gtk.DrawingArea):
             self.render_surface_cr.paint()
         
         if self.is_loading:
-            draw_text(cr, _("Loading..."), 
-                      rect.x + 10, rect.y, rect.width, rect.height, 22)
-            return
+            load_text = _("Loading...")
+            load_width, load_height = get_content_size(load_text)
+            draw_text(cr, 
+                      load_text, 
+                      rect.x + (rect.width - load_width) / 2, 
+                      rect.y + rect.height - load_height, 
+                      rect.width, 
+                      load_height)
 
         # Draw items on surface cairo.
         self.draw_items(self.render_surface_cr, rect)
