@@ -33,10 +33,11 @@ app_theme = init_skin(
     )
 
 from dtk.ui.application import Application
-from dtk.ui.hscalebar import HScalebar
+from dtk.ui.new_scalebar import HScalebar
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
 import gtk
 import deepin_gsettings
+import gtk
 
 dg = deepin_gsettings.new("org.gnome.settings-daemon.plugins.xrandr")
 
@@ -53,36 +54,42 @@ def __resized(widget):
 
 if __name__ == "__main__":
     # Init application.
-    application = Application()
+    #application = Application()
 
     # Set application default size.
-    application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
+    #application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
 
     # Set application icon.
-    application.set_icon(app_theme.get_pixbuf("icon.ico"))
+    #application.set_icon(app_theme.get_pixbuf("icon.ico"))
     
     # Set application preview pixbuf.
-    application.set_skin_preview(app_theme.get_pixbuf("frame.png"))
+    #application.set_skin_preview(app_theme.get_pixbuf("frame.png"))
     
     # Add titlebar.
-    application.add_titlebar(
-        ["theme", "max", "min", "close"], 
-        app_theme.get_pixbuf("logo.png"), 
-        "Scalebar demo",
-        "Scalebar demo",
-        )
+    #application.add_titlebar(
+        #["theme", "max", "min", "close"], 
+        #app_theme.get_pixbuf("logo.png"), 
+        #"Scalebar demo",
+        #"Scalebar demo",
+        #)
     
     # Add Scalebar.
-    hscale1 = HScalebar(show_value = True)
+    hscale1 = HScalebar(show_value = False)
     hscale1.add_mark(50, gtk.POS_BOTTOM, "TOP")
     hscale1.add_mark(0, gtk.POS_BOTTOM, "LEFT")
     hscale1.add_mark(100, gtk.POS_BOTTOM, "RIGHT")
     hscale1_align = gtk.Alignment()
     hscale1_align.set(0.5, 0.5, 1, 1)
-    hscale1_align.set_padding(0, 2, 2, 2)
+    hscale1_align.set_padding(0, 0, 0, 0)
     hscale1_align.add(hscale1)
     
-    application.main_box.pack_start(hscale1_align)
-    application.window.connect("check-resize", __resized)
+    win = gtk.Window()
+    win.set_size_request(300, -1)
+    win.add(hscale1_align)
+    win.connect("destroy", gtk.main_quit)
+    win.show_all()
+    gtk.main()
+    #application.main_box.pack_start(hscale1_align)
+    #application.window.connect("check-resize", __resized)
 
-    application.run()
+    #application.run()
