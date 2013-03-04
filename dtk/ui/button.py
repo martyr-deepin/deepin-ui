@@ -710,7 +710,7 @@ class CheckButton(ToggleButton):
     CheckButton class.
     '''
 	
-    def __init__(self, label_text=None, padding_x=8, font_size=DEFAULT_FONT_SIZE):
+    def __init__(self, label_text=None, padding_x=2, font_size=DEFAULT_FONT_SIZE):
         '''
         Initialize CheckButton class.
         
@@ -1063,7 +1063,7 @@ class RadioButton(ToggleButton):
     @undocumented: click_radio_button
     '''
 	
-    def __init__(self, label_text=None, padding_x=8, font_size=DEFAULT_FONT_SIZE):
+    def __init__(self, label_text=None, padding_x=2, font_size=DEFAULT_FONT_SIZE):
         '''
         Initialize RadioButton class.
         

@@ -74,7 +74,7 @@ if __name__ == "__main__":
         #)
     
     # Add Scalebar.
-    hscale1 = HScalebar(show_value = False)
+    hscale1 = HScalebar(show_value = True)
     hscale1.add_mark(50, gtk.POS_BOTTOM, "TOP")
     hscale1.add_mark(0, gtk.POS_BOTTOM, "LEFT")
     hscale1.add_mark(100, gtk.POS_BOTTOM, "RIGHT")
