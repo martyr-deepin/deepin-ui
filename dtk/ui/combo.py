@@ -307,7 +307,7 @@ class ComboBox(gtk.VBox):
         
         self.emit("item-selected", item_content, item_value, item_index)
         
-        self.grab_focus()
+        #self.grab_focus()
         
         self.queue_draw()
         
