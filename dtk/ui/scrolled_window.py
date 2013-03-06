@@ -222,19 +222,11 @@ class ScrolledWindow(gtk.Bin):
     def do_scroll_event(self, e):
         value = self.vadjustment.value
         step = self.vadjustment.step_increment
-        page_size = self.vadjustment.page_size
         upper = self.vadjustment.upper
-
-        if upper != page_size:
-            if value == 0 and self.vscrollbar_state != "top":
-                self.vscrollbar_state = "top"
-                self.emit("vscrollbar-state-changed", self.vscrollbar_state)
-            elif value > 0 and value < upper-page_size-1 and self.vscrollbar_state != "center":
-                self.vscrollbar_state = "center"
-                self.emit("vscrollbar-state-changed", self.vscrollbar_state)
-            elif value == upper-page_size-1 and self.vscrollbar_state != "bottom":
-                self.vscrollbar_state = "bottom"
-                self.emit("vscrollbar-state-changed", self.vscrollbar_state)
+        page_size = self.vadjustment.page_size
+        
+        # Emit signal 'vscrollbar_state_changed'.
+        self.emit_vscrollbar_state_changed(e)
 
         #TODO: need handle other scrolltype? I can only capture below two scrolltype at the moment
         if e.direction == gdk.SCROLL_DOWN:
@@ -324,6 +316,10 @@ class ScrolledWindow(gtk.Bin):
             self._vertical.last_pos = e.y_root
             self._vertical.last_time = e.time
             self._vertical.in_motion = True
+            
+            # Emit signal 'vscrollbar_state_changed'.
+            self.emit_vscrollbar_state_changed(e)
+
             return True
 
     def calc_vbar_length(self):
@@ -655,5 +651,25 @@ class ScrolledWindow(gtk.Bin):
 
         print "v_len:%f, height:%f, vir_bar_len:%d" % ( self._vertical.virtual_len,
                 self.allocation.height, self._vertical.bar_len)
+        
+    def emit_vscrollbar_state_changed(self, e):    
+        value = self.vadjustment.value
+        page_size = self.vadjustment.page_size
+        upper = self.vadjustment.upper
+        if e.type == gtk.gdk.MOTION_NOTIFY:
+            bottom_value = upper - page_size
+        elif e.type == gtk.gdk.SCROLL:
+            bottom_value = upper - page_size - 1
+        
+        if upper != page_size:
+            if value == 0 and self.vscrollbar_state != "top":
+                self.vscrollbar_state = "top"
+                self.emit("vscrollbar-state-changed", self.vscrollbar_state)
+            elif value > 0 and value < bottom_value and self.vscrollbar_state != "center":
+                self.vscrollbar_state = "center"
+                self.emit("vscrollbar-state-changed", self.vscrollbar_state)
+            elif value == bottom_value and self.vscrollbar_state != "bottom":
+                self.vscrollbar_state = "bottom"
+                self.emit("vscrollbar-state-changed", self.vscrollbar_state)
 
 gobject.type_register(ScrolledWindow)
