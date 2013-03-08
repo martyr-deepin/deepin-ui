@@ -955,11 +955,10 @@ class DroplistItem(object):
         '''
         Internal function to wrap clicked action.
         '''
-        # Emit item-selected signal.
-        self.droplist.emit("item-selected", self.item[0], self.item[1], self.index)
-            
         # Hide droplist.
         droplist_grab_window_focus_out()
+        # Emit item-selected signal.
+        self.droplist.emit("item-selected", self.item[0], self.item[1], self.index)
             
     def expose_droplist_item(self, widget, event, item_content):
         '''

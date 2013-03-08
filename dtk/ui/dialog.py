@@ -349,7 +349,8 @@ class ConfirmDialog(DialogBox):
                  default_height=145,
                  confirm_callback=None, 
                  cancel_callback=None, 
-                 cancel_first=False):
+                 cancel_first=False, 
+                 message_text_size=11):
         '''
         Initialize ConfirmDialog class.
         
@@ -368,7 +369,7 @@ class ConfirmDialog(DialogBox):
         self.label_align = gtk.Alignment()
         self.label_align.set(0.5, 0.5, 0, 0)
         self.label_align.set_padding(0, 0, 8, 8)
-        self.label = Label(message, text_x_align=ALIGN_MIDDLE, text_size=11)
+        self.label = Label(message, text_x_align=ALIGN_MIDDLE, text_size=message_text_size)
         
         self.confirm_button = Button(_("OK"))
         self.cancel_button = Button(_("Cancel"))
