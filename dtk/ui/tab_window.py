@@ -251,15 +251,15 @@ class TabBox(gtk.VBox):
             
             with cairo_state(cr):
                 with cairo_disable_antialias(cr):
-                    cr.rectangle(0,
-                                 0,
-                                 sum(self.tab_title_widths[0:self.tab_index]),
-                                 self.tab_height)
-                    cr.rectangle(sum(self.tab_title_widths[0:min(self.tab_index + 1, len(self.tab_items))]) + 1,
-                                 0,
-                                 sum(self.tab_title_widths) - sum(self.tab_title_widths[0:min(self.tab_index + 1, len(self.tab_items))]),
-                                 self.tab_height)
-                    cr.clip()
+                    #cr.rectangle(0,
+                                 #0,
+                                 #sum(self.tab_title_widths[0:self.tab_index]),
+                                 #self.tab_height)
+                    #cr.rectangle(sum(self.tab_title_widths[0:min(self.tab_index + 1, len(self.tab_items))]) + 1,
+                                 #0,
+                                 #sum(self.tab_title_widths) - sum(self.tab_title_widths[0:min(self.tab_index + 1, len(self.tab_items))]),
+                                 #self.tab_height)
+                    #cr.clip()
                     
                     cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_unselect_bg_color.get_color(), 0.7)))
                     cr.rectangle(1, 1, tab_title_width, self.tab_height)
