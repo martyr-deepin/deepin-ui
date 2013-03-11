@@ -23,6 +23,12 @@
 import gtk
 import gobject
 from timeline import Timeline, CURVE_SINE
+from draw import draw_pixbuf
+from utils import set_cursor
+from theme import ui_theme
+from utils import move_window, is_in_rect
+from window import Window
+
 
 class HSlider(gtk.Viewport):
     __gsignals__ = {
@@ -139,7 +145,220 @@ class HSlider(gtk.Viewport):
 
 gobject.type_register(HSlider)
 
-
+class WizardBox(gtk.EventBox):
+    __gsignals__ = {
+        'close': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        }
+    
+    def __init__(self, slider_images=None, pointer_images=None, slide_delay=4000):
+        gtk.EventBox.__init__(self)
+        
+        self.add_events(gtk.gdk.BUTTON_PRESS_MASK |
+                        gtk.gdk.BUTTON_RELEASE_MASK |
+                        gtk.gdk.POINTER_MOTION_MASK |
+                        gtk.gdk.ENTER_NOTIFY_MASK |
+                        gtk.gdk.LEAVE_NOTIFY_MASK
+                        )
+        
+        self.connect("expose-event", self.on_expose_event)                
+        self.connect("motion-notify-event", self.on_motion_notify)
+        self.connect("leave-notify-event", self.on_leave_notify)
+        self.connect("enter-notify-event", self.on_enter_notify)
+        self.connect("button-press-event", self.on_button_press)
+        
+        # Init images.
+        self.slider_pixbufs = map(gtk.gdk.pixbuf_new_from_file, slider_images)
+        self.slider_numuber = len(slider_images)
+        self.dot_normal_pixbuf, self.dot_active_pixbuf = map(gtk.gdk.pixbuf_new_from_file, pointer_images)
+        self.close_pixbuf = ui_theme.get_pixbuf("button/window_close_normal.png").get_pixbuf()
+        
+        # Init sizes.
+        self.init_size()
+        self.pointer_coords = {}
+        
+        # Move animation.
+        self.active_index = 0
+        self.target_index = None
+        
+        self.active_alpha = 1.0
+        self.target_index = 0.0
+        
+        self.active_x = 0
+        self.target_x = None
+        self.slider_y = 0
+        self.auto_animation_id = None
+        self.auto_animation_timeout = slide_delay  # millisecond.
+        self.slider_timeout = 1000 # millisecond.
+        self.in_animation = False
+        self.motion_index = None
+        self.auto_animation()
+        
+    def init_size(self):    
+        slider_pixbuf = self.slider_pixbufs[0]
+        self.slider_width = slider_pixbuf.get_width()
+        self.slider_height = slider_pixbuf.get_height()
+        self.set_size_request(self.slider_width, self.slider_height)
+        
+        self.dot_width = self.dot_normal_pixbuf.get_width()
+        self.dot_height = self.dot_normal_pixbuf.get_height()
+        
+        dot_spacing = 10        
+        self.dot_width_offset = self.dot_width + dot_spacing
+        dot_area_width = self.dot_width * self.slider_numuber + dot_spacing * (self.slider_numuber - 1)
+        dot_offset_y = 40
+        self.dot_start_x =  (self.slider_width - dot_area_width) / 2
+        self.dot_y = self.slider_height - dot_offset_y
+        
+        close_spacing = 5
+        close_x = self.slider_width - self.close_pixbuf.get_width() - close_spacing
+        close_y = close_spacing
+        self.close_rect = gtk.gdk.Rectangle(close_x, close_y,
+                                            self.close_pixbuf.get_width(),
+                                            self.close_pixbuf.get_height())    
+        
+    def on_expose_event(self, widget, event):    
+        cr = widget.window.cairo_create()        
+        # rect = widget.allocation
+        
+        cr.save()
+        draw_pixbuf(cr, self.slider_pixbufs[self.active_index], self.active_x, self.slider_y, self.active_alpha)
+        
+        if self.target_index != None and self.target_x != None:
+            draw_pixbuf(cr, self.slider_pixbufs[self.target_index], self.target_x, self.slider_y, self.target_alpha)
+        cr.restore()    
+        
+        # Draw select pointer.
+        dot_start_x = self.dot_start_x
+        
+        for index in range(self.slider_numuber):
+            if self.target_index == None:
+                if self.active_index == index:
+                    dot_pixbuf = self.dot_active_pixbuf
+                else:    
+                    dot_pixbuf = self.dot_normal_pixbuf
+            else:        
+                if self.target_index == index:
+                    dot_pixbuf = self.dot_active_pixbuf
+                else:    
+                    dot_pixbuf = self.dot_normal_pixbuf
+                    
+            pointer_rect = gtk.gdk.Rectangle(
+                dot_start_x, self.dot_y,
+                self.dot_width, self.dot_height)        
+            self.pointer_coords[index] = pointer_rect
+            draw_pixbuf(cr, dot_pixbuf, dot_start_x, self.dot_y)
+            dot_start_x += self.dot_width_offset
+            
+        # Draw close pixbuf.    
+        draw_pixbuf(cr, self.close_pixbuf, self.close_rect.x, self.close_rect.y)    
+        return True    
+    
+    def handle_animation(self, widget, event):    
+        self.motion_index = None
+        for index, rect in self.pointer_coords.items():
+            if rect.x <= event.x <= rect.x + rect.width and rect.y <= event.y <= rect.y + rect.height:
+                set_cursor(widget, gtk.gdk.HAND2)
+                self.motion_index = index
+                # if self.active_index != index:
+                #     self.start_animation(self.hover_animation_time, index)
+                break    
+        else:    
+            self.motion_index = None
+            set_cursor(widget, None)
+    
+    def on_motion_notify(self, widget, event):
+        self.handle_animation(widget, event)
+    
+    def on_enter_notify(self, widget, event):
+        if self.auto_animation_id is not None:
+            gobject.source_remove(self.auto_animation_id)
+            self.auto_animation_id = None
+    
+    def on_leave_notify(self, widget, event):
+        self.auto_animation()
+        set_cursor(widget, None)
+    
+    def on_button_press(self, widget, event):
+        if self.motion_index != None:
+            self.start_animation(self.slider_timeout, self.motion_index)
+            
+        rect = self.close_rect    
+        if rect.x <= event.x <= rect.x + rect.width and rect.y <= event.y <= rect.y + rect.height:
+            self.emit("close")
+    
+    def auto_animation(self):
+        self.auto_animation_id = gobject.timeout_add(self.auto_animation_timeout, 
+                                                 lambda : self.start_animation(self.slider_timeout))
+    
+    def start_animation(self, animation_time, target_index=None, direction="left"):
+        if target_index is None:
+            if self.active_index >= self.slider_numuber - 1:
+                target_index = 0
+            else:    
+                target_index = self.active_index + 1
+        else:        
+            if target_index < self.active_index:
+                direction = "right"
+                
+        if not self.in_animation:        
+            self.in_animation = True
+            self.target_index = target_index
+            
+            self.timeline = Timeline(animation_time, CURVE_SINE)
+            self.timeline.connect("update", lambda source, status: self.update_animation(source, status, direction))
+            self.timeline.connect("completed", lambda source: self.completed_animation(source, target_index))
+            self.timeline.run()
+        return True    
+    
+    def update_animation(self, source, status, direction):
+        self.active_alpha = 1.0 - status
+        self.target_alpha = status
+        
+        if direction == "right":
+            self._to_right(status)
+        else:    
+            self._to_left(status)
+            
+        self.queue_draw()    
+        
+    def completed_animation(self, source, index):    
+        self.active_index = index
+        self.active_alpha = 1.0
+        self.target_index = None
+        self.target_alpha = 0.0
+        self.in_animation = False
+        self.active_x = 0
+        self.target_x = None
+        self.queue_draw()
+        
+        
+    def _to_right(self, status):    
+        self.active_x = self.slider_width * status
+        # self.target_x = 0 - self.slider_width * (1.0 - status)
+        self.target_x = 0
+        
+    def _to_left(self, status):    
+        self.active_x = 0 - (self.slider_width * status)
+        # self.target_x = self.slider_width * (1.0 - status)
+        self.target_x = 0
+        
+        
+class Wizard(Window):        
+    def __init__(self, slider_files, pointer_files, finish_callback=None, slide_delay=4000):
+        Window.__init__(self)
+        self.finish_callback = finish_callback
+        
+        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_resizable(False)
+        self.wizard_box = WizardBox(slider_files, pointer_files, slide_delay)
+        self.wizard_box.connect("close", lambda widget: self.destroy())
+        self.connect("destroy", self.destroy_wizard)
+        self.window_frame.add(self.wizard_box)
+        
+    def destroy_wizard(self, widget):    
+        if self.finish_callback:
+            self.finish_callback()
+            
 
 if __name__ == "__main__":
     s = HSlider()
