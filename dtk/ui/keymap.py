@@ -24,6 +24,16 @@ import gtk.gdk as gdk
 import pygtk
 pygtk.require('2.0')
 
+
+
+def keybinder_to_deepin(keystring):
+    return " + ".join(map(lambda key: key.strip("<"), keystring.split(">")))
+
+def deepin_to_keybinder(keystring):
+    keys = keystring.split(" + ")
+    modifiers = "".join(["<%s>" % key for key in keys[0:-1]])
+    return "%s%s" % (modifiers, keys[-1])
+
 def get_key_name(keyval):
     '''
     Get key name with given key value.
@@ -31,7 +41,7 @@ def get_key_name(keyval):
     @param keyval: Key value.
     @return: Return key name with given key value.
     '''
-    key_unicode = gdk.keyval_to_unicode(keyval)
+    key_unicode = gdk.keyval_to_unicode(gdk.keyval_to_upper(keyval))
     if key_unicode == 0:
         return gdk.keyval_name(keyval)
     else:
@@ -62,9 +72,9 @@ def get_key_event_modifiers(key_event):
     if key_event.state & gdk.MOD1_MASK:
         modifiers.append("Alt")    
         
-    # Don't need add Shift modifier if keyval is upper character.
-    if key_event.state & gdk.SHIFT_MASK and (len(get_key_name(key_event.keyval)) != 1 or not gdk.keyval_is_upper(key_event.keyval)):
-        modifiers.append("Shift")    
+    # # Don't need add Shift modifier if keyval is upper character.
+    # if key_event.state & gdk.SHIFT_MASK and (len(get_key_name(key_event.keyval)) != 1 or not gdk.keyval_is_upper(key_event.keyval)):
+    #     modifiers.append("Shift")    
         
     return modifiers
 
