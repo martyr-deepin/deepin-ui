@@ -1,11 +1,14 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011 ~ 2012 Deepin, Inc.
-#               2011 ~ 2012 Xia Bin
+# Copyright (C) 2011 ~ 2013 Deepin, Inc.
+#               2011 ~ 2013 Xia Bin
 # 
 # Author:     Xia Bin <xiabin@linuxdeepin.com>
+#             Hou Shaohui houshao55@gmail.com
+#
 # Maintainer: Xia Bin <xiabin@linuxdeepin.com>
+#             Hou Shaohui houshao55@gmail.com
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +29,6 @@ from timeline import Timeline, CURVE_SINE
 from draw import draw_pixbuf
 from utils import set_cursor
 from theme import ui_theme
-from utils import move_window, is_in_rect
 from window import Window
 
 
@@ -162,8 +164,8 @@ class WizardBox(gtk.EventBox):
         
         self.connect("expose-event", self.on_expose_event)                
         self.connect("motion-notify-event", self.on_motion_notify)
-        self.connect("leave-notify-event", self.on_leave_notify)
-        self.connect("enter-notify-event", self.on_enter_notify)
+        # self.connect("leave-notify-event", self.on_leave_notify)
+        # self.connect("enter-notify-event", self.on_enter_notify)
         self.connect("button-press-event", self.on_button_press)
         
         # Init images.
@@ -354,6 +356,7 @@ class Wizard(Window):
         self.wizard_box.connect("close", lambda widget: self.destroy())
         self.connect("destroy", self.destroy_wizard)
         self.window_frame.add(self.wizard_box)
+        self.add_move_event(self.wizard_box)
         
     def destroy_wizard(self, widget):    
         if self.finish_callback:

@@ -1865,9 +1865,10 @@ class ShortcutKeyEntry(gtk.VBox):
         self.entry.im.focus_out()
         self.entry.queue_draw()
         
-        if self.shortcut_key != self.shortcut_key_record:
-            self.emit("shortcut-key-change", self.shortcut_key)
-            self.shortcut_key_record = None
+        # FIXME.
+        # if self.shortcut_key != self.shortcut_key_record:
+        #     self.emit("shortcut-key-change", self.shortcut_key)
+        #     self.shortcut_key_record = None
             
     def handle_key_press(self, widget, event):
         '''
@@ -1879,6 +1880,7 @@ class ShortcutKeyEntry(gtk.VBox):
                 self.set_shortcut_key(None)
             elif keyname != "":
                 self.set_shortcut_key(keyname)
+                
             
     def set_shortcut_key(self, shortcut_key):
         '''
@@ -1894,6 +1896,10 @@ class ShortcutKeyEntry(gtk.VBox):
         else:
             self.set_text(self.shortcut_key)
         self.entry.editable_flag = False
+        
+        if self.shortcut_key != self.shortcut_key_record:
+            self.emit("shortcut-key-change", self.shortcut_key)
+            self.shortcut_key_record = None
                 
     def get_shortcut_key(self):
         '''
