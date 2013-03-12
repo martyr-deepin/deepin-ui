@@ -152,8 +152,9 @@ class WizardBox(gtk.EventBox):
         'close': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         }
     
-    def __init__(self, slider_images=None, pointer_images=None, slide_delay=4000):
+    def __init__(self, slider_images=None, pointer_images=None, slide_delay=10000):
         gtk.EventBox.__init__(self)
+        self.set_visible_window(False)
         
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK |
                         gtk.gdk.BUTTON_RELEASE_MASK |
@@ -211,7 +212,7 @@ class WizardBox(gtk.EventBox):
         self.dot_start_x =  (self.slider_width - dot_area_width) / 2
         self.dot_y = self.slider_height - dot_offset_y
         
-        close_spacing = 5
+        close_spacing = 0
         close_x = self.slider_width - self.close_pixbuf.get_width() - close_spacing
         close_y = close_spacing
         self.close_rect = gtk.gdk.Rectangle(close_x, close_y,
@@ -220,17 +221,19 @@ class WizardBox(gtk.EventBox):
         
     def on_expose_event(self, widget, event):    
         cr = widget.window.cairo_create()        
-        # rect = widget.allocation
+        rect = widget.allocation
         
         cr.save()
-        draw_pixbuf(cr, self.slider_pixbufs[self.active_index], self.active_x, self.slider_y, self.active_alpha)
+        draw_pixbuf(cr, self.slider_pixbufs[self.active_index], rect.x + self.active_x, 
+                    rect.x + self.slider_y, self.active_alpha)
         
         if self.target_index != None and self.target_x != None:
-            draw_pixbuf(cr, self.slider_pixbufs[self.target_index], self.target_x, self.slider_y, self.target_alpha)
+            draw_pixbuf(cr, self.slider_pixbufs[self.target_index], rect.x + self.target_x, 
+                        rect.y + self.slider_y, self.target_alpha)
         cr.restore()    
         
         # Draw select pointer.
-        dot_start_x = self.dot_start_x
+        dot_start_x = rect.x + self.dot_start_x
         
         for index in range(self.slider_numuber):
             if self.target_index == None:
@@ -245,14 +248,14 @@ class WizardBox(gtk.EventBox):
                     dot_pixbuf = self.dot_normal_pixbuf
                     
             pointer_rect = gtk.gdk.Rectangle(
-                dot_start_x, self.dot_y,
+                dot_start_x, rect.y + self.dot_y,
                 self.dot_width, self.dot_height)        
             self.pointer_coords[index] = pointer_rect
-            draw_pixbuf(cr, dot_pixbuf, dot_start_x, self.dot_y)
+            draw_pixbuf(cr, dot_pixbuf, dot_start_x, rect.y + self.dot_y)
             dot_start_x += self.dot_width_offset
             
         # Draw close pixbuf.    
-        draw_pixbuf(cr, self.close_pixbuf, self.close_rect.x, self.close_rect.y)    
+        draw_pixbuf(cr, self.close_pixbuf, rect.x + self.close_rect.x, rect.y + self.close_rect.y)    
         return True    
     
     def handle_animation(self, widget, event):    
@@ -346,7 +349,7 @@ class WizardBox(gtk.EventBox):
         
         
 class Wizard(Window):        
-    def __init__(self, slider_files, pointer_files, finish_callback=None, slide_delay=4000):
+    def __init__(self, slider_files, pointer_files, finish_callback=None, slide_delay=8000):
         Window.__init__(self)
         self.finish_callback = finish_callback
         
