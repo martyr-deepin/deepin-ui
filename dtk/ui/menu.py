@@ -25,6 +25,7 @@ from draw import draw_vlinear, draw_pixbuf, draw_text, draw_hlinear
 from line import HSeparator
 from theme import ui_theme
 from window import Window
+from keymap import get_keyevent_name
 import gobject
 import gtk
 from utils import (is_in_rect, get_content_size, propagate_expose,
@@ -91,6 +92,10 @@ def menu_grab_window_button_press(widget, event):
                 event_widget.event(event)
                 menu_grab_window_focus_out()
     
+def menu_grab_window_key_press(widget, event):
+    if get_keyevent_name(event) == "Escape":
+        menu_grab_window_focus_out()
+    
 def menu_grab_window_motion_notify(widget, event):
     global menu_active_item
     
@@ -120,6 +125,7 @@ def menu_grab_window_motion_notify(widget, event):
                 menu_item.item_box.queue_draw()
 
 menu_grab_window.connect("button-press-event", menu_grab_window_button_press)
+menu_grab_window.connect("key-press-event", menu_grab_window_key_press)
 menu_grab_window.connect("motion-notify-event", menu_grab_window_motion_notify)
 
 class Menu(Window):
