@@ -28,8 +28,7 @@ from theme import ui_theme
 import gobject
 import gtk
 from utils import (propagate_expose, cairo_disable_antialias,
-                   color_hex_to_cairo, get_widget_root_coordinate, 
-                   WIDGET_POS_BOTTOM_LEFT, alpha_color_hex_to_cairo)
+                   color_hex_to_cairo, alpha_color_hex_to_cairo)
 
 class ComboBox(gtk.VBox):
     '''
@@ -171,20 +170,21 @@ class ComboBox(gtk.VBox):
             
         self.queue_draw()
         
-    def click_drop_button(self, *args):
+    def click_drop_button(self, widget, event):
         '''
         Internal function to handle `button-press-event` signal.
         '''
         if self.droplist.get_visible():
             self.droplist.hide()
         else:
-            (align_x, align_y) = get_widget_root_coordinate(self.align, WIDGET_POS_BOTTOM_LEFT)
-            '''
-            FIXME: why align_x < 0
-            '''
+            wx, wy = int(event.x), int(event.y)
+            (offset_x, offset_y) = widget.translate_coordinates(self, 0, 0)
+            (_, px, py, modifier) = widget.get_display().get_pointer()
+            droplist_x, droplist_y = px - wx - offset_x - 1, py - wy - offset_y + self.height - 1
+            
             self.droplist.show(
-                (align_x - 1, align_y - 1),
-                (0, -self.height + 1))
+                (droplist_x, droplist_y),
+                (0, -self.height))
             
             self.droplist.item_select_index = self.select_index
             self.droplist.active_item()
