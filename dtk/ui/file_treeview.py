@@ -359,7 +359,7 @@ class DirItem(TreeItem):
     def release_resource(self):
         '''
         '''
-        print "release dir: %s" % self.directory_path
+        # print "release dir: %s" % self.directory_path
         if self.pixbuf:
             del self.pixbuf
             self.pixbuf = None
@@ -568,7 +568,7 @@ class FileItem(TreeItem):
     def release_resource(self):
         '''
         '''
-        print "release file: %s" % self.file_path
+        # print "release file: %s" % self.file_path
         if self.pixbuf:
             del self.pixbuf
             self.pixbuf = None

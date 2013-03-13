@@ -159,6 +159,58 @@ class ScrolledWindow(gtk.Bin):
         cr.rectangle(0, 0, self.hallocation.width, self.hallocation.height)
         cr.fill()
 
+    def do_button_press_event(self, e):
+        if 0 <= e.x - self.vallocation.x <= self.bar_width:
+            # Button press on vadjustment.
+            press_pos = e.y - self.vadjustment.value
+            value = pos2value(press_pos - self.vallocation.height / 2, self._vertical.virtual_len, self.vadjustment.upper)
+            value = max(0, min(value, self.vadjustment.upper - self.vadjustment.page_size))
+            
+            if press_pos < self.vallocation.y:
+                if self.vadjustment.value - value > self.vadjustment.page_size:
+                    self.vadjustment.set_value(max(self.vadjustment.value - self.vadjustment.page_size, 
+                                                   0))
+                else:
+                    self.vadjustment.set_value(value)
+                
+                return True
+            elif press_pos > self.vallocation.y + self.vallocation.height:
+                if value - self.vadjustment.value > self.vadjustment.page_size:
+                    self.vadjustment.set_value(min(self.vadjustment.value + self.vadjustment.page_size, 
+                                                   self.vadjustment.upper - self.vadjustment.page_size))
+                else:
+                    self.vadjustment.set_value(value)
+                
+                return True
+            else:
+                return False
+        elif 0 <= e.y - self.hallocation.y <= self.bar_width:
+            # Button press on hadjustment.
+            press_pos = e.x - self.hadjustment.value
+            value = pos2value(press_pos - self.hallocation.width / 2, self._horizaontal.virtual_len, self.hadjustment.upper)
+            value = max(0, min(value, self.hadjustment.upper - self.hadjustment.page_size))
+            
+            if press_pos < self.hallocation.x:
+                if self.hadjustment.value - value > self.hadjustment.page_size:
+                    self.hadjustment.set_value(max(self.hadjustment.value - self.hadjustment.page_size, 
+                                                   0))
+                else:
+                    self.hadjustment.set_value(value)
+                
+                return True
+            elif press_pos > self.hallocation.x + self.hallocation.width:
+                if value - self.hadjustment.value > self.hadjustment.page_size:
+                    self.hadjustment.set_value(min(self.hadjustment.value + self.hadjustment.page_size, 
+                                                   self.hadjustment.upper - self.hadjustment.page_size))
+                else:
+                    self.hadjustment.set_value(value)
+                
+                return True
+            else:
+                return False
+        else:
+            return False
+        
     def do_button_release_event(self, e):
         if e.window == self.hwindow:
             self._horizaontal.in_motion = False
