@@ -886,8 +886,9 @@ def invisible_window(window):
         
         widget.shape_combine_mask(bitmap, 0, 0)
     
-    window.move(0, 0)
+    window.move(-10, -10)
     window.set_default_size(0, 0)
+    window.set_decorated(False)
     window.connect("size-allocate", shape_window)
 
 def split_with(split_list, condition_func):
