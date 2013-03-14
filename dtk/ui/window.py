@@ -103,6 +103,7 @@ class Window(WindowBase):
         self.connect_after("expose-event", self.expose_window_background)
         self.connect_after("size-allocate", lambda w, e: self.queue_draw())
         self.connect("motion-notify-event", self.motion_notify)
+        self.connect("leave-notify-event", self.leave_notify)
         self.connect("button-press-event", self.resize_window)
         self.connect("window-state-event", self.monitor_window_state)
         self.window_frame.connect("expose-event", self.expose_window_frame)
@@ -291,6 +292,9 @@ class Window(WindowBase):
                 set_cursor(self, None)
                 
             self.cursor_type = cursor_type
+            
+    def leave_notify(self, widget, event):
+        set_cursor(self, None)
             
     def get_cursor_type(self, event):
         """
