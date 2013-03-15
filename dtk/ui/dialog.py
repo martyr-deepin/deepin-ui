@@ -349,7 +349,7 @@ class ConfirmDialog(DialogBox):
                  default_height=145,
                  confirm_callback=None, 
                  cancel_callback=None, 
-                 cancel_first=False, 
+                 cancel_first=True, 
                  message_text_size=11):
         '''
         Initialize ConfirmDialog class.
@@ -421,7 +421,7 @@ class InputDialog(DialogBox):
                  default_height=145,
                  confirm_callback=None, 
                  cancel_callback=None, 
-                 cancel_first=False):
+                 cancel_first=True):
         '''
         Initialize InputDialog class.
         

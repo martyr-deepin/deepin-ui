@@ -340,7 +340,7 @@ def get_screen_size(widget):
     height = screen.get_height()
     return (width, height)
 
-def is_in_rect((tx, ty), (x, y, w, h)):
+def is_in_rect((tx, ty), rect):
     '''
     Whether target coordinate in given rectangle.
     
@@ -352,6 +352,11 @@ def is_in_rect((tx, ty), (x, y, w, h)):
     @param h: Height of rectangle area.
     @return: Return True if target coordinate in given rectangle.
     '''
+    if isinstance(rect, gtk.gdk.Rectangle):
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+    else:    
+        x, y, w, h = rect
+        
     return (tx >= x and tx <= x + w and ty >= y and ty <= y + h)
 
 def scroll_to_top(scrolled_window):
