@@ -79,7 +79,6 @@ class Titlebar(gtk.Button):
         self.connect("button-release-event", self.on_titlebar_release_event)
         self.connect("motion-notify-event", self.on_titlebar_motion_notify)
         self.connect("leave-notify-event", self.on_titlebar_leave_notify)
-        self.connect("size-allocate", self.on_titlebar_size_allocate)
         
         bg_pixbuf = ui_theme.get_pixbuf("listview/header_normal.png").get_pixbuf()
         self.default_height = bg_pixbuf.get_height()
@@ -97,12 +96,6 @@ class Titlebar(gtk.Button):
         self.set_no_show_all(False)
         self.show_all()
         
-    def hide_title(self, indexs):    
-        pass
-    
-    def show_title(self, indexs=None):
-        pass
-        
     def set_titles(self, titles, expand_index=0):    
         self.titles = titles
         self.expand_index = expand_index
@@ -112,11 +105,15 @@ class Titlebar(gtk.Button):
         self.enable()
         
     def set_widths(self, widths):    
-        self.title_widths = widths
+        self.title_widths = dict(widths)
         self.queue_draw()
         
     def get_before_width(self, index):    
-        return sum(self.title_widths[:index])
+        filter_items = filter(lambda item: item[0] < index, self.title_widths.items())
+        if filter_items:
+            return sum(zip(*filter_items)[-1])
+        else:
+            return 0
         
     def on_titlebar_expose_event(self, widget, event):    
         cr = widget.window.cairo_create()
@@ -153,9 +150,9 @@ class Titlebar(gtk.Button):
         # Draw split.
         split_pixbuf = ui_theme.get_pixbuf("listview/split.png").get_pixbuf()
         split_start_x = x
-        for index, each_width in enumerate(self.title_widths):
+        for index, each_width in self.title_widths.items():
             split_start_x += each_width                            
-            if index != len(self.title_widths) - 1:
+            if index != max(self.title_widths.keys()):
                 draw_pixbuf(cr, split_pixbuf, split_start_x - 1, y)
             
             # Draw title.    
@@ -194,7 +191,7 @@ class Titlebar(gtk.Button):
         
         rect = widget.allocation
         rect.x = rect.y = 0
-        for index, width in enumerate(self.title_widths):
+        for index, width in self.title_widths.items():
             title_rect = gtk.gdk.Rectangle(rect.x, rect.y, width, self.default_height)
             if is_in_rect((event.x, event.y), title_rect):
                 self.hover_index = index
@@ -203,9 +200,6 @@ class Titlebar(gtk.Button):
         else:    
             self.hover_index = None
         self.queue_draw()    
-        
-    def on_titlebar_size_allocate(self, widget, rect):    
-        pass
         
     def on_titlebar_leave_notify(self, widget, event):
         self.hover_index = None
@@ -227,7 +221,8 @@ class TreeView(gtk.VBox):
         "single-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "double-click-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
-        "right-press-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int, int, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)),
+        "right-press-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, 
+                               (int, int, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)),
     }    
 	
     def __init__(self,
@@ -283,6 +278,12 @@ class TreeView(gtk.VBox):
         self.title_offset_y = -1
         
         self.highlight_item = None
+        
+        # hide columns.
+        self.hide_columns = None
+        
+        # expand column.
+        self.expand_column = 0
         
         # Init redraw.
         self.redraw_request_list = []
@@ -455,6 +456,7 @@ class TreeView(gtk.VBox):
             self.titles = titles
             self.title_box.set_titles(titles)
             self.sort_methods = sort_methods
+            self.title_offset_y = self.title_box.default_height
         else:
             self.titles = None
             self.sort_methods = None
@@ -829,17 +831,7 @@ class TreeView(gtk.VBox):
                     self.column_widths.insert(index, column_width)
                     
         if self.titles != None:
-            fixed_width_count = sum(filter(lambda w: w != -1, self.column_widths))
-            title_height = ui_theme.get_pixbuf("listview/header_press.png").get_pixbuf().get_height()
-            self.title_offset_y = title_height
-            
-            new_column_widths = []
-            for width in self.column_widths:
-                if width == -1:
-                    width = abs(self.draw_area.allocation.width - fixed_width_count)
-                new_column_widths.append(width)    
-            self.title_box.set_widths(new_column_widths)
-            
+            self.title_box.set_widths(self.get_column_widths())
             
     def redraw_request(self, item, immediately=False):
         if not item in self.redraw_request_list:
@@ -1062,7 +1054,7 @@ class TreeView(gtk.VBox):
                 
             for item in self.visible_items[start_row:end_row]:
                 item_width_count = 0
-                for (index, column_width) in enumerate(column_widths):
+                for (index, column_width) in column_widths:
                     render_x = rect.x + item_width_count - hadjust_value
                     render_y = rect.y + item_height_count - vadjust_value
                     render_width = column_width
@@ -1508,16 +1500,46 @@ class TreeView(gtk.VBox):
         (event_x, event_y) = get_event_coords(event)
         return self.get_row_with_coordinate(event_y)
     
+    def set_hide_columns(self, hide_columns):
+        self.hide_columns = hide_columns
+        if self.hide_columns != None:
+            if self.expand_column != None:
+                if self.expand_column in self.hide_columns:
+                    self.hide_columns.remove(self.expand_column)
+            
+        self.update_item_widths()
+        self.queue_draw()
+        
+    def set_expand_column(self, column):
+        self.expand_column = column
+        if self.hide_columns != None:
+            if column in self.hide_columns:
+                self.hide_columns.remove(column)
+        self.update_item_widths()        
+        self.queue_draw()
+        
     def get_column_widths(self):
         rect = self.draw_area.allocation
         column_widths = []
-        fixed_width_count = sum(filter(lambda w: w != -1, self.column_widths))
-        for column_width in self.column_widths:
-            if column_width == -1:
-                column_widths.append(rect.width - fixed_width_count)
+        
+        fixed_width_count = 0
+        for index, column_width in enumerate(self.column_widths):
+            if self.hide_columns != None:
+                if index != self.expand_column and index not in self.hide_columns:
+                    fixed_width_count += column_width
+            else:        
+                if index != self.expand_column:
+                    fixed_width_count += column_width
+            
+        for index, column_width in enumerate(self.column_widths):
+            if index == self.expand_column:
+                column_widths.append((index, rect.width - fixed_width_count))
             else:
-                column_widths.append(column_width)
-
+                if self.hide_columns != None:
+                    if index not in self.hide_columns:
+                        column_widths.append((index, column_width))
+                else:        
+                    column_widths.append((index, column_width))
         return column_widths        
     
     def get_cell_with_event(self, event):
@@ -1529,7 +1551,7 @@ class TreeView(gtk.VBox):
             if item_height_count <= event_y <= item_height_count + item.get_height():
                 event_row = item_index_count
                 offset_y = event_y - item_height_count
-                (event_column, offset_x) = get_disperse_index(self.get_column_widths(), event_x)
+                (event_column, offset_x) = get_disperse_index(zip(*self.get_column_widths())[-1], event_x)
                 return (event_row, event_column, offset_x, offset_y)
             
             item_height_count += item.get_height()

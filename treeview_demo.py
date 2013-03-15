@@ -81,6 +81,13 @@ if __name__ == "__main__":
     # Add TreeView.
     print os.path.expanduser("~")
     treeview = TreeView(get_dir_items(os.path.expanduser("~")))
+    
+    # expand column.
+    treeview.set_expand_column(3)
+    
+    # hide column
+    treeview.set_hide_columns([1, 2])
+    
     #treeview.set_highlight_item(treeview.get_items()[35])
     treeview.connect("delete-select-items", m_delete_select_items)
     treeview.connect("button-press-item", m_button_press_item)
@@ -92,8 +99,8 @@ if __name__ == "__main__":
     treeview_align.set(0.5, 0.5, 1, 1)
     treeview_align.set_padding(0, 2, 2, 2)
     
-    # treeview.set_column_titles(["文件名", "大小", "类型", "修改时间"],
-    #                            [sort_by_name, sort_by_size, sort_by_type, sort_by_mtime])
+    treeview.set_column_titles(["文件名", "大小", "类型", "修改时间"],
+                               [sort_by_name, sort_by_size, sort_by_type, sort_by_mtime])
     
     treeview_align.add(treeview)
     application.main_box.pack_start(treeview_align)
