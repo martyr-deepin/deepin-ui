@@ -7,6 +7,7 @@
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
 #             Zhai Xiang <zhaixiang@linuxdeepin.com>
+#             Hou Shaohui <houshao55@gmail.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,9 +36,8 @@ from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
 from cache_pixbuf import CachePixbuf
 from deepin_utils.core import get_disperse_index
 from utils import (cairo_state, get_window_shadow_size, get_event_coords,
-                   container_remove_all, get_same_level_widgets,
-                   is_left_button, is_double_click, is_single_click, remove_timeout_id, 
-                   is_right_button)
+                   is_in_rect,is_left_button, is_double_click, is_single_click, 
+                   remove_timeout_id, is_right_button)
 from skin_config import skin_config
 from scrolled_window import ScrolledWindow
 import copy
@@ -56,70 +56,162 @@ class SortThread(td.Thread):
     def run(self):
         self.render_action(*self.sort_action())
 
-class TitleBox(gtk.Button):
-	
-    def __init__(self, title, index, last_one):
+        
+class Titlebar(gtk.Button):
+    
+    __gsignals__ = {"clicked-title" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, 
+                                       (gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT))}
+    
+    def __init__(self):
         gtk.Button.__init__(self)
-        self.title = title
-        self.index = index
-        self.last_one = last_one
-        self.cache_pixbuf = CachePixbuf()
-        self.sort_ascending = False
-        self.focus_in = False
+        self.bg_cache_pixbuf = CachePixbuf()
+        self.hover_cache_pixbuf = CachePixbuf()
+        self.press_cache_pixbuf = CachePixbuf()
         
-        self.connect("expose-event", self.expose_title_box)
+        self.add_events(gtk.gdk.BUTTON_PRESS_MASK |
+                        gtk.gdk.BUTTON_RELEASE_MASK |
+                        gtk.gdk.POINTER_MOTION_MASK |
+                        gtk.gdk.ENTER_NOTIFY_MASK |
+                        gtk.gdk.LEAVE_NOTIFY_MASK)
         
-    def expose_title_box(self, widget, event):
-        # Init.
+        self.connect("expose-event", self.on_titlebar_expose_event)
+        self.connect("button-press-event", self.on_titlebar_press_event)
+        self.connect("button-release-event", self.on_titlebar_release_event)
+        self.connect("motion-notify-event", self.on_titlebar_motion_notify)
+        self.connect("leave-notify-event", self.on_titlebar_leave_notify)
+        self.connect("size-allocate", self.on_titlebar_size_allocate)
+        
+        bg_pixbuf = ui_theme.get_pixbuf("listview/header_normal.png").get_pixbuf()
+        self.default_height = bg_pixbuf.get_height()
+
+        self.titles = None        
+        self.hover_index = None
+        self.press_index = None
+        self.title_widths = None
+        self.expand_index = None
+        
+        self.set_no_show_all(True)
+        self.hide_all()
+        
+    def enable(self):    
+        self.set_no_show_all(False)
+        self.show_all()
+        
+    def hide_title(self, indexs):    
+        pass
+    
+    def show_title(self, indexs=None):
+        pass
+        
+    def set_titles(self, titles, expand_index=0):    
+        self.titles = titles
+        self.expand_index = expand_index
+        self.sort_ascendings = [False] * len(titles)                
+        self.set_size_request(-1, self.default_height)
+        
+        self.enable()
+        
+    def set_widths(self, widths):    
+        self.title_widths = widths
+        self.queue_draw()
+        
+    def get_before_width(self, index):    
+        return sum(self.title_widths[:index])
+        
+    def on_titlebar_expose_event(self, widget, event):    
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
+        title_rect = gtk.gdk.Rectangle(x, y, w, h)
+        
+        if self.title_widths is None:
+            cr.set_source_rgb(1, 1, 1)
+            cr.rectangle(*rect)
+            cr.fill()
+            return True
+        
         # Draw background.
-        if widget.state == gtk.STATE_NORMAL:
-            header_pixbuf = ui_theme.get_pixbuf("listview/header_normal.png").get_pixbuf()
-        elif widget.state == gtk.STATE_PRELIGHT:
-            header_pixbuf = ui_theme.get_pixbuf("listview/header_hover.png").get_pixbuf()
-        elif widget.state == gtk.STATE_ACTIVE:
-            header_pixbuf = ui_theme.get_pixbuf("listview/header_press.png").get_pixbuf()
+        bg_pixbuf = ui_theme.get_pixbuf("listview/header_normal.png").get_pixbuf()
+        self.bg_cache_pixbuf.scale(bg_pixbuf, w, h)
+        draw_pixbuf(cr, self.bg_cache_pixbuf.get_cache(), x, y)
+        
+        # Draw press status.
+        if self.press_index != None:
+            press_pixbuf = ui_theme.get_pixbuf("listview/header_press.png").get_pixbuf()
+            self.press_cache_pixbuf.scale(press_pixbuf, self.title_widths[self.press_index], h)
+            draw_pixbuf(cr, self.press_cache_pixbuf.get_cache(),
+                         x + self.get_before_width(self.press_index), y)
+            
+        # Draw hover status.    
+        elif self.hover_index != None:
+            hover_pixbuf = ui_theme.get_pixbuf("listview/header_hover.png").get_pixbuf()
+            self.hover_cache_pixbuf.scale(hover_pixbuf, self.title_widths[self.hover_index], h)
+            draw_pixbuf(cr, self.hover_cache_pixbuf.get_cache(),
+                        x + self.get_before_width(self.hover_index), y)
+        
+        # Draw split.
+        split_pixbuf = ui_theme.get_pixbuf("listview/split.png").get_pixbuf()
+        split_start_x = x
+        for index, each_width in enumerate(self.title_widths):
+            split_start_x += each_width                            
+            if index != len(self.title_widths) - 1:
+                draw_pixbuf(cr, split_pixbuf, split_start_x - 1, y)
+            
+            # Draw title.    
+            draw_text(cr, self.titles[index], title_rect.x, y, each_width, h, 
+                      alignment=pango.ALIGN_CENTER)
+            title_rect.x += each_width
+            
+            # Draw sort icon.
+            if self.hover_index != None and self.hover_index == index:
+                if self.sort_ascendings[self.hover_index]:
+                    sort_pixbuf = ui_theme.get_pixbuf("listview/sort_ascending.png").get_pixbuf()
+                else:
+                    sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
 
-        self.cache_pixbuf.scale(header_pixbuf, w, h)
-        draw_pixbuf(cr, self.cache_pixbuf.get_cache(), x, y)
-        
-        # Draw title.
-        if not self.last_one:
-            split_pixbuf = ui_theme.get_pixbuf("listview/split.png").get_pixbuf()
-            draw_pixbuf(cr, 
-                        split_pixbuf,
-                        x + w - split_pixbuf.get_width() + 1, 
-                        y)
-            
-        # Draw title.
-        draw_text(cr, self.title, x, y, w, h,
-                  alignment=pango.ALIGN_CENTER)    
-        
-        # Draw sort icon.
-        if self.focus_in:
-            if self.sort_ascending:
-                sort_pixbuf = ui_theme.get_pixbuf("listview/sort_ascending.png").get_pixbuf()
-            else:
-                sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
-            
-            draw_pixbuf(cr, sort_pixbuf,
-                        x + w - sort_pixbuf.get_width(),
-                        y + (h - sort_pixbuf.get_height()) / 2)    
-        
-        return True
+                draw_pixbuf(cr, sort_pixbuf, 
+                            title_rect.x - sort_pixbuf.get_width(),
+                            y + (h - sort_pixbuf.get_height()) / 2
+                            )
+        return True    
     
-    def toggle_sort(self, sort_action, render_action):
-        self.sort_ascending = not self.sort_ascending
-        
-        for title_box in get_same_level_widgets(self):
-            title_box.focus_in = title_box == self
-            title_box.queue_draw()
-            
-        SortThread(lambda : sort_action(self.index), render_action).start()
+    def on_titlebar_press_event(self, widget, event):
+        if self.hover_index !=None:
+            self.press_index = self.hover_index
 
+            self.queue_draw()
+    
+    def on_titlebar_release_event(self, widget, event):
+        if self.press_index != None:
+            self.sort_ascendings[self.press_index] = not self.sort_ascendings[self.press_index]        
+            self.emit("clicked-title", self.press_index, self.sort_ascendings[self.press_index])
+            self.press_index = None
+    
+    def on_titlebar_motion_notify(self, widget, event):    
+        if not self.title_widths:
+            return
+        
+        rect = widget.allocation
+        rect.x = rect.y = 0
+        for index, width in enumerate(self.title_widths):
+            title_rect = gtk.gdk.Rectangle(rect.x, rect.y, width, self.default_height)
+            if is_in_rect((event.x, event.y), title_rect):
+                self.hover_index = index
+                break
+            rect.x += width
+        else:    
+            self.hover_index = None
+        self.queue_draw()    
+        
+    def on_titlebar_size_allocate(self, widget, rect):    
+        pass
+        
+    def on_titlebar_leave_notify(self, widget, event):
+        self.hover_index = None
+        self.queue_draw()
+
+    
 class TreeView(gtk.VBox):
     '''
     TreeView widget.
@@ -198,8 +290,8 @@ class TreeView(gtk.VBox):
         gtk.timeout_add(self.redraw_delay, self.update_redraw_request_list)
         
         # Init widgets.
-        self.title_box = gtk.HBox()
-        
+        self.title_box = Titlebar()
+        self.title_box.connect("clicked-title", self.on_titlebar_clicked_title)
         self.draw_area = gtk.DrawingArea()
         self.draw_area.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.draw_area.set_can_focus(True)
@@ -215,7 +307,7 @@ class TreeView(gtk.VBox):
         # Connect widgets.
         self.draw_align.add(self.draw_area)
         self.scrolled_window.add_child(self.draw_align)
-        self.pack_start(self.title_box, False, False)
+        self.pack_start(self.title_box, False, True)
         self.pack_start(self.scrolled_window, True, True)
         
         # Handle signals.
@@ -293,59 +385,63 @@ class TreeView(gtk.VBox):
                         vadjust.set_value(max(vadjust.get_lower(), 
                                               new_row_height_count - self.visible_items[new_row].get_height()))
                         
+                        
+    def on_titlebar_clicked_title(self, widget, index, sort_ascending):                    
+        SortThread(lambda : self.sort_column(index, sort_ascending), self.render_sort_column).start()
+                        
         
-    def sort_column(self, sort_column_index):
-       # Update sort action id.
-       self.sort_action_id += 1
-       
-       # Save current action id to return.
-       sort_action_id = self.sort_action_id
-       
-       # Split items with different column index.
-       level_items = []
-       column_index = None
-       for item in self.visible_items:
-           if item.column_index != column_index:
-               level_items.append((item.column_index, item.parent_item, [item]))
-               column_index = item.column_index
-           else:
-               if len(level_items) == 0:
-                   level_items.append((item.column_index, item.parent_item, [item]))
-               else:
-                   level_items[-1][2].append(item)
-       
-       # Connect all toplevel items to sort.
-       toplevel_items = []
-       child_items = []
-       for item in level_items:
-           (column_index, parent_item, items) = item
-           if column_index == 0:
-               toplevel_items += items
-           else:
-               child_items.append(item)
-       level_items = [(0, None, toplevel_items)] + child_items        
-       
-       # Sort items with different column index to make sure parent item sort before child item.
-       level_items = sorted(level_items, key=lambda (column_index, parent_item, items): column_index)            
-       
-       # Sort all items.
-       result_items = []
-       for (column_index, parent_item, items) in level_items:
-           # Do sort action.
-           sort_items = self.sort_methods[sort_column_index](
-               items, 
-               self.title_box.get_children()[sort_column_index].sort_ascending
-               )
-           
-           # If column index is 0, insert at last position.
-           if column_index == 0:
-               result_items += sort_items
-           # Insert after parent item if column index is not 0 (child items).
-           else:
-               split_index = result_items.index(parent_item) + 1
-               result_items = result_items[0:split_index] + sort_items + result_items[split_index::]
-           
-       return (result_items, sort_action_id)
+    def sort_column(self, sort_column_index, sort_ascending):
+        # Update sort action id.
+        self.sort_action_id += 1
+        
+        # Save current action id to return.
+        sort_action_id = self.sort_action_id
+        
+        # Split items with different column index.
+        level_items = []
+        column_index = None
+        for item in self.visible_items:
+            if item.column_index != column_index:
+                level_items.append((item.column_index, item.parent_item, [item]))
+                column_index = item.column_index
+            else:
+                if len(level_items) == 0:
+                    level_items.append((item.column_index, item.parent_item, [item]))
+                else:
+                    level_items[-1][2].append(item)
+        
+        # Connect all toplevel items to sort.
+        toplevel_items = []
+        child_items = []
+        for item in level_items:
+            (column_index, parent_item, items) = item
+            if column_index == 0:
+                toplevel_items += items
+            else:
+                child_items.append(item)
+        level_items = [(0, None, toplevel_items)] + child_items        
+        
+        # Sort items with different column index to make sure parent item sort before child item.
+        level_items = sorted(level_items, key=lambda (column_index, parent_item, items): column_index)            
+        
+        # Sort all items.
+        result_items = []
+        for (column_index, parent_item, items) in level_items:
+            # Do sort action.
+            sort_items = self.sort_methods[sort_column_index](
+                items, 
+                sort_ascending
+                )
+            
+            # If column index is 0, insert at last position.
+            if column_index == 0:
+                result_items += sort_items
+            # Insert after parent item if column index is not 0 (child items).
+            else:
+                split_index = result_items.index(parent_item) + 1
+                result_items = result_items[0:split_index] + sort_items + result_items[split_index::]
+            
+        return (result_items, sort_action_id)
     
     @post_gui
     def render_sort_column(self, items, sort_action_id):
@@ -357,19 +453,11 @@ class TreeView(gtk.VBox):
     def set_column_titles(self, titles, sort_methods):
         if titles != None and sort_methods != None:
             self.titles = titles
+            self.title_box.set_titles(titles)
             self.sort_methods = sort_methods
-                
-            container_remove_all(self.title_box)
-            
-            for (index, title) in enumerate(self.titles):
-                title_box = TitleBox(title, index, index == len(self.titles) - 1)
-                title_box.connect("button-press-event", lambda w, e: w.toggle_sort(self.sort_column, self.render_sort_column))
-                self.title_box.pack_start(title_box)
         else:
             self.titles = None
             self.sort_methods = None
-            
-            container_remove_all(self.title_box)
         
     def select_items(self, items):
         for select_row in self.select_rows:
@@ -741,18 +829,17 @@ class TreeView(gtk.VBox):
                     self.column_widths.insert(index, column_width)
                     
         if self.titles != None:
-            title_boxs = self.title_box.get_children()
             fixed_width_count = sum(filter(lambda w: w != -1, self.column_widths))
             title_height = ui_theme.get_pixbuf("listview/header_press.png").get_pixbuf().get_height()
             self.title_offset_y = title_height
-            for (index, column_width) in enumerate(self.column_widths):
-                if column_width == -1:
-                    '''
-                    FIXME: why width or height < 0 in set_size_request
-                    '''
-                    title_boxs[index].set_size_request(max(self.draw_area.allocation.width - fixed_width_count, 0), max(title_height, 0))
-                else:
-                    title_boxs[index].set_size_request(column_width, title_height)
+            
+            new_column_widths = []
+            for width in self.column_widths:
+                if width == -1:
+                    width = abs(self.draw_area.allocation.width - fixed_width_count)
+                new_column_widths.append(width)    
+            self.title_box.set_widths(new_column_widths)
+            
             
     def redraw_request(self, item, immediately=False):
         if not item in self.redraw_request_list:
