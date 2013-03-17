@@ -22,9 +22,9 @@
 
 from theme import ui_theme
 from utils import (color_hex_to_cairo, alpha_color_hex_to_cairo, 
-                   cairo_disable_antialias, cairo_state, get_content_size)
+                   cairo_disable_antialias, get_content_size)
 from draw import draw_text
-import gobject
+from label import Label
 import gtk
 import pango
 
@@ -33,11 +33,17 @@ class IpAddressEntry(gtk.VBox):
         gtk.VBox.__init__(self)
 
         self.address = address
-
-        self.set_size_request(width, height)
+        self.width = width
+        self.height = height
+        self.label = Label()
+        self.pack_start(self.label, False, False)
         self.token = token
 
+        self.connect("size-allocate", self.__on_size_allocate)
         self.connect("expose-event", self.__on_expose)
+        self.label.connect("button-press-event", self.__on_button_press)
+        self.label.connect("key-press-event", self.__on_key_press)
+        self.label.connect("focus-out-event", self.__on_focus_out)
 
     def set_address(self, address):
         self.address = address
@@ -47,14 +53,24 @@ class IpAddressEntry(gtk.VBox):
         self.token = token
         self.queue_draw()
 
+    def __on_size_allocate(self, widget, rect):
+        if rect.width > self.width:                                             
+            self.width = rect.width                                             
+                                                                                
+        self.set_size_request(self.width, self.height)                          
+        self.label.set_size_request(self.width, self.height)
+
     def __on_expose(self, widget, event):
         cr = widget.window.cairo_create()                                       
         rect = widget.allocation 
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        
         token_spacing = 10
         ip_addr = []
+        
         if self.address != "":
             ip_addr = [t for t in self.address.split(self.token)]
+        
         '''
         ipv4 max value is 255
         '''
@@ -87,7 +103,7 @@ class IpAddressEntry(gtk.VBox):
                 (ui_theme.get_color("combo_entry_background").get_color(), 0.9)))            
             cr.rectangle(x, y, w - 1, h - 1)       
             cr.fill()        
-        
+
         '''
         draw ip address and token
         '''
@@ -101,7 +117,7 @@ class IpAddressEntry(gtk.VBox):
                       y, 
                       ip_max_width, 
                       h, 
-                      alignment = pango.ALIGN_RIGHT)
+                      alignment = pango.ALIGN_CENTER)
             
             if i != ip_addr_len - 1:
                 draw_text(cr, 
@@ -113,3 +129,12 @@ class IpAddressEntry(gtk.VBox):
                           alignment = pango.ALIGN_CENTER)
             
             i += 1
+
+    def __on_button_press(self, widget, event):
+        pass
+
+    def __on_key_press(self, widget, event):
+        pass
+
+    def __on_focus_out(self, widget, event):
+        pass
