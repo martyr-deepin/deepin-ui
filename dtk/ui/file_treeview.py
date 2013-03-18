@@ -45,7 +45,7 @@ INDICATOR_PADDING_LEFT = INDICATOR_PADDING_RIGHT = 4
 ITEM_PADDING_Y = 2
 ITEM_HEIGHT = ICON_SIZE + ITEM_PADDING_Y * 2
 COLUMN_OFFSET = 32
-MODIFICATION_TIME_PADDING_LEFT = 12
+MODIFICATION_TIME_PADDING_LEFT = 20
 CONTENT_TYPE_PADDING_LEFT = 12
 SIZE_PADDING_LEFT = 12
 
@@ -322,7 +322,7 @@ class DirItem(TreeItem):
         return ITEM_HEIGHT
     
     def get_column_widths(self):
-        return [self.name_width, self.size_width, self.content_type_width, -1]
+        return [self.name_width, self.size_width, self.content_type_width, self.modification_time_width]
     
     def get_column_renders(self):
         return [self.render_name,
@@ -530,7 +530,7 @@ class FileItem(TreeItem):
         return ITEM_HEIGHT
     
     def get_column_widths(self):
-        return [self.name_width, self.size_width, self.content_type_width, -1]
+        return [self.name_width, self.size_width, self.content_type_width, self.modification_time_width]
     
     def get_column_renders(self):
         return [self.render_name,
@@ -605,7 +605,7 @@ class LoadingItem(TreeItem):
         return ITEM_HEIGHT
     
     def get_column_widths(self):
-        return [200, 1, -1]
+        return [200, 1, 1]
     
     def get_column_renders(self):
         return [self.render,
@@ -669,7 +669,7 @@ class EmptyItem(TreeItem):
         return ITEM_HEIGHT
     
     def get_column_widths(self):
-        return [200, 1, -1]
+        return [200, 1, 1]
     
     def get_column_renders(self):
         return [self.render,
