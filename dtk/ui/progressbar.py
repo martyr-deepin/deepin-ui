@@ -106,7 +106,11 @@ class ProgressBar(gtk.Button):
         
         # Expose callback.
         self.connect("expose-event", self.expose_progressbar)
-        
+    
+    def set_progress(self, progress):
+        self.progress_buffer.progress = progress
+        self.queue_draw()
+
     def expose_progressbar(self, widget, event):
         '''
         Internal callback for `expose` signal.
@@ -122,7 +126,6 @@ class ProgressBar(gtk.Button):
         
         return True        
         
-        
     def test_progressbar(self):
         '''Test prorgressbar.'''
         self.test_ticker += 1
@@ -133,8 +136,6 @@ class ProgressBar(gtk.Button):
 gobject.type_register(ProgressBar)
 
 if __name__ == "__main__":
-    import pseudo_skin
-    
     window = gtk.Window()    
     progressbar = ProgressBar()
     progressbar.progress_buffer.progress = 100
