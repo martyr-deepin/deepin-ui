@@ -283,7 +283,7 @@ class TreeView(gtk.VBox):
         self.hide_columns = None
         
         # expand column.
-        self.expand_column = 0
+        self.expand_column = None
         
         # Init redraw.
         self.redraw_request_list = []
@@ -1377,6 +1377,8 @@ class TreeView(gtk.VBox):
                 self.visible_items[motion_row].motion_notify(motion_column, offset_x, offset_y)
                                 
             self.emit("motion-notify-item", self.visible_items[motion_row], motion_column, offset_x, offset_y)
+        else:    
+            self.emit("motion-notify-item", None, 0, 0, 0)
                             
     def auto_scroll_tree_view(self, event):
         '''
@@ -1674,6 +1676,9 @@ class TreeView(gtk.VBox):
             if hasattr(item, "highlight"):        
                 self.highlight_item = item    
                 self.highlight_item.highlight()
+                try:
+                    self.select_rows.append(self.visible_items.index(self.highlight_item))
+                except: pass    
                 
                 self.queue_draw()    
                 
