@@ -167,6 +167,7 @@ class TextItem(TreeItem):
         '''
         # Init.
         TreeItem.__init__(self)
+        self.item_width = 160
         self.text = text
         self.text_size = text_size
         self.padding_x = padding_x
@@ -198,7 +199,7 @@ class TextItem(TreeItem):
         return self.text_size + self.padding_y * 2
     
     def get_column_widths(self):
-        return [-1]
+        return [self.item_width]
     
     def get_column_renders(self):
         return [self.render_text]
@@ -235,6 +236,7 @@ class IconTextItem(TreeItem):
         # Init.
         TreeItem.__init__(self)
         (self.icon_normal_dpixbuf, self.icon_hover_dpixbuf, self.icon_disable_dpixbuf) = icon_dpixbufs
+        self.item_width = 160
         self.text = text
         self.text_size = text_size
         self.icon_width = 16
@@ -282,7 +284,7 @@ class IconTextItem(TreeItem):
         return self.text_size + self.padding_y * 2
     
     def get_column_widths(self):
-        return [-1]
+        return [self.item_width]
     
     def get_column_renders(self):
         return [self.render]
