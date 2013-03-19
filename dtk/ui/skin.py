@@ -45,8 +45,9 @@ from utils import (is_in_rect, set_cursor, remove_timeout_id,
                    color_hex_to_cairo, cairo_state, container_remove_all, 
                    cairo_disable_antialias, 
                    scroll_to_bottom, 
-                   place_center, get_pixbuf_support_foramts, 
+                   place_center, file_is_image,
                    get_optimum_pixbuf_from_file)
+
 
 __all__ = ["SkinWindow"]
 
@@ -91,14 +92,12 @@ class LoadSkinThread(td.Thread):
         Run.
         '''
         gtk.timeout_add(100, self.render_skin_icons)
-        support_foramts = get_pixbuf_support_foramts()
         for skin_dir in self.skin_dirs:
             for root, dirs, files in os.walk(skin_dir):
                 dirs.sort()         # sort directory with alpha order
                 for filename in files:
-                    if end_with_suffixs(filename, support_foramts):
+                    if file_is_image(os.path.join(root, filename)):
                         self.skin_icon_list.append((root, filename))
-                        
         self.in_loading = False
 
 class SkinWindow(DialogBox):
@@ -228,8 +227,7 @@ class SkinPreviewPage(gtk.VBox):
         
     def create_skin_from_file(self, skin_file):
         '''Create skin from file.'''
-        support_foramts = get_pixbuf_support_foramts()
-        if end_with_suffixs(skin_file, support_foramts):
+        if file_is_image(skin_file):
             self.create_skin_from_image(skin_file)
         elif end_with_suffixs(skin_file, ["tar.gz"]):
             self.create_skin_from_package(skin_file)
