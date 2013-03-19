@@ -238,7 +238,8 @@ class TreeView(gtk.VBox):
                  right_space=0,
                  top_bottom_space=3,
                  padding_x=0,
-                 padding_y=0
+                 padding_y=0,
+                 expand_column=None,
                  ):
         '''
         Initialize TreeView class.
@@ -283,7 +284,7 @@ class TreeView(gtk.VBox):
         self.hide_columns = None
         
         # expand column.
-        self.expand_column = None
+        self.expand_column = expand_column
         
         # Init redraw.
         self.redraw_request_list = []

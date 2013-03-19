@@ -26,6 +26,7 @@ from contextlib import contextmanager
 import cairo
 import gobject
 import gtk
+import gio
 import os
 import pango
 import pangocairo
@@ -1044,3 +1045,20 @@ def get_unused_port(address="localhost"):
     print "Please import deepin_utils.net.get_unused_port, this function will departed in next release version."
     return net.get_unused_port(address="localhost")
 
+
+def file_is_image(file, filter_type=get_pixbuf_support_foramts()):
+    gfile = gio.File(file)
+    try:
+        fileinfo = gfile.query_info('standard::type,standard::content-type')            
+        file_type = fileinfo.get_file_type()
+        if file_type == gio.FILE_TYPE_REGULAR:
+            content_type = fileinfo.get_attribute_as_string("standard::content-type")
+            split_content = content_type.split("/")
+            if len(split_content) == 2:
+                if split_content[0] == "image" and split_content[1] in filter_type:
+                    file_path = gfile.get_path()
+                    if not file_path.endswith(".part"):
+                        return True
+        return False        
+    except:
+        return False
