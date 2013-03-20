@@ -24,29 +24,51 @@ from theme import ui_theme
 from utils import (color_hex_to_cairo, alpha_color_hex_to_cairo, 
                    cairo_disable_antialias, get_content_size)
 from draw import draw_text
-from label import Label
+from new_entry import Entry
 import gtk
 import pango
 
-class IpAddressEntry(gtk.VBox):
+class IpAddressEntry(gtk.HBox):
     def __init__(self, address = "",  width = 120, height = 22, token = "."):
-        gtk.VBox.__init__(self)
+        gtk.HBox.__init__(self)
 
         self.address = address
+        self.ip_address = []
+        self.entry_list = []
         self.width = width
         self.height = height
-        self.label = Label()
-        self.pack_start(self.label, False, False)
         self.token = token
 
         self.connect("size-allocate", self.__on_size_allocate)
         self.connect("expose-event", self.__on_expose)
-        self.label.connect("button-press-event", self.__on_button_press)
-        self.label.connect("key-press-event", self.__on_key_press)
-        self.label.connect("focus-out-event", self.__on_focus_out)
+
+        self.__set_entry_list()
+
+    def __set_entry_list(self):
+        if self.address != "":                                                  
+            self.ip_address = [t for t in self.address.split(self.token)]
+
+        ip_addr_len = len(self.ip_address)
+
+        if ip_addr_len == 0:
+            i = 0
+            while i < 4:
+                self.entry_list.append(Entry())
+                self.pack_start(self.entry_list[i])
+                i += 1
+            return
+
+        if ip_addr_len == 4:
+            i = 0
+            while i < 4:                                                        
+                self.entry_list.append(Entry(self.ip_address[i]))                                 
+                self.pack_start(self.entry_list[i])                             
+                i += 1                                                          
+            return
 
     def set_address(self, address):
         self.address = address
+        self.__set_entry_list()
         self.queue_draw()
 
     def set_token(self, token):
@@ -58,7 +80,6 @@ class IpAddressEntry(gtk.VBox):
             self.width = rect.width                                             
                                                                                 
         self.set_size_request(self.width, self.height)                          
-        self.label.set_size_request(self.width, self.height)
 
     def __on_expose(self, widget, event):
         cr = widget.window.cairo_create()                                       
@@ -66,10 +87,6 @@ class IpAddressEntry(gtk.VBox):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         
         token_spacing = 10
-        ip_addr = []
-        
-        if self.address != "":
-            ip_addr = [t for t in self.address.split(self.token)]
         
         '''
         ipv4 max value is 255
@@ -79,7 +96,7 @@ class IpAddressEntry(gtk.VBox):
         but what about ipv6?
         '''
         ipv6_max = "ffff"
-        ip_addr_len = len(ip_addr)
+        ip_addr_len = len(self.ip_address)
         i = 0
         
         '''
@@ -108,17 +125,11 @@ class IpAddressEntry(gtk.VBox):
         draw ip address and token
         '''
         ip_max_width, ip_max_height = get_content_size(str(ipv4_max))
+        
         if ip_addr_len == 6:
             ip_max_width, ip_max_height = get_content_size(ipv6_max)
+        
         while i < ip_addr_len:
-            draw_text(cr, 
-                      ip_addr[i], 
-                      x + i * (ip_max_width + token_spacing), 
-                      y, 
-                      ip_max_width, 
-                      h, 
-                      alignment = pango.ALIGN_CENTER)
-            
             if i != ip_addr_len - 1:
                 draw_text(cr, 
                           self.token, 
