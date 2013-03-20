@@ -979,14 +979,14 @@ class Entry(gtk.EventBox):
         key_name = get_keyevent_name(event)
         text = self.get_text()
         
-        if self.is_ipv4 and key_name != "BackSpace" and text != "":
+        if self.is_ipv4 and key_name not in ["BackSpace", "Tab", "Left", "Right"] and text != "":
+            if not self.is_ipv4_number(key_name):
+                return
+            
             if int(text + key_name) > 255:
                 return
 
             if len(text) >= 3:
-                return
-            
-            if not self.is_ipv4_number(key_name):
                 return
 
         input_method_filt = self.im.filter_keypress(event)
