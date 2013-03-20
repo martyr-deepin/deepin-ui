@@ -756,6 +756,7 @@ class Entry(gtk.EventBox):
                  is_password_entry=False,
                  shown_password=False, 
                  is_ipv4=False,
+                 is_mac=False,
                  ):
         '''
         Initialize Entry class.
@@ -792,9 +793,13 @@ class Entry(gtk.EventBox):
         '''
         self.shown_password = shown_password
         '''
-        regex ipv4
+        ipv4
         '''
         self.is_ipv4 = is_ipv4
+        '''
+        mac address
+        '''
+        self.is_mac = is_mac
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
@@ -966,8 +971,17 @@ class Entry(gtk.EventBox):
         '''
         self.handle_key_press(widget, event)
     
+    '''
+    FIXME: regex expression is not strict!
+    '''
     def is_ipv4_number(self, x):
         if re.match("^\\d+$", x) == None:
+            return False
+        
+        return True
+
+    def is_mac_address(self, x):
+        if re.match("^[A-Za-z0-9]+$", x) == None:
             return False
         
         return True
@@ -987,6 +1001,13 @@ class Entry(gtk.EventBox):
                 return
 
             if len(text) >= 3:
+                return
+
+        if self.is_mac and key_name not in ["BackSpace", "Tab", "Left", "Right"] and text != "":
+            if not self.is_mac_address(key_name):
+                return
+            
+            if len(text) >= 2:
                 return
 
         input_method_filt = self.im.filter_keypress(event)

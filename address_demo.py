@@ -33,7 +33,7 @@ app_theme = init_skin(
     )
 
 from dtk.ui.application import Application
-from dtk.ui.address_entry import IpAddressEntry
+from dtk.ui.address_entry import IpAddressEntry, MacAddressEntry
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
 import gtk
 
@@ -58,12 +58,18 @@ if __name__ == "__main__":
         "IpAddressEntry demo",
         )
     
-    align = gtk.Alignment()                                             
-    align.set(0, 0, 0, 0)                                           
-    align.set_padding(10, 10, 10, 10)
-    ipaddress_entry = IpAddressEntry("192.168.1.16")
-    print "DEBUG", ipaddress_entry.get_address()
-    align.add(ipaddress_entry)
-    application.main_box.pack_start(align)
+    align1 = gtk.Alignment()                                             
+    align1.set(0, 0, 0, 0)                                           
+    align1.set_padding(10, 10, 10, 10)
+    ip_address_entry = IpAddressEntry("192.168.1.16")
+    print "DEBUG", ip_address_entry.get_address()
+    align1.add(ip_address_entry)
+    align2 = gtk.Alignment()
+    align2.set(0, 0, 0, 0)
+    align2.set_padding(10, 10, 10, 10)
+    mac_address_entry = MacAddressEntry("60:eb:69:5c:3f:2b")
+    align2.add(mac_address_entry)
+    application.main_box.pack_start(align1)
+    application.main_box.pack_start(align2)
 
     application.run()
