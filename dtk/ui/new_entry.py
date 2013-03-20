@@ -981,7 +981,7 @@ class Entry(gtk.EventBox):
         return True
 
     def is_mac_address(self, x):
-        if re.match("^[A-Za-z0-9]+$", x) == None:
+        if re.match("^[a-z0-9]+$", x) == None:
             return False
         
         return True
@@ -990,10 +990,10 @@ class Entry(gtk.EventBox):
         '''
         Internal function to handle key press.
         '''
-        key_name = get_keyevent_name(event)
+        key_name = get_keyevent_name(event, False)
         text = self.get_text()
         
-        if self.is_ipv4 and key_name not in ["BackSpace", "Tab", "Left", "Right"] and text != "":
+        if self.is_ipv4 and key_name not in ["BackSpace", "Tab", "Left", "Right"]:
             if not self.is_ipv4_number(key_name):
                 return
             
@@ -1003,7 +1003,7 @@ class Entry(gtk.EventBox):
             if len(text) >= 3:
                 return
 
-        if self.is_mac and key_name not in ["BackSpace", "Tab", "Left", "Right"] and text != "":
+        if self.is_mac and key_name not in ["BackSpace", "Tab", "Left", "Right"]:
             if not self.is_mac_address(key_name):
                 return
             

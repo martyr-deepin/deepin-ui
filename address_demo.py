@@ -68,6 +68,7 @@ if __name__ == "__main__":
     align2.set(0, 0, 0, 0)
     align2.set_padding(10, 10, 10, 10)
     mac_address_entry = MacAddressEntry("60:eb:69:5c:3f:2b")
+    print "DEBUG", mac_address_entry.get_address()
     align2.add(mac_address_entry)
     application.main_box.pack_start(align1)
     application.main_box.pack_start(align2)

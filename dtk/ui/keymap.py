@@ -34,14 +34,17 @@ def deepin_to_keybinder(keystring):
     modifiers = "".join(["<%s>" % key for key in keys[0:-1]])
     return "%s%s" % (modifiers, keys[-1])
 
-def get_key_name(keyval):
+def get_key_name(keyval, to_upper=True):
     '''
     Get key name with given key value.
     
     @param keyval: Key value.
     @return: Return key name with given key value.
     '''
-    key_unicode = gdk.keyval_to_unicode(gdk.keyval_to_upper(keyval))
+    if to_upper:
+        key_unicode = gdk.keyval_to_unicode(gdk.keyval_to_upper(keyval))
+    else:
+        key_unicode = gdk.keyval_to_unicode(keyval)
     if key_unicode == 0:
         return gdk.keyval_name(keyval)
     else:
@@ -78,7 +81,7 @@ def get_key_event_modifiers(key_event):
         
     return modifiers
 
-def get_keyevent_name(key_event):
+def get_keyevent_name(key_event, to_upper=True):
     '''
     Get key event name.
     
@@ -89,7 +92,7 @@ def get_keyevent_name(key_event):
         return ""
     else:
         key_modifiers = get_key_event_modifiers(key_event)
-        key_name = get_key_name(key_event.keyval)
+        key_name = get_key_name(key_event.keyval, to_upper)
         if key_name == " ":
             key_name = "Space"
         
