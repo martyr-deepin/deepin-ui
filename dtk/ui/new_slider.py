@@ -173,7 +173,7 @@ class WizardBox(gtk.EventBox):
         self.slider_pixbufs = map(gtk.gdk.pixbuf_new_from_file, slider_images)
         self.slider_numuber = len(slider_images)
         self.dot_normal_pixbuf, self.dot_active_pixbuf = map(gtk.gdk.pixbuf_new_from_file, pointer_images)
-        self.close_pixbuf = ui_theme.get_pixbuf("button/window_close_normal.png").get_pixbuf()
+        self.close_dpixbuf = ui_theme.get_pixbuf("button/window_close_normal.png")
         
         # Init sizes.
         self.init_size()
@@ -213,11 +213,11 @@ class WizardBox(gtk.EventBox):
         self.dot_y = self.slider_height - dot_offset_y
         
         close_spacing = 0
-        close_x = self.slider_width - self.close_pixbuf.get_width() - close_spacing
+        close_x = self.slider_width - self.close_dpixbuf.get_pixbuf().get_width() - close_spacing
         close_y = close_spacing
         self.close_rect = gtk.gdk.Rectangle(close_x, close_y,
-                                            self.close_pixbuf.get_width(),
-                                            self.close_pixbuf.get_height())    
+                                            self.close_dpixbuf.get_pixbuf().get_width(),
+                                            self.close_dpixbuf.get_pixbuf().get_height())    
         
     def on_expose_event(self, widget, event):    
         cr = widget.window.cairo_create()        
@@ -255,7 +255,8 @@ class WizardBox(gtk.EventBox):
             dot_start_x += self.dot_width_offset
             
         # Draw close pixbuf.    
-        draw_pixbuf(cr, self.close_pixbuf, rect.x + self.close_rect.x, rect.y + self.close_rect.y)    
+        draw_pixbuf(cr, self.close_dpixbuf.get_pixbuf(), 
+                    rect.x + self.close_rect.x, rect.y + self.close_rect.y)    
         return True    
     
     def handle_animation(self, widget, event):    
