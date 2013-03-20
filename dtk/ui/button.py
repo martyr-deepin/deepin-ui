@@ -173,7 +173,8 @@ class ImageButton(gtk.Button):
                  hover_dpixbuf, 
                  press_dpixbuf, 
                  scale_x=False, 
-                 content=None):
+                 content=None, 
+                 insensitive_dpixbuf=None):
         '''
         Initialize ImageButton class.
 
@@ -185,8 +186,43 @@ class ImageButton(gtk.Button):
         '''
         gtk.Button.__init__(self)
         self.cache_pixbuf = CachePixbuf()
-        draw_button(self, self.cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixbuf, scale_x, content)
+        self.normal_dpixbuf = normal_dpixbuf
+        self.hover_dpixbuf = hover_dpixbuf
+        self.press_dpixbuf = press_dpixbuf
+        self.insensitive_dpixbuf = insensitive_dpixbuf
+        self.scale_x = scale_x
+        self.content = content
+        draw_button(self, 
+                    self.cache_pixbuf, 
+                    self.normal_dpixbuf, 
+                    self.hover_dpixbuf, 
+                    self.press_dpixbuf, 
+                    self.scale_x, 
+                    self.content, 
+                    self.insensitive_dpixbuf)
+
+    def set_active(self, is_active):
+        if is_active:
+            draw_button(self,                                                       
+                    self.cache_pixbuf,                                          
+                    self.hover_dpixbuf,                                        
+                    self.hover_dpixbuf,                                         
+                    self.press_dpixbuf,                                         
+                    self.scale_x,                                               
+                    self.content,                                               
+                    self.insensitive_dpixbuf)
+        else:
+            draw_button(self,                                                       
+                    self.cache_pixbuf,                                          
+                    self.normal_dpixbuf,                                        
+                    self.hover_dpixbuf,                                         
+                    self.press_dpixbuf,                                         
+                    self.scale_x,                                               
+                    self.content,                                               
+                    self.insensitive_dpixbuf)
         
+        self.queue_draw()
+
 gobject.type_register(ImageButton)
 
 class ThemeButton(gtk.Button):
@@ -293,7 +329,8 @@ gobject.type_register(MaxButton)
 
 def draw_button(widget, cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
                 scale_x=False, button_label=None, font_size=DEFAULT_FONT_SIZE, 
-                label_dcolor=ui_theme.get_color("button_default_font")):
+                label_dcolor=ui_theme.get_color("button_default_font"), 
+                insensitive_dpixbuf=None):
     '''
     Draw button.
     
@@ -321,13 +358,14 @@ def draw_button(widget, cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixb
             cache_pixbuf,
             scale_x, False,
             normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
-            button_label, font_size, label_dcolor))
+            button_label, font_size, label_dcolor, insensitive_dpixbuf))
         
 def expose_button(widget, event, 
                   cache_pixbuf,
                   scale_x, scale_y,
                   normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
-                  button_label, font_size, label_dcolor):
+                  button_label, font_size, label_dcolor, 
+                  insensitive_dpixbuf=None):
     '''
     Expose callback for L{ I{draw_button} <draw_button>}.
 
@@ -344,7 +382,8 @@ def expose_button(widget, event,
     '''
     # Init.
     rect = widget.allocation
-    
+
+    image = None
     # Get pixbuf along with button's sate.
     if widget.state == gtk.STATE_NORMAL:
         image = normal_dpixbuf.get_pixbuf()
@@ -352,6 +391,10 @@ def expose_button(widget, event,
         image = hover_dpixbuf.get_pixbuf()
     elif widget.state == gtk.STATE_ACTIVE:
         image = press_dpixbuf.get_pixbuf()
+    elif widget.state == gtk.STATE_INSENSITIVE:
+        if insensitive_dpixbuf == None:
+            insensitive_dpixbuf = normal_dpixbuf
+        image = insensitive_dpixbuf.get_pixbuf()
     
     # Init size.
     if scale_x:
