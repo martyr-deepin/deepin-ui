@@ -35,6 +35,7 @@ import gtk
 import pango
 import cairo
 import pangocairo
+import re
 from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
                           get_content_size, is_double_click, is_right_button, 
                           is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias
@@ -753,7 +754,8 @@ class Entry(gtk.EventBox):
                  font_size=DEFAULT_FONT_SIZE, 
                  enable_clear_button=False,
                  is_password_entry=False,
-                 shown_password=False
+                 shown_password=False, 
+                 is_ipv4=False,
                  ):
         '''
         Initialize Entry class.
@@ -789,6 +791,10 @@ class Entry(gtk.EventBox):
         TODO: Shown password or not
         '''
         self.shown_password = shown_password
+        '''
+        regex ipv4
+        '''
+        self.is_ipv4 = is_ipv4
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
@@ -959,12 +965,30 @@ class Entry(gtk.EventBox):
         Internal callback for `key-press-event` signal.
         '''
         self.handle_key_press(widget, event)
+    
+    def is_ipv4_number(self, x):
+        if re.match("^\\d+$", x) == None:
+            return False
         
+        return True
+
     def handle_key_press(self, widget, event):
         '''
         Internal function to handle key press.
         '''
-        # Pass key to IMContext.
+        key_name = get_keyevent_name(event)
+        text = self.get_text()
+        
+        if self.is_ipv4 and key_name != "BackSpace" and text != "":
+            if int(text + key_name) > 255:
+                return
+
+            if len(text) >= 3:
+                return
+            
+            if not self.is_ipv4_number(key_name):
+                return
+
         input_method_filt = self.im.filter_keypress(event)
         if not input_method_filt:
             self.handle_key_event(event)

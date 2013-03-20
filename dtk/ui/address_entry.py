@@ -53,7 +53,7 @@ class IpAddressEntry(gtk.HBox):
         if ip_addr_len == 0:
             i = 0
             while i < 4:
-                self.entry_list.append(Entry())
+                self.entry_list.append(Entry(is_ipv4 = True))
                 self.pack_start(self.entry_list[i])
                 i += 1
             return
@@ -61,7 +61,8 @@ class IpAddressEntry(gtk.HBox):
         if ip_addr_len == 4:
             i = 0
             while i < 4:                                                        
-                self.entry_list.append(Entry(self.ip_address[i]))                                 
+                self.entry_list.append(Entry(self.ip_address[i], 
+                                             is_ipv4 = True))                                 
                 self.pack_start(self.entry_list[i])                             
                 i += 1                                                          
             return
