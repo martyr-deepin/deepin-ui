@@ -28,8 +28,11 @@ from new_entry import Entry
 import gtk
 import pango
 
+'''
+only support ipv4
+'''
 class IpAddressEntry(gtk.HBox):
-    def __init__(self, address = "",  width = 120, height = 22, token = "."):
+    def __init__(self, address = "",  width = 120, height = 22):
         gtk.HBox.__init__(self)
 
         self.address = address
@@ -37,7 +40,9 @@ class IpAddressEntry(gtk.HBox):
         self.entry_list = []
         self.width = width
         self.height = height
-        self.token = token
+        self.padding_x = 2
+        self.token = "."
+        self.ipv4_max = 255
 
         self.connect("size-allocate", self.__on_size_allocate)
         self.connect("expose-event", self.__on_expose)
@@ -53,7 +58,7 @@ class IpAddressEntry(gtk.HBox):
         if ip_addr_len == 0:
             i = 0
             while i < 4:
-                self.entry_list.append(Entry(is_ipv4 = True))
+                self.entry_list.append(Entry(padding_x = self.padding_x, is_ipv4 = True))
                 self.pack_start(self.entry_list[i])
                 i += 1
             return
@@ -61,8 +66,7 @@ class IpAddressEntry(gtk.HBox):
         if ip_addr_len == 4:
             i = 0
             while i < 4:                                                        
-                self.entry_list.append(Entry(self.ip_address[i], 
-                                             is_ipv4 = True))                                 
+                self.entry_list.append(Entry(self.ip_address[i], padding_x = self.padding_x, is_ipv4 = True))
                 self.pack_start(self.entry_list[i])                             
                 i += 1                                                          
             return
@@ -72,9 +76,20 @@ class IpAddressEntry(gtk.HBox):
         self.__set_entry_list()
         self.queue_draw()
 
-    def set_token(self, token):
-        self.token = token
-        self.queue_draw()
+    def get_address(self):
+        i = 0
+        address = ""
+
+        entry_list_len = len(self.entry_list)
+        while i < entry_list_len:
+            address += self.entry_list[i].get_text()
+            
+            if i < entry_list_len - 1:
+                address += self.token
+
+            i += 1
+
+        return address
 
     def __on_size_allocate(self, widget, rect):
         if rect.width > self.width:                                             
@@ -89,21 +104,14 @@ class IpAddressEntry(gtk.HBox):
         
         token_spacing = 10
         
-        '''
-        ipv4 max value is 255
-        '''
-        ipv4_max = 255
-        '''
-        but what about ipv6?
-        '''
-        ipv6_max = "ffff"
         ip_addr_len = len(self.ip_address)
         i = 0
         
         '''
-        check Ip Address format validate, it is better to use regex, but regex is too heavy...
+        check Ip Address format validate, it is better to use regex, 
+        but regex is too heavy...
         '''
-        if self.token != "." and self.token != ":" and ip_addr_len != 0 and ip_addr_len != 4 and ip_addr_len != 6:
+        if self.token != "." and ip_addr_len != 0 and ip_addr_len != 4:
             print "Ip Address format is wrong!"
             return
 
@@ -125,10 +133,7 @@ class IpAddressEntry(gtk.HBox):
         '''
         draw ip address and token
         '''
-        ip_max_width, ip_max_height = get_content_size(str(ipv4_max))
-        
-        if ip_addr_len == 6:
-            ip_max_width, ip_max_height = get_content_size(ipv6_max)
+        ip_max_width, ip_max_height = get_content_size(str(self.ipv4_max))
         
         while i < ip_addr_len:
             if i != ip_addr_len - 1:
@@ -141,12 +146,3 @@ class IpAddressEntry(gtk.HBox):
                           alignment = pango.ALIGN_CENTER)
             
             i += 1
-
-    def __on_button_press(self, widget, event):
-        pass
-
-    def __on_key_press(self, widget, event):
-        pass
-
-    def __on_focus_out(self, widget, event):
-        pass

@@ -62,6 +62,7 @@ if __name__ == "__main__":
     align.set(0, 0, 0, 0)                                           
     align.set_padding(10, 10, 10, 10)
     ipaddress_entry = IpAddressEntry("192.168.1.16")
+    print "DEBUG", ipaddress_entry.get_address()
     align.add(ipaddress_entry)
     application.main_box.pack_start(align)
 
