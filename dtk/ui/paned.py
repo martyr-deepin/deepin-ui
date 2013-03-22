@@ -28,6 +28,9 @@ import gobject
 import gtk
 import math
 from theme import ui_theme
+
+# Load customize rc style before any other.
+gtk.rc_parse_string("style 'my_style' {\n    GtkPaned::handle-size = %s\n }\nwidget '*' style 'my_style'" % (PANED_HANDLE_SIZE))
         
 class Paned(gtk.Paned):
     '''
@@ -168,13 +171,11 @@ class Paned(gtk.Paned):
         return is_in_rect((x, y), rect)
 
     def do_enter_notify_event(self, e):
-        print "enter"
         self.show_button = True
         
         self.queue_draw()
     
     def do_leave_notify_event(self, e):
-        print "leave"
         self.show_button = False
         self.init_button("normal")
         
