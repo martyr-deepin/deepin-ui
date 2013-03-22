@@ -50,6 +50,7 @@ class Paned(gtk.Paned):
                  shrink_first,
                  enable_animation=False,
                  always_show_button=False,
+                 enable_drag=False,
                  handle_color=ui_theme.get_color("paned_line")
                  ):
         '''
@@ -59,6 +60,7 @@ class Paned(gtk.Paned):
         self.shrink_first = shrink_first
         self.enable_animation = enable_animation
         self.always_show_button = always_show_button
+        self.enable_drag = enable_drag
         self.handle_color = handle_color
         self.bheight = ui_theme.get_pixbuf("paned/paned_up_normal.png").get_pixbuf().get_width()
         self.saved_position = -1
@@ -195,11 +197,12 @@ class Paned(gtk.Paned):
             
             self.init_button("hover")
         else:
-            handle.set_cursor(self.cursor_type)
-            
+            if self.enable_drag:
+                handle.set_cursor(self.cursor_type)
+                gtk.Paned.do_motion_notify_event(self, e)                
+            else:    
+                handle.set_cursor(None)
             self.init_button("normal")
-        
-        gtk.Paned.do_motion_notify_event(self, e)
 
     def do_button_press_event(self, e):
         '''
@@ -308,9 +311,10 @@ class HPaned(Paned):
                  shrink_first=True,
                  enable_animation=False,
                  always_show_button=False,
+                 enable_drag=False,
                  handle_color=ui_theme.get_color("paned_line")
                  ):
-        Paned.__init__(self, shrink_first, enable_animation, always_show_button, handle_color)
+        Paned.__init__(self, shrink_first, enable_animation, always_show_button, enable_drag, handle_color)
         self.set_orientation(gtk.ORIENTATION_HORIZONTAL)
         self.cursor_type = gtk.gdk.Cursor(gtk.gdk.SB_H_DOUBLE_ARROW)
 
@@ -319,9 +323,10 @@ class VPaned(Paned):
                  shrink_first=True,
                  enable_animation=False,
                  always_show_button=False,
+                 enable_drag=False,
                  handle_color=ui_theme.get_color("paned_line")
                  ):
-        Paned.__init__(self, shrink_first, enable_animation, always_show_button, handle_color)
+        Paned.__init__(self, shrink_first, enable_animation, always_show_button, enable_drag, handle_color)
         self.set_orientation(gtk.ORIENTATION_VERTICAL)
         self.cursor_type = gtk.gdk.Cursor(gtk.gdk.SB_V_DOUBLE_ARROW)
         
