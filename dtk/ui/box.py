@@ -241,7 +241,7 @@ class ResizableBox(gtk.EventBox):
                          self.height - self.padding_y)
             cr.fill()
 
-            cr.set_source_rgb(*color_hex_to_cairo("#797979"))
+            cr.set_source_rgb(*color_hex_to_cairo("#E2E2E2"))
             cr.set_line_width(self.line_width)
             cr.rectangle(x, 
                          y, 

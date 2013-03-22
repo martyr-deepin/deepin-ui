@@ -56,7 +56,8 @@ class HScalebar(gtk.Button):
                  format_value="",
                  value_min = 0,
                  value_max = 100,  
-                 line_height=6
+                 line_height=6,
+                 gray_progress=False
                  ):
         gtk.Button.__init__(self)
         #        
@@ -71,6 +72,7 @@ class HScalebar(gtk.Button):
         self.value_max = value_max - value_min
         self.value_min = value_min
         self.drag = False
+        self.gray_progress = gray_progress
         # init color.
         self.fg_side_color = "#0071B3"
         self.bg_side_color = "#B3B3B3"
@@ -193,6 +195,10 @@ class HScalebar(gtk.Button):
                     self.progress_border, 
                     self.progress_border)
             cr.fill()
+
+            '''
+            foreground color setting
+            '''
             
             if self.enable_check:
                 fg_inner_color = self.fg_inner_color
@@ -200,6 +206,11 @@ class HScalebar(gtk.Button):
                 fg_corner_color = self.fg_corner_color
             else:
                 fg_inner_color = self.bg_inner1_color 
+                fg_side_color  = self.bg_side_color 
+                fg_corner_color = self.bg_corner_color 
+            
+            if self.gray_progress:
+                fg_inner_color = self.bg_inner2_color 
                 fg_side_color  = self.bg_side_color 
                 fg_corner_color = self.bg_corner_color 
             '''

@@ -185,43 +185,21 @@ class ImageButton(gtk.Button):
         @param content: Button label content.
         '''
         gtk.Button.__init__(self)
-        self.cache_pixbuf = CachePixbuf()
-        self.normal_dpixbuf = normal_dpixbuf
-        self.hover_dpixbuf = hover_dpixbuf
-        self.press_dpixbuf = press_dpixbuf
-        self.insensitive_dpixbuf = insensitive_dpixbuf
-        self.scale_x = scale_x
-        self.content = content
+        cache_pixbuf = CachePixbuf()
         draw_button(self, 
-                    self.cache_pixbuf, 
-                    self.normal_dpixbuf, 
-                    self.hover_dpixbuf, 
-                    self.press_dpixbuf, 
-                    self.scale_x, 
-                    self.content, 
-                    self.insensitive_dpixbuf)
+                    cache_pixbuf, 
+                    normal_dpixbuf, 
+                    hover_dpixbuf, 
+                    press_dpixbuf, 
+                    scale_x, 
+                    content, 
+                    insensitive_dpixbuf)
 
     def set_active(self, is_active):
         if is_active:
-            draw_button(self,                                                       
-                    self.cache_pixbuf,                                          
-                    self.hover_dpixbuf,                                        
-                    self.hover_dpixbuf,                                         
-                    self.press_dpixbuf,                                         
-                    self.scale_x,                                               
-                    self.content,                                               
-                    self.insensitive_dpixbuf)
+            self.set_state(gtk.STATE_PRELIGHT)
         else:
-            draw_button(self,                                                       
-                    self.cache_pixbuf,                                          
-                    self.normal_dpixbuf,                                        
-                    self.hover_dpixbuf,                                         
-                    self.press_dpixbuf,                                         
-                    self.scale_x,                                               
-                    self.content,                                               
-                    self.insensitive_dpixbuf)
-        
-        self.queue_draw()
+            self.set_state(gtk.STATE_NORMAL)
 
 gobject.type_register(ImageButton)
 
