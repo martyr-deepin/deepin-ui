@@ -57,9 +57,6 @@ class Application(object):
         """
         # Init gdk threads, the integrant method for multi-thread GUI application.
         gtk.gdk.threads_init()
-        
-        # Load customize rc style before any other.
-        gtk.rc_parse_string("style 'my_style' {\n    GtkPaned::handle-size = %s\n }\nwidget '*' style 'my_style'" % (PANED_HANDLE_SIZE))
 
         # Init status.
         self.menu_button_callback = None
