@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011 ~ 2012 Deepin, Inc.
-#               2011 ~ 2012 Wang Yong
+# Copyright (C) 2011 ~ 2013 Deepin, Inc.
+#               2011 ~ 2013 Hou ShaoHui
 # 
-# Author:     Wang Yong <lazycat.manatee@gmail.com>
-# Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+# Author:     Hou ShaoHui <houshao55@gmail.com>
+# Maintainer: Hou ShaoHui <houshao55@gmail.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,309 +20,296 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from button import DisableButton
-from droplist import Droplist
-from keymap import get_keyevent_name
-from label import Label
-from theme import ui_theme
-import gobject
 import gtk
-from utils import (propagate_expose, cairo_disable_antialias,
-                   color_hex_to_cairo, alpha_color_hex_to_cairo)
+import pango
+import gobject
 
-class ComboBox(gtk.VBox):
-    '''
-    ComboBox class.
+from new_entry import Entry
+from button import DisableButton
+from poplist import Poplist
+from theme import ui_theme
+from label import Label
+from new_treeview import TreeItem as AbstractItem
+from draw import draw_text, draw_vlinear
+from utils import (propagate_expose, cairo_disable_antialias,
+                   color_hex_to_cairo, alpha_color_hex_to_cairo, get_content_size)
+from constant import DEFAULT_FONT_SIZE
+
+def draw_vlinear_mask(cr, rect, shadow_color):    
+    draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, ui_theme.get_shadow_color(shadow_color).get_color_info())
     
-    @undocumented: focus_in_combo
-    @undocumented: focus_out_combo
-    @undocumented: click_drop_button
-    @undocumented: key_press_combo
-    @undocumented: key_release_combo
-    @undocumented: update_select_content
-    @undocumented: set_sensitive
-    @undocumented: expose_combobox_frame
+
+class ComboTextItem(AbstractItem):
+    
+    def __init__(self, title, item_value, item_width=None, font_size=DEFAULT_FONT_SIZE):
+        AbstractItem.__init__(self)
+        self.column_index = 0
+        self.item_height = 26
+        self.spacing_x = 15
+        self.padding_x = 5
+        self.font_size = font_size
+        if item_width == None:
+            self.item_width, _ = get_content_size(title, font_size)
+            self.item_width += self.spacing_x *2
+        else:    
+            self.item_width = item_width
+        self.title = title
+        self.item_value = item_value
+        
+    def get_height(self):    
+        return self.item_height
+    
+    def get_column_widths(self):
+        return (self.item_width,)
+    
+    def get_width(self):
+        return self.item_width
+    
+    def get_column_renders(self):
+        return (self.render_title,)
+    
+    def unselect(self):
+        self.is_select = False
+        self.emit_redraw_request()
+        
+    def emit_redraw_request(self):    
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
+    def select(self):        
+        self.is_select = True
+        self.emit_redraw_request()
+        
+    def render_title(self, cr, rect):        
+        font_color = ui_theme.get_color("menu_font").get_color()
+        
+        if self.is_hover:    
+            draw_vlinear_mask(cr, rect, "menu_item_select")
+            font_color = ui_theme.get_color("menu_select_font").get_color()
+        
+        draw_text(cr, self.title, rect.x + self.padding_x,
+                  rect.y, rect.width - self.padding_x * 2,
+                  rect.height, text_size=self.font_size, 
+                  text_color = font_color,
+                  alignment=pango.ALIGN_LEFT)    
+        
+    def expand(self):
+        pass
+    
+    def unexpand(self):
+        pass
+    
+    def unhover(self, column, offset_x, offset_y):
+        self.is_hover = False
+        self.emit_redraw_request()
+    
+    def hover(self, column, offset_x, offset_y):
+        self.is_hover = True
+        self.emit_redraw_request()
+        
+    def button_press(self, column, offset_x, offset_y):
+        pass
+    
+    def single_click(self, column, offset_x, offset_y):
+        pass
+
+    def double_click(self, column, offset_x, offset_y):
+        pass        
+    
+    def draw_drag_line(self, drag_line, drag_line_at_bottom=False):
+        pass
+    
+gobject.type_register(ComboTextItem)
+
+        
+class ComboList(Poplist):
+    '''
+    class docs
     '''
 	
+    def __init__(self,
+                 items=[],
+                 max_height=None,
+                 max_width=None):
+        '''
+        init docs
+        '''
+        Poplist.__init__(self,
+                         items, 
+                         max_height,
+                         max_width,
+                         False,
+                         self.shape_combo_list_frame,
+                         self.expose_combo_list_frame,
+                         align_size=2,
+                         min_width=80,
+                         window_type=gtk.WINDOW_POPUP,
+                         )
+        
+        self.treeview.draw_mask = self.draw_treeview_mask
+        self.treeview.set_expand_column(0)
+        self.expose_window_frame = self.expose_combo_list_frame
+        
+    def draw_treeview_mask(self, cr, x, y, w, h):
+        cr.set_source_rgb(1, 1, 1)
+        cr.rectangle(x, y, w, h)
+        cr.fill()
+        
+    def get_select_index(self):    
+        select_rows = self.treeview.select_rows
+        if len(select_rows) > 0:
+            return select_rows[0]
+        return 0
+    
+    def reset_status(self):
+        self.treeview.left_button_press = False
+        
+    def set_select_index(self, index):
+        self.treeview.set_select_rows([index])
+        self.treeview.set_hover_row(index)
+        
+    def hover_select_item(self):    
+        self.treeview.set_hover_row(self.get_select_index())
+        
+    def shape_combo_list_frame(self, widget, event):
+        pass
+        
+    def expose_combo_list_frame(self, widget, event):
+        cr = widget.window.cairo_create()        
+        rect = widget.allocation
+        cr.set_source_rgb(1, 1, 1)
+        cr.rectangle(*rect)
+        cr.fill()
+
+        with cairo_disable_antialias(cr):
+            cr.set_line_width(1)
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("droplist_frame").get_color()))
+            cr.rectangle(rect.x + 1, rect.y + 1, rect.width - 1, rect.height - 1)
+            cr.stroke()
+            
+            
+gobject.type_register(ComboList)
+
+class ComboBox(gtk.VBox):
+    
     __gsignals__ = {
         "item-selected" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
         "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
     }
-
-    def __init__(self, 
-                 items, 
-                 droplist_height=None, 
+    
+    def __init__(self, items, 
+                 droplist_height=None,
                  select_index=0, 
-                 max_width=None,
-                 fixed_width=None):
-        '''
-        Initialize ComboBox class.
+                 max_width=None, 
+                 fixed_width=None, 
+                 editable=False,
+                 ):
         
-        @param items: ComboBox item, item format: (item_label, item_value)
-        @param droplist_height: You can set maximum height of droplist, default is None.
-        @param select_index: Initialize selected index, default is 0.
-        @param max_width: Maximum width of ComboBox, default is None that width along with content.
-        '''
-        # Init.
         gtk.VBox.__init__(self)
         self.set_can_focus(True)
-        self.droplist_height = droplist_height
-        self.focus_flag = False
         
-        self.dropbutton_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()
-        self.label_padding_left = 6
-        self.box = gtk.HBox()
-        self.dropbutton = DisableButton(
+        # Init variables.
+        self.focus_flag = False
+        self.select_index = select_index
+        max_height = droplist_height
+        self.raw_items = items
+        self.editable = editable
+        if self.editable:
+            self.padding_x = 0
+        else:
+            self.padding_x = 5
+        
+        # Init combo widgets.
+        self.combo_items = [ComboTextItem(item[0], item[1], item_width=fixed_width) for item in items]
+        self.combo_list = ComboList(self.combo_items, max_height=max_height, max_width=max_width)        
+        self.combo_list.set_select_index(self.select_index)
+        self.drop_button = DisableButton(
             (ui_theme.get_pixbuf("combo/dropbutton_normal.png"),
              ui_theme.get_pixbuf("combo/dropbutton_hover.png"),
              ui_theme.get_pixbuf("combo/dropbutton_press.png"),
              ui_theme.get_pixbuf("combo/dropbutton_disable.png")),
             )
-        
-        self.set_items(items, select_index, max_width, fixed_width, True)
-        
-        self.height = 22
-        
-        self.label.text_color = ui_theme.get_color("menu_font")
-                
-        self.align = gtk.Alignment()
-        self.align.set(0.5, 0.5, 0.0, 0.0)
-        self.align.set_padding(1, 1, 1 + self.label_padding_left, 1)
-        
-        self.pack_start(self.align, False, False)
-        self.align.add(self.box)
+        self.drop_button_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()        
+        remained_width = self.combo_list.get_normal_width() - self.drop_button_width - self.padding_x - 1
         
         
-        self.box.pack_start(self.label, False, False)
-        self.box.pack_start(self.dropbutton, False, False)
-        self.label.connect("button-press-event", self.click_drop_button)
+        panel_align = gtk.Alignment()
+        panel_align.set(0.5, 0.5, 0.0, 0.0)
         
-        self.align.connect("expose-event", self.expose_combobox_frame)
-        self.dropbutton.connect("button-press-event", self.click_drop_button)
-        self.connect("key-press-event", self.key_press_combo)
-        self.connect("key-release-event", self.key_release_combo)
-        self.connect("focus-in-event", self.focus_in_combo)
-        self.connect("focus-out-event", self.focus_out_combo)
-        
-        self.keymap = {
-            "Home" : self.select_first_item,
-            "End" : self.select_last_item,
-            "Up" : self.select_prev_item,
-            "Down" : self.select_next_item}
-        
-    def set_items(self, items, select_index=0, max_width=None, fixed_width=None, create_label=False):
-        '''
-        Update combo's items in runtime.
-        
-        @param items: ComboBox item, item format: (item_label, item_value)
-        @param select_index: Initialize selected index, default is 0.
-        @param max_width: Maximum width of ComboBox, default is None that width along with content.
-        @param create_label: This option just set as True when combo widget create, you should always ignore it.
-        '''
-        # Init.
-        self.items = items
-        self.select_index = select_index
-        
-        # Build droplist and update width.
-        self.droplist = Droplist(items, max_width=max_width, fixed_width=fixed_width, max_height=self.droplist_height)
-        self.droplist.connect("item-selected", self.update_select_content)
-        self.droplist.connect("key-release", lambda dl, s, o, i: self.emit("key-release", s, o, i))
-        self.width = self.droplist.get_droplist_width()
-        if self.width < max_width:
-            self.width = max_width
-        
-        if self.droplist_height:
-            self.droplist.set_size_request(-1, self.droplist_height)
-
-        # Create label when first time build combo widget.
-        if create_label:
-            self.label = Label(items[select_index][0], 
-                               label_width=self.width - self.dropbutton_width - 1 - self.label_padding_left,
+        if self.editable:
+            self.display_panel = Entry(self.combo_items[self.select_index].title)
+            self.display_panel.set_size_request(remained_width, -1)
+        else:    
+            self.display_panel = Label(self.combo_items[self.select_index].title, 
+                               label_width=remained_width,
                                enable_select=False,
                                enable_double_click=False)
-        
-        # Update label size.
-        self.label.set_text(self.items[select_index][0])
-        self.label.label_width = self.width - self.dropbutton_width - 1 - self.label_padding_left
-        self.label.update_size()
-        
-    def focus_in_combo(self, widget, event):
-        '''
-        Internal function, focus in ComboBox.
-        
-        @param widget: Gtk.Widget instance.
-        @param event: Focus in event.
-        '''
-        self.focus_flag = True
-        self.label.text_color = ui_theme.get_color("menu_select_font")
-
-        self.queue_draw()
-        
-    def focus_out_combo(self, widget, event):
-        '''
-        Internal function, focus out ComboBox.
-        
-        @param widget: Gtk.Widget instance.
-        @param event: Focus out event.
-        '''
-        self.focus_flag = False        
-        self.label.text_color = ui_theme.get_color("menu_font")
             
-        self.queue_draw()
+            self.display_panel.connect("button-press-event", self.on_drop_button_press)
+            panel_align.set_padding(0, 0, self.padding_x, 0)            
+            
+        panel_align.add(self.display_panel)    
         
-    def click_drop_button(self, widget, event):
-        '''
-        Internal function to handle `button-press-event` signal.
-        '''
-        if self.droplist.get_visible():
-            self.droplist.hide()
+        hbox = gtk.HBox()
+        hbox.pack_start(panel_align, True, False)
+        hbox.pack_start(self.drop_button, False, False)
+        box_align = gtk.Alignment()
+        box_align.set(0.5, 0.5, 0.0, 0.0)
+        box_align.add(hbox)
+        self.add(box_align)
+        
+        # Connect signals.
+        box_align.connect("expose-event", self.on_expose_combo_frame)
+        self.drop_button.connect("button-press-event", self.on_drop_button_press)
+        self.connect("focus-in-event", self.on_focus_in_combo)
+        self.connect("focus-out-event", self.on_focus_out_combo)
+        self.combo_list.treeview.connect("button-press-item", self.on_combo_single_click)
+        
+    def on_drop_button_press(self, widget, event):    
+        
+        self.combo_list.hover_select_item()
+        height = self.allocation.height
+        x, y = self.window.get_root_origin()
+        
+        if self.combo_list.get_visible():
+            self.combo_list.hide()
         else:
             wx, wy = int(event.x), int(event.y)
             (offset_x, offset_y) = widget.translate_coordinates(self, 0, 0)
             (_, px, py, modifier) = widget.get_display().get_pointer()
-            droplist_x, droplist_y = px - wx - offset_x - 1, py - wy - offset_y + self.height - 1
+            droplist_x, droplist_y = px - wx - offset_x - 1, py - wy - offset_y + height - 1
+            self.combo_list.show((droplist_x, droplist_y), (0, -height))
             
-            self.droplist.show(
-                (droplist_x, droplist_y),
-                (0, -self.height))
-            
-            self.droplist.item_select_index = self.select_index
-            self.droplist.active_item()
-            self.droplist.scroll_page_to_select_item()
-            
-        self.queue_draw()    
-        
-    def select_first_item(self):
-        '''
-        Select first item.
-        '''
-        if len(self.droplist.droplist_items) > 0:
-            first_index = self.droplist.get_first_index()
-            if first_index != None:
-                self.droplist.item_select_index = first_index
-                self.droplist.active_item()
-                self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
+    def on_combo_single_click(self, widget, item, column, x, y):        
+        self.display_panel.set_text(item.title)
+        self.combo_list.reset_status()
+        if item:
+            index = self.combo_list.get_select_index()
+            self.emit("item-selected", item.title, item.item_value, index)
     
-    def select_last_item(self):
-        '''
-        Select last item.
-        '''
-        if len(self.droplist.droplist_items) > 0:
-            last_index = self.droplist.get_last_index()
-            if last_index != None:
-                self.droplist.item_select_index = last_index
-                self.droplist.active_item()
-                self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
-    
-    def select_prev_item(self):
-        '''
-        Select preview item.
-        '''
-        if len(self.droplist.droplist_items) > 0:
-            prev_index = self.droplist.get_prev_index()
-            if prev_index != None:
-                self.droplist.item_select_index = prev_index
-                self.droplist.active_item()
-                self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
-    
-    def select_next_item(self):
-        '''
-        Select next item.
-        '''
-        if len(self.droplist.droplist_items) > 0:
-            next_index = self.droplist.get_next_index()
-            if next_index != None:
-                self.droplist.item_select_index = next_index
-                self.droplist.active_item()
-                self.droplist.droplist_items[self.droplist.item_select_index].wrap_droplist_clicked_action()
+    def on_focus_in_combo(self, widget, event):
+        self.focus_flag = True
+        self.queue_draw()
         
-    def key_press_combo(self, widget, event):
-        '''
-        Internal function to handle `key-press-event` signal.
+    def on_focus_out_combo(self, widget, event):    
+        self.focus_flag = False
+        self.queue_draw()
         
-        @param widget: Gtk.Widget instance.
-        @param event: Key press event.
-        '''
-        if not self.droplist.get_visible():
-            key_name = get_keyevent_name(event)
-            if self.keymap.has_key(key_name):
-                self.keymap[key_name]()
+    def set_select_index(self, item_index):    
+        if 0 <= item_index < len(self.combo_items):
+            self.combo_list.set_select_index(item_index)        
+            self.display_panel.set_text(self.combo_items[item_index].title)
             
-            return True     
-        
-    def set_select_index(self, item_index):
-        '''
-        Set select index.
-        
-        @param item_index: The index of selected item.
-        '''
+    def get_item_with_index(self, item_index):        
         if 0 <= item_index < len(self.items):
-            item = self.items[item_index]
-            if item:
-                self.select_index = item_index
-                self.label.set_text(item[0])
-                
-    def get_item_with_index(self, item_index):
-        '''
-        Get item with given index.
-        
-        @return: Return item that match given index, or return None if haven't special index.
-        '''
-        if 0 <= item_index < len(self.items):
-            return self.items[item_index]                
+            return self.raw_items[item_index]                
         else:
             return None
         
-    def get_current_item(self):
-        '''
-        Get current item.
+    def get_current_item(self):    
+        return self.raw_items[self.combo_list.get_select_index()]
         
-        @return: Return current item.
-        '''
-        return self.get_item_with_index(self.select_index)
-                
-    def key_release_combo(self, widget, event):
-        '''
-        Internal function to handle `key-release-event` signal.
-        
-        @param widget: Gtk.Widget instance.
-        @param event: Key release event.
-        '''
-        self.emit("key-release", 
-                  self.items[self.select_index][0],
-                  self.items[self.select_index][1],
-                  self.select_index)    
-    
-    def update_select_content(self, droplist, item_content, item_value, item_index):
-        '''
-        Internal function to update select content.
-        
-        @param droplist: Droplist.
-        @param item_content: Item content.
-        @param item_value: Item value.
-        @param item_index: Item index.
-        '''
-        self.select_index = item_index
-        self.label.set_text(item_content)
-        
-        self.emit("item-selected", item_content, item_value, item_index)
-        
-        #self.grab_focus()
-        
-        self.queue_draw()
-        
-    def set_sensitive(self, sensitive):
-        '''
-        Internal function to overwrite function `set_sensitive`.
-        '''
-        super(ComboBox, self).set_sensitive(sensitive)
-        self.label.set_sensitive(sensitive)
-        self.dropbutton.set_sensitive(sensitive)
-            
-    def expose_combobox_frame(self, widget, event):
-        '''
-        Internal function to handle `expose-event` signal of frame.
-        '''
+    def on_expose_combo_frame(self, widget, event):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -338,12 +325,12 @@ class ComboBox(gtk.VBox):
             cr.stroke()
             
             if self.focus_flag:
-                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_select_background").get_color(), 0.9)))
-                cr.rectangle(rect.x, rect.y, rect.width - 1 - self.dropbutton_width, rect.height - 1)
+                color = (ui_theme.get_color("combo_entry_select_background").get_color(), 0.9)
+                cr.set_source_rgba(*alpha_color_hex_to_cairo(color))
+                cr.rectangle(rect.x, rect.y, rect.width - 1 - self.drop_button_width, rect.height - 1)
                 cr.fill()
-                
                 cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
-                cr.rectangle(rect.x + rect.width - 1 - self.dropbutton_width, rect.y, self.dropbutton_width, rect.height - 1)
+                cr.rectangle(rect.x + rect.width - 1 - self.drop_button_width, rect.y, self.drop_button_width, rect.height - 1)
                 cr.fill()
             else:
                 cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))

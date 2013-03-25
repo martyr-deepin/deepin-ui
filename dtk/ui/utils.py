@@ -1059,6 +1059,7 @@ def file_is_image(file, filter_type=get_pixbuf_support_foramts()):
                     file_path = gfile.get_path()
                     if not file_path.endswith(".part"):
                         return True
-        return False        
     except:
-        return False
+        pass
+    
+    return False

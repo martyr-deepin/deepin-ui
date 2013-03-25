@@ -45,9 +45,10 @@ class Poplist(Window):
                  expose_frame_function=None,
                  x_align=ALIGN_START,
                  y_align=ALIGN_START,
-                 min_width=130,
+                 min_width=80,
                  align_size=0,
-                 grab_window=None
+                 grab_window=None,
+                 window_type=gtk.WINDOW_TOPLEVEL,
                  ):
         '''
         init docs
@@ -55,6 +56,7 @@ class Poplist(Window):
         # Init.
         Window.__init__(self, 
                         shadow_visible=shadow_visible,
+                        window_type=window_type,
                         shape_frame_function=shape_frame_function,
                         expose_frame_function=expose_frame_function)
         self.items = items
@@ -87,33 +89,28 @@ class Poplist(Window):
         
     def get_scrolledwindow(self):
         return self.treeview.scrolled_window
-        
-    def realize_poplist(self, widget):
+    
+    def get_base_width(self):
         treeview_width = self.min_width
         for item in self.treeview.visible_items:
             if hasattr(item, "get_width"):
                 treeview_width = max(treeview_width, item.get_width())
-                
-        treeview_height = int(self.treeview.scrolled_window.get_vadjustment().get_upper())
-                
-        if self.max_width != None and self.max_height != None: 
-            adjust_width = self.max_width
-            adjust_height = self.max_height
-        elif self.max_height != None:
-            adjust_width = treeview_width
-            adjust_height = self.max_height
-        elif self.max_width != None:
-            adjust_width = self.max_width
-            adjust_height = treeview_height
-        else:
-            adjust_width = treeview_width
-            adjust_height = treeview_height
-            
-        self.treeview.set_size_request(adjust_width, adjust_height)
-        
+        if self.max_width != None:        
+            treeview_width = min(self.max_width, treeview_width)
+        return treeview_width    
+    
+    def get_normal_width(self):
         (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()
-        self.window_width = adjust_width + shadow_padding_x * 2 + self.align_size * 2
+        return self.get_base_width() + shadow_padding_x * 2 + self.align_size * 2
+        
+    def realize_poplist(self, widget):
+        adjust_height = int(self.treeview.scrolled_window.get_vadjustment().get_upper())
+        if self.max_height != None:
+            adjust_height = min(adjust_height, self.max_height)
+        self.treeview.set_size_request(self.get_base_width(), adjust_height)
+        (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()
         self.window_height = adjust_height + shadow_padding_y * 2 + self.align_size * 2
+        self.window_width = self.get_normal_width()
         self.set_default_size(self.window_width, self.window_height)
         self.set_geometry_hints(
             None,
@@ -126,6 +123,9 @@ class Poplist(Window):
         
     def show(self, (expect_x, expect_y), (offset_x, offset_y)=(0, 0)):
         (screen_width, screen_height) = get_screen_size(self)
+        
+        if not self.get_realized():
+            self.realize()
         
         if self.x_align == ALIGN_START:
             dx = expect_x

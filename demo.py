@@ -404,19 +404,7 @@ if __name__ == "__main__":
     password_entry = PasswordEntry()
     password_entry.set_size(100, 22)
     
-    combo_box = ComboBox(
-        [("测试测试测试1", 1),
-         ("测试测试测试2", 2),
-         ("测试测试测试3", 3),
-         None,
-         ("测试测试测试", 4),
-         None,
-         ("测试测试测试4", 5),
-         ("测试测试测试5", 6),
-         ("测试测试测试6", 7),
-         ],
-        100
-        )
+    combo_box = ComboBox([("测试测试测试%d" % i, i)  for i in range(10)], 100)
     
     spin_box = SpinBox(3000, 0, 5000, 100)
     
