@@ -823,6 +823,8 @@ class Entry(gtk.EventBox):
         '''
         self.offset_y = 0
         
+        self.key_upper = False
+        
         # Add keymap.
         self.keymap = {
             "Left" : self.move_to_left,
@@ -990,7 +992,7 @@ class Entry(gtk.EventBox):
         '''
         Internal function to handle key press.
         '''
-        key_name = get_keyevent_name(event, False)
+        key_name = get_keyevent_name(event, self.key_upper)
         text = self.get_text()
         
         if self.is_ipv4 and key_name not in ["BackSpace", "Tab", "Left", "Right"]:
@@ -1020,7 +1022,7 @@ class Entry(gtk.EventBox):
         '''
         Internal function to handle key event.
         '''
-        key_name = get_keyevent_name(event)
+        key_name = get_keyevent_name(event, self.key_upper)
         
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
@@ -1817,6 +1819,7 @@ class ShortcutKeyEntry(gtk.VBox):
                  point_color = ui_theme.get_alpha_color("text_entry_point"),
                  frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point"),
                  frame_color = ui_theme.get_alpha_color("text_entry_frame"),
+                 support_shift=False,
                  ):
         '''
         Initialize ShortcutKeyEntry class.
@@ -1873,6 +1876,7 @@ class ShortcutKeyEntry(gtk.VBox):
         
         self.shortcut_key = content
         self.shortcut_key_record = None
+        self.support_shift = support_shift
         
     def set_sensitive(self, sensitive):
         '''
@@ -1919,7 +1923,7 @@ class ShortcutKeyEntry(gtk.VBox):
         '''
         Internal function to handle key press.
         '''
-        keyname = get_keyevent_name(event)
+        keyname = get_keyevent_name(event, not self.support_shift)
         if keyname != "":
             if keyname == "BackSpace":
                 self.set_shortcut_key(None)

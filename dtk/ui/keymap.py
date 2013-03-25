@@ -34,7 +34,7 @@ def deepin_to_keybinder(keystring):
     modifiers = "".join(["<%s>" % key for key in keys[0:-1]])
     return "%s%s" % (modifiers, keys[-1])
 
-def get_key_name(keyval, to_upper=True):
+def get_key_name(keyval, to_upper=False):
     '''
     Get key name with given key value.
     
@@ -76,12 +76,12 @@ def get_key_event_modifiers(key_event):
         modifiers.append("Alt")    
         
     # # Don't need add Shift modifier if keyval is upper character.
-    # if key_event.state & gdk.SHIFT_MASK and (len(get_key_name(key_event.keyval)) != 1 or not gdk.keyval_is_upper(key_event.keyval)):
-    #     modifiers.append("Shift")    
+    if key_event.state & gdk.SHIFT_MASK and (len(get_key_name(key_event.keyval)) != 1 or not gdk.keyval_is_upper(key_event.keyval)):
+        modifiers.append("Shift")    
         
     return modifiers
 
-def get_keyevent_name(key_event, to_upper=True):
+def get_keyevent_name(key_event, to_upper=False):
     '''
     Get key event name.
     
