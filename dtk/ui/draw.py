@@ -708,3 +708,5 @@ def draw_blank_mask(cr, x, y, w, h):
     '''
     pass
 
+
+

@@ -1322,6 +1322,7 @@ class TreeView(gtk.VBox):
         self.press_in_select_rows = None
 
     def hover_item(self, event):
+        
         if self.left_button_press:
             if self.start_drag:
                 if self.enable_drag_drop:
@@ -1487,6 +1488,9 @@ class TreeView(gtk.VBox):
         if len(self.visible_items) > 0:
             self.unhover_row()
             
+        # Rest.
+        self.left_button_press = False    
+            
     def focus_out_tree_view(self, widget, event):
         self.left_button_press = False
         
@@ -1495,6 +1499,12 @@ class TreeView(gtk.VBox):
             if 0 <= self.hover_row < len(self.visible_items):
                 self.visible_items[self.hover_row].unhover(0, 0, 0)
             self.hover_row = None
+            
+    def set_hover_row(self, index):        
+        self.unhover_row()
+        if 0 <= index < len(self.visible_items):
+            self.visible_items[index].hover(0, 0, 0)
+            self.hover_row = index
             
     def get_event_row(self, event, offset_index=0):
         '''
@@ -1693,7 +1703,7 @@ class TreeView(gtk.VBox):
             self.highlight_item = None
 
             self.queue_draw()
-        
+            
 gobject.type_register(TreeView)
 
 class TreeItem(gobject.GObject):
