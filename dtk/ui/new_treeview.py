@@ -323,6 +323,7 @@ class TreeView(gtk.VBox):
         self.draw_area.connect("key-release-event", self.key_release_tree_view)
         self.draw_area.connect("size-allocate", self.size_allocated_tree_view)
         self.draw_area.connect("leave-notify-event", self.leave_tree_view)
+        self.draw_area.connect("focus-out-event", self.focus_out_tree_view)
         
         # Add items.
         self.add_items(items)
@@ -1485,6 +1486,9 @@ class TreeView(gtk.VBox):
     def leave_tree_view(self, widget, event):
         if len(self.visible_items) > 0:
             self.unhover_row()
+            
+    def focus_out_tree_view(self, widget, event):
+        self.left_button_press = False
         
     def unhover_row(self):
         if self.hover_row != None:
