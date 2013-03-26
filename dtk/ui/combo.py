@@ -44,7 +44,7 @@ class ComboTextItem(AbstractItem):
     def __init__(self, title, item_value, item_width=None, font_size=DEFAULT_FONT_SIZE):
         AbstractItem.__init__(self)
         self.column_index = 0
-        self.item_height = 26
+        self.item_height = 22
         self.spacing_x = 15
         self.padding_x = 5
         self.font_size = font_size
@@ -276,8 +276,8 @@ class ComboBox(gtk.VBox):
         else:    
             self.display_panel.set_fixed_width(remained_width)
 
-        self.combo_list.set_size(valid_width + self.padding_x + 1, self.max_height, 
-                                 fixed_height=self.default_poplist_height)
+        self.combo_list.set_size(valid_width + self.padding_x + 1, 
+                                 self.max_height, self.default_poplist_height)
     
     def get_adjust_width(self):
         if self.fixed_width:
