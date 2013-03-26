@@ -60,6 +60,7 @@ class Label(gtk.EventBox):
                  wrap_width=None,
                  underline=False,
                  hover_color=None,
+                 fixed_width=None
                  ):
         '''
         Initialize Label class.
@@ -95,6 +96,7 @@ class Label(gtk.EventBox):
         self.is_hover = False
         self.ellipsize = pango.ELLIPSIZE_END
         self.update_size_hook = None
+        self.fixed_width = fixed_width
         
         self.text = text
         self.text_size = text_size
@@ -136,6 +138,10 @@ class Label(gtk.EventBox):
         self.ellipsize = ellipsize
         
         self.queue_draw()
+        
+    def set_fixed_width(self, width):
+        self.fixed_width = width
+        self.set_size_request(width, -1)
         
     def copy_to_clipboard(self):
         '''
@@ -423,6 +429,8 @@ class Label(gtk.EventBox):
             label_width += self.gaussian_radious * 2
             label_height += self.gaussian_radious * 2
             
+        if self.fixed_width:    
+            label_width = self.fixed_width
         self.set_size_request(label_width, label_height)
         
     def set_clickable(self):

@@ -26,7 +26,7 @@ import gobject
 
 from new_entry import Entry
 from button import DisableButton
-from poplist import Poplist
+from new_poplist import AbstractPoplist
 from theme import ui_theme
 from label import Label
 from new_treeview import TreeItem as AbstractItem
@@ -122,7 +122,7 @@ class ComboTextItem(AbstractItem):
 gobject.type_register(ComboTextItem)
 
         
-class ComboList(Poplist):
+class ComboList(AbstractPoplist):
     '''
     class docs
     '''
@@ -134,10 +134,9 @@ class ComboList(Poplist):
         '''
         init docs
         '''
-        Poplist.__init__(self,
+        AbstractPoplist.__init__(self,
                          items, 
                          max_height,
-                         max_width,
                          False,
                          self.shape_combo_list_frame,
                          self.expose_combo_list_frame,
@@ -168,6 +167,9 @@ class ComboList(Poplist):
         self.treeview.set_select_rows([index])
         self.treeview.set_hover_row(index)
         
+    def get_items(self):    
+        return self.treeview.get_items()
+        
     def hover_select_item(self):    
         self.treeview.set_hover_row(self.get_select_index())
         
@@ -197,8 +199,8 @@ class ComboBox(gtk.VBox):
         "key-release" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, gobject.TYPE_PYOBJECT, int,)),
     }
     
-    def __init__(self, items, 
-                 droplist_height=None,
+    def __init__(self, items=[], 
+                 droplist_height=None,                 
                  select_index=0, 
                  max_width=None, 
                  fixed_width=None, 
@@ -211,18 +213,20 @@ class ComboBox(gtk.VBox):
         # Init variables.
         self.focus_flag = False
         self.select_index = select_index
-        max_height = droplist_height
-        self.raw_items = items
         self.editable = editable
+        self.default_poplist_height = 100
+        self.default_width = 120
+        self.max_width = max_width
+        self.max_height = droplist_height
+        self.fixed_width = fixed_width
+        
         if self.editable:
             self.padding_x = 0
         else:
             self.padding_x = 5
-        
-        # Init combo widgets.
-        self.combo_items = [ComboTextItem(item[0], item[1], item_width=fixed_width) for item in items]
-        self.combo_list = ComboList(self.combo_items, max_height=max_height, max_width=max_width)        
-        self.combo_list.set_select_index(self.select_index)
+            
+        self.items = [ComboTextItem(item[0], item[1]) for item in items]
+        self.combo_list = ComboList()        
         self.drop_button = DisableButton(
             (ui_theme.get_pixbuf("combo/dropbutton_normal.png"),
              ui_theme.get_pixbuf("combo/dropbutton_hover.png"),
@@ -230,28 +234,24 @@ class ComboBox(gtk.VBox):
              ui_theme.get_pixbuf("combo/dropbutton_disable.png")),
             )
         self.drop_button_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()        
-        remained_width = self.combo_list.get_normal_width() - self.drop_button_width - self.padding_x - 1
-        
-        
-        panel_align = gtk.Alignment()
-        panel_align.set(0.5, 0.5, 0.0, 0.0)
+        self.panel_align = gtk.Alignment()
+        self.panel_align.set(0.5, 0.5, 0.0, 0.0)
         
         if self.editable:
-            self.display_panel = Entry(self.combo_items[self.select_index].title)
-            self.display_panel.set_size_request(remained_width, -1)
+            self.display_panel = Entry()
         else:    
-            self.display_panel = Label(self.combo_items[self.select_index].title, 
-                               label_width=remained_width,
-                               enable_select=False,
-                               enable_double_click=False)
+            self.display_panel = Label("", enable_select=False, enable_double_click=False)
             
             self.display_panel.connect("button-press-event", self.on_drop_button_press)
-            panel_align.set_padding(0, 0, self.padding_x, 0)            
+            self.panel_align.set_padding(0, 0, self.padding_x, 0)            
             
-        panel_align.add(self.display_panel)    
+        self.panel_align.add(self.display_panel)    
+        
+        # init items.
+        self.add_items(items)
         
         hbox = gtk.HBox()
-        hbox.pack_start(panel_align, True, False)
+        hbox.pack_start(self.panel_align, True, False)
         hbox.pack_start(self.drop_button, False, False)
         box_align = gtk.Alignment()
         box_align.set(0.5, 0.5, 0.0, 0.0)
@@ -264,6 +264,39 @@ class ComboBox(gtk.VBox):
         self.connect("focus-in-event", self.on_focus_in_combo)
         self.connect("focus-out-event", self.on_focus_out_combo)
         self.combo_list.treeview.connect("button-press-item", self.on_combo_single_click)
+        
+    def set_size_request(self, width, height):    
+        pass
+    
+    def auto_set_size(self):
+        valid_width = self.get_adjust_width()
+        remained_width = valid_width - self.drop_button_width
+        if self.editable:
+            self.display_panel.set_size_request(remained_width, -1)
+        else:    
+            self.display_panel.set_fixed_width(remained_width)
+
+        self.combo_list.set_size(valid_width + self.padding_x + 1, self.max_height, 
+                                 fixed_height=self.default_poplist_height)
+    
+    def get_adjust_width(self):
+        if self.fixed_width:
+            return self.fixed_width
+        if len(self.items) > 0:
+            item_max_width = max([item.get_width() for item in self.items])
+        else:                
+            item_max_width = self.default_width
+            
+        if self.max_width:    
+            return max(self.max_width, item_max_width)
+        return item_max_width
+        
+    def add_items(self, items, select_index=0, pos=None, clear_first=True):    
+        # Init combo widgets.
+        combo_items = [ComboTextItem(item[0], item[1]) for item in items]
+        self.combo_list.treeview.add_items(combo_items, insert_pos=pos, clear_first=clear_first)        
+        self.auto_set_size()
+        self.set_select_index(select_index)
         
     def on_drop_button_press(self, widget, event):    
         
@@ -296,18 +329,23 @@ class ComboBox(gtk.VBox):
         self.queue_draw()
         
     def set_select_index(self, item_index):    
-        if 0 <= item_index < len(self.combo_items):
+        if 0 <= item_index < len(self.all_items):
             self.combo_list.set_select_index(item_index)        
-            self.display_panel.set_text(self.combo_items[item_index].title)
+            self.display_panel.set_text(self.all_items[item_index].title)
+            
+    @property        
+    def all_items(self):
+        return self.combo_list.get_items()
             
     def get_item_with_index(self, item_index):        
-        if 0 <= item_index < len(self.items):
-            return self.raw_items[item_index]                
+        if 0 <= item_index < len(self.all_items):
+            item = self.all_items[item_index]
+            return (item.title, item.item_value)
         else:
             return None
         
     def get_current_item(self):    
-        return self.raw_items[self.combo_list.get_select_index()]
+        return self.get_item_with_index(self.combo_list.get_select_index())
         
     def on_expose_combo_frame(self, widget, event):
         # Init.
