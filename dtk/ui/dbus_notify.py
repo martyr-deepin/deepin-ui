@@ -31,17 +31,18 @@ def check_dbus(bus, interface):
     avail = dbus_iface.ListNames()
     return interface in avail
 
+DEFAULT_TIMEOUT = 3
 
 class DbusNotify(object):
     
-    def __init__(self, app_name, icon=None):
+    def __init__(self, app_name, icon=None, timeout=None):
         self.app_name = app_name
         self.icon = icon or app_name
         self.summary = ""
         self.body = ""
         self.hints = {}
         self.actions = []
-        self.timeout = 3
+        self.timeout = timeout or DEFAULT_TIMEOUT
         
     def set_summary(self, summary):    
         self.summary = summary
