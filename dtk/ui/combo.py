@@ -238,14 +238,14 @@ class ComboBox(gtk.VBox):
         self.panel_align.set(0.5, 0.5, 0.0, 0.0)
         
         if self.editable:
-            self.display_panel = Entry()
+            self.label = Entry()
         else:    
-            self.display_panel = Label("", enable_select=False, enable_double_click=False)
+            self.label = Label("", enable_select=False, enable_double_click=False)
             
-            self.display_panel.connect("button-press-event", self.on_drop_button_press)
+            self.label.connect("button-press-event", self.on_drop_button_press)
             self.panel_align.set_padding(0, 0, self.padding_x, 0)            
             
-        self.panel_align.add(self.display_panel)    
+        self.panel_align.add(self.label)    
         
         # init items.
         self.add_items(items)
@@ -272,9 +272,9 @@ class ComboBox(gtk.VBox):
         valid_width = self.get_adjust_width()
         remained_width = valid_width - self.drop_button_width
         if self.editable:
-            self.display_panel.set_size_request(remained_width, -1)
+            self.label.set_size_request(remained_width, -1)
         else:    
-            self.display_panel.set_fixed_width(remained_width)
+            self.label.set_fixed_width(remained_width)
 
         self.combo_list.set_size(valid_width + self.padding_x + 1, 
                                  self.max_height, self.default_poplist_height)
@@ -314,7 +314,7 @@ class ComboBox(gtk.VBox):
             self.combo_list.show((droplist_x, droplist_y), (0, -height))
             
     def on_combo_single_click(self, widget, item, column, x, y):        
-        self.display_panel.set_text(item.title)
+        self.label.set_text(item.title)
         self.combo_list.reset_status()
         if item:
             index = self.combo_list.get_select_index()
@@ -331,7 +331,7 @@ class ComboBox(gtk.VBox):
     def set_select_index(self, item_index):    
         if 0 <= item_index < len(self.all_items):
             self.combo_list.set_select_index(item_index)        
-            self.display_panel.set_text(self.all_items[item_index].title)
+            self.label.set_text(self.all_items[item_index].title)
             
     @property        
     def all_items(self):
@@ -345,7 +345,10 @@ class ComboBox(gtk.VBox):
             return None
         
     def get_current_item(self):    
-        return self.get_item_with_index(self.combo_list.get_select_index())
+        return self.get_item_with_index(self.get_select_index())
+    
+    def get_select_index(self):
+        return self.combo_list.get_select_index()
         
     def on_expose_combo_frame(self, widget, event):
         # Init.
