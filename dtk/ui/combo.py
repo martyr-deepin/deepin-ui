@@ -57,7 +57,7 @@ class ComboTextItem(AbstractItem):
         self.item_value = item_value
         
     def get_height(self):    
-        return self.item_height
+            return self.item_height
     
     def get_column_widths(self):
         return (self.item_width,)
@@ -120,6 +120,7 @@ class ComboTextItem(AbstractItem):
         pass
     
 gobject.type_register(ComboTextItem)
+
 
         
 class ComboList(AbstractPoplist):
@@ -384,3 +385,195 @@ class ComboBox(gtk.VBox):
         return True
     
 gobject.type_register(ComboBox)    
+
+
+
+class AdvanceComboBox(gtk.VBox):
+    
+    __gsignals__ = {
+        "item-selected" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+    }
+    
+    def __init__(self, items=[], 
+                 droplist_height=None,                 
+                 select_index=0, 
+                 max_width=None, 
+                 fixed_width=None, 
+                 editable=True,
+                 ):
+        
+        gtk.VBox.__init__(self)
+        self.set_can_focus(True)
+        
+        # Init variables.
+        self.focus_flag = False
+        self.select_index = select_index
+        self.editable = editable
+        self.default_poplist_height = 100
+        self.default_width = 120
+        self.max_width = max_width
+        self.max_height = droplist_height
+        self.fixed_width = fixed_width
+        
+        if self.editable:
+            self.padding_x = 0
+        else:
+            self.padding_x = 5
+            
+        self.combo_list = ComboList()        
+        self.treeview = self.combo_list.treeview
+        self.drop_button = DisableButton(
+            (ui_theme.get_pixbuf("combo/dropbutton_normal.png"),
+             ui_theme.get_pixbuf("combo/dropbutton_hover.png"),
+             ui_theme.get_pixbuf("combo/dropbutton_press.png"),
+             ui_theme.get_pixbuf("combo/dropbutton_disable.png")),
+            )
+        self.drop_button_width = ui_theme.get_pixbuf("combo/dropbutton_normal.png").get_pixbuf().get_width()        
+        self.panel_align = gtk.Alignment()
+        self.panel_align.set(0.5, 0.5, 0.0, 0.0)
+        
+        if self.editable:
+            self.label = Entry()
+        else:    
+            self.label = Label("", enable_select=False, enable_double_click=False)
+            
+            self.label.connect("button-press-event", self.on_drop_button_press)
+            self.panel_align.set_padding(0, 0, self.padding_x, 0)            
+            
+        self.panel_align.add(self.label)    
+        
+        # init items.
+        self.add_items(items)
+        
+        hbox = gtk.HBox()
+        hbox.pack_start(self.panel_align, True, False)
+        hbox.pack_start(self.drop_button, False, False)
+        box_align = gtk.Alignment()
+        box_align.set(0.5, 0.5, 0.0, 0.0)
+        box_align.add(hbox)
+        self.add(box_align)
+        
+        # Connect signals.
+        box_align.connect("expose-event", self.on_expose_combo_frame)
+        self.drop_button.connect("button-press-event", self.on_drop_button_press)
+        self.connect("focus-in-event", self.on_focus_in_combo)
+        self.connect("focus-out-event", self.on_focus_out_combo)
+        self.treeview.connect("button-press-item", self.on_combo_single_click)
+        
+    def set_size_request(self, width, height):    
+        pass
+    
+    def auto_set_size(self):
+        valid_width = self.get_adjust_width()
+        remained_width = valid_width - self.drop_button_width
+        if self.editable:
+            self.label.set_size_request(remained_width, -1)
+        else:    
+            self.label.set_fixed_width(remained_width)
+
+        self.combo_list.set_size(valid_width + self.padding_x + 1, 
+                                 self.max_height, self.default_poplist_height)
+    
+    def get_adjust_width(self):
+        if self.fixed_width:
+            return self.fixed_width
+        if len(self.items) > 0:
+            item_max_width = max([item.get_width() for item in self.items])
+        else:                
+            item_max_width = self.default_width
+            
+        if self.max_width:    
+            return max(self.max_width, item_max_width)
+        return item_max_width
+        
+    def add_items(self, items, select_index=0, pos=None, clear_first=True):    
+        # Init combo widgets.
+        self.treeview.add_items(items, insert_pos=pos, clear_first=clear_first)        
+        self.auto_set_size()
+        self.set_select_index(select_index)
+        
+    def on_drop_button_press(self, widget, event):    
+        
+        self.combo_list.hover_select_item()
+        height = self.allocation.height
+        x, y = self.window.get_root_origin()
+        
+        if self.combo_list.get_visible():
+            self.combo_list.hide()
+        else:
+            wx, wy = int(event.x), int(event.y)
+            (offset_x, offset_y) = widget.translate_coordinates(self, 0, 0)
+            (_, px, py, modifier) = widget.get_display().get_pointer()
+            droplist_x, droplist_y = px - wx - offset_x - 1, py - wy - offset_y + height - 1
+            self.combo_list.show((droplist_x, droplist_y), (0, -height))
+            
+    def on_combo_single_click(self, widget, item, column, x, y):        
+        self.label.set_text(item.title)
+        self.combo_list.reset_status()
+        if item:
+            self.emit("item-selected", item)
+    
+    def on_focus_in_combo(self, widget, event):
+        self.focus_flag = True
+        self.queue_draw()
+        
+    def on_focus_out_combo(self, widget, event):    
+        self.focus_flag = False
+        self.queue_draw()
+        
+    def set_select_index(self, item_index):    
+        if 0 <= item_index < len(self.all_items):
+            self.combo_list.set_select_index(item_index)        
+            self.label.set_text(self.all_items[item_index].title)
+            
+    @property        
+    def all_items(self):
+        return self.combo_list.get_items()
+            
+    def get_item_with_index(self, item_index):        
+        if 0 <= item_index < len(self.all_items):
+            item = self.all_items[item_index]
+            return item
+        else:
+            return None
+        
+    def get_current_item(self):    
+        return self.get_item_with_index(self.get_select_index())
+    
+    def get_select_index(self):
+        return self.combo_list.get_select_index()
+        
+    def on_expose_combo_frame(self, widget, event):
+        # Init.
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        
+        # Draw frame.
+        with cairo_disable_antialias(cr):
+            cr.set_line_width(1)
+            if self.get_sensitive():
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("combo_entry_frame").get_color()))
+            else:
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disable_frame").get_color()))
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.stroke()
+            
+            if self.focus_flag:
+                color = (ui_theme.get_color("combo_entry_select_background").get_color(), 0.9)
+                cr.set_source_rgba(*alpha_color_hex_to_cairo(color))
+                cr.rectangle(rect.x, rect.y, rect.width - 1 - self.drop_button_width, rect.height - 1)
+                cr.fill()
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
+                cr.rectangle(rect.x + rect.width - 1 - self.drop_button_width, rect.y, self.drop_button_width, rect.height - 1)
+                cr.fill()
+            else:
+                cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
+                cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
+                cr.fill()
+        
+        # Propagate expose to children.
+        propagate_expose(widget, event)
+        
+        return True
+    
+gobject.type_register(AdvanceComboBox)    
