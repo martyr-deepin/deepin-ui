@@ -93,7 +93,8 @@ class AbstractPoplist(Window):
             adjust_height = min_height
         self.window_height = adjust_height    
         self.window_width = width
-        
+        self.unrealize()
+                
     def realize_poplist(self, widget):
         (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()
         self.treeview.set_size_request(self.window_width - self.align_size * 2 - shadow_padding_x * 2,
