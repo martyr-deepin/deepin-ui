@@ -85,6 +85,9 @@ class AbstractPoplist(Window):
         return self.treeview.scrolled_window
     
     def set_size(self, width, max_height=None, min_height=100):
+        self.treeview.update_item_index()
+        self.treeview.update_vadjustment()
+        
         adjust_height = int(self.treeview.scrolled_window.get_vadjustment().get_upper())
         if max_height != None:
             adjust_height = min(adjust_height, max_height)
@@ -93,7 +96,9 @@ class AbstractPoplist(Window):
             adjust_height = min_height
         self.window_height = adjust_height    
         self.window_width = width
-        self.unrealize()
+        
+        if self.get_realized():
+            self.unrealize()
                 
     def realize_poplist(self, widget):
         (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()
@@ -101,6 +106,7 @@ class AbstractPoplist(Window):
                                        self.window_height)
         max_height = self.window_height + self.align_size * 2 + shadow_padding_x * 2
         self.set_default_size(self.window_width, max_height)
+        print self.window_width, max_height
         self.set_geometry_hints(
             None,
             self.window_width,       # minimum width
