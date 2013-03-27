@@ -106,7 +106,6 @@ class AbstractPoplist(Window):
                                        self.window_height)
         max_height = self.window_height + self.align_size * 2 + shadow_padding_x * 2
         self.set_default_size(self.window_width, max_height)
-        print self.window_width, max_height
         self.set_geometry_hints(
             None,
             self.window_width,       # minimum width
