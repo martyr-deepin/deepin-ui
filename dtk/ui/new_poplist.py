@@ -62,7 +62,7 @@ class AbstractPoplist(Window):
         self.align_size = align_size
         self.window_width = self.window_height = 0
         self.treeview_align = gtk.Alignment()
-        self.treeview_align.set(0.5, 0.5, 1, 1)
+        self.treeview_align.set(1, 1, 1, 1)
         self.treeview_align.set_padding(self.align_size, self.align_size, self.align_size, self.align_size)
         self.treeview = TreeView(items,
                                  enable_highlight=False,
@@ -71,7 +71,7 @@ class AbstractPoplist(Window):
         
         # Connect widgets.
         self.treeview_align.add(self.treeview)
-        self.window_frame.pack_start(self.treeview_align, True, False)
+        self.window_frame.pack_start(self.treeview_align, True, True)
         
         self.connect("realize", self.realize_poplist)
         
@@ -85,22 +85,29 @@ class AbstractPoplist(Window):
         return self.treeview.scrolled_window
     
     def set_size(self, width, max_height=None, min_height=100):
-        adjust_height = int(self.treeview.scrolled_window.get_vadjustment().get_upper())
+        if len(self.treeview.get_items()) > 0:
+            adjust_height = sum([item.get_height() for item in self.treeview.get_items()])
+        else:    
+            adjust_height = 0
+            
         if max_height != None:
             adjust_height = min(adjust_height, max_height)
-                
+            
         if adjust_height <= 0:    
             adjust_height = min_height
         self.window_height = adjust_height    
         self.window_width = width
-        self.unrealize()
+        if self.get_realized():
+            self.unrealize()
                 
     def realize_poplist(self, widget):
+        print "i unrealizeing."
         (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()
-        self.treeview.set_size_request(self.window_width - self.align_size * 2 - shadow_padding_x * 2,
-                                       self.window_height)
-        max_height = self.window_height + self.align_size * 2 + shadow_padding_x * 2
+        # self.treeview.set_size_request(self.window_width - self.align_size * 2 - shadow_padding_x * 2,
+        #                                self.window_height)
+        max_height = self.window_height + self.align_size * 2 + shadow_padding_x * 2 + 1
         self.set_default_size(self.window_width, max_height)
+        # self.set_size_request(self.window_width, max_height)
         self.set_geometry_hints(
             None,
             self.window_width,       # minimum width
