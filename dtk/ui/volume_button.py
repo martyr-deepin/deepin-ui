@@ -24,6 +24,7 @@ from cache_pixbuf import CachePixbuf
 from draw import draw_pixbuf
 from theme import ui_theme
 from utils import set_clickable_cursor
+import tooltip as Tooltip
 import gobject
 import gtk
 
@@ -418,6 +419,7 @@ class VolumeButton(gtk.Button):
     @value.setter
     def value(self, value):        
         if 0 <= value <= self.__volume_max_value:
+            Tooltip.text(self, str(value))
             temp_padding = (float(self.__volume_max_value) / self.__volume_width)
             temp_padding_x = float(value) / temp_padding            
             self.__point_padding_x = temp_padding_x + ((self.__fg_padding_x))
