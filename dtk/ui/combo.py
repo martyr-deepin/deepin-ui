@@ -294,8 +294,10 @@ class ComboBox(gtk.VBox):
         
     def add_items(self, items, select_index=0, pos=None, clear_first=True):    
         # Init combo widgets.
+        if clear_first:
+            self.combo_list.treeview.clear()
         combo_items = [ComboTextItem(item[0], item[1]) for item in items]
-        self.combo_list.treeview.add_items(combo_items, insert_pos=pos, clear_first=clear_first)        
+        self.combo_list.treeview.add_items(combo_items, insert_pos=pos)        
         self.auto_set_size()
         self.set_select_index(select_index)
         
