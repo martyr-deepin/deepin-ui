@@ -20,19 +20,30 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from theme import ui_theme
+from theme import ui_theme, DynamicColor
 from utils import (color_hex_to_cairo, alpha_color_hex_to_cairo, 
-                   cairo_disable_antialias, get_content_size)
+                   cairo_disable_antialias, get_content_size,
+                   container_remove_all)
 from draw import draw_text
 from new_entry import Entry
 import gtk
 import pango
+import gobject
 
 '''
 only support ipv4
 '''
 class IpAddressEntry(gtk.HBox):
-    def __init__(self, address = "",  width = 120, height = 22):
+
+    __gsignals__ = {
+        "focus-out" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,))
+        }
+
+    def __init__(self,
+                 address = "",
+                 width = 120,
+                 height = 22,
+                 alert_color="#e33939"):
         gtk.HBox.__init__(self)
 
         self.address = address
@@ -40,20 +51,30 @@ class IpAddressEntry(gtk.HBox):
         self.entry_list = []
         self.width = width
         self.height = height
+        self.alert_color = DynamicColor(alert_color)
         self.padding_x = 2
         self.token = "."
         self.ipv4_max = 255
+        self.normal_frame = ui_theme.get_color("combo_entry_frame")
+        self.frame_color = self.normal_frame
 
         self.connect("size-allocate", self.__on_size_allocate)
         self.connect("expose-event", self.__on_expose)
+        self.connect("set-focus-child", self.__on_focus_child)
 
         self.__set_entry_list()
+
+    def __on_focus_child(self, widget, child):
+        if child == None:
+            self.emit("focus-out", widget.get_address())
 
     def __set_entry_list(self):
         if self.address != "":                                                  
             self.ip_address = [t for t in self.address.split(self.token)]
 
         ip_addr_len = len(self.ip_address)
+
+        container_remove_all(self)
 
         if ip_addr_len == 0:
             i = 0
@@ -70,6 +91,14 @@ class IpAddressEntry(gtk.HBox):
                 self.pack_start(self.entry_list[i])                             
                 i += 1                                                          
             return
+
+    def set_frame_alert(self, state):
+        if state:
+            self.frame_color = self.alert_color
+        else:
+            self.frame_color = self.normal_frame
+        # FIXME must let parent redraw, maybe let user do this?
+        self.parent.queue_draw()
 
     def set_address(self, address):
         self.address = address
@@ -104,7 +133,7 @@ class IpAddressEntry(gtk.HBox):
         
         token_spacing = 10
         
-        ip_addr_len = len(self.ip_address)
+        ip_addr_len = len(self.ip_address) or 4
         i = 0
         
         '''
@@ -121,7 +150,8 @@ class IpAddressEntry(gtk.HBox):
         with cairo_disable_antialias(cr):                                           
             cr.set_line_width(1)                                                    
             cr.set_source_rgb(*color_hex_to_cairo(
-                ui_theme.get_color("combo_entry_frame").get_color()))
+                self.frame_color.get_color()))
+                #ui_theme.get_color("combo_entry_frame").get_color()))
             cr.rectangle(x, y, w, h)                   
             cr.stroke()                                                             
                                                                                 
