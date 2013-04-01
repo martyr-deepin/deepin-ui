@@ -71,9 +71,10 @@ class IpAddressEntry(gtk.HBox):
     def __set_entry_list(self):
         if self.address != "":                                                  
             self.ip_address = [t for t in self.address.split(self.token)]
+        else:
+            self.ip_address = ""
 
         ip_addr_len = len(self.ip_address)
-
         if ip_addr_len == 0 and not self.entry_list:
             i = 0
             while i < 4:
