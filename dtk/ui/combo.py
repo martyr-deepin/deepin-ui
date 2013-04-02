@@ -321,6 +321,7 @@ class ComboBox(gtk.VBox):
         self.combo_list.reset_status()
         if item:
             index = self.combo_list.get_select_index()
+            self.combo_list.hide_self()
             self.emit("item-selected", item.title, item.item_value, index)
     
     def on_focus_in_combo(self, widget, event):
