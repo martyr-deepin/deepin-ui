@@ -75,8 +75,7 @@ class WebView(webkit.WebView):
 
             def _inspect_web_view_cb (self, inspector, web_view):
                 """Called when the 'inspect' menu item is activated"""
-                from scrolled_window import ScrolledWindow
-                scrolled_window = ScrolledWindow()
+                scrolled_window = gtk.ScrolledWindow()
                 webview = webkit.WebView()
                 scrolled_window.add(webview)
                 scrolled_window.show_all()
