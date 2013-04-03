@@ -74,8 +74,11 @@ class IpAddressEntry(gtk.HBox):
         else:
             self.ip_address = ""
 
+        container_remove_all(self)
+        self.entry_list = []
+
         ip_addr_len = len(self.ip_address)
-        if ip_addr_len == 0 and not self.entry_list:
+        if ip_addr_len == 0:
             i = 0
             while i < 4:
                 self.entry_list.append(Entry(padding_x = self.padding_x, is_ipv4 = True))
