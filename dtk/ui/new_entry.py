@@ -737,6 +737,7 @@ class Entry(gtk.EventBox):
     MOVE_NONE = 3
     
     __gsignals__ = {
+        "edit-alarm" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "editing" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "edit-complete" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "press-return" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
