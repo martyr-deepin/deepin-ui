@@ -64,6 +64,11 @@ class IpAddressEntry(gtk.HBox):
 
         self.__set_entry_list()
 
+    def entry_changes(self, widget, content, index):
+        if len(content) == 3:
+            if index < 4:
+                self.entry_list[index + 1].grab_focus()
+    
     def __on_focus_child(self, widget, child):
         if child == None:
             self.emit("focus-out", widget.get_address())
@@ -84,14 +89,16 @@ class IpAddressEntry(gtk.HBox):
                 self.entry_list.append(Entry(padding_x = self.padding_x, is_ipv4 = True))
                 self.pack_start(self.entry_list[i])
                 i += 1
+            map(lambda (i, e): e.connect("changed", self.entry_changes,i), enumerate(self.entry_list))
             return
 
         if ip_addr_len == 4:
             i = 0
-            while i < 4:                                                        
+            while i < 4:                                            
                 self.entry_list.append(Entry(self.ip_address[i], padding_x = self.padding_x, is_ipv4 = True))
                 self.pack_start(self.entry_list[i])                             
                 i += 1                                                          
+            map(lambda (i, e): e.connect("changed", self.entry_changes,i), enumerate(self.entry_list))
             return
 
     def set_frame_alert(self, state):
@@ -117,7 +124,6 @@ class IpAddressEntry(gtk.HBox):
             
             if i < entry_list_len - 1:
                 address += self.token
-
             i += 1
 
         return address
