@@ -31,19 +31,6 @@ from utils import (color_hex_to_cairo, get_content_size, cairo_state,
 import gtk
 import gobject
 
-#/* HScalebar
-# * @ point_dpixbuf : 设置图标 -> point_dpixbuf=app_theme.get_pixbuf("文件夹名字/图标名字.png")
-# * @ show_value : 是否显示 value.
-# * @ show_value_type : 显示 value 的位置[ gtk.POS_TOP 上面 | gtk.POS_BOTTOM 下面].
-# * @ show_point_num : 取小数点位数, 0 为整形.
-# * @ format_value : 跟在 value 后面的参数. 如果 format_value = "%%" value%%
-# * @ value_min: 最小值
-# * @ value_max: 最大值
-# * @ line_height: 进度条的前景和背景的线高.
-# * @ add_mark: 添加标记位置 value(位置), position_type(显示类型,gtk.POS_TOP, gtk.POS_BOTTOM), mar(显示文本).
-# * @ set_enable: True 启用 False 禁用.
-#*/
-
 class HScalebar(gtk.Button):    
     __gsignals__ = {
         "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
@@ -59,6 +46,17 @@ class HScalebar(gtk.Button):
                  line_height=6,
                  gray_progress=False
                  ):
+        '''
+        @point_dpixbuf: a DynamicPixbuf object.
+        @show_value: If True draw the current value next to the slider
+        @show_value_type: the position where the current value is displayed. gtk.POS_TOP or gtk.POS_BOTTOM
+        @show_point_num: the accuracy of the value. If 0 value is int type.
+        @format_value: a string that displayed after the value
+        @value_min: the min value
+        @value_max: the max value
+        @line_height: the line height
+        @gray_progress: If True the HScalebar looks gray
+        '''
         gtk.Button.__init__(self)
         #        
         self.position_list = []
@@ -107,6 +105,7 @@ class HScalebar(gtk.Button):
         self.connect("button-press-event", self.__progressbar_press_event)
         self.connect("button-release-event", self.__progressbar_release_event)
         self.connect("motion-notify-event", self.__progressbar_motion_notify_event)        
+        self.connect("scroll-event", self.__progressbar_scroll_event)
                 
     def __progressbar_expose_event(self, widget, event):    
         cr = widget.window.cairo_create()
@@ -298,6 +297,22 @@ class HScalebar(gtk.Button):
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_side_color))
             cr.rectangle(x + self.point_width/2, mark_y, self.mark_width, self.mark_height) 
             cr.fill()
+
+    def __progressbar_scroll_event(self, widget, event):
+        if event.direction == gtk.gdk.SCROLL_UP or event.direction == gtk.gdk.SCROLL_LEFT:
+            step = -5
+        elif event.direction == gtk.gdk.SCROLL_DOWN or event.direction == gtk.gdk.SCROLL_RIGHT:
+            step = 5
+        else:
+            step = 0
+        # one step increase/decrease 5%
+        value = self.value + step * (self.value_max - self.value_min) / 100.0
+        if value > self.value_max:
+            value = self.value_max
+        if value < 0:
+            value = 0
+        self.set_value(value + self.value_min)
+        self.emit("value-changed", self.value + self.value_min)
 
     def __progressbar_press_event(self, widget, event):
         temp_value = float(widget.allocation.width - self.point_width)
