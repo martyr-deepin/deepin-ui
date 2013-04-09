@@ -360,12 +360,12 @@ class BreadMenu(Poplist):
         init docs
         '''
         Poplist.__init__(self,
-                         items, 
-                         max_height,
-                         max_width,
-                         False,
-                         self.shape_bread_menu_frame,
-                         self.expose_bread_menu_frame,
+                         items=items, 
+                         max_height=max_height,
+                         max_width=max_width,
+                         shadow_visible=False,
+                         shape_frame_function=self.shape_bread_menu_frame,
+                         expose_frame_function=self.expose_bread_menu_frame,
                          align_size=2
                          )
         
