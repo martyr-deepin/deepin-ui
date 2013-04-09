@@ -332,8 +332,8 @@ class ComboBox(gtk.VBox):
         return self.combo_list.items
             
     def get_item_with_index(self, item_index):        
-        if 0 <= item_index < len(self.all_items):
-            item = self.all_items[item_index]
+        if 0 <= item_index < len(self.items):
+            item = self.items[item_index]
             return (item.title, item.item_value)
         else:
             return None
