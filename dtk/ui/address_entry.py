@@ -25,7 +25,7 @@ from utils import (color_hex_to_cairo, alpha_color_hex_to_cairo,
                    cairo_disable_antialias, get_content_size,
                    container_remove_all)
 from draw import draw_text
-from new_entry import Entry
+from entry import Entry
 import gtk
 import pango
 import gobject

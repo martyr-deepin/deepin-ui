@@ -25,7 +25,7 @@ from theme import ui_theme
 from window import Window
 from draw import draw_text, draw_vlinear, draw_pixbuf
 from utils import get_content_size, get_screen_size
-from new_treeview import TreeView, TreeItem
+from treeview import TreeView, TreeItem
 from constant import DEFAULT_FONT_SIZE, ALIGN_START, ALIGN_MIDDLE
 import gobject
 import gtk

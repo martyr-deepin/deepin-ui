@@ -24,12 +24,12 @@ import gtk
 import pango
 import gobject
 
-from new_entry import Entry
+from entry import Entry
 from button import DisableButton
 from poplist import Poplist
 from theme import ui_theme
 from label import Label
-from new_treeview import TreeItem as AbstractItem
+from treeview import TreeItem as AbstractItem
 from draw import draw_text, draw_vlinear
 from utils import (propagate_expose, cairo_disable_antialias,
                    color_hex_to_cairo, alpha_color_hex_to_cairo, get_content_size)

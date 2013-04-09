@@ -22,8 +22,8 @@
 
 import dtk.ui
 import dtk.ui.application
-import dtk.ui.new_slider
-import dtk.ui.new_entry
+import dtk.ui.slider
+import dtk.ui.entry
 import dtk.ui.button
 import dtk.ui.label 
 

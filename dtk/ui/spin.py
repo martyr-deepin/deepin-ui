@@ -22,7 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from button import DisableButton
-from new_entry import Entry
+from entry import Entry
 from label import Label
 from theme import ui_theme
 from draw import draw_text

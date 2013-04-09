@@ -21,10 +21,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from dtk.ui.new_treeview import TreeView, TreeItem
+from dtk.ui.treeview import TreeView, TreeItem
 from dtk.ui.draw import draw_text
 from dtk.ui.utils import color_hex_to_cairo, is_left_button, is_right_button
-from dtk.ui.new_entry import EntryBuffer, Entry
+from dtk.ui.entry import EntryBuffer, Entry
 import gobject
 import gtk
 
