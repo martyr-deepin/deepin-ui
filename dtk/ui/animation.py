@@ -33,6 +33,7 @@ def LinerInterpolator(factor, lower, upper):
     @return: the calculated value
     '''
     return factor * (upper - lower)
+
 def RandomInterpolator(base, offset, *args):
     '''
     Random interpolator
@@ -169,7 +170,7 @@ class Animation:
 
     def stop(self):
         '''
-        stop immediately the animation object
+        Stop immediately the animation object.
         '''
         if self.animation_id:
             gobject.source_remove(self.animation_id)
