@@ -27,7 +27,6 @@ from threads import post_gui
 from titlebar import Titlebar
 from utils import container_remove_all, place_center
 from window import Window
-from constant import PANED_HANDLE_SIZE
 import gtk
 
 class Application(object):
@@ -35,11 +34,17 @@ class Application(object):
     This is the base class of every program based on deepin-ui.
     Every program should realize it.
     """
-    def __init__(self, app_support_colormap=True, resizable=True):
+    
+    def __init__(self, 
+                 app_support_colormap=True, 
+                 resizable=True
+                 ):
         """
         Initialize the Application class.
         
-        @param app_support_colormap: Set False if your program don't allow manipulate colormap, such as mplayer, otherwise you should keep this option as True.
+        @param app_support_colormap: Set False if your program don't allow manipulate colormap, 
+        such as mplayer, otherwise you should keep this option as True.
+        @param resizable: Set this option with False if you want window's size fixed, default is True.
         """
         # Init.
         self.app_support_colormap = app_support_colormap
@@ -80,9 +85,13 @@ class Application(object):
 
     def add_titlebar(self,
                      button_mask=["theme", "menu", "max", "min", "close"],
-                     icon_dpixbuf=None, app_name=None, title=None, 
-                     add_separator=False, show_title=True, enable_gaussian=True, 
-                     titlebar_bg_pixbuf=None):
+                     icon_dpixbuf=None, 
+                     app_name=None, 
+                     title=None, 
+                     add_separator=False, 
+                     show_title=True, 
+                     enable_gaussian=True, 
+                     ):
         """
         Add titlebar to the application.
         
@@ -94,10 +103,17 @@ class Application(object):
         @param title: The title string of the window, which will be displayed on the center of the titlebar. By default, it is None.
         @param add_separator: If True, add a line between the titlebar and the body of the window. By default, it's False.
         @param show_title: If False, the titlebar will not be displayed. By default, it's True.
+        @param enable_gaussian: Set it as False if don't want gaussian application title. By default, it's True.
         """
         # Init titlebar.
-        self.titlebar = Titlebar(button_mask, icon_dpixbuf, app_name, title, add_separator, show_title=show_title, 
-                                 enable_gaussian=enable_gaussian, bg_pixbuf=titlebar_bg_pixbuf)
+        self.titlebar = Titlebar(button_mask, 
+                                 icon_dpixbuf, 
+                                 app_name, 
+                                 title, 
+                                 add_separator, 
+                                 show_title=show_title, 
+                                 enable_gaussian=enable_gaussian,
+                                 )
         if "theme" in button_mask:
             self.titlebar.theme_button.connect("clicked", self.theme_callback)
         if "menu" in button_mask:
@@ -198,6 +214,8 @@ class Application(object):
         """
         Destroy the window and quit the program.
         
+        This function just call gtk.main_quit .
+        
         @param widget: Not used.
         @param data: Not used.
         """
@@ -207,7 +225,8 @@ class Application(object):
         """
         Show the window and start the mainloop.
         
-        You must use this function at last of program, otherwise program will run in loop too early that all code after application.run won't execute until program exit.
+        You must use this function at last of program, 
+        otherwise program will run in loop too early that all code after application.run won't execute until program exit.
         """
         # Show window.
         self.window.show_window()
@@ -254,6 +273,7 @@ class Application(object):
         """
         Set the menu_button_callback function.
         
-        @param callback: A function which is invoked when the menu button is clicked.
+        @param callback: A function which is invoked when the menu button is clicked, 
+        this callback just accept one argument, argument is gtk.widget.
         """
         self.menu_button_callback = callback

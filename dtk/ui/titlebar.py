@@ -23,9 +23,8 @@
 
 from box import EventBox, ImageBox
 from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
-from draw import draw_line, draw_pixbuf
+from draw import draw_line
 from label import Label
-from cache_pixbuf import CachePixbuf
 from locales import _
 import tooltip as Tooltip
 from utils import window_is_max
@@ -48,8 +47,7 @@ class Titlebar(EventBox):
                  height=26,
                  show_title=True,
                  enable_gaussian=True,
-                 bg_pixbuf=None,
-		        ):
+                 ):
         """
         Initialize the title bar.
 
@@ -64,8 +62,6 @@ class Titlebar(EventBox):
         # Init.
         EventBox.__init__(self)
         self.set_size_request(-1, height)
-        self.bg_pixbuf = bg_pixbuf
-        self.cache_bg_pixbuf = CachePixbuf()
         self.v_layout_box = gtk.VBox()
         self.h_layout_box = gtk.HBox()
         self.add(self.v_layout_box)
@@ -157,18 +153,6 @@ class Titlebar(EventBox):
         # Show.
         self.show_all()
 
-        self.connect("expose-event", self.__expose_titlebar_bg)
-
-    def __expose_titlebar_bg(self, widget, event):
-        if self.bg_pixbuf == None:
-            return
-        
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-
-        self.cache_bg_pixbuf.scale(self.bg_pixbuf.get_pixbuf(), rect.width - 2, rect.height)
-        draw_pixbuf(cr, self.cache_bg_pixbuf.get_cache(), rect.x + 1, rect.y)
-        
     def expose_titlebar_separator(self, widget, event):
         """
         Expose the separation line between the titlebar and the body of the window.
