@@ -22,8 +22,8 @@
 
 import dtk.ui
 import dtk.ui.application
-import dtk.ui.new_slider
-import dtk.ui.new_entry
+import dtk.ui.slider
+import dtk.ui.entry
 import dtk.ui.button
 import dtk.ui.label 
 
@@ -52,7 +52,7 @@ if __name__ == "__main__":
         "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py",
     )
     
-    slider = dtk.ui.new_slider.HSlider()
+    slider = dtk.ui.slider.HSlider()
     label = dtk.ui.label.Label("Slider Demo")
     label_align = gtk.Alignment(0.5, 0.5, 0, 0)
     label_align.add(label)
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     widget2.add(button2)
 
     widget3 = gtk.Alignment(0.5, 0.5, 0, 0)
-    text_entry = dtk.ui.new_entry.InputEntry()
+    text_entry = dtk.ui.entry.InputEntry()
     text_entry.set_size(100, 22)
     widget3.add(text_entry)
 

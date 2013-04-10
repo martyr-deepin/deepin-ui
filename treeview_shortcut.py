@@ -31,7 +31,7 @@ app_theme = init_skin(
     os.path.join(get_parent_dir(__file__), "skin"),
     os.path.join(get_parent_dir(__file__), "app_theme"),
     )
-from dtk.ui.new_treeview import TreeItem, TreeView
+from dtk.ui.treeview import TreeItem, TreeView
 from dtk.ui.draw import draw_text
 from dtk.ui.utils import (color_hex_to_cairo, is_left_button, 
                           is_double_click, is_single_click)

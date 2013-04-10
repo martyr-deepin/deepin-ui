@@ -23,7 +23,7 @@
 from button import Button
 from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
 from draw import draw_vlinear, draw_line, draw_pixbuf
-from new_entry import InputEntry
+from entry import InputEntry
 from iconview import IconView
 from label import Label
 from locales import _

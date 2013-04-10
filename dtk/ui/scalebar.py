@@ -22,330 +22,343 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from theme import ui_theme
 from cache_pixbuf import CachePixbuf
-from draw import draw_pixbuf, draw_text, cairo_state, draw_line
-from utils import is_left_button, get_content_size, color_hex_to_cairo
-from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
-from pango import FontDescription
+from draw import draw_pixbuf, draw_text
+from utils import (is_left_button, get_content_size, color_hex_to_cairo,
+                   cairo_disable_antialias)
+from constant import DEFAULT_FONT_SIZE
 import gobject
 import gtk
 
-'''
-TODO: It acts like gtk.HScale
-'''
-class HScalebar(gtk.HScale):
-    '''
-    HScalebar.
-    
-    @undocumented: expose_h_scalebar
-    @undocumented: press_volume_progressbar
-    '''
-
-    '''
-    enum
-    '''
-    POS_TOP = gtk.POS_TOP
-    POS_BOTTOM = gtk.POS_BOTTOM
-	
-    '''
-    TODO: 
-    '''
+class HScalebar(gtk.Button):    
+    __gsignals__ = {
+        "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+    }        
     def __init__(self,
-                 left_fg_dpixbuf=None,
-                 left_bg_dpixbuf=None,
-                 middle_fg_dpixbuf=None,
-                 middle_bg_dpixbuf=None,
-                 right_fg_dpixbuf=None,
-                 right_bg_dpixbuf=None,
-                 point_dpixbuf=None,
+                 point_dpixbuf=ui_theme.get_pixbuf("hscalebar/point.png"),
                  show_value=False,
-                 format_value=None
+                 show_value_type=gtk.POS_TOP,
+                 show_point_num=0,
+                 format_value="",
+                 value_min = 0,
+                 value_max = 100,  
+                 line_height=6,
+                 gray_progress=False
                  ):
         '''
-        Init HScalebar class.
-        
-        @param left_fg_dpixbuf: Left foreground pixbuf.
-        @param left_bg_dpixbuf: Left background pixbuf.
-        @param middle_fg_dpixbuf: Middle foreground pixbuf.
-        @param middle_bg_dpixbuf: Middle background pixbuf.
-        @param right_fg_dpixbuf: Right foreground pixbuf.
-        @param right_bg_dpixbuf: Right background pixbuf.
-        @param point_dpixbuf: Pointer pixbuf.
-        @param show_value: whether draw the current value
-        @param format_value: a string representing value for display
+        @point_dpixbuf: a DynamicPixbuf object.
+        @show_value: If True draw the current value next to the slider
+        @show_value_type: the position where the current value is displayed. gtk.POS_TOP or gtk.POS_BOTTOM
+        @show_point_num: the accuracy of the value. If 0 value is int type.
+        @format_value: a string that displayed after the value
+        @value_min: the min value
+        @value_max: the max value
+        @line_height: the line height
+        @gray_progress: If True the HScalebar looks gray
         '''
-        # Init.
-        gtk.HScale.__init__(self)
-        self.set_adjustment(gtk.Adjustment(0, 0, 100, 1, 5))
-        
-        self.line_width = 1
-        self.side_width = 1
-        self.h_scale_height = 6
-        self.fg_side_color = "#2670B2"
-        self.bg_side_color = "#BABABA"
-        self.fg_inner_color = "#59AFEE"
-        self.bg_inner1_color = "#DCDCDC"
+        gtk.Button.__init__(self)
+        #        
+        self.position_list = []
+        self.mark_check = False
+        self.enable_check = True
+        self.new_mark_x = 0
+        self.next_mark_x = 0
+        self.value = 0
+        self.show_value_type = show_value_type
+        self.show_point_num = show_point_num
+        self.value_max = value_max - value_min
+        self.value_min = value_min
+        self.drag = False
+        self.gray_progress = gray_progress
+        # init color.
+        self.fg_side_color = "#0071B3"
+        self.bg_side_color = "#B3B3B3"
+        self.fg_inner_color = "#30ABEE"
+        self.bg_inner1_color = "#CCCCCC"
         self.bg_inner2_color = "#E6E6E6"
-        self.fg_corner_color = "#3F85B6"
-        self.bg_corner_color = "#C2C4C5"
-        self.value_text_color = "#000000"
-        
-        self.left_fg_dpixbuf = left_fg_dpixbuf
-        self.left_bg_dpixbuf = left_bg_dpixbuf
-        self.middle_fg_dpixbuf = middle_fg_dpixbuf
-        self.middle_bg_dpixbuf = middle_bg_dpixbuf
-        self.right_fg_dpixbuf = right_fg_dpixbuf
-        self.right_bg_dpixbuf = right_bg_dpixbuf
-        self.point_dpixbuf = point_dpixbuf
-        if self.point_dpixbuf == None:
-            raise Exception, "point pixbuf can not be None" 
-        
-        self.cache_bg_pixbuf = CachePixbuf()
-        self.cache_fg_pixbuf = CachePixbuf()
-        #################
-        self.show_value = show_value
+        self.fg_corner_color = "#2E84B7"
+        self.bg_corner_color = "#C1C5C6"
+        #
+        self.point_pixbuf = point_dpixbuf
+        self.line_height = line_height
+        self.line_width = 1.0
+        self.progress_border = 1
+        self.mark_height = 6
+        self.mark_width = 1
+        self.bottom_space = 2 # vertical space between bottom mark line and drag point
         self.format_value = format_value
-        self.set_digits(0)
-        self.set_draw_value(show_value)
-        if format_value:
-            self.connect("format-value", self.on_format_value_cb, format_value)
-        self.button_pressed = False
-        self.mark_list = {}
-        self.has_top_markup_flag = False
-        self.has_bottom_markup_flag = False
-        self.top_markup_height = 0
-        self.bottom_markup_height = 0
-        '''
-        enum
-        '''
-        self.MARK_POS = 0
-        self.MARK_MARKUP = 1
-        self.MARK_MARKUP_SIZE = 2
+        self.trg_by_grab = False
+        self.show_value = show_value
         
-        # Set size request.
-        #self.set_size_request(-1, self.point_dpixbuf.get_pixbuf().get_height())
+        self.point_width = self.point_pixbuf.get_pixbuf().get_width()
+        self.point_height = self.point_pixbuf.get_pixbuf().get_height()
+        self.text_height_factor = 2
+        self.set_size_request(-1, self.point_height + get_content_size("0")[1] * self.text_height_factor + self.bottom_space)
         
-        # Redraw.
-        self.connect("expose-event", self.expose_h_scalebar)
-        #self.connect("button-press-event", self.press_volume_progressbar)
-        #self.connect("button-release-event", self.m_release_volume_progressbar)
-        #self.connect("motion-notify-event", self.m_motion)
-    
-    '''
-    Adds a mark at value
-    @param value: the value at which the mark is placed, must be between the lower and upper limits of the scales' adjustment.
-    @param position: where to draw the mark. For a horizontal scale, gtk.POS_TOP is drawn above the scale, anything else below.
-    @param markup: text to be shown at the mark.
-    '''
-    def add_mark(self, value, position, markup):
-        gtk.HScale.add_mark(self, value, position, markup)
-        size = get_content_size(markup)
-        self.mark_list[value] = [position, markup, size]
-        if position == gtk.POS_TOP:
-            self.has_top_markup_flag = True
-            if self.top_markup_height < size[1]:
-                self.top_markup_height = size[1]
-        if position == gtk.POS_BOTTOM:
-            self.has_bottom_markup_flag = True
-            if self.bottom_markup_height < size[1]:
-                self.bottom_markup_height = size[1]
-        self.queue_draw()
-    
-    def on_format_value_cb(self, widget, value, format_value):
-        '''
-        Internal callback for `format-value` signal.
-        '''
-        if widget.get_digits() <= 0:
-            return "%d%s" % (value, format_value)
-        else:
-            return "%s%s" % (str(round(value, widget.get_digits())), format_value)
-    
-    def expose_h_scalebar(self, widget, event):
-        '''
-        Internal callback for `expose-event` signal.
-        '''
-        # Init.
+        # init events.
+        self.init_events()
+                
+    def init_events(self):     
+        self.add_events(gtk.gdk.ALL_EVENTS_MASK)        
+        self.connect("expose-event", self.__progressbar_expose_event)
+        self.connect("button-press-event", self.__progressbar_press_event)
+        self.connect("button-release-event", self.__progressbar_release_event)
+        self.connect("motion-notify-event", self.__progressbar_motion_notify_event)        
+        self.connect("scroll-event", self.__progressbar_scroll_event)
+                
+    def __progressbar_expose_event(self, widget, event):    
         cr = widget.window.cairo_create()
         rect = widget.allocation
+        
         cr.rectangle(rect.x, rect.y, rect.width, rect.height)
         cr.clip()
-        
-        # Init pixbuf.
-        point_pixbuf = self.point_dpixbuf.get_pixbuf()
-        
-        # Init value.
-        upper = self.get_adjustment().get_upper() 
-        lower = self.get_adjustment().get_lower() 
-        point_pixbuf_max_width = 17
-        point_pixbuf_min_width = 8
-        point_pixbuf_max_height = 17
-        point_pixbuf_min_height = 12
-        ## these values be allocated by gtk
-        slider_height = 17
-        value_text_height = 20
-        markup_spacing = 8
+        # draw bg and fg.
+        self.draw_bg_and_fg(cr, rect)
+        # draw mark.
+        for position in self.position_list:
+            self.draw_value(cr, rect,  "%s" % (str(position[2])), position[0] - self.value_min, position[1], mark_check=True)
+        # draw value.
+        if self.show_value:
+            if self.show_point_num:
+                draw_value_temp = round(self.value + self.value_min, self.show_point_num)
+            else:    
+                draw_value_temp = int(round(self.value + self.value_min, self.show_point_num))
+            
+            self.draw_value(cr, rect, 
+                            "%s%s" % (draw_value_temp, self.format_value), 
+                            self.value, 
+                            self.show_value_type)
+        # draw point.
+        self.draw_point(cr, rect)
+            
+        return True
+                    
+    def draw_bg_and_fg(self, cr, rect):    
+        with cairo_disable_antialias(cr):
+            x, y, w, h = rect         
+            progress_x = rect.x + self.point_width/2
+            progress_y = rect.y + (rect.height-self.bottom_space)/2 - self.line_height/2
+            progress_width = rect.width - self.point_width
+            value_width = int(float(self.value) / self.value_max * (rect.width - self.point_width/2))
+            if int(float(self.value)) == self.value_max:
+                value_width = value_width - 1 # there is less 1px for 100% mark line
 
-        # count the y-coordinate of the point begin to draw
-        if self.get_draw_value():
-            hscale_height = slider_height + value_text_height
-        else:
-            hscale_height = slider_height
-        if self.has_top_markup_flag:
-            top_space_height = self.top_markup_height + markup_spacing
-        else:
-            top_space_height = 0
-        if self.has_bottom_markup_flag:
-            bottom_space_height = self.bottom_markup_height + markup_spacing
-        else:
-            bottom_space_height = 0
-        origin_y = rect.y + ((rect.height - hscale_height - top_space_height - bottom_space_height) / 2)
-        total_length = max(upper - lower, 1)
-        
-        # adjust point pixbuf to a fit size
-        point_width = point_pixbuf.get_width()
-        point_height = point_pixbuf.get_height()
-        if point_width > point_pixbuf_max_width:
-            point_width = point_pixbuf_max_width
-        if point_width < point_pixbuf_min_width:
-            point_width = point_pixbuf_min_width
-        if point_height > point_pixbuf_max_height:
-            point_height = point_pixbuf_max_height
-        if point_height < point_pixbuf_min_height:
-            point_height = point_pixbuf_min_height
-        point_pixbuf = point_pixbuf.scale_simple(
-            point_width, point_height, gtk.gdk.INTERP_BILINEAR)
-        
-        x, y, w, h = rect.x + point_width/2, rect.y, rect.width - point_width, rect.height
-        # draw mark
-        with cairo_state(cr):
-            for mark_value in self.mark_list:
-                mark = self.mark_list[mark_value]
-                if mark[self.MARK_POS] == gtk.POS_TOP:
-                    mark_y = origin_y + markup_spacing / 2
-                elif mark[self.MARK_POS] == gtk.POS_BOTTOM:
-                    mark_y = origin_y + top_space_height + hscale_height + markup_spacing / 2
-                if self.get_inverted():
-                    mark_x = ((upper - mark_value) / total_length) * w + x - (mark[self.MARK_MARKUP_SIZE][0] / 2)
-                else:
-                    mark_x = ((mark_value - lower) / total_length) * w + x - (mark[self.MARK_MARKUP_SIZE][0] / 2)
-                if mark_x < x:
-                    mark_x = x
-                elif (mark_x+mark[self.MARK_MARKUP_SIZE][0]) > x + w:
-                    mark_x = x + w - mark[self.MARK_MARKUP_SIZE][0]
-                draw_text(cr, mark[self.MARK_MARKUP], mark_x, mark_y,
-                          mark[self.MARK_MARKUP_SIZE][0]+2, mark[self.MARK_MARKUP_SIZE][1])
-        
-        line_height = self.h_scale_height
-        line_spacing = (slider_height - line_height) / 2
-        if line_spacing < 0:
-            line_spacing = 0
-        if self.get_draw_value() and self.get_value_pos() == gtk.POS_TOP:
-            point_y = line_y = origin_y + top_space_height + value_text_height + line_spacing
-        else:
-            point_y = line_y = origin_y + top_space_height + line_spacing
-        point_y -= (point_height - line_height) / 2
-
-        if self.get_inverted():
-            value = ((upper - self.get_value()) / total_length * w)
-        else:
-            value = ((self.get_value() - lower) / total_length * w)
-        with cairo_state(cr):
             '''
-            background y
+            background
             '''
-            bg_y = point_y + (point_pixbuf.get_height() - self.h_scale_height) / 2
-            cr.set_line_width(self.line_width)
+            # background inner
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_inner2_color))
-            cr.rectangle(x, bg_y, w, self.h_scale_height)
+            cr.rectangle(progress_x+value_width, 
+                    progress_y+self.progress_border, 
+                    progress_width-value_width-self.progress_border, 
+                    self.line_height-self.progress_border*2)
             cr.fill()
 
+            # background border
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_side_color))
-            cr.rectangle(x, bg_y, w, self.h_scale_height)
-            cr.stroke()
+            # top border
+            cr.rectangle(
+                    progress_x+value_width, 
+                    progress_y,
+                    progress_width-value_width-self.progress_border, 
+                    self.progress_border)
+            cr.fill()
+            # bottom border
+            cr.rectangle(
+                    progress_x+value_width, 
+                    progress_y+self.line_height-self.progress_border, 
+                    progress_width-value_width-self.progress_border, 
+                    self.progress_border)
+            cr.fill()
+            # right border
+            cr.rectangle(
+                    progress_x+progress_width-self.progress_border, 
+                    progress_y+self.progress_border, 
+                    self.progress_border,
+                    self.line_height-self.progress_border*2)
+            cr.fill()
 
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_corner_color))
-            draw_line(cr, x, bg_y, x + 1, bg_y)
-            draw_line(cr, x + w, bg_y, x + w - 1, bg_y)
-            draw_line(cr, x, bg_y + self.h_scale_height, x + 1, bg_y + self.h_scale_height)
-            draw_line(cr, x + w, bg_y + self.h_scale_height, x + w - 1, bg_y + self.h_scale_height)
+            # top right corner
+            cr.rectangle(
+                    progress_x+progress_width-self.progress_border, 
+                    progress_y,
+                    self.progress_border, 
+                    self.progress_border)
+            cr.fill()
+            # bottom right corner
+            cr.rectangle(
+                    progress_x+progress_width-self.progress_border, 
+                    progress_y+self.line_height-self.progress_border,
+                    self.progress_border, 
+                    self.progress_border)
+            cr.fill()
+
+            '''
+            foreground color setting
+            '''
+            
+            if self.enable_check:
+                fg_inner_color = self.fg_inner_color
+                fg_side_color  = self.fg_side_color
+                fg_corner_color = self.fg_corner_color
+            else:
+                fg_inner_color = self.bg_inner1_color 
+                fg_side_color  = self.bg_side_color 
+                fg_corner_color = self.bg_corner_color 
+            
+            if self.gray_progress:
+                fg_inner_color = self.bg_inner2_color 
+                fg_side_color  = self.bg_side_color 
+                fg_corner_color = self.bg_corner_color 
+            '''
+            foreground
+            '''
+            # foreground inner
+            cr.set_source_rgb(*color_hex_to_cairo(fg_inner_color))
+            cr.rectangle(progress_x+self.progress_border, 
+                    progress_y+self.progress_border, 
+                    value_width-self.progress_border, 
+                    self.line_height-self.progress_border*2)
+            cr.fill()
+
+            # foreground border
+            cr.set_source_rgb(*color_hex_to_cairo(fg_side_color))
+            # top border
+            cr.rectangle(
+                    progress_x+self.progress_border, 
+                    progress_y, 
+                    value_width-self.progress_border, 
+                    self.progress_border)
+            cr.fill()
+            # bottom border
+            cr.rectangle(
+                    progress_x+self.progress_border, 
+                    progress_y+self.line_height-self.progress_border, 
+                    value_width-self.progress_border, 
+                    self.progress_border)
+            cr.fill()
+            # left border
+            cr.rectangle(
+                    progress_x, 
+                    progress_y+self.progress_border, 
+                    self.progress_border, 
+                    self.line_height-self.progress_border*2)
+            cr.fill()
+
+            cr.set_source_rgb(*color_hex_to_cairo(fg_corner_color))
+            # top left corner
+            cr.rectangle(
+                    progress_x,
+                    progress_y,
+                    self.progress_border, 
+                    self.progress_border)
+            cr.fill()
+            # bottom left corner
+            cr.rectangle(
+                    progress_x,
+                    progress_y+self.line_height-self.progress_border,
+                    self.progress_border, 
+                    self.progress_border)
+            cr.fill()
+
+    def draw_point(self, cr, rect):
+        pixbuf_w_average = self.point_pixbuf.get_pixbuf().get_width() / 2
+        x = rect.x + self.point_width / 2 + int(float(self.value) / self.value_max * (rect.width - self.point_width)) - pixbuf_w_average
+        if int(float(self.value)) == self.value_max:
+            x = x - 1 # there is less 1px for 100% mark line
+        draw_pixbuf(cr,
+                    self.point_pixbuf.get_pixbuf(), 
+                    x, 
+                    rect.y + (rect.height-self.bottom_space)/2 - self.point_pixbuf.get_pixbuf().get_height()/2)
         
-            if self.get_value() > lower:
-                if self.get_inverted():
-                    rect_x = value + point_width
-                    rect_width = x + w - value
-                    line_x0 = x + w - 1
-                    line_x1 = x + w
-                else:
-                    rect_x = x
-                    rect_width = value
-                    line_x0 = x
-                    line_x1 = x + 1
-                '''
-                background
-                '''
-                cr.set_source_rgb(*color_hex_to_cairo(self.bg_inner1_color))
-                #cr.rectangle(x, bg_y, value, self.h_scale_height)
-                cr.rectangle(rect_x, bg_y, rect_width, self.h_scale_height)
-                cr.fill()
-                '''
-                foreground
-                '''
-                cr.set_source_rgb(*color_hex_to_cairo(self.fg_inner_color))
-                #cr.rectangle(x, bg_y, value, self.h_scale_height)
-                cr.rectangle(rect_x, bg_y, rect_width, self.h_scale_height)
-                cr.fill()
-
-                cr.set_source_rgb(*color_hex_to_cairo(self.fg_side_color))
-                #cr.rectangle(x, bg_y, value, self.h_scale_height)
-                cr.rectangle(rect_x, bg_y, rect_width, self.h_scale_height)
-                cr.stroke()
-
-                cr.set_source_rgb(*color_hex_to_cairo(self.fg_corner_color))         
-                draw_line(cr, line_x0, bg_y, line_x1, bg_y)                                  
-                draw_line(cr, line_x0, bg_y + self.h_scale_height, line_x1, bg_y + self.h_scale_height)
-
-        # Draw drag point.
-        draw_pixbuf(cr, point_pixbuf, x + value - point_pixbuf.get_width() / 2, point_y)
-
-        # draw value
-        if self.get_draw_value():
-            value_layout = widget.get_layout()
-            value_layout.set_font_description(FontDescription("%s %s" % (DEFAULT_FONT, DEFAULT_FONT_SIZE)))
-            layout_offset = widget.get_layout_offsets()
-            cr.set_source_rgb(*color_hex_to_cairo(self.value_text_color))
-            cr.move_to(layout_offset[0], layout_offset[1])
-            cr.update_layout(value_layout)
-            cr.show_layout(value_layout)
+    def draw_value(self, cr, rect, text, value, type_=None, mark_check=False):
+        text_width, text_height = get_content_size(text)
+        text_y = rect.y 
+        if gtk.POS_TOP == type_:
+            text_y = text_y
+        if gtk.POS_BOTTOM == type_:
+            text_y = rect.y + (rect.height-self.bottom_space)/2 + self.point_height + self.bottom_space - text_height/2
+            
+        x = rect.x + int(float(value) / self.value_max * (rect.width - self.point_width))
+        max_value = max(x - (text_width/2 - self.point_width/2), rect.x)
+        min_value = min(max_value, rect.x + rect.width - text_width)
         
-        return True        
+        if self.enable_check:
+            draw_text(cr, text, min_value, text_y, rect.width, 0)                
+        else:
+            draw_text(cr, text, min_value, text_y, rect.width, 0, DEFAULT_FONT_SIZE, self.bg_side_color)
+        
+        if int(float(value)) == self.value_max:
+            x = x - 1 # there is less 1px for 100% mark line
+        mark_y = text_y-self.bottom_space/2-(self.point_height-self.line_height)/2
+        if mark_check:
+            cr.set_source_rgb(*color_hex_to_cairo(self.bg_side_color))
+            cr.rectangle(x + self.point_width/2, mark_y, self.mark_width, self.mark_height) 
+            cr.fill()
 
-    def m_render(self, widget, event):
-        rect = widget.allocation
-        lower = self.get_adjustment().get_lower()
-        upper = self.get_adjustment().get_upper()
-        point_width = self.point_dpixbuf.get_pixbuf().get_width()
+    def __progressbar_scroll_event(self, widget, event):
+        if event.direction == gtk.gdk.SCROLL_UP or event.direction == gtk.gdk.SCROLL_LEFT:
+            step = -5
+        elif event.direction == gtk.gdk.SCROLL_DOWN or event.direction == gtk.gdk.SCROLL_RIGHT:
+            step = 5
+        else:
+            step = 0
+        # one step increase/decrease 5%
+        value = self.value + step * (self.value_max - self.value_min) / 100.0
+        if value > self.value_max:
+            value = self.value_max
+        if value < 0:
+            value = 0
+        self.set_value(value + self.value_min)
+        self.emit("value-changed", self.value + self.value_min)
 
-        self.set_value(lower + ((event.x - point_width / 2)  / (rect.width - point_width)) * (upper - lower))
+    def __progressbar_press_event(self, widget, event):
+        temp_value = float(widget.allocation.width - self.point_width)
+        temp_value = ((float((event.x - self.point_width/2)) / temp_value) * self.value_max) # get value.
+        value = max(min(self.value_max, temp_value), 0)
+        if value != self.value:
+            self.set_enable(True)
+        self.value = value       
+        self.drag = True        
+        self.set_value(self.value + self.value_min)
+        self.emit("value-changed", self.value + self.value_min)
+        # self.grab_add()
+        
+    def __progressbar_release_event(self, widget, event):    
+        self.drag = False
+        # self.grab_remove()
+        
+    def __progressbar_motion_notify_event(self, widget, event):    
+        if self.drag:
+            self.set_enable(True)
+            width = float(widget.allocation.width - self.point_width)
+            temp_value = (float((event.x - self.point_width/2)) /  width) * self.value_max
+            self.value = max(min(self.value_max, temp_value), 0) # get value.
+            self.set_value(self.value + self.value_min)
+            self.emit("value-changed", self.value + self.value_min)
+            
+    def add_mark(self, value, position_type, markup):
+        if self.value_min <= value <= self.value_max+self.value_min:
+            self.position_list.append((value, position_type, markup))
+        else:    
+            print "error:input value_min <= value <= value_max!!"
+        
+    def set_value(self, value):    
+        self.value = max(min(self.value_max, value - self.value_min), 0) 
+        self.queue_draw()     
+        
+    def get_value(self):    
+        return self.value + self.value_min
+        
+    def set_enable(self, enable_bool):
+        self.enable_check = enable_bool
         self.queue_draw()
-    
-    def press_volume_progressbar(self, widget, event):
-        '''
-        Internal callback for `button-press-event` signal.
-        '''
-        # Init.
-        if is_left_button(event):
-            self.button_pressed = True
-            self.m_render(widget, event)
 
-        return False
+    def get_enable(self, enable_bool):
+        return self.enable_check 
 
-    def m_release_volume_progressbar(self, widget, event):
-        self.button_pressed = False
-
-    def m_motion(self, widget, event):
-        if self.button_pressed:
-            self.m_render(widget, event)
-    
 gobject.type_register(HScalebar)
 
 class VScalebar(gtk.VScale):

@@ -6,6 +6,7 @@
 # 
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+#             Zhai Xiang <zhaixiang@linuxdeepin.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,21 +22,687 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
-from contextlib import contextmanager 
-from draw import draw_hlinear
+from draw import draw_hlinear, draw_pixbuf
 from keymap import get_keyevent_name
 from locales import _
 from menu import Menu
 from theme import ui_theme
+from contextlib import contextmanager 
 import sys
 import traceback
 import gobject
 import gtk
 import pango
+import cairo
 import pangocairo
-from utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
-                   get_content_size, is_double_click, is_right_button, 
-                   is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias)
+import re
+from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
+                          get_content_size, is_double_click, is_right_button, 
+                          is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias
+                          )
+try:
+    import deepin_gsettings
+    DESKTOP_SETTINGS_CONF = "org.gnome.desktop.interface"
+    DESKTOP_SETTINGS = deepin_gsettings.new(DESKTOP_SETTINGS_CONF)
+except ImportError:
+    print "----------Please Install Deepin GSettings Python Binding----------"
+    print "git clone git@github.com:linuxdeepin/deepin-gsettings.git"
+    print "------------------------------------------------------------------"
+
+DEFAULT_CURSOR_BLINK_TIME = 600  # microsecond
+
+class EntryBuffer(gobject.GObject):
+    '''
+    EntryBuffer
+    stores text for display in a Entry
+    '''
+    __gproperties__ = {
+        'cursor-visible': (gobject.TYPE_BOOLEAN, 'cursor_visible', 'cursor visible',
+            True, gobject.PARAM_READWRITE),
+        'visibility': (gobject.TYPE_BOOLEAN, 'visibility', 'visibility',
+            True, gobject.PARAM_READWRITE),
+        'select-area-visible': (gobject.TYPE_BOOLEAN, 'select_area_visible', 'select area visible',
+            True, gobject.PARAM_READWRITE),
+        'invisible-char': (gobject.TYPE_CHAR, 'invisible_char', 'invisible char', ' ', '~', '*', gobject.PARAM_READWRITE)}
+    
+    __gsignals__ = {
+        "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "insert-pos-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "selection-pos-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())}
+    
+    def __init__(self, text='',
+                 font=DEFAULT_FONT,
+                 font_size=DEFAULT_FONT_SIZE,
+                 font_weight='normal',
+                 text_color=ui_theme.get_color("entry_text").get_color(),
+                 text_select_color=ui_theme.get_color("entry_select_text").get_color(),
+                 background_select_color=ui_theme.get_shadow_color("entry_select_background"),
+                 enable_clear_button=False,
+                 is_password_entry=False,
+                 shown_password=False,
+                ):
+        '''
+        text: the buffer content
+        @param text: Entry initialize content, default is \"\".
+        @param font: font family, default is DEFAULT_FONT.
+        @param font_size: font size, default is DEFAULT_FONT_SIZE.
+        @param font_weight: font weight, default is 'normal'.
+        @param text_color: Color of text in normal status, a hex string.
+        @param text_select_color: Color of text in select status, a hex string.
+        @param background_select_color: Color of background in select status, a hex string.
+        '''
+        self.__gobject_init__()
+        self.buffer = gtk.TextBuffer()
+        self.alignment = pango.ALIGN_LEFT
+        self.font = font
+        self.font_weight = font_weight
+        self.font_size = font_size
+        self.text_color = text_color
+        self.text_select_color = text_select_color
+        self.background_select_color = background_select_color
+        self.cursor_cr = None
+        self.cursor_x = -1
+        self.cursor_y = -1
+        self.cursor_pos1 = -1
+        self.cursor_pos2 = -1
+        '''
+        TODO: Add clear button
+        '''
+        self.enable_clear_button = enable_clear_button
+        '''
+        TODO: shown password or not
+        '''
+        self.is_password_entry = is_password_entry
+        self.shown_password = shown_password
+        '''
+        property
+        '''
+        self.__prop_dict = {}
+        self.__prop_dict['cursor-visible'] = True
+        self.__prop_dict['select-area-visible'] = True
+        self.__prop_dict['visibility'] = True
+        self.__prop_dict['invisible-char'] = '*'
+
+        # pango layout
+        surface = cairo.ImageSurface(cairo.FORMAT_RGB24, 0, 0) 
+        cr = cairo.Context(surface)
+        pango_cr = pangocairo.CairoContext(cr)
+        self._layout = pango_cr.create_layout()
+        self._layout.set_font_description(
+            pango.FontDescription("%s %s %d" % (self.font, self.font_weight, self.font_size)))
+        self._layout.set_alignment(self.alignment)
+        self._layout.set_single_paragraph_mode(True)
+        self.set_text(text)
+        self.buffer.connect("changed", lambda bf: self.emit("changed"))
+    
+    def get_content_size(self):
+        return get_content_size(self.get_text(), self.font_size)
+    
+    def do_set_property(self, pspec, value):
+        if pspec.name in self.__prop_dict:
+            self.__prop_dict[pspec.name] = value
+        else:
+            raise AttributeError, 'unknown property %s' % pspec.name
+    
+    def do_get_property(self, pspec):
+        if pspec.name in self.__prop_dict:
+            return self.__prop_dict[pspec.name]
+        else:
+            raise AttributeError, 'unknown property %s' % pspec.name
+    
+    def set_font_family(self, font_family):
+        '''
+        set font family
+        @param font_family: a string representing the family name.
+        '''
+        self.font = font_family
+        self._layout.set_font_description(
+            pango.FontDescription("%s %s %d" % (self.font, self.font_weight, self.font_size)))
+    
+    def get_font_family(self):
+        '''
+        get font family
+        @return: a string representing the family name.
+        '''
+        return self.font
+    
+    def set_font_weight(self, font_weight):
+        '''
+        set font weight
+        @param font_weight: the weight for the font description. The value must be one of pango weight. A string type
+        '''
+        self.font_weight = font_weight
+        self._layout.set_font_description(
+            pango.FontDescription("%s %s %d" % (self.font, self.font_weight, self.font_size)))
+    
+    def get_font_weight(self):
+        '''
+        get font weight
+        @return: the weight for the font description. A string type
+        '''
+        return self.font_weight
+    
+    def set_font_size(self, font_size):
+        '''
+        set font size
+        @param font_size: the size for the font description. An int type
+        '''
+        self.font_size = font_size
+        self._layout.set_font_description(
+            pango.FontDescription("%s %s %d" % (self.font, self.font_weight, self.font_size)))
+    
+    def get_font_size(self):
+        '''
+        get font size
+        @return: the size for the font description. An int type
+        '''
+        return self.font_size
+    
+    def set_alignment(self, alignment):
+        '''
+        set alignment
+        @param alignment: the alignment, the value must be one of pango alignment
+        '''
+        self.alignment = alignment
+        self._layout.set_alignment(alignment)
+
+    def get_alignment(self):
+        '''
+        get alignment
+        @return: the alignment
+        '''
+        return self._layout.get_alignment()
+    
+    def set_invisible_char(self, char):
+        '''
+        set invisible-char property
+        @param char: a Unicode character
+        '''
+        if not char:
+            char = '*'
+        #self.set_property("invisible-char", char[0])
+        self.set_property('invisible-char', char[0])
+    
+    def get_invisible_char(self):
+        '''
+        get invisible-char property
+        @return: a Unicode character
+        '''
+        #return self.get_property("invisible-char")
+        return self.get_property('invisible-char')
+    
+    def set_visibility(self, visible):
+        '''
+        set visibility property
+        @param visible: a bool type
+        '''
+        self.set_property("visibility", visible)
+    
+    def get_visibility(self):
+        '''
+        get visibility property
+        @return: a bool type
+        '''
+        return self.get_property("visibility")
+    
+    def get_cursor_visible(self):
+        '''
+        get curosr-visible property
+        @return: a bool type
+        '''
+        return self.get_property("cursor-visible")
+    
+    def set_cursor_visible(self, cursor_visible):
+        '''
+        set cursor-visible property
+        @param cursor_visible: a bool type
+        '''
+        self.set_property("cursor-visible", cursor_visible)
+    
+    def set_text(self, text):
+        '''
+        set text to display
+        @param text: the new text, a string.
+        '''
+        if text is None:
+            text = ''
+        self.buffer.set_text('\\n'.join(text.split('\n')))
+        self._layout.set_text(self.get_text())
+    
+    def get_text(self):
+        '''
+        get text
+        @return: the text showed, a string
+        '''
+        return self.buffer.get_text(*self.buffer.get_bounds())
+    
+    def place_cursor(self, offset):
+        '''
+        move insert-cursor and selection-cursor to the location specified by index.
+        @param offset: a int num
+        '''
+        self.set_insert_pos(offset)
+        self.set_selection_pos(offset)
+    
+    def set_insert_pos(self, pos):
+        '''
+        set insert-cursor location by pos
+        @param pos: a int num
+        '''
+        if pos < 0:
+            pos = 0
+        max_offset = self.get_char_count()
+        if pos > max_offset:
+            pos = max_offset
+        tmp_iter = self.buffer.get_iter_at_mark(self.buffer.get_insert())
+        tmp_iter.set_line_offset(pos)
+        self.buffer.move_mark_by_name("insert", tmp_iter)
+        self.emit("insert-pos-changed")
+    
+    def get_insert_pos(self):
+        '''
+        get insert-curosr localtion offset
+        @return: a int num
+        '''
+        insert_iter = self.buffer.get_iter_at_mark(self.buffer.get_insert())
+        return insert_iter.get_line_offset()
+    
+    def get_insert_index(self):
+        '''
+        get insert-curosr localtion index
+        @return: a int num
+        '''
+        insert_iter = self.buffer.get_iter_at_mark(self.buffer.get_insert())
+        return insert_iter.get_line_index()
+    
+    def get_selection_pos(self):
+        '''
+        get selection-curosr localtion
+        @return: a int num
+        '''
+        selection_iter = self.buffer.get_iter_at_mark(self.buffer.get_selection_bound())
+        return selection_iter.get_line_offset()
+    
+    def get_selection_index(self):
+        '''
+        get selection-curosr localtion
+        @return: a int num
+        '''
+        selection_iter = self.buffer.get_iter_at_mark(self.buffer.get_selection_bound())
+        return selection_iter.get_line_index()
+    
+    def set_selection_pos(self, pos):
+        '''
+        set selection-cursor location by pos
+        @param pos: a int num
+        '''
+        if pos < 0:
+            pos = 0
+        max_offset = self.get_char_count()
+        if pos > max_offset:
+            pos = max_offset
+        tmp_iter = self.buffer.get_iter_at_mark(self.buffer.get_insert())
+        tmp_iter.set_line_offset(pos)
+        self.buffer.move_mark_by_name("selection_bound", tmp_iter)
+        self.emit("selection-pos-changed")
+    
+    def get_selection_bounds(self):
+        '''
+        get selection bounds index
+        @return: a 2-tuple containing the selction-range left pos and right pos
+        '''
+        bounds = self.buffer.get_selection_bounds()
+        if not bounds:
+            return bounds
+        return (bounds[0].get_line_index(), bounds[1].get_line_index())
+    
+    def set_text_color(self, color):
+        '''
+        set text color
+        @param color: the font color, a hex string
+        '''
+        self.text_color = color
+
+    def get_text_color(self):
+        '''
+        get text color
+        @return: the font color, a hex string
+        '''
+        return self.text_color
+    
+    def get_has_selection(self):
+        '''
+        get has-selection property
+        @return: a bool type
+        '''
+        return self.buffer.get_has_selection()
+    
+    def get_length(self):
+        '''
+        get text length
+        @return: the bytes num, an int num
+        '''
+        first_line = self.buffer.get_iter_at_line(0)
+        return first_line.get_bytes_in_line()
+    
+    def get_char_count(self):
+        '''
+        get characters num
+        @return: the chars num
+        '''
+        first_line = self.buffer.get_iter_at_line(0)
+        return first_line.get_chars_in_line()
+  
+    def __reset_password(self):
+        ori_str = self.get_text()
+        str_len = len(ori_str)
+        new_str = ""
+
+        if not str_len:
+            return
+
+        if not self.shown_password:
+            i = str_len
+            while i:
+                new_str += "*"
+                i -= 1
+            self._layout.set_text(new_str)
+
+    def __draw_text(self, cr, layout, context, x, y, offset_x, offset_y):
+        cr.move_to(x - offset_x, y + offset_y)                               
+        cr.set_source_rgb(*color_hex_to_cairo(self.text_color))              
+        context.update_layout(layout)                                        
+        context.show_layout(layout)
+
+    def __draw_select_text(self, layout, left_pos, right_pos):
+        if not self.is_password_entry:
+            layout.set_text(self.get_text()[left_pos:right_pos])
+        else:
+            if self.shown_password:
+                layout.set_text(self.get_text()[left_pos:right_pos])
+            else:
+                layout.set_text(self._layout.get_text()[left_pos:right_pos])
+    
+    def render(self, cr, rect, cursor_alpha=1, im=None, offset_x=0, offset_y=0, grab_focus_flag=False, shown_password=False):
+        '''render. Used by widget'''
+        # Clip text area first.
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+        layout = None
+        context = pangocairo.CairoContext(cr)
+        
+        self.shown_password = shown_password
+        
+        cr.rectangle(x, y, w, h)
+        cr.clip()
+        
+        # Draw text
+        with cairo_state(cr):
+            length = self.get_length()
+            
+            if self.get_visibility():
+                self._layout.set_text(self.get_text())
+            else:
+                self._layout.set_text(self.get_invisible_char()*length)
+            layout = self._layout.copy()
+
+            if not self.is_password_entry:
+                self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
+            else:
+                if self.shown_password:
+                    self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
+                else:
+                    '''
+                    FIXME: HOWTO act like Mac password style
+                    self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
+                    timer = gobject.timeout_add(200, self.__reset_password)
+                    '''
+                    self.__reset_password()
+                    layout = self._layout.copy()
+                    self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
+            
+            # Draw selected text.
+            if self.get_has_selection() and self.get_property("select-area-visible"):
+                (left_pos, right_pos)= self.get_selection_bounds()
+                if self.get_visibility():
+                    self.__draw_select_text(layout, left_pos, right_pos)
+                else:
+                    layout.set_text(self.get_invisible_char()*(right_pos-left_pos))
+                # draw selection background
+                mid_begin_pos = self.get_cursor_pos(left_pos)[0]
+                mid_end_pos = self.get_cursor_pos(right_pos)[0]
+                draw_hlinear(cr, 
+                             x + mid_begin_pos[0] - offset_x,
+                             y + mid_begin_pos[1] + offset_y,
+                             mid_end_pos[0] - mid_begin_pos[0],
+                             mid_begin_pos[3],
+                             self.background_select_color.get_color_info())
+                cr.move_to(x + mid_begin_pos[0] - offset_x, y + offset_y)
+                cr.set_source_rgb(*color_hex_to_cairo(self.text_select_color))
+                context.update_layout(layout)
+                context.show_layout(layout)
+            # Draw cursor
+            if self.get_cursor_visible() and grab_focus_flag:
+                # Init.
+                cursor_index = self.get_insert_index()
+                cursor_pos = self.get_cursor_pos(cursor_index)[0]
+
+                # Draw cursor.
+                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entry_cursor").get_color()))
+                cursor_pos_x = cursor_pos[0] + x - offset_x
+                '''
+                TODO: re-calc cursor pos when enabled clear button
+                '''
+                if self.enable_clear_button and x + w < cursor_pos_x:
+                    cursor_pos_x = x + w - 1
+                '''
+                FIXME: switched im at first time, cursor pos was wrong
+                '''
+                if im:
+                    im.set_cursor_location(gtk.gdk.Rectangle(cursor_pos[0]+x-offset_x, cursor_pos[1]+y, 1, cursor_pos[3]))
+                
+                self.cursor_cr = cr
+                self.cursor_x = cursor_pos_x
+                self.cursor_y = y + offset_y
+                self.cursor_pos1 = cursor_pos[1]
+                self.cursor_pos2 = cursor_pos[3]
+                self.m_draw_cursor(cursor_alpha)
+                '''
+                FIXME: HOWTO flash cursor
+                CursorFlashThread(self).start()
+                '''
+                
+    def m_draw_cursor(self, cursor_alpha):
+        self.cursor_cr.set_source_rgba(0, 0, 0, cursor_alpha)
+        self.cursor_cr.rectangle(self.cursor_x, 
+                                 self.cursor_pos1 + self.cursor_y, 
+                                 1, 
+                                 self.cursor_pos2)
+        self.cursor_cr.fill()
+
+    def m_clear_cursor(self):
+        self.cursor_cr.set_source_rgb(255, 255, 255)
+        self.cursor_cr.rectangle(self.cursor_x, 
+                                 self.cursor_pos1 + self.cursor_y, 
+                                 1, 
+                                 self.cursor_pos2)
+        self.cursor_cr.fill()
+
+    def get_cursor_pos(self, cursor):
+        '''
+        get cursor pos
+        @return: a 2-lists containing two 4-lists representing the strong and weak cursor positions
+        '''
+        poses = list(self._layout.get_cursor_pos(cursor))
+        new_poses = []
+        for pos in poses:
+            pos = list(pos)
+            pos[0] /= pango.SCALE
+            pos[1] /= pango.SCALE
+            pos[2] /= pango.SCALE
+            pos[3] /= pango.SCALE
+            new_poses.append(pos)
+        return new_poses
+    
+    def index_to_pos(self, index):
+        '''
+        index to pos
+        @param index: the index of the text, an int num
+        @return: a list containing the char's coordinate
+        '''
+        pos = self._layout.index_to_pos(index)
+        pos = list(pos)
+        pos[0] /= pango.SCALE
+        pos[1] /= pango.SCALE
+        pos[2] /= pango.SCALE
+        pos[3] /= pango.SCALE
+        return pos
+    
+    def xy_to_index(self, x, y):
+        '''
+        coord to index
+        @param x: the x coord
+        @param y: the y coord
+        @return: the index
+        '''
+        return self._layout.xy_to_index(x, y)
+    
+    def index_to_offset(self, index):
+        '''
+        convert byte index to char offset
+        @param index: the byte index from start of line
+        '''
+        if index < 0:
+            index = 0
+        elif index >= self.get_length():
+            index = self.get_length()
+        pos_iter = self.buffer.get_iter_at_line_index(0, index)
+        return pos_iter.get_line_offset()
+    
+    def offset_to_index(self, offset):
+        '''
+        convert char offset to byte index
+        @param offset: the char offset from start of line
+        '''
+        if offset < 0:
+            offset = 0
+        elif offset >= self.get_char_count():
+            offset = self.get_char_count()
+        pos_iter = self.buffer.get_iter_at_line_offset(0, offset)
+        return pos_iter.get_line_index()
+    
+    def get_pixel_size(self):
+        '''
+        get the layout text size
+        @return: a 2-tuple containing the logical width height of the pango.Layout
+        '''
+        return self._layout.get_pixel_size()
+    
+    def move_to_end(self):
+        '''move insert cursor to end'''
+        self.place_cursor(self.get_length())
+    
+    def move_to_start(self):
+        '''move insert cursor to start'''
+        self.place_cursor(0)
+    
+    def move_to_left(self):
+        '''move insert cursor to left'''
+        current = self.get_insert_pos()
+        self.place_cursor(current-1)
+    
+    def move_to_right(self):
+        '''move insert cursor to rigth'''
+        current = self.get_insert_pos()
+        self.place_cursor(current+1)
+
+    def select_to_end(self):
+        '''move selection cursor to end'''
+        self.set_insert_pos(self.get_length())
+    
+    def select_to_start(self):
+        '''move selection cursor to start'''
+        self.set_insert_pos(0)
+    
+    def select_to_left(self):
+        '''move selection cursor to left'''
+        current = self.get_insert_pos()
+        self.set_insert_pos(current-1)
+     
+    def select_to_right(self):
+        '''move selection cursor to right'''
+        current = self.get_insert_pos()
+        self.set_insert_pos(current+1)
+    
+    def select_all(self):
+        '''select all text'''
+        self.set_selection_pos(0)
+        self.set_insert_pos(self.get_char_count())
+    
+    def delete_selection(self):
+        '''delete the selected text'''
+        self.buffer.delete_selection(True, True)
+    
+    def insert_at_cursor(self, text):
+        '''
+        insert text at insert-cursor
+        @param text: some text in UTF-8 format
+        '''
+        self.buffer.insert_at_cursor('\\n'.join(text.split('\n')))
+        self._layout.set_text(self.get_text())
+    
+    def insert(self, pos, text):
+        '''
+        insert text
+        @param pos: insert at the pos, an int type.
+        @param text: the text to insert
+        '''
+        if pos < 0:
+            pos = 0
+        if pos > self.get_length():
+            pos = self.get_length()
+        tmp_iter = self.buffer.get_iter_at_mark(self.buffer.get_insert())
+        tmp_iter.set_line_offset(pos)
+        self.buffer.insert(tmp_iter, '\\n'.join(text.split('\n')))
+        self._layout.set_text(self.get_text())
+    
+    def backspace(self):
+        '''backspace'''
+        self.buffer.backspace(
+            self.buffer.get_iter_at_mark(self.buffer.get_insert()), True, True)
+        self._layout.set_text(self.get_text())
+    
+    def delete(self):
+        '''delete'''
+        tmp_iter = self.buffer.get_iter_at_mark(self.buffer.get_insert())
+        if tmp_iter.ends_line():
+            return
+        self.move_to_right()
+        self.backspace()
+    
+    def cut_clipboard(self, clipboard, editable=True):
+        '''
+        copies the currently-selected text to the clipboard, then deletes said text if it's editable
+        @param clipboard: a gtk.Clipboard type
+        @param editable: whether the buffer is editable, a bool type
+        '''
+        self.buffer.cut_clipboard(clipboard, editable)
+    
+    def copy_clipboard(self, clipboard):
+        '''
+        copies the currently-selected text to the clipboard
+        @param clipboard: a gtk.Clipboard type
+        '''
+        self.buffer.copy_clipboard(clipboard)
+    
+    def paste_clipboard(self, clipboard, editable=True):
+        '''
+        pastes the contents of the clipboard at the insertion point
+        @param clipboard: a gtk.Clipboard type
+        @param editable: whether the buffer is editable, a bool type
+        '''
+        self.buffer.paste_clipboard(clipboard, None, editable)
+    
+gobject.type_register(EntryBuffer)
 
 class Entry(gtk.EventBox):
     '''
@@ -71,6 +738,8 @@ class Entry(gtk.EventBox):
     
     __gsignals__ = {
         "edit-alarm" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "editing" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "edit-complete" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "press-return" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
         "invalid-value" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
@@ -84,6 +753,11 @@ class Entry(gtk.EventBox):
                  text_select_color=ui_theme.get_color("entry_select_text"),
                  background_select_color=ui_theme.get_shadow_color("entry_select_background"),
                  font_size=DEFAULT_FONT_SIZE, 
+                 enable_clear_button=False,
+                 is_password_entry=False,
+                 shown_password=False, 
+                 is_ipv4=False,
+                 is_mac=False,
                  ):
         '''
         Initialize Entry class.
@@ -98,32 +772,59 @@ class Entry(gtk.EventBox):
         '''
         # Init.
         gtk.EventBox.__init__(self)
+        # in order to compatible before code
+        if not isinstance(text_color, str):
+            text_color = text_color.get_color()
+        if not isinstance(text_select_color, str):
+            text_select_color = text_select_color.get_color()
+        self.is_password_entry = is_password_entry
+        self.entry_buffer = EntryBuffer(
+            content, DEFAULT_FONT, font_size,
+            'noraml', text_color, text_select_color, 
+            background_select_color, enable_clear_button, 
+            is_password_entry = is_password_entry)
+        '''
+        TODO: Add clear button
+        '''
+        self.clear_button = ClearButton(False)
+        self.enable_clear_button = enable_clear_button
+        self.clear_button_x = -1
+        '''
+        TODO: Shown password or not
+        '''
+        self.shown_password = shown_password
+        '''
+        ipv4
+        '''
+        self.is_ipv4 = is_ipv4
+        '''
+        mac address
+        '''
+        self.is_mac = is_mac
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
-        self.font_size = font_size
-        self.text_color = text_color
-        self.text_select_color = text_select_color
-        self.background_select_color = background_select_color
         self.padding_x = padding_x
         self.padding_y = padding_y
         self.move_direction = self.MOVE_NONE
         self.double_click_flag = False
         self.left_click_flag = False
         self.left_click_coordindate = None
-        self.drag_start_index = 0
-        self.drag_end_index = 0
         self.grab_focus_flag = False
         self.editable_flag = True
         self.check_text = None
         self.cursor_visible_flag = True
         self.right_menu_visible_flag = True
         self.select_area_visible_flag = True
+        self.entry_buffer.set_property("select-area-visible", self.select_area_visible_flag)
         
-        self.content = content
-        self.cursor_index = len(self.content)
-        self.select_start_index = self.select_end_index = self.cursor_index
         self.offset_x = 0
+        '''
+        TODO: it need to consider about offset in y axis
+        '''
+        self.offset_y = 0
+        
+        self.key_upper = False
         
         # Add keymap.
         self.keymap = {
@@ -162,7 +863,28 @@ class Entry(gtk.EventBox):
         self.connect("focus-out-event", self.focus_out_entry)
         
         self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
+        self.connect("editing", self.__edit_going)
+        self.cursor_alpha = 1
+        self.edit_complete_flag = True
+        self.edit_timeout_id = None
+
+    def cursor_flash_tick(self):
+        #self.window.invalidate_rect(self.allocation, True)
         
+        # redraw entry text and cursor
+        self.queue_draw()
+
+        # according edit status change cursor alpha color every 500 microsecond
+        if self.cursor_alpha == 1 and self.edit_complete_flag:
+            self.cursor_alpha = 0
+        else:
+            self.cursor_alpha = 1
+        return self.grab_focus_flag
+    
+    def show_password(self, shown_password):
+        self.shown_password = shown_password
+        self.queue_draw()
+    
     def set_editable(self, editable):
         '''
         Set entry editable status.
@@ -184,7 +906,7 @@ class Entry(gtk.EventBox):
             traceback.print_exc(file=sys.stdout)
         else:  
             new_text = self.get_text()
-            if self.check_text == None or self.check_text(new_text):
+            if self.check_text is None or self.check_text(new_text):
                 if old_text != new_text:
                     self.emit("changed", new_text)
             else:
@@ -210,20 +932,12 @@ class Entry(gtk.EventBox):
         '''
         if self.is_editable():
             with self.monitor_entry_content():
-                if text != None:
-                    self.content = text
-                    self.cursor_index = len(self.content)
-                    self.select_start_index = self.select_end_index = self.cursor_index
-                    
-                    text_width = self.get_content_width(self.content)
-                    rect = self.get_allocation()
-                    
-                    if text_width > rect.width - self.padding_x * 2 > 0:
-                        self.offset_x = text_width - rect.width + self.padding_x * 2
-                    else:
-                        self.offset_x = 0
-                    
-                    self.queue_draw()
+                if text is not None:
+                    self.entry_buffer.set_text(text)
+                    # reset the offset
+                    self.offset_x = self.offset_y = 0
+                    self.__calculate_cursor_offset()
+            self.queue_draw()
         
     def get_text(self):
         '''
@@ -231,19 +945,26 @@ class Entry(gtk.EventBox):
         
         @return: Return entry text string.
         '''
-        return self.content
+        return self.entry_buffer.get_text()
+    
+    def get_buffer(self):
+        '''
+        get EntryBuffer
+        @return: the EntryBuffer
+        '''
+        return self.entry_buffer
+    
+    def set_buffer(self, entry_buffer):
+        '''
+        set EntryBuffer
+        @param entry_buffer: the EntryBuffer'''
+        self.entry_buffer = entry_buffer
     
     def realize_entry(self, widget):
         '''
         Internal callback for `realize` signal.
         '''
-        text_width = self.get_content_width(self.content)
-        rect = self.get_allocation()
-
-        if text_width > rect.width - self.padding_x * 2 > 0:
-            self.offset_x = text_width - rect.width + self.padding_x * 2
-        else:
-            self.offset_x = 0
+        self.__calculate_cursor_offset()
             
         self.im.set_client_window(widget.window)
         
@@ -252,12 +973,46 @@ class Entry(gtk.EventBox):
         Internal callback for `key-press-event` signal.
         '''
         self.handle_key_press(widget, event)
+    
+    '''
+    FIXME: regex expression is not strict!
+    '''
+    def is_ipv4_number(self, x):
+        if re.match("^\\d+$", x) == None:
+            return False
         
+        return True
+
+    def is_mac_address(self, x):
+        if re.match("^[a-z0-9]+$", x) == None:
+            return False
+        
+        return True
+
     def handle_key_press(self, widget, event):
         '''
         Internal function to handle key press.
         '''
-        # Pass key to IMContext.
+        key_name = get_keyevent_name(event, self.key_upper)
+        text = self.get_text()
+        
+        if self.is_ipv4 and key_name not in ["BackSpace", "Tab", "Left", "Right"]:
+            if not self.is_ipv4_number(key_name):
+                return
+            
+            if int(text + key_name) > 255:
+                return
+
+            if len(text) >= 3:
+                return
+
+        if self.is_mac and key_name not in ["BackSpace", "Tab", "Left", "Right"]:
+            if not self.is_mac_address(key_name):
+                return
+            
+            if len(text) >= 2:
+                return
+
         input_method_filt = self.im.filter_keypress(event)
         if not input_method_filt:
             self.handle_key_event(event)
@@ -268,7 +1023,7 @@ class Entry(gtk.EventBox):
         '''
         Internal function to handle key event.
         '''
-        key_name = get_keyevent_name(event)
+        key_name = get_keyevent_name(event, self.key_upper)
         
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
@@ -277,32 +1032,23 @@ class Entry(gtk.EventBox):
         '''
         Clear entry select status.
         '''
-        self.select_start_index = self.select_end_index = self.cursor_index
+        self.entry_buffer.set_selection_pos(self.entry_buffer.get_insert_pos())
         self.move_direction = self.MOVE_NONE            
             
     def move_to_start(self):
         '''
         Move cursor to start position of entry.
         '''
+        self.entry_buffer.move_to_start()
         self.offset_x = 0
-        self.cursor_index = 0
-        
-        self.clear_select_status()
-        
         self.queue_draw()
         
     def move_to_end(self):
         '''
         Move cursor to end position of entry.
         '''
-        text_width = self.get_content_width(self.content)
-        rect = self.get_allocation()
-        if text_width > rect.width - self.padding_x * 2 > 0:
-            self.offset_x = text_width - (rect.width - self.padding_x * 2)
-        self.cursor_index = len(self.content)
-        
-        self.clear_select_status()
-        
+        self.entry_buffer.move_to_end()
+        self.__calculate_cursor_offset()
         self.queue_draw()
         
     def move_to_left(self):
@@ -313,24 +1059,10 @@ class Entry(gtk.EventBox):
         if self.keynav_failed(gtk.DIR_LEFT):
             self.get_toplevel().set_focus_child(self)
             
-        if self.select_start_index != self.select_end_index:
-            self.cursor_index = self.select_start_index
-            select_start_width = self.get_content_width(self.content[0:self.select_start_index])
-
-            self.clear_select_status()
-
-            if select_start_width < self.offset_x:
-                self.offset_x = select_start_width
-            
-            self.queue_draw()
-        elif self.cursor_index > 0:
-            self.cursor_index -= len(self.get_utf8_string(self.content[0:self.cursor_index], -1))
-            
-            text_width = self.get_content_width(self.content[0:self.cursor_index])
-            if text_width - self.offset_x < 0:
-                self.offset_x = text_width
-                
-            self.queue_draw()    
+        self.entry_buffer.move_to_left()
+        # comput coord offset
+        self.__calculate_cursor_offset()
+        self.queue_draw()
             
     def move_to_right(self):
         '''
@@ -340,26 +1072,9 @@ class Entry(gtk.EventBox):
         if self.keynav_failed(gtk.DIR_RIGHT):
             self.get_toplevel().set_focus_child(self)
                         
-        if self.select_start_index != self.select_end_index:
-            self.cursor_index = self.select_end_index
-            select_end_width = self.get_content_width(self.content[0:self.select_end_index])
-
-            self.clear_select_status()
-            
-            rect = self.get_allocation()
-            if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
-                self.offset_x = select_end_width - rect.width + self.padding_x * 2
-            
-            self.queue_draw()
-        elif self.cursor_index < len(self.content):
-            self.cursor_index += len(self.content[self.cursor_index::].decode('utf-8')[0].encode('utf-8'))            
-            
-            text_width = self.get_content_width(self.content[0:self.cursor_index])
-            rect = self.get_allocation()
-            if text_width - self.offset_x > rect.width - self.padding_x * 2:
-                self.offset_x = text_width - (rect.width - self.padding_x * 2)
-            
-            self.queue_draw()
+        self.entry_buffer.move_to_right()
+        self.__calculate_cursor_offset()
+        self.queue_draw()
             
     def backspace(self):
         '''
@@ -367,56 +1082,40 @@ class Entry(gtk.EventBox):
         '''        
         if self.is_editable():
             with self.monitor_entry_content():
-                if self.select_start_index != self.select_end_index:
-                    self.delete()
-                elif self.cursor_index > 0:
-                    old_insert_width = self.get_content_width(self.content[0:self.cursor_index])
-                    delete_char = self.get_utf8_string(self.content[0:self.cursor_index], -1)
-                    self.cursor_index -= len(delete_char)
-                    
-                    self.content = self.content[0:self.cursor_index] + self.content[self.cursor_index + len(delete_char)::]
-                    text_width = self.get_content_width(self.content)
-                    insert_width = self.get_content_width(self.content[0:self.cursor_index])
-                    rect = self.get_allocation()
-                    if text_width < rect.width - self.padding_x * 2:
-                        self.offset_x = 0
-                    else:
-                        self.offset_x += insert_width - old_insert_width
-                        
-                    self.queue_draw()    
+                if self.entry_buffer.get_has_selection():
+                    self.entry_buffer.delete_selection()
+                else:
+                    self.entry_buffer.backspace()
+
+                # comput coord offset
+                self.__calculate_cursor_offset()
+            self.queue_draw()    
             
     def select_all(self):
         '''
         Select all text of entry.
         '''
-        self.select_start_index = 0
-        self.select_end_index = len(self.content)
-        
+        self.entry_buffer.select_all()
+        # reset the offset
+        self.offset_x = self.offset_y = 0
+        self.__calculate_cursor_offset()
         self.queue_draw()
         
     def cut_to_clipboard(self):
         '''
         Cut selected text to clipboard.
         '''
-        if self.select_start_index != self.select_end_index:
-            cut_text = self.content[self.select_start_index:self.select_end_index]
-            
-            if self.is_editable():
-                with self.monitor_entry_content():
-                    self.delete()
-            
-            clipboard = gtk.Clipboard()
-            clipboard.set_text(cut_text)
+        if not self.is_password_entry:
+            with self.monitor_entry_content():
+                self.entry_buffer.cut_clipboard(gtk.Clipboard(), self.is_editable())
+            self.queue_draw()
 
     def copy_to_clipboard(self):
         '''
         Copy selected text to clipboard.
         '''
-        if self.select_start_index != self.select_end_index:
-            cut_text = self.content[self.select_start_index:self.select_end_index]
-            
-            clipboard = gtk.Clipboard()
-            clipboard.set_text(cut_text)
+        if not self.is_password_entry:
+            self.entry_buffer.copy_clipboard(gtk.Clipboard())
     
     def paste_from_clipboard(self):
         '''
@@ -437,128 +1136,55 @@ class Entry(gtk.EventBox):
         '''
         Select text to left char.
         '''
-        if self.select_start_index != self.select_end_index:
-            if self.move_direction == self.MOVE_LEFT:
-                if self.select_start_index > 0:
-                    self.select_start_index -= len(self.get_utf8_string(self.content[0:self.select_start_index], -1))
-                    select_start_width = self.get_content_width(self.content[0:self.select_start_index])    
-                    if select_start_width < self.offset_x:
-                        self.offset_x = select_start_width
-            else:
-                self.select_end_index -= len(self.get_utf8_string(self.content[0:self.select_end_index], -1))
-                    
-                select_end_width = self.get_content_width(self.content[0:self.select_end_index])
-                if select_end_width < self.offset_x:
-                    self.offset_x = select_end_width
-        else:
-            self.select_end_index = self.cursor_index
-            self.select_start_index = self.cursor_index - len(self.get_utf8_string(self.content[0:self.cursor_index], -1))
-            self.move_direction = self.MOVE_LEFT
-            
+        self.entry_buffer.select_to_left()
+        self.__calculate_cursor_offset()
         self.queue_draw()
         
     def select_to_right(self):
         '''
         Select text to right char.
         '''
-        if self.select_start_index != self.select_end_index:
-            rect = self.get_allocation()    
-            
-            if self.move_direction == self.MOVE_RIGHT:
-                if self.select_end_index < len(self.content):
-                    self.select_end_index += len(self.get_utf8_string(self.content[self.select_end_index::], 0))
-                    
-                    select_end_width = self.get_content_width(self.content[0:self.select_end_index])    
-                    if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
-                        self.offset_x = select_end_width - rect.width + self.padding_x * 2
-            else:
-                self.select_start_index += len(self.get_utf8_string(self.content[self.select_start_index::], 0))
-                select_start_width = self.get_content_width(self.content[0:self.select_start_index])
-                if select_start_width > self.offset_x + rect.width - self.padding_x * 2:
-                    self.offset_x = select_start_width - rect.width + self.padding_x * 2
-        else:
-            if self.select_end_index < len(self.content):
-                self.select_start_index = self.cursor_index
-                self.select_end_index = self.cursor_index + len(self.get_utf8_string(self.content[self.select_end_index::], 0))
-                self.move_direction = self.MOVE_RIGHT
-            
+        self.entry_buffer.select_to_right()
+        self.__calculate_cursor_offset()
         self.queue_draw()        
         
     def select_to_start(self):
         '''
         Select text to start position.
         '''
-        if self.select_start_index != self.select_end_index:
-            if self.move_direction == self.MOVE_LEFT:
-                self.select_start_index = 0
-            else:
-                self.select_end_index = self.select_start_index
-                self.select_start_index = 0
-                
-                self.move_direction = self.MOVE_LEFT    
-        else:
-            self.select_start_index = 0
-            self.select_end_index = self.cursor_index
-            
-            self.move_direction = self.MOVE_LEFT
-
+        self.entry_buffer.select_to_start()
         self.offset_x = 0    
-        
         self.queue_draw()
         
     def select_to_end(self):
         '''
         Select text to end position.
         '''
-        if self.select_start_index != self.select_end_index:
-            if self.move_direction == self.MOVE_RIGHT:
-                self.select_end_index = len(self.content)
-            else:
-                self.select_start_index = self.select_end_index
-                self.select_end_index = len(self.content)
-                
-                self.move_direction = self.MOVE_RIGHT    
-        else:
-            self.select_start_index = self.cursor_index
-            self.select_end_index = len(self.content)
-            
-            self.move_direction = self.MOVE_RIGHT
-        
-        rect = self.get_allocation()
-        select_end_width = self.get_content_width(self.content)
-        if select_end_width > self.offset_x + rect.width - self.padding_x * 2:
-            self.offset_x = select_end_width - rect.width + self.padding_x * 2
-        else:
-            self.offset_x = 0
-        
+        self.entry_buffer.select_to_end()
+        self.__calculate_cursor_offset()
         self.queue_draw()
         
     def delete(self):
         '''
         Delete selected text.
         '''
-        if self.is_editable() and self.select_start_index != self.select_end_index:
+        if self.is_editable():
             with self.monitor_entry_content():
-                rect = self.get_allocation()
-                
-                self.cursor_index = self.select_start_index
-                
-                select_start_width = self.get_content_width(self.content[0:self.select_start_index])
-                select_end_width = self.get_content_width(self.content[0:self.select_end_index])
-                
-                self.cursor_index = self.select_start_index
-                if select_start_width < self.offset_x:
-                    if select_end_width < self.offset_x + rect.width - self.padding_x * 2:
-                        self.offset_x = max(select_start_width + self.offset_x - select_end_width, 0)
-                    else:
-                        self.offset_x = 0
-                        
-                self.content = self.content[0:self.select_start_index] + self.content[self.select_end_index::]
+                if self.entry_buffer.get_has_selection():
+                    self.entry_buffer.delete_selection()
+                else:
+                    self.entry_buffer.delete()
+
+                self.__calculate_cursor_offset()
+            self.queue_draw()
                             
-                self.select_start_index = self.select_end_index = self.cursor_index
-                
-                self.queue_draw()
-                            
+    def get_input_method_cursor_rect(self):
+        rect = self.allocation
+        
+        cursor_index = self.entry_buffer.get_insert_index()
+        cursor_pos = self.entry_buffer.get_cursor_pos(cursor_index)[0]
+        return gtk.gdk.Rectangle(cursor_pos[0] + rect.x - self.offset_x, cursor_pos[1] + rect.y, 1, cursor_pos[3])
+    
     def expose_entry(self, widget, event):
         '''
         Internal callback for `expose-event` signal.
@@ -566,159 +1192,45 @@ class Entry(gtk.EventBox):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
+        rect.x += self.padding_x
+        rect.y += self.padding_y
+        '''
+        TODO: keep some space for clear button
+        '''
+        if self.enable_clear_button:
+            rect.width -= (2 * self.padding_x + ClearButton.button_padding_x)
+            self.clear_button_x = rect.width
+        else:
+            rect.width -= 2 * self.padding_x
+        rect.height -= 2 * self.padding_y
         
         # Draw background.
-        if self.get_sensitive():
-            self.draw_entry_background(cr, rect)
+        if not self.get_sensitive():
+            self.entry_buffer.set_property("select-area-visible", False)
+
+        '''
+        TODO: Draw clear button
+        '''
+        self.offset_y = (rect.height - get_content_size("DEBUG", DEFAULT_FONT_SIZE)[1]) / 2
+        if self.enable_clear_button and len(self.get_text()):
+            self.clear_button.render(cr, rect, self.offset_y)
         
-        # Draw text.
-        self.draw_entry_text(cr, rect)
-        
-        # Draw cursor.
-        if self.cursor_visible_flag and self.get_sensitive():
-            self.draw_entry_cursor(cr, rect)
+        '''
+        Draw entry
+        '''
+        self.entry_buffer.render(cr, rect, self.cursor_alpha, self.im, self.offset_x, self.offset_y, self.grab_focus_flag, self.shown_password)
         
         # Propagate expose.
         propagate_expose(widget, event)
         
         return True
     
-    def draw_entry_background(self, cr, rect):
-        '''
-        Internal function to draw entry background.
-        '''
-        x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        
-        if self.select_start_index != self.select_end_index and self.select_area_visible_flag:
-            select_start_width = self.get_content_width(self.content[0:self.select_start_index])
-            select_end_width = self.get_content_width(self.content[0:self.select_end_index])
-            
-            draw_hlinear(cr, 
-                         x + self.padding_x + max(select_start_width - self.offset_x, 0),
-                         y + self.padding_y,
-                         min(select_end_width, self.offset_x + w - self.padding_x * 2) - max(select_start_width, self.offset_x),
-                         h - self.padding_y * 2,
-                         self.background_select_color.get_color_info())
-    
-    def draw_entry_text(self, cr, rect):
-        '''
-        Internal function to draw entry text.
-        '''
-        x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        with cairo_state(cr):
-            # Clip text area first.
-            draw_x = x + self.padding_x
-            draw_y = y + self.padding_y
-            draw_width = w - self.padding_x * 2
-            draw_height = h - self.padding_y * 2
-            cr.rectangle(draw_x, draw_y, draw_width, draw_height)
-            cr.clip()
-            
-            # Create pangocairo context.
-            context = pangocairo.CairoContext(cr)
-            
-            # Set layout.
-            layout = context.create_layout()
-            layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
-            
-            if not self.get_sensitive():
-                # Set text.
-                layout.set_text(self.content)
-                
-                # Get text size.
-                (text_width, text_height) = layout.get_pixel_size()
-                
-                # Move text.
-                cr.move_to(draw_x - self.offset_x, 
-                           draw_y + (draw_height - text_height) / 2)
-                
-                # Draw text.
-                cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disable_text").get_color()))
-                context.update_layout(layout)
-                context.show_layout(layout)
-            elif self.select_start_index != self.select_end_index and self.select_area_visible_flag:
-                # Get string.
-                before_select_str = self.content[0:self.select_start_index]
-                select_str = self.content[self.select_start_index:self.select_end_index]
-                after_select_str = self.content[self.select_end_index::]
-                
-                # Build render list.
-                render_list = []
-                
-                layout.set_text(before_select_str)
-                (before_select_width, before_select_height) = layout.get_pixel_size()
-                render_list.append((before_select_str, 0, before_select_height, self.text_color))                
-                
-                layout.set_text(select_str)
-                (select_width, select_height) = layout.get_pixel_size()
-                render_list.append((select_str, before_select_width, select_height, self.text_select_color))
-                
-                layout.set_text(after_select_str)
-                (after_select_width, after_select_height) = layout.get_pixel_size()
-                render_list.append((after_select_str, before_select_width + select_width, after_select_height, self.text_color))
-                
-                # Render.
-                for (string, offset, text_height, text_color) in render_list:
-                    layout.set_text(string)
-                    cr.move_to(draw_x - self.offset_x + offset,
-                               draw_y + (draw_height - text_height) / 2)
-                    cr.set_source_rgb(*color_hex_to_cairo(text_color.get_color()))
-                    context.update_layout(layout)
-                    context.show_layout(layout)
-            else:
-                layout.set_text(self.content)
-                
-                # Get text size.
-                (text_width, text_height) = layout.get_pixel_size()
-                
-                # Move text.
-                cr.move_to(draw_x - self.offset_x, 
-                           draw_y + (draw_height - text_height) / 2)
-                
-                # Draw text.
-                cr.set_source_rgb(*color_hex_to_cairo(self.text_color.get_color()))
-                context.update_layout(layout)
-                context.show_layout(layout)
-            
-    def draw_entry_cursor(self, cr, rect):
-        '''
-        Internal function to draw entry cursor.
-        '''
-        if self.grab_focus_flag and self.select_start_index == self.select_end_index:
-            # Init.
-            cursor_rect = self.get_cursor_rect()
-            
-            # Draw cursor.
-            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("entry_cursor").get_color()))
-            cr.rectangle(cursor_rect.x, cursor_rect.y, cursor_rect.width, cursor_rect.height)
-            cr.fill()
-            
-            # Tell input method follow cursor position.
-            self.im.set_cursor_location(cursor_rect)
-            
-    def get_cursor_rect(self):
-        '''
-        docs
-        '''
-        # Init.
-        rect = self.allocation
-        x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        left_str = self.content[0:self.cursor_index]
-        left_str_width = self.get_content_width(left_str)
-        padding_y = (h - (get_content_size("Height", self.font_size)[-1])) / 2
-        
-        # Draw cursor.
-        return gtk.gdk.Rectangle(
-            x + self.padding_x + left_str_width - self.offset_x,
-            y + padding_y,
-            1, 
-            h - padding_y * 2
-            )
-    
     def button_press_entry(self, widget, event):
         '''
         Internal callback for `button-press-event` signal.
         '''
+        if self.enable_clear_button and not event.x < self.clear_button_x:
+            self.set_text("")
         self.handle_button_press(widget, event)
         
     def handle_button_press(self, widget, event):
@@ -745,18 +1257,14 @@ class Entry(gtk.EventBox):
         elif is_left_button(event):
             self.left_click_flag = True
             self.left_click_coordindate = (event.x, event.y)
-            
-            self.drag_start_index = self.get_index_at_event(widget, event)
+            self.entry_buffer.place_cursor(
+                self.entry_buffer.index_to_offset(self.get_index_at_event(widget, event)))
+        self.queue_draw()    
             
     def button_release_entry(self, widget, event):
         '''
         Internal callback for `button-release-event` signal.
         '''
-        if not self.double_click_flag and self.left_click_coordindate == (event.x, event.y):
-            self.cursor_index = self.get_index_at_event(widget, event)    
-            self.select_start_index = self.select_end_index = self.cursor_index
-            self.queue_draw()
-            
         self.double_click_flag = False
         self.left_click_flag = False
             
@@ -765,20 +1273,9 @@ class Entry(gtk.EventBox):
         Internal callback for `motion-notify-event` signal.
         '''
         if not self.double_click_flag and self.left_click_flag:
-            self.cursor_index = self.drag_start_index
-            self.drag_end_index = self.get_index_at_event(widget, event)
-            
-            self.select_start_index = min(self.drag_start_index, self.drag_end_index)
-            self.select_end_index = max(self.drag_start_index, self.drag_end_index)
-            
-            if self.drag_start_index < self.drag_end_index:
-                rect = self.get_allocation()
-                if int(event.x) > rect.width:
-                    self.move_offsetx_right(widget, event)
-            else:
-                if int(event.x) < 0:
-                    self.move_offsetx_left(widget, event)
-                
+            self.entry_buffer.set_insert_pos(
+                self.entry_buffer.index_to_offset(self.get_index_at_event(widget, event)))
+            self.__calculate_cursor_offset()
             self.queue_draw()    
             
     def focus_in_entry(self, widget, event):
@@ -786,10 +1283,13 @@ class Entry(gtk.EventBox):
         Internal callback for `focus-in-event` signal.
         '''
         self.grab_focus_flag = True
-        
         self.im.focus_in()
-        
-        self.queue_draw()
+        try:
+            cursor_blink_time = int(DESKTOP_SETTINGS.get_int("cursor-blink-time") / 2)
+        except Exception:
+            cursor_blink_time = DEFAULT_CURSOR_BLINK_TIME
+        gobject.timeout_add(cursor_blink_time, self.cursor_flash_tick)
+        #self.queue_draw()
             
     def focus_out_entry(self, widget, event):
         '''
@@ -808,6 +1308,7 @@ class Entry(gtk.EventBox):
 
         self.queue_draw()
         
+    # this function maybe can be deleted
     def move_offsetx_right(self, widget, event):
         '''
         Internal function to move offset_x to right.
@@ -825,6 +1326,7 @@ class Entry(gtk.EventBox):
             
             self.offset_x += len(self.get_utf8_string(self.content[x_index::], 0))
             
+    # this function maybe can be deleted
     def move_offsetx_left(self, widget, event):
         '''
         Internal function to move offset_x to left.
@@ -844,16 +1346,11 @@ class Entry(gtk.EventBox):
         '''
         Internal function to get index at event.
         '''
-        cr = widget.window.cairo_create()
-        context = pangocairo.CairoContext(cr)
-        layout = context.create_layout()
-        layout.set_font_description(pango.FontDescription("%s %s" % (DEFAULT_FONT, self.font_size)))
-        layout.set_text(self.content)
-        (text_width, text_height) = layout.get_pixel_size()
+        (text_width, text_height) = self.entry_buffer.get_pixel_size()
         if int(event.x) + self.offset_x - self.padding_x > text_width:
-            return len(self.content)
+            return self.entry_buffer.get_length()
         else:
-            (x_index, y_index) = layout.xy_to_index((int(event.x) + self.offset_x - self.padding_x) * pango.SCALE, 0)
+            (x_index, y_index) = self.entry_buffer.xy_to_index((int(event.x) + self.offset_x - self.padding_x) * pango.SCALE, 0)
             return x_index
         
     def commit_entry(self, input_text):
@@ -862,34 +1359,35 @@ class Entry(gtk.EventBox):
         '''
         if self.is_editable():
             with self.monitor_entry_content():
-                if self.select_start_index != self.select_end_index:
-                    self.delete()
+                if self.entry_buffer.get_has_selection():
+                    self.entry_buffer.delete_selection()
                     
-                self.content = self.content[0:self.cursor_index] + input_text + self.content[self.cursor_index::]
-                self.cursor_index += len(input_text)
+                self.entry_buffer.insert_at_cursor(input_text)
                 
-                text_width = self.get_content_width(self.content)
-                rect = self.get_allocation()
-                if text_width <= rect.width - self.padding_x * 2:
-                    self.offset_x = 0
-                elif self.cursor_index == len(self.content):
-                    self.offset_x = text_width - (rect.width - self.padding_x * 2)
-                else:
-                    old_text_width = self.get_content_width(self.content[0:self.cursor_index - len(input_text)])
-                    input_text_width = self.get_content_width(input_text)
-                    if old_text_width - self.offset_x + input_text_width > rect.width - self.padding_x * 2:
-                        new_text_width = self.get_content_width(self.content[0:self.cursor_index])
-                        self.offset_x = new_text_width - (rect.width - self.padding_x * 2)
-                
-                self.queue_draw()
+                self.__calculate_cursor_offset()
+            self.queue_draw()
+            self.emit("editing")
         
+    def __edit_going(self, widget):
+        self.cursor_alpha = 1
+        self.edit_complete_flag = False
+        if self.edit_timeout_id != None:
+            gobject.source_remove(self.edit_timeout_id)
+        self.edit_timeout_id = gobject.timeout_add(500, self.__wait_edit_complete)
+
+    def __wait_edit_complete(self):
+        self.edit_complete_flag = True
+        return False
+
+    # this function maybe can be deleted
     def get_content_width(self, content):
         '''
         Internal function to get content width.
         '''
-        (content_width, content_height) = get_content_size(content, self.font_size)
+        (content_width, content_height) = get_content_size(content, self.entry_buffer.font_size)
         return content_width
         
+    # this function maybe can be deleted
     def get_utf8_string(self, content, index):
         '''
         Internal to get utf8 string.
@@ -901,7 +1399,49 @@ class Entry(gtk.EventBox):
             traceback.print_exc(file=sys.stdout)
             return ""
     
+    def __calculate_cursor_offset(self):
+        '''calculate the cursor offset'''
+        rect = self.allocation
+        if not self.get_realized() or (rect.x == -1 or rect.y == -1):
+            self.offset_x = self.offset_y = 0
+            return
+        # comput coord offset
+        cursor_index = self.entry_buffer.get_insert_index()
+        cursor_pos = self.entry_buffer.get_cursor_pos(cursor_index)[0]
+        if cursor_pos[0] - self.offset_x > rect.width - self.padding_x * 2 :
+            self.offset_x = cursor_pos[0] - (rect.width - self.padding_x * 2) + 2
+        elif cursor_pos[0] - self.offset_x < 0:
+            self.offset_x = cursor_pos[0]
+        if self.offset_x < 0:
+            self.offset_x = 0
+
+    def calculate(self):
+        '''docstring for calculate'''
+        self.__calculate_cursor_offset()
+    
 gobject.type_register(Entry)
+
+'''
+TODO: Add x button (Clear Button)
+'''
+class ClearButton(gtk.EventBox):
+    button_padding_x = 20
+    
+    def __init__(self,
+                 visible=False, 
+                ):
+        gtk.EventBox.__init__(self)
+        self.button_margin_x = 4
+        self.button_padding_y = 1
+        self.clear_pixbuf = ui_theme.get_pixbuf("entry/gtk-cancel.png")
+
+    def render(self, cr, rect, offset_y=0):
+        draw_pixbuf(cr, 
+                    self.clear_pixbuf.get_pixbuf(), 
+                    rect.x + rect.width + self.button_margin_x, 
+                    rect.y + self.button_padding_y + offset_y)
+
+gobject.type_register(ClearButton)
 
 class TextEntry(gtk.VBox):
     '''
@@ -926,7 +1466,7 @@ class TextEntry(gtk.VBox):
                  frame_color = ui_theme.get_alpha_color("text_entry_frame"),
                  ):
         '''
-        Initialize InputEntry class.
+        Initialize TextEntry class.
         
         @param content: Initialize entry text, default is \"\".
         @param action_button: Extra button add at right side of text entry, default is None.
@@ -1128,6 +1668,7 @@ class InputEntry(gtk.VBox):
                  point_color = ui_theme.get_alpha_color("text_entry_point"),
                  frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point"),
                  frame_color = ui_theme.get_alpha_color("text_entry_frame"),
+                 enable_clear_button=False,
                  ):
         '''
 
@@ -1147,7 +1688,7 @@ class InputEntry(gtk.VBox):
         self.align.set(0.5, 0.5, 1.0, 1.0)
         self.action_button = action_button
         self.h_box = gtk.HBox()
-        self.entry = Entry(content)
+        self.entry = Entry(content, enable_clear_button=enable_clear_button)
         self.background_color = background_color
         self.acme_color = acme_color
         self.point_color = point_color
@@ -1279,6 +1820,7 @@ class ShortcutKeyEntry(gtk.VBox):
                  point_color = ui_theme.get_alpha_color("text_entry_point"),
                  frame_point_color = ui_theme.get_alpha_color("text_entry_frame_point"),
                  frame_color = ui_theme.get_alpha_color("text_entry_frame"),
+                 support_shift=False,
                  ):
         '''
         Initialize ShortcutKeyEntry class.
@@ -1322,8 +1864,10 @@ class ShortcutKeyEntry(gtk.VBox):
         
         # Setup flags.
         self.entry.cursor_visible_flag = False
+        self.entry.entry_buffer.set_property("cursor-visible", self.entry.cursor_visible_flag)
         self.entry.right_menu_visible_flag = False
         self.entry.select_area_visible_flag = False
+        self.entry.entry_buffer.set_property("select-area-visible", self.entry.select_area_visible_flag)
         self.entry.editable_flag = False
     
         # Overwrite entry's function.
@@ -1333,6 +1877,7 @@ class ShortcutKeyEntry(gtk.VBox):
         
         self.shortcut_key = content
         self.shortcut_key_record = None
+        self.support_shift = support_shift
         
     def set_sensitive(self, sensitive):
         '''
@@ -1370,20 +1915,22 @@ class ShortcutKeyEntry(gtk.VBox):
         self.entry.im.focus_out()
         self.entry.queue_draw()
         
-        if self.shortcut_key != self.shortcut_key_record:
-            self.emit("shortcut-key-change", self.shortcut_key)
-            self.shortcut_key_record = None
+        # FIXME.
+        # if self.shortcut_key != self.shortcut_key_record:
+        #     self.emit("shortcut-key-change", self.shortcut_key)
+        #     self.shortcut_key_record = None
             
     def handle_key_press(self, widget, event):
         '''
         Internal function to handle key press.
         '''
-        keyname = get_keyevent_name(event)
+        keyname = get_keyevent_name(event, not self.support_shift)
         if keyname != "":
             if keyname == "BackSpace":
                 self.set_shortcut_key(None)
             elif keyname != "":
                 self.set_shortcut_key(keyname)
+                
             
     def set_shortcut_key(self, shortcut_key):
         '''
@@ -1399,6 +1946,10 @@ class ShortcutKeyEntry(gtk.VBox):
         else:
             self.set_text(self.shortcut_key)
         self.entry.editable_flag = False
+        
+        if self.shortcut_key != self.shortcut_key_record:
+            self.emit("shortcut-key-change", self.shortcut_key)
+            self.shortcut_key_record = None
                 
     def get_shortcut_key(self):
         '''
@@ -1485,17 +2036,130 @@ class ShortcutKeyEntry(gtk.VBox):
         
 gobject.type_register(ShortcutKeyEntry)
 
+'''
+TODO: Act like Mac style
+      The last character when inputting is visible then disappeared for a while
+'''
+class PasswordEntry(gtk.VBox):
+    '''
+    Perhaps it need more signals
+    '''
+    __gsignals__ = {
+        "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),    
+    }
+    
+    def __init__(self, 
+                 content="", 
+                 action_button=None, 
+                 background_color=ui_theme.get_alpha_color("text_entry_background"), 
+                 acme_color=ui_theme.get_alpha_color("text_entry_acme"), 
+                 point_color=ui_theme.get_alpha_color("text_entry_point"), 
+                 frame_point_color=ui_theme.get_alpha_color("text_entry_frame_point"), 
+                 frame_color=ui_theme.get_alpha_color("text_entry_frame"), 
+                 shown_password=False):
+        gtk.VBox.__init__(self)
+        self.align = gtk.Alignment()
+        self.align.set(0.5, 0.5, 1.0, 1.0)
+        self.action_button = action_button
+        self.h_box = gtk.HBox()
+        self.entry = Entry(content, True, is_password_entry=True)
+        self.entry.connect("key-press-event", self.key_press_entry)
+        self.entry.connect("key-release-event", self.key_released_entry)
+        self.background_color = background_color
+        self.acme_color = acme_color
+        self.point_color = point_color
+        self.frame_point_color = frame_point_color
+        self.frame_color = frame_color
+        self.shown_password = shown_password
+
+        self.pack_start(self.align, False, False)
+        self.align.add(self.h_box)
+        self.h_box.pack_start(self.entry)
+        if action_button:
+            self.action_align = gtk.Alignment()
+            self.action_align.set(0.0, 0.5, 0, 0)
+            self.action_align.set_padding(0, 0, 0, self.entry.padding_x)
+            self.action_align.add(self.action_button)
+
+            self.h_box.pack_start(self.action_align, False, False)
+
+            self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
+
+        '''
+        signal callback
+        '''
+        self.align.connect("expose-event", self.expose_password_entry)
+    
+    def show_password(self, shown_password=False):
+        self.shown_password = shown_password
+        self.entry.show_password(self.shown_password)
+
+    def key_press_entry(self, widget, argv):
+        pass
+
+    def key_released_entry(self, widget, argv):
+        pass
+
+    def emit_action_active_signal(self):
+        pass
+
+    def expose_password_entry(self, widget, event):
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        x, y, w, h = rect.x, rect.y, rect.width, rect.height
+
+        with cairo_disable_antialias(cr):
+            cr.set_line_width(1)
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("combo_entry_frame").get_color()))
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.stroke()
+            
+            cr.set_source_rgba(*alpha_color_hex_to_cairo((ui_theme.get_color("combo_entry_background").get_color(), 0.9)))
+            cr.rectangle(rect.x, rect.y, rect.width - 1, rect.height - 1)
+            cr.fill()
+
+        propagate_expose(widget, event)
+
+        return True
+
+    def set_size(self, width, height):
+        self.set_size_request(width, height)
+
+        action_button_width = 0
+        if self.action_button:
+            action_button_width = self.action_button.get_size_request()[-1] + self.entry.padding_x
+
+        self.entry.set_size_request(width - 2 - action_button_width, height - 2)
+
+gobject.type_register(PasswordEntry)
+
 if __name__ == "__main__":
+    def entry_changed(entry, text):
+        '''entry text changed '''
+        print "entry changed:", entry.get_text()
+
+    def entry_check_text(text):
+        '''check text'''
+        if text and text[0] in "0123456789":
+            return False
+        return True
     window = gtk.Window()
     window.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
     window.set_decorated(False)
     window.add_events(gtk.gdk.ALL_EVENTS_MASK)        
     window.connect("destroy", lambda w: gtk.main_quit())
-    window.set_size_request(300, -1)
-    window.move(100, 100)
+    #window.set_size_request(300, 100)
+    window.move(150, 50)
     
-    entry = Entry("Enter to search")
-    window.add(entry)
+    hbox = gtk.HBox(False, 10)
+    entry = Entry("")
+    entry.check_text = entry_check_text
+    #entry.entry_buffer.set_property("visibility", False)
+    #entry.connect("changed", entry_changed)
+    entry.set_size_request(100, 25)
+    hbox.pack_start(entry, False, False)
+    window.add(hbox)
+    #window.connect("expose-event", show_entry_buf, entry_buf)
 
     window.show_all()
     

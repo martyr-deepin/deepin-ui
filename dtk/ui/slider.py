@@ -1,11 +1,14 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011 ~ 2012 Deepin, Inc.
-#               2011 ~ 2012 Wang Yong
+# Copyright (C) 2011 ~ 2013 Deepin, Inc.
+#               2011 ~ 2013 Xia Bin
 # 
-# Author:     Wang Yong <lazycat.manatee@gmail.com>
-# Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+# Author:     Xia Bin <xiabin@linuxdeepin.com>
+#             Hou Shaohui houshao55@gmail.com
+#
+# Maintainer: Xia Bin <xiabin@linuxdeepin.com>
+#             Hou Shaohui houshao55@gmail.com
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,288 +23,376 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from draw import draw_pixbuf
-from timeline import Timeline, CURVE_SINE
-from utils import move_window, is_in_rect
-from window import Window
-import gobject
 import gtk
+import gobject
+from timeline import Timeline, CURVE_SINE
+from draw import draw_pixbuf
+from utils import set_cursor
+from theme import ui_theme
+from window import Window
 
-class Slider(gtk.Viewport):
-    '''
-    Slider.
-    
-    @undocumented: size_allocate_cb
-    '''
-    
-    def __init__(self, 
-                 slide_callback=None,
-                 ):
-        '''
-        Initialize Slider class.
 
-        @param slide_callback: Callback when slider change image, arguments: (index, widget), default is None.
-        '''
+class HSlider(gtk.Viewport):
+    __gsignals__ = {
+            "completed_slide" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+            }
+    def __init__(self, slide_time=200):
         gtk.Viewport.__init__(self)
-        self.active_widget = None
-        self.slide_callback = slide_callback
-        self.timeouts = dict()
-
         self.set_shadow_type(gtk.SHADOW_NONE)
+        self.fixed = gtk.Fixed()
+        self.add(self.fixed)
+        self.slide_time = slide_time
+        self.pre_widget = None
+        self.active_widget = None
+        self.connect("realize", self._update_size)
+        self.connect("size_allocate", self._update_size)
+        self.page_width = 0
+        self.page_height = 0
+        self.in_sliding = False
 
-        self.layout = gtk.HBox(True)
-        self.content = gtk.EventBox()
-        self.content.add(self.layout)
-        self.add(self.content)
+
+    def _update_size(self, w=None, _w=None):
+        self.page_width = self.allocation.width
+        self.page_height = self.allocation.height
+        if self.active_widget:
+            self.active_widget.set_size_request(self.page_width, self.page_height)
+        if self.pre_widget:
+            self.pre_widget.set_size_request(self.page_width, self.page_height)
+        self.show_all()
+
+    def _to_right(self, percent):
+        self.offset = int(round(percent * self.page_width)) 
         
-    def slide_to(self, widget):
-        '''
-        Slide to given widget.
+        if self.pre_widget:
+            self.fixed.move(self.pre_widget, - self.offset, 0)
         
-        @param widget: Widget in slider.
-        '''
-        self.active_widget = widget
-
-        start_position = self.get_hadjustment().get_value()
-        end_position = widget.get_allocation().x
-
-        if start_position != end_position:
-            timeline = Timeline(500, CURVE_SINE)
-            timeline.connect('update', lambda source, status: 
-                             self.update(source,
-                                         status, 
-                                         start_position,
-                                         end_position - start_position))
-            timeline.run()
+        self.fixed.move(self.active_widget, self.page_width - self.offset, 0)
+    def _to_left(self, percent):
+        self.offset = int(round(percent * self.page_width))
         
-        if self.slide_callback:    
-            self.slide_callback(self.layout.get_children().index(widget), widget)
-            
-    def update(self, source, status, start_position, pos):
-        self.get_hadjustment().set_value(start_position + int(round(status * pos)))
-
-    def set_widget(self, widget):
-        self.active_widget = widget
-        adjustment = self.get_hadjustment()
-        adjustment.set_value(widget.get_allocation().x)
-
-    def append_widget(self, widget):
-        '''
-        Append widget.
+        if self.pre_widget:
+            self.fixed.move(self.pre_widget, self.offset, 0)
         
-        @param widget: Widget to append in slider.
+        self.fixed.move(self.active_widget, self.offset - self.page_width, 0)
+
+    def _no_effect(self):
+        self.offset = self.page_width
+
+        if self.pre_widget:
+            self.fixed.remove(self.pre_widget)
+        self.fixed.move(self.active_widget, 0, 0)
+
+    def to_page(self, w, direction):
+        if self.in_sliding:
+            #TODO:  animation should continue in according to previous status. this can be done to record offset in 
+            #self.timeline.stop()
+            #self.timeline.emit("completed")
+            return
+        #self.to_page_now(w)
+        if w != self.active_widget:
+            w.set_size_request(self.page_width, self.page_height)
+            if w.parent != self.fixed:
+                self.fixed.put(w, self.page_width, 0)
+            self.active_widget = w
+
+            self.timeline = Timeline(self.slide_time, CURVE_SINE)
+            if direction == "right":
+                self.timeline.connect('update', lambda source, status: self._to_right(status))
+            elif direction == "left":
+                self.timeline.connect('update', lambda source, status: self._to_left(status))
+            else:
+                self._no_effect()
+
+            self.timeline.connect("completed", lambda source: self._completed())
+            self.timeline.run()
+            self.in_sliding = True
+
+            self.show_all()
+
+    def _completed(self):
+        if self.pre_widget and self.pre_widget.parent == self.fixed:
+            self.fixed.remove(self.pre_widget)
+        self.pre_widget = self.active_widget
+        #print "Pre: " +  str(self.pre_widget)  + "  act: " + str(self.active_widget) + "children: " + str(self.get_children())
+        self.show_all()
+        self.in_sliding = False
+        self.emit("completed_slide")
+
+    def to_page_now(self, w, d=None):
         '''
-        self.layout.pack_start(widget, True, True, 0)
+        if self.pre_widget:
+            self.fixed.remove(self.pre_widget)
+        self.active_widget = w
+        self.pre_widget = self.active_widget
 
-    def add_slide_timeout(self, widget, milliseconds):
-        """
-        Adds a timeout for ``widget`` to slide in after ``seconds``.
-        
-        @param widget: Add widget.
-        @param milliseconds: Delay time.
-        """
-        if widget in self.timeouts:
-            raise RuntimeError("A timeout for '%s' was already added" % widget)
-
-        callback = lambda: self.slide_to(widget)
-        self.timeouts[widget] = (gobject.timeout_add(milliseconds, callback),
-                                 milliseconds)
-
-    def remove_slide_timeout(self, widget):
+        if self.get_realized():
+            w.set_size_request(self.allocation.width, self.allocation.height)
+            self.show_all()
+        self.fixed.add(w)
         '''
-        Try remove slide timeout that match given widget.
+        self.to_page(w, d)
 
-        @param widget: Match widget.
-        '''
-        try:
-            gobject.source_remove(self.timeouts.pop(widget)[0])
-        except Exception:
-            pass
 
-gobject.type_register(Slider)
 
-class Wizard(Window):
-    '''
-    Wizard.
+    def slide_to_page(self, w, d):
+        #raise Warning("use to_page and to_page_now instead of slide_to_page/set_to_page.")
+        self.to_page(w, d)
+    def set_to_page(self, w):
+        #raise Warning("use to_page and to_page_now instead of slide_to_page/set_to_page.")
+        self.to_page_now(w)
+    def append_page(self, w):
+        #Warning("slider didn't need this method..")
+        pass
+
+
+gobject.type_register(HSlider)
+
+class WizardBox(gtk.EventBox):
+    __gsignals__ = {
+        'close': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        }
     
-    @undocumented: button_press_slider
-    @undocumented: button_press_navigatebar
-    @undocumented: expose_navigatebar
-    '''
-	
-    def __init__(self, 
-                 slider_files,
-                 navigate_files,
-                 finish_callback=None,
-                 window_width=548, 
-                 window_height=373,
-                 navigatebar_height=58,
-                 slide_delay=4000,
-                 close_area_width=32,
-                 close_area_height=32,
-                 ):
-        '''
-        Initialize Wizard class.
+    def __init__(self, slider_images=None, pointer_images=None, slide_delay=10000):
+        gtk.EventBox.__init__(self)
+        self.set_visible_window(False)
         
-        @param slider_files: Big slide image file list.
-        @param navigate_files: Small navigate image file list.
-        @param finish_callback: Callback when finish show.
-        @param window_width: Default window width.
-        @param window_height: Default window height.
-        @param navigatebar_height: Navigatebar height.
-        @param slide_delay: Delay of slide, in milliseconds.
-        @param close_area_width: Width of top-right close area.
-        @param close_area_height: Height of top-right close area.
-        '''
-        # Init.
-        Window.__init__(self)
-        self.slider_files = slider_files
-        self.finish_callback = finish_callback
-        self.window_width = window_width
-        self.window_height = window_height
-        self.navigatebar_height = navigatebar_height
-        self.slider_number = len(self.slider_files)
-        self.slide_index = 0
-        self.slide_delay = slide_delay # milliseconds
-        self.close_area_width = close_area_width
-        self.close_area_height = close_area_height
+        self.add_events(gtk.gdk.BUTTON_PRESS_MASK |
+                        gtk.gdk.BUTTON_RELEASE_MASK |
+                        gtk.gdk.POINTER_MOTION_MASK |
+                        gtk.gdk.ENTER_NOTIFY_MASK |
+                        gtk.gdk.LEAVE_NOTIFY_MASK
+                        )
         
-        # Init navigate pixbufs.
-        self.select_pixbufs = []
-        self.unselect_pixbufs = []
-        for (select_file, unselect_file) in navigate_files:
-            self.select_pixbufs.append(gtk.gdk.pixbuf_new_from_file(select_file))
-            self.unselect_pixbufs.append(gtk.gdk.pixbuf_new_from_file(unselect_file))
-        self.navigate_item_width = self.select_pixbufs[0].get_width()    
+        self.connect("expose-event", self.on_expose_event)                
+        self.connect("motion-notify-event", self.on_motion_notify)
+        # self.connect("leave-notify-event", self.on_leave_notify)
+        # self.connect("enter-notify-event", self.on_enter_notify)
+        self.connect("button-press-event", self.on_button_press)
         
-        # Set window attributes.
-        self.set_resizable(False)
-        self.set_position(gtk.WIN_POS_CENTER)
-        self.set_size_request(self.window_width, self.window_height)
+        # Init images.
+        self.slider_pixbufs = map(gtk.gdk.pixbuf_new_from_file, slider_images)
+        self.slider_numuber = len(slider_images)
+        self.dot_normal_pixbuf, self.dot_active_pixbuf = map(gtk.gdk.pixbuf_new_from_file, pointer_images)
+        self.close_dpixbuf = ui_theme.get_pixbuf("button/window_close_normal.png")
         
-        # Add widgets.
-        self.main_box = gtk.VBox()
-        self.slider = Slider(self.set_slide_page)
-        self.navigatebar = gtk.EventBox()
-        self.navigatebar.set_visible_window(False)
-        self.navigatebar.set_size_request(-1, self.navigatebar_height)
-        self.main_box.pack_start(self.slider, True, True)
-        self.main_box.pack_start(self.navigatebar, True, True)
-        self.main_align = gtk.Alignment()
-        self.main_align.set(0.5, 0.5, 1, 1)
-        self.main_align.set_padding(0, 0, 0, 0)
-        self.main_align.add(self.main_box)
-        self.window_frame.add(self.main_align)
-
-        # Start animation.
-        self.slider_widgets = []
-        for (index, slider_file) in enumerate(self.slider_files):
-            widget = gtk.image_new_from_file(slider_file)
-            self.slider_widgets.append(widget)
-            self.slider.append_widget(widget)
-            self.slider.add_slide_timeout(widget, index * self.slide_delay)
+        # Init sizes.
+        self.init_size()
+        self.pointer_coords = {}
+        
+        # Move animation.
+        self.active_index = 0
+        self.target_index = None
+        
+        self.active_alpha = 1.0
+        self.target_index = 0.0
+        
+        self.active_x = 0
+        self.target_x = None
+        self.slider_y = 0
+        self.auto_animation_id = None
+        self.auto_animation_timeout = slide_delay  # millisecond.
+        self.slider_timeout = 1000 # millisecond.
+        self.in_animation = False
+        self.motion_index = None
+        self.auto_animation()
+        
+    def init_size(self):    
+        slider_pixbuf = self.slider_pixbufs[0]
+        self.slider_width = slider_pixbuf.get_width()
+        self.slider_height = slider_pixbuf.get_height()
+        self.set_size_request(self.slider_width, self.slider_height)
+        
+        self.dot_width = self.dot_normal_pixbuf.get_width()
+        self.dot_height = self.dot_normal_pixbuf.get_height()
+        
+        dot_spacing = 10        
+        self.dot_width_offset = self.dot_width + dot_spacing
+        dot_area_width = self.dot_width * self.slider_numuber + dot_spacing * (self.slider_numuber - 1)
+        dot_offset_y = 40
+        self.dot_start_x =  (self.slider_width - dot_area_width) / 2
+        self.dot_y = self.slider_height - dot_offset_y
+        
+        close_spacing = 0
+        close_x = self.slider_width - self.close_dpixbuf.get_pixbuf().get_width() - close_spacing
+        close_y = close_spacing
+        self.close_rect = gtk.gdk.Rectangle(close_x, close_y,
+                                            self.close_dpixbuf.get_pixbuf().get_width(),
+                                            self.close_dpixbuf.get_pixbuf().get_height())    
+        
+    def on_expose_event(self, widget, event):    
+        cr = widget.window.cairo_create()        
+        rect = widget.allocation
+        
+        cr.save()
+        draw_pixbuf(cr, self.slider_pixbufs[self.active_index], rect.x + self.active_x, 
+                    rect.x + self.slider_y, self.active_alpha)
+        
+        if self.target_index != None and self.target_x != None:
+            draw_pixbuf(cr, self.slider_pixbufs[self.target_index], rect.x + self.target_x, 
+                        rect.y + self.slider_y, self.target_alpha)
+        cr.restore()    
+        
+        # Draw select pointer.
+        dot_start_x = rect.x + self.dot_start_x
+        
+        for index in range(self.slider_numuber):
+            if self.target_index == None:
+                if self.active_index == index:
+                    dot_pixbuf = self.dot_active_pixbuf
+                else:    
+                    dot_pixbuf = self.dot_normal_pixbuf
+            else:        
+                if self.target_index == index:
+                    dot_pixbuf = self.dot_active_pixbuf
+                else:    
+                    dot_pixbuf = self.dot_normal_pixbuf
+                    
+            pointer_rect = gtk.gdk.Rectangle(
+                dot_start_x, rect.y + self.dot_y,
+                self.dot_width, self.dot_height)        
+            self.pointer_coords[index] = pointer_rect
+            draw_pixbuf(cr, dot_pixbuf, dot_start_x, rect.y + self.dot_y)
+            dot_start_x += self.dot_width_offset
             
-        self.slider.connect("button-press-event", self.button_press_slider)    
-        self.navigatebar.connect("button-press-event", self.button_press_navigatebar)        
-        self.navigatebar.connect("expose-event", self.expose_navigatebar)
-        self.connect("destroy", self.destroy_wizard)
+        # Draw close pixbuf.    
+        draw_pixbuf(cr, self.close_dpixbuf.get_pixbuf(), 
+                    rect.x + self.close_rect.x, rect.y + self.close_rect.y)    
+        return True    
+    
+    def handle_animation(self, widget, event):    
+        self.motion_index = None
+        for index, rect in self.pointer_coords.items():
+            if rect.x <= event.x <= rect.x + rect.width and rect.y <= event.y <= rect.y + rect.height:
+                set_cursor(widget, gtk.gdk.HAND2)
+                self.motion_index = index
+                # if self.active_index != index:
+                #     self.start_animation(self.hover_animation_time, index)
+                break    
+        else:    
+            self.motion_index = None
+            set_cursor(widget, None)
+    
+    def on_motion_notify(self, widget, event):
+        self.handle_animation(widget, event)
+    
+    def on_enter_notify(self, widget, event):
+        if self.auto_animation_id is not None:
+            gobject.source_remove(self.auto_animation_id)
+            self.auto_animation_id = None
+    
+    def on_leave_notify(self, widget, event):
+        self.auto_animation()
+        set_cursor(widget, None)
+    
+    def on_button_press(self, widget, event):
+        if self.motion_index != None:
+            self.start_animation(self.slider_timeout, self.motion_index)
+            
+        rect = self.close_rect    
+        if rect.x <= event.x <= rect.x + rect.width and rect.y <= event.y <= rect.y + rect.height:
+            self.emit("close")
+    
+    def auto_animation(self):
+        self.auto_animation_id = gobject.timeout_add(self.auto_animation_timeout, 
+                                                 lambda : self.start_animation(self.slider_timeout))
+    
+    def start_animation(self, animation_time, target_index=None, direction="left"):
+        if target_index is None:
+            if self.active_index >= self.slider_numuber - 1:
+                target_index = 0
+            else:    
+                target_index = self.active_index + 1
+        else:        
+            if target_index < self.active_index:
+                direction = "right"
+                
+        if not self.in_animation:        
+            self.in_animation = True
+            self.target_index = target_index
+            
+            self.timeline = Timeline(animation_time, CURVE_SINE)
+            self.timeline.connect("update", lambda source, status: self.update_animation(source, status, direction))
+            self.timeline.connect("completed", lambda source: self.completed_animation(source, target_index))
+            self.timeline.run()
+        return True    
+    
+    def update_animation(self, source, status, direction):
+        self.active_alpha = 1.0 - status
+        self.target_alpha = status
         
-    def destroy_wizard(self, widget):
+        if direction == "right":
+            self._to_right(status)
+        else:    
+            self._to_left(status)
+            
+        self.queue_draw()    
+        
+    def completed_animation(self, source, index):    
+        self.active_index = index
+        self.active_alpha = 1.0
+        self.target_index = None
+        self.target_alpha = 0.0
+        self.in_animation = False
+        self.active_x = 0
+        self.target_x = None
+        self.queue_draw()
+        
+        
+    def _to_right(self, status):    
+        self.active_x = self.slider_width * status
+        # self.target_x = 0 - self.slider_width * (1.0 - status)
+        self.target_x = 0
+        
+    def _to_left(self, status):    
+        self.active_x = 0 - (self.slider_width * status)
+        # self.target_x = self.slider_width * (1.0 - status)
+        self.target_x = 0
+        
+        
+class Wizard(Window):        
+    def __init__(self, slider_files, pointer_files, finish_callback=None, slide_delay=8000):
+        Window.__init__(self)
+        self.finish_callback = finish_callback
+        
+        self.set_position(gtk.WIN_POS_CENTER)
+        self.set_resizable(False)
+        self.wizard_box = WizardBox(slider_files, pointer_files, slide_delay)
+        self.wizard_box.connect("close", lambda widget: self.destroy())
+        self.connect("destroy", self.destroy_wizard)
+        self.window_frame.add(self.wizard_box)
+        self.add_move_event(self.wizard_box)
+        
+    def destroy_wizard(self, widget):    
         if self.finish_callback:
             self.finish_callback()
-        
-    def button_press_slider(self, widget, event):
-        '''
-        Internal callback for slider's `button-press-event` signal.
-        '''
-        rect = widget.allocation
-        (window_x, window_y) = widget.get_toplevel().window.get_origin()
-        if is_in_rect((event.x_root, event.y_root), 
-                           (window_x + rect.width - self.close_area_width,
-                            window_y,
-                            self.close_area_width,
-                            self.close_area_height)):
-            self.destroy()    
-        else:
-            widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
-    
-    def button_press_navigatebar(self, widget, event):
-        '''
-        Internal callback for navigatebar's `button-press-event` signal.
-        '''
-        # Init. 
-        rect = widget.allocation
-        
-        # Get navigate index.
-        navigate_index = int(event.x / (rect.width / self.slider_number))
-        
-        # Remove slider timeout.
-        for widget in self.slider_widgets:
-            self.slider.remove_slide_timeout(widget)
-        
-        # Slide select widget.
-        self.slider.slide_to(self.slider_widgets[navigate_index])
-        
-        # Reset timeout.
-        if navigate_index < self.slider_number - 1:
-            for (index, widget) in enumerate(self.slider_widgets[navigate_index::]):
-                self.slider.add_slide_timeout(widget, index * self.slide_delay)
-                
-    def expose_navigatebar(self, widget, event):
-        '''
-        Internal callback for `expose-event` signal.
-        '''
-        # Init.
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        
-        # Render unselect item.
-        for (index, unselect_pixbuf) in enumerate(self.unselect_pixbufs):
-            if index != self.slide_index:
-                draw_pixbuf(cr, unselect_pixbuf,
-                            rect.x + index * self.navigate_item_width,
-                            rect.y)
-                
-        # Render select item.
-        draw_pixbuf(cr, self.select_pixbufs[self.slide_index],
-                    rect.x + self.slide_index * self.navigate_item_width,
-                    rect.y)        
-        
-        return True
-    
-    def set_slide_page(self, index, widget):
-        '''
-        Set slide page.
-        
-        @param index: Index to set.
-        @param widget: The widget you want to set.
-        '''
-        self.slide_index = index
-        self.navigatebar.queue_draw()    
-        
-gobject.type_register(Wizard)
+            
 
 if __name__ == "__main__":
-    window = gtk.Window()    
-    window.set_size_request(752, 452)
-    window.connect("destroy", lambda w: gtk.main_quit())
-    
-    image1 = gtk.image_new_from_file("/test/Download/ubiquity-slideshow-deepin-11.12.2/slideshows/deepin-zh-hans/slides/screenshots/1.png")
-    image2 = gtk.image_new_from_file("/test/Download/ubiquity-slideshow-deepin-11.12.2/slideshows/deepin-zh-hans/slides/screenshots/2.png")
-    image3 = gtk.image_new_from_file("/test/Download/ubiquity-slideshow-deepin-11.12.2/slideshows/deepin-zh-hans/slides/screenshots/3.png")
-    image4 = gtk.image_new_from_file("/test/Download/ubiquity-slideshow-deepin-11.12.2/slideshows/deepin-zh-hans/slides/screenshots/4.png")
-    
-    slider = Slider()
-    slider.append_widget(image1)
-    slider.append_widget(image2)
-    slider.append_widget(image3)
-    slider.append_widget(image4)
-    window.add(slider)
-    
-    slider.add_slide_timeout(image1, 1)
-    slider.add_slide_timeout(image2, 2)
-    slider.add_slide_timeout(image3, 3)
-    slider.add_slide_timeout(image4, 4)
-    
-    window.show_all()
+    s = HSlider()
+
+    w = gtk.Window()
+    w.set_size_request(300, 300)
+    h = gtk.HBox()
+    w1 = gtk.Button("Widget 1")
+    w2 = gtk.Button("Widget 2")
+
+    s.to_page_now(w1)
+
+    b = gtk.Button("to1")
+    b.connect("clicked", lambda w: s.to_page(w1, "right" ))
+    h.add(b)
+
+    b = gtk.Button("to2")
+    b.connect("clicked", lambda w: s.to_page(w2, "left"))
+    h.add(b)
+
+    v = gtk.VBox()
+    v.add(h)
+    v.add(s)
+
+    w.add(v)
+    w.show_all()
+
+    w.connect("destroy", gtk.main_quit)
+
     gtk.main()

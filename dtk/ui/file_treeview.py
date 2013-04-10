@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from new_treeview import TreeItem
+from treeview import TreeItem
 import collections
 from gio_utils import (get_file_icon_pixbuf, is_directory, get_dir_child_files, 
                        get_gfile_modification_time, get_gfile_size,

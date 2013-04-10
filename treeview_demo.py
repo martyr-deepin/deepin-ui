@@ -34,7 +34,7 @@ app_theme = init_skin(
     )
 
 from dtk.ui.application import Application
-from dtk.ui.new_treeview import TreeView
+from dtk.ui.treeview import TreeView
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
 from dtk.ui.file_treeview import (get_dir_items, sort_by_name, sort_by_size,
                                   sort_by_type, sort_by_mtime)

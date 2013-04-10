@@ -27,7 +27,7 @@ from theme import ui_theme
 from dtk.ui.paned import HPaned
 from dtk.ui.categorybar import Categorybar
 from dtk.ui.file_iconview import (FileIconView, iconview_get_dir_items)
-from dtk.ui.new_treeview import TreeView
+from dtk.ui.treeview import TreeView
 from dtk.ui.file_treeview import get_dir_items
 
 class FileManager(HPaned):

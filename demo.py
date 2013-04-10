@@ -39,7 +39,7 @@ app_theme = init_skin(
 
 
 # Load other modules.
-import dtk.ui.new_entry
+import dtk.ui.entry
 from dtk.ui.application import Application
 from dtk.ui.browser import WebView
 from dtk.ui.button import CheckButton, RadioButton, ComboButton
@@ -50,7 +50,7 @@ from dtk.ui.color_selection import ColorButton
 from dtk.ui.combo import ComboBox
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
 from dtk.ui.droplist import Droplist
-from dtk.ui.new_entry import InputEntry, ShortcutKeyEntry, PasswordEntry, TextEntry
+from dtk.ui.entry import InputEntry, ShortcutKeyEntry, PasswordEntry, TextEntry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.label import Label
@@ -66,13 +66,12 @@ from dtk.ui.spin import SpinBox
 from dtk.ui.poplist import Poplist, IconTextItem
 from dtk.ui.statusbar import Statusbar
 from dtk.ui.tab_window import TabWindow, TabBox
-from dtk.ui.treeview import TreeView, TreeViewItem
 from dtk.ui.unique_service import UniqueService, is_exists
 from dtk.ui.utils import container_remove_all, get_widget_root_coordinate
 from dtk.ui.volume_button import VolumeButton
 from dtk.ui.breadcrumb import Bread, Crumb
 from dtk.ui.dialog import OpenFileDialog
-from dtk.ui.new_slider import HSlider
+from dtk.ui.slider import HSlider
 import dbus
 import dbus.service
 import gtk
@@ -395,7 +394,7 @@ if __name__ == "__main__":
     # Add entry widget.
     entry_box = gtk.HBox(spacing=10)
     
-    text_entry = dtk.ui.new_entry.TextEntry()
+    text_entry = dtk.ui.entry.TextEntry()
     text_entry.set_size(100, 22)
     input_entry = InputEntry()
     input_entry.set_size(100, 22)
@@ -520,46 +519,6 @@ if __name__ == "__main__":
     #Tree view.
     def tree_view_single_click_cb(widget, item):
         pass    
-
-    
-    tree_view = TreeView()
-    tree_view_scrolled_window = ScrolledWindow()
-    tree_view_scrolled_window.add_child(tree_view)
-    tree_view.connect("single-click-item", tree_view_single_click_cb)
-    
-    tab_5_box.pack_start(tree_view_scrolled_window)
-
-
-    
-    wuhan_node = tree_view.add_item(None, TreeViewItem("Linux Deepin"))
-
-    wuhan_dev_node = tree_view.add_item(wuhan_node, TreeViewItem("test1"))
-    wuhan_des_node = tree_view.add_item(wuhan_node, TreeViewItem("test2"))
-    wuhan_sys_node = tree_view.add_item(wuhan_node, TreeViewItem("test3"))
-    
-    tree_view.add_item(wuhan_dev_node, TreeViewItem("Deepin Music Player"))    
-    tree_view.add_item(wuhan_dev_node, TreeViewItem("Deepin Media Player"))
-    tree_view.add_item(wuhan_dev_node, TreeViewItem("Deepin Software Center"))
-    
-    tree_view.add_item(wuhan_sys_node, TreeViewItem("Deepin Talk"))    
-    tree_view.add_item(wuhan_sys_node, TreeViewItem("Deepin IM"))
-    tree_view.add_item(wuhan_sys_node, TreeViewItem("Deepin Reader"))
-    
-    tree_view.add_item(wuhan_des_node, TreeViewItem("ZHL"))    
-    tree_view.add_item(wuhan_des_node, TreeViewItem("ZHL"))
-    tree_view.add_item(wuhan_des_node, TreeViewItem("zhm"))
-    
-    beijing_node = tree_view.add_item(None, TreeViewItem("深度 Linux"))    
-    tree_view.add_items(beijing_node, [TreeViewItem(name) for name in ("开发部", "设计部", "系统部")])
-    tree_view.set_index_text(1, "深度测试改名")
-    #tree_view.expand()
-    tree_view.set_highlight_index(3)
-    # text_view = TextView("this is line one\nline break is awesome\nblahblahlooooooooooooooooooooooooooooooooooooooooooooooooooooooooog")
-    # sw = ScrolledWindow()
-    # text_viewport = gtk.Viewport()
-    # text_viewport.add(text_view)
-    # sw.add(text_viewport)
-    # tab_5_box.pack_start(sw, True, True)
     
     # Run.
     application.run()

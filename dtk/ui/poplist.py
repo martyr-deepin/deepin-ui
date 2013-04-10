@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011 ~ 2012 Deepin, Inc.
-#               2011 ~ 2012 Wang Yong
+# Copyright (C) 2011 ~ 2013 Deepin, Inc.
+#               2011 ~ 2013 Hou ShaoHui
 # 
-# Author:     Wang Yong <lazycat.manatee@gmail.com>
-# Maintainer: Wang Yong <lazycat.manatee@gmail.com>
+# Author:     Hou ShaoHui <houshao55@gmail.com>
+# Maintainer: Hou ShaoHui <houshao55@gmail.com>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ from theme import ui_theme
 from window import Window
 from draw import draw_text, draw_vlinear, draw_pixbuf
 from utils import get_content_size, get_screen_size
-from new_treeview import TreeView, TreeItem
+from treeview import TreeView, TreeItem
 from constant import DEFAULT_FONT_SIZE, ALIGN_START, ALIGN_MIDDLE
 import gobject
 import gtk
@@ -38,14 +38,16 @@ class Poplist(Window):
 	
     def __init__(self,
                  items,
-                 max_height=None,
+                 min_width=80,
                  max_width=None,
+                 fixed_width=None,
+                 min_height=100,                 
+                 max_height=None,
                  shadow_visible=True,
                  shape_frame_function=None,
                  expose_frame_function=None,
                  x_align=ALIGN_START,
                  y_align=ALIGN_START,
-                 min_width=80,
                  align_size=0,
                  grab_window=None,
                  window_type=gtk.WINDOW_TOPLEVEL,
@@ -59,25 +61,26 @@ class Poplist(Window):
                         window_type=window_type,
                         shape_frame_function=shape_frame_function,
                         expose_frame_function=expose_frame_function)
-        self.items = items
         self.max_height = max_height
-        self.max_width = max_width
+        self.min_height = min_height
         self.x_align = x_align
         self.y_align = y_align
         self.min_width = min_width
+        self.max_width = max_width
+        self.fixed_width = fixed_width
         self.align_size = align_size
         self.window_width = self.window_height = 0
         self.treeview_align = gtk.Alignment()
-        self.treeview_align.set(0.5, 0.5, 0, 0)
+        self.treeview_align.set(1, 1, 1, 1)
         self.treeview_align.set_padding(self.align_size, self.align_size, self.align_size, self.align_size)
-        self.treeview = TreeView(self.items,
+        self.treeview = TreeView(items,
                                  enable_highlight=False,
                                  enable_multiple_select=False,
                                  enable_drag_drop=False)
         
         # Connect widgets.
         self.treeview_align.add(self.treeview)
-        self.window_frame.pack_start(self.treeview_align, True, False)
+        self.window_frame.pack_start(self.treeview_align, True, True)
         
         self.connect("realize", self.realize_poplist)
         
@@ -90,27 +93,55 @@ class Poplist(Window):
     def get_scrolledwindow(self):
         return self.treeview.scrolled_window
     
-    def get_base_width(self):
-        treeview_width = self.min_width
-        for item in self.treeview.visible_items:
-            if hasattr(item, "get_width"):
-                treeview_width = max(treeview_width, item.get_width())
-        if self.max_width != None:        
-            treeview_width = min(self.max_width, treeview_width)
-        return treeview_width    
+    @property
+    def items(self):
+        return self.treeview.get_items()
     
-    def get_normal_width(self):
-        (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()
-        return self.get_base_width() + shadow_padding_x * 2 + self.align_size * 2
-        
-    def realize_poplist(self, widget):
-        adjust_height = int(self.treeview.scrolled_window.get_vadjustment().get_upper())
-        if self.max_height != None:
+    def get_adjust_width(self):
+        if self.fixed_width:
+            return self.fixed_width
+        if len(self.items) > 0:
+            adjust_width = max([item.get_width() for item in self.items])
+        else:                
+            adjust_width = self.min_width
+            
+        if self.max_width:    
+            return min(self.max_width, adjust_width)
+        return adjust_width
+    
+    def get_adjust_height(self):
+        if len(self.items) > 0:
+            adjust_height = sum([item.get_height() for item in self.items])
+        else:    
+            adjust_height = 0
+            
+        if self.max_height != None:    
             adjust_height = min(adjust_height, self.max_height)
-        self.treeview.set_size_request(self.get_base_width(), adjust_height)
-        (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()
-        self.window_height = adjust_height + shadow_padding_y * 2 + self.align_size * 2
-        self.window_width = self.get_normal_width()
+            
+        if adjust_height <= 0:    
+            adjust_height = self.min_height
+        return adjust_height    
+    
+    def get_adjust_size(self):
+        return (self.get_adjust_width(), self.get_adjust_height())
+    
+    def hide_self(self):
+        poplist_grab_window.popup_grab_window_focus_out()
+        
+    def auto_set_size(self):    
+        self.set_size(*self.get_adjust_size())
+    
+    def set_size(self, width, height):
+        (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()        
+        self.window_height = height + self.align_size * 2 + shadow_padding_x * 2 + 1
+        self.window_width = width + shadow_padding_x * 2 + 1 
+        if self.get_realized():
+            self.unrealize()
+                
+    def realize_poplist(self, widget):
+        if self.window_height <= 0 or self.window_height <=0:
+            self.auto_set_size()
+        
         self.set_default_size(self.window_width, self.window_height)
         self.set_geometry_hints(
             None,
@@ -151,72 +182,6 @@ class Poplist(Window):
         self.show_all()
                             
 gobject.type_register(Poplist)        
-
-class TextItem(TreeItem):
-    '''
-    class docs
-    '''
-	
-    def __init__(self, 
-                 text, 
-                 text_size = DEFAULT_FONT_SIZE,
-                 padding_x = 10,
-                 padding_y = 6):
-        '''
-        init docs
-        '''
-        # Init.
-        TreeItem.__init__(self)
-        self.item_width = 160
-        self.text = text
-        self.text_size = text_size
-        self.padding_x = padding_x
-        self.padding_y = padding_y
-        (self.text_width, self.text_height) = get_content_size(self.text)
-        
-    def render_text(self, cr, rect):
-        font_color = ui_theme.get_color("menu_font").get_color()
-        if self.is_hover:
-            # Draw background.
-            draw_vlinear(cr, rect.x, rect.y, rect.width, rect.height, 
-                         ui_theme.get_shadow_color("menu_item_select").get_color_info())
-        
-            # Set font color.
-            font_color = ui_theme.get_color("menu_select_font").get_color()
-            
-        draw_text(cr, 
-                  self.text,
-                  rect.x + self.padding_x, 
-                  rect.y,
-                  rect.width - self.padding_x * 2, 
-                  rect.height,
-                  text_color=font_color)
-        
-    def get_width(self):
-        return self.text_width + self.padding_x * 2
-        
-    def get_height(self):
-        return self.text_size + self.padding_y * 2
-    
-    def get_column_widths(self):
-        return [self.item_width]
-    
-    def get_column_renders(self):
-        return [self.render_text]
-
-    def unhover(self, column, offset_x, offset_y):
-        self.is_hover = False
-
-        if self.redraw_request_callback:
-            self.redraw_request_callback(self)
-    
-    def hover(self, column, offset_x, offset_y):
-        self.is_hover = True
-        
-        if self.redraw_request_callback:
-            self.redraw_request_callback(self)
-    
-gobject.type_register(TextItem)
 
 class IconTextItem(TreeItem):
     '''

@@ -25,7 +25,7 @@ from utils import (color_hex_to_cairo, alpha_color_hex_to_cairo,
                    cairo_disable_antialias, get_content_size,
                    container_remove_all)
 from draw import draw_text
-from new_entry import Entry
+from entry import Entry
 import gtk
 import pango
 import gobject
@@ -64,6 +64,11 @@ class IpAddressEntry(gtk.HBox):
 
         self.__set_entry_list()
 
+    def entry_changes(self, widget, content, index):
+        if len(content) == 3:
+            if index < 4:
+                self.entry_list[index + 1].grab_focus()
+    
     def __on_focus_child(self, widget, child):
         if child == None:
             self.emit("focus-out", widget.get_address())
@@ -74,21 +79,26 @@ class IpAddressEntry(gtk.HBox):
         else:
             self.ip_address = ""
 
+        container_remove_all(self)
+        self.entry_list = []
+
         ip_addr_len = len(self.ip_address)
-        if ip_addr_len == 0 and not self.entry_list:
+        if ip_addr_len == 0:
             i = 0
             while i < 4:
                 self.entry_list.append(Entry(padding_x = self.padding_x, is_ipv4 = True))
                 self.pack_start(self.entry_list[i])
                 i += 1
+            map(lambda (i, e): e.connect("changed", self.entry_changes,i), enumerate(self.entry_list))
             return
 
         if ip_addr_len == 4:
             i = 0
-            while i < 4:                                                        
+            while i < 4:                                            
                 self.entry_list.append(Entry(self.ip_address[i], padding_x = self.padding_x, is_ipv4 = True))
                 self.pack_start(self.entry_list[i])                             
                 i += 1                                                          
+            map(lambda (i, e): e.connect("changed", self.entry_changes,i), enumerate(self.entry_list))
             return
 
     def set_frame_alert(self, state):
@@ -114,7 +124,6 @@ class IpAddressEntry(gtk.HBox):
             
             if i < entry_list_len - 1:
                 address += self.token
-
             i += 1
 
         return address

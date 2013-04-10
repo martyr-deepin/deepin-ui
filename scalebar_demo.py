@@ -33,7 +33,7 @@ app_theme = init_skin(
     )
 
 from dtk.ui.application import Application
-from dtk.ui.new_scalebar import HScalebar
+from dtk.ui.scalebar import HScalebar
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
 import gtk
 import deepin_gsettings
