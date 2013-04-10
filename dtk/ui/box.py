@@ -91,6 +91,7 @@ gobject.type_register(ImageBox)
 class BackgroundBox(gtk.VBox):
     '''
     BackgroundBox is container for clip background.
+    We use this widget as container to handle background render.
     
     @undocumented: expose_background_box
     '''
@@ -148,12 +149,19 @@ class BackgroundBox(gtk.VBox):
         
 gobject.type_register(BackgroundBox)
 
-'''
-TODO: Resizable can be drag toward downward
-'''
 class ResizableBox(gtk.EventBox):
+    """
+    Resizable box.
+    
+    Use as container that need resizable it's size.
+    
+    @undocumented: invalidate
+    @undocumented: expose_override
+    """
+    
     __gsignals__ = {
-        "resize" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),}
+        "resize" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),
+        }
     
     def __init__(self, 
                  width=690, 
@@ -161,7 +169,18 @@ class ResizableBox(gtk.EventBox):
                  min_height=160, 
                  padding_x=50, 
                  padding_y=18, 
-                 resizeable=True):
+                 resizeable=True,
+                 ):
+        """
+        Initialize.
+        
+        @param width: The width of widget, default is 690 pixels.
+        @param height: The height of widget, default is 160 pixels.
+        @param min_height: The minimum height that widget's height can't less than this value, default is 160 pixels.
+        @param padding_x: The horizontal padding value, default is 50 pixels.
+        @param padding_y: The vertical padding value, default is 18 pixels.
+        @param resizeable: The option the control whether resize widget, default is True.
+        """
         gtk.EventBox.__init__(self)
         
         self.padding_x = padding_x
@@ -184,9 +203,17 @@ class ResizableBox(gtk.EventBox):
         self.set_events(gtk.gdk.POINTER_MOTION_MASK)
   
     def get_resizable(self):
+        """
+        Get the resizable status of widget.
+        """
         return self.resizable
 
     def set_resizeable(self, resizeable):
+        """
+        Set the resizable option.
+        
+        @param resizable: Set as True if you want widget can resize, or set False if you want fixed it's size temporary.
+        """
         self.resizeable = resizeable
         self.queue_draw()
 
