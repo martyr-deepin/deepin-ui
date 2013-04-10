@@ -73,6 +73,7 @@ case "$1" in
         echo "./repos.sh build          => build deb package"
         echo "./repos.sh install        => install deb package"
         echo "./repos.sh module_docs    => build docs for given module"
-        echo "./repos.sh build_docs     => build docs for all modules"
+        echo "./repos.sh build_html     => build html docs for all modules"
+        echo "./repos.sh build_pdf      => build pdf docs for all modules"
         ;;
     esac

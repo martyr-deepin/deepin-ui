@@ -8,3 +8,4 @@ dist
 dtk.egg-info
 *.po~
 *.swp
+apidocs
