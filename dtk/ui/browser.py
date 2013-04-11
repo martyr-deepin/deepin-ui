@@ -24,12 +24,14 @@ import webkit
 import dtk_webkit_cookie
 from deepin_utils.file import touch_file_dir
 from gtk import gdk
+import gtk
 
 class WebView(webkit.WebView):
     '''
+    WebView wrap that support cookie.
+    
     @undocumented: save_adjustment
     @undocumented: do_scroll
-    WebView wrap that support cookie.
     '''
 
     def __init__(self, cookie_filepath=None):
@@ -49,7 +51,9 @@ class WebView(webkit.WebView):
         self.connect("scroll-event", self.do_scroll)
 
     def enable_inspector(self):
-        import gtk
+        '''
+        Enable inspector feature of webview.
+        '''
         class Inspector (gtk.Window):
             def __init__ (self, inspector):
                 """initialize the WebInspector class"""
@@ -116,7 +120,7 @@ class WebView(webkit.WebView):
 
     def save_adjustment(self, webview, hadj, vadj):
         '''
-        the callback of "set-scroll-adjustmens"
+        Internal callback of "set-scroll-adjustmens" signal.
         '''
         self.vadjustment = vadj
         self.hadjustment = hadj
