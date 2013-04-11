@@ -137,9 +137,11 @@ class HScalebar(gtk.Button):
     def draw_bg_and_fg(self, cr, rect):    
         with cairo_disable_antialias(cr):
             x, y, w, h = rect         
-            progress_x = rect.x + self.point_width/2
+            #progress_x = rect.x + self.point_width/2
+            progress_x = rect.x
             progress_y = rect.y + (rect.height-self.bottom_space)/2 - self.line_height/2
-            progress_width = rect.width - self.point_width
+            #progress_width = rect.width - self.point_width
+            progress_width = rect.width
             value_width = int(float(self.value) / self.value_max * (rect.width - self.point_width/2))
             if int(float(self.value)) == self.value_max:
                 value_width = value_width - 1 # there is less 1px for 100% mark line
@@ -266,8 +268,8 @@ class HScalebar(gtk.Button):
     def draw_point(self, cr, rect):
         pixbuf_w_average = self.point_pixbuf.get_pixbuf().get_width() / 2
         x = rect.x + self.point_width / 2 + int(float(self.value) / self.value_max * (rect.width - self.point_width)) - pixbuf_w_average
-        if int(float(self.value)) == self.value_max:
-            x = x - 1 # there is less 1px for 100% mark line
+        #if int(float(self.value)) == self.value_max:
+            #x = x - 1 # there is less 1px for 100% mark line
         draw_pixbuf(cr,
                     self.point_pixbuf.get_pixbuf(), 
                     x, 
@@ -290,8 +292,8 @@ class HScalebar(gtk.Button):
         else:
             draw_text(cr, text, min_value, text_y, rect.width, 0, DEFAULT_FONT_SIZE, self.bg_side_color)
         
-        if int(float(value)) == self.value_max:
-            x = x - 1 # there is less 1px for 100% mark line
+        #if int(float(value)) == self.value_max:
+            #x = x - 1 # there is less 1px for 100% mark line
         mark_y = text_y-self.bottom_space/2-(self.point_height-self.line_height)/2
         if mark_check:
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_side_color))
