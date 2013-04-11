@@ -1437,53 +1437,22 @@ class ComboButton(gtk.Button):
 
 gobject.type_register(ComboButton)
 
-class OffButton(gtk.Button):     
-    __gsignals__ = {
-        "toggled" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-    }    
-    def __init__(self,
-                 state = False,
-                 inactive_normal_pixbuf = ui_theme.get_pixbuf("offbutton/off.png"), 
-                 active_normal_pixbuf = ui_theme.get_pixbuf("offbutton/on.png")):
-        gtk.Button.__init__(self)
-        self.active_state = state
-        self.inactive_normal_pixbuf = inactive_normal_pixbuf
-        self.active_normal_pixbuf = active_normal_pixbuf
-        self.set_size_request(self.active_normal_pixbuf.get_pixbuf().get_width(),
-                              self.active_normal_pixbuf.get_pixbuf().get_height()
+class SwitchButton(ToggleButton):
+    '''
+    SwitchButton class.
+    '''
+	
+    def __init__(self, active=False):
+        '''
+        Initialize SwitchButton class.
+        
+        @param active: Button active status, default is False.
+        '''
+        ToggleButton.__init__(self,
+                              ui_theme.get_pixbuf("switchbutton/off.png"),
+                              ui_theme.get_pixbuf("switchbutton/on.png"),
                               )
-        self.add_events(gtk.gdk.ALL_EVENTS_MASK)
-        self.connect("clicked", self.off_button_clicked)
-        self.connect("expose-event", self.off_button_expose_event)
-        
-    def off_button_clicked(self, widget):
-        self.set_state(not self.active_state) 
-        
-    def set_active(self, state):    
-        self.set_state(state)
-        
-    def get_active(self):    
-        return self.get_state()
-        
-    def set_state(self, state):
-        if self.active_state != state:
-            self.active_state = state
-            self.queue_draw()
-            self.emit("toggled")
-        
-    def get_state(self):    
-        return self.active_state
-    
-    def off_button_expose_event(self, widget, event):
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        #
-        if not self.active_state:
-            __pixbuf = self.inactive_normal_pixbuf
-        else:    
-            __pixbuf = self.active_normal_pixbuf        
-        #    
-        draw_pixbuf(cr, __pixbuf.get_pixbuf(), rect.x, rect.y)        
-        return True
-        
-gobject.type_register(OffButton)
+        self.set_active(active)
+
+gobject.type_register(SwitchButton)
+
