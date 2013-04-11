@@ -39,7 +39,7 @@ __all__ = ["Button", "ImageButton", "ThemeButton",
            "MenuButton", "MinButton", "CloseButton",
            "MaxButton", "ToggleButton", "ActionButton",
            "CheckButton", "RadioButton", "DisableButton",
-           "LinkButton"]
+           "LinkButton", "ComboButton", "SwitchButton"]
 
 class Button(gtk.Button):
     '''
@@ -1453,6 +1453,5 @@ class SwitchButton(ToggleButton):
                               ui_theme.get_pixbuf("switchbutton/on.png"),
                               )
         self.set_active(active)
-
+        
 gobject.type_register(SwitchButton)
-
