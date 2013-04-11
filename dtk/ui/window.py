@@ -32,7 +32,7 @@ from utils import (cairo_state, propagate_expose, set_cursor,
                    enable_shadow, alpha_color_hex_to_cairo)
 
 class Window(WindowBase):
-    """
+    '''
     The Window class is a subclass of gtk.Window. It adds some features that deepin-ui have to gtk.Window.
 
     @undocumented: get_cursor_type
@@ -43,7 +43,7 @@ class Window(WindowBase):
     @undocumented: motion_notify
     @undocumented: double_click_window
     @undocumented: monitor_window_state
-    """
+    '''
     def __init__(self, 
                  enable_resize=False, 
                  shadow_radius=6, 
@@ -51,14 +51,14 @@ class Window(WindowBase):
                  shadow_visible=True,
                  shape_frame_function=None,
                  expose_frame_function=None):
-        """
+        '''
         Initialise the Window class.
 
         @param enable_resize: If True, the window will be set resizable. By default, it's False.
         @param shadow_radius: The radius of the shadow. By default, it's 6.
         @param window_type: A flag of type gtk.WindowType, which indicates the type of the window. By default, it's gtk.WINDOW_TOPLEVEL.
         @param shadow_visible: If True, the shadow is visible. By default, it's True, just disable when your program not allow manipulate colormap, such as mplayer. 
-        """
+        '''
         # Init.
         WindowBase.__init__(self, window_type)
         self.shadow_radius = shadow_radius
@@ -109,13 +109,13 @@ class Window(WindowBase):
         self.window_frame.connect("expose-event", self.expose_window_frame)
         
     def expose_window_background(self, widget, event):
-        """
+        '''
         Internal function to expose the window background.
 
         @param widget: A window of type Gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
         @return: Always return True.
-        """
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -191,12 +191,12 @@ class Window(WindowBase):
         return True
     
     def expose_window_shadow(self, widget, event):
-        """
+        '''
         Interh function to expose the window shadow.
 
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
-        """
+        '''
         if self.shadow_is_visible:
             # Init.
             cr = widget.window.cairo_create()
@@ -207,12 +207,12 @@ class Window(WindowBase):
             draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding, ui_theme.get_shadow_color("window_shadow"))
     
     def expose_window_frame(self, widget, event):
-        """
+        '''
         Internal function to expose the window frame.
         
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
-        """
+        '''
         if self.expose_frame_function:
             self.expose_frame_function(widget, event)
         elif self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
@@ -230,12 +230,12 @@ class Window(WindowBase):
                               )
 
     def shape_window_frame(self, widget, rect):
-        """
+        '''
         Internal function to draw nonrectangular window frame.
 
         @param widget: A widget of type gtk.Widget.
         @param rect: The bounding region of the window.
-        """
+        '''
         if self.shape_frame_function:
             self.shape_frame_function(widget, rect)
         elif widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
@@ -264,26 +264,26 @@ class Window(WindowBase):
                 widget.shape_combine_mask(bitmap, 0, 0)
             
     def hide_shadow(self):
-        """
+        '''
         Hide the window shadow.
-        """
+        '''
         self.shadow_is_visible = False
         self.window_shadow.set_padding(0, 0, 0, 0)
         
     def show_shadow(self):
-        """
+        '''
         Show the window shadow.
-        """
+        '''
         self.shadow_is_visible = True
         self.window_shadow.set_padding(self.shadow_padding, self.shadow_padding, self.shadow_padding, self.shadow_padding)
         
     def motion_notify(self, widget, event):
-        """
+        '''
         Internal callback for `motion-notify` signal. 
 
         @param widget: A widget of gtk.Widget.
         @param event: The motion-notify-event of type gtk.gdk.Event
-        """
+        '''
         if self.enable_resize and self.shadow_is_visible:
             cursor_type = self.get_cursor_type(event)
             if cursor_type != None:
@@ -297,12 +297,12 @@ class Window(WindowBase):
         set_cursor(self, None)
             
     def get_cursor_type(self, event):
-        """
+        '''
         Get the cursor position.
 
         @param event: An event of type gtk.gdk.Event.
         @return: If the cursor is on the frame of the window, return the cursor position. Otherwise return None.
-        """
+        '''
         # Get event coordinate.
         (ex, ey) = get_event_root_coords(event)
         
@@ -316,11 +316,11 @@ class Window(WindowBase):
         return self.get_cursor_type_with_coordinate(ex, ey, wx, wy, ww, wh)
         
     def get_shadow_size(self):
-        """
+        '''
         Get the shadow size.
 
         @return: return the shadow size or (0, 0)
-        """
+        '''
         if enable_shadow(self) and self.shadow_visible:
             window_state = self.window.get_state()
             if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:

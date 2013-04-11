@@ -40,15 +40,15 @@ class WindowBase(gtk.Window):
         gtk.Window.__init__(self, window_type)
         
     def show_window(self):
-        """
+        '''
         Show the window.
-        """
+        '''
         self.show_all()
 
     def toggle_max_window(self):
-        """
+        '''
         Toggle the window size between maximized size and normal size.
-        """
+        '''
         window_state = self.window.get_state()
         if window_state == gtk.gdk.WINDOW_STATE_MAXIMIZED:
             self.unmaximize()
@@ -56,9 +56,9 @@ class WindowBase(gtk.Window):
             self.maximize()
 
     def toggle_fullscreen_window(self):
-        """
+        '''
         Toggle the window between fullscreen mode and normal size.
-        """
+        '''
         window_state = self.window.get_state()
         if window_state == gtk.gdk.WINDOW_STATE_FULLSCREEN:
             self.unfullscreen()
@@ -66,11 +66,11 @@ class WindowBase(gtk.Window):
             self.fullscreen()
             
     def close_window(self):
-        """
+        '''
         Close the window. Send the destroy signal to the program.
 
         @return: Always return False.
-        """
+        '''
         # Hide window immediately when user click close button,
         # user will feeling this software very quick, ;p
         self.hide_all()
@@ -80,39 +80,39 @@ class WindowBase(gtk.Window):
         return False
         
     def min_window(self):
-        """
+        '''
         Minimize the window. Make it iconified.
-        """
+        '''
         self.iconify()
         
     def resize_window(self, widget, event):
-        """
+        '''
         Resize the window.
 
         @param widget: The window of type gtk.Widget.
         @param event: A signal of type gtk.gdk.Event.
-        """
+        '''
         if self.enable_resize:
             edge = self.get_edge()            
             if edge != None:
                 resize_window(self, event, self, edge)
                 
     def is_disable_window_maximized(self):
-        """
+        '''
         An interface which indicates whether the window could be maximized, you should implement this function you own.
         @return: Always return False.
-        """
+        '''
         return False                
                 
     def monitor_window_state(self, widget, event):
-        """
+        '''
         Internal function to monitor window state, 
 
         add shadow when window at maximized or fullscreen status. Otherwise hide shadow.
 
         @param widget: The window of type gtk.Widget.
         @param event: The event of gtk.gdk.Event.
-        """
+        '''
         window_state = self.window.get_state()
         if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:
             self.hide_shadow()
@@ -123,40 +123,40 @@ class WindowBase(gtk.Window):
             self.show_shadow()
         
     def add_move_event(self, widget):
-        """
+        '''
         Add move event callback.
 
         @param widget: A widget of type gtk.Widget.
-        """
+        '''
         widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
         
     def add_toggle_event(self, widget):
-        """
+        '''
         Add toggle event callback.
 
         @param widget: A widget of type gtk.Widget.
-        """
+        '''
         widget.connect("button-press-event", self.double_click_window)        
         
     def double_click_window(self, widget, event):
-        """
+        '''
         Double click event handler of the window. It will maximize the window.
 
         @param widget: A widget of type gtk.Widget.
         @param event: A event of type gtk.gdk.Event.
         @return: Always return False.
-        """
+        '''
         if is_double_click(event):
             self.toggle_max_window()
             
         return False    
             
     def get_edge(self):
-        """
+        '''
         Get the edge which the cursor is on, according to the cursor type.
 
         @return: If there is a corresponding cursor type, an instance of gtk.gdk.WindowEdge is returned, else None is returned.
-        """
+        '''
         if EDGE_DICT.has_key(self.cursor_type):
             return EDGE_DICT[self.cursor_type]
         else:

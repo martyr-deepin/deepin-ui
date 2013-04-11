@@ -33,11 +33,11 @@ import gtk
 import pango
 
 class Titlebar(EventBox):
-    """
+    '''
     Titlebar defines every thing of a title bar of a application based on deepin ui.
     
     @undocumented: expose_titlebar_separator
-    """
+    '''
     def __init__(self, 
                  button_mask=["theme", "menu", "max", "min", "close"],
                  icon_dpixbuf=None,
@@ -48,7 +48,7 @@ class Titlebar(EventBox):
                  show_title=True,
                  enable_gaussian=True,
                  ):
-        """
+        '''
         Initialize the title bar.
 
         @param button_mask: A string list. Each item of it indicates that there is a corresponding button on the title bar. By default, it's ["theme", "menu", "max", "min", "close"], which means theme button, menu button, max button, min button and close button, respectively.
@@ -58,7 +58,7 @@ class Titlebar(EventBox):
         @param add_separator: If True, add a separation line between the title bar and the body of the window. By default, it's False.
         @param height: The hight of the title bar. By default, it's 26 pixels.
         @param show_title: If False, the title bar will not be displayed. By default, it's True.
-        """
+        '''
         # Init.
         EventBox.__init__(self)
         self.set_size_request(-1, height)
@@ -154,13 +154,13 @@ class Titlebar(EventBox):
         self.show_all()
 
     def expose_titlebar_separator(self, widget, event):
-        """
+        '''
         Expose the separation line between the titlebar and the body of the window.
 
         @param widget: A widget of type Gtk.Widget.
         @param event: Not used.
         @return: Always return True.
-        """
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -172,11 +172,11 @@ class Titlebar(EventBox):
         return True
     
     def change_title(self, title):
-        """
+        '''
         Change the title of the application, which is diplayed on the center of the title bar.
         
         @param title: New title string that want to set.
-        """
+        '''
         self.title_box.set_text(title)
         
 gobject.type_register(Titlebar)

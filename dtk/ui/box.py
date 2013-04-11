@@ -150,14 +150,14 @@ class BackgroundBox(gtk.VBox):
 gobject.type_register(BackgroundBox)
 
 class ResizableBox(gtk.EventBox):
-    """
+    '''
     Resizable box.
     
     Use as container that need resizable it's size.
     
     @undocumented: invalidate
     @undocumented: expose_override
-    """
+    '''
     
     __gsignals__ = {
         "resize" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),
@@ -171,7 +171,7 @@ class ResizableBox(gtk.EventBox):
                  padding_y=18, 
                  resizeable=True,
                  ):
-        """
+        '''
         Initialize.
         
         @param width: The width of widget, default is 690 pixels.
@@ -180,7 +180,7 @@ class ResizableBox(gtk.EventBox):
         @param padding_x: The horizontal padding value, default is 50 pixels.
         @param padding_y: The vertical padding value, default is 18 pixels.
         @param resizeable: The option the control whether resize widget, default is True.
-        """
+        '''
         gtk.EventBox.__init__(self)
         
         self.padding_x = padding_x
@@ -203,17 +203,19 @@ class ResizableBox(gtk.EventBox):
         self.set_events(gtk.gdk.POINTER_MOTION_MASK)
   
     def get_resizable(self):
-        """
+        '''
         Get the resizable status of widget.
-        """
+        
+        @return: Return True if box can resizable.
+        '''
         return self.resizable
 
     def set_resizeable(self, resizeable):
-        """
+        '''
         Set the resizable option.
         
         @param resizable: Set as True if you want widget can resize, or set False if you want fixed it's size temporary.
-        """
+        '''
         self.resizeable = resizeable
         self.queue_draw()
 

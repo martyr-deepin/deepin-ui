@@ -49,7 +49,9 @@ class Button(gtk.Button):
     @undocumented: expose_button
     '''
 	
-    def __init__(self, label="", font_size=DEFAULT_FONT_SIZE):
+    def __init__(self, 
+                 label="", 
+                 font_size=DEFAULT_FONT_SIZE):
         '''
         Initialize Button class.
         
@@ -69,7 +71,8 @@ class Button(gtk.Button):
         self.connect("key-press-event", self.key_press_button)
         
         self.keymap = {
-            "Return" : self.clicked}
+            "Return" : self.clicked
+            }
         
     def set_label(self, label, font_size=DEFAULT_FONT_SIZE):
         '''
@@ -183,6 +186,7 @@ class ImageButton(gtk.Button):
         @param press_dpixbuf: DynamicPixbuf for button press status.
         @param scale_x: Whether scale horticulturally, default is False.
         @param content: Button label content.
+        @param insensitive_dpixbuf: DyanmicPixbuf for button insensitive status, default is None.
         '''
         gtk.Button.__init__(self)
         cache_pixbuf = CachePixbuf()
@@ -196,6 +200,11 @@ class ImageButton(gtk.Button):
                     insensitive_dpixbuf)
 
     def set_active(self, is_active):
+        '''
+        Set active status.
+        
+        @param is_active: Set as True to make ImageButton active.
+        '''
         if is_active:
             self.set_state(gtk.STATE_PRELIGHT)
         else:
@@ -305,10 +314,17 @@ class MaxButton(gtk.Button):
         
 gobject.type_register(MaxButton)
 
-def draw_button(widget, cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
-                scale_x=False, button_label=None, font_size=DEFAULT_FONT_SIZE, 
+def draw_button(widget, 
+                cache_pixbuf, 
+                normal_dpixbuf, 
+                hover_dpixbuf, 
+                press_dpixbuf,
+                scale_x=False, 
+                button_label=None, 
+                font_size=DEFAULT_FONT_SIZE, 
                 label_dcolor=ui_theme.get_color("button_default_font"), 
-                insensitive_dpixbuf=None):
+                insensitive_dpixbuf=None,
+                ):
     '''
     Draw button.
     
@@ -321,6 +337,7 @@ def draw_button(widget, cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixb
     @param button_label: Button label, default is None.
     @param font_size: Button label font size, default is DEFAULT_FONT_SIZE.
     @param label_dcolor: Button label color.
+    @param insensitive_dpixbuf: DyanmicPixbuf of insensitive status, default is None.
     '''
     # Init request size.
     if scale_x:
@@ -338,11 +355,17 @@ def draw_button(widget, cache_pixbuf, normal_dpixbuf, hover_dpixbuf, press_dpixb
             normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
             button_label, font_size, label_dcolor, insensitive_dpixbuf))
         
-def expose_button(widget, event, 
+def expose_button(widget, 
+                  event, 
                   cache_pixbuf,
-                  scale_x, scale_y,
-                  normal_dpixbuf, hover_dpixbuf, press_dpixbuf,
-                  button_label, font_size, label_dcolor, 
+                  scale_x, 
+                  scale_y,
+                  normal_dpixbuf, 
+                  hover_dpixbuf, 
+                  press_dpixbuf,
+                  button_label, 
+                  font_size, 
+                  label_dcolor, 
                   insensitive_dpixbuf=None):
     '''
     Expose callback for L{ I{draw_button} <draw_button>}.
@@ -357,6 +380,7 @@ def expose_button(widget, event,
     @param button_label: Button label, default is None.
     @param font_size: Button label font size, default is DEFAULT_FONT_SIZE.
     @param label_dcolor: Button label color.
+    @param insensitive_dpixbuf: DynamicPixbuf of insensitive status.
     '''
     # Init.
     rect = widget.allocation
@@ -509,6 +533,7 @@ class ToggleButton(gtk.ToggleButton):
         @param active_disable_dpixbuf: DynamicPixbuf for active disable status, default is None. 
         @param button_label: Button label, default is None.
         @param padding_x: Padding x, default is 0.
+        @param font_size: Font size, default is DEFAULT_FONT_SIZE.
         '''
         gtk.ToggleButton.__init__(self)
         self.font_size = font_size
@@ -669,7 +694,7 @@ class ActionButton(gtk.Button):
         Initialize for ActionButton class.
         
         @param actions: Actions for button.
-        @param index: Index default is 0.
+        @param index: Action index, default is 0.
         '''
         gtk.Button.__init__(self)
         self.actions = actions
@@ -731,12 +756,16 @@ class CheckButton(ToggleButton):
     CheckButton class.
     '''
 	
-    def __init__(self, label_text=None, padding_x=2, font_size=DEFAULT_FONT_SIZE):
+    def __init__(self, 
+                 label_text=None, 
+                 padding_x=2, 
+                 font_size=DEFAULT_FONT_SIZE):
         '''
         Initialize CheckButton class.
         
         @param label_text: Label text.
         @param padding_x: Horticultural padding value, default is 8.
+        @param font_size: Font size, default is DEFAULT_FONT_SIZE.
         '''
         ToggleButton.__init__(
             self,
@@ -755,7 +784,12 @@ gobject.type_register(CheckButton)
 
 class CheckAllButton(gtk.ToggleButton):
     '''
-    class docs
+    CheckAllButton class.
+    
+    @undocumented: handle_click_event
+    @undocumented: press_toggle_button
+    @undocumented: release_toggle_button
+    @undocumented: expose_toggle_button
     '''
 	
     __gsignals__ = {
@@ -780,7 +814,23 @@ class CheckAllButton(gtk.ToggleButton):
                  font_size=DEFAULT_FONT_SIZE,
                  ):
         '''
-        init docs
+        Initialize for CheckAllButton class.
+        
+        @param inactive_normal_dpixbuf: DyanmicPixbuf for button inactive normal status, default is None.
+        @param active_normal_dpixbuf: DyanmicPixbuf for button active normal status, default is None.
+        @param inactive_hover_dpixbuf: DyanmicPixbuf for button inactive hover status, default is None.
+        @param active_hover_dpixbuf: DyanmicPixbuf for button active hover status, default is None.
+        @param inactive_press_dpixbuf: DyanmicPixbuf for button inactive press status, default is None.
+        @param active_press_dpixbuf: DyanmicPixbuf for button active press status, default is None.
+        @param inactive_disable_dpixbuf: DyanmicPixbuf for button inactive disable status, default is None.
+        @param active_disable_dpixbuf: DyanmicPixbuf for button active disable status, default is None.
+        @param middle_disable_dpixbuf: DyanmicPixbuf for button middle disable status, default is None.
+        @param middle_hover_dpixbuf: DyanmicPixbuf for button middle hover status, default is None.
+        @param middle_normal_dpixbuf: DyanmicPixbuf for button middle normal status, default is None.
+        @param middle_press_dpixbuf: DyanmicPixbuf for button middle press status, default is None.
+        @param button_label: Button label, default is None.
+        @param padding_x: Padding x, default is 0.
+        @param font_size: Button label font size, default is DEFAULT_FONT_SIZE.
         '''
         gtk.ToggleButton.__init__(self)
         self.font_size = font_size
@@ -825,6 +875,11 @@ class CheckAllButton(gtk.ToggleButton):
         self.connect("clicked", self.handle_click_event)
         
     def update_status(self, actives):
+        '''
+        Update status of button.
+        
+        @param actives: This is boolean list that include all button's active status, CheckAllButton will change status in INACTIVE/ACTIVE/HALF-ACTIVE.
+        '''
         if actives.count(True) == len(actives):
             self.set_half_status(False)
             self.set_active(True)
@@ -837,9 +892,17 @@ class CheckAllButton(gtk.ToggleButton):
         self.queue_draw()
         
     def set_half_status(self, half_status):
+        '''
+        Set half active status.
+        '''
         self.in_half_status = half_status
         
     def handle_click_event(self, widget):
+        '''
+        Internal callback for `click` signal.
+        
+        @param event: Button clicked event.
+        '''
         if self.in_half_status:
             self.set_active(False)
             self.in_half_status = False
@@ -971,7 +1034,11 @@ gobject.type_register(CheckAllButton)
 
 class CheckButtonBuffer(gobject.GObject):
     '''
-    class docs
+    CheckButtonBuffer class.
+    
+    Use to render CheckButton in TreeView widget.
+    
+    @undocumented: render
     '''
 
     STATE_NORMAL = 1
@@ -981,9 +1048,14 @@ class CheckButtonBuffer(gobject.GObject):
     def __init__(self,
                  active=False,
                  render_padding_x=0,
-                 render_padding_y=0):
+                 render_padding_y=0,
+                 ):
         '''
-        init docs
+        Initialize CheckButtonBuffer class.
+        
+        @param active: Set True to active buffer status, default is False.
+        @param render_padding_x: Horizontal padding value, default is 0.
+        @param render_padding_y: Vertical padding value, default is 0.
         '''
         gobject.GObject.__init__(self)
         self.inactive_normal_dpixbuf = ui_theme.get_pixbuf("button/check_button_inactive_normal.png")
@@ -1003,12 +1075,41 @@ class CheckButtonBuffer(gobject.GObject):
         self.button_state = self.STATE_NORMAL
         
     def get_active(self):
+        '''
+        Get active status of check button buffer.
+        
+        @return: Return True if buffer is in active status.
+        '''
         return self.active
         
     def is_in_button_area(self, x, y):
+        '''
+        Helper function to detect button event is in button area.
+        
+        You can add this function in callback function of TreeItem, such as: 
+                hover/unhover
+                motion_notify
+                button_press/button_release
+                single_click/double_click
+                
+        @param x: X coordinate of button event.        
+        @param y: Y coordiante of button event.
+        '''
         return is_in_rect((x, y), (self.render_padding_x, self.render_padding_y, self.render_width, self.render_height))
     
     def press_button(self, x, y):
+        '''
+        Helper function to handle button-press-event.
+
+        You can add this function in callback function of TreeItem, such as: 
+                hover/unhover
+                motion_notify
+                button_press/button_release
+                single_click/double_click
+                
+        @param x: X coordinate of button event.        
+        @param y: Y coordiante of button event.
+        '''
         if self.is_in_button_area(x, y):
             self.button_state = self.STATE_ACTIVE
             self.button_press_flag = True
@@ -1020,6 +1121,18 @@ class CheckButtonBuffer(gobject.GObject):
             return False
 
     def release_button(self, x, y):
+        '''
+        Helper function to handle button-release-event.
+
+        You can add this function in callback function of TreeItem, such as: 
+                hover/unhover
+                motion_notify
+                button_press/button_release
+                single_click/double_click
+                
+        @param x: X coordinate of button event.        
+        @param y: Y coordiante of button event.
+        '''
         if self.is_in_button_area(x, y):
             self.button_state = self.STATE_ACTIVE
             self.button_press_flag = False
@@ -1029,6 +1142,18 @@ class CheckButtonBuffer(gobject.GObject):
             return False
 
     def motion_button(self, x, y):
+        '''
+        Helper function to handle motion-notify event.
+
+        You can add this function in callback function of TreeItem, such as: 
+                hover/unhover
+                motion_notify
+                button_press/button_release
+                single_click/double_click
+                
+        @param x: X coordinate of button event.        
+        @param y: Y coordiante of button event.
+        '''
         if self.is_in_button_area(x, y):
             if self.button_state != self.STATE_PRELIGHT:
                 self.button_state = self.STATE_PRELIGHT
@@ -1084,12 +1209,17 @@ class RadioButton(ToggleButton):
     @undocumented: click_radio_button
     '''
 	
-    def __init__(self, label_text=None, padding_x=2, font_size=DEFAULT_FONT_SIZE):
+    def __init__(self, 
+                 label_text=None, 
+                 padding_x=2, 
+                 font_size=DEFAULT_FONT_SIZE,
+                 ):
         '''
         Initialize RadioButton class.
         
         @param label_text: Label text.
         @param padding_x: Horticultural padding value, default is 8.
+        @param font_size: Font size, default is DEFAULT_FONT_SIZE.
         '''
         ToggleButton.__init__(
             self,
@@ -1184,7 +1314,8 @@ class LinkButton(Label):
                  text, 
                  link, 
                  enable_gaussian=True, 
-                 text_color=ui_theme.get_color("link_text")):
+                 text_color=ui_theme.get_color("link_text"),
+                 ):
         '''
         Initialize LinkButton class.
         
@@ -1204,7 +1335,11 @@ gobject.type_register(LinkButton)
 
 class ComboButton(gtk.Button):
     '''
-    class docs
+    ComboButton class.
+    
+    @undocumented: expose_combo_button
+    @undocumented: button_press_combo_button
+    @undocumented: click_combo_button
     '''
 	
     __gsignals__ = {
@@ -1223,7 +1358,16 @@ class ComboButton(gtk.Button):
                  arrow_disable_dpixbuf,
                  ):
         '''
-        init docs
+        Initialize ComboButton class.
+        
+        @param button_normal_dpixbuf: DyanmicPixbuf of button normal status.
+        @param button_hover_dpixbuf: DyanmicPixbuf of button hover status.
+        @param button_press_dpixbuf: DyanmicPixbuf of button press status.
+        @param button_disable_dpixbuf: DyanmicPixbuf of button disable status.
+        @param arrow_normal_dpixbuf: DyanmicPixbuf of arrow normal status.
+        @param arrow_hover_dpixbuf: DyanmicPixbuf of arrow hover status.
+        @param arrow_press_dpixbuf: DyanmicPixbuf of arrow press status.
+        @param arrow_disable_dpixbuf: DyanmicPixbuf of arrow disable status.
         '''
         # Init.
         gtk.Button.__init__(self)

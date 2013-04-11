@@ -30,22 +30,22 @@ from window import Window
 import gtk
 
 class Application(object):
-    """
+    '''
     This is the base class of every program based on deepin-ui.
     Every program should realize it.
-    """
+    '''
     
     def __init__(self, 
                  app_support_colormap=True, 
                  resizable=True
                  ):
-        """
+        '''
         Initialize the Application class.
         
         @param app_support_colormap: Set False if your program don't allow manipulate colormap, 
         such as mplayer, otherwise you should keep this option as True.
         @param resizable: Set this option with False if you want window's size fixed, default is True.
-        """
+        '''
         # Init.
         self.app_support_colormap = app_support_colormap
         self.resizable = resizable
@@ -55,11 +55,11 @@ class Application(object):
         self.init()
 
     def init(self):
-        """
+        '''
         This do the remain initialize step.
         
         It Initializes the window and some important signal such as "destroy".
-        """
+        '''
         # Init gdk threads, the integrant method for multi-thread GUI application.
         gtk.gdk.threads_init()
 
@@ -92,7 +92,7 @@ class Application(object):
                      show_title=True, 
                      enable_gaussian=True, 
                      ):
-        """
+        '''
         Add titlebar to the application.
         
         Connect click signal of the standard button to default callback.
@@ -104,7 +104,7 @@ class Application(object):
         @param add_separator: If True, add a line between the titlebar and the body of the window. By default, it's False.
         @param show_title: If False, the titlebar will not be displayed. By default, it's True.
         @param enable_gaussian: Set it as False if don't want gaussian application title. By default, it's True.
-        """
+        '''
         # Init titlebar.
         self.titlebar = Titlebar(button_mask, 
                                  icon_dpixbuf, 
@@ -135,50 +135,50 @@ class Application(object):
             self.window.set_title(app_name)
     
     def close_window(self, widget):
-        """
+        '''
         Close the window when the close button is clicked.
 
         @param widget: A widget of Gtk.Widget. Passed by gtk.
-        """
+        '''
         self.window.close_window()
 
     def show_titlebar(self):
-        """
+        '''
         Show title bar of the window. 
 
         By default, it is invoked at the last step of add_titlebar.
-        """
+        '''
         if self.titlebar_box.get_children() == [] and self.titlebar != None:
             self.titlebar_box.add(self.titlebar)
 
     def hide_titlebar(self):
-        """
+        '''
         Hide the title bar.
-        """
+        '''
         container_remove_all(self.titlebar_box)
 
     @post_gui
     def raise_to_top(self):
-        """
+        '''
         Raise the window to the top of the window stack.
-        """
+        '''
         self.window.present()
 
     def set_title(self, title):
-        """
+        '''
         Set the application title.
         
         @param title: The title string of the application.
-        """
+        '''
         self.titlebar.change_title(title)
 
     def set_default_size(self, default_width, default_height):
-        """
+        '''
         Set the default size of the window.
         
         @param default_width: Default width in pixels of the application, once set, application don't allow smaller than width.
         @param default_height: Default height in pixels of the application, once set, application don't allow smaller than height.
-        """
+        '''
         self.window.set_default_size(default_width, default_height)
         if self.resizable:
             self.window.set_geometry_hints(
@@ -201,33 +201,33 @@ class Application(object):
         skin_config.set_application_window_size(default_width, default_height)
 
     def set_icon(self, icon_dpixbuf):
-        """
+        '''
         Set the icon of the application. 
 
         This icon is used by the window manager or the dock.
         
         @param icon_dpixbuf: The icon pixbuf of dtk.ui.theme.DynamicPixbuf.
-        """
+        '''
         gtk.window_set_default_icon(icon_dpixbuf.get_pixbuf())
 
     def destroy(self, widget, data=None):
-        """
+        '''
         Destroy the window and quit the program.
         
         This function just call gtk.main_quit .
         
         @param widget: Not used.
         @param data: Not used.
-        """
+        '''
         gtk.main_quit()
 
     def run(self):
-        """
+        '''
         Show the window and start the mainloop.
         
         You must use this function at last of program, 
         otherwise program will run in loop too early that all code after application.run won't execute until program exit.
-        """
+        '''
         # Show window.
         self.window.show_window()
 
@@ -235,22 +235,22 @@ class Application(object):
         gtk.main()
 
     def set_skin_preview(self, preview_pixbuf):
-        """
+        '''
         Set the skin preview of the application.
         
         @note: The size of preview_pixbuf must be proportional to the size of program, otherwise adjust skin will got wrong coordinate.
         
         @param preview_pixbuf: A pixbuf of type dtk.ui.theme.DynamicPixbuf.
-        """
+        '''
         self.skin_preview_pixbuf = preview_pixbuf
         
     def theme_callback(self, widget):
-        """
+        '''
         Invoked when the theme button is clicked.
         
         @param widget: Not used.
         @return: Always return False
-        """
+        '''
         skin_window = SkinWindow(self.skin_preview_pixbuf)
         skin_window.show_all()
         place_center(self.window, skin_window)
@@ -258,22 +258,22 @@ class Application(object):
         return False
 
     def menu_callback(self, widget):
-        """
+        '''
         Invoked when the menu button is clicked.
         
         @param widget: Not used.
         @return: Always return False
-        """
+        '''
         if self.menu_button_callback:
             self.menu_button_callback(widget)
 
         return False
 
     def set_menu_callback(self, callback):
-        """
+        '''
         Set the menu_button_callback function.
         
         @param callback: A function which is invoked when the menu button is clicked, 
         this callback just accept one argument, argument is gtk.widget.
-        """
+        '''
         self.menu_button_callback = callback

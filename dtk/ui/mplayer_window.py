@@ -32,7 +32,7 @@ from utils import (cairo_state, propagate_expose, set_cursor,
                    enable_shadow)
 
 class MplayerWindow(WindowBase):
-    """
+    '''
     Special Window class for mplayer.
 
     Generally speaking, compared with Window class, it uses a different shadow mechanism.
@@ -49,19 +49,19 @@ class MplayerWindow(WindowBase):
     @undocumented: motion_notify
     @undocumented: double_click_window
     @undocumented: monitor_window_state
-    """
+    '''
 	
     def __init__(self, 
                  enable_resize=False, 
                  shadow_radius=6, 
                  window_type=gtk.WINDOW_TOPLEVEL):
-        """
+        '''
         Initialise the Window class.
 
         @param enable_resize: If True, the window will be set resizable. By default, it's False.
         @param shadow_radius: The radius of the shadow.
         @param window_type: A flag of type gtk._gtk.WindowType, which indicates the type of the window. By default, it's gtk.WINDOW_TOPLEVEL.
-        """
+        '''
         # Init.
         WindowBase.__init__(self, window_type)
         self.shadow_radius = shadow_radius
@@ -112,12 +112,12 @@ class MplayerWindow(WindowBase):
             self.window_shadow.connect("motion-notify-event", self.motion_notify)
         
     def adjust_window_shadow(self, widget, event):
-        """
+        '''
         Internal function to adjust postion and size of the shadow of the window.
 
         @param widget: the widget of type gtk.Widget.
         @param event: the event of gtk.gdk.Event.
-        """
+        '''
         if enable_shadow(self) and self.shadow_visible:    
             (x, y) = self.get_position()
             (width, height) = self.get_size()
@@ -128,23 +128,23 @@ class MplayerWindow(WindowBase):
                 )
         
     def show_window(self):
-        """
+        '''
         Show the window.
-        """
+        '''
         self.show_all()
         
         if enable_shadow(self) and self.shadow_visible:
             self.window_shadow.show_all()
         
     def expose_window(self, widget, event):
-        """
+        '''
         Internal function to expose the window.
 
         @param widget: A window of type Gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
 
         @return: Always return True.
-        """
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -185,21 +185,21 @@ class MplayerWindow(WindowBase):
         return True
     
     def set_window_shape(self, shape_flag):
-        """
+        '''
         Enable window shape.
 
         @param shape_flag: The flag that indicates the shape.
-        """
+        '''
         self.shape_flag = shape_flag
         self.shape_window(self, self.get_allocation())
         
     def shape_window(self, widget, rect):
-        """
+        '''
         Internal function to draw the shaped window.
 
         @param widget: A widget of type gtk.Widget.
         @param rect: The bounding region of the window.
-        """
+        '''
         if widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
@@ -239,12 +239,12 @@ class MplayerWindow(WindowBase):
                 self.window_shadow.queue_draw()
             
     def shape_window_shadow(self, widget, rect):
-        """
+        '''
         Internal function to draw the shaped window's shadow.
 
         @param widget: A widget of type gtk.Widget.
         @param rect: The bounding region of the window.
-        """
+        '''
         if rect.width > 0 and rect.height > 0:
             # Init.
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
@@ -290,12 +290,12 @@ class MplayerWindow(WindowBase):
                 self.window_shadow.queue_draw()
             
     def expose_window_shadow(self, widget, event):
-        """
+        '''
         Internal fucntion to expose the window shadow.
 
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
-        """
+        '''
         if self.shadow_is_visible:
             # Init.
             cr = widget.window.cairo_create()
@@ -311,53 +311,53 @@ class MplayerWindow(WindowBase):
             draw_window_shadow(cr, x, y, w, h, self.shadow_radius, self.shadow_padding, ui_theme.get_shadow_color("window_shadow"))
     
     def hide_shadow(self):
-        """
+        '''
         Hide the window shadow.
-        """
+        '''
         self.shadow_is_visible = False
         
         if enable_shadow(self) and self.shadow_visible:
             self.window_shadow.hide_all()
         
     def show_shadow(self):
-        """
+        '''
         Show the window shadow.
-        """
+        '''
         self.shadow_is_visible = True
         
         if enable_shadow(self) and self.shadow_visible:
             self.window_shadow.show_all()
         
     def monitor_window_state(self, widget, event):
-        """
+        '''
         Monitor window state, add shadow when window at maximized or fullscreen status. Otherwise hide shadow.
 
         @param widget: The window of type gtk.Widget.
         @param event: The event of gtk.gdk.Event.
-        """
+        '''
         super(MplayerWindow, self).monitor_window_state(widget, event)
         
         self.adjust_window_shadow(widget, event)    
             
     def motion_notify(self, widget, event):
-        """
+        '''
         Internal callback for `motion-notify-event` signal.
 
         @param widget: A widget of gtk.Widget.
         @param event: The motion-notify-event of type gtk.gdk.Event
-        """
+        '''
         if self.enable_resize and self.shadow_is_visible:
             self.cursor_type = self.get_cursor_type(event)
             set_cursor(self.window_shadow, self.cursor_type)
             
     def get_cursor_type(self, event):
-        """
+        '''
         Get the cursor position.
 
         @param event: An event of type gtk.gdk.Event.
 
         @return: If the cursor is on the frame of the window, return the cursor position. Otherwise return None.
-        """
+        '''
         # Get event coordinate.
         (ex, ey) = get_event_root_coords(event)
         
@@ -371,11 +371,11 @@ class MplayerWindow(WindowBase):
         return self.get_cursor_type_with_coordinate(ex, ey, wx, wy, ww, wh)
         
     def get_shadow_size(self):
-        """
+        '''
         Get the shadow size.
 
         @return: Always return (0, 0)
-        """
+        '''
         return (0, 0)
     
 gobject.type_register(MplayerWindow)

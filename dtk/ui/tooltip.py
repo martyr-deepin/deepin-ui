@@ -220,7 +220,7 @@ class TooltipInfo:
     quickshow_delay = 2500
 
 def generate_tooltip_content():
-    """ generate child widget and update the TooltipInfo"""
+    ''' generate child widget and update the TooltipInfo'''
     if TooltipInfo.widget == TooltipInfo.prewidget and TooltipInfo.alignment.child and not TooltipInfo.need_update:
         return
 

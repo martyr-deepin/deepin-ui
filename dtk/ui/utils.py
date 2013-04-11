@@ -471,12 +471,12 @@ def color_hex_to_rgb(color):
     return (int(color[:2], 16), int(color[2:4], 16), int(color[4:], 16)) 
     
 def color_hex_to_cairo(color):
-    """ 
+    ''' 
     Convert a html (hex) RGB value to cairo color. 
      
     @param color: The color to convert. 
     @return: A color in cairo format, (red, green, blue). 
-    """ 
+    ''' 
     gdk_color = gtk.gdk.color_parse(color)
     return (gdk_color.red / 65535.0, gdk_color.green / 65535.0, gdk_color.blue / 65535.0)
 
@@ -490,13 +490,13 @@ def color_rgb_to_hex(rgb_color):
     return "#%02X%02X%02X" % rgb_color
 
 def color_rgb_to_cairo(color): 
-    """ 
+    ''' 
     Convert a 8 bit RGB value to cairo color. 
      
     @type color: a triple of integers between 0 and 255 
     @param color: The color to convert. 
     @return: A color in cairo format. 
-    """ 
+    ''' 
     return (color[0] / 255.0, color[1] / 255.0, color[2] / 255.0) 
 
 def get_match_parent(widget, match_types):
