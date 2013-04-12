@@ -1675,9 +1675,16 @@ class TreeView(gtk.VBox):
             (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
             vadjust = self.scrolled_window.get_vadjustment()
             highlight_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:item_index])) 
-            if offset_y > highlight_row_height_count or offset_y + vadjust.get_page_size() < highlight_row_height_count:
-                vadjust.set_value(max(vadjust.get_lower(), 
-                                      highlight_row_height_count - self.visible_items[item_index].get_height()))
+            
+            max_height = vadjust.get_upper() - vadjust.get_page_size()
+            page_height = vadjust.get_value() + vadjust.get_page_size()
+            
+            # Don't greater than vadjustment upper value.
+            if highlight_row_height_count > max_height:
+                highlight_row_height_count = max_height
+                
+            if vadjust.get_value >= highlight_row_height_count  or page_height <= highlight_row_height_count:
+                vadjust.set_value(max(vadjust.get_lower(), highlight_row_height_count))
                     
     def get_highlight_item(self):
         return self.highlight_item
