@@ -301,9 +301,9 @@ class HScalebar(gtk.Button):
             cr.fill()
 
     def __progressbar_scroll_event(self, widget, event):
-        if event.direction == gtk.gdk.SCROLL_UP or event.direction == gtk.gdk.SCROLL_LEFT:
+        if event.direction == gtk.gdk.SCROLL_DOWN or event.direction == gtk.gdk.SCROLL_LEFT:
             step = -5
-        elif event.direction == gtk.gdk.SCROLL_DOWN or event.direction == gtk.gdk.SCROLL_RIGHT:
+        elif event.direction == gtk.gdk.SCROLL_UP or event.direction == gtk.gdk.SCROLL_RIGHT:
             step = 5
         else:
             step = 0
