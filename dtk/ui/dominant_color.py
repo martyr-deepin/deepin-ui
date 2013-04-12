@@ -57,7 +57,6 @@ def get_dominant_color(image_path):
     index_max = scipy.argmax(counts)                    # find most frequent
     peak = codes[index_max]
     colour = ''.join(chr(c) for c in peak).encode('hex')
-    # print 'most frequent is %s (#%s)' % (peak, colour)
     
     return "#%s" % (colour[0:6])
 
