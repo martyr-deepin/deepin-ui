@@ -319,6 +319,16 @@ def draw_text(cr, markup,
     @param border_radious: Border radious, default is None.
     @param border_color: Border color, default is None.
     @param wrap_width: Wrap width of text, default is None.
+    @param underline: Whether draw underline for text, default is False.
+    @param vertical_alignment: Vertical alignment value, default is TEXT_ALIGN_MIDDLE, can use below value:
+     - TEXT_ALIGN_TOP
+     - TEXT_ALIGN_MIDDLE
+     - TEXT_ALIGN_BOTTOM
+    @param clip_line_count: The line number to clip text area, if set 2, all lines that above 2 will clip out, default is None.
+    @param ellipsize: Ellipsize style of text when text width longer than draw area, it can use below value:
+     - pango.ELLIPSIZE_START
+     - pango.ELLIPSIZE_CENTER
+     - pango.ELLIPSIZE_END
     '''
     if border_radious == None and border_color == None and gaussian_radious == None and gaussian_color == None:
         render_text(cr, markup, x, y, w, h, text_size, text_color, text_font, alignment,
@@ -404,6 +414,16 @@ def render_text(cr, markup,
     @param text_font: Text font, default is DEFAULT_FONT.
     @param alignment: Font alignment option, default is pango.ALIGN_LEFT. You can set pango.ALIGN_MIDDLE or pango.ALIGN_RIGHT.
     @param wrap_width: Wrap width of text, default is None.
+    @param underline: Whether draw underline for text, default is False.
+    @param vertical_alignment: Vertical alignment value, default is TEXT_ALIGN_MIDDLE, can use below value:
+     - TEXT_ALIGN_TOP
+     - TEXT_ALIGN_MIDDLE
+     - TEXT_ALIGN_BOTTOM
+    @param clip_line_count: The line number to clip text area, if set 2, all lines that above 2 will clip out, default is None.
+    @param ellipsize: Ellipsize style of text when text width longer than draw area, it can use below value:
+     - pango.ELLIPSIZE_START
+     - pango.ELLIPSIZE_CENTER
+     - pango.ELLIPSIZE_END
     '''
     with cairo_state(cr):
         # Set color.
@@ -698,7 +718,7 @@ def draw_radial_round(cr, x, y, r, color_infos):
 
 def draw_blank_mask(cr, x, y, w, h):
     '''
-    Draw blank mask, use for default mask function.
+    Draw blank mask, use for as class interfaces for default mask function.
     
     @param cr: Cairo context.
     @param x: X coordiante of rectangle area.
@@ -707,6 +727,3 @@ def draw_blank_mask(cr, x, y, w, h):
     @param h: Width of rectangle area.
     '''
     pass
-
-
-
