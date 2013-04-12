@@ -23,7 +23,7 @@
 from dominant_color import get_dominant_color
 from cache_pixbuf import CachePixbuf
 from deepin_utils.config import Config
-from constant import SHADE_SIZE, COLOR_SEQUENCE
+from constant import SHADOW_SIZE, COLOR_SEQUENCE
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from deepin_utils.file import create_directory, remove_file, touch_file, remove_directory
 from utils import color_hex_to_cairo, find_similar_color
@@ -425,9 +425,9 @@ class SkinConfig(gobject.GObject):
         if (background_width + background_x) < render_width:
             draw_hlinear(
                 cr,
-                x + (background_width + background_x) - SHADE_SIZE,
+                x + (background_width + background_x) - SHADOW_SIZE,
                 y,
-                SHADE_SIZE,
+                SHADOW_SIZE,
                 (background_height + background_y),
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
@@ -444,9 +444,9 @@ class SkinConfig(gobject.GObject):
             draw_vlinear(
                 cr,
                 x,
-                y + (background_height + background_y) - SHADE_SIZE,
+                y + (background_height + background_y) - SHADOW_SIZE,
                 (background_width + background_x),
-                SHADE_SIZE,
+                SHADOW_SIZE,
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
             

@@ -23,7 +23,7 @@
 from button import Button, ImageButton, ToggleButton, ActionButton
 from cache_pixbuf import CachePixbuf
 from deepin_utils.config import Config
-from constant import SHADE_SIZE, COLOR_SEQUENCE
+from constant import SHADOW_SIZE, COLOR_SEQUENCE
 from dialog import ConfirmDialog, OpenFileDialog, SaveFileDialog
 from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
@@ -968,7 +968,7 @@ class SkinEditArea(gtk.EventBox):
         self.shadow_radius = 6
         self.frame_radius = 2
         self.shadow_padding = self.shadow_radius - self.frame_radius
-        self.shadow_size = int(self.eval_scale(SHADE_SIZE))
+        self.shadow_size = int(self.eval_scale(SHADOW_SIZE))
         self.min_resize_width = self.min_resize_height = self.shadow_size
         
         self.drag_start_x = 0

@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PIL import Image
-from constant import SHADE_SIZE
+from constant import SHADOW_SIZE
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from utils import propagate_expose, color_hex_to_cairo, find_similar_color
 import gtk
@@ -103,12 +103,12 @@ class ColorTestWidget(gtk.DrawingArea):
         
         # Draw mask.
         draw_vlinear(
-            cr, rect.x, rect.y + self.pixbuf.get_height() - SHADE_SIZE, rect.width, SHADE_SIZE,
+            cr, rect.x, rect.y + self.pixbuf.get_height() - SHADOW_SIZE, rect.width, SHADOW_SIZE,
             [(0, (self.background_color, 0)),
              (1, (self.background_color, 1))])
         
         draw_hlinear(
-            cr, rect.x + self.pixbuf.get_width() - SHADE_SIZE, rect.y, SHADE_SIZE, rect.height,
+            cr, rect.x + self.pixbuf.get_width() - SHADOW_SIZE, rect.y, SHADOW_SIZE, rect.height,
             [(0, (self.background_color, 0)),
              (1, (self.background_color, 1))])
 

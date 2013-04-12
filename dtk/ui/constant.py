@@ -27,6 +27,7 @@ MENU_ITEM_RADIUS = 2            # menu item radius
 DEFAULT_WINDOW_WIDTH = 890      # default window width
 DEFAULT_WINDOW_HEIGHT = 629     # default window height
 
+# Edge dictionary to use in deepin-ui unitive.
 EDGE_DICT = {
     gtk.gdk.TOP_LEFT_CORNER : gtk.gdk.WINDOW_EDGE_NORTH_WEST,
     gtk.gdk.TOP_SIDE : gtk.gdk.WINDOW_EDGE_NORTH,
@@ -50,7 +51,7 @@ WIDGET_POS_CENTER = 8
 
 def get_system_font():
     '''
-    Get system font.
+    Helper function to get system font when deepin-ui load.
     
     This function will create invisible gtk window to get system font, window destroy after detect.
     
@@ -64,19 +65,25 @@ def get_system_font():
     
     return font_name
 
-DEFAULT_FONT = get_system_font()
+DEFAULT_FONT = get_system_font() # get system font
 
+# Align alias. 
 ALIGN_START = pango.ALIGN_LEFT
 ALIGN_MIDDLE = pango.ALIGN_CENTER
 ALIGN_END = pango.ALIGN_RIGHT
 
+# Button status.
 BUTTON_NORMAL = 0
 BUTTON_PRESS = 1
 BUTTON_HOVER = 2
 
+# Default font size of deepin-ui.
 DEFAULT_FONT_SIZE = 9
-SHADE_SIZE = 200
 
+# Shadow size.
+SHADOW_SIZE = 200
+
+# Color name dictionary. 
 COLOR_NAME_DICT = {
         "dark_grey" : "#333333",
         "red" : "#FF0000",
@@ -99,6 +106,8 @@ COLOR_SEQUENCE = ["red", "orange", "gold", "yellow", "green_yellow", "chartreuse
 SIMILAR_COLOR_SEQUENCE = ["red", "orange", "gold", "yellow", "green_yellow", "chartreuse",
                           "deep_pink", "purple", "dark_purple", "blue", "dodger_blue", "cyan"]
 
+# Version.
 VERSION = "1.0.1"
 
+# Size of paned handle in deepin-ui.
 PANED_HANDLE_SIZE = 11
