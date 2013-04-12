@@ -95,11 +95,13 @@ class ColorSelectDialog(DialogBox):
     DEFAULT_COLOR_LIST = ["#000000", "#808080", "#E20417", "#F29300", "#FFEC00", "#95BE0D", "#008F35", "#00968F", "#FFFFFF", "#C0C0C0", "#E2004E", "#E2007A", "#920A7E", "#162883", "#0069B2", "#009DE0"]
 	
     def __init__(self, 
+                 init_color="#FFFFFF",
                  confirm_callback=None, 
                  cancel_callback=None):
         '''
         Initialize ColorSelectDialog class.
         
+        @param init_color: Initialize color of dialog.
         @param confirm_callback: Callback when user click OK, this callback accept one argument, color string.
         @param cancel_callback: Callback when user click cancel, this callback don't accept any argument.
         '''
@@ -113,7 +115,7 @@ class ColorSelectDialog(DialogBox):
         self.color_align.set_padding(10, 0, 8, 8)
         self.color_align.add(self.color_box)
         self.color_hsv = HSV()
-        self.color_string = self.color_hsv.get_color_string()
+        self.color_string = init_color
         (self.color_r, self.color_g, self.color_b) = self.color_hsv.get_rgb_color()
         self.color_hsv.get_hsv_widget().connect(
             "button-release-event", 
@@ -133,7 +135,7 @@ class ColorSelectDialog(DialogBox):
         self.color_display_box = gtk.VBox()
         self.color_display_button = gtk.Button()
         self.color_display_button.connect("expose-event", self.expose_display_button)
-        self.color_display_button.set_size_request(70, 49)
+        self.color_display_button.set_size_request(70, 58)
         self.color_display_align = gtk.Alignment()
         self.color_display_align.set(0.5, 0.5, 1.0, 1.0)
         self.color_display_align.set_padding(5, 5, 5, 5)
@@ -280,7 +282,8 @@ class ColorSelectDialog(DialogBox):
         
         if clear_highlight:
             self.color_select_view.clear_highlight()
-        
+            
+        self.color_rgb_box.queue_draw()    
         self.color_display_button.queue_draw()
         
 gobject.type_register(ColorSelectDialog)
@@ -484,7 +487,7 @@ class ColorButton(gtk.VBox):
         @param widget: ColorButton widget.
         @param event: Button press event.
         '''
-        dialog = ColorSelectDialog(self.select_color)
+        dialog = ColorSelectDialog(self.color, self.select_color)
         dialog.show_all()
         place_center(self.get_toplevel(), dialog)
         
