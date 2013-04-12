@@ -139,6 +139,31 @@ class DialogBox(Window):
          - DIALOG_MASK_GLASS_PAGE       glass mask style, similar DIALOG_MASK_SINGLE_PAGE but with different color.
          - DIALOG_MASK_MULTIPLE_PAGE    multiple mask style, use in multiple page that background mask not include dialog button area.
          - DIALOG_MASK_TAB_PAGE         tab mask style, use in preference page that background mask not include button area.
+        @param close_callback: The callback that will call when close dialog box, callback don't need input argument.
+        @param modal: If modal is True the window becomes modal. Modal windows prevent interaction with other windows in the same application. 
+        @param window_hint: Sets the window type hint, default is gtk.gdk.WINDOW_TYPE_HINT_DIALOG, it allow use below value:
+         - gtk.gdk.WINDOW_TYPE_HINT_NORMAL                          A normal toplevel window.
+         - gtk.gdk.WINDOW_TYPE_HINT_DIALOG                          A dialog window.
+         - gtk.gdk.WINDOW_TYPE_HINT_MENU                            A window used to implement a menu.
+         - gtk.gdk.WINDOW_TYPE_HINT_TOOLBAR                         A window used to implement a toolbar.
+         - gtk.gdk.WINDOW_TYPE_HINT_SPLASHSCREEN                    A window used to implement a splash screen
+         - gtk.gdk.WINDOW_TYPE_HINT_UTILITY
+         - gtk.gdk.WINDOW_TYPE_HINT_DOCK                            A window used to implement a docking bar.
+         - gtk.gdk.WINDOW_TYPE_HINT_DESKTOP                         A window used to implement a desktop.
+         - gtk.gdk.WINDOW_TYPE_HINT_DROPDOWN_MENU                   A menu that belongs to a menubar.
+         - gtk.gdk.WINDOW_TYPE_HINT_POPUP_MENU                      A menu that does not belong to a menubar, e.g. a context menu.
+         - gtk.gdk.WINDOW_TYPE_HINT_TOOLTIP                         A tooltip.
+         - gtk.gdk.WINDOW_TYPE_HINT_NOTIFICATION                    A notification - typically a "bubble" that belongs to a status icon.
+         - gtk.gdk.WINDOW_TYPE_HINT_COMBO                           A popup from a combo box.
+         - gtk.gdk.WINDOW_TYPE_HINT_DND                             A window that is used to implement a DND cursor.
+        @param window_pos: The window position of window, it can use below value:
+         - gtk.WIN_POS_NONE                      No influence is made on placement.
+         - gtk.WIN_POS_CENTER                    Windows should be placed in the center of the screen.
+         - gtk.WIN_POS_MOUSE                     Windows should be placed at the current mouse position.
+         - gtk.WIN_POS_CENTER_ALWAYS             Keep window centered as it changes size, etc.
+         - gtk.WIN_POS_CENTER_ON_PARENT          Center the window on its transient parent (see the gtk.Window.set_transient_for()) method.        
+        @param skip_taskbar_hint: Set True to make desktop environment not to display the window in the task bar, default is True.
+        @param resizable: Whether allowed user resizable dialog, default is False.
         '''
         Window.__init__(self, resizable)
         self.default_width = default_width
@@ -350,7 +375,8 @@ class ConfirmDialog(DialogBox):
                  confirm_callback=None, 
                  cancel_callback=None, 
                  cancel_first=True, 
-                 message_text_size=11):
+                 message_text_size=11,
+                 ):
         '''
         Initialize ConfirmDialog class.
         
@@ -360,6 +386,8 @@ class ConfirmDialog(DialogBox):
         @param default_height: Dialog height, default is 145 pixel.
         @param confirm_callback: Callback when user click confirm button.
         @param cancel_callback: Callback when user click cancel button.
+        @param cancel_first: Set as True if to make cancel button before confirm button, default is True.
+        @param message_text_size: Text size of message, default is 11.
         '''
         # Init.
         DialogBox.__init__(self, title, default_width, default_height, DIALOG_MASK_SINGLE_PAGE)
@@ -412,6 +440,7 @@ class InputDialog(DialogBox):
     
     @undocumented: click_confirm_button
     @undocumented: click_cancel_button
+    @undocumented: m_key_press
     '''
 	
     def __init__(self, 
@@ -431,6 +460,7 @@ class InputDialog(DialogBox):
         @param default_height: Height of dialog, default is 330 pixel.
         @param confirm_callback: Callback when user click confirm button, this callback accept one argument that return by user input text.
         @param cancel_callback: Callback when user click cancel button, this callback not need argument.
+        @param cancel_first: Set as True if to make cancel button before confirm button, default is True.
         '''
         # Init.
         DialogBox.__init__(self, title, default_width, default_height, DIALOG_MASK_SINGLE_PAGE)
@@ -471,9 +501,6 @@ class InputDialog(DialogBox):
 
         return True
     
-    '''
-    TODO: Add press 'Enter' key binding to confirm_button
-    '''
     def m_press_return(self):
         self.click_confirm_button()
 
@@ -510,7 +537,12 @@ class OpenFileDialog(gtk.FileChooserDialog):
     Simple dialog to open file.
     '''
 	
-    def __init__(self, title, parent, ok_callback=None, cancel_callback=None):
+    def __init__(self, 
+                 title, 
+                 parent, 
+                 ok_callback=None, 
+                 cancel_callback=None,
+                 ):
         '''
         Initialize OpenFileDialog class.
         
@@ -546,7 +578,12 @@ class SaveFileDialog(gtk.FileChooserDialog):
     Simple dialog to save file.
     '''
 	
-    def __init__(self, title, parent, ok_callback=None, cancel_callback=None):
+    def __init__(self, 
+                 title, 
+                 parent, 
+                 ok_callback=None, 
+                 cancel_callback=None,
+                 ):
         '''
         Initialize SaveFileDialog class.
         
