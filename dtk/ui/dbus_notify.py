@@ -34,8 +34,25 @@ def check_dbus(bus, interface):
 DEFAULT_TIMEOUT = 3
 
 class DbusNotify(object):
+    '''
+    Dbus notify interface.
     
-    def __init__(self, app_name, icon=None, timeout=None):
+    @undocumented: set_icon_from_pixbuf
+    @undocumented: pixbuf_to_dbus
+    '''
+    
+    def __init__(self, 
+                 app_name, 
+                 icon=None, 
+                 timeout=None,
+                 ):
+        '''
+        Initialize DbusNotify class.
+        
+        @param app_name: The name of application.
+        @param icon: The name of icon, default is None, it will use app_name as icon name if set `icon` with None.
+        @param timeout: The timeout of disappear (in seconds), default is None.
+        '''
         self.app_name = app_name
         self.icon = icon or app_name
         self.summary = ""
@@ -45,9 +62,19 @@ class DbusNotify(object):
         self.timeout = timeout or DEFAULT_TIMEOUT
         
     def set_summary(self, summary):    
+        '''
+        Set summary of notify message.
+        
+        @param summary: Summary string.
+        '''
         self.summary = summary
         
     def set_body(self, body):    
+        '''
+        Set body of notify message.
+        
+        @param body: Body string.
+        '''
         self.body = body
         
     def set_icon_from_pixbuf(self, pixbuf):
@@ -57,9 +84,17 @@ class DbusNotify(object):
         pass
         
     def set_icon_from_path(self, image_path):    
+        '''
+        Set icon file path.
+        
+        @param image_path: The filepath of image.
+        '''
         self.hints["image-path"] = image_path
         
     def notify(self):
+        '''
+        Call notifications dbus service to display notify message.
+        '''
         bus = dbus.SessionBus()
         if not check_dbus(bus, NOTIFICATIONS_SERVICE_NAME):
             return False
