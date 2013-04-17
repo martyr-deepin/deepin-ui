@@ -29,23 +29,54 @@ import gobject
 import gtk
 
 class EntryTreeView(TreeView):
+    '''
+    EntryTreeView class.
+    
+    @undocumented: button_press
+    @undocumented: button_release
+    @undocumented: motion_notify
+    @undocumented: double_click
+    @undocumented: edit_done
+    @undocumented: entry_focus_changed
+    @undocumented: release_item
+    '''
+    
     __gsignals__ = {
         "select"  : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.GObject, int)),
         "unselect": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "double-click" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.GObject, int))}
     
     def __init__(self, 
-            items=[],
-            drag_data=None,
-            enable_hover=False,
-            enable_highlight=True,
-            enable_multiple_select=False,
-            enable_drag_drop=False,
-            drag_icon_pixbuf=None,
-            start_drag_offset=50,
-            mask_bound_height=12,
-            right_space=0,
-            top_bottom_space=3):
+                 items=[],
+                 drag_data=None,
+                 enable_hover=False,
+                 enable_highlight=True,
+                 enable_multiple_select=False,
+                 enable_drag_drop=False,
+                 drag_icon_pixbuf=None,
+                 start_drag_offset=50,
+                 mask_bound_height=12,
+                 right_space=0,
+                 top_bottom_space=3,
+                 ):
+        '''
+        Initialize EntryTreeView class.
+        
+        @param items: Items for EntryTreeView, default is empty list.
+        @param drag_data: Data use for DND, format is (targets, actions, button)
+         - targets: the list of targets supported by the widget drag 
+         - actions: the allowed drag operations for the drag
+         - button: the button the user pressed to start the drag
+        @param enable_hover: Whether support hover action, default is False.
+        @param enable_highlight: Whether support highlight action, default is True.
+        @param enable_multiple_select: Whether support multiple selection, default is False.
+        @param enable_drag_drop: Whether support DND, default is False.
+        @param drag_icon_pixbuf: The icon when drag items.
+        @param start_drag_offset: The offset to trigger drag action.
+        @param mask_bound_height: The height of mask bound.
+        @param right_space: Right space, default is 0.
+        @param top_bottom_space: Vertical space, default is 3.
+        '''
         super(EntryTreeView, self).__init__(
             items, drag_data, enable_hover,
             enable_highlight, enable_multiple_select,
@@ -203,6 +234,25 @@ class EntryTreeView(TreeView):
                 self.set_drag_row(None)
         
 class EntryTreeItem(TreeItem):
+    '''    
+    EntryTreeItem class.
+    
+    @undocumented: entry_buffer_changed
+    @undocumented: get_height
+    @undocumented: get_column_widths
+    @undocumented: get_column_renders
+    @undocumented: render_title
+    @undocumented: render_content
+    @undocumented: unselect
+    @undocumented: select
+    @undocumented: hover
+    @undocumented: unhover
+    @undocumented: single_click
+    @undocumented: double_click
+    @undocumented: expand
+    @undocumented: unexpand
+    '''    
+    
     def __init__(self, title, content):
         TreeItem.__init__(self)
         self.title = title
@@ -304,7 +354,3 @@ class EntryTreeItem(TreeItem):
         self.delete_items_callback(self.child_items)
 
 gobject.type_register(EntryTreeItem)
-
-'''
-Please play with the demo entry_treeview_demo.py
-'''

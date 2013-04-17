@@ -241,6 +241,14 @@ class Menu(Window):
         self.connect("show", self.init_menu)
         self.connect("hide", self.hide_menu)
         self.connect("realize", self.realize_menu)
+
+    def set_mutual_icons(self, index, icons):
+        # deepin-media-player useing.
+        # other no use.
+        for item in self.menu_items:
+            item.set_item_icons(None)
+        #
+        self.menu_items[index].set_item_icons(icons)
         
     def hide_menu(self, widget):
         '''
@@ -547,6 +555,13 @@ class MenuItem(object):
             self.create_menu_item()
         else:
             self.create_separator_item()
+
+    def set_item_icons(self, icons):
+        # deepin media player modify icons.
+        if self.item:
+            (item_icons, item_content, item_node) = self.item[0:3]
+            item_icons = icons
+            self.item = (item_icons, item_content, item_node)
         
     def create_separator_item(self):
         '''
