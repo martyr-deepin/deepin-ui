@@ -241,6 +241,14 @@ class Menu(Window):
         self.connect("show", self.init_menu)
         self.connect("hide", self.hide_menu)
         self.connect("realize", self.realize_menu)
+
+    def set_mutual_icons(self, index, icons):
+        # deepin-media-player useing.
+        # other no use.
+        for item in self.menu_items:
+            item.set_item_icons(None)
+        #
+        self.menu_items[index].set_item_icons(icons)
         
     def hide_menu(self, widget):
         '''
