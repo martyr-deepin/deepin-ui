@@ -248,6 +248,7 @@ def start_desktop_file(desktop_path):
     Start application with given desktop path.
     
     @param desktop_path: The path of desktop file.
+    @return: Return True if launch application successfully, otherwise return error string.
     '''
     if not os.path.exists(desktop_path):
         return "Desktop file not exists: %s" % desktop_path
