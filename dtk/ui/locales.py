@@ -42,9 +42,7 @@ if not os.path.exists(LOCALE_DIR):
 
 _ = None    
 try:
-    gettext.bindtextdomain("deepin-ui", LOCALE_DIR)
-    gettext.textdomain("deepin-ui")
-    _ = gettext.gettext
+    _ = gettext.translation("deepin-ui", LOCALE_DIR).gettext
 except Exception, e:
     print "module locales got error: %s" % (e)
     traceback.print_exc(file=sys.stdout)
