@@ -41,7 +41,7 @@ from utils import (
         color_rgb_to_hex, 
         cairo_disable_antialias,
         place_center)
-from deepin_utils.core import is_hex_color
+from deepin_utils.core import is_hex_color, is_int
 
 class HSV(gtk.ColorSelection):
     '''
@@ -161,19 +161,22 @@ class ColorSelectDialog(DialogBox):
         self.color_rgb_box = gtk.VBox()
         self.color_r_box = gtk.HBox()
         self.color_r_label = Label(_("Red: "))
-        self.color_r_spin = SpinBox(self.color_r, 0, 255, 1)
+        self.color_r_spin = SpinBox(self.color_r, 0, 255, 1,
+                                    check_text=self.is_color_value)
         self.color_r_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_r_box.pack_start(self.color_r_label, False, False)
         self.color_r_box.pack_start(self.color_r_spin, False, False)
         self.color_g_box = gtk.HBox()
         self.color_g_label = Label(_("Green: "))
-        self.color_g_spin = SpinBox(self.color_g, 0, 255, 1)
+        self.color_g_spin = SpinBox(self.color_g, 0, 255, 1,
+                                    check_text=self.is_color_value)
         self.color_g_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_g_box.pack_start(self.color_g_label, False, False)
         self.color_g_box.pack_start(self.color_g_spin, False, False)
         self.color_b_box = gtk.HBox()
         self.color_b_label = Label(_("Blue: "))
-        self.color_b_spin = SpinBox(self.color_b, 0, 255, 1)
+        self.color_b_spin = SpinBox(self.color_b, 0, 255, 1,
+                                    check_text=self.is_color_value)
         self.color_b_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_b_box.pack_start(self.color_b_label, False, False)
         self.color_b_box.pack_start(self.color_b_spin, False, False)
@@ -213,6 +216,9 @@ class ColorSelectDialog(DialogBox):
         self.body_box.pack_start(self.color_align, True, True)
         
         self.update_color_info(self.color_string)
+        
+    def is_color_value(self, string):
+        return len(string) == 0 or (is_int(string) and 0 <= int(string) <= 255)
         
     def click_confirm_button(self):
         '''

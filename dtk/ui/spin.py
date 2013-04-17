@@ -65,7 +65,9 @@ class SpinBox(gtk.VBox):
                  lower=0, 
                  upper=100, 
                  step=10, 
-                 default_width=55):
+                 default_width=55,
+                 check_text=is_float,
+                 ):
         '''
         Initialize SpinBox class.
         
@@ -74,6 +76,7 @@ class SpinBox(gtk.VBox):
         @param upper: Upper value, default is 100.
         @param step: Step value, default is 10.
         @param default_width: Default with, default is 55 pixel.
+        @param check_text: The check function, default is is_float to check value is float.
         '''
         gtk.VBox.__init__(self)
         self.current_value = value
@@ -101,7 +104,7 @@ class SpinBox(gtk.VBox):
         button_box.pack_start(arrow_up_button, False, False)
         button_box.pack_start(arrow_down_button, False, False)
         self.value_entry = Entry(str(value))
-        self.value_entry.check_text = is_float
+        self.value_entry.check_text = check_text
         self.value_entry.connect("press-return", lambda entry: self.update_and_emit(int(entry.get_text())))
         
         self.main_align = gtk.Alignment()
