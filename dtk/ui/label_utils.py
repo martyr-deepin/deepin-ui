@@ -25,6 +25,11 @@ import tooltip as tooltip
 __all__ = ["show_label_tooltip"]
 
 def show_label_tooltip(label):
+    '''
+    Make label show tooltip.
+    
+    @param label: The label widget to display it's content as tooltip.
+    '''
     label.update_size_hook = set_label_tooltip_hook
 
 def set_label_tooltip_hook(label, label_width, expect_label_width):
