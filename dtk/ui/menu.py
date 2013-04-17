@@ -547,6 +547,12 @@ class MenuItem(object):
             self.create_menu_item()
         else:
             self.create_separator_item()
+
+    def set_item_icons(self, icons):
+        # deepin media player modify icons.
+        (item_icons, item_content, item_node) = self.item[0:3]
+        item_icons = icons
+        self.item = (item_icons, item_content, item_node)
         
     def create_separator_item(self):
         '''
