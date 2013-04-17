@@ -31,6 +31,9 @@ import time
 file_icon_pixbuf_dict = {}
 
 def get_file_type_dict():
+    '''
+    @return: Return dictionary include file type.
+    '''
     return ([(gio.FILE_TYPE_DIRECTORY, []),
              (gio.FILE_TYPE_SYMBOLIC_LINK, []),
              (gio.FILE_TYPE_MOUNTABLE, []),
@@ -64,6 +67,12 @@ def get_file_icon_pixbuf(filepath, icon_size):
             return icon_theme.load_icon("unknown", icon_size, gtk.ICON_LOOKUP_USE_BUILTIN)
     
 def get_dir_child_num(gfile):
+    '''
+    Get child number with given directory.
+    
+    @param gfile: The directory GFile. 
+    @return: Return number of child files with given directory.
+    '''
     gfile_enumerator = gfile.enumerate_children("standard::*")
     
     # Return empty list if enumerator is None.
@@ -84,6 +93,9 @@ def get_dir_child_infos(dir_path, sort=None, reverse=False, show_hidden=False):
     Get children FileInfos with given directory path.
     
     @param dir_path: Directory path.
+    @param sort: The function to sort files, this function have two arguments:
+     - file_infos: File info list.
+     - reverse: Whether sort files reverse.
     @param show_hidden: Show hidden file or not
     @return: Return a list of gio.Fileinfo.
     '''
@@ -140,6 +152,8 @@ def get_dir_child_files(dir_path, sort_files=None, reverse=False, show_hidden=Fa
     Get children gio.File with given directory path.
 
     @param dir_path: Directory path.
+    @param sort_files: Whether sort files, default is None.
+    @param reverse: Whether sort files reverse, default is False.
     @param show_hidden: Show hidden file or not
     @return: Return a list of gio.File.
     '''
@@ -154,6 +168,9 @@ def get_dir_child_files(dir_path, sort_files=None, reverse=False, show_hidden=Fa
 def sort_file_by_name(file_infos, reverse):
     '''
     Sort file info by name.
+    
+    @param file_infos: The file info list.
+    @param reverse: Whether sort files reverse, default is False.
     '''
     # Init.
     file_info_oreder_dict = collections.OrderedDict(get_file_type_dict())
@@ -172,25 +189,49 @@ def sort_file_by_name(file_infos, reverse):
 def get_gfile_name(gfile):
     '''
     Get name of gfile.
+    
+    @param gfile: The GFile.
+    @return: Return the name with given gfile, use \"standard::name\" to query info from gfile.
     '''
     return gfile.query_info("standard::name").get_name()
 
 def get_gfile_content_type(gfile):
     '''
     Get type of gfile.
+    
+    @param gfile: The GFile.
+    @return: Return content type with given gfile, use \"standard::content-type\" to query info from gfile.
     '''
     return gio.content_type_get_description(gfile.query_info("standard::content-type").get_content_type())
 
 def get_gfile_modification_time(gfile):
+    '''
+    Get modification time.
+    
+    @param gfile: The GFile.
+    @return: Return modified time with given gfile, use \"time::modified\" to query info from gfile.
+    '''
     return time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(gfile.query_info("time::modified").get_modification_time()))
 
 def get_gfile_size(gfile):
+    '''
+    Get size of gfile.
+    
+    @param gfile: The GFile.
+    @return: Return size of gfile, return number if gfile is directory.
+    '''
     if gfile.query_info("standard::type").get_file_type() == gio.FILE_TYPE_DIRECTORY:
         return get_dir_child_num(gfile)
     else:
         return gfile.query_info("standard::size").get_size()
     
 def get_gfile_type(gfile):
+    '''
+    Get type of gfile.
+    
+    @param gfile: The GFile.
+    @return: Return type of gfile.
+    '''
     return gfile.query_info("standard::type").get_file_type()
 
 def is_directory(gfile):
@@ -203,6 +244,11 @@ def is_directory(gfile):
     return gfile.query_info("standard::type").get_file_type() == gio.FILE_TYPE_DIRECTORY
 
 def start_desktop_file(desktop_path):
+    '''
+    Start application with given desktop path.
+    
+    @param desktop_path: The path of desktop file.
+    '''
     if not os.path.exists(desktop_path):
         return "Desktop file not exists: %s" % desktop_path
     else:
