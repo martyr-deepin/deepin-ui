@@ -123,6 +123,7 @@ class EntryBuffer(gobject.GObject):
         self.enable_clear_button = enable_clear_button
         self.is_password_entry = is_password_entry
         self.shown_password = shown_password
+        self.sensitive = True
 
         self.__prop_dict = {}
         self.__prop_dict['cursor-visible'] = True
@@ -443,7 +444,10 @@ class EntryBuffer(gobject.GObject):
 
     def __draw_text(self, cr, layout, context, x, y, offset_x, offset_y):
         cr.move_to(x - offset_x, y + offset_y)                               
-        cr.set_source_rgb(*color_hex_to_cairo(self.text_color))              
+        if self.sensitive:
+            cr.set_source_rgb(*color_hex_to_cairo(self.text_color))              
+        else:
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color("disable_text").get_color()))              
         context.update_layout(layout)                                        
         context.show_layout(layout)
 
@@ -776,6 +780,7 @@ class Entry(gtk.EventBox):
     Entry.
     
     @undocumented: calculate
+    @undocumented: set_sensitive
     @undocumented: get_input_method_cursor_rect
     @undocumented: monitor_entry_content
     @undocumented: realize_entry
@@ -1484,6 +1489,10 @@ class Entry(gtk.EventBox):
 
     def calculate(self):
         self.__calculate_cursor_offset()
+        
+    def set_sensitive(self, sensitive):
+        super(Entry, self).set_sensitive(sensitive)
+        self.entry_buffer.sensitive = sensitive
     
 gobject.type_register(Entry)
 
