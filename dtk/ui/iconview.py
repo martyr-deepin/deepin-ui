@@ -22,7 +22,6 @@
 
 import cairo
 import math
-from constant import DEFAULT_FONT_SIZE
 from draw import draw_vlinear, draw_text
 from keymap import get_keyevent_name
 from skin_config import skin_config
@@ -54,11 +53,13 @@ class IconView(gtk.DrawingArea):
     @undocumented: redraw_item
     @undocumented: get_offset_coordinate
     @undocumented: get_render_item_indexes
+    @undocumented: get_render_item_info
+    @undocumented: return_item
+    @undocumented: draw_background
+    @undocumented: draw_items
+    @undocumented: draw_row_mask
     '''
 	
-    '''
-    TODO: emit motion-item signal, return IconItem left top corner`s (x, y)
-    '''
     __gsignals__ = {
         "items-change" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "lost-focus-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
@@ -83,6 +84,7 @@ class IconView(gtk.DrawingArea):
 
         @param padding_x: Horizontal padding value.
         @param padding_y: Vertical padding value.
+        @param mask_bound_height: The height of mask bound, default is 12 pixels.
         '''
         # Init.
         gtk.DrawingArea.__init__(self)
@@ -371,6 +373,11 @@ class IconView(gtk.DrawingArea):
                                       vadjust.get_value() + vadjust.get_page_size() - self.padding_y))
             
     def set_items(self, items):
+        '''
+        Set items of IconView.
+        
+        @param items: The items that need set.
+        '''
         if items != self.items:
             self.items = items
             self.emit("items-change")
@@ -427,6 +434,11 @@ class IconView(gtk.DrawingArea):
             pass
     
     def set_loading(self, is_loading):
+        '''
+        Set loading status of icon view.
+        
+        @param is_loading: Set as True to make loading status active.
+        '''
         self.is_loading = is_loading
         self.queue_draw()
 
