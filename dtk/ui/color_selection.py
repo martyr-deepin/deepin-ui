@@ -97,17 +97,21 @@ class ColorSelectDialog(DialogBox):
     def __init__(self, 
                  init_color="#FFFFFF",
                  confirm_callback=None, 
-                 cancel_callback=None):
+                 cancel_callback=None,
+                 cancel_first=True, 
+                 ):
         '''
         Initialize ColorSelectDialog class.
         
         @param init_color: Initialize color of dialog.
         @param confirm_callback: Callback when user click OK, this callback accept one argument, color string.
         @param cancel_callback: Callback when user click cancel, this callback don't accept any argument.
+        @param cancel_first: Set as True if to make cancel button before confirm button, default is True.
         '''
         DialogBox.__init__(self, _("Select color"), mask_type=DIALOG_MASK_SINGLE_PAGE)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
+        self.cancel_first = cancel_first
         
         self.color_box = gtk.HBox()
         self.color_align = gtk.Alignment()
@@ -202,7 +206,10 @@ class ColorSelectDialog(DialogBox):
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
         
-        self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
+        if self.cancel_first:
+            self.right_button_box.set_buttons([self.cancel_button, self.confirm_button])
+        else:
+            self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         self.body_box.pack_start(self.color_align, True, True)
         
         self.update_color_info(self.color_string)
