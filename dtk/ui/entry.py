@@ -46,16 +46,26 @@ try:
     DESKTOP_SETTINGS = deepin_gsettings.new(DESKTOP_SETTINGS_CONF)
 except ImportError:
     print "----------Please Install Deepin GSettings Python Binding----------"
-    print "git clone git@github.com:linuxdeepin/deepin-gsettings.git"
+    print "sudo apt-get install deepin-gsettings"
     print "------------------------------------------------------------------"
 
 DEFAULT_CURSOR_BLINK_TIME = 600  # microsecond
 
 class EntryBuffer(gobject.GObject):
     '''
-    EntryBuffer
-    stores text for display in a Entry
+    EntryBuffer class.
+    
+    EntryBuffer is store all status of Entry widget, 
+    to render entry widget in other complex widget, such as TreeView.
+    
+    @undocumented: get_content_size
+    @undocumented: do_set_property
+    @undocumented: do_get_property
+    @undocumented: render
+    @undocumented: m_draw_cursor
+    @undocumented: m_clear_cursor
     '''
+    
     __gproperties__ = {
         'cursor-visible': (gobject.TYPE_BOOLEAN, 'cursor_visible', 'cursor visible',
             True, gobject.PARAM_READWRITE),
@@ -70,7 +80,8 @@ class EntryBuffer(gobject.GObject):
         "insert-pos-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "selection-pos-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())}
     
-    def __init__(self, text='',
+    def __init__(self, 
+                 text='',
                  font=DEFAULT_FONT,
                  font_size=DEFAULT_FONT_SIZE,
                  font_weight='normal',
@@ -82,7 +93,8 @@ class EntryBuffer(gobject.GObject):
                  shown_password=False,
                 ):
         '''
-        text: the buffer content
+        Initialize EntryBuffer class.
+
         @param text: Entry initialize content, default is \"\".
         @param font: font family, default is DEFAULT_FONT.
         @param font_size: font size, default is DEFAULT_FONT_SIZE.
@@ -90,6 +102,9 @@ class EntryBuffer(gobject.GObject):
         @param text_color: Color of text in normal status, a hex string.
         @param text_select_color: Color of text in select status, a hex string.
         @param background_select_color: Color of background in select status, a hex string.
+        @param enable_clear_button: Whether display clear button, default is False.
+        @param is_password_entry: Whether is password entry, default is False.
+        @param shown_password: Whether display password character, default is False.
         '''
         self.__gobject_init__()
         self.buffer = gtk.TextBuffer()
@@ -105,25 +120,16 @@ class EntryBuffer(gobject.GObject):
         self.cursor_y = -1
         self.cursor_pos1 = -1
         self.cursor_pos2 = -1
-        '''
-        TODO: Add clear button
-        '''
         self.enable_clear_button = enable_clear_button
-        '''
-        TODO: shown password or not
-        '''
         self.is_password_entry = is_password_entry
         self.shown_password = shown_password
-        '''
-        property
-        '''
+
         self.__prop_dict = {}
         self.__prop_dict['cursor-visible'] = True
         self.__prop_dict['select-area-visible'] = True
         self.__prop_dict['visibility'] = True
         self.__prop_dict['invisible-char'] = '*'
 
-        # pango layout
         surface = cairo.ImageSurface(cairo.FORMAT_RGB24, 0, 0) 
         cr = cairo.Context(surface)
         pango_cr = pangocairo.CairoContext(cr)
@@ -152,7 +158,8 @@ class EntryBuffer(gobject.GObject):
     
     def set_font_family(self, font_family):
         '''
-        set font family
+        Set font family.
+        
         @param font_family: a string representing the family name.
         '''
         self.font = font_family
@@ -161,15 +168,17 @@ class EntryBuffer(gobject.GObject):
     
     def get_font_family(self):
         '''
-        get font family
-        @return: a string representing the family name.
+        Get font family.
+        
+        @return: Return a string representing the family name.
         '''
         return self.font
     
     def set_font_weight(self, font_weight):
         '''
-        set font weight
-        @param font_weight: the weight for the font description. The value must be one of pango weight. A string type
+        Set font weight.
+        
+        @param font_weight: A weight string for the font description. The value must be one of pango weight. 
         '''
         self.font_weight = font_weight
         self._layout.set_font_description(
@@ -177,15 +186,17 @@ class EntryBuffer(gobject.GObject):
     
     def get_font_weight(self):
         '''
-        get font weight
-        @return: the weight for the font description. A string type
+        Get font weight.
+        
+        @return: Return weight string for the font description. 
         '''
         return self.font_weight
     
     def set_font_size(self, font_size):
         '''
-        set font size
-        @param font_size: the size for the font description. An int type
+        Set font size.
+        
+        @param font_size: The size for the font description, an int type.
         '''
         self.font_size = font_size
         self._layout.set_font_description(
@@ -193,76 +204,84 @@ class EntryBuffer(gobject.GObject):
     
     def get_font_size(self):
         '''
-        get font size
-        @return: the size for the font description. An int type
+        Get font size.
+        
+        @return: Return the size for the font description, an int type.
         '''
         return self.font_size
     
     def set_alignment(self, alignment):
         '''
-        set alignment
-        @param alignment: the alignment, the value must be one of pango alignment
+        Set alignment.
+        
+        @param alignment: the alignment, the value must be one of pango alignment.
         '''
         self.alignment = alignment
         self._layout.set_alignment(alignment)
 
     def get_alignment(self):
         '''
-        get alignment
-        @return: the alignment
+        Get alignment.
+        
+        @return: Return the alignment.
         '''
         return self._layout.get_alignment()
     
     def set_invisible_char(self, char):
         '''
-        set invisible-char property
-        @param char: a Unicode character
+        Set invisible-char property.
+        
+        @param char: A Unicode character.
         '''
         if not char:
             char = '*'
-        #self.set_property("invisible-char", char[0])
         self.set_property('invisible-char', char[0])
     
     def get_invisible_char(self):
         '''
-        get invisible-char property
-        @return: a Unicode character
+        Get invisible-char property.
+        
+        @return: Return a Unicode character.
         '''
-        #return self.get_property("invisible-char")
         return self.get_property('invisible-char')
     
     def set_visibility(self, visible):
         '''
-        set visibility property
-        @param visible: a bool type
+        Set visibility property.
+        
+        @param visible: A boolean type of visibility.
         '''
         self.set_property("visibility", visible)
     
     def get_visibility(self):
         '''
-        get visibility property
-        @return: a bool type
+        Get visibility property.
+        
+        @return: Return visibility status, a boolean type.
         '''
         return self.get_property("visibility")
     
     def get_cursor_visible(self):
         '''
-        get curosr-visible property
-        @return: a bool type
+        Get cursor-visible property.
+        
+        @return: Return True when cursor visible.
         '''
         return self.get_property("cursor-visible")
     
     def set_cursor_visible(self, cursor_visible):
         '''
-        set cursor-visible property
-        @param cursor_visible: a bool type
+        Set cursor-visible property.
+        
+        @param cursor_visible: Set True to make cursor visible.
         '''
         self.set_property("cursor-visible", cursor_visible)
     
     def set_text(self, text):
         '''
-        set text to display
-        @param text: the new text, a string.
+        Set text to display.
+        
+        @param text: Set the content of entry buffer.
         '''
         if text is None:
             text = ''
@@ -271,23 +290,26 @@ class EntryBuffer(gobject.GObject):
     
     def get_text(self):
         '''
-        get text
-        @return: the text showed, a string
+        Get text.
+        
+        @return: Return the text showed.
         '''
         return self.buffer.get_text(*self.buffer.get_bounds())
     
     def place_cursor(self, offset):
         '''
-        move insert-cursor and selection-cursor to the location specified by index.
-        @param offset: a int num
+        Move insert-cursor and selection-cursor to the location specified by index.
+        
+        @param offset: The offset of cursor.
         '''
         self.set_insert_pos(offset)
         self.set_selection_pos(offset)
     
     def set_insert_pos(self, pos):
         '''
-        set insert-cursor location by pos
-        @param pos: a int num
+        Set insert-cursor location by pos.
+        
+        @param pos: The position of insert cursor.
         '''
         if pos < 0:
             pos = 0
@@ -301,40 +323,45 @@ class EntryBuffer(gobject.GObject):
     
     def get_insert_pos(self):
         '''
-        get insert-curosr localtion offset
-        @return: a int num
+        Get insert-cursor location offset.
+        
+        @return: Return position of insert cursor. 
         '''
         insert_iter = self.buffer.get_iter_at_mark(self.buffer.get_insert())
         return insert_iter.get_line_offset()
     
     def get_insert_index(self):
         '''
-        get insert-curosr localtion index
-        @return: a int num
+        Get insert-cursor location index.
+        
+        @return: Return insert index.
         '''
         insert_iter = self.buffer.get_iter_at_mark(self.buffer.get_insert())
         return insert_iter.get_line_index()
     
     def get_selection_pos(self):
         '''
-        get selection-curosr localtion
-        @return: a int num
+        Get selection-cursor location.
+        
+        @return: Get position of selection cursor.
         '''
         selection_iter = self.buffer.get_iter_at_mark(self.buffer.get_selection_bound())
         return selection_iter.get_line_offset()
     
     def get_selection_index(self):
         '''
-        get selection-curosr localtion
-        @return: a int num
+        Get selection-cursor location.
+        
+        @return: Get index of selection cursor.
         '''
         selection_iter = self.buffer.get_iter_at_mark(self.buffer.get_selection_bound())
         return selection_iter.get_line_index()
     
     def set_selection_pos(self, pos):
         '''
-        set selection-cursor location by pos
-        @param pos: a int num
+        Set selection-cursor location by pos.
+        
+        @param pos: The position of selection cursor.
         '''
         if pos < 0:
             pos = 0
@@ -348,8 +375,9 @@ class EntryBuffer(gobject.GObject):
     
     def get_selection_bounds(self):
         '''
-        get selection bounds index
-        @return: a 2-tuple containing the selction-range left pos and right pos
+        Get selection bounds index.
+        
+        @return: Return a 2-tuple containing the selection-range left position and right position.
         '''
         bounds = self.buffer.get_selection_bounds()
         if not bounds:
@@ -358,37 +386,42 @@ class EntryBuffer(gobject.GObject):
     
     def set_text_color(self, color):
         '''
-        set text color
-        @param color: the font color, a hex string
+        Set text color.
+        
+        @param color: The font color, a hex string.
         '''
         self.text_color = color
 
     def get_text_color(self):
         '''
-        get text color
-        @return: the font color, a hex string
+        Get text color.
+        
+        @return: Return the font color, a hex string.
         '''
         return self.text_color
     
     def get_has_selection(self):
         '''
-        get has-selection property
-        @return: a bool type
+        Get has-selection property.
+        
+        @return: Return True if entry buffer has selection.
         '''
         return self.buffer.get_has_selection()
     
     def get_length(self):
         '''
-        get text length
-        @return: the bytes num, an int num
+        Get text length.
+        
+        @return: Return the content length of bytes, an int type.
         '''
         first_line = self.buffer.get_iter_at_line(0)
         return first_line.get_bytes_in_line()
     
     def get_char_count(self):
         '''
-        get characters num
-        @return: the chars num
+        Get characters number.
+        
+        @return: Return the number of characters.
         '''
         first_line = self.buffer.get_iter_at_line(0)
         return first_line.get_chars_in_line()
@@ -424,7 +457,6 @@ class EntryBuffer(gobject.GObject):
                 layout.set_text(self._layout.get_text()[left_pos:right_pos])
     
     def render(self, cr, rect, cursor_alpha=1, im=None, offset_x=0, offset_y=0, grab_focus_flag=False, shown_password=False):
-        '''render. Used by widget'''
         # Clip text area first.
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         layout = None
@@ -452,7 +484,7 @@ class EntryBuffer(gobject.GObject):
                     self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
                 else:
                     '''
-                    FIXME: HOWTO act like Mac password style
+                    FIXME: HOW-TO act like Mac password style
                     self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
                     timer = gobject.timeout_add(200, self.__reset_password)
                     '''
@@ -507,7 +539,7 @@ class EntryBuffer(gobject.GObject):
                 self.cursor_pos2 = cursor_pos[3]
                 self.m_draw_cursor(cursor_alpha)
                 '''
-                FIXME: HOWTO flash cursor
+                FIXME: HOW-TO flash cursor
                 CursorFlashThread(self).start()
                 '''
                 
@@ -529,8 +561,9 @@ class EntryBuffer(gobject.GObject):
 
     def get_cursor_pos(self, cursor):
         '''
-        get cursor pos
-        @return: a 2-lists containing two 4-lists representing the strong and weak cursor positions
+        Get cursor position.
+        
+        @return: Return a 2-lists containing two 4-lists representing the strong and weak cursor positions.
         '''
         poses = list(self._layout.get_cursor_pos(cursor))
         new_poses = []
@@ -545,9 +578,10 @@ class EntryBuffer(gobject.GObject):
     
     def index_to_pos(self, index):
         '''
-        index to pos
-        @param index: the index of the text, an int num
-        @return: a list containing the char's coordinate
+        Index to position.
+        
+        @param index: The index of the text, an int number.
+        @return: Return a list containing the characters' coordinate.
         '''
         pos = self._layout.index_to_pos(index)
         pos = list(pos)
@@ -559,17 +593,19 @@ class EntryBuffer(gobject.GObject):
     
     def xy_to_index(self, x, y):
         '''
-        coord to index
-        @param x: the x coord
-        @param y: the y coord
-        @return: the index
+        Coordinate to index.
+        
+        @param x: The x coordinate.
+        @param y: The y coordinate.
+        @return: Return the index that corresponding to given coordinate.
         '''
         return self._layout.xy_to_index(x, y)
     
     def index_to_offset(self, index):
         '''
-        convert byte index to char offset
-        @param index: the byte index from start of line
+        Convert byte index to character offset.
+        
+        @param index: Return the character offset that corresponding to given byte index.
         '''
         if index < 0:
             index = 0
@@ -580,8 +616,9 @@ class EntryBuffer(gobject.GObject):
     
     def offset_to_index(self, offset):
         '''
-        convert char offset to byte index
-        @param offset: the char offset from start of line
+        Convert character offset to byte index.
+        
+        @param offset: Return the byte index that corresponding to given character offset.
         '''
         if offset < 0:
             offset = 0
@@ -592,69 +629,92 @@ class EntryBuffer(gobject.GObject):
     
     def get_pixel_size(self):
         '''
-        get the layout text size
-        @return: a 2-tuple containing the logical width height of the pango.Layout
+        Get the layout text size.
+        
+        @return: Return a 2-tuple containing the logical width height of the pango.Layout.
         '''
         return self._layout.get_pixel_size()
     
     def move_to_end(self):
-        '''move insert cursor to end'''
+        '''
+        Move insert cursor to end position.
+        '''
         self.place_cursor(self.get_length())
     
     def move_to_start(self):
-        '''move insert cursor to start'''
+        '''
+        Move insert cursor to start position.
+        '''
         self.place_cursor(0)
     
     def move_to_left(self):
-        '''move insert cursor to left'''
+        '''
+        Move insert cursor to left.
+        '''
         current = self.get_insert_pos()
         self.place_cursor(current-1)
     
     def move_to_right(self):
-        '''move insert cursor to rigth'''
+        '''
+        Move insert cursor to right.
+        '''
         current = self.get_insert_pos()
         self.place_cursor(current+1)
 
     def select_to_end(self):
-        '''move selection cursor to end'''
+        '''
+        Move selection cursor to end.
+        '''
         self.set_insert_pos(self.get_length())
     
     def select_to_start(self):
-        '''move selection cursor to start'''
+        '''
+        Move selection cursor to start.
+        '''
         self.set_insert_pos(0)
     
     def select_to_left(self):
-        '''move selection cursor to left'''
+        '''
+        Move selection cursor to left.
+        '''
         current = self.get_insert_pos()
         self.set_insert_pos(current-1)
      
     def select_to_right(self):
-        '''move selection cursor to right'''
+        '''
+        Move selection cursor to right.
+        '''
         current = self.get_insert_pos()
         self.set_insert_pos(current+1)
     
     def select_all(self):
-        '''select all text'''
+        '''
+        Select all text.
+        '''
         self.set_selection_pos(0)
         self.set_insert_pos(self.get_char_count())
     
     def delete_selection(self):
-        '''delete the selected text'''
+        '''
+        Delete the selected text.
+        '''
         self.buffer.delete_selection(True, True)
     
     def insert_at_cursor(self, text):
         '''
-        insert text at insert-cursor
-        @param text: some text in UTF-8 format
+        Insert text at insert-cursor.
+        
+        @param text: The text string to insert at cursor.
         '''
         self.buffer.insert_at_cursor('\\n'.join(text.split('\n')))
         self._layout.set_text(self.get_text())
     
     def insert(self, pos, text):
         '''
-        insert text
-        @param pos: insert at the pos, an int type.
-        @param text: the text to insert
+        Insert text.
+        
+        @param pos: The position to insert, an int type.
+        @param text: The text to insert.
         '''
         if pos < 0:
             pos = 0
@@ -666,13 +726,17 @@ class EntryBuffer(gobject.GObject):
         self._layout.set_text(self.get_text())
     
     def backspace(self):
-        '''backspace'''
+        '''
+        Backspace.
+        '''
         self.buffer.backspace(
             self.buffer.get_iter_at_mark(self.buffer.get_insert()), True, True)
         self._layout.set_text(self.get_text())
     
     def delete(self):
-        '''delete'''
+        '''
+        Delete.
+        '''
         tmp_iter = self.buffer.get_iter_at_mark(self.buffer.get_insert())
         if tmp_iter.ends_line():
             return
@@ -681,24 +745,27 @@ class EntryBuffer(gobject.GObject):
     
     def cut_clipboard(self, clipboard, editable=True):
         '''
-        copies the currently-selected text to the clipboard, then deletes said text if it's editable
-        @param clipboard: a gtk.Clipboard type
-        @param editable: whether the buffer is editable, a bool type
+        Copies the currently-selected text to the clipboard, then deletes said text if it's editable.
+        
+        @param clipboard: A gtk.Clipboard type.
+        @param editable: Whether the buffer is editable, a boolean type.
         '''
         self.buffer.cut_clipboard(clipboard, editable)
     
     def copy_clipboard(self, clipboard):
         '''
-        copies the currently-selected text to the clipboard
-        @param clipboard: a gtk.Clipboard type
+        Copies the currently-selected text to the clipboard.
+        
+        @param clipboard: A gtk.Clipboard type.
         '''
         self.buffer.copy_clipboard(clipboard)
     
     def paste_clipboard(self, clipboard, editable=True):
         '''
-        pastes the contents of the clipboard at the insertion point
-        @param clipboard: a gtk.Clipboard type
-        @param editable: whether the buffer is editable, a bool type
+        Pastes the contents of the clipboard at the insertion point.
+        
+        @param clipboard: A gtk.Clipboard type.
+        @param editable: Whether the buffer is editable, a boolean type.
         '''
         self.buffer.paste_clipboard(clipboard, None, editable)
     
@@ -708,8 +775,12 @@ class Entry(gtk.EventBox):
     '''
     Entry.
     
+    @undocumented: calculate
+    @undocumented: get_input_method_cursor_rect
     @undocumented: monitor_entry_content
     @undocumented: realize_entry
+    @undocumented: is_ipv4_number
+    @undocumented: is_mac_address
     @undocumented: key_press_entry
     @undocumented: handle_key_press
     @undocumented: handle_key_event
@@ -730,6 +801,7 @@ class Entry(gtk.EventBox):
     @undocumented: commit_entry
     @undocumented: get_content_width
     @undocumented: get_utf8_string
+    @undocumented: cursor_flash_tick
     '''
     
     MOVE_LEFT = 1
@@ -769,6 +841,11 @@ class Entry(gtk.EventBox):
         @param text_select_color: Color of text in select status.
         @param background_select_color: Color of background in select status.
         @param font_size: Entry font size, default is DEFAULT_FONT_SIZE.
+        @param enable_clear_button: Whether display clear button, default is False.
+        @param is_password_entry: Whether is password entry, default is False.
+        @param shown_password: Whether display password character, default is False.
+        @param is_ipv4: Whether entry is IPv4 widget.
+        @param is_mac: Whether entry is mac address widget.
         '''
         # Init.
         gtk.EventBox.__init__(self)
@@ -780,26 +857,14 @@ class Entry(gtk.EventBox):
         self.is_password_entry = is_password_entry
         self.entry_buffer = EntryBuffer(
             content, DEFAULT_FONT, font_size,
-            'noraml', text_color, text_select_color, 
+            'normal', text_color, text_select_color, 
             background_select_color, enable_clear_button, 
             is_password_entry = is_password_entry)
-        '''
-        TODO: Add clear button
-        '''
         self.clear_button = ClearButton(False)
         self.enable_clear_button = enable_clear_button
         self.clear_button_x = -1
-        '''
-        TODO: Shown password or not
-        '''
         self.shown_password = shown_password
-        '''
-        ipv4
-        '''
         self.is_ipv4 = is_ipv4
-        '''
-        mac address
-        '''
         self.is_mac = is_mac
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
@@ -809,7 +874,7 @@ class Entry(gtk.EventBox):
         self.move_direction = self.MOVE_NONE
         self.double_click_flag = False
         self.left_click_flag = False
-        self.left_click_coordindate = None
+        self.left_click_coordinate = None
         self.grab_focus_flag = False
         self.editable_flag = True
         self.check_text = None
@@ -819,9 +884,6 @@ class Entry(gtk.EventBox):
         self.entry_buffer.set_property("select-area-visible", self.select_area_visible_flag)
         
         self.offset_x = 0
-        '''
-        TODO: it need to consider about offset in y axis
-        '''
         self.offset_y = 0
         
         self.key_upper = False
@@ -869,8 +931,6 @@ class Entry(gtk.EventBox):
         self.edit_timeout_id = None
 
     def cursor_flash_tick(self):
-        #self.window.invalidate_rect(self.allocation, True)
-        
         # redraw entry text and cursor
         self.queue_draw()
 
@@ -882,6 +942,11 @@ class Entry(gtk.EventBox):
         return self.grab_focus_flag
     
     def show_password(self, shown_password):
+        '''
+        Show password.
+        
+        @param show_password: Set as True to make password visible.
+        '''
         self.shown_password = shown_password
         self.queue_draw()
     
@@ -949,15 +1014,18 @@ class Entry(gtk.EventBox):
     
     def get_buffer(self):
         '''
-        get EntryBuffer
-        @return: the EntryBuffer
+        Get EntryBuffer.
+        
+        @return: Return the EntryBuffer.
         '''
         return self.entry_buffer
     
     def set_buffer(self, entry_buffer):
         '''
-        set EntryBuffer
-        @param entry_buffer: the EntryBuffer'''
+        Set EntryBuffer.
+        
+        @param entry_buffer: The EntryBuffer.
+        '''
         self.entry_buffer = entry_buffer
     
     def realize_entry(self, widget):
@@ -974,9 +1042,6 @@ class Entry(gtk.EventBox):
         '''
         self.handle_key_press(widget, event)
     
-    '''
-    FIXME: regex expression is not strict!
-    '''
     def is_ipv4_number(self, x):
         if re.match("^\\d+$", x) == None:
             return False
@@ -1060,7 +1125,8 @@ class Entry(gtk.EventBox):
             self.get_toplevel().set_focus_child(self)
             
         self.entry_buffer.move_to_left()
-        # comput coord offset
+        
+        # Compute coordinate offset.
         self.__calculate_cursor_offset()
         self.queue_draw()
             
@@ -1087,7 +1153,7 @@ class Entry(gtk.EventBox):
                 else:
                     self.entry_buffer.backspace()
 
-                # comput coord offset
+                # Compute coordinate offset.
                 self.__calculate_cursor_offset()
             self.queue_draw()    
             
@@ -1096,7 +1162,8 @@ class Entry(gtk.EventBox):
         Select all text of entry.
         '''
         self.entry_buffer.select_all()
-        # reset the offset
+        
+        # Reset the offset.
         self.offset_x = self.offset_y = 0
         self.__calculate_cursor_offset()
         self.queue_draw()
@@ -1256,7 +1323,7 @@ class Entry(gtk.EventBox):
         # Change cursor when click left button.
         elif is_left_button(event):
             self.left_click_flag = True
-            self.left_click_coordindate = (event.x, event.y)
+            self.left_click_coordinate = (event.x, event.y)
             self.entry_buffer.place_cursor(
                 self.entry_buffer.index_to_offset(self.get_index_at_event(widget, event)))
         self.queue_draw()    
@@ -1289,7 +1356,6 @@ class Entry(gtk.EventBox):
         except Exception:
             cursor_blink_time = DEFAULT_CURSOR_BLINK_TIME
         gobject.timeout_add(cursor_blink_time, self.cursor_flash_tick)
-        #self.queue_draw()
             
     def focus_out_entry(self, widget, event):
         '''
@@ -1405,7 +1471,8 @@ class Entry(gtk.EventBox):
         if not self.get_realized() or (rect.x == -1 or rect.y == -1):
             self.offset_x = self.offset_y = 0
             return
-        # comput coord offset
+        
+        # Compute coordinate offset.
         cursor_index = self.entry_buffer.get_insert_index()
         cursor_pos = self.entry_buffer.get_cursor_pos(cursor_index)[0]
         if cursor_pos[0] - self.offset_x > rect.width - self.padding_x * 2 :
@@ -1416,15 +1483,18 @@ class Entry(gtk.EventBox):
             self.offset_x = 0
 
     def calculate(self):
-        '''docstring for calculate'''
         self.__calculate_cursor_offset()
     
 gobject.type_register(Entry)
 
-'''
-TODO: Add x button (Clear Button)
-'''
 class ClearButton(gtk.EventBox):
+    '''
+    ClearButton class.
+    
+    ClearButton use as action button of Entry widget.
+    
+    @undocumented: render
+    '''
     button_padding_x = 20
     
     def __init__(self,
@@ -1804,6 +1874,7 @@ class ShortcutKeyEntry(gtk.VBox):
     @undocumented: expose_shortcutkey_entry
     @undocumented: handle_focus_out
     @undocumented: handle_key_press
+    @undocumented: handle_button_press
     '''
 	
     __gsignals__ = {
@@ -1832,6 +1903,7 @@ class ShortcutKeyEntry(gtk.VBox):
         @param point_color: Pointer color of shortcutkey entry.
         @param frame_point_color: Frame pointer color of shortcutkey entry.
         @param frame_color: Frame color of shortcutkey entry.
+        @param support_shift: Whether support shift, default is False.
         '''
         # Init.
         gtk.VBox.__init__(self)
@@ -1914,11 +1986,6 @@ class ShortcutKeyEntry(gtk.VBox):
         self.entry.grab_focus_flag = False
         self.entry.im.focus_out()
         self.entry.queue_draw()
-        
-        # FIXME.
-        # if self.shortcut_key != self.shortcut_key_record:
-        #     self.emit("shortcut-key-change", self.shortcut_key)
-        #     self.shortcut_key_record = None
             
     def handle_key_press(self, widget, event):
         '''
@@ -2036,13 +2103,14 @@ class ShortcutKeyEntry(gtk.VBox):
         
 gobject.type_register(ShortcutKeyEntry)
 
-'''
-TODO: Act like Mac style
-      The last character when inputting is visible then disappeared for a while
-'''
 class PasswordEntry(gtk.VBox):
     '''
-    Perhaps it need more signals
+    PasswordEntry class.
+    
+    @undocumented: key_press_entry
+    @undocumented: key_released_entry
+    @undocumented: emit_action_active_signal
+    @undocumented: expose_password_entry
     '''
     __gsignals__ = {
         "action-active" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),    
@@ -2056,7 +2124,20 @@ class PasswordEntry(gtk.VBox):
                  point_color=ui_theme.get_alpha_color("text_entry_point"), 
                  frame_point_color=ui_theme.get_alpha_color("text_entry_frame_point"), 
                  frame_color=ui_theme.get_alpha_color("text_entry_frame"), 
-                 shown_password=False):
+                 shown_password=False,
+                 ):
+        '''
+        Initialize PasswordEntry class.
+        
+        @param content: Initialize entry text, default is \"\".
+        @param action_button: Extra button add at right side of shortcutkey entry, default is None.
+        @param background_color: Color of shortcutkey entry background.
+        @param acme_color: Acme point color of shortcutkey entry.
+        @param point_color: Pointer color of shortcutkey entry.
+        @param frame_point_color: Frame pointer color of shortcutkey entry.
+        @param frame_color: Frame color of shortcutkey entry.
+        @param shown_password: Whether show password, default is False.
+        '''
         gtk.VBox.__init__(self)
         self.align = gtk.Alignment()
         self.align.set(0.5, 0.5, 1.0, 1.0)
@@ -2085,12 +2166,14 @@ class PasswordEntry(gtk.VBox):
 
             self.action_button.connect("clicked", lambda w: self.emit_action_active_signal())
 
-        '''
-        signal callback
-        '''
         self.align.connect("expose-event", self.expose_password_entry)
     
     def show_password(self, shown_password=False):
+        '''
+        Show password.
+        
+        @param show_password: Set as True to make password visible.
+        '''
         self.shown_password = shown_password
         self.entry.show_password(self.shown_password)
 
@@ -2123,6 +2206,12 @@ class PasswordEntry(gtk.VBox):
         return True
 
     def set_size(self, width, height):
+        '''
+        Set text entry size with given value.
+        
+        @param width: New width of text entry.
+        @param height: New height of text entry.
+        '''
         self.set_size_request(width, height)
 
         action_button_width = 0
