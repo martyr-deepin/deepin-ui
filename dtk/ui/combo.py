@@ -303,6 +303,10 @@ class ComboBox(gtk.VBox):
         # Init items.
         self.add_items(items)
         
+        # set selected index
+        if len(items) > 0:
+            self.set_select_index(select_index)
+        
         hbox = gtk.HBox()
         hbox.pack_start(self.panel_align, True, False)
         hbox.pack_start(self.drop_button, False, False)
