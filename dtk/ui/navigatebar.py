@@ -129,6 +129,12 @@ class Navigatebar(EventBox):
         return True
     
     def update_notify_num(self, item, notify_num):
+        '''
+        Update notify number.
+        
+        @param item: The item need to notify.
+        @param notify_num: Notify number.
+        '''
         item.notify_num = notify_num
         
         item.item_box.queue_draw()
@@ -152,7 +158,8 @@ class NavItem(object):
                  vertical,
                  set_index, get_index,
                  item_hover_pixbuf,
-                 item_press_pixbuf):
+                 item_press_pixbuf,
+                 ):
         '''
         Initialize NavItem class.
         
