@@ -60,7 +60,7 @@ class GlobalKey(threading.Thread):
 
     def __init__(self):
         '''
-        Init for global key.
+        Initialize GlobalKey class.
         '''
         super(GlobalKey, self).__init__()
         self.daemon = True
@@ -70,9 +70,16 @@ class GlobalKey(threading.Thread):
         self.stop = False
 
         self.known_modifiers_mask = 0
-        gdk_modifiers = (gtk.gdk.CONTROL_MASK, gtk.gdk.SHIFT_MASK, gtk.gdk.MOD1_MASK,
-                         gtk.gdk.MOD2_MASK, gtk.gdk.MOD3_MASK, gtk.gdk.MOD4_MASK, gtk.gdk.MOD5_MASK,
-                         gtk.gdk.SUPER_MASK, gtk.gdk.HYPER_MASK)
+        gdk_modifiers = (gtk.gdk.CONTROL_MASK, 
+                         gtk.gdk.SHIFT_MASK, 
+                         gtk.gdk.MOD1_MASK,
+                         gtk.gdk.MOD2_MASK, 
+                         gtk.gdk.MOD3_MASK, 
+                         gtk.gdk.MOD4_MASK, 
+                         gtk.gdk.MOD5_MASK,
+                         gtk.gdk.SUPER_MASK, 
+                         gtk.gdk.HYPER_MASK,
+                         )
         for mod in gdk_modifiers:
             self.known_modifiers_mask |= mod
 

@@ -87,12 +87,14 @@ class VSeparator(gtk.Alignment):
     def __init__(self, 
                  color_infos, 
                  padding_x=0, 
-                 padding_y=0):
-        '''Init vertically separator.
+                 padding_y=0,
+                 ):
+        '''
+        Init vertically separator.
         
         @param color_infos: A list of color info, [(position, (hex_color, alpha_value))]
-        @param padding_x: Padding value in horizontally.
-        @param padding_y: Padding value in vertically.
+        @param padding_x: Padding value in horizontally, default is 0 pixel.
+        @param padding_y: Padding value in vertically, default is 0 pixel.
         '''
         gtk.Alignment.__init__(self)
         

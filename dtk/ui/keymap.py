@@ -24,12 +24,16 @@ import gtk.gdk as gdk
 import pygtk
 pygtk.require('2.0')
 
-
-
 def keybinder_to_deepin(keystring):
+    '''
+    Convert shortcutkey string to deepin style from keybinder style.
+    '''
     return " + ".join(map(lambda key: key.strip("<"), keystring.split(">")))
 
 def deepin_to_keybinder(keystring):
+    '''
+    Convert shortcutkey string to keybinder style from deepin style.
+    '''
     keys = keystring.split(" + ")
     modifiers = "".join(["<%s>" % key for key in keys[0:-1]])
     return "%s%s" % (modifiers, keys[-1])
@@ -39,6 +43,7 @@ def get_key_name(keyval, to_upper=False):
     Get key name with given key value.
     
     @param keyval: Key value.
+    @param to_upper: Set as True to return upper key name, default is False.
     @return: Return key name with given key value.
     '''
     if to_upper:
@@ -86,6 +91,7 @@ def get_keyevent_name(key_event, to_upper=False):
     Get key event name.
     
     @param key_event: Key event.
+    @param to_upper: Set as True to return upper key name, default is False.
     @return: Return key event string.
     '''
     if key_event.is_modifier:
