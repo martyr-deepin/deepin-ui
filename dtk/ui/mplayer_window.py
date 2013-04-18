@@ -355,7 +355,6 @@ class MplayerWindow(WindowBase):
         Get the cursor position.
 
         @param event: An event of type gtk.gdk.Event.
-
         @return: If the cursor is on the frame of the window, return the cursor position. Otherwise return None.
         '''
         # Get event coordinate.
