@@ -454,7 +454,7 @@ class TreeView(gtk.VBox):
             print "render_sort_column: drop old sort result!"
         
     def set_column_titles(self, titles, sort_methods=None):
-        if titles != None and sort_methods != None:
+        if titles:
             self.titles = titles
             self.title_box.set_titles(titles)
             self.sort_methods = sort_methods
