@@ -390,8 +390,8 @@ class TreeView(gtk.VBox):
                         
                         
     def on_titlebar_clicked_title(self, widget, index, sort_ascending):                    
-        SortThread(lambda : self.sort_column(index, sort_ascending), self.render_sort_column).start()
-                        
+        if self.sort_methods:
+            SortThread(lambda : self.sort_column(index, sort_ascending), self.render_sort_column).start()
         
     def sort_column(self, sort_column_index, sort_ascending):
         # Update sort action id.
@@ -453,8 +453,8 @@ class TreeView(gtk.VBox):
         else:
             print "render_sort_column: drop old sort result!"
         
-    def set_column_titles(self, titles, sort_methods):
-        if titles != None and sort_methods != None:
+    def set_column_titles(self, titles, sort_methods=None):
+        if titles:
             self.titles = titles
             self.title_box.set_titles(titles)
             self.sort_methods = sort_methods
