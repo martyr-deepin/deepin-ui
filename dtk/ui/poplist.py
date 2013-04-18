@@ -33,7 +33,11 @@ from popup_grab_window import PopupGrabWindow, wrap_grab_window
 
 class Poplist(Window):
     '''
-    class docs
+    Poplist class.
+    
+    @undocumented: hide_self
+    @undocumented: auto_set_size
+    @undocumented: realize_poplist
     '''
 	
     def __init__(self,
@@ -53,7 +57,22 @@ class Poplist(Window):
                  window_type=gtk.WINDOW_TOPLEVEL,
                  ):
         '''
-        init docs
+        Initialize Poplist class.
+        
+        @param items: The item list to initialize.
+        @param min_width: The minimum width of poplist, default is 80 pixels.
+        @param max_width: The maximum width of poplist, default is None.
+        @param fixed_width: The fixed width of poplist, default is None.
+        @param min_height: The minimum height of poplist, default is 100 pixels.
+        @param max_height: The maximum height of poplist, default is None.
+        @param shadow_visible: Set it with True to make shadow visible.
+        @param shape_frame_function: The function to shape frame.
+        @param expose_frame_function: The function to draw frame.
+        @param x_align: The horizontal alignment value, default is ALIGN_START. 
+        @param y_align: The vertical alignment value, default is ALIGN_START.
+        @param align_size: The alignment size, default is 0.
+        @param grab_window: Window to handle grab event, default is None that use poplist_grab_window.
+        @param window_type: The type of window, default is gtk.WINDOW_TOPLEVEL.
         '''
         # Init.
         Window.__init__(self, 
@@ -91,6 +110,11 @@ class Poplist(Window):
             wrap_grab_window(poplist_grab_window, self)
         
     def get_scrolledwindow(self):
+        '''
+        Get scrolled window.
+        
+        @return: Return the scrolled window.
+        '''
         return self.treeview.scrolled_window
     
     @property
@@ -98,6 +122,11 @@ class Poplist(Window):
         return self.treeview.get_items()
     
     def get_adjust_width(self):
+        '''
+        Get width of adjustment.
+        
+        @return: Return the width of adjustment.
+        '''
         if self.fixed_width:
             return self.fixed_width
         if len(self.items) > 0:
@@ -110,6 +139,11 @@ class Poplist(Window):
         return adjust_width
     
     def get_adjust_height(self):
+        '''
+        Get height of adjustment.
+        
+        @return: Return the height of adjustment.
+        '''
         if len(self.items) > 0:
             adjust_height = sum([item.get_height() for item in self.items])
         else:    
@@ -123,6 +157,11 @@ class Poplist(Window):
         return adjust_height    
     
     def get_adjust_size(self):
+        '''
+        Get size of adjustment.
+        
+        @return: Return the size of adjustment.
+        '''
         return (self.get_adjust_width(), self.get_adjust_height())
     
     def hide_self(self):
@@ -132,6 +171,12 @@ class Poplist(Window):
         self.set_size(*self.get_adjust_size())
     
     def set_size(self, width, height):
+        '''
+        Set size.
+        
+        @param width: The width.
+        @param height: The height.
+        '''
         (shadow_padding_x, shadow_padding_y) = self.get_shadow_size()        
         self.window_height = height + self.align_size * 2 + shadow_padding_x * 2 + 1
         self.window_width = width + shadow_padding_x * 2 + 1 
@@ -153,6 +198,12 @@ class Poplist(Window):
             )
         
     def show(self, (expect_x, expect_y), (offset_x, offset_y)=(0, 0)):
+        '''
+        Show poplist.
+
+        @param (expect_x, expect_y): Expect coordinate.
+        @param (offset_x, offset_y): Offset of coordinate, default is (0, 0)
+        '''
         (screen_width, screen_height) = get_screen_size(self)
         
         if not self.get_realized():
@@ -185,7 +236,7 @@ gobject.type_register(Poplist)
 
 class IconTextItem(TreeItem):
     '''
-    class docs
+    IconTextItem class.
     '''
 	
     def __init__(self, 
@@ -196,7 +247,7 @@ class IconTextItem(TreeItem):
                  padding_x = 10,
                  padding_y = 6):
         '''
-        init docs
+        Initialize IconTextItem class.
         '''
         # Init.
         TreeItem.__init__(self)
