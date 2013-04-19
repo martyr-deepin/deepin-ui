@@ -35,12 +35,14 @@ class Window(WindowBase):
     '''
     The Window class is a subclass of gtk.Window. It adds some features that deepin-ui have to gtk.Window.
 
+    @undocumented: init
     @undocumented: get_cursor_type
     @undocumented: expose_window_background
     @undocumented: expose_window_shadow
     @undocumented: expose_window_frame
     @undocumented: shape_window_frame
     @undocumented: motion_notify
+    @undocumented: leave_notify
     @undocumented: double_click_window
     @undocumented: monitor_window_state
     '''
@@ -50,7 +52,8 @@ class Window(WindowBase):
                  window_type=gtk.WINDOW_TOPLEVEL, 
                  shadow_visible=True,
                  shape_frame_function=None,
-                 expose_frame_function=None):
+                 expose_frame_function=None,
+                 ):
         '''
         Initialise the Window class.
 
@@ -58,6 +61,8 @@ class Window(WindowBase):
         @param shadow_radius: The radius of the shadow. By default, it's 6.
         @param window_type: A flag of type gtk.WindowType, which indicates the type of the window. By default, it's gtk.WINDOW_TOPLEVEL.
         @param shadow_visible: If True, the shadow is visible. By default, it's True, just disable when your program not allow manipulate colormap, such as mplayer. 
+        @param shape_frame_function: The function to define the shape of frame.
+        @param expose_frame_function: The function to render frame.
         '''
         # Init.
         WindowBase.__init__(self, window_type)
@@ -192,7 +197,7 @@ class Window(WindowBase):
     
     def expose_window_shadow(self, widget, event):
         '''
-        Interh function to expose the window shadow.
+        Internal function to expose the window shadow.
 
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
@@ -231,7 +236,7 @@ class Window(WindowBase):
 
     def shape_window_frame(self, widget, rect):
         '''
-        Internal function to draw nonrectangular window frame.
+        Internal function to draw non-rectangular window frame.
 
         @param widget: A widget of type gtk.Widget.
         @param rect: The bounding region of the window.
