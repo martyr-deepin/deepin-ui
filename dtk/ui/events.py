@@ -215,9 +215,13 @@ class GSignals(object):
         self.events.emit(signal, self, *args, **kwargs)
         
     def add_events(self, events):
-        ''' Add a list of events to the allowed events '''
+        ''' 
+        Add a list of events to the allowed events.
+        '''
         self.events.__events__ += list(events)
 
     def add_event(self, event):
-        ''' Add a event to the allowed events '''
+        ''' 
+        Add a event to the allowed events.
+        '''
         self.events.__events__ += [event]

@@ -30,6 +30,8 @@ import time
 import sys
 import traceback
 
+__all__ = ["MissionThreadPool", "MissionThread"]
+
 class MissionThreadPool(td.Thread):
     '''
     A class of thread pool.
@@ -254,13 +256,13 @@ class TestMissionThread(MissionThread):
         self.artist = artist
         
     def start_mission(self):
-        '''Start misssion.'''
+        '''Start mission.'''
         print "*** Start download cover for %s" % (self.artist)
         time.sleep(5)
         print "*** Finish download cover for %s" % (self.artist)
         
     def get_mission_result(self):
-        '''Get misssion retsult.'''
+        '''Get mission result.'''
         return os.path.join("/home/cover", self.artist)
     
 def clean_cover(filepath):

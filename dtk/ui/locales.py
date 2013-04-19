@@ -36,15 +36,13 @@ import os
 import sys
 import traceback
 
-LOCALE_DIR=os.path.join(get_parent_dir(__file__, 2), "locale")
+LOCALE_DIR = os.path.join(get_parent_dir(__file__, 2), "locale")
 if not os.path.exists(LOCALE_DIR):
     LOCALE_DIR="/usr/share/locale"
 
 _ = None    
 try:
-    gettext.bindtextdomain("deepin-ui", LOCALE_DIR)
-    gettext.textdomain("deepin-ui")
-    _ = gettext.gettext
+    _ = gettext.translation("deepin-ui", LOCALE_DIR).gettext
 except Exception, e:
     print "module locales got error: %s" % (e)
     traceback.print_exc(file=sys.stdout)

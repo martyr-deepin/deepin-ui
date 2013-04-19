@@ -253,7 +253,7 @@ class Theme(object):
 
     def get_color(self, color_name):
         '''
-        Get color with given dynmaic color.
+        Get color with given dynamic color.
         
         @param color_name: DynamicColor name from theme.txt.
         
@@ -263,7 +263,7 @@ class Theme(object):
     
     def get_alpha_color(self, color_name):
         '''
-        Get color with given dynmaic alpha color.
+        Get color with given dynamic alpha color.
         
         @param color_name: DynamicAlphaColor name from theme.txt.
         
@@ -273,7 +273,7 @@ class Theme(object):
     
     def get_shadow_color(self, color_name):
         '''
-        Get color with given dynmaic shadow color.
+        Get color with given dynamic shadow color.
         
         @param color_name: DynamicShadowColor name from theme.txt.
         
@@ -299,7 +299,7 @@ class Theme(object):
         # Change theme name.
         self.theme_name = new_theme_name
 
-        # Update dynmaic pixbuf.
+        # Update dynamic pixbuf.
         for (path, pixbuf) in self.pixbuf_dict.items():
             pixbuf.update(self.get_theme_file_path("image/%s" % (path)))
             

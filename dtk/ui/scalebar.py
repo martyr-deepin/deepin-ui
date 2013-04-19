@@ -32,9 +32,19 @@ import gobject
 import gtk
 
 class HScalebar(gtk.Button):    
+    '''
+    HScalebar class.
+    
+    @undocumented: init_events
+    @undocumented: draw_bg_and_fg
+    @undocumented: draw_point
+    @undocumented: draw_value
+    '''
+    
     __gsignals__ = {
         "value-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
     }        
+    
     def __init__(self,
                  point_dpixbuf=ui_theme.get_pixbuf("hscalebar/point.png"),
                  show_value=False,
@@ -47,18 +57,17 @@ class HScalebar(gtk.Button):
                  gray_progress=False
                  ):
         '''
-        @point_dpixbuf: a DynamicPixbuf object.
-        @show_value: If True draw the current value next to the slider
-        @show_value_type: the position where the current value is displayed. gtk.POS_TOP or gtk.POS_BOTTOM
-        @show_point_num: the accuracy of the value. If 0 value is int type.
-        @format_value: a string that displayed after the value
-        @value_min: the min value
-        @value_max: the max value
-        @line_height: the line height
-        @gray_progress: If True the HScalebar looks gray
+        @param point_dpixbuf: a DynamicPixbuf object.
+        @param show_value: If True draw the current value next to the slider.
+        @param show_value_type: The position where the current value is displayed. gtk.POS_TOP or gtk.POS_BOTTOM.
+        @param show_point_num: The accuracy of the value. If 0 value is int type.
+        @param format_value: A string that displayed after the value.
+        @param value_min: The min value, default is 0.
+        @param value_max: The max value, default is 100.
+        @param line_height: The line height, default is 6 pixels.
+        @param gray_progress: If True the HScalebar looks gray, default is False.
         '''
         gtk.Button.__init__(self)
-        #        
         self.position_list = []
         self.mark_check = False
         self.enable_check = True
@@ -71,7 +80,8 @@ class HScalebar(gtk.Button):
         self.value_min = value_min
         self.drag = False
         self.gray_progress = gray_progress
-        # init color.
+        
+        # Init color.
         self.fg_side_color = "#0071B3"
         self.bg_side_color = "#B3B3B3"
         self.fg_inner_color = "#30ABEE"
@@ -79,7 +89,7 @@ class HScalebar(gtk.Button):
         self.bg_inner2_color = "#E6E6E6"
         self.fg_corner_color = "#2E84B7"
         self.bg_corner_color = "#C1C5C6"
-        #
+
         self.point_pixbuf = point_dpixbuf
         self.line_height = line_height
         self.line_width = 1.0
@@ -88,7 +98,6 @@ class HScalebar(gtk.Button):
         self.mark_width = 1
         self.bottom_space = 2 # vertical space between bottom mark line and drag point
         self.format_value = format_value
-        self.trg_by_grab = False
         self.show_value = show_value
         
         self.point_width = self.point_pixbuf.get_pixbuf().get_width()
@@ -96,7 +105,6 @@ class HScalebar(gtk.Button):
         self.text_height_factor = 2
         self.set_size_request(-1, self.point_height + get_content_size("0")[1] * self.text_height_factor + self.bottom_space)
         
-        # init events.
         self.init_events()
                 
     def init_events(self):     
@@ -113,12 +121,14 @@ class HScalebar(gtk.Button):
         
         cr.rectangle(rect.x, rect.y, rect.width, rect.height)
         cr.clip()
-        # draw bg and fg.
+        # Draw background and foreground.
         self.draw_bg_and_fg(cr, rect)
-        # draw mark.
+        
+        # Draw mark.
         for position in self.position_list:
             self.draw_value(cr, rect,  "%s" % (str(position[2])), position[0] - self.value_min, position[1], mark_check=True)
-        # draw value.
+            
+        # Draw value.
         if self.show_value:
             if self.show_point_num:
                 draw_value_temp = round(self.value + self.value_min, self.show_point_num)
@@ -129,7 +139,7 @@ class HScalebar(gtk.Button):
                             "%s%s" % (draw_value_temp, self.format_value), 
                             self.value, 
                             self.show_value_type)
-        # draw point.
+        # Draw point.
         self.draw_point(cr, rect)
             
         return True
@@ -137,19 +147,14 @@ class HScalebar(gtk.Button):
     def draw_bg_and_fg(self, cr, rect):    
         with cairo_disable_antialias(cr):
             x, y, w, h = rect         
-            #progress_x = rect.x + self.point_width/2
             progress_x = rect.x
             progress_y = rect.y + (rect.height-self.bottom_space)/2 - self.line_height/2
-            #progress_width = rect.width - self.point_width
             progress_width = rect.width
             value_width = int(float(self.value) / self.value_max * (rect.width - self.point_width/2))
             if int(float(self.value)) == self.value_max:
                 value_width = value_width - 1 # there is less 1px for 100% mark line
 
-            '''
-            background
-            '''
-            # background inner
+            # Background inner.
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_inner2_color))
             cr.rectangle(progress_x+value_width, 
                     progress_y+self.progress_border, 
@@ -157,23 +162,26 @@ class HScalebar(gtk.Button):
                     self.line_height-self.progress_border*2)
             cr.fill()
 
-            # background border
+            # Background border.
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_side_color))
-            # top border
+            
+            # Top border.
             cr.rectangle(
                     progress_x+value_width, 
                     progress_y,
                     progress_width-value_width-self.progress_border, 
                     self.progress_border)
             cr.fill()
-            # bottom border
+            
+            # Bottom border.
             cr.rectangle(
                     progress_x+value_width, 
                     progress_y+self.line_height-self.progress_border, 
                     progress_width-value_width-self.progress_border, 
                     self.progress_border)
             cr.fill()
-            # right border
+            
+            # Right border.
             cr.rectangle(
                     progress_x+progress_width-self.progress_border, 
                     progress_y+self.progress_border, 
@@ -182,14 +190,16 @@ class HScalebar(gtk.Button):
             cr.fill()
 
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_corner_color))
-            # top right corner
+            
+            # Top right corner.
             cr.rectangle(
                     progress_x+progress_width-self.progress_border, 
                     progress_y,
                     self.progress_border, 
                     self.progress_border)
             cr.fill()
-            # bottom right corner
+            
+            # Bottom right corner.
             cr.rectangle(
                     progress_x+progress_width-self.progress_border, 
                     progress_y+self.line_height-self.progress_border,
@@ -197,10 +207,6 @@ class HScalebar(gtk.Button):
                     self.progress_border)
             cr.fill()
 
-            '''
-            foreground color setting
-            '''
-            
             if self.enable_check:
                 fg_inner_color = self.fg_inner_color
                 fg_side_color  = self.fg_side_color
@@ -214,10 +220,8 @@ class HScalebar(gtk.Button):
                 fg_inner_color = self.bg_inner2_color 
                 fg_side_color  = self.bg_side_color 
                 fg_corner_color = self.bg_corner_color 
-            '''
-            foreground
-            '''
-            # foreground inner
+
+            # Foreground inner.
             cr.set_source_rgb(*color_hex_to_cairo(fg_inner_color))
             cr.rectangle(progress_x+self.progress_border, 
                     progress_y+self.progress_border, 
@@ -225,23 +229,26 @@ class HScalebar(gtk.Button):
                     self.line_height-self.progress_border*2)
             cr.fill()
 
-            # foreground border
+            # Foreground border.
             cr.set_source_rgb(*color_hex_to_cairo(fg_side_color))
-            # top border
+            
+            # Top border.
             cr.rectangle(
                     progress_x+self.progress_border, 
                     progress_y, 
                     value_width-self.progress_border, 
                     self.progress_border)
             cr.fill()
-            # bottom border
+            
+            # Bottom border.
             cr.rectangle(
                     progress_x+self.progress_border, 
                     progress_y+self.line_height-self.progress_border, 
                     value_width-self.progress_border, 
                     self.progress_border)
             cr.fill()
-            # left border
+            
+            # Left border.
             cr.rectangle(
                     progress_x, 
                     progress_y+self.progress_border, 
@@ -250,14 +257,16 @@ class HScalebar(gtk.Button):
             cr.fill()
 
             cr.set_source_rgb(*color_hex_to_cairo(fg_corner_color))
-            # top left corner
+            
+            # Top left corner.
             cr.rectangle(
                     progress_x,
                     progress_y,
                     self.progress_border, 
                     self.progress_border)
             cr.fill()
-            # bottom left corner
+            
+            # Bottom left corner.
             cr.rectangle(
                     progress_x,
                     progress_y+self.line_height-self.progress_border,
@@ -268,8 +277,7 @@ class HScalebar(gtk.Button):
     def draw_point(self, cr, rect):
         pixbuf_w_average = self.point_pixbuf.get_pixbuf().get_width() / 2
         x = rect.x + self.point_width / 2 + int(float(self.value) / self.value_max * (rect.width - self.point_width)) - pixbuf_w_average
-        #if int(float(self.value)) == self.value_max:
-            #x = x - 1 # there is less 1px for 100% mark line
+
         draw_pixbuf(cr,
                     self.point_pixbuf.get_pixbuf(), 
                     x, 
@@ -292,8 +300,6 @@ class HScalebar(gtk.Button):
         else:
             draw_text(cr, text, min_value, text_y, rect.width, 0, DEFAULT_FONT_SIZE, self.bg_side_color)
         
-        #if int(float(value)) == self.value_max:
-            #x = x - 1 # there is less 1px for 100% mark line
         mark_y = text_y-self.bottom_space/2-(self.point_height-self.line_height)/2
         if mark_check:
             cr.set_source_rgb(*color_hex_to_cairo(self.bg_side_color))
@@ -307,6 +313,7 @@ class HScalebar(gtk.Button):
             step = 5
         else:
             step = 0
+            
         # one step increase/decrease 5%
         value = self.value + step * (self.value_max - self.value_min) / 100.0
         if value > self.value_max:
@@ -315,6 +322,8 @@ class HScalebar(gtk.Button):
             value = 0
         self.set_value(value + self.value_min)
         self.emit("value-changed", self.value + self.value_min)
+        
+        return True
 
     def __progressbar_press_event(self, widget, event):
         temp_value = float(widget.allocation.width - self.point_width)
@@ -326,11 +335,9 @@ class HScalebar(gtk.Button):
         self.drag = True        
         self.set_value(self.value + self.value_min)
         self.emit("value-changed", self.value + self.value_min)
-        # self.grab_add()
         
     def __progressbar_release_event(self, widget, event):    
         self.drag = False
-        # self.grab_remove()
         
     def __progressbar_motion_notify_event(self, widget, event):    
         if self.drag:
@@ -342,24 +349,53 @@ class HScalebar(gtk.Button):
             self.emit("value-changed", self.value + self.value_min)
             
     def add_mark(self, value, position_type, markup):
+        '''
+        Add mark at value.
+        
+        @param value: the value at which the mark is placed, must be between the lower and upper limits of the scales' adjustment. 
+        @param position_type: Where to draw the mark. 
+        @param markup: Text to be shown at the mark, using Pango markup, or None.
+        '''
         if self.value_min <= value <= self.value_max+self.value_min:
             self.position_list.append((value, position_type, markup))
         else:    
             print "error:input value_min <= value <= value_max!!"
         
     def set_value(self, value):    
+        '''
+        Set value.
+        
+        @param value: The new value of the range.
+        '''
         self.value = max(min(self.value_max, value - self.value_min), 0) 
         self.queue_draw()     
         
     def get_value(self):    
+        '''
+        Get value.
+        
+        @return: Return the value of range.
+        '''
         return self.value + self.value_min
         
     def set_enable(self, enable_bool):
+        '''
+        Grey scalebar, the effect of this function is different with set_sensitive.
+        set_sensitive will grey widget and make user can't interact with widget.
+        set_enable just grey widget, widget will active again when you interact it.
+        
+        @param enable_bool: Set as False to grey widget.
+        '''
         self.enable_check = enable_bool
         self.queue_draw()
 
     def get_enable(self, enable_bool):
-        return self.enable_check 
+        '''
+        Get the enable status of scalebar.
+        
+        @return: Return True if scalebar is enable.
+        '''
+        return self.enable_check
 
 gobject.type_register(HScalebar)
 
@@ -477,12 +513,16 @@ class VScalebar(gtk.VScale):
     def set_has_point(self, value):
         '''
         Set has point.
+        
+        @param value: Set True to make scalebar have point.
         '''
         self.__has_point = value
         
     def get_has_point(self):    
         '''
         Get has point.
+        
+        @return: Return True if scalebar have point.
         '''
         return self.__has_point
     

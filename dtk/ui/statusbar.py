@@ -34,7 +34,8 @@ class Statusbar(EventBox):
 	
     def __init__(self, 
                  height, 
-                 add_separator=False):
+                 add_separator=False,
+                 ):
         '''
         Initialize Statusbar class.
         

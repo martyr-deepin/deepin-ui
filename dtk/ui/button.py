@@ -1442,16 +1442,22 @@ class SwitchButton(ToggleButton):
     SwitchButton class.
     '''
 	
-    def __init__(self, active=False):
+    def __init__(self, active=False, inactive_disable_dpixbuf=None, active_disable_dpixbuf=None):
         '''
         Initialize SwitchButton class.
         
         @param active: Button active status, default is False.
         '''
-        ToggleButton.__init__(self,
-                              ui_theme.get_pixbuf("switchbutton/off.png"),
-                              ui_theme.get_pixbuf("switchbutton/on.png"),
-                              )
+        if inactive_disable_dpixbuf and active_disable_dpixbuf:
+            ToggleButton.__init__(self, 
+                                  ui_theme.get_pixbuf("switchbutton/off.png"), 
+                                  ui_theme.get_pixbuf("switchbutton/on.png"), 
+                                  inactive_disable_dpixbuf = inactive_disable_dpixbuf, 
+                                  active_disable_dpixbuf = active_disable_dpixbuf)
+        else:
+            ToggleButton.__init__(self,
+                                  ui_theme.get_pixbuf("switchbutton/off.png"),
+                                  ui_theme.get_pixbuf("switchbutton/on.png"))
         self.set_active(active)
         
 gobject.type_register(SwitchButton)

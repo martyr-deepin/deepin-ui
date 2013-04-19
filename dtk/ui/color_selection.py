@@ -41,7 +41,7 @@ from utils import (
         color_rgb_to_hex, 
         cairo_disable_antialias,
         place_center)
-from deepin_utils.core import is_hex_color
+from deepin_utils.core import is_hex_color, is_int
 
 class HSV(gtk.ColorSelection):
     '''
@@ -97,17 +97,21 @@ class ColorSelectDialog(DialogBox):
     def __init__(self, 
                  init_color="#FFFFFF",
                  confirm_callback=None, 
-                 cancel_callback=None):
+                 cancel_callback=None,
+                 cancel_first=True, 
+                 ):
         '''
         Initialize ColorSelectDialog class.
         
         @param init_color: Initialize color of dialog.
         @param confirm_callback: Callback when user click OK, this callback accept one argument, color string.
         @param cancel_callback: Callback when user click cancel, this callback don't accept any argument.
+        @param cancel_first: Set as True if to make cancel button before confirm button, default is True.
         '''
         DialogBox.__init__(self, _("Select color"), mask_type=DIALOG_MASK_SINGLE_PAGE)
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
+        self.cancel_first = cancel_first
         
         self.color_box = gtk.HBox()
         self.color_align = gtk.Alignment()
@@ -157,19 +161,22 @@ class ColorSelectDialog(DialogBox):
         self.color_rgb_box = gtk.VBox()
         self.color_r_box = gtk.HBox()
         self.color_r_label = Label(_("Red: "))
-        self.color_r_spin = SpinBox(self.color_r, 0, 255, 1)
+        self.color_r_spin = SpinBox(self.color_r, 0, 255, 1,
+                                    check_text=self.is_color_value)
         self.color_r_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_r_box.pack_start(self.color_r_label, False, False)
         self.color_r_box.pack_start(self.color_r_spin, False, False)
         self.color_g_box = gtk.HBox()
         self.color_g_label = Label(_("Green: "))
-        self.color_g_spin = SpinBox(self.color_g, 0, 255, 1)
+        self.color_g_spin = SpinBox(self.color_g, 0, 255, 1,
+                                    check_text=self.is_color_value)
         self.color_g_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_g_box.pack_start(self.color_g_label, False, False)
         self.color_g_box.pack_start(self.color_g_spin, False, False)
         self.color_b_box = gtk.HBox()
         self.color_b_label = Label(_("Blue: "))
-        self.color_b_spin = SpinBox(self.color_b, 0, 255, 1)
+        self.color_b_spin = SpinBox(self.color_b, 0, 255, 1,
+                                    check_text=self.is_color_value)
         self.color_b_spin.connect("value-changed", lambda s, v: self.click_rgb_spin())
         self.color_b_box.pack_start(self.color_b_label, False, False)
         self.color_b_box.pack_start(self.color_b_spin, False, False)
@@ -202,10 +209,16 @@ class ColorSelectDialog(DialogBox):
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
         
-        self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
+        if self.cancel_first:
+            self.right_button_box.set_buttons([self.cancel_button, self.confirm_button])
+        else:
+            self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
         self.body_box.pack_start(self.color_align, True, True)
         
         self.update_color_info(self.color_string)
+        
+    def is_color_value(self, string):
+        return len(string) == 0 or (is_int(string) and 0 <= int(string) <= 255)
         
     def click_confirm_button(self):
         '''

@@ -28,14 +28,20 @@ from utils import (resize_window, is_double_click, move_window)
 
 class WindowBase(gtk.Window):
     '''
-    Window base.
+    WindowBase class.
+    
+    @undocumented: draw_background
+    @undocumented: draw_skin
+    @undocumented: get_cursor_type_with_coordinate
     '''
 	
     def __init__(self,
                  window_type=gtk.WINDOW_TOPLEVEL, 
                  ):
         '''
-        init docs
+        Initialize WindowBase class.
+        
+        @param window_type: The window type, default is gtk.WINDOW_TOPLEVEL
         '''
         gtk.Window.__init__(self, window_type)
         
@@ -100,6 +106,7 @@ class WindowBase(gtk.Window):
     def is_disable_window_maximized(self):
         '''
         An interface which indicates whether the window could be maximized, you should implement this function you own.
+        
         @return: Always return False.
         '''
         return False                
@@ -183,6 +190,9 @@ class WindowBase(gtk.Window):
         pass
     
     def get_cursor_type_with_coordinate(self, ex, ey, wx, wy, ww, wh):
+        '''
+        Get cursor type with given coordinate.
+        '''
         if self.get_resizable():
             if wx <= ex <= wx + self.shadow_padding:
                 if wy <= ey <= wy + self.shadow_padding * 2:

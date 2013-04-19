@@ -44,6 +44,8 @@ class Label(gtk.EventBox):
     @undocumented: draw_label_background
     @undocumented: draw_label_text
     @undocumented: update_size
+    @undocumented: hover
+    @undocumented: unhover
     '''
 	
     def __init__(self, 
@@ -75,6 +77,9 @@ class Label(gtk.EventBox):
         @param gaussian_radious: Radious of gaussian.
         @param border_radious: Radious of border.
         @param wrap_width: Wrap width.
+        @param underline: Whether display underline, default is False.
+        @param hover_color: Hover color, default is None.
+        @param fixed_width: Fixed width, default is None.
         '''
         # Init.
         gtk.EventBox.__init__(self)
@@ -135,11 +140,24 @@ class Label(gtk.EventBox):
             }
         
     def set_ellipsize(self, ellipsize):
+        '''
+        Set ellipsize of label.
+        
+        @param ellipsize: Ellipsize style of text when text width longer than draw area, it can use below value:
+         - pango.ELLIPSIZE_START
+         - pango.ELLIPSIZE_CENTER
+         - pango.ELLIPSIZE_END
+        '''
         self.ellipsize = ellipsize
         
         self.queue_draw()
         
     def set_fixed_width(self, width):
+        '''
+        Set fixed width of label.
+        
+        @param width: The width of label.
+        '''
         self.fixed_width = width
         self.set_size_request(width, -1)
         
@@ -236,6 +254,7 @@ class Label(gtk.EventBox):
         
         @param widget: Label widget.
         @param event: gtk.gdk.Event.
+        @return: Return the index at event.
         '''
         cr = widget.window.cairo_create()
         context = pangocairo.CairoContext(cr)
@@ -401,6 +420,8 @@ class Label(gtk.EventBox):
     def get_text(self):
         '''
         Get text of label.
+        
+        @return: Return the text of label.
         '''
         return self.text
     
@@ -434,6 +455,9 @@ class Label(gtk.EventBox):
         self.set_size_request(label_width, label_height)
         
     def set_clickable(self):
+        '''
+        Make label clickable.
+        '''
         set_clickable_cursor(self)
         
         self.connect("enter-notify-event", lambda w, e: self.hover())

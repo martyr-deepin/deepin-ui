@@ -33,6 +33,7 @@ class Notebook(gtk.EventBox):
     
     @undocumented: calculate_tab_width
     @undocumented: expose_notebook
+    @undocumented: button_press_notebook
     '''
 	
     def __init__(self,

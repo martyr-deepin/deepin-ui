@@ -38,7 +38,7 @@ import traceback
 
 class SkinConfig(gobject.GObject):
     '''
-    SkinConfig.
+    SkinConfig class.
     
     @undocumented: update_image_size
     @undocumented: get_skin_file_path
@@ -62,6 +62,8 @@ class SkinConfig(gobject.GObject):
     @undocumented: horizontal_mirror_background
     @undocumented: render_background
     @undocumented: export_skin
+    @undocumented: load_skin_from_image
+    @undocumented: load_skin_from_package
     '''
     
     __gsignals__ = {
@@ -504,6 +506,11 @@ class SkinConfig(gobject.GObject):
         self.app_theme_dir = app_theme.user_theme_dir
             
     def load_skin_from_image(self, filepath):
+        '''
+        Load theme from given image.
+        
+        @param filepath: The file path of image.
+        '''
         # Init.
         skin_dir = os.path.join(self.user_skin_dir, str(uuid.uuid4()))
         skin_image_file = os.path.basename(filepath)
@@ -545,7 +552,11 @@ class SkinConfig(gobject.GObject):
             return (False, skin_dir, skin_image_file)
         
     def load_skin_from_package(self, filepath):
-        '''Create skin from package.'''
+        '''
+        Load theme from given package.
+        
+        @param filepath: The file path of package.
+        '''
         # Init.
         skin_dir = os.path.join(self.user_skin_dir, str(uuid.uuid4()))
         

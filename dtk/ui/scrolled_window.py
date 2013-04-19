@@ -30,7 +30,7 @@ __all__ = ['ScrolledWindow']
 
 # the p_range is the virtual width/height, it's value is smaller than
 # the allocation.width/height when scrollbar's width/height smaller than
-# the minmum scrollbar length.
+# the minimum scrollbar length.
 # p_range =  allocation.width/height - (min_bar_len - *bar_len*)
 #       the *bar_len* =  (adj.page_size / adj.upper) * allocation.width/height
 # by this processing, 0~(adj.upper-adj.page_size) will be mapped to 0~p_range.
@@ -88,12 +88,13 @@ class ScrolledWindow(gtk.Bin):
 
     def __init__(self,
                  right_space=2,
-                 top_bottom_space=3):
+                 top_bottom_space=3,
+                 ):
         '''
         Init scrolled window.
 
-        @param right_space: the space between right border and the vertical scroolbar.
-        @param top_bottom_space: the space between top border and the vertical scroolbar.
+        @param right_space: the space between right border and the vertical scrollbar.
+        @param top_bottom_space: the space between top border and the vertical scrollbar.
         '''
         gtk.Bin.__init__(self)
         self.bar_min_length = 50  #scrollbar smallest height
@@ -112,17 +113,17 @@ class ScrolledWindow(gtk.Bin):
 
         class Record():
             def __init__(self):
-                self.bar_len = 0  #scrollbar length
-                self.last_pos = 0 #last mouse motion pointer's position (x or y)
+                self.bar_len = 0  # scrollbar length
+                self.last_pos = 0 # last mouse motion pointer's position (x or y)
 
-                #last mouse motion timestamp, if user moved the window
-                #then the last_pos is likely become invalid so we need "last_time"
-                #to deal with this situation.
+                # Last mouse motion times-tamp, if user moved the window
+                # then the last_pos is likely become invalid so we need "last_time"
+                # to deal with this situation.
                 self.last_time = 0
-                self.virtual_len = 0  #the virtual window height or width length
-                self.bar_pos = 0 #the scrollbar topcorner/leftcorner position
+                self.virtual_len = 0   # the virtual window height or width length
+                self.bar_pos = 0       # the scrollbar top-corner/left-corner position
                 self.is_inside = False # is pointer in the scrollbar region?
-                self.in_motion = False # is user is draging scrollbar?
+                self.in_motion = False # is user is dragging scrollbar?
                 self.policy = gtk.POLICY_AUTOMATIC
                 self.need_update_region = False # update gdk.Window's shape_region when need
 
@@ -147,7 +148,6 @@ class ScrolledWindow(gtk.Bin):
             return False
 
     def draw_vbar(self):
-        #img = cairo.ImageSurface(cairo.FORMAT_ARGB32, 100, 100)
         cr = self.vwindow.cairo_create()
         cr.set_source_rgb(*color_hex_to_cairo(self.bar_background.get_color()))
         cr.rectangle(0, 0, self.vallocation.width, self.vallocation.height)
@@ -280,26 +280,23 @@ class ScrolledWindow(gtk.Bin):
         # Emit signal 'vscrollbar_state_changed'.
         self.emit_vscrollbar_state_changed(e)
 
-        #TODO: need handle other scrolltype? I can only capture below two scrolltype at the moment
         if e.direction == gdk.SCROLL_DOWN:
             self.vadjustment.set_value(min(upper-page_size-1, value+step))
         elif e.direction == gdk.SCROLL_UP:
             self.vadjustment.set_value(max(0, value-step))
 
-        # We need always return False here, otherwise nesting scrolled window can't work correctly.
+        # WARNING: We need always return False here, otherwise nesting scrolled window can't work correctly.
         return False
 
     def do_leave_notify_event(self, e):
         if e.window == self.hwindow :
             self._horizaontal.is_inside = False
-            #if e.y < 0 and not self._horizaontal.in_motion:
             if not self._horizaontal.in_motion:
                 self.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
             return True
         elif e.window == self.vwindow:
             self._vertical.is_inside = False
             if not self._vertical.in_motion:
-            #if e.x < 0 and not self._vertical.in_motion:
                 self.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
             return True
         else:
@@ -334,9 +331,9 @@ class ScrolledWindow(gtk.Bin):
             deltaX = e.x_root - self._horizaontal.last_pos
             upper = self.hadjustment.upper
 
-            #the pos maybe beyond the effective range, but we will immediately corrected
-            #it's value.
-            #the "invariant" is  the "value" always in the effective range.
+            # The pos maybe beyond the effective range, 
+            # but we will immediately corrected it's value.
+            # the "invariant" is  the "value" always in the effective range.
             value = pos2value(self._horizaontal.bar_pos+deltaX, self._horizaontal.virtual_len, upper)
             value = max(0, min(value, self.hadjustment.upper-self.hadjustment.page_size))
             self.hadjustment.set_value(value)
@@ -382,7 +379,6 @@ class ScrolledWindow(gtk.Bin):
 
         ratio = float(self.vadjustment.page_size) / (self.vadjustment.upper-self.vadjustment.lower)
 
-        # assert(self.vadjustment.upper >= self.vadjustment.page_size)
         if ratio == 1:
             self._vertical.bar_len = 0
         else:
@@ -410,9 +406,7 @@ class ScrolledWindow(gtk.Bin):
 
 
         ratio = float(self.hadjustment.page_size) / (self.hadjustment.upper-self.hadjustment.lower)
-        # assert(self.hadjustment.lower == 0)
 
-        # assert(self.hadjustment.upper >= self.hadjustment.page_size)
         if ratio == 1:
             self._horizaontal.bar_len = 0
         else:
@@ -422,9 +416,6 @@ class ScrolledWindow(gtk.Bin):
             self._horizaontal.bar_len = max(bar_len, self.bar_min_length)
 
     def calc_hbar_allocation(self):
-        #assert 0 <= int(self.hpos) <= self.allocation.width - self.hbar_length,\
-        #        "self.hpos %f   self.allocation.width %f self.hbar_lengh %f" % (self.hpos, self.allocation.width,
-        #                self.hbar_length)
         bar_len = int(self._horizaontal.bar_len)
         if bar_len == 0:
             self.hallocation = gdk.Rectangle(0, 0, 0, 0)
@@ -437,7 +428,6 @@ class ScrolledWindow(gtk.Bin):
 
     def vadjustment_changed(self, adj):
         if self.get_realized():
-            # assert(self.vadjustment.value <= self.vadjustment.upper-self.vadjustment.page_size)
             upper = self.vadjustment.upper
             self._vertical.bar_pos = value2pos(adj.value, self._vertical.virtual_len, upper)
             self.calc_vbar_allocation()
@@ -446,7 +436,6 @@ class ScrolledWindow(gtk.Bin):
 
     def hadjustment_changed(self, adj):
         if self.get_realized():
-            # assert(self.hadjustment.value <= self.hadjustment.upper-self.hadjustment.page_size)
             upper = self.hadjustment.upper
             self._horizaontal.bar_pos = value2pos(adj.value, self._horizaontal.virtual_len, upper)
             self.calc_hbar_allocation()
@@ -457,7 +446,7 @@ class ScrolledWindow(gtk.Bin):
         '''
         Used to add children without native scrolling capabilities.
 
-        If a child has native scrolling, use ScrolledWindow.add() insetad
+        If a child has native scrolling, use ScrolledWindow.add() instead
 
         of this function.
 
@@ -478,8 +467,6 @@ class ScrolledWindow(gtk.Bin):
         @param child: the child with native scrolling.
         '''
         self.add_with_viewport(child)
-        #raise Exception, "use add_with_viewport instead add_child"
-
 
     def do_add(self, child):
         self.child = None
@@ -487,20 +474,17 @@ class ScrolledWindow(gtk.Bin):
 
         child.set_scroll_adjustments(self.hadjustment, self.vadjustment)
 
-    def do_size_request(self, requsition):
+    def do_size_request(self, requisition):
         if self.child:
-            #print "sel size_request", (requsition.width, requsition.height)
-            self.child.do_size_request(self.child, requsition)
-            #print "child size request:", (requsition.width, requsition.height)
+            self.child.do_size_request(self.child, requisition)
 
     def do_size_allocate(self, allocation):
-        #print "do_size_allocate", allocation
         self.allocation = allocation
 
         if self.get_realized():
             self.binwindow.move_resize(*self.allocation)
 
-        #must before calc_xxx_length, because we need child to cumpute the adjustment value
+        # Must before calc_xxx_length, because we need child to compute the adjustment value.
         if self.child:
             (allocation.x, allocation.y) = (0, 0)
             self.child.do_size_allocate(self.child, allocation)
@@ -527,8 +511,6 @@ class ScrolledWindow(gtk.Bin):
                 self.vwindow.show()
 
     def do_unrealize(self):
-        #print "do_unrealize"
-
         self.binwindow.set_user_data(None)
         self.binwindow.destroy()
         self.binwindow = None
@@ -539,18 +521,10 @@ class ScrolledWindow(gtk.Bin):
         self.hwindow.destroy()
         self.hwindow = None
 
-        # assert(self.get_realized() == True)
         gtk.Bin.do_unrealize(self)
-        # assert(self.get_realized() == False)
-
 
     def do_realize(self):
-        #print "self.get_parent_window():", self.get_parent_window()
-        #print "do_realize", self.get_realized()
-
-        # assert(self.get_realized() == False)
         gtk.Bin.do_realize(self)
-        # assert(self.get_realized() == True)
 
         self.binwindow = gtk.gdk.Window(self.get_parent_window(),
                 x=self.allocation.x,
@@ -582,8 +556,6 @@ class ScrolledWindow(gtk.Bin):
                     )
                 )
         self.vwindow.set_user_data(self)
-        #sefl.vwindow.get_
-        #self.vwindow.set_background(self.bar_background)
 
         self.hwindow = gtk.gdk.Window(self.binwindow,
                 x=self.hallocation.x,
@@ -602,18 +574,14 @@ class ScrolledWindow(gtk.Bin):
                     )
                 )
         self.hwindow.set_user_data(self)
-        #self.hwindow.set_background(self.bar_background)
 
         if self.child:
             self.child.set_parent_window(self.binwindow)
 
         self.queue_resize()
 
-
     def set_shadow_type(self, t):
-        #raise Warning("dtk's scrolledwindow didn't support this function")
         return
-
 
     def set_policy(self, h, v):
         '''
@@ -627,29 +595,24 @@ class ScrolledWindow(gtk.Bin):
         return
 
     def do_map(self):
-        gtk.Bin.do_map(self)  #must before self.xwindow.show(), didn't know the reason.
+        gtk.Bin.do_map(self)    # must before self.xwindow.show(), didn't know the reason.
         self.binwindow.show()
-        #self.hwindow.show()  #will show or hide in calc_xbar_allocation()
-        #self.vwindow.show()
         if self.child and not self.child.get_mapped() and self.child.get_visible():
             self.child.do_map(self.child)
 
     def do_unmap(self):
-        #self.set_mapped(False)
         self.binwindow.hide()
         self.hwindow.hide()
         self.vwindow.hide()
         gtk.Bin.do_unmap(self)
 
     def do_remove(self, child):
-        #TODO: need this?
-        #child.set_scroll_adjustments(None, None)
         gtk.Bin.do_remove(self, child)
 
     def get_vadjustment(self):
         '''
         Returns the vertical scrollbar's adjustment,
-        used to connect the vectical scrollbar to the child widget's
+        used to connect the vertical scrollbar to the child widget's
         vertical scroll functionality.
         '''
         return self.vadjustment
