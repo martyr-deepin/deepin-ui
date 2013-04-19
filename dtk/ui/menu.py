@@ -279,6 +279,13 @@ class Menu(Window):
             self.menu_items.append(menu_item)
             self.item_box.pack_start(menu_item.item_box, False, False)
 
+    def clear_menus(self):
+        self.menu_items = []
+        self.item_align.remove(self.item_box)
+        self.item_box = gtk.VBox()
+        self.item_align.add(self.item_box)
+        self.resize(1, 1)
+
     def hide_menu(self, widget):
         '''
         Internal callback for `hide` signal.
