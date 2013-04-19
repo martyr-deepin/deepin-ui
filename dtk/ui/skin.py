@@ -169,7 +169,9 @@ class SkinWindow(DialogBox):
 gobject.type_register(SkinWindow)
 
 class SkinPreviewPage(gtk.VBox):
-    '''Skin preview.'''
+    '''
+    Skin preview.
+    '''
 	
     def __init__(self, 
                  dialog, 
