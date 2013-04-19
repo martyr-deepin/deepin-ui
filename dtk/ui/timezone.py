@@ -28,10 +28,29 @@ import gobject
 import gtk
 
 class TimeZone(gtk.EventBox):
+    '''
+    TimeZone class.
+    '''
+    
     __gsignals__ = {
         "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),}
     
-    def __init__(self, timezone=0, width=800, height=409, padding_top=0, padding_left=0):
+    def __init__(self, 
+                 timezone=0, 
+                 width=800, 
+                 height=409, 
+                 padding_top=0, 
+                 padding_left=0,
+                 ):
+        '''
+        Initialize TimeZone class.
+        
+        @param timezone: Timezone, default is 0.
+        @param width: The width of timezone, default is 800 pixels.
+        @param height: The height of timezone, default is 409 pixels.
+        @param padding_top: The padding value of top, default is 0.
+        @param padding_left: The padding value of left, default is 0.
+        '''
         gtk.EventBox.__init__(self)
         
         self.__timezone = timezone + 9
@@ -60,6 +79,11 @@ class TimeZone(gtk.EventBox):
         self.connect("expose-event", self.__expose)
    
     def set_timezone(self, timezone):
+        '''
+        set timezone.
+        
+        @param timezone: Timezone to set.
+        '''
         self.__timezone = timezone + 9
         if self.__timezone < 0:
             self.__timezone = 0
