@@ -211,6 +211,8 @@ class Menu(Window):
         self.item_align.add(self.item_box)
         self.window_frame.add(self.item_align)
         self.menu_items = []
+        # deepin media player.
+        self.font_size = font_size
         
         if items:
             (icon_width, icon_height, have_submenu, submenu_width, submenu_height) = self.get_menu_icon_info(items)
@@ -249,7 +251,35 @@ class Menu(Window):
             item.set_item_icons(None)
         #
         self.menu_items[index].set_item_icons(icons)
+
+    def add_menu_items(self, items):
+        # deepin media player.
+        print self.menu_items
+        (icon_width, icon_height, have_submenu, submenu_width, submenu_height) = self.get_menu_icon_info(items)
         
+        for item in items:
+            menu_item = MenuItem(
+                item, 
+                self.font_size, 
+                self.select_scale, 
+                self.show_submenu, 
+                self.hide_submenu, 
+                self.get_root_menu, 
+                self.get_menu_items,
+                icon_width, 
+                icon_height,
+                have_submenu, 
+                submenu_width, 
+                submenu_height,
+                self.padding_x, 
+                self.padding_y,
+                self.item_padding_x, 
+                self.item_padding_y, 
+                self.menu_min_width,
+                self.menu_item_select_color)
+            self.menu_items.append(menu_item)
+            self.item_box.pack_start(menu_item.item_box, False, False)
+
     def hide_menu(self, widget):
         '''
         Internal callback for `hide` signal.
