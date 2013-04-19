@@ -254,7 +254,6 @@ class Menu(Window):
 
     def add_menu_items(self, items):
         # deepin media player.
-        print self.menu_items
         (icon_width, icon_height, have_submenu, submenu_width, submenu_height) = self.get_menu_icon_info(items)
         
         for item in items:
