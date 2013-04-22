@@ -180,12 +180,11 @@ class WizardBox(gtk.EventBox):
         'close': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         }
     
-<<<<<<< HEAD
-    def __init__(self, slider_images, pointer_images, button_images, show_button=True, slide_delay=10000):
-=======
     def __init__(self, 
                  slider_images=None, 
                  pointer_images=None, 
+                 button_images=None, 
+                 show_button=True, 
                  slide_delay=10000,
                  ):
         '''
@@ -193,9 +192,10 @@ class WizardBox(gtk.EventBox):
         
         @param slider_images: Slider images, default is None.
         @param pointer_images: Pointer images, default is None.
+        @param pointer_images: Button images, default is None.
+        @param show_button: Set as True to show button.
         @param slide_delay: The time of delay between slider image, default is 10000ms.
         '''
->>>>>>> 53be642880016f3742961ff338b79a6bacdf62d7
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
         
