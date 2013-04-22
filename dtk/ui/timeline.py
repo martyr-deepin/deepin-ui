@@ -29,7 +29,7 @@ FRAMERATE = 30.0
 
 class Timeline(gobject.GObject):
     '''
-    Timeline.
+    Timeline class.
     '''
 
     __gtype_name__ = 'Timeline'
@@ -39,7 +39,10 @@ class Timeline(gobject.GObject):
         'completed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
         }
 
-    def __init__(self, duration, curve):
+    def __init__(self, 
+                 duration, 
+                 curve,
+                 ):
         '''
         Initialize Timeline class.
 

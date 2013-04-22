@@ -283,7 +283,7 @@ def is_left_button(event):
 
 def is_right_button(event):
     '''
-    Whehter event is right button event.
+    Whether event is right button event.
     
     @param event: gtk.gdk.BUTTON_PRESS event.
     @return: Return True if event is right button event.
@@ -292,7 +292,7 @@ def is_right_button(event):
 
 def is_middle_button(event):
     '''
-    Whehter event is middle button event.
+    Whether event is middle button event.
     
     @param event: gtk.gdk.BUTTON_PRESS event.
     @return: Return True if event is middle button event.
@@ -472,7 +472,7 @@ def color_hex_to_rgb(color):
     
 def color_hex_to_cairo(color):
     ''' 
-    Convert a html (hex) RGB value to cairo color. 
+    Convert a HTML (hex) RGB value to cairo color. 
      
     @param color: The color to convert. 
     @return: A color in cairo format, (red, green, blue). 
@@ -698,7 +698,7 @@ def rgb2hsb(r_value, g_value, b_value):
 
 def find_similar_color(search_color):
     '''
-    Find simliar color match search_color.
+    Find similar color match search_color.
     
     @param search_color: Color to search.
     @return: Return similar color name and value, (color_name, color_value).
@@ -754,7 +754,7 @@ def get_system_icon_info(icon_theme="Deepin", icon_name="NULL", size=48):
     __icon_theme.set_custom_theme(icon_theme)
     return __icon_theme.lookup_icon(icon_name, size, gtk.ICON_LOOKUP_NO_SVG)
 
-def get_pixbuf_support_foramts():
+def get_pixbuf_support_formats():
     '''
     Get formats that support by pixbuf.
     
@@ -884,6 +884,11 @@ def unique_print(text):
     print "%s: %s" % (time.time(), text)
 
 def invisible_window(window):
+    '''
+    Make window invisible.
+
+    We use this function for global event that to hide event window.
+    '''
     def shape_window(widget, rect):
         w, h = rect.width, rect.height
         bitmap = gtk.gdk.Pixmap(None, w, h, 1)
@@ -1048,8 +1053,7 @@ def get_unused_port(address="localhost"):
     print "Please import deepin_utils.net.get_unused_port, this function will departed in next release version."
     return net.get_unused_port(address="localhost")
 
-
-def file_is_image(file, filter_type=get_pixbuf_support_foramts()):
+def file_is_image(file, filter_type=get_pixbuf_support_formats()):
     gfile = gio.File(file)
     try:
         fileinfo = gfile.query_info('standard::type,standard::content-type')            

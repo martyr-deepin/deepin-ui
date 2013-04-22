@@ -35,6 +35,7 @@ from utils import (alpha_color_hex_to_cairo, cairo_disable_antialias,
                    propagate_expose, remove_timeout_id)
 from deepin_utils.core import is_float
 
+__all__ = ["SpinBox", "TimeSpinBox"]
 
 class SpinBox(gtk.VBox):
     '''
@@ -243,7 +244,7 @@ class SpinBox(gtk.VBox):
         
     def increase_value(self):    
         '''
-        Internal function to increase valule.
+        Internal function to increase value.
         '''
         new_value = self.current_value + self.step_value
         if new_value > self.upper_value: 
@@ -255,7 +256,7 @@ class SpinBox(gtk.VBox):
             
     def decrease_value(self):     
         '''
-        Internal function to decrease valule.
+        Internal function to decrease value.
         '''
         new_value = self.current_value - self.step_value
         if new_value < self.lower_value: 
@@ -357,8 +358,17 @@ class SecondThread(td.Thread):
 
 class TimeSpinBox(gtk.VBox):
     '''
-    enum for self.time_label button-press-event set hour, minute or second
+    TimeSpinBox class.
+    
+    @undocumented: value_changed
+    @undocumented: size_change_cb
+    @undocumented: press_increase_button
+    @undocumented: press_decrease_button
+    @undocumented: handle_key_release
+    @undocumented: expose_time_spin
+    @undocumented: create_simple_button
     '''
+    
     SET_NONE = 0
     SET_HOUR = 1
     SET_MIN = 2
@@ -373,22 +383,23 @@ class TimeSpinBox(gtk.VBox):
                  width=95, 
                  height=22, 
                  padding_x=5, 
-                 is_24hour=True):
+                 is_24hour=True,
+                 ):
+        '''
+        Initialize TimeSpinBox class.
+        
+        @param width: The width of TimeSpinBox, default is 95 pixels.
+        @param height: The height of TimeSpinBox, default is 22 pixels.
+        @param padding_x: The padding x of TimeSpinBox, default is 5 pixels.
+        @param is_24hour: Whether use 24 hours format, default is True.
+        '''
         gtk.VBox.__init__(self)
 
         self.set_time = self.SET_NONE
         self.set_time_bg_color = "#DCDCDC"
         self.time_width = 0
         self.time_comma_width = 0
-        
-        '''
-        24 hour display
-        '''
         self.__24hour = is_24hour
-
-        '''
-        press increase or decrease button
-        '''
         self.__pressed_button = False
 
         self.hour_value = time.localtime().tm_hour
@@ -433,9 +444,19 @@ class TimeSpinBox(gtk.VBox):
         SecondThread(self).start()
   
     def get_24hour(self):
+        '''
+        Get whether use 24 hour format.
+        
+        @return: Return True if is use 24 hour format.
+        '''
         return self.__24hour
     
     def set_24hour(self, value):
+        '''
+        Set whether use 24 hour format.
+        
+        @param value: Set as True to use 24 hour format.
+        '''
         self.__24hour = value
         self.queue_draw()
 

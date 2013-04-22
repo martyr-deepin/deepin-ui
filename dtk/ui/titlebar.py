@@ -56,8 +56,9 @@ class Titlebar(EventBox):
         @param app_name: Application name string. It will be displayed just next to the icon_dpixbuf. By default, it's None.
         @param title: Title string of the application. It will be displayed on the center of the title bar. By default, it's None.
         @param add_separator: If True, add a separation line between the title bar and the body of the window. By default, it's False.
-        @param height: The hight of the title bar. By default, it's 26 pixels.
+        @param height: The height of the title bar. By default, it's 26 pixels.
         @param show_title: If False, the title bar will not be displayed. By default, it's True.
+        @param enable_gaussian: Whether enable gaussian on title, default is True.
         '''
         # Init.
         EventBox.__init__(self)
@@ -173,7 +174,7 @@ class Titlebar(EventBox):
     
     def change_title(self, title):
         '''
-        Change the title of the application, which is diplayed on the center of the title bar.
+        Change the title of the application, which is displayed on the center of the title bar.
         
         @param title: New title string that want to set.
         '''
