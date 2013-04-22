@@ -156,9 +156,11 @@ class Titlebar(gtk.Button):
             if index != max(self.title_widths.keys()):
                 draw_pixbuf(cr, split_pixbuf, split_start_x - 1, y)
             
-            # Draw title.    
-            draw_text(cr, self.titles[index], title_rect.x, y, each_width, h, 
-                      alignment=pango.ALIGN_CENTER)
+            # Draw title. 
+            # FIXME: IndexError: tuple index out of range
+            if index < len(self.titles):
+                draw_text(cr, self.titles[index], title_rect.x, y, each_width, h, 
+                          alignment=pango.ALIGN_CENTER)
             title_rect.x += each_width
             
             # Draw sort icon.
