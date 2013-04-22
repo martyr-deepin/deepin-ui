@@ -796,18 +796,8 @@ def get_resize_pixbuf_with_height(filepath, expect_height):
             gtk.gdk.INTERP_BILINEAR)
     else:
         return pixbuf
-        
-def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_middle_area=True):
-    '''
-    Get optimum size pixbuf from file.
     
-    @param filepath: Filepath to contain image.
-    @param expect_width: Expect width.
-    @param expect_height: Expect height.
-    @param cut_middle_area: Default cut image with middle area.
-    @return: Return optimum size pixbuf with expect size.
-    '''
-    pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
+def get_optimum_pixbuf_from_pixbuf(pixbuf, expect_width, expect_height, cut_middle_area=True):    
     pixbuf_width, pixbuf_height = pixbuf.get_width(), pixbuf.get_height()
     if pixbuf_width >= expect_width and pixbuf_height >= expect_height:
         if float(pixbuf_width) / pixbuf_height == float(expect_width) / expect_height:
@@ -871,7 +861,20 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
                                                expect_height)
     else:
         return pixbuf
-
+        
+def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_middle_area=True):
+    '''
+    Get optimum size pixbuf from file.
+    
+    @param filepath: Filepath to contain image.
+    @param expect_width: Expect width.
+    @param expect_height: Expect height.
+    @param cut_middle_area: Default cut image with middle area.
+    @return: Return optimum size pixbuf with expect size.
+    '''
+    pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
+    return get_optimum_pixbuf_from_pixbuf(pixbuf, expect_width, expect_height, cut_middle_area)
+    
 def unique_print(text):
     '''
     Unique print, generic for test code.

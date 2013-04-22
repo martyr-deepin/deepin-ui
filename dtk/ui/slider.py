@@ -30,6 +30,7 @@ from draw import draw_pixbuf
 from utils import set_cursor
 from theme import ui_theme
 from window import Window
+from utils import is_in_rect
 
 
 class HSlider(gtk.Viewport):
@@ -152,7 +153,7 @@ class WizardBox(gtk.EventBox):
         'close': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         }
     
-    def __init__(self, slider_images=None, pointer_images=None, slide_delay=10000):
+    def __init__(self, slider_images, pointer_images, button_images, show_button=True, slide_delay=10000):
         gtk.EventBox.__init__(self)
         self.set_visible_window(False)
         
@@ -173,7 +174,10 @@ class WizardBox(gtk.EventBox):
         self.slider_pixbufs = map(gtk.gdk.pixbuf_new_from_file, slider_images)
         self.slider_numuber = len(slider_images)
         self.dot_normal_pixbuf, self.dot_active_pixbuf = map(gtk.gdk.pixbuf_new_from_file, pointer_images)
+        self.button_normal_pixbuf, self.button_press_pixbuf = map(gtk.gdk.pixbuf_new_from_file, button_images)
         self.close_dpixbuf = ui_theme.get_pixbuf("button/window_close_normal.png")
+        
+        self.show_button = show_button
         
         # Init sizes.
         self.init_size()
@@ -219,6 +223,13 @@ class WizardBox(gtk.EventBox):
                                             self.close_dpixbuf.get_pixbuf().get_width(),
                                             self.close_dpixbuf.get_pixbuf().get_height())    
         
+        button_bottom_size = 55
+        button_width = self.button_normal_pixbuf.get_width()
+        button_height = self.button_normal_pixbuf.get_height()
+        button_x = (self.slider_width - button_width) / 2
+        button_y = self.slider_height - button_height - button_bottom_size        
+        self.button_rect = gtk.gdk.Rectangle(button_x,  button_y, button_width, button_height)
+        
     def on_expose_event(self, widget, event):    
         cr = widget.window.cairo_create()        
         rect = widget.allocation
@@ -257,6 +268,13 @@ class WizardBox(gtk.EventBox):
         # Draw close pixbuf.    
         draw_pixbuf(cr, self.close_dpixbuf.get_pixbuf(), 
                     rect.x + self.close_rect.x, rect.y + self.close_rect.y)    
+        
+        if self.show_button and self.target_index == self.slider_numuber - 1:
+            if self.button_hover_flag:
+                pixbuf = self.button_press_pixbuf
+            else:    
+                pixbuf = self.button_normal_pixbuf
+            draw_pixbuf(cr, pixbuf, rect.x + self.button_rect.x, rect.y + self.button_rect.y)    
         return True    
     
     def handle_animation(self, widget, event):    
@@ -274,6 +292,11 @@ class WizardBox(gtk.EventBox):
     
     def on_motion_notify(self, widget, event):
         self.handle_animation(widget, event)
+        if is_in_rect((event.x, event.y), self.button_rect):    
+            self.button_hover_flag = True
+        else:    
+            self.button_hover_flag = False
+        self.queue_draw()    
     
     def on_enter_notify(self, widget, event):
         if self.auto_animation_id is not None:
@@ -288,9 +311,12 @@ class WizardBox(gtk.EventBox):
         if self.motion_index != None:
             self.start_animation(self.slider_timeout, self.motion_index)
             
-        rect = self.close_rect    
-        if rect.x <= event.x <= rect.x + rect.width and rect.y <= event.y <= rect.y + rect.height:
+        if is_in_rect((event.x, event.y), self.close_rect):
             self.emit("close")
+            
+        if is_in_rect((event.x, event.y), self.button_rect):    
+            self.emit("close")
+                            
     
     def auto_animation(self):
         self.auto_animation_id = gobject.timeout_add(self.auto_animation_timeout, 
@@ -299,6 +325,7 @@ class WizardBox(gtk.EventBox):
     def start_animation(self, animation_time, target_index=None, direction="left"):
         if target_index is None:
             if self.active_index >= self.slider_numuber - 1:
+                return False
                 target_index = 0
             else:    
                 target_index = self.active_index + 1
@@ -330,7 +357,7 @@ class WizardBox(gtk.EventBox):
     def completed_animation(self, source, index):    
         self.active_index = index
         self.active_alpha = 1.0
-        self.target_index = None
+        # self.target_index = None
         self.target_alpha = 0.0
         self.in_animation = False
         self.active_x = 0
@@ -350,13 +377,15 @@ class WizardBox(gtk.EventBox):
         
         
 class Wizard(Window):        
-    def __init__(self, slider_files, pointer_files, finish_callback=None, slide_delay=8000):
+    def __init__(self, slider_files, pointer_files, button_files, show_button=True, 
+                 finish_callback=None, slide_delay=8000):
+        
         Window.__init__(self)
         self.finish_callback = finish_callback
         
         self.set_position(gtk.WIN_POS_CENTER)
         self.set_resizable(False)
-        self.wizard_box = WizardBox(slider_files, pointer_files, slide_delay)
+        self.wizard_box = WizardBox(slider_files, pointer_files, button_files, show_button, slide_delay)
         self.wizard_box.connect("close", lambda widget: self.destroy())
         self.connect("destroy", self.destroy_wizard)
         self.window_frame.add(self.wizard_box)
