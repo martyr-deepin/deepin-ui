@@ -35,7 +35,6 @@ class HScalebar(gtk.Button):
     '''
     HScalebar class.
     
-    @undocumented: init_events
     @undocumented: draw_bg_and_fg
     @undocumented: draw_point
     @undocumented: draw_value
@@ -80,6 +79,7 @@ class HScalebar(gtk.Button):
         self.value_min = value_min
         self.drag = False
         self.gray_progress = gray_progress
+        self.magnetic_values = []
         
         # Init color.
         self.fg_side_color = "#0071B3"
@@ -105,9 +105,6 @@ class HScalebar(gtk.Button):
         self.text_height_factor = 2
         self.set_size_request(-1, self.point_height + get_content_size("0")[1] * self.text_height_factor + self.bottom_space)
         
-        self.init_events()
-                
-    def init_events(self):     
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)        
         self.connect("expose-event", self.__progressbar_expose_event)
         self.connect("button-press-event", self.__progressbar_press_event)
@@ -331,8 +328,15 @@ class HScalebar(gtk.Button):
         value = max(min(self.value_max, temp_value), 0)
         if value != self.value:
             self.set_enable(True)
-        self.value = value       
         self.drag = True        
+        
+        print value, self.magnetic_values
+        for (magnetic_value, magnetic_range) in self.magnetic_values:
+            if magnetic_value - magnetic_range <= value <= magnetic_value + magnetic_range:
+                value = magnetic_value
+                break
+        
+        self.value = value       
         self.set_value(self.value + self.value_min)
         self.emit("value-changed", self.value + self.value_min)
         
@@ -396,6 +400,9 @@ class HScalebar(gtk.Button):
         @return: Return True if scalebar is enable.
         '''
         return self.enable_check
+    
+    def set_magnetic_values(self, magnetic_values):
+        self.magnetic_values = magnetic_values
 
 gobject.type_register(HScalebar)
 

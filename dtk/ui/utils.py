@@ -597,26 +597,6 @@ def cairo_disable_antialias(cr):
         # Restore antialias.
         cr.set_antialias(antialias)
 
-@contextmanager
-def exec_time():
-    '''
-    Print execute time with given code block.
-    
-    Usage:
-
-    >>> with exec_time():
-    >>>     # Write any code at here.
-    >>>     # ...
-    '''
-    start_time = time.time()
-    try:  
-        yield  
-    except Exception, e:  
-        print 'function exec_time got error %s' % e  
-        traceback.print_exc(file=sys.stdout)
-    else:  
-        print "time: %f" % (time.time() - start_time)
-
 def remove_timeout_id(callback_id):
     '''
     Remove callback id.
