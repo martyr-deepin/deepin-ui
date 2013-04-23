@@ -123,11 +123,15 @@ class Titlebar(gtk.Button):
         
         title_rect = gtk.gdk.Rectangle(x, y, w, h)
         
-        if self.title_widths is None:
+        if self.titles == None:
             cr.set_source_rgb(1, 1, 1)
             cr.rectangle(*rect)
             cr.fill()
             return True
+        
+        if not self.title_widths and len(self.titles) > 0:
+            average_width = rect.width / len(self.titles)
+            self.title_widths = {key: average_width for key in range(len(self.titles))}
         
         # Draw background.
         bg_pixbuf = ui_theme.get_pixbuf("listview/header_normal.png").get_pixbuf()
