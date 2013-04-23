@@ -207,9 +207,10 @@ class NavItem(object):
         '''
         Internal function to wrap clicked action.
         '''
+        self.set_index(self.index)
+        
         if self.clicked_callback:
             self.clicked_callback()
-        self.set_index(self.index)
         
     def expose_nav_item(self, widget, event):
         '''
