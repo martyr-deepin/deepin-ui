@@ -373,7 +373,8 @@ class BreadMenu(Poplist):
                          expose_frame_function=self.expose_bread_menu_frame,
                          align_size=2
                          )
-        
+        self.set_skip_pager_hint(True)
+        self.set_skip_taskbar_hint(True)
         self.treeview.draw_mask = self.draw_treeview_mask
         self.expose_window_frame = self.expose_bread_menu_frame
         
