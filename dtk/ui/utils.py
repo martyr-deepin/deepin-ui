@@ -209,6 +209,8 @@ def move_window(widget, event, window):
     @param window: Gtk.Window instance.
     '''
     if is_left_button(event):
+        widget.set_can_focus(True)
+        widget.grab_focus()
         window.begin_move_drag(
             event.button, 
             int(event.x_root), 
