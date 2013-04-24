@@ -373,8 +373,10 @@ if __name__ == "__main__":
     entry_box = gtk.HBox(spacing=10)
     
     text_entry = dtk.ui.entry.TextEntry()
+
     text_entry.set_size(100, 22)
     input_entry = InputEntry()
+    input_entry.entry.place_holder = "哈哈中"    
     input_entry.set_size(100, 22)
     shortcust_entry = ShortcutKeyEntry()
     shortcust_entry.set_size(100, 22)

@@ -22,7 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from constant import DEFAULT_FONT_SIZE, DEFAULT_FONT
-from draw import draw_hlinear, draw_pixbuf
+from draw import draw_hlinear, draw_pixbuf, draw_text
 from keymap import get_keyevent_name
 from locales import _
 from menu import Menu
@@ -835,6 +835,7 @@ class Entry(gtk.EventBox):
                  shown_password=False, 
                  is_ipv4=False,
                  is_mac=False,
+                 place_holder="",
                  ):
         '''
         Initialize Entry class.
@@ -887,6 +888,8 @@ class Entry(gtk.EventBox):
         self.right_menu_visible_flag = True
         self.select_area_visible_flag = True
         self.entry_buffer.set_property("select-area-visible", self.select_area_visible_flag)
+        self.place_holder = place_holder
+        self.cursor_blank_id = None
         
         self.offset_x = 0
         self.offset_y = 0
@@ -1290,8 +1293,12 @@ class Entry(gtk.EventBox):
         '''
         Draw entry
         '''
-        self.entry_buffer.render(cr, rect, self.cursor_alpha, self.im, self.offset_x, self.offset_y, self.grab_focus_flag, self.shown_password)
-        
+        if not self.grab_focus_flag and  not self.get_text() and self.place_holder:
+            draw_text(cr, self.place_holder, rect.x, rect.y, rect.width, rect.height, text_color="#bcbcbc")
+        else:    
+            self.entry_buffer.render(cr, rect, self.cursor_alpha, self.im, self.offset_x, self.offset_y, 
+                                     self.grab_focus_flag, self.shown_password)
+            
         # Propagate expose.
         propagate_expose(widget, event)
         
@@ -1354,13 +1361,16 @@ class Entry(gtk.EventBox):
         '''
         Internal callback for `focus-in-event` signal.
         '''
+        if self.cursor_blank_id != None:
+            gobject.source_remove(self.cursor_blank_id)
+            
         self.grab_focus_flag = True
         self.im.focus_in()
         try:
             cursor_blink_time = int(DESKTOP_SETTINGS.get_int("cursor-blink-time") / 2)
         except Exception:
             cursor_blink_time = DEFAULT_CURSOR_BLINK_TIME
-        gobject.timeout_add(cursor_blink_time, self.cursor_flash_tick)
+        self.cursor_blank_id = gobject.timeout_add(cursor_blink_time, self.cursor_flash_tick)
             
     def focus_out_entry(self, widget, event):
         '''
