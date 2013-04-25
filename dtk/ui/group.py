@@ -79,7 +79,8 @@ class ToggleButtonGroup(gtk.HBox):
         '''
         Initialize for ToggleButtonGroup class.
         
-        @param items: A list of ImageButton item, item format: (inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf, active_hover_dpixbuf, toggled_callback)
+        @param items: A list of ImageButton item, item format: 
+         - (inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf, active_hover_dpixbuf, toggled_callback)
         @param spacing: Spacing value between items, default is 5 pixel.
         '''
         gtk.HBox.__init__(self)
@@ -133,7 +134,8 @@ class ImageButtonItem(gtk.Button):
         '''
         Initialize ImageButtonItem class.
 
-        @param item: Image button item, item foramt: (normal_dpixbuf, hover_dpixbuf, press_dpixbuf, clicked_callback)
+        @param item: Image button item, item foramt: 
+         - (normal_dpixbuf, hover_dpixbuf, press_dpixbuf, clicked_callback)
         @param index: Item index.
         @param set_index: Set index callback.
         @param get_index: Get index callback.
@@ -213,7 +215,8 @@ class ToggleButtonItem(gtk.ToggleButton):
         '''
         Initialize ToggleButtonItem class.
 
-        @param item: Toggle button item, item foramt: (inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf, active_hover_dpixbuf, toggled_callback)
+        @param item: Toggle button item, item foramt: 
+         - (inactive_dpixbuf, active_dpixbuf, inactive_hover_dpixbuf, active_hover_dpixbuf, toggled_callback)
         @param index: Item index.
         @param set_index: Set index callback.
         @param get_index: Get index callback.

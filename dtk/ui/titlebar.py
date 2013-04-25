@@ -23,9 +23,8 @@
 
 from box import EventBox, ImageBox
 from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
-from draw import draw_line, draw_pixbuf
+from draw import draw_line
 from label import Label
-from cache_pixbuf import CachePixbuf
 from locales import _
 import tooltip as Tooltip
 from utils import window_is_max
@@ -34,11 +33,11 @@ import gtk
 import pango
 
 class Titlebar(EventBox):
-    """
+    '''
     Titlebar defines every thing of a title bar of a application based on deepin ui.
     
     @undocumented: expose_titlebar_separator
-    """
+    '''
     def __init__(self, 
                  button_mask=["theme", "menu", "max", "min", "close"],
                  icon_dpixbuf=None,
@@ -48,9 +47,8 @@ class Titlebar(EventBox):
                  height=26,
                  show_title=True,
                  enable_gaussian=True,
-                 bg_pixbuf=None,
-		        ):
-        """
+                 ):
+        '''
         Initialize the title bar.
 
         @param button_mask: A string list. Each item of it indicates that there is a corresponding button on the title bar. By default, it's ["theme", "menu", "max", "min", "close"], which means theme button, menu button, max button, min button and close button, respectively.
@@ -58,14 +56,13 @@ class Titlebar(EventBox):
         @param app_name: Application name string. It will be displayed just next to the icon_dpixbuf. By default, it's None.
         @param title: Title string of the application. It will be displayed on the center of the title bar. By default, it's None.
         @param add_separator: If True, add a separation line between the title bar and the body of the window. By default, it's False.
-        @param height: The hight of the title bar. By default, it's 26 pixels.
+        @param height: The height of the title bar. By default, it's 26 pixels.
         @param show_title: If False, the title bar will not be displayed. By default, it's True.
-        """
+        @param enable_gaussian: Whether enable gaussian on title, default is True.
+        '''
         # Init.
         EventBox.__init__(self)
         self.set_size_request(-1, height)
-        self.bg_pixbuf = bg_pixbuf
-        self.cache_bg_pixbuf = CachePixbuf()
         self.v_layout_box = gtk.VBox()
         self.h_layout_box = gtk.HBox()
         self.add(self.v_layout_box)
@@ -157,26 +154,14 @@ class Titlebar(EventBox):
         # Show.
         self.show_all()
 
-        self.connect("expose-event", self.__expose_titlebar_bg)
-
-    def __expose_titlebar_bg(self, widget, event):
-        if self.bg_pixbuf == None:
-            return
-        
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-
-        self.cache_bg_pixbuf.scale(self.bg_pixbuf.get_pixbuf(), rect.width - 2, rect.height)
-        draw_pixbuf(cr, self.cache_bg_pixbuf.get_cache(), rect.x + 1, rect.y)
-        
     def expose_titlebar_separator(self, widget, event):
-        """
+        '''
         Expose the separation line between the titlebar and the body of the window.
 
         @param widget: A widget of type Gtk.Widget.
         @param event: Not used.
         @return: Always return True.
-        """
+        '''
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
@@ -188,11 +173,11 @@ class Titlebar(EventBox):
         return True
     
     def change_title(self, title):
-        """
-        Change the title of the application, which is diplayed on the center of the title bar.
+        '''
+        Change the title of the application, which is displayed on the center of the title bar.
         
         @param title: New title string that want to set.
-        """
+        '''
         self.title_box.set_text(title)
         
 gobject.type_register(Titlebar)

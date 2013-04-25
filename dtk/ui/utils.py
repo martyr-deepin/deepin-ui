@@ -209,6 +209,8 @@ def move_window(widget, event, window):
     @param window: Gtk.Window instance.
     '''
     if is_left_button(event):
+        widget.set_can_focus(True)
+        widget.grab_focus()
         window.begin_move_drag(
             event.button, 
             int(event.x_root), 
@@ -283,7 +285,7 @@ def is_left_button(event):
 
 def is_right_button(event):
     '''
-    Whehter event is right button event.
+    Whether event is right button event.
     
     @param event: gtk.gdk.BUTTON_PRESS event.
     @return: Return True if event is right button event.
@@ -292,7 +294,7 @@ def is_right_button(event):
 
 def is_middle_button(event):
     '''
-    Whehter event is middle button event.
+    Whether event is middle button event.
     
     @param event: gtk.gdk.BUTTON_PRESS event.
     @return: Return True if event is middle button event.
@@ -471,12 +473,12 @@ def color_hex_to_rgb(color):
     return (int(color[:2], 16), int(color[2:4], 16), int(color[4:], 16)) 
     
 def color_hex_to_cairo(color):
-    """ 
-    Convert a html (hex) RGB value to cairo color. 
+    ''' 
+    Convert a HTML (hex) RGB value to cairo color. 
      
     @param color: The color to convert. 
     @return: A color in cairo format, (red, green, blue). 
-    """ 
+    ''' 
     gdk_color = gtk.gdk.color_parse(color)
     return (gdk_color.red / 65535.0, gdk_color.green / 65535.0, gdk_color.blue / 65535.0)
 
@@ -490,13 +492,13 @@ def color_rgb_to_hex(rgb_color):
     return "#%02X%02X%02X" % rgb_color
 
 def color_rgb_to_cairo(color): 
-    """ 
+    ''' 
     Convert a 8 bit RGB value to cairo color. 
      
     @type color: a triple of integers between 0 and 255 
     @param color: The color to convert. 
     @return: A color in cairo format. 
-    """ 
+    ''' 
     return (color[0] / 255.0, color[1] / 255.0, color[2] / 255.0) 
 
 def get_match_parent(widget, match_types):
@@ -597,26 +599,6 @@ def cairo_disable_antialias(cr):
         # Restore antialias.
         cr.set_antialias(antialias)
 
-@contextmanager
-def exec_time():
-    '''
-    Print execute time with given code block.
-    
-    Usage:
-
-    >>> with exec_time():
-    >>>     # Write any code at here.
-    >>>     # ...
-    '''
-    start_time = time.time()
-    try:  
-        yield  
-    except Exception, e:  
-        print 'function exec_time got error %s' % e  
-        traceback.print_exc(file=sys.stdout)
-    else:  
-        print "time: %f" % (time.time() - start_time)
-
 def remove_timeout_id(callback_id):
     '''
     Remove callback id.
@@ -698,7 +680,7 @@ def rgb2hsb(r_value, g_value, b_value):
 
 def find_similar_color(search_color):
     '''
-    Find simliar color match search_color.
+    Find similar color match search_color.
     
     @param search_color: Color to search.
     @return: Return similar color name and value, (color_name, color_value).
@@ -754,7 +736,7 @@ def get_system_icon_info(icon_theme="Deepin", icon_name="NULL", size=48):
     __icon_theme.set_custom_theme(icon_theme)
     return __icon_theme.lookup_icon(icon_name, size, gtk.ICON_LOOKUP_NO_SVG)
 
-def get_pixbuf_support_foramts():
+def get_pixbuf_support_formats():
     '''
     Get formats that support by pixbuf.
     
@@ -796,18 +778,8 @@ def get_resize_pixbuf_with_height(filepath, expect_height):
             gtk.gdk.INTERP_BILINEAR)
     else:
         return pixbuf
-        
-def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_middle_area=True):
-    '''
-    Get optimum size pixbuf from file.
     
-    @param filepath: Filepath to contain image.
-    @param expect_width: Expect width.
-    @param expect_height: Expect height.
-    @param cut_middle_area: Default cut image with middle area.
-    @return: Return optimum size pixbuf with expect size.
-    '''
-    pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
+def get_optimum_pixbuf_from_pixbuf(pixbuf, expect_width, expect_height, cut_middle_area=True):    
     pixbuf_width, pixbuf_height = pixbuf.get_width(), pixbuf.get_height()
     if pixbuf_width >= expect_width and pixbuf_height >= expect_height:
         if float(pixbuf_width) / pixbuf_height == float(expect_width) / expect_height:
@@ -871,7 +843,20 @@ def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_midd
                                                expect_height)
     else:
         return pixbuf
-
+        
+def get_optimum_pixbuf_from_file(filepath, expect_width, expect_height, cut_middle_area=True):
+    '''
+    Get optimum size pixbuf from file.
+    
+    @param filepath: Filepath to contain image.
+    @param expect_width: Expect width.
+    @param expect_height: Expect height.
+    @param cut_middle_area: Default cut image with middle area.
+    @return: Return optimum size pixbuf with expect size.
+    '''
+    pixbuf = gtk.gdk.pixbuf_new_from_file(filepath)
+    return get_optimum_pixbuf_from_pixbuf(pixbuf, expect_width, expect_height, cut_middle_area)
+    
 def unique_print(text):
     '''
     Unique print, generic for test code.
@@ -881,6 +866,11 @@ def unique_print(text):
     print "%s: %s" % (time.time(), text)
 
 def invisible_window(window):
+    '''
+    Make window invisible.
+
+    We use this function for global event that to hide event window.
+    '''
     def shape_window(widget, rect):
         w, h = rect.width, rect.height
         bitmap = gtk.gdk.Pixmap(None, w, h, 1)
@@ -1045,8 +1035,7 @@ def get_unused_port(address="localhost"):
     print "Please import deepin_utils.net.get_unused_port, this function will departed in next release version."
     return net.get_unused_port(address="localhost")
 
-
-def file_is_image(file, filter_type=get_pixbuf_support_foramts()):
+def file_is_image(file, filter_type=get_pixbuf_support_formats()):
     gfile = gio.File(file)
     try:
         fileinfo = gfile.query_info('standard::type,standard::content-type')            

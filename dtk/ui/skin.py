@@ -23,7 +23,7 @@
 from button import Button, ImageButton, ToggleButton, ActionButton
 from cache_pixbuf import CachePixbuf
 from deepin_utils.config import Config
-from constant import SHADE_SIZE, COLOR_SEQUENCE
+from constant import SHADOW_SIZE, COLOR_SEQUENCE
 from dialog import ConfirmDialog, OpenFileDialog, SaveFileDialog
 from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
@@ -59,7 +59,8 @@ class LoadSkinThread(td.Thread):
     def __init__(self, 
                  skin_dirs, 
                  add_skin_icons, 
-                 add_add_icon):
+                 add_add_icon,
+                 ):
         '''
         Initialize LoadSkinThread class.
         
@@ -112,13 +113,14 @@ class SkinWindow(DialogBox):
     def __init__(self, 
                  app_frame_pixbuf, 
                  preview_width=450, 
-                 preview_height=500):
+                 preview_height=500,
+                 ):
         '''
         Initialize SkinWindow class.
         
         @param app_frame_pixbuf: Application's pixbuf for frame. 
-        @param preview_width: Preview width, default is 450.
-        @param preview_height: Preview height, default is 500.
+        @param preview_width: Preview width, default is 450 pixels.
+        @param preview_height: Preview height, default is 500 pixels.
         '''
         DialogBox.__init__(self, _("Select skin"), preview_width, preview_height, mask_type=DIALOG_MASK_SINGLE_PAGE)
         self.app_frame_pixbuf = app_frame_pixbuf
@@ -167,13 +169,18 @@ class SkinWindow(DialogBox):
 gobject.type_register(SkinWindow)
 
 class SkinPreviewPage(gtk.VBox):
-    '''Skin preview.'''
+    '''
+    Skin preview.
+    '''
 	
     def __init__(self, 
                  dialog, 
                  change_skin_callback, 
-                 switch_edit_page_callback):
-        '''Init skin preview.'''
+                 switch_edit_page_callback,
+                 ):
+        '''
+        Init skin preview.
+        '''
         gtk.VBox.__init__(self)
         self.dialog = dialog
         self.change_skin_callback = change_skin_callback
@@ -205,7 +212,9 @@ class SkinPreviewPage(gtk.VBox):
         self.connect("drag-data-received", self.drag_skin_file)
         
     def add_skin_icons(self, skin_infos):
-        '''Add skin icon.'''
+        '''
+        Add skin icon.
+        '''
         items = []
         for (root, filename) in skin_infos:
             items.append(
@@ -218,29 +227,39 @@ class SkinPreviewPage(gtk.VBox):
         self.preview_view.add_items(items)
         
     def add_add_icon(self):
-        '''Add add icon.'''
+        '''
+        Add add icon.
+        '''
         self.preview_view.add_items([SkinAddIcon(self.create_skin_from_file)])
         
     def drag_skin_file(self, widget, drag_context, x, y, selection_data, info, timestamp):
-        '''Drag skin file.'''
+        '''
+        Drag skin file.
+        '''
         self.create_skin_from_file(urllib.unquote(selection_data.get_uris()[0].split("file://")[1]))            
         
     def create_skin_from_file(self, skin_file):
-        '''Create skin from file.'''
+        '''
+        Create skin from file.
+        '''
         if file_is_image(skin_file):
             self.create_skin_from_image(skin_file)
         elif end_with_suffixs(skin_file, ["tar.gz"]):
             self.create_skin_from_package(skin_file)
         
     def create_skin_from_image(self, filepath):
-        '''Create skin from image.'''
+        '''
+        Create skin from image.
+        '''
         (load_skin_status, skin_dir, skin_image_file) = skin_config.load_skin_from_image(filepath)
         
         if load_skin_status:
             self.add_skin_preview_icon(skin_dir, skin_image_file)
         
     def create_skin_from_package(self, filepath):
-        '''Create skin from package.'''
+        '''
+        Create skin from package.
+        '''
         (load_skin_status, skin_dir, skin_image_file) = skin_config.load_skin_from_image(filepath)
         
         if load_skin_status:
@@ -264,7 +283,9 @@ class SkinPreviewPage(gtk.VBox):
         scroll_to_bottom(self.preview_scrolled_window)            
                     
     def highlight_skin(self):
-        '''Highlight skin.'''
+        '''
+        Highlight skin.
+        '''
         # Highlight skin.
         for item in self.preview_view.items:
             if isinstance(item, SkinPreviewIcon) and item.skin_dir == skin_config.skin_dir:
@@ -273,7 +294,9 @@ class SkinPreviewPage(gtk.VBox):
                 break
             
     def pop_delete_skin_dialog(self, item):
-        '''Pop delete skin dialog.'''
+        '''
+        Pop delete skin dialog.
+        '''
         dialog = ConfirmDialog(
             _("Delete skin"),
             _("Are you sure delete this skin?"),
@@ -282,7 +305,9 @@ class SkinPreviewPage(gtk.VBox):
         place_center(self.get_toplevel(), dialog)
             
     def remove_skin(self, item):
-        '''Remove skin.'''
+        '''
+        Remove skin.
+        '''
         if len(self.preview_view.items) > 1:
             # Change to first theme if delete current theme.
             if item.skin_dir == skin_config.skin_dir:
@@ -302,7 +327,9 @@ class SkinPreviewPage(gtk.VBox):
 gobject.type_register(SkinPreviewPage)
         
 class SkinPreviewIcon(gobject.GObject):
-    '''Icon item.'''
+    '''
+    Icon item.
+    '''
     
     BUTTON_HIDE = 0
     BUTTON_NORMAL = 1
@@ -318,7 +345,9 @@ class SkinPreviewIcon(gobject.GObject):
                  change_skin_callback,
                  switch_edit_page_callback,
                  pop_delete_skin_dialog_callback):
-        '''Init item icon.'''
+        '''
+        Init item icon.
+        '''
         gobject.GObject.__init__(self)
         self.skin_dir = skin_dir
         self.background_file = background_file
@@ -347,7 +376,9 @@ class SkinPreviewIcon(gobject.GObject):
         self.config.load()
         
     def is_in_delete_button_area(self, x, y):
-        '''Is cursor in delete button area.'''
+        '''
+        Is cursor in delete button area.
+        '''
         delete_pixbuf = ui_theme.get_pixbuf("skin/delete_normal.png").get_pixbuf()
         
         return is_in_rect((x, y), 
@@ -357,7 +388,9 @@ class SkinPreviewIcon(gobject.GObject):
                            delete_pixbuf.get_height()))
     
     def is_in_edit_button_area(self, x, y):
-        '''Is cursor in edit button area.'''
+        '''
+        Is cursor in edit button area.
+        '''
         edit_pixbuf = ui_theme.get_pixbuf("skin/edit_normal.png").get_pixbuf()
         
         return is_in_rect((x, y), 
@@ -367,27 +400,39 @@ class SkinPreviewIcon(gobject.GObject):
                            edit_pixbuf.get_height()))
     
     def is_deletable(self):
-        '''Is deletable.'''
+        '''
+        Is deletable.
+        '''
         return self.config.getboolean("action", "deletable")
     
     def is_editable(self):
-        '''Is editable.'''
+        '''
+        Is editable.
+        '''
         return self.config.getboolean("action", "editable")    
         
     def emit_redraw_request(self):
-        '''Emit redraw-request signal.'''
+        '''
+        Emit redraw-request signal.
+        '''
         self.emit("redraw-request")
         
     def get_width(self):
-        '''Get width.'''
+        '''
+        Get width.
+        '''
         return self.width + (self.icon_padding + self.padding_x) * 2
         
     def get_height(self):
-        '''Get height.'''
+        '''
+        Get height.
+        '''
         return self.height + (self.icon_padding + self.padding_y) * 2
     
     def render(self, cr, rect):
-        '''Render item.'''
+        '''
+        Render item.
+        '''
         # Draw frame.
         if self.hover_flag:
             pixbuf = ui_theme.get_pixbuf("skin/preview_hover.png").get_pixbuf()
@@ -447,7 +492,9 @@ class SkinPreviewIcon(gobject.GObject):
             draw_pixbuf(cr, pixbuf, edit_button_x, edit_button_y)
             
     def icon_item_motion_notify(self, x, y):
-        '''Handle `motion-notify-event` signal.'''
+        '''
+        Handle `motion-notify-event` signal.
+        '''
         self.hover_flag = True
         
         remove_timeout_id(self.show_delete_button_id)
@@ -484,17 +531,23 @@ class SkinPreviewIcon(gobject.GObject):
         self.emit_redraw_request()
         
     def show_delete_button(self, status):
-        '''Show delete button.'''
+        '''
+        Show delete button.
+        '''
         self.delete_button_status = status
         self.emit_redraw_request()
 
     def show_edit_button(self, status):
-        '''Show edit button.'''
+        '''
+        Show edit button.
+        '''
         self.edit_button_status = status
         self.emit_redraw_request()
         
     def icon_item_lost_focus(self):
-        '''Lost focus.'''
+        '''
+        Lost focus.
+        '''
         self.hover_flag = False
         self.delete_button_status = self.BUTTON_HIDE
         self.edit_button_status = self.BUTTON_HIDE
@@ -505,19 +558,25 @@ class SkinPreviewIcon(gobject.GObject):
         self.emit_redraw_request()
         
     def icon_item_highlight(self):
-        '''Highlight item.'''
+        '''
+        Highlight item.
+        '''
         self.highlight_flag = True
 
         self.emit_redraw_request()
         
     def icon_item_normal(self):
-        '''Set item with normal status.'''
+        '''
+        Set item with normal status.
+        '''
         self.highlight_flag = False
         
         self.emit_redraw_request()
     
     def icon_item_button_press(self, x, y):
-        '''Handle button-press event.'''
+        '''
+        Handle button-press event.
+        '''
         if not self.is_deletable() and not self.is_editable():
             self.change_skin_callback(self)    
         else:
@@ -540,7 +599,9 @@ class SkinPreviewIcon(gobject.GObject):
         self.emit_redraw_request()    
     
     def icon_item_button_release(self, x, y):
-        '''Handle button-release event.'''
+        '''
+        Handle button-release event.
+        '''
         if self.is_deletable():
             if self.is_in_delete_button_area(x, y):
                 self.delete_button_status = self.BUTTON_HOVER
@@ -556,24 +617,32 @@ class SkinPreviewIcon(gobject.GObject):
         self.emit_redraw_request()    
     
     def icon_item_single_click(self, x, y):
-        '''Handle single click event.'''
+        '''
+        Handle single click event.
+        '''
         pass
 
     def icon_item_double_click(self, x, y):
-        '''Handle double click event.'''
+        '''
+        Handle double click event.
+        '''
         pass
     
 gobject.type_register(SkinPreviewIcon)
 
 class SkinAddIcon(gobject.GObject):
-    '''Icon item.'''
+    '''
+    Icon item.
+    '''
 	
     __gsignals__ = {
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
     def __init__(self, ok_callback=None, cancel_callback=None):
-        '''Init item icon.'''
+        '''
+        Init item icon.
+        '''
         gobject.GObject.__init__(self)
         self.ok_callback = ok_callback
         self.cancel_callback = cancel_callback
@@ -586,19 +655,27 @@ class SkinAddIcon(gobject.GObject):
         self.highlight_flag = False
         
     def emit_redraw_request(self):
-        '''Emit redraw-request signal.'''
+        '''
+        Emit redraw-request signal.
+        '''
         self.emit("redraw-request")
         
     def get_width(self):
-        '''Get width.'''
+        '''
+        Get width.
+        '''
         return self.width + (self.icon_padding + self.padding_x) * 2
         
     def get_height(self):
-        '''Get height.'''
+        '''
+        Get height.
+        '''
         return self.height + (self.icon_padding + self.padding_y) * 2
     
     def render(self, cr, rect):
-        '''Render item.'''
+        '''
+        Render item.
+        '''
         # Draw frame.
         if self.hover_flag:
             pixbuf = ui_theme.get_pixbuf("skin/preview_hover.png").get_pixbuf()
@@ -624,55 +701,75 @@ class SkinAddIcon(gobject.GObject):
                 )
         
     def icon_item_motion_notify(self, x, y):
-        '''Handle `motion-notify-event` signal.'''
+        '''
+        Handle `motion-notify-event` signal.
+        '''
         self.hover_flag = True
         
         self.emit_redraw_request()
         
     def icon_item_lost_focus(self):
-        '''Lost focus.'''
+        '''
+        Lost focus.
+        '''
         self.hover_flag = False
         
         self.emit_redraw_request()
         
     def icon_item_highlight(self):
-        '''Highlight item.'''
+        '''
+        Highlight item.
+        '''
         self.highlight_flag = True
 
         self.emit_redraw_request()
         
     def icon_item_normal(self):
-        '''Set item with normal status.'''
+        '''
+        Set item with normal status.
+        '''
         self.highlight_flag = False
         
         self.emit_redraw_request()
     
     def icon_item_button_press(self, x, y):
-        '''Handle button-press event.'''
+        '''
+        Handle button-press event.
+        '''
         OpenFileDialog(_("Add skin from file"), None, self.ok_callback, self.cancel_callback)
     
     def icon_item_button_release(self, x, y):
-        '''Handle button-release event.'''
+        '''
+        Handle button-release event.
+        '''
         pass
     
     def icon_item_single_click(self, x, y):
-        '''Handle single click event.'''
+        '''
+        Handle single click event.
+        '''
         pass
 
     def icon_item_double_click(self, x, y):
-        '''Handle double click event.'''
+        '''
+        Handle double click event.
+        '''
         pass
         
 gobject.type_register(SkinAddIcon)
 
 class SkinEditPage(gtk.VBox):
-    '''Init skin edit page.'''
+    '''
+    Init skin edit page.
+    '''
 	
     def __init__(self, 
                  dialog, 
                  app_frame_pixbuf, 
                  switch_preview_page):
-        '''Init skin edit page.'''
+        '''
+        Init skin edit page.
+        '''
         gtk.VBox.__init__(self)
         self.dialog = dialog
         self.switch_preview_page = switch_preview_page
@@ -791,17 +888,23 @@ class SkinEditPage(gtk.VBox):
         self.color_select_view.connect("button-press-item", self.change_skin_theme)
         
     def click_vertical_mirror_button(self):
-        '''Click vertical mirror button.'''
+        '''
+        Click vertical mirror button.
+        '''
         skin_config.vertical_mirror_background()        
         skin_config.save_skin()
         
     def click_horizontal_mirror_button(self):
-        '''Click horizontal mirror button.'''
+        '''
+        Click horizontal mirror button.
+        '''
         skin_config.horizontal_mirror_background()
         skin_config.save_skin()
         
     def change_skin_theme(self, view, item, x, y):
-        '''Change skin theme.'''
+        '''
+        Change skin theme.
+        '''
         # Highlight theme icon.
         self.highlight_color_icon(item.color)
         
@@ -810,7 +913,9 @@ class SkinEditPage(gtk.VBox):
         skin_config.save_skin()
         
     def highlight_color_icon(self, color):
-        '''Highlight color icon.'''
+        '''
+        Highlight color icon.
+        '''
         for item in self.color_select_view.items:
             if item.color == color:
                 self.color_select_view.clear_highlight()
@@ -818,20 +923,26 @@ class SkinEditPage(gtk.VBox):
                 break
             
     def export_skin(self, button):
-        '''Export skin.'''
+        '''
+        Export skin.
+        '''
         SaveFileDialog(_("Export skin"), None, skin_config.export_skin)
         
 gobject.type_register(SkinEditPage)
 
 class ColorIconItem(gobject.GObject):
-    '''Icon item.'''
+    '''
+    Icon item.
+    '''
 	
     __gsignals__ = {
         "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
     }
     
     def __init__(self, color):
-        '''Init item icon.'''
+        '''
+        Init item icon.
+        '''
         gobject.GObject.__init__(self)
         self.color = color
         self.width = 42
@@ -842,19 +953,27 @@ class ColorIconItem(gobject.GObject):
         self.highlight_flag = False
         
     def emit_redraw_request(self):
-        '''Emit redraw-request signal.'''
+        '''
+        Emit redraw-request signal.
+        '''
         self.emit("redraw-request")
         
     def get_width(self):
-        '''Get width.'''
+        '''
+        Get width.
+        '''
         return self.width + self.padding_x * 2
         
     def get_height(self):
-        '''Get height.'''
+        '''
+        Get height.
+        '''
         return self.height + self.padding_y * 2
     
     def render(self, cr, rect):
-        '''Render item.'''
+        '''
+        Render item.
+        '''
         # Init.
         draw_x = rect.x + self.padding_x
         draw_y = rect.y + self.padding_y
@@ -881,49 +1000,67 @@ class ColorIconItem(gobject.GObject):
                 draw_y - 2)
             
     def icon_item_motion_notify(self, x, y):
-        '''Handle `motion-notify-event` signal.'''
+        '''
+        Handle `motion-notify-event` signal.
+        '''
         self.hover_flag = True
         
         self.emit_redraw_request()
         
     def icon_item_lost_focus(self):
-        '''Lost focus.'''
+        '''
+        Lost focus.
+        '''
         self.hover_flag = False
         
         self.emit_redraw_request()
         
     def icon_item_highlight(self):
-        '''Highlight item.'''
+        '''
+        Highlight item.
+        '''
         self.highlight_flag = True
 
         self.emit_redraw_request()
         
     def icon_item_normal(self):
-        '''Set item with normal status.'''
+        '''
+        Set item with normal status.
+        '''
         self.highlight_flag = False
         
         self.emit_redraw_request()
     
     def icon_item_button_press(self, x, y):
-        '''Handle button-press event.'''
+        '''
+        Handle button-press event.
+        '''
         pass        
     
     def icon_item_button_release(self, x, y):
-        '''Handle button-release event.'''
+        '''
+        Handle button-release event.
+        '''
         pass
     
     def icon_item_single_click(self, x, y):
-        '''Handle single click event.'''
+        '''
+        Handle single click event.
+        '''
         pass
 
     def icon_item_double_click(self, x, y):
-        '''Handle double click event.'''
+        '''
+        Handle double click event.
+        '''
         pass
     
 gobject.type_register(ColorIconItem)
 
 class SkinEditArea(gtk.EventBox):
-    '''Skin edit area.'''
+    '''
+    Skin edit area.
+    '''
 	
     POSITION_LEFT_SIDE = 0
     POSITION_RIGHT_SIDE = 1
@@ -937,7 +1074,9 @@ class SkinEditArea(gtk.EventBox):
     POSITION_OUTSIDE = 9
     
     def __init__(self, app_frame_pixbuf):
-        '''Init skin edit area.'''
+        '''
+        Init skin edit area.
+        '''
         gtk.EventBox.__init__(self)
         self.set_has_window(False)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
@@ -968,7 +1107,7 @@ class SkinEditArea(gtk.EventBox):
         self.shadow_radius = 6
         self.frame_radius = 2
         self.shadow_padding = self.shadow_radius - self.frame_radius
-        self.shadow_size = int(self.eval_scale(SHADE_SIZE))
+        self.shadow_size = int(self.eval_scale(SHADOW_SIZE))
         self.min_resize_width = self.min_resize_height = self.shadow_size
         
         self.drag_start_x = 0
@@ -992,11 +1131,15 @@ class SkinEditArea(gtk.EventBox):
         self.connect("leave-notify-event", self.leave_notify_skin_edit_area)
         
     def eval_scale(self, value):
-        '''Eval scale.'''
+        '''
+        Eval scale.
+        '''
         return value * self.preview_pixbuf_width / self.app_window_width
         
     def expose_skin_edit_area(self, widget, event):
-        '''Expose edit area.'''
+        '''
+        Expose edit area.
+        '''
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
@@ -1177,7 +1320,9 @@ class SkinEditArea(gtk.EventBox):
                 cr.stroke()
             
     def button_press_skin_edit_area(self, widget, event):
-        '''Callback for `button-press-event`'''
+        '''
+        Callback for `button-press-event`
+        '''
         self.button_press_flag = True
         self.button_release_flag = False
         self.action_type = self.skin_edit_area_get_action_type(event)
@@ -1190,7 +1335,9 @@ class SkinEditArea(gtk.EventBox):
         self.drag_background_y = self.resize_y
     
     def button_release_skin_edit_area(self, widget, event):
-        '''Callback for `button-release-event`.'''
+        '''
+        Callback for `button-release-event`.
+        '''
         # Init.
         rect = widget.allocation
         
@@ -1221,7 +1368,9 @@ class SkinEditArea(gtk.EventBox):
         skin_config.save_skin()
     
     def leave_notify_skin_edit_area(self, widget, event):
-        '''Callback for `leave-notify-event` signal.'''
+        '''
+        Callback for `leave-notify-event` signal.
+        '''
         if not self.button_press_flag:
             self.in_resize_area_flag = False        
             
@@ -1230,7 +1379,9 @@ class SkinEditArea(gtk.EventBox):
             self.queue_draw()
         
     def motion_skin_edit_area(self, widget, event):
-        '''Callback for `motion-notify-event`.'''
+        '''
+        Callback for `motion-notify-event`.
+        '''
         if self.button_press_flag:
             if self.action_type != None:
                 if self.action_type == self.POSITION_INSIDE:
@@ -1261,7 +1412,9 @@ class SkinEditArea(gtk.EventBox):
                     self.queue_draw()
     
     def skin_edit_area_set_cursor(self, action_type):
-        '''Set cursor.'''
+        '''
+        Set cursor.
+        '''
         if action_type == self.POSITION_INSIDE:
             set_cursor(self, gtk.gdk.FLEUR)
         elif action_type == self.POSITION_TOP_LEFT_CORNER:
@@ -1284,7 +1437,9 @@ class SkinEditArea(gtk.EventBox):
             set_cursor(self, None)
             
     def skin_edit_area_get_action_type(self, event):
-        '''Get action type.'''
+        '''
+        Get action type.
+        '''
         ex, ey = event.x, event.y
         resize_x = self.padding_x + self.shadow_padding + self.resize_x
         resize_y = self.padding_y + self.shadow_padding + self.resize_y
@@ -1350,7 +1505,9 @@ class SkinEditArea(gtk.EventBox):
             return self.POSITION_OUTSIDE
         
     def is_in_resize_area(self, event):
-        '''Is at resize area.'''
+        '''
+        Is at resize area.
+        '''
         offset_x = self.padding_x + self.shadow_padding
         offset_y = self.padding_y + self.shadow_padding
         return is_in_rect(
@@ -1361,7 +1518,9 @@ class SkinEditArea(gtk.EventBox):
              self.resize_height + self.resize_pointer_size))        
         
     def skin_edit_area_resize(self, action_type, event):
-        '''Resize.'''
+        '''
+        Resize.
+        '''
         if action_type == self.POSITION_LEFT_SIDE:
             self.skin_edit_area_adjust_left(event)
             self.queue_draw()
@@ -1392,7 +1551,9 @@ class SkinEditArea(gtk.EventBox):
             self.queue_draw()
             
     def skin_edit_area_adjust_left(self, event):
-        '''Adjust left.'''
+        '''
+        Adjust left.
+        '''
         offset_x = self.padding_x + self.shadow_padding
         if self.lock_flag:
             new_resize_x = min(int(event.x) - offset_x, 0)
@@ -1416,7 +1577,9 @@ class SkinEditArea(gtk.EventBox):
             self.resize_x = int(new_resize_x)
         
     def skin_edit_area_adjust_top(self, event):
-        '''Adjust top.'''
+        '''
+        Adjust top.
+        '''
         offset_y = self.padding_y + self.shadow_padding
         if self.lock_flag:
             new_resize_y = min(int(event.y) - offset_y, 0)
@@ -1440,7 +1603,9 @@ class SkinEditArea(gtk.EventBox):
             self.resize_y = int(new_resize_y)
         
     def skin_edit_area_adjust_right(self, event):
-        '''Adjust right.'''
+        '''
+        Adjust right.
+        '''
         offset_x = self.padding_x + self.shadow_padding
         if self.lock_flag:
             new_resize_width = max(int(event.x) - self.resize_x - offset_x, self.min_resize_width - self.resize_x)
@@ -1457,7 +1622,9 @@ class SkinEditArea(gtk.EventBox):
             self.resize_width = int(new_resize_x - self.resize_x - offset_x)
         
     def skin_edit_area_adjust_bottom(self, event):
-        '''Adjust bottom.'''
+        '''
+        Adjust bottom.
+        '''
         offset_y = self.padding_y + self.shadow_padding
         if self.lock_flag:
             new_resize_height = max(int(event.y) - self.resize_y - offset_y, self.min_resize_height - self.resize_y)
@@ -1474,7 +1641,9 @@ class SkinEditArea(gtk.EventBox):
             self.resize_height = int(new_resize_y - self.resize_y - offset_y)
     
     def skin_edit_area_drag_background(self, event):
-        '''Drag background.'''
+        '''
+        Drag background.
+        '''
         new_resize_x = int(event.x) - self.drag_start_x + self.drag_background_x
         new_resize_y = int(event.y) - self.drag_start_y + self.drag_background_y
         self.resize_x = min(max(new_resize_x, self.min_resize_width - self.resize_width), 0)
@@ -1483,7 +1652,9 @@ class SkinEditArea(gtk.EventBox):
         self.queue_draw()
         
     def update_skin_config(self):
-        '''Update skin config.'''
+        '''
+        Update skin config.
+        '''
         self.resize_scale_x = skin_config.scale_x
         self.resize_scale_y = skin_config.scale_y
         self.resize_x = self.eval_scale(skin_config.x * self.resize_scale_x)
@@ -1492,7 +1663,9 @@ class SkinEditArea(gtk.EventBox):
         self.resize_height = int(self.eval_scale(self.background_pixbuf.get_height() * self.resize_scale_y))
         
     def click_reset_button(self):
-        '''Click reset button.'''
+        '''
+        Click reset button.
+        '''
         # Reset skin config.
         skin_config.reset()
         
@@ -1504,7 +1677,9 @@ class SkinEditArea(gtk.EventBox):
         skin_config.save_skin()
         
     def click_auto_resize_button(self):
-        '''Click auto resize button.'''
+        '''
+        Click auto resize button.
+        '''
         # Auto resize skin config.
         skin_config.auto_resize()
         
@@ -1516,7 +1691,9 @@ class SkinEditArea(gtk.EventBox):
         skin_config.save_skin()
         
     def update_lock_status(self, toggle_button):
-        '''Update lock status.'''
+        '''
+        Update lock status.
+        '''
         self.lock_flag = toggle_button.get_active()
         
 gobject.type_register(SkinEditArea)

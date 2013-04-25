@@ -28,8 +28,18 @@ import gobject
 import gtk
 
 class ProgressBuffer(gobject.GObject):
+    '''
+    ProgressBuffer class.
+    
+    This is buffer state of ProgressBar, we use ProgressBuffer in TreeView to render progress.
+    
+    @undocumented: render
+    '''
 	
     def __init__(self):
+        '''
+        Initialize ProgressBuffer class.
+        '''
         gobject.GObject.__init__(self)
         self.progress = 0
         
@@ -93,6 +103,7 @@ class ProgressBar(gtk.Button):
     
     @undocumented: expose_progressbar
     @undocumented: update_light_ticker
+    @undocumented: test_progressbar
     '''
 	
     def __init__(self):

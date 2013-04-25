@@ -23,7 +23,7 @@
 from dominant_color import get_dominant_color
 from cache_pixbuf import CachePixbuf
 from deepin_utils.config import Config
-from constant import SHADE_SIZE, COLOR_SEQUENCE
+from constant import SHADOW_SIZE, COLOR_SEQUENCE
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from deepin_utils.file import create_directory, remove_file, touch_file, remove_directory
 from utils import color_hex_to_cairo, find_similar_color
@@ -38,7 +38,7 @@ import traceback
 
 class SkinConfig(gobject.GObject):
     '''
-    SkinConfig.
+    SkinConfig class.
     
     @undocumented: update_image_size
     @undocumented: get_skin_file_path
@@ -62,6 +62,8 @@ class SkinConfig(gobject.GObject):
     @undocumented: horizontal_mirror_background
     @undocumented: render_background
     @undocumented: export_skin
+    @undocumented: load_skin_from_image
+    @undocumented: load_skin_from_package
     '''
     
     __gsignals__ = {
@@ -425,9 +427,9 @@ class SkinConfig(gobject.GObject):
         if (background_width + background_x) < render_width:
             draw_hlinear(
                 cr,
-                x + (background_width + background_x) - SHADE_SIZE,
+                x + (background_width + background_x) - SHADOW_SIZE,
                 y,
-                SHADE_SIZE,
+                SHADOW_SIZE,
                 (background_height + background_y),
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
@@ -444,9 +446,9 @@ class SkinConfig(gobject.GObject):
             draw_vlinear(
                 cr,
                 x,
-                y + (background_height + background_y) - SHADE_SIZE,
+                y + (background_height + background_y) - SHADOW_SIZE,
                 (background_width + background_x),
-                SHADE_SIZE,
+                SHADOW_SIZE,
                 [(0, (self.dominant_color, 0)),
                  (1, (self.dominant_color, 1))])
             
@@ -504,6 +506,11 @@ class SkinConfig(gobject.GObject):
         self.app_theme_dir = app_theme.user_theme_dir
             
     def load_skin_from_image(self, filepath):
+        '''
+        Load theme from given image.
+        
+        @param filepath: The file path of image.
+        '''
         # Init.
         skin_dir = os.path.join(self.user_skin_dir, str(uuid.uuid4()))
         skin_image_file = os.path.basename(filepath)
@@ -545,7 +552,11 @@ class SkinConfig(gobject.GObject):
             return (False, skin_dir, skin_image_file)
         
     def load_skin_from_package(self, filepath):
-        '''Create skin from package.'''
+        '''
+        Load theme from given package.
+        
+        @param filepath: The file path of package.
+        '''
         # Init.
         skin_dir = os.path.join(self.user_skin_dir, str(uuid.uuid4()))
         

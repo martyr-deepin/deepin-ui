@@ -55,6 +55,8 @@ class ListView(gtk.DrawingArea):
     
     @undocumented: update_select_rows
     @undocumented: auto_scroll_list_view
+    @undocumented: auto_scroll_list_view_down
+    @undocumented: auto_scroll_list_view_up
     @undocumented: update_redraw_request_list
     @undocumented: set_adjust_cursor
     @undocumented: realize_list_view
@@ -70,7 +72,10 @@ class ListView(gtk.DrawingArea):
     @undocumented: leave_list_view
     @undocumented: key_press_list_view
     @undocumented: key_release_list_view
-
+    @undocumented: draw_items
+    @undocumented: draw_items_row
+    @undocumented: keep_select_status
+    @undocumented: emit_item_event
     '''
     
     SORT_DESCENDING = False
@@ -107,6 +112,9 @@ class ListView(gtk.DrawingArea):
         @param enable_drag_drop: Whether allow user drag drop on listview, default is True.
         @param drag_icon_pixbuf: Drag icon.
         @param drag_out_offset: Out offset value to trigger drag action on listview, default is 50 pixel, if cursor not drag more than 50 pixel, listview won't think it is B{drag out action}.
+        @param mask_bound_height: The height of mask bound.
+        @param hide_columns: The columns need to hide, default is empty list.
+        @param hide_column_resize: Whether resize with hide column, default is False.
         '''
         # Init.
         gtk.DrawingArea.__init__(self)
@@ -148,14 +156,8 @@ class ListView(gtk.DrawingArea):
         self.mask_bound_height = mask_bound_height
         self.auto_scroll_id = None
         self.auto_scroll_delay = 70 # milliseconds
-        '''
-        TODO: hiding columns
-        '''
         self.hide_columns = hide_columns
         self.hide_column_resize = hide_column_resize
-        '''
-        TODO: hide or show column flag
-        '''
         if len(self.hide_columns):
             self.hide_column_flag = True
         else:
@@ -199,10 +201,12 @@ class ListView(gtk.DrawingArea):
             "Ctrl + a" : self.select_all_items,
             }
     
-    '''
-    TODO: It is able to hide columns
-    '''
     def hide_column(self, hide_columns=[]):
+        '''
+        Hide column.
+        
+        @param hide_columns: The columns need to hide, default is empty list.
+        '''
         self.hide_columns = hide_columns
         if len(self.hide_columns):
             self.hide_column_flag = True
@@ -210,9 +214,19 @@ class ListView(gtk.DrawingArea):
             self.hide_column_flag = False
    
     def set_hide_column_flag(self, hide_column_flag):
+        '''
+        Set hide column flag.
+        
+        @param hide_column_flag: The flag to control hide column.
+        '''
         self.hide_column_flag = hide_column_flag
 
     def set_hide_column_resize(self, hide_column_resize):
+        '''
+        Set hide column resize.
+        
+        @param hide_column_resize: The flag to control hide column resize.
+        '''
         self.hide_column_resize = hide_column_resize
     
     def set_expand_column(self, column):
@@ -225,7 +239,7 @@ class ListView(gtk.DrawingArea):
         
     def update_redraw_request_list(self):
         '''
-        Internal fucntion to update redraw request list.
+        Internal function to update redraw request list.
         '''
         # Redraw when request list is not empty.
         if len(self.redraw_request_list) > 0:
@@ -309,7 +323,7 @@ class ListView(gtk.DrawingArea):
             else:
                 self.items = self.items[0:insert_pos] + items + self.items[insert_pos::]
 
-        # Re-calcuate.
+        # Re-calculate.
         (title_widths, title_heights) = self.get_title_sizes()
         sort_pixbuf = ui_theme.get_pixbuf("listview/sort_descending.png").get_pixbuf()
         sort_icon_width = sort_pixbuf.get_width() + self.SORT_PADDING_X * 2
@@ -420,6 +434,8 @@ class ListView(gtk.DrawingArea):
     def set_title_height(self, title_height):
         '''
         Set title height.
+        
+        @param title_height: Title height.
         '''
         self.title_height = title_height
         if self.titles:
@@ -432,7 +448,6 @@ class ListView(gtk.DrawingArea):
         Get sort type with given column index.
         
         @param column: Column index.
-
         @return: Return sort type with given column index, return None if haven't found match column index.
         '''
         if 0 <= column <= last_index(self.title_sorts):
@@ -453,6 +468,8 @@ class ListView(gtk.DrawingArea):
     def get_cell_widths(self):
         '''
         Get cell width of columns.
+        
+        @return: Return the width of cells.
         '''
         return self.cell_widths
     
@@ -508,8 +525,8 @@ class ListView(gtk.DrawingArea):
         Draw mask interface.
         
         @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
         @param w: Width of draw area.
         @param h: Height of draw area.
         '''
@@ -522,8 +539,8 @@ class ListView(gtk.DrawingArea):
         Draw item hover interface.
 
         @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
         @param w: Width of draw area.
         @param h: Height of draw area.
         '''
@@ -534,8 +551,8 @@ class ListView(gtk.DrawingArea):
         Draw item select interface.
         
         @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
         @param w: Width of draw area.
         @param h: Height of draw area.
         '''
@@ -546,8 +563,8 @@ class ListView(gtk.DrawingArea):
         Draw item highlight interface.
         
         @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
         @param w: Width of draw area.
         @param h: Height of draw area.
         '''
@@ -559,15 +576,15 @@ class ListView(gtk.DrawingArea):
 
     def realize_list_view(self, widget):
         '''
-        Internal fucntion for realize listview.
+        Internal function for realize listview.
         
-        @param widget: ListView wiget.
+        @param widget: ListView widget.
         '''
         self.grab_focus()       # focus key after realize
 
         rect = widget.allocation
         '''
-        TODO: expand_cell_width is rect.width - other noexpand columns width
+        TODO: expand_cell_width is rect.width - other no-expand columns width
         '''
         if 0 <= self.expand_column < len(self.cell_widths):
             self.set_cell_width(self.expand_column, self.__update_expand_cell_width(rect.width))
@@ -625,21 +642,13 @@ class ListView(gtk.DrawingArea):
         # Draw titles.
         if self.titles:
             i = 0
-            '''
-            TODO: if len(items) = 0, cell_widths[0] >> rect.width, wired!
-            '''
             if cell_widths[0] > rect.width:
                 cell_widths[0] = rect.width - sum(cell_widths[1:len(cell_widths)])
             for (column, width) in enumerate(cell_widths):
-                '''
-                TODO: update the width in the hide_columns pos
-                '''
                 if self.hide_column_flag and column == self.expand_column:
                     for hide_column in self.hide_columns:
                         width += cell_widths[hide_column]
-                '''
-                TODO: without drawing the column in hide_columns
-                '''
+                        
                 if self.hide_column_flag and column in self.hide_columns:
                     continue
                 # Get offset x coordinate.
@@ -648,7 +657,7 @@ class ListView(gtk.DrawingArea):
                     for hide_column in self.hide_columns:
                         cell_offset_x -= cell_widths[hide_column]
                 
-                # Calcuate current cell width.
+                # Calculate current cell width.
                 if column == last_index(cell_widths):
                     if sum(cell_widths) < rect.width:
                         cell_width = rect.width - cell_offset_x
@@ -783,10 +792,6 @@ class ListView(gtk.DrawingArea):
                 else:
                     end_index = min(end_y / self.item_height + 2, len(self.items))        
                 
-                '''
-                TODO: Draw rows
-                      filter_renders hold the filter_column index such as 0, 2
-                '''
                 filter_renders = []
                 for (row, item) in enumerate(self.items[start_index:end_index]):
                     if self.hide_column_flag:
@@ -796,12 +801,7 @@ class ListView(gtk.DrawingArea):
                         renders = item.get_renders()
                     render_y = rect.y + (row + start_index) * self.item_height + self.title_offset_y
                     render_height = self.item_height
-                    '''
-                    TODO: Draw columns in a row
-                          renders mapped hold new column[] such as 0, 1
-                          but filter_renders without mapping hold  0, 2
-                          it is important to look for the original column index
-                    '''
+                    
                     for (column, render) in enumerate(renders):
                         index = column
                         if self.hide_column_flag:
@@ -844,9 +844,6 @@ class ListView(gtk.DrawingArea):
                                     (start_index + row) in self.select_rows,
                                     item == self.highlight_item)
                         
-                        '''
-                        TODO: other items need considering about float to int issue?
-                        '''
                         with cairo_state(cr):
                             cr.rectangle(render_x, 
                                          render_y, 
@@ -1378,8 +1375,7 @@ class ListView(gtk.DrawingArea):
         Is event coordinate in visible area.
         
         @param event: gtk.gdk.Event.
-        
-        @return: Return True if event coordiante in visible area.
+        @return: Return True if event coordinate in visible area.
         '''
         (event_x, event_y) = get_event_coords(event)
         scrolled_window = get_match_parent(self, ["ScrolledWindow"])
@@ -1505,7 +1501,7 @@ class ListView(gtk.DrawingArea):
         Get row with given y coordinate.
         
         @param y: Y coordinate.
-        @return: Return row that match given y coordinate, return None if haven't any row match y coordiante.
+        @return: Return row that match given y coordinate, return None if haven't any row match y coordinate.
         '''
         row = int((y - self.title_offset_y) / self.item_height)
         if 0 <= row <= last_index(self.items):
@@ -1519,7 +1515,7 @@ class ListView(gtk.DrawingArea):
 
         @param event: gtk.gdk.Event instance.
         @param offset_index: Offset index base on event row.
-        @return: Return row at event coordinate, return None if haven't any row match event coordiante.
+        @return: Return row at event coordinate, return None if haven't any row match event coordinate.
         '''
         (event_x, event_y) = get_event_coords(event)
         return self.get_row_with_coordinate(event.y, offset_index)
@@ -1530,7 +1526,7 @@ class ListView(gtk.DrawingArea):
         
         @param y: Y coordinate.
         @param offset_index: Row offset index.
-        @return: Return row at y coordinate, return None if haven't any row match y coordiante.
+        @return: Return row at y coordinate, return None if haven't any row match y coordinate.
         '''
         row = int((y - self.title_offset_y) / self.item_height)
         if 0 <= row <= last_index(self.items) + offset_index:
@@ -2178,7 +2174,7 @@ def render_image(cr, rect, image_path, x, y):
     @param cr: Cairo context.
     @param rect: Draw area.
     @param image_path: Image path.
-    @param x: X coordiante of draw position.
-    @param y: Y coordiante of draw position.
+    @param x: X coordinate of draw position.
+    @param y: Y coordinate of draw position.
     '''
     draw_pixbuf(cr, ui_theme.get_pixbuf(image_path).get_pixbuf(), x, y)

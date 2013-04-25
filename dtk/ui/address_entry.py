@@ -30,10 +30,12 @@ import gtk
 import pango
 import gobject
 
-'''
-only support ipv4
-'''
 class IpAddressEntry(gtk.HBox):
+    '''
+    Widget for input IP address, only support IPv4 format now.
+    
+    @undocumented: entry_changes
+    '''
 
     __gsignals__ = {
         "focus-out" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,))
@@ -43,7 +45,16 @@ class IpAddressEntry(gtk.HBox):
                  address = "",
                  width = 120,
                  height = 22,
-                 alert_color="#e33939"):
+                 alert_color="#e33939"
+                 ):
+        '''
+        Initialise.
+
+        @param address: IP address string, default is \"\" .
+        @param width: the width of IP address widget, default is 120 pixel.
+        @param height: the height of IP address widget, default is 22 pixel.
+        @param alert_color: alert color string, default is #e33939
+        '''
         gtk.HBox.__init__(self)
 
         self.address = address
@@ -102,19 +113,35 @@ class IpAddressEntry(gtk.HBox):
             return
 
     def set_frame_alert(self, state):
+        '''        
+        Make frame show alert color.
+        
+        @param state: Show alert color if state is True, otherwise show normal color.
+        '''        
         if state:
             self.frame_color = self.alert_color
         else:
             self.frame_color = self.normal_frame
+            
         # FIXME must let parent redraw, maybe let user do this?
         self.parent.queue_draw()
 
     def set_address(self, address):
+        '''        
+        Set IP address.
+        
+        @param address: IP address string, only support IPv4 format now.
+        '''        
         self.address = address
         self.__set_entry_list()
         self.queue_draw()
 
     def get_address(self):
+        '''        
+        Return IP address.
+
+        @return: Return IP address string, only support IPv4 format now.
+        '''        
         i = 0
         address = ""
 
@@ -144,22 +171,17 @@ class IpAddressEntry(gtk.HBox):
         ip_addr_len = len(self.ip_address) or 4
         i = 0
         
-        '''
-        check Ip Address format validate, it is better to use regex, 
-        but regex is too heavy...
-        '''
+        # Check IP Address format validate, it is better to use regex, 
+        # but regex is too heavy...
         if ip_addr_len != 0 and ip_addr_len != 4:
             print "IP address format is wrong!"
             return
 
-        '''
-        draw background
-        '''
+        # Draw background.
         with cairo_disable_antialias(cr):                                           
             cr.set_line_width(1)                                                    
             cr.set_source_rgb(*color_hex_to_cairo(
                 self.frame_color.get_color()))
-                #ui_theme.get_color("combo_entry_frame").get_color()))
             cr.rectangle(x, y, w, h)                   
             cr.stroke()                                                             
                                                                                 
@@ -168,9 +190,7 @@ class IpAddressEntry(gtk.HBox):
             cr.rectangle(x, y, w - 1, h - 1)       
             cr.fill()        
 
-        '''
-        draw ip address and token
-        '''
+        # Draw IP address and token.
         ip_max_width, ip_max_height = get_content_size(str(self.ipv4_max))
         
         while i < ip_addr_len:
@@ -186,7 +206,22 @@ class IpAddressEntry(gtk.HBox):
             i += 1
 
 class MacAddressEntry(gtk.HBox):
-    def __init__(self, address = "", width = 180, height = 22):
+    '''        
+    Widget for mac address.
+    '''        
+    
+    def __init__(self, 
+                 address="", 
+                 width=180, 
+                 height=22,
+                 ):
+        '''        
+        Initialise.
+        
+        @param address: Mac address string, default is \"\"
+        @param width: the width of mac address, default is 180 pixel.
+        @param height: the height of mac address, default is 22 pixel.
+        '''        
         gtk.HBox.__init__(self)
 
         self.address = address
@@ -226,11 +261,21 @@ class MacAddressEntry(gtk.HBox):
             return
 
     def set_address(self, address):
+        '''        
+        Set the mac address.
+        
+        @param address: mac address string.
+        '''        
         self.address = address
         self.__set_entry_list()
         self.queue_draw()
 
     def get_address(self):
+        '''        
+        Get mac address.
+        
+        @return: Return mac address string.
+        '''        
         i = 0
         address = ""
 
@@ -265,9 +310,7 @@ class MacAddressEntry(gtk.HBox):
             print "MAC address format is wrong!"
             return
 
-        '''
-        draw background
-        '''
+        # Draw background.
         with cairo_disable_antialias(cr):                                           
             cr.set_line_width(1)                                                    
             cr.set_source_rgb(*color_hex_to_cairo(
@@ -280,9 +323,7 @@ class MacAddressEntry(gtk.HBox):
             cr.rectangle(x, y, w - 1, h - 1)       
             cr.fill()        
 
-        '''
-        draw ip address and token
-        '''
+        # Draw IP address and token.
         mac_max_width, mac_max_height = get_content_size(self.mac_max)
        
         while i < mac_addr_len:

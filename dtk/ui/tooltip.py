@@ -31,8 +31,8 @@ import gtk
 
 
 __all__ = ["text", "custom", "show_tooltip", "show_delay", "hide_delay", "hide_duration",
-        "background", "padding", "show_now", "has_shadow", "disable", "always_update",
-        "disable_all"]
+           "background", "padding", "show_now", "has_shadow", "disable", "always_update",
+           "disable_all"]
 
 class ChildLocation:
     def __init__(self):
@@ -220,7 +220,7 @@ class TooltipInfo:
     quickshow_delay = 2500
 
 def generate_tooltip_content():
-    """ generate child widget and update the TooltipInfo"""
+    ''' generate child widget and update the TooltipInfo'''
     if TooltipInfo.widget == TooltipInfo.prewidget and TooltipInfo.alignment.child and not TooltipInfo.need_update:
         return
 

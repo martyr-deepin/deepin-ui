@@ -25,10 +25,10 @@ from functools import partial
 from types import FunctionType
 
 class InvalidEvent(Exception):
-    """
+    '''
     Raised if a non-defined event should be registered at a strict-mode
     event register.
-    """
+    '''
     def __init__(self, event):
         self.event = event
 
@@ -215,9 +215,13 @@ class GSignals(object):
         self.events.emit(signal, self, *args, **kwargs)
         
     def add_events(self, events):
-        """ Add a list of events to the allowed events """
+        ''' 
+        Add a list of events to the allowed events.
+        '''
         self.events.__events__ += list(events)
 
     def add_event(self, event):
-        """ Add a event to the allowed events """
+        ''' 
+        Add a event to the allowed events.
+        '''
         self.events.__events__ += [event]

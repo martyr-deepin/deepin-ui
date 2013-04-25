@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-04 10:06+0800\n"
+"POT-Creation-Date: 2013-04-17 17:48+0800\n"
 "PO-Revision-Date: 2012-07-13 07:14+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,124 +17,164 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../ui/tab_window.py:312 ../ui/color_selection.py:183 ../ui/dialog.py:367
-#: ../ui/dialog.py:435
+#: ../ui/tab_window.py:477 ../ui/dialog.py:402 ../ui/dialog.py:476
+#: ../ui/color_selection.py:199
 msgid "OK"
 msgstr "确定"
 
-#: ../ui/tab_window.py:313 ../ui/color_selection.py:184 ../ui/dialog.py:368
-#: ../ui/dialog.py:436
+#: ../ui/tab_window.py:478 ../ui/dialog.py:403 ../ui/dialog.py:477
+#: ../ui/color_selection.py:200
 msgid "Cancel"
 msgstr "取消"
 
-#: ../ui/skin.py:84
-msgid "Select skin"
-msgstr "选择皮肤"
+#: ../ui/file_manager.py:44
+msgid "Computer"
+msgstr ""
 
-#: ../ui/skin.py:89 ../ui/skin.py:107 ../ui/titlebar.py:145
-msgid "Close"
-msgstr "关闭"
+#: ../ui/file_manager.py:45
+msgid "Home"
+msgstr ""
 
-#: ../ui/skin.py:275
-msgid "Skin version mismatch"
-msgstr "皮肤版本不一致"
+#: ../ui/file_manager.py:46
+msgid "Desktop"
+msgstr ""
 
-#: ../ui/skin.py:276
-msgid "Import skin version is mismatch with current one!"
-msgstr "导入皮肤和当前皮肤版本不一致"
+#: ../ui/file_manager.py:47
+msgid "Documents"
+msgstr ""
 
-#: ../ui/skin.py:308
-msgid "Delete skin"
-msgstr "删除皮肤"
+#: ../ui/file_manager.py:48
+msgid "Downloads"
+msgstr ""
 
-#: ../ui/skin.py:309
-msgid "Are you sure delete this skin?"
-msgstr "你确定要删除当前皮肤？"
+#: ../ui/file_manager.py:49
+msgid "Music"
+msgstr ""
 
-#: ../ui/skin.py:682
-msgid "Add skin from file"
-msgstr "添加皮肤文件"
+#: ../ui/file_manager.py:50
+msgid "Pictures"
+msgstr ""
 
-#: ../ui/skin.py:782
-msgid "Zoom"
-msgstr "缩放"
+#: ../ui/file_manager.py:51
+msgid "Videos"
+msgstr ""
 
-#: ../ui/skin.py:783
-msgid "Vertical flip"
-msgstr "纵向翻转"
+#: ../ui/file_manager.py:52
+msgid "Trash"
+msgstr ""
 
-#: ../ui/skin.py:784
-msgid "Horizontal flip"
-msgstr "横向翻转"
-
-#: ../ui/skin.py:785
-msgid "Lock scaling"
-msgstr "锁定缩放比例"
-
-#: ../ui/skin.py:786 ../ui/skin.py:849
-msgid "Export skin"
-msgstr "导出皮肤"
-
-#: ../ui/skin.py:791 ../ui/color_selection.py:92
-msgid "Select color"
-msgstr "选择颜色"
-
-#: ../ui/skin.py:807
-msgid "Return"
-msgstr "返回"
-
-#: ../ui/color_selection.py:130
-msgid "Color value"
-msgstr "颜色值"
-
-#: ../ui/color_selection.py:143
-msgid "Red: "
-msgstr "红色: "
-
-#: ../ui/color_selection.py:149
-msgid "Green: "
-msgstr "绿色: "
-
-#: ../ui/color_selection.py:155
-msgid "Blue: "
-msgstr "蓝色: "
-
-#: ../ui/titlebar.py:121
+#: ../ui/titlebar.py:127
 msgid "Change skin"
 msgstr "换肤"
 
-#: ../ui/titlebar.py:127
+#: ../ui/titlebar.py:133
 msgid "Main menu"
 msgstr "主菜单"
 
-#: ../ui/titlebar.py:133
+#: ../ui/titlebar.py:139
 msgid "Minimum"
 msgstr "最小化"
 
-#: ../ui/titlebar.py:139
+#: ../ui/titlebar.py:145
 msgid "Maximize"
 msgstr "最大化"
 
-#: ../ui/entry.py:122
+#: ../ui/titlebar.py:151 ../ui/skin.py:128 ../ui/skin.py:150
+msgid "Close"
+msgstr "关闭"
+
+#: ../ui/iconview.py:476
+msgid "Loading..."
+msgstr "加载中..."
+
+#: ../ui/color_selection.py:108 ../ui/skin.py:764
+msgid "Select color"
+msgstr "选择颜色"
+
+#: ../ui/color_selection.py:146
+msgid "Color value"
+msgstr "颜色值"
+
+#: ../ui/color_selection.py:159
+msgid "Red: "
+msgstr "红色: "
+
+#: ../ui/color_selection.py:165
+msgid "Green: "
+msgstr "绿色: "
+
+#: ../ui/color_selection.py:171
+msgid "Blue: "
+msgstr "蓝色: "
+
+#: ../ui/skin.py:123
+msgid "Select skin"
+msgstr "选择皮肤"
+
+#: ../ui/skin.py:249
+msgid "Skin version mismatch"
+msgstr "皮肤版本不一致"
+
+#: ../ui/skin.py:250
+msgid "Import skin version is mismatch with current one!"
+msgstr "导入皮肤和当前皮肤版本不一致"
+
+#: ../ui/skin.py:278
+msgid "Delete skin"
+msgstr "删除皮肤"
+
+#: ../ui/skin.py:279
+msgid "Are you sure delete this skin?"
+msgstr "你确定要删除当前皮肤？"
+
+#: ../ui/skin.py:652
+msgid "Add skin from file"
+msgstr "添加皮肤文件"
+
+#: ../ui/skin.py:755
+msgid "Zoom"
+msgstr "缩放"
+
+#: ../ui/skin.py:756
+msgid "Vertical flip"
+msgstr "纵向翻转"
+
+#: ../ui/skin.py:757
+msgid "Horizontal flip"
+msgstr "横向翻转"
+
+#: ../ui/skin.py:758
+msgid "Lock scaling"
+msgstr "锁定缩放比例"
+
+#: ../ui/skin.py:759 ../ui/skin.py:822
+msgid "Export skin"
+msgstr "导出皮肤"
+
+#: ../ui/skin.py:780
+msgid "Return"
+msgstr "返回"
+
+#: ../ui/entry.py:911
 msgid "Cut"
 msgstr "剪切"
 
-#: ../ui/entry.py:123
+#: ../ui/entry.py:912
 msgid "Copy"
 msgstr "拷贝"
 
-#: ../ui/entry.py:124
+#: ../ui/entry.py:913
 msgid "Paste"
 msgstr "粘贴"
 
-#: ../ui/entry.py:125
+#: ../ui/entry.py:914
 msgid "Select all"
 msgstr "选择全部"
 
-#: ../ui/entry.py:1110
+#: ../ui/entry.py:1972
 msgid "Please input new shortcuts"
 msgstr "请输入新的快捷键"
 
-#: ../ui/entry.py:1145
+#: ../ui/entry.py:2012
 msgid "Disabled"
 msgstr "禁用"

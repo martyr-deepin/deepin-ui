@@ -30,17 +30,29 @@ STAR_SIZE = 13
 
 class StarBuffer(gobject.GObject):
     '''
-    class docs
+    StarBuffer class.
+    
+    @undocumented: get_star_pixbufs
     '''
 	
-    def __init__(self, star_level=5):
+    def __init__(self, 
+                 star_level=5,
+                 ):
         '''
-        init docs
+        Initialize StarBuffer class.
+        
+        @param star_level: The level of star, default is 5.
         '''
         gobject.GObject.__init__(self)
         self.star_level = int(star_level)
         
     def render(self, cr, rect):
+        '''
+        Render star buffer on given cairo and rectangle.
+        
+        @param cr: The cairo object.
+        @param rect: The render rectangle.
+        '''
         for (star_index, star_pixbuf) in enumerate(self.get_star_pixbufs()):
             draw_pixbuf(cr,
                         star_pixbuf,
@@ -63,12 +75,15 @@ gobject.type_register(StarBuffer)
 
 class StarView(gtk.Button):
     '''
-    class docs
+    StarView class.
+    
+    @undocumented: expose_star_view
+    @undocumented: motion_notify_star_view
     '''
 	
     def __init__(self):
         '''
-        init docs
+        Initialize StarView class.
         '''
         gtk.Button.__init__(self)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)

@@ -47,11 +47,15 @@ class AnonymityThread(td.Thread):
     Anonymity thread.
     '''
 
-    def __init__(self, long_time_func, render_func=None):
+    def __init__(self, 
+                 long_time_func, 
+                 render_func=None,
+                 ):
         '''
         Initialize AnonymityThread class.
         
-        @param callback: Callback run in thread. 
+        @param long_time_func: Long time function.
+        @param render_func: Render result function, this function have one input argument. By default, this argument is None.
         '''
         td.Thread.__init__(self)
         self.setDaemon(True)    # make thread exit when main program exit
@@ -68,12 +72,12 @@ class AnonymityThread(td.Thread):
         
 class Thread(td.Thread):
     '''
-    class docs
+    Thread class that setDaemon(True)
     '''
 	
     def __init__(self):
         '''
-        init docs
+        Initialize Thread class.
         '''
         td.Thread.__init__(self)
         self.setDaemon(True)

@@ -27,12 +27,18 @@ from draw import draw_pixbuf
 
 class CycleStrip(gtk.HBox):
     '''
-    class docs
+    CycleStrip class.
+    
+    This widget use for cycle drawing background, but use CachePixbuf to accelerate render.
+    
+    @undocumented: expose_cycle_strip
     '''
 	
     def __init__(self, background_dpixbuf):
         '''
-        init docs
+        Initialize CycleStrip class.
+        
+        @param background_dpixbuf: DynamicPixbuf background.
         '''
         gtk.HBox.__init__(self)
         self.background_dpixbuf = background_dpixbuf

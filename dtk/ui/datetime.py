@@ -28,6 +28,8 @@ from math import radians
 import time
 import threading as td
 
+__all__ = ["DateTimeHTCStyle", "DateTime"]
+
 class SecondThread(td.Thread):
     def __init__(self, ThisPtr):
         td.Thread.__init__(self)
@@ -43,6 +45,12 @@ class SecondThread(td.Thread):
             print "class SecondThread got error %s" % e
 
 class DateTimeHTCStyle(gtk.VBox):
+    '''
+    DateTime with HTC style.
+    
+    @undocumented: invalidate
+    '''
+    
     def __init__(self, 
                  width=500, 
                  height=125, 
@@ -50,6 +58,16 @@ class DateTimeHTCStyle(gtk.VBox):
                  pixbuf_spacing=10,
                  comma_spacing=30, 
                  sec_visible=False):
+        '''
+        Initialize DateTimeHTCStyle class.
+        
+        @param width: Width of widget, default is 500 pixels.
+        @param height: Height of widget, default is 125 pixels.
+        @param is_24hour: Whether use 24 hours format, default is True.
+        @param pixbuf_spacing: Spacing around widget pixbuf, default is 10 pixels.
+        @param comma_spacing: Spacing around comma, default is 30 pixels.
+        @param sec_visible: Whether display second, default is False.
+        '''
         gtk.VBox.__init__(self)
 
         self.width = width
@@ -76,16 +94,36 @@ class DateTimeHTCStyle(gtk.VBox):
         self.queue_draw()
 
     def get_is_24hour(self):
+        '''        
+        Whether is use 24 hour format.
+        
+        @return: Return True if is 24 hours format.
+        '''        
         return self.is_24hour
 
     def set_is_24hour(self, is_24hour):
+        '''
+        Set 24 hour format.
+        
+        @param is_24hour: Set this option as True to use 24 hours.
+        '''
         self.is_24hour = is_24hour
         self.queue_draw()
 
     def get_sec_visible(self):
+        '''
+        Whether second is visible.
+        
+        @return: Return True if seconds is visible.
+        '''
         return self.sec_visible
 
     def set_sec_visible(self, sec_visible):
+        '''
+        Set second visible.
+        
+        @param sec_visible: Set this option as True to make second visible.
+        '''
         self.sec_visible = sec_visible
         self.queue_draw()
     
@@ -147,9 +185,21 @@ class DateTimeHTCStyle(gtk.VBox):
 gobject.type_register(DateTimeHTCStyle)
 
 class DateTime(gtk.VBox):
+    '''
+    DateTime class.
+    
+    @undocumented: invalidate
+    '''
+    
     def __init__(self, 
                  width=180, 
                  height=180):
+        '''
+        Initialize DateTime class.
+        
+        @param width: Width of widget, default is 180 pixels.
+        @param height: Height of widget, default is 180 pixels.
+        '''
         gtk.VBox.__init__(self)
         
         self.hour_value = time.localtime().tm_hour                               

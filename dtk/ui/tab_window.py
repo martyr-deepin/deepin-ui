@@ -40,21 +40,30 @@ class TabBox(gtk.VBox):
     Tab box.
     
     @undocumented: press_tab_title_box
+    @undocumented: get_close_button_at_event
+    @undocumented: motion_notify_tab_title_box
+    @undocumented: update_tab_title_widths
+    @undocumented: draw_title_background
     @undocumented: expose_tab_title_box
     @undocumented: expose_tab_content_align
     @undocumented: expose_tab_content_box
     '''
 	
-    '''
-    TODO: add switch-tab signal to show tab index
-    '''
     __gsignals__ = { 
         "switch-tab" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),
     }
 
-    def __init__(self, can_close_tab=False, dockfill=False, current_tab_index=-1):
+    def __init__(self, 
+                 can_close_tab=False, 
+                 dockfill=False, 
+                 current_tab_index=-1,
+                 ):
         '''
         Initialize TabBox class.
+        
+        @param can_close_tab: Whether display close button on tab, default is False.
+        @param dockfill: Whether make tab's width fill with TabBox's width.
+        @param current_tab_index: The index of current tab, default is -1.
         '''
         # Init.
         gtk.VBox.__init__(self)
@@ -74,14 +83,8 @@ class TabBox(gtk.VBox):
         self.close_button_select_foreground_color = "#FFFFFF"
         self.close_button_color = "#666666"
         self.hover_close_button_index = None
-        '''
-        TODO: Dock Fill for tab items
-        '''
         self.dockfill = dockfill
         self.tab_box_width = -1
-        '''
-        TODO: It can be setting the current tab index at object construct
-        '''
         self.current_tab_index = current_tab_index
         
         self.tab_title_box = gtk.DrawingArea()
@@ -113,6 +116,9 @@ class TabBox(gtk.VBox):
         self.tab_content_box.connect("expose-event", self.expose_tab_content_box)
         
     def show_default_page(self):
+        '''
+        Show default page.
+        '''
         if self.default_widget != None and len(self.tab_items) == 0:
             container_remove_all(self.tab_content_box)
             self.tab_content_box.add(self.default_widget)
@@ -122,6 +128,11 @@ class TabBox(gtk.VBox):
             self.show_all()
         
     def set_default_widget(self, widget):
+        '''
+        Set default page of tab window.
+        
+        @param widget: Widget for default page.
+        '''
         self.default_widget = widget
         
         self.show_default_page()
@@ -144,6 +155,11 @@ class TabBox(gtk.VBox):
             self.switch_content(self.current_tab_index)
         
     def delete_items(self, items):
+        '''
+        Delete given items.
+        
+        @param items: The item list need to delete.
+        '''
         item_indexs = map(lambda item: self.tab_items.index(item), items)
         
         for item in items:
@@ -158,6 +174,11 @@ class TabBox(gtk.VBox):
         print self.tab_items    
     
     def set_current_tab(self, index):
+        '''
+        Set current tab with given index.
+        
+        @param index: The index of current tab.
+        '''
         self.switch_content(index)
     
     def switch_content(self, index):
@@ -251,16 +272,6 @@ class TabBox(gtk.VBox):
             
             with cairo_state(cr):
                 with cairo_disable_antialias(cr):
-                    #cr.rectangle(0,
-                                 #0,
-                                 #sum(self.tab_title_widths[0:self.tab_index]),
-                                 #self.tab_height)
-                    #cr.rectangle(sum(self.tab_title_widths[0:min(self.tab_index + 1, len(self.tab_items))]) + 1,
-                                 #0,
-                                 #sum(self.tab_title_widths) - sum(self.tab_title_widths[0:min(self.tab_index + 1, len(self.tab_items))]),
-                                 #self.tab_height)
-                    #cr.clip()
-                    
                     cr.set_source_rgba(*alpha_color_hex_to_cairo((self.tab_unselect_bg_color.get_color(), 0.7)))
                     cr.rectangle(1, 1, tab_title_width, self.tab_height)
                     cr.fill()
@@ -424,10 +435,11 @@ gobject.type_register(TabBox)
 
 class TabWindow(DialogBox):
     '''
-    Tab window.
+    TabWindow class.
     
     @undocumented: click_confirm_button
     @undocumented: click_cancel_button
+    @undocumented: switched_tab
     '''
 	
     def __init__(self, title, items, 
@@ -436,7 +448,8 @@ class TabWindow(DialogBox):
                  window_width=458,
                  window_height=472, 
                  dockfill=False, 
-                 current_tab_index=-1):
+                 current_tab_index=-1,
+                 ):
         '''
         Initialize TabWindow clas.
         
@@ -447,6 +460,7 @@ class TabWindow(DialogBox):
         @param window_width: Default window width.
         @param window_height: Default window height.
         @param dockfill: Fill the tab items
+        @param current_tab_index: The index of current tab, default is -1.
         '''
         DialogBox.__init__(self, 
                            title, 
@@ -465,10 +479,6 @@ class TabWindow(DialogBox):
                               current_tab_index=current_tab_index)
         self.tab_box.add_items(items)
         self.tab_box.connect("switch-tab", self.switched_tab)
-        '''
-        TODO: Test set_current_tab for TabBox
-        self.tab_box.set_current_tab(2)
-        '''
         self.tab_align = gtk.Alignment()
         self.tab_align.set(0.5, 0.5, 1.0, 1.0)
         self.tab_align.set_padding(8, 0, 0, 0)
@@ -487,11 +497,13 @@ class TabWindow(DialogBox):
         self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
     
     def set_current_tab(self, index):
+        '''
+        Set current tab with given index.
+        
+        @param index: The index of current tab.
+        '''
         self.tab_box.switch_content(index)
     
-    '''
-    TODO: it is easy to get the index switched the tab item
-    '''
     def switched_tab(self, widget, index):
         pass
     

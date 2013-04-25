@@ -27,7 +27,21 @@ import gobject
 
 class PopupGrabWindow(gtk.Window):
     '''
-    class docs
+    PopupGrabWindow class.
+    
+    @undocumented: input_method_commit
+    @undocumented: popup_grab_window_focus_in
+    @undocumented: popup_grab_window_focus_out
+    @undocumented: is_press_on_popup_grab_window
+    @undocumented: popup_grab_window_button_press
+    @undocumented: popup_grab_window_enter_notify
+    @undocumented: popup_grab_window_leave_notify
+    @undocumented: popup_grab_window_scroll_event
+    @undocumented: popup_grab_window_key_press
+    @undocumented: popup_grab_window_key_release
+    @undocumented: popup_grab_window_button_press
+    @undocumented: popup_grab_window_button_release
+    @undocumented: popup_grab_window_motion_notify
     '''
 	
     __gsignals__ = {
@@ -38,9 +52,14 @@ class PopupGrabWindow(gtk.Window):
     def __init__(self, 
                  wrap_window_type,
                  focus_out_callback=None,
-                 handle_input_method=False):
+                 handle_input_method=False,
+                 ):
         '''
-        init docs
+        Initialize PopupGrabWindow class.
+        
+        @param wrap_window_type: The type of wrap window to response event.
+        @param wrap_window_type: The callback for focus-out signal, default is None.
+        @param handle_input_method: Whether handle input method, default is False.
         '''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)

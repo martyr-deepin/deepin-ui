@@ -293,6 +293,7 @@ class Droplist(gtk.Window):
     '''
     Droplist.
     
+    @undocumented: create_item
     @undocumented: expose_item_align
     @undocumented: droplist_key_press
     @undocumented: droplist_key_release
@@ -334,6 +335,8 @@ class Droplist(gtk.Window):
         @param item_padding_right: Padding at right of item, default is 32.
         @param item_padding_y: Padding of item vertically, default is 3.
         @param max_width: Maximum width of droplist, default is None.
+        @param fixed_width: Fixed width of droplist, default is None.
+        @param max_height: Maximum height of droplist, default is None.
         '''
         # Init.
         gtk.Window.__init__(self, gtk.WINDOW_POPUP)
@@ -424,6 +427,8 @@ class Droplist(gtk.Window):
     def get_droplist_width(self):
         '''
         Get droplist width.
+        
+        @return: Return width of droplist.
         '''
         if self.fixed_width != None:
             return self.padding_x * 2 + self.fixed_width
@@ -793,9 +798,7 @@ class Droplist(gtk.Window):
                 
             droplist_height += droplist_item.item_box_height    
         droplist_width += self.padding_x * 2    
-        '''
-        FIXME: if do not set max_height, then ...
-        '''
+
         if self.max_height != None:
             droplist_height = min(self.max_height, droplist_height + self.padding_y * 2)
 
@@ -815,9 +818,7 @@ class Droplist(gtk.Window):
 
         if self.expect_x + droplist_width > screen_width:
             dx = self.expect_x - droplist_width + self.offset_x
-        '''
-        TODO: Fix TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'
-        '''
+
         if droplist_height != None:
             if self.expect_y + droplist_height > screen_height:
                 dy = self.expect_y - droplist_height + self.offset_y
@@ -874,6 +875,7 @@ class DroplistItem(object):
         @param item_padding_right: Padding at right of item.
         @param item_padding_y: Padding at top or bottom of item.
         @param max_width: Maximum width of droplist item.
+        @param fixed_width: Fxied width of droplist item.
         '''
         # Init.
         self.droplist = droplist
@@ -957,6 +959,7 @@ class DroplistItem(object):
         '''
         # Hide droplist.
         droplist_grab_window_focus_out()
+        
         # Emit item-selected signal.
         self.droplist.emit("item-selected", self.item[0], self.item[1], self.index)
             
@@ -995,4 +998,3 @@ class DroplistItem(object):
         propagate_expose(widget, event)
     
         return True
-

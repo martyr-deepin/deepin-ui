@@ -45,6 +45,8 @@ import pango
 import math
 import threading as td
 
+__all__ = ["TreeView"]
+
 class SortThread(td.Thread):
 	
     def __init__(self, sort_action, render_action):
@@ -55,7 +57,6 @@ class SortThread(td.Thread):
         
     def run(self):
         self.render_action(*self.sort_action())
-
         
 class Titlebar(gtk.Button):
     
@@ -122,11 +123,15 @@ class Titlebar(gtk.Button):
         
         title_rect = gtk.gdk.Rectangle(x, y, w, h)
         
-        if self.title_widths is None:
+        if self.titles == None:
             cr.set_source_rgb(1, 1, 1)
             cr.rectangle(*rect)
             cr.fill()
             return True
+        
+        if not self.title_widths and len(self.titles) > 0:
+            average_width = rect.width / len(self.titles)
+            self.title_widths = {key: average_width for key in range(len(self.titles))}
         
         # Draw background.
         bg_pixbuf = ui_theme.get_pixbuf("listview/header_normal.png").get_pixbuf()
@@ -155,9 +160,11 @@ class Titlebar(gtk.Button):
             if index != max(self.title_widths.keys()):
                 draw_pixbuf(cr, split_pixbuf, split_start_x - 1, y)
             
-            # Draw title.    
-            draw_text(cr, self.titles[index], title_rect.x, y, each_width, h, 
-                      alignment=pango.ALIGN_CENTER)
+            # Draw title. 
+            # FIXME: IndexError: tuple index out of range
+            if index < len(self.titles):
+                draw_text(cr, self.titles[index], title_rect.x, y, each_width, h, 
+                          alignment=pango.ALIGN_CENTER)
             title_rect.x += each_width
             
             # Draw sort icon.
@@ -209,6 +216,47 @@ class Titlebar(gtk.Button):
 class TreeView(gtk.VBox):
     '''
     TreeView widget.
+    
+    @undocumented: realize_tree_view
+    @undocumented: button_release_scrolled_window
+    @undocumented: on_titlebar_clicked_title
+    @undocumented: render_sort_column
+    @undocumented: update_item_widths
+    @undocumented: redraw_request
+    @undocumented: update_redraw_request_list
+    @undocumented: update_vadjustment
+    @undocumented: expose_tree_view
+    @undocumented: draw_background
+    @undocumented: draw_mask
+    @undocumented: draw_items
+    @undocumented: get_expose_bound
+    @undocumented: button_press_tree_view
+    @undocumented: click_item
+    @undocumented: shift_click
+    @undocumented: ctrl_click
+    @undocumented: button_release_tree_view
+    @undocumented: release_item
+    @undocumented: is_in_visible_area
+    @undocumented: set_drag_row
+    @undocumented: drag_select_items_at_cursor
+    @undocumented: motion_tree_view
+    @undocumented: hover_item
+    @undocumented: auto_scroll_tree_view
+    @undocumented: get_drag_row
+    @undocumented: auto_scroll_tree_view_down
+    @undocumented: auto_scroll_tree_view_up
+    @undocumented: update_select_rows
+    @undocumented: key_press_tree_view
+    @undocumented: key_release_tree_view
+    @undocumented: size_allocated_tree_view
+    @undocumented: leave_tree_view
+    @undocumented: focus_out_tree_view
+    @undocumented: unhover_row
+    @undocumented: set_hover_row
+    @undocumented: get_cell_with_event
+    @undocumented: get_row_with_coordinate
+    @undocumented: get_offset_coordinate
+    @undocumented: keep_select_status
     '''
     
     AUTO_SCROLL_HEIGHT = 24
@@ -243,6 +291,21 @@ class TreeView(gtk.VBox):
                  ):
         '''
         Initialize TreeView class.
+        
+        @param items: The init items.
+        @param drag_data: Data for drag action.
+        @param enable_hover: Whether enable mouse hover effect, default is True.
+        @param enable_highlight: Whether enable highlight effect, default is True.
+        @param enable_multiple_select: Whether enable multiple select operation, default is True.
+        @param enable_drag_drop: Whether enable drag drop operation, default is True.
+        @param drag_icon_pixbuf: The pixbuf display when drag drop operation start.
+        @param start_drag_offset: The offset to trigger drag drop operation, default is 50 pixels.
+        @param mask_bound_height: The height of mask bound, default is 12 pixels.
+        @param right_space: Right space, default is 0.
+        @param top_bottom_space: Top bottom space, default is 3 pixels.
+        @param padding_x: The padding x value.
+        @param padding_y: The padding y value.
+        @param expand_column: The expand column, default is None.
         '''
         # Init.
         gtk.VBox.__init__(self)
@@ -348,6 +411,11 @@ class TreeView(gtk.VBox):
             }
 
     def get_items(self):
+        '''
+        Get items.
+        
+        @return: Return all visible items.
+        '''
         return self.visible_items
     
     def realize_tree_view(self, widget):
@@ -366,10 +434,16 @@ class TreeView(gtk.VBox):
                 gc.collect()
 
     def expand_item(self):
+        '''
+        Expand item.
+        '''
         if len(self.select_rows) == 1:
             self.visible_items[self.select_rows[0]].expand()
             
     def unexpand_item(self):
+        '''
+        Unexpand item.
+        '''
         if len(self.select_rows) == 1:
             select_item = self.visible_items[self.select_rows[0]]
             if select_item.is_expand:
@@ -390,10 +464,16 @@ class TreeView(gtk.VBox):
                         
                         
     def on_titlebar_clicked_title(self, widget, index, sort_ascending):                    
-        SortThread(lambda : self.sort_column(index, sort_ascending), self.render_sort_column).start()
-                        
+        if self.sort_methods:
+            SortThread(lambda : self.sort_column(index, sort_ascending), self.render_sort_column).start()
         
     def sort_column(self, sort_column_index, sort_ascending):
+        '''
+        Sort column.
+        
+        @param sort_column_index: The index of sort column.
+        @param sort_ascending: Sort ascending.
+        '''
         # Update sort action id.
         self.sort_action_id += 1
         
@@ -453,8 +533,17 @@ class TreeView(gtk.VBox):
         else:
             print "render_sort_column: drop old sort result!"
         
-    def set_column_titles(self, titles, sort_methods):
-        if titles != None and sort_methods != None:
+    def set_column_titles(self, 
+                          titles, 
+                          sort_methods=None,
+                          ):
+        '''
+        Set column titles.
+        
+        @param titles: The title list to column.
+        @param sort_methods: The sort method for column.
+        '''
+        if titles:
             self.titles = titles
             self.title_box.set_titles(titles)
             self.sort_methods = sort_methods
@@ -463,7 +552,14 @@ class TreeView(gtk.VBox):
             self.titles = None
             self.sort_methods = None
         
-    def select_items(self, items):
+    def select_items(self, 
+                     items,
+                     ):
+        '''
+        Select items.
+        
+        @param items: The items need to select.
+        '''
         for select_row in self.select_rows:
             self.visible_items[select_row].unselect()
             
@@ -484,6 +580,11 @@ class TreeView(gtk.VBox):
                 self.visible_items[select_row].select()
             
     def set_select_rows(self, rows):
+        '''
+        Set select rows.
+        
+        @param rows: The row to select.
+        '''
         for select_row in self.select_rows:
             self.visible_items[select_row].unselect()
             
@@ -807,6 +908,9 @@ class TreeView(gtk.VBox):
             self.set_select_rows(range(0, len(self.visible_items)))    
         
     def delete_select_items(self):
+        '''
+        Delete selected items.
+        '''
         delete_items = map(lambda row: self.visible_items[row], self.select_rows)
         self.start_select_row = None
         self.select_rows = []
@@ -814,6 +918,9 @@ class TreeView(gtk.VBox):
         self.delete_items(delete_items)
         
     def press_return(self):
+        '''
+        Do return operation on selected item.
+        '''
         self.emit("press-return", map(lambda row: self.visible_items[row], self.select_rows))
         
     def update_item_index(self):
@@ -852,13 +959,26 @@ class TreeView(gtk.VBox):
         return True
     
     def set_items(self, items):
+        '''
+        Set items of TreeView.
+        
+        @param items: The need items to set.
+        '''
         if items != self.visible_items:
             self.visible_items = items
             self.emit("items-change")
         
-    def add_items(self, items, insert_pos=None, clear_first=False):
+    def add_items(self, 
+                  items, 
+                  insert_pos=None, 
+                  clear_first=False,
+                  ):
         '''
         Add items.
+        
+        @param items: The items to add.
+        @param insert_pos: The insert position, if it is None, insert at end, otherwise insert with given position.
+        @param clear_first: Whether clear items before insert, default is False.
         '''
         if len(items) > 0:
             with self.keep_select_status():
@@ -871,7 +991,7 @@ class TreeView(gtk.VBox):
                     self.set_items(self.visible_items[0:insert_pos] + items + self.visible_items[insert_pos::])
                 
                 # Update redraw callback.
-                # Callback is better way to avoid perfermance problem than gobject signal.
+                # Callback is better way to avoid performance problem than gobject signal.
                 for item in items:
                     item.redraw_request_callback = self.redraw_request
                     item.add_items_callback = self.add_items
@@ -884,12 +1004,22 @@ class TreeView(gtk.VBox):
                 self.update_vadjustment()
                 
     def delete_item_by_index(self, index):
+        '''
+        Delete item with given index.
+        
+        @param index: The index of item that need to delete.
+        '''
         item = self.visible_items[index]
         items_delete = []
         items_delete.append(item)
         self.delete_items(items_delete)
     
     def delete_items(self, items):
+        '''
+        Delete items.
+        
+        @param items: The items need to delete.
+        '''
         if len(items) > 0:
             cache_remove_items = []
             with self.keep_select_status():
@@ -909,9 +1039,15 @@ class TreeView(gtk.VBox):
                 self.emit("items-change")
                 
     def clear(self):
+        '''
+        Clear operation, same as function `delete_all_items`.
+        '''
         self.delete_all_items()
     
     def delete_all_items(self):
+        '''
+        Delete all items.
+        '''
         if len(self.visible_items) > 0:
             self.start_select_row = None
             self.select_rows = []
@@ -1035,8 +1171,8 @@ class TreeView(gtk.VBox):
         Draw mask interface.
         
         @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
         @param w: Width of draw area.
         @param h: Height of draw area.
         '''
@@ -1213,6 +1349,9 @@ class TreeView(gtk.VBox):
             self.visible_items[click_row].select()
                 
     def unselect_all(self):
+        '''
+        Unselect all items.
+        '''
         self.set_select_rows([])
                 
     def button_release_tree_view(self, widget, event):
@@ -1262,7 +1401,7 @@ class TreeView(gtk.VBox):
         
         @param event: gtk.gdk.Event.
         
-        @return: Return True if event coordiante in visible area.
+        @return: Return True if event coordinate in visible area.
         '''
         (event_x, event_y) = get_event_coords(event)
         vadjust = self.scrolled_window.get_vadjustment()
@@ -1512,12 +1651,17 @@ class TreeView(gtk.VBox):
 
         @param event: gtk.gdk.Event instance.
         @param offset_index: Offset index base on event row.
-        @return: Return row at event coordinate, return None if haven't any row match event coordiante.
+        @return: Return row at event coordinate, return None if haven't any row match event coordinate.
         '''
         (event_x, event_y) = get_event_coords(event)
         return self.get_row_with_coordinate(event_y)
     
     def set_hide_columns(self, hide_columns):
+        '''
+        Set the hide columns.
+        
+        @param hide_columns: The columns need to hide.
+        '''
         self.hide_columns = hide_columns
         if self.hide_columns != None:
             if self.expand_column != None:
@@ -1528,6 +1672,11 @@ class TreeView(gtk.VBox):
         self.queue_draw()
         
     def set_expand_column(self, column):
+        '''
+        Set expand column.
+        
+        @param column: The column to expand.
+        '''
         self.expand_column = column
         if self.hide_columns != None:
             if column in self.hide_columns:
@@ -1536,6 +1685,11 @@ class TreeView(gtk.VBox):
         self.queue_draw()
         
     def get_column_widths(self):
+        '''
+        Get the width of columns.
+        
+        @return: Return the all columns' width.
+        '''
         rect = self.draw_area.allocation
         column_widths = []
         
@@ -1658,12 +1812,23 @@ class TreeView(gtk.VBox):
                         break
                     
     def visible_highlight(self):
+        '''
+        Make highlight item in visible area.
+        '''
         self.visible_highlight_item()
         
     def visible_highlight_item(self):
+        '''
+        Make highlight item in visible area.
+        '''
         self.visible_item(self.highlight_item)
                 
     def visible_item(self, item):
+        '''
+        Make item in visible area.
+        
+        @param item: The item need to visible.
+        '''
         if item != None and item in self.visible_items:
             # Get bound index.
             (start_index, end_index, item_height_count) = self.get_expose_bound()
@@ -1675,14 +1840,31 @@ class TreeView(gtk.VBox):
             (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
             vadjust = self.scrolled_window.get_vadjustment()
             highlight_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:item_index])) 
-            if offset_y > highlight_row_height_count or offset_y + vadjust.get_page_size() < highlight_row_height_count:
-                vadjust.set_value(max(vadjust.get_lower(), 
-                                      highlight_row_height_count - self.visible_items[item_index].get_height()))
+            
+            max_height = vadjust.get_upper() - vadjust.get_page_size()
+            page_height = vadjust.get_value() + vadjust.get_page_size()
+            
+            # Don't greater than vadjustment upper value.
+            if highlight_row_height_count > max_height:
+                highlight_row_height_count = max_height
+                
+            if vadjust.get_value >= highlight_row_height_count  or page_height <= highlight_row_height_count:
+                vadjust.set_value(max(vadjust.get_lower(), highlight_row_height_count))
                     
     def get_highlight_item(self):
+        '''
+        Get highlight item.
+        
+        @return: Return highlight item.
+        '''
         return self.highlight_item
                     
     def set_highlight_item(self, item):
+        '''
+        Set highlight item.
+        
+        @param item: The item need to highlight.
+        '''
         if self.enable_highlight and item != None:
             if self.highlight_item:
                 if hasattr(self.highlight_item, "unhighlight"):
@@ -1698,6 +1880,9 @@ class TreeView(gtk.VBox):
                 self.queue_draw()    
                 
     def clear_highlight(self):
+        '''
+        Clear highlight.
+        '''
         if self.highlight_item and hasattr(self.highlight_item, "unhighlight"):
             self.highlight_item.unhighlight()
             self.highlight_item = None
@@ -1717,7 +1902,7 @@ class TreeItem(gobject.GObject):
         '''
         gobject.GObject.__init__(self)
         self.parent_item = None
-        self.chlid_items = None
+        self.child_items = None
         self.row_index = None
         self.column_index = None
         self.redraw_request_callback = None

@@ -34,7 +34,12 @@ class OrderedSet(collections.MutableSet):
     Set that remembers original insertion order.
     '''
     
-    def __init__(self, iterable=None):
+    def __init__(self, 
+                 iterable=None,
+                 ):
+        '''
+        Initialize OrderedSet class.
+        '''
         self.end = end = [] 
         end += [None, end, end]         # sentinel node for doubly linked list
         self.map = {}                   # key --> [key, prev, next]
