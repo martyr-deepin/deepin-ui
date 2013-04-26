@@ -76,6 +76,7 @@ class IPV4Entry(gtk.VBox):
             "Home" : self.move_to_start,
             "End" : self.move_to_end,
             "Ctrl + a" : self.select_current_segment,
+            "BackSpace" : self.backspace,
             }
         
         self.calculate_cursor_positions()
@@ -171,6 +172,47 @@ class IPV4Entry(gtk.VBox):
     def select_current_segment(self):
         self.highlight_current_segment()
         self.queue_draw()
+        
+    def backspace(self):
+        ip_segments = self.ip.split(".")
+        if self.highlight_segment_index != None:
+            # Get new ip string.
+            ip_segments[self.highlight_segment_index] = ""
+            
+            # Get new cursor index.
+            string_before_select = ""
+            for ip_segment in ip_segments[0:self.highlight_segment_index]:
+                string_before_select += "%s." % ip_segment 
+            new_cursor_index = len(string_before_select)
+            
+            # Set new ip.
+            self.clear_highlight_segment()
+            self.set_ip('.'.join(ip_segments))  # set ip first.
+            self.set_cursor_index(new_cursor_index) # NOTE: set new cursor index of set ip, otherwise will got wrong cursor_segment_index
+        else:
+            if ip_segments[self.cursor_segment_index] == "":
+                if self.cursor_segment_index > 0:
+                    self.move_to_left()
+            else:
+                # Get new cursor index.
+                string_before_select = ""
+                for ip_segment in ip_segments[0:self.cursor_segment_index]:
+                    string_before_select += "%s." % ip_segment 
+                segment_first_index = len(string_before_select)
+                
+                if self.cursor_index == segment_first_index:
+                    if self.cursor_segment_index > 0:
+                        self.move_to_left()
+                else:
+                    current_segment = ip_segments[self.cursor_segment_index]
+                    before_insert_string = current_segment[0:self.cursor_index - segment_first_index - 1]
+                    after_insert_string = current_segment[self.cursor_index - segment_first_index:len(current_segment)]
+                    new_current_segment = before_insert_string + after_insert_string
+                    new_cursor_index = self.cursor_index - 1
+                    ip_segments[self.cursor_segment_index] = new_current_segment
+                    
+                    self.set_ip(".".join(ip_segments))
+                    self.set_cursor_index(new_cursor_index)
         
     def highlight_current_segment(self):
         self.set_highlight_segment(self.cursor_segment_index)
