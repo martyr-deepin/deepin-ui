@@ -30,7 +30,15 @@ from dtk.ui.timeline import Timeline, CURVE_SINE
 
 class ResizableLabelBuffer(gobject.GObject):
     '''
-    class docs
+    ResizableLabelBuffer class.
+    
+    @undocumented: get_max_size
+    @undocumented: get_expand_size
+    @undocumented: get_init_size
+    @undocumented: render
+    @undocumented: handle_button_press
+    @undocumented: update
+    @undocumented: completed
     '''
 	
     __gsignals__ = {
@@ -47,7 +55,15 @@ class ResizableLabelBuffer(gobject.GObject):
                  animation_time=200, # milliseconds
                  ):
         '''
-        init docs
+        Initialize ResizableLabelBuffer class.
+        
+        @param label_content: The content of label.
+        @param label_wrap_width: The wrap width of label.
+        @param label_init_height: The initialize height of label. 
+        @param label_init_line: The initialize line number of label.
+        @param label_font_size: The font size.
+        @param label_font_color: The font color.
+        @param animation_time: The time of animation, default is 200 milliseconds.
         '''
         gobject.GObject.__init__(self)
         
@@ -178,7 +194,11 @@ gobject.type_register(ResizableLabelBuffer)
 
 class ResizableLabel(EventBox):
     '''
-    class docs
+    ResizableLabel class.
+    
+    @undocumented: update_size
+    @undocumented: expose_resizable_label
+    @undocumented: button_press_resizable_label
     '''
 	
     def __init__(self, 
@@ -190,7 +210,14 @@ class ResizableLabel(EventBox):
                  label_font_color="#000000",
                  ):
         '''
-        init docs
+        Initialize ResizableLabel class.
+        
+        @param label_content: The content of label.
+        @param label_wrap_width: The wrap width of label.
+        @param label_init_height: The initialize height of label. 
+        @param label_init_line: The initialize line number of label.
+        @param label_font_size: The font size.
+        @param label_font_color: The font color.
         '''
         EventBox.__init__(self)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
