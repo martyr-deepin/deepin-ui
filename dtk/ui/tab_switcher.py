@@ -30,7 +30,14 @@ import gtk
 
 class TabSwitcher(EventBox):
     '''
-    class docs
+    TabSwitcher class.
+    
+    @undocumented: realize_tab_switcher
+    @undocumented: expose_tab_switcher
+    @undocumented: button_press_tab_switcher
+    @undocumented: start_animation
+    @undocumented: update_animation
+    @undocumented: completed_animation
     '''
 	
     __gsignals__ = {
@@ -39,9 +46,17 @@ class TabSwitcher(EventBox):
         "click-current-tab" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (int,)),
     }
     
-    def __init__(self, tab_names, padding_x=0, padding_y=0):
+    def __init__(self, 
+                 tab_names, 
+                 padding_x=0, 
+                 padding_y=0,
+                 ):
         '''
-        init docs
+        Initialize TabSwitcher class.
+
+        @param tab_names: The name of tabs.
+        @param padding_x: The padding x around tab name, default is 0 pixel.
+        @param padding_y: The padding y around tab name, default is 0 pixel.
         '''
         EventBox.__init__(self)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
