@@ -50,6 +50,7 @@ from dtk.ui.combo import ComboBox
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, WIDGET_POS_BOTTOM_LEFT
 from dtk.ui.droplist import Droplist
 from dtk.ui.entry import InputEntry, ShortcutKeyEntry, PasswordEntry, TextEntry
+from dtk.ui.net import IPV4Entry
 from dtk.ui.frame import HorizontalFrame
 from dtk.ui.iconview import IconView, IconItem
 from dtk.ui.label import Label
@@ -387,12 +388,19 @@ if __name__ == "__main__":
     
     spin_box = SpinBox(3000, 0, 5000, 100)
     
-    entry_box.pack_start(text_entry, False, False)
-    entry_box.pack_start(input_entry, False, False)
-    entry_box.pack_start(shortcust_entry, False, False)
-    entry_box.pack_start(password_entry, False, False)
-    entry_box.pack_start(combo_box, False, False)
-    entry_box.pack_start(spin_box, False, False)
+    ipv4_entry = IPV4Entry()
+    # ipv4_entry.set_ip("255.255.255.andy")
+    # ipv4_entry.set_ip("192.168..12")
+    # ipv4_entry.set_ip("192.168..12")
+    # ipv4_entry.set_ip("...")
+    
+    # entry_box.pack_start(text_entry, False, False)
+    # entry_box.pack_start(input_entry, False, False)
+    entry_box.pack_start(ipv4_entry, False, False)
+    # entry_box.pack_start(shortcust_entry, False, False)
+    # entry_box.pack_start(password_entry, False, False)
+    # entry_box.pack_start(combo_box, False, False)
+    # entry_box.pack_start(spin_box, False, False)
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)
