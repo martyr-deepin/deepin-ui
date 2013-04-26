@@ -40,6 +40,7 @@ class IPV4Entry(gtk.VBox):
 	
     __gsignals__ = {
         "editing" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        "invalid-value" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
     def __init__(self):
@@ -138,7 +139,7 @@ class IPV4Entry(gtk.VBox):
             
             return True
         else:
-            print "%s is not valid IPv4 address" % ip_string
+            self.emit("invalid-value", ip_string)
             
             return False
             
