@@ -29,12 +29,17 @@ from utils import (color_hex_to_cairo, alpha_color_hex_to_cairo,
                    is_double_click,
                    cairo_disable_antialias, get_content_size)
 from draw import draw_text, draw_hlinear
+from gsettings import DESKTOP_SETTINGS, DEFAULT_CURSOR_BLINK_TIME
 
 class IPV4Entry(gtk.VBox):
     '''
     class docs
     '''
 	
+    __gsignals__ = {
+        "editing" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+    }
+    
     def __init__(self):
         '''
         init docs
@@ -58,6 +63,11 @@ class IPV4Entry(gtk.VBox):
         self.cursor_segment_index = 0
         self.highlight_segment_index = None
         
+        self.cursor_alpha = 1
+        self.cursor_blank_id = None
+        self.edit_complete_flag = True
+        self.edit_timeout_id = None
+        
         self.draw_area = gtk.EventBox()
         self.draw_area.set_visible_window(False)
         self.draw_area.add_events(gtk.gdk.ALL_EVENTS_MASK)        
@@ -69,6 +79,7 @@ class IPV4Entry(gtk.VBox):
         self.draw_area.connect("expose-event", self.expose_ipv4_entry)
         self.draw_area.connect("focus-in-event", self.focus_in_ipv4_entry)
         self.draw_area.connect("focus-out-event", self.focus_out_ipv4_entry)
+        self.connect("editing", self.__edit_going)
         
         self.keymap = {
             "Left" : self.move_to_left,
@@ -247,10 +258,13 @@ class IPV4Entry(gtk.VBox):
         
         if self.keymap.has_key(key_name):
             self.keymap[key_name]()
+            self.emit("editing")
         elif key_name in map(str, range(0, 10)):
             self.insert_ip_number(key_name)
+            self.emit("editing")
         elif key_name == ".":
             self.insert_ip_dot()
+            self.emit("editing")
             
     def set_cursor_index(self, cursor_index):
         self.cursor_index = cursor_index
@@ -338,6 +352,37 @@ class IPV4Entry(gtk.VBox):
         self.grab_focus_flag = True
         self.queue_draw()
         
+        if self.cursor_blank_id != None:
+            gobject.source_remove(self.cursor_blank_id)
+            
+        try:
+            cursor_blink_time = int(DESKTOP_SETTINGS.get_int("cursor-blink-time") / 2)
+        except Exception:
+            cursor_blink_time = DEFAULT_CURSOR_BLINK_TIME
+        self.cursor_blank_id = gobject.timeout_add(cursor_blink_time, self.cursor_flash_tick)
+        
+    def cursor_flash_tick(self):
+        # redraw entry text and cursor
+        self.queue_draw()
+
+        # according edit status change cursor alpha color every 500 microsecond
+        if self.cursor_alpha == 1 and self.edit_complete_flag:
+            self.cursor_alpha = 0
+        else:
+            self.cursor_alpha = 1
+        return self.grab_focus_flag
+    
+    def __edit_going(self, widget):
+        self.cursor_alpha = 1
+        self.edit_complete_flag = False
+        if self.edit_timeout_id != None:
+            gobject.source_remove(self.edit_timeout_id)
+        self.edit_timeout_id = gobject.timeout_add(500, self.__wait_edit_complete)
+
+    def __wait_edit_complete(self):
+        self.edit_complete_flag = True
+        return False
+    
     def focus_out_ipv4_entry(self, widget, event):
         self.grab_focus_flag = False
         self.queue_draw()
@@ -413,7 +458,7 @@ class IPV4Entry(gtk.VBox):
     def draw_cursor(self, cr, rect):
         if self.grab_focus_flag and self.highlight_segment_index == None:
             x, y, w, h = rect.x, rect.y, rect.width, rect.height
-            cr.set_source_rgba(0, 0, 0, 1.0)
+            cr.set_source_rgba(0, 0, 0, self.cursor_alpha)
             cr.rectangle(x + self.cursor_positions[self.cursor_index], y + self.cursor_padding_y, 1, h - self.cursor_padding_y * 2)
             cr.fill()
         
