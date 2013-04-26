@@ -32,7 +32,20 @@ import gtk
 
 class SlideSwitcher(EventBox):
     '''
-    class docs
+    SlideSwitcher class.
+    
+    @undocumented: expose_slide_switcher
+    @undocumented: enter_notify_slide_switcher
+    @undocumented: leave_notify_slide_switcher
+    @undocumented: update_animation
+    @undocumented: completed_animation
+    @undocumented: motion_notify_slide_switcher
+    @undocumented: handle_animation
+    @undocumented: start_animation
+    @undocumented: to_left_animation
+    @undocumented: to_right_animation
+    @undocumented: start_auto_slide
+    @undocumented: stop_auto_slide
     '''
 	
     __gsignals__ = {
@@ -59,7 +72,23 @@ class SlideSwitcher(EventBox):
                  inactive_dpixbuf=ui_theme.get_pixbuf("slide_switcher/inactive.png"),
                  ):
         '''
-        init docs
+        Initialize SlideSwitcher class.
+        
+        @param images: The image list of sliders.
+        @param pointer_offset_x: The offset x of pointer relative to right edge of slider image, default is -130 pixels.
+        @param pointer_offset_y: The offset y of pointer relative to bottom edge of slider image, default is -20 pixels.
+        @param pointer_padding: The padding between pointers, default is 20 pixels.
+        @param hover_animation_time: The animation time of hover operation, default is 500 milliseconds. 
+        @param auto_animation_time: The animation time of automatic play, default is 2000 milliseconds. 
+        @param auto_slide_time: The slide time of automatic play, default is 2000 milliseconds. 
+        @param horizontal_align: The horizontal alignment, default is ALIGN_START.
+        @param vertical_align: The vertical alignment, default is ALIGN_START.
+        @param height_offset: The height offset, default is 0 pixels.
+        @param hover_switch: Set as True to make slider switch when hover operation active.
+        @param auto_switch: Set as True to make slider play automatically.
+        @param navigate_switch: Set as True to make slider switch navigate.
+        @param active_dpixbuf: The dynamic pixbuf of active status.
+        @param inactive_dpixbuf: The dynamic pixbuf of inactive status.
         '''
         EventBox.__init__(self)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
