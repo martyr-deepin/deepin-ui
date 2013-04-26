@@ -35,7 +35,28 @@ from gsettings import DESKTOP_SETTINGS, DEFAULT_CURSOR_BLINK_TIME
 
 class IPV4Entry(gtk.VBox):
     '''
-    class docs
+    IPV4Entry class.
+    
+    @undocumented: is_ip_address
+    @undocumented: calculate_cursor_positions
+    @undocumented: button_press_ipv4_entry
+    @undocumented: paste_ip
+    @undocumented: highlight_current_segment
+    @undocumented: set_highlight_segment
+    @undocumented: clear_highlight_segment
+    @undocumented: key_press_ipv4_entry
+    @undocumented: handle_key_event
+    @undocumented: insert_ip_number
+    @undocumented: set_current_segment
+    @undocumented: in_valid_range
+    @undocumented: insert_ip_dot
+    @undocumented: focus_in_ipv4_entry
+    @undocumented: cursor_flash_tick
+    @undocumented: focus_out_ipv4_entry
+    @undocumented: expose_ipv4_entry
+    @undocumented: draw_background
+    @undocumented: draw_ip
+    @undocumented: draw_cursor
     '''
 	
     __gsignals__ = {
@@ -46,7 +67,7 @@ class IPV4Entry(gtk.VBox):
     
     def __init__(self):
         '''
-        init docs
+        Initialize IPV4Entry class.
         '''
         gtk.VBox.__init__(self)
         self.width = 120
@@ -60,7 +81,7 @@ class IPV4Entry(gtk.VBox):
         self.ip_chars = map(str, range(0, 10)) + ["."]
         self.select_active_color=ui_theme.get_shadow_color("select_active_background")
         self.select_inactive_color=ui_theme.get_shadow_color("select_inactive_background")
-        self.last_segement_index = 3
+        self.last_segment_index = 3
         
         self.cursor_index = 0
         self.cursor_padding_y = 2
@@ -108,30 +129,48 @@ class IPV4Entry(gtk.VBox):
         self.calculate_cursor_positions()
         
     def move_to_left(self):
+        '''
+        Move cursor backward.
+        '''
         if self.cursor_index > 0:
             self.set_cursor_index(self.cursor_index - 1)
             self.clear_highlight_segment()
             self.queue_draw()
     
     def move_to_right(self):
+        '''
+        Move cursor forward.
+        '''
         if self.cursor_index < len(self.ip):
             self.set_cursor_index(self.cursor_index + 1)
             self.clear_highlight_segment()
             self.queue_draw()
             
     def move_to_start(self):
+        '''
+        Move cursor to start position.
+        '''
         if self.cursor_index != 0:
             self.set_cursor_index(0)
             self.clear_highlight_segment()
             self.queue_draw()
             
     def move_to_end(self):
+        '''
+        Move cursor to end position.
+        '''
         if self.cursor_index != len(self.ip):
             self.set_cursor_index(len(self.ip))
             self.clear_highlight_segment()
             self.queue_draw()
         
     def set_ip(self, ip_string):
+        '''
+        Set ipv4 address.
+        
+        @param ip_string: The string of ipv4 address.
+        @return: Return True if ip_string set successful, emit `invalid-value` signal and return False is ip address is not valid format.
+        '''
         ip = ip_string.replace(" ", "")
         if self.is_ip_address(ip):
             if self.ip != ip:
@@ -159,6 +198,11 @@ class IPV4Entry(gtk.VBox):
         return True    
         
     def get_ip(self):
+        '''
+        Get ip address.
+        
+        @return: Return string of ip address.
+        '''
         return self.ip
     
     def calculate_cursor_positions(self):
@@ -212,6 +256,9 @@ class IPV4Entry(gtk.VBox):
         self.queue_draw()    
         
     def select_current_segment(self):
+        '''
+        Select current ip segment.
+        '''
         self.highlight_current_segment()
         self.queue_draw()
         
@@ -243,6 +290,9 @@ class IPV4Entry(gtk.VBox):
             self.move_to_end()
                 
     def backspace(self):
+        '''
+        Delete backward.
+        '''
         ip_segments = self.ip.split(".")
         if self.highlight_segment_index != None:
             # Get new ip string.
@@ -325,6 +375,11 @@ class IPV4Entry(gtk.VBox):
             self.emit("editing")
             
     def set_cursor_index(self, cursor_index):
+        '''
+        Set cursor index.
+        
+        @param cursor_index: The cursor index to set.
+        '''
         self.cursor_index = cursor_index
         
         dot_indexes = []
@@ -369,12 +424,12 @@ class IPV4Entry(gtk.VBox):
             
             # Insert ip character at end of current segment.
             if last_index == self.cursor_index:
-                if current_segment_len < self.last_segement_index:
+                if current_segment_len < self.last_segment_index:
                     new_current_segment = current_segment + ip_number
                     self.set_current_segment(ip_segments, new_current_segment, True)
             # Insert at middle if current cursor not at end position.
             else:
-                if current_segment_len < self.last_segement_index:
+                if current_segment_len < self.last_segment_index:
                     split_offset = last_index - self.cursor_index
                     before_insert_string = current_segment[0:current_segment_len - split_offset]
                     after_insert_string = current_segment[-split_offset:current_segment_len]
@@ -390,7 +445,7 @@ class IPV4Entry(gtk.VBox):
             
             if highlight_next_segment:
                 # Highlight next segment if have 3 characters in current segment.
-                if len(new_current_segment) >= self.last_segement_index and self.cursor_segment_index != self.last_segement_index:
+                if len(new_current_segment) >= self.last_segment_index and self.cursor_segment_index != self.last_segment_index:
                     self.set_highlight_segment(self.cursor_segment_index + 1, True)
                     self.queue_draw()
                     
@@ -401,8 +456,8 @@ class IPV4Entry(gtk.VBox):
             return False
     
     def insert_ip_dot(self):
-        # Just move cursort to next segment when cursor haven't at last segment.
-        if self.cursor_segment_index < self.last_segement_index:
+        # Just move cursor to next segment when cursor haven't at last segment.
+        if self.cursor_segment_index < self.last_segment_index:
             self.set_highlight_segment(self.cursor_segment_index + 1, True)
             self.queue_draw()
             
@@ -477,7 +532,7 @@ class IPV4Entry(gtk.VBox):
             cr.set_source_rgba(0.5, 0.5, 0.5, 0.8)
             dot_distance = self.width / 4
             dot_bottom_padding = 9
-            for index in range(0, self.last_segement_index):
+            for index in range(0, self.last_segment_index):
                 cr.rectangle(x + dot_distance * (index + 1) - self.dot_size / 2, y + h - dot_bottom_padding, self.dot_size, self.dot_size)
                 cr.fill()
                 
