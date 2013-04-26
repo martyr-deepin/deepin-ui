@@ -41,6 +41,7 @@ class IPV4Entry(gtk.VBox):
     __gsignals__ = {
         "editing" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "invalid-value" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
+        "changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)),
     }
     
     def __init__(self):
@@ -133,6 +134,9 @@ class IPV4Entry(gtk.VBox):
     def set_ip(self, ip_string):
         ip = ip_string.replace(" ", "")
         if self.is_ip_address(ip):
+            if self.ip != ip:
+                self.emit("changed", self.ip)
+            
             self.ip = ip 
             self.calculate_cursor_positions()
             self.queue_draw()
