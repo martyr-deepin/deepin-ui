@@ -23,10 +23,12 @@
 import gtk
 import gobject
 import pango
+from locales import _
+from menu import Menu
 from theme import ui_theme
 from keymap import get_keyevent_name
 from utils import (color_hex_to_cairo, alpha_color_hex_to_cairo, 
-                   is_double_click,
+                   is_double_click, is_right_button, is_left_button,
                    cairo_disable_antialias, get_content_size)
 from draw import draw_text, draw_hlinear
 from gsettings import DESKTOP_SETTINGS, DEFAULT_CURSOR_BLINK_TIME
@@ -93,6 +95,13 @@ class IPV4Entry(gtk.VBox):
             "BackSpace" : self.backspace,
             }
         
+        self.right_menu = Menu(
+            [(None, _("Cut"), self.cut_to_clipboard),
+             (None, _("Copy"), self.copy_to_clipboard),
+             (None, _("Paste"), self.paste_from_clipboard),
+             ],
+            True)
+        
         self.calculate_cursor_positions()
         
     def move_to_left(self):
@@ -125,8 +134,12 @@ class IPV4Entry(gtk.VBox):
             self.ip = ip 
             self.calculate_cursor_positions()
             self.queue_draw()
+            
+            return True
         else:
             print "%s is not valid IPv4 address" % ip_string
+            
+            return False
             
     def is_ip_address(self, ip_string):
         for ip_char in ip_string:
@@ -176,10 +189,19 @@ class IPV4Entry(gtk.VBox):
                     self.set_cursor_index(cursor_index)
                     break
                 
+        # Hide right menu immediately.
+        self.right_menu.hide()
+        
         if is_double_click(event):
             self.highlight_current_segment()
-        else:
+        elif is_left_button(event):
             self.clear_highlight_segment()
+        elif is_right_button(event):
+            x, y = self.window.get_root_origin()
+            wx, wy = int(event.x), int(event.y)
+            (offset_x, offset_y) = widget.translate_coordinates(self, 0, 0)
+            (_, px, py, modifier) = widget.get_display().get_pointer()
+            self.right_menu.show((px - offset_x, py - wy - offset_y + widget.allocation.height))
                 
         self.queue_draw()    
         
@@ -211,8 +233,8 @@ class IPV4Entry(gtk.VBox):
         clipboard.request_text(lambda clipboard, text, data: self.paste_ip(text))
         
     def paste_ip(self, text):
-        self.set_ip(text)
-        self.move_to_end()
+        if self.set_ip(text):
+            self.move_to_end()
                 
     def backspace(self):
         ip_segments = self.ip.split(".")
