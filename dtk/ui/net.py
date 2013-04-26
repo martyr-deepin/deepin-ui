@@ -87,6 +87,9 @@ class IPV4Entry(gtk.VBox):
             "Home" : self.move_to_start,
             "End" : self.move_to_end,
             "Ctrl + a" : self.select_current_segment,
+            "Ctrl + c" : self.copy_to_clipboard,
+            "Ctrl + x" : self.cut_to_clipboard,
+            "Ctrl + v" : self.paste_from_clipboard,
             "BackSpace" : self.backspace,
             }
         
@@ -184,6 +187,33 @@ class IPV4Entry(gtk.VBox):
         self.highlight_current_segment()
         self.queue_draw()
         
+    def cut_to_clipboard(self):
+        '''
+        Cut ip address to clipboard.
+        '''
+        clipboard = gtk.Clipboard()
+        clipboard.set_text(self.get_ip())
+        self.set_ip("...")
+        self.move_to_start()
+
+    def copy_to_clipboard(self):
+        '''
+        Copy ip address to clipboard.
+        '''
+        clipboard = gtk.Clipboard()
+        clipboard.set_text(self.get_ip())
+    
+    def paste_from_clipboard(self):
+        '''
+        Paste ip address from clipboard.
+        '''
+        clipboard = gtk.Clipboard()    
+        clipboard.request_text(lambda clipboard, text, data: self.paste_ip(text))
+        
+    def paste_ip(self, text):
+        self.set_ip(text)
+        self.move_to_end()
+                
     def backspace(self):
         ip_segments = self.ip.split(".")
         if self.highlight_segment_index != None:
