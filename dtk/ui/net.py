@@ -73,7 +73,8 @@ class IPV4Entry(gtk.VBox):
         self.width = 120
         self.height = 22
         self.set_size_request(self.width, self.height)
-        self.normal_frame = ui_theme.get_color("combo_entry_frame")
+        self.normal_frame = ui_theme.get_color("entry_normal_frame")
+        self.alert_frame = ui_theme.get_color("entry_alert_frame")
         self.frame_color = self.normal_frame
         self.ip = "..."
         self.dot_size = 2
@@ -128,6 +129,19 @@ class IPV4Entry(gtk.VBox):
         
         self.calculate_cursor_positions()
         
+    def set_frame_alert(self, state):
+        '''        
+        Make frame show alert color.
+        
+        @param state: Show alert color if state is True, otherwise show normal color.
+        '''        
+        if state:
+            self.frame_color = self.alert_frame
+        else:
+            self.frame_color = self.normal_frame
+            
+        self.queue_draw()
+        
     def move_to_left(self):
         '''
         Move cursor backward.
@@ -164,6 +178,9 @@ class IPV4Entry(gtk.VBox):
             self.clear_highlight_segment()
             self.queue_draw()
         
+    def set_address(self, address):
+        self.set_ip(address)
+            
     def set_ip(self, ip_string):
         '''
         Set ipv4 address.
@@ -197,6 +214,9 @@ class IPV4Entry(gtk.VBox):
             
         return True    
         
+    def get_address(self):
+        return self.get_ip()
+    
     def get_ip(self):
         '''
         Get ip address.
