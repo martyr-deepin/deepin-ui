@@ -126,6 +126,11 @@ class MplayerWindow(WindowBase):
                 x - self.shadow_padding, y - self.shadow_padding,
                 width + self.shadow_padding * 2, height + self.shadow_padding * 2
                 )
+            
+        # NOTE: Some desktop environment will disable window minimum operation instead with hide window operation
+        # to get the realtime preview of application, then window will got wrong shape mask after un-minimum.
+        # So we do shape window when `configure-event` event emit to fixed the compatible problem.
+        self.shape_window(widget, widget.allocation)    
         
     def show_window(self):
         '''
