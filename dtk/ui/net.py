@@ -640,7 +640,7 @@ class MACEntry(gtk.VBox):
         Initialize MACEntry class.
         '''
         gtk.VBox.__init__(self)
-        self.width = 120
+        self.width = 130
         self.height = 22
         self.set_size_request(self.width, self.height)
         self.normal_frame = ui_theme.get_color("entry_normal_frame")
