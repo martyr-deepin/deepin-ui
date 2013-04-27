@@ -82,6 +82,9 @@ print time.time() - start_time
 
 list_view = None
 
+def print_address(widget, address):
+    print address
+
 def m_motion_item(widget, item, x, y):
     print widget, item, x, y
 
@@ -389,6 +392,8 @@ if __name__ == "__main__":
     spin_box = SpinBox(3000, 0, 5000, 100)
     
     mac_entry = MACEntry()
+    # mac_entry = IPV4Entry()
+    mac_entry.connect("changed", print_address)
     # mac_entry = IPV4Entry()
     # mac_entry.set_ip("255.255.255.andy")
     # mac_entry.set_ip("192.168..12")
