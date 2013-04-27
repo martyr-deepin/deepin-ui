@@ -323,6 +323,7 @@ class HScalebar(gtk.Button):
         return True
 
     def __progressbar_press_event(self, widget, event):
+        widget.grab_add()
         temp_value = float(widget.allocation.width - self.point_width)
         temp_value = ((float((event.x - self.point_width/2)) / temp_value) * self.value_max) # get value.
         value = max(min(self.value_max, temp_value), 0)
@@ -341,6 +342,7 @@ class HScalebar(gtk.Button):
         self.emit("value-changed", self.value + self.value_min)
         
     def __progressbar_release_event(self, widget, event):    
+        widget.grab_remove()
         self.drag = False
         
     def __progressbar_motion_notify_event(self, widget, event):    
