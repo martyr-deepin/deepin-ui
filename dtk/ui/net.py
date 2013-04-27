@@ -79,7 +79,8 @@ class IPV4Entry(gtk.VBox):
         self.ip = "..."
         self.dot_size = 2
         self.grab_focus_flag = False
-        self.ip_chars = map(str, range(0, 10)) + ["."]
+        self.segment_split_char = "."
+        self.ip_chars = map(str, range(0, 10)) + [self.segment_split_char]
         self.select_active_color=ui_theme.get_shadow_color("select_active_background")
         self.select_inactive_color=ui_theme.get_shadow_color("select_inactive_background")
         self.last_segment_index = 3
@@ -118,6 +119,7 @@ class IPV4Entry(gtk.VBox):
             "Ctrl + x" : self.cut_to_clipboard,
             "Ctrl + v" : self.paste_from_clipboard,
             "BackSpace" : self.backspace,
+            "." : self.insert_ip_dot,
             }
         
         self.right_menu = Menu(
@@ -208,7 +210,7 @@ class IPV4Entry(gtk.VBox):
             if ip_char not in self.ip_chars:
                 return False
             
-        for ip_segment in ip_string.split("."):
+        for ip_segment in ip_string.split(self.segment_split_char):
             if ip_segment != "" and not self.in_valid_range(ip_segment):
                 return False
             
@@ -229,7 +231,7 @@ class IPV4Entry(gtk.VBox):
         self.cursor_positions = []
         
         ip_segment_distance = self.width / 4
-        ip_segments = self.ip.split(".")
+        ip_segments = self.ip.split(self.segment_split_char)
         for (ip_segment_index, ip_segment) in enumerate(ip_segments):
             if len(ip_segment) == 0:
                 self.cursor_positions.append(ip_segment_distance * ip_segment_index + ip_segment_distance / 2)
@@ -313,7 +315,7 @@ class IPV4Entry(gtk.VBox):
         '''
         Delete backward.
         '''
-        ip_segments = self.ip.split(".")
+        ip_segments = self.ip.split(self.segment_split_char)
         if self.highlight_segment_index != None:
             # Get new ip string.
             ip_segments[self.highlight_segment_index] = ""
@@ -321,12 +323,12 @@ class IPV4Entry(gtk.VBox):
             # Get new cursor index.
             string_before_select = ""
             for ip_segment in ip_segments[0:self.highlight_segment_index]:
-                string_before_select += "%s." % ip_segment 
+                string_before_select += "%s%s" % (ip_segment, self.segment_split_char)
             new_cursor_index = len(string_before_select)
             
             # Set new ip.
             self.clear_highlight_segment()
-            self.set_ip('.'.join(ip_segments))  # set ip first.
+            self.set_ip(self.segment_split_char.join(ip_segments))  # set ip first.
             self.set_cursor_index(new_cursor_index) # NOTE: set new cursor index of set ip, otherwise will got wrong cursor_segment_index
         else:
             if ip_segments[self.cursor_segment_index] == "":
@@ -336,7 +338,7 @@ class IPV4Entry(gtk.VBox):
                 # Get new cursor index.
                 string_before_select = ""
                 for ip_segment in ip_segments[0:self.cursor_segment_index]:
-                    string_before_select += "%s." % ip_segment 
+                    string_before_select += "%s%s" % (ip_segment, self.segment_split_char)
                 segment_first_index = len(string_before_select)
                 
                 if self.cursor_index == segment_first_index:
@@ -350,7 +352,7 @@ class IPV4Entry(gtk.VBox):
                     new_cursor_index = self.cursor_index - 1
                     ip_segments[self.cursor_segment_index] = new_current_segment
                     
-                    self.set_ip(".".join(ip_segments))
+                    self.set_ip(self.segment_split_char.join(ip_segments))
                     self.set_cursor_index(new_cursor_index)
         
     def highlight_current_segment(self):
@@ -358,7 +360,7 @@ class IPV4Entry(gtk.VBox):
         
     def set_highlight_segment(self, segment_index, move_cursor_right=False):
         # Get ip segments.
-        ip_segments = self.ip.split(".")
+        ip_segments = self.ip.split(self.segment_split_char)
         
         # Just highlight segment when segment content is not empty.
         if len(ip_segments[segment_index]) > 0:
@@ -368,7 +370,7 @@ class IPV4Entry(gtk.VBox):
         current_segment = ip_segments[segment_index]
         string_before_select = ""
         for ip_segment in ip_segments[0:segment_index]:
-            string_before_select += "%s." % ip_segment 
+            string_before_select += "%s%s" % (ip_segment, self.segment_split_char)
             
         new_cursor_index = len(string_before_select) + len(current_segment)
         
@@ -390,9 +392,6 @@ class IPV4Entry(gtk.VBox):
         elif key_name in map(str, range(0, 10)):
             self.insert_ip_number(key_name)
             self.emit("editing")
-        elif key_name == ".":
-            self.insert_ip_dot()
-            self.emit("editing")
             
     def set_cursor_index(self, cursor_index):
         '''
@@ -404,7 +403,7 @@ class IPV4Entry(gtk.VBox):
         
         dot_indexes = []
         for (ip_char_index, ip_char) in enumerate(self.ip):
-            if ip_char == ".":
+            if ip_char == self.segment_split_char:
                 dot_indexes.append(ip_char_index)
                 
         self.cursor_segment_index = 0
@@ -417,28 +416,28 @@ class IPV4Entry(gtk.VBox):
     def insert_ip_number(self, ip_number):
         if self.highlight_segment_index != None:
             # Get new ip string.
-            ip_segments = self.ip.split(".")
+            ip_segments = self.ip.split(self.segment_split_char)
             ip_segments[self.highlight_segment_index] = ip_number
             
             # Get new cursor index.
             string_before_select = ""
             for ip_segment in ip_segments[0:self.highlight_segment_index]:
-                string_before_select += "%s." % ip_segment 
+                string_before_select += "%s%s" % (ip_segment, self.segment_split_char)
             new_cursor_index = len(string_before_select) + 1
             
             # Set new ip.
             self.clear_highlight_segment()
-            self.set_ip('.'.join(ip_segments))  # set ip first.
+            self.set_ip(self.segment_split_char.join(ip_segments))  # set ip first.
             self.set_cursor_index(new_cursor_index) # NOTE: set new cursor index of set ip, otherwise will got wrong cursor_segment_index
         else:
             # Get last index of current segment.
-            ip_segments = self.ip.split(".")
+            ip_segments = self.ip.split(self.segment_split_char)
             current_segment = ip_segments[self.cursor_segment_index]
             current_segment_len = len(current_segment)
             
             string_before_select = ""
             for ip_segment in ip_segments[0:self.cursor_segment_index]:
-                string_before_select += "%s." % ip_segment 
+                string_before_select += "%s%s" % (ip_segment, self.segment_split_char)
                 
             last_index = len(string_before_select) + len(current_segment)
             
@@ -460,7 +459,7 @@ class IPV4Entry(gtk.VBox):
         if self.in_valid_range(new_current_segment):
             new_cursor_index = self.cursor_index + 1
             ip_segments[self.cursor_segment_index] = new_current_segment
-            self.set_ip('.'.join(ip_segments)) # set ip first.
+            self.set_ip(self.segment_split_char.join(ip_segments)) # set ip first.
             self.set_cursor_index(new_cursor_index) # NOTE: set new cursor index of set ip, otherwise will got wrong cursor_segment_index
             
             if highlight_next_segment:
@@ -559,7 +558,7 @@ class IPV4Entry(gtk.VBox):
     def draw_ip(self, cr, rect):
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
         ip_segment_distance = self.width / 4
-        for (ip_segment_index, ip_segment) in enumerate(self.ip.split(".")):
+        for (ip_segment_index, ip_segment) in enumerate(self.ip.split(self.segment_split_char)):
             text_color = "#000000"
             if ip_segment_index == self.highlight_segment_index:
                 (ip_segment_width, ip_segment_height) = get_content_size(ip_segment)
