@@ -104,13 +104,6 @@ class Bread(gtk.HBox):
         left_box.pack_start(self.left_btn, False, False)
         right_box.pack_start(self.right_btn, False, False)
         
-        # Init scrolled window
-        self.scroll_win = ScrolledWindow()
-        self.scroll_win.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
-        self.pack_start(left_box, False, True)
-        self.pack_start(self.scroll_win, True, True)
-        self.pack_end(right_box, False, True)
-        
         # Init Hbox        
         self.hbox = gtk.HBox(False, 0)
         self.hbox.show()
@@ -123,8 +116,9 @@ class Bread(gtk.HBox):
             self.eventbox.connect("button-press-event", self.event_box_press)
 
         self.hbox.pack_end(self.eventbox, True, True)
-        self.hbox.connect("expose-event", self.redraw_bg)
-        self.scroll_win.add_with_viewport(self.hbox)
+        self.scroll_win = ScrolledWindow()
+        self.pack_start(left_box, False, True)
+        self.pack_start(self.hbox, True, True)
 
         # Add Bread Items
         self.adj = self.scroll_win.get_hadjustment()
