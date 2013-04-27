@@ -36,21 +36,11 @@ import pango
 import cairo
 import pangocairo
 import re
+from gsettings import DESKTOP_SETTINGS, DEFAULT_CURSOR_BLINK_TIME
 from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
                           get_content_size, is_double_click, is_right_button, 
                           is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias
                           )
-try:
-    import deepin_gsettings
-    DESKTOP_SETTINGS_CONF = "org.gnome.desktop.interface"
-    DESKTOP_SETTINGS = deepin_gsettings.new(DESKTOP_SETTINGS_CONF)
-except ImportError:
-    print "----------Please Install Deepin GSettings Python Binding----------"
-    print "sudo apt-get install deepin-gsettings"
-    print "------------------------------------------------------------------"
-
-DEFAULT_CURSOR_BLINK_TIME = 600  # microsecond
-
 class EntryBuffer(gobject.GObject):
     '''
     EntryBuffer class.
