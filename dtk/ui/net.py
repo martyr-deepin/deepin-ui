@@ -196,7 +196,7 @@ class IPV4Entry(gtk.VBox):
         ip = ip_string.replace(" ", "")
         if self.is_ip_address(ip):
             if self.ip != ip:
-                if ip == "...":
+                if ip == self.default_address:
                     self.emit("changed", "")
                 else:
                     self.emit("changed", ip)
@@ -771,7 +771,7 @@ class MACEntry(gtk.VBox):
         mac = mac_string.replace(" ", "")
         if self.is_mac_address(mac):
             if self.mac != mac:
-                if mac == ":::::":
+                if mac == self.default_address:
                     self.emit("changed", "")
                 else:
                     self.emit("changed", mac)
