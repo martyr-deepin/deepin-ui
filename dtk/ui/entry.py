@@ -35,7 +35,6 @@ import gtk
 import pango
 import cairo
 import pangocairo
-import re
 from gsettings import DESKTOP_SETTINGS, DEFAULT_CURSOR_BLINK_TIME
 from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
                           get_content_size, is_double_click, is_right_button, 
@@ -477,11 +476,6 @@ class EntryBuffer(gobject.GObject):
                 if self.shown_password:
                     self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
                 else:
-                    '''
-                    FIXME: HOW-TO act like Mac password style
-                    self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
-                    timer = gobject.timeout_add(200, self.__reset_password)
-                    '''
                     self.__reset_password()
                     layout = self._layout.copy()
                     self.__draw_text(cr, layout, context, x, y, offset_x, offset_y)
@@ -774,8 +768,6 @@ class Entry(gtk.EventBox):
     @undocumented: get_input_method_cursor_rect
     @undocumented: monitor_entry_content
     @undocumented: realize_entry
-    @undocumented: is_ipv4_number
-    @undocumented: is_mac_address
     @undocumented: key_press_entry
     @undocumented: handle_key_press
     @undocumented: handle_key_event
@@ -823,8 +815,6 @@ class Entry(gtk.EventBox):
                  enable_clear_button=False,
                  is_password_entry=False,
                  shown_password=False, 
-                 is_ipv4=False,
-                 is_mac=False,
                  place_holder="",
                  ):
         '''
@@ -840,8 +830,6 @@ class Entry(gtk.EventBox):
         @param enable_clear_button: Whether display clear button, default is False.
         @param is_password_entry: Whether is password entry, default is False.
         @param shown_password: Whether display password character, default is False.
-        @param is_ipv4: Whether entry is IPv4 widget.
-        @param is_mac: Whether entry is mac address widget.
         '''
         # Init.
         gtk.EventBox.__init__(self)
@@ -860,8 +848,6 @@ class Entry(gtk.EventBox):
         self.enable_clear_button = enable_clear_button
         self.clear_button_x = -1
         self.shown_password = shown_password
-        self.is_ipv4 = is_ipv4
-        self.is_mac = is_mac
         self.set_visible_window(False)
         self.set_can_focus(True) # can focus to response key-press signal
         self.im = gtk.IMMulticontext()
@@ -1040,42 +1026,10 @@ class Entry(gtk.EventBox):
         '''
         self.handle_key_press(widget, event)
     
-    def is_ipv4_number(self, x):
-        if re.match("^\\d+$", x) == None:
-            return False
-        
-        return True
-
-    def is_mac_address(self, x):
-        if re.match("^[a-z0-9]+$", x) == None:
-            return False
-        
-        return True
-
     def handle_key_press(self, widget, event):
         '''
         Internal function to handle key press.
         '''
-        key_name = get_keyevent_name(event, self.key_upper)
-        text = self.get_text()
-        
-        if self.is_ipv4 and key_name not in ["BackSpace", "Tab", "Left", "Right"]:
-            if not self.is_ipv4_number(key_name):
-                return
-            
-            if int(text + key_name) > 255:
-                return
-
-            if len(text) >= 3:
-                return
-
-        if self.is_mac and key_name not in ["BackSpace", "Tab", "Left", "Right"]:
-            if not self.is_mac_address(key_name):
-                return
-            
-            if len(text) >= 2:
-                return
-
         input_method_filt = self.im.filter_keypress(event)
         if not input_method_filt:
             self.handle_key_event(event)
