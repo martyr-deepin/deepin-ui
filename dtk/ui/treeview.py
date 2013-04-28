@@ -1294,7 +1294,7 @@ class TreeView(gtk.VBox):
                     self.start_select_row = None
                     self.select_rows = []
                     self.queue_draw()
-                elif not right_press_row in self.select_rows:
+                elif right_press_row not in self.select_rows or self.start_select_row == None:
                     self.start_select_row = right_press_row
                     self.select_rows = [right_press_row]
                     self.queue_draw()
