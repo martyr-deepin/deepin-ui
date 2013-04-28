@@ -50,6 +50,9 @@
  "progressbar_foreground_frame" : "#995b2e",
  "entry_normal_frame" : "#ddcec4",
  "entry_alert_frame" : "#e33939",
+ "globalItemHover" : "#f7d5bc",
+ "globalItemSelect" : "#e9b48e",
+ "globalItemHighlight" : "#d2956c",
  },	
  "alpha_colors" : {
      "color_button_disable_mask" : ("#ffffff", 0.85),
