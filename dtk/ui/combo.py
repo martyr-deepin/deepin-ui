@@ -430,6 +430,10 @@ class ComboBox(gtk.VBox):
         '''
         return self.combo_list.get_select_index()
         
+    def set_sensitive(self, sensitive):
+        super(ComboBox, self).set_sensitive(sensitive)
+        self.label.set_sensitive(sensitive)
+    
     def on_expose_combo_frame(self, widget, event):
         # Init.
         cr = widget.window.cairo_create()

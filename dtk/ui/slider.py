@@ -42,6 +42,7 @@ class HSlider(gtk.Viewport):
     '''
     
     __gsignals__ = {
+            "start_slide" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
             "completed_slide" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
             }
     
@@ -125,11 +126,15 @@ class HSlider(gtk.Viewport):
             else:
                 self._no_effect()
 
+            self.timeline.connect("start", lambda source: self._start())
             self.timeline.connect("completed", lambda source: self._completed())
             self.timeline.run()
             self.in_sliding = True
 
             self.show_all()
+            
+    def _start(self):
+        self.emit("start_slide")
 
     def _completed(self):
         if self.pre_widget and self.pre_widget.parent == self.fixed:
