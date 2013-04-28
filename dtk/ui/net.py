@@ -196,7 +196,10 @@ class IPV4Entry(gtk.VBox):
         ip = ip_string.replace(" ", "")
         if self.is_ip_address(ip):
             if self.ip != ip:
-                self.emit("changed", ip)
+                if ip == "...":
+                    self.emit("changed", "")
+                else:
+                    self.emit("changed", ip)
             
             self.ip = ip 
             self.calculate_cursor_positions()
@@ -768,7 +771,10 @@ class MACEntry(gtk.VBox):
         mac = mac_string.replace(" ", "")
         if self.is_mac_address(mac):
             if self.mac != mac:
-                self.emit("changed", mac)
+                if mac == ":::::":
+                    self.emit("changed", "")
+                else:
+                    self.emit("changed", mac)
             
             self.mac = mac 
             self.calculate_cursor_positions()
