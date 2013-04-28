@@ -145,7 +145,8 @@ class IPV4Entry(gtk.VBox):
         else:
             self.frame_color = self.normal_frame
             
-        self.queue_draw()
+        # FIXME must let parent redraw, maybe let user do this?
+        self.parent.queue_draw()
         
     def move_to_left(self):
         '''
