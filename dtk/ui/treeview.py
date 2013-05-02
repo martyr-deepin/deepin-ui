@@ -287,7 +287,7 @@ class TreeView(gtk.VBox):
                  top_bottom_space=3,
                  padding_x=0,
                  padding_y=0,
-                 expand_column=None,
+                 expand_column=0,
                  ):
         '''
         Initialize TreeView class.
@@ -305,7 +305,7 @@ class TreeView(gtk.VBox):
         @param top_bottom_space: Top bottom space, default is 3 pixels.
         @param padding_x: The padding x value.
         @param padding_y: The padding y value.
-        @param expand_column: The expand column, default is None.
+        @param expand_column: The expand column, default is 0.
         '''
         # Init.
         gtk.VBox.__init__(self)
@@ -1894,6 +1894,10 @@ gobject.type_register(TreeView)
 class TreeItem(gobject.GObject):
     '''
     Tree item template use for L{ I{TreeView} <TreeView>}.
+    
+    This class just provide the interface that TreeView item need implement.
+    Normal, you shouldn't use this class directly, instead you should use item that base on NodeItem,
+    NodeItem provide more simple apis than TreeItem.
     '''
     
     def __init__(self):
@@ -1914,6 +1918,7 @@ class TreeItem(gobject.GObject):
         self.is_highlight = False
         self.drag_line = False
         self.drag_line_at_bottom = False
+        self.column_offset = 0
         
     def expand(self):
         pass
@@ -1987,3 +1992,138 @@ class TreeItem(gobject.GObject):
         return False
     
 gobject.type_register(TreeItem)
+
+class NodeItem(TreeItem):
+    '''
+    NodeItem class to provide basic attribute of treeview node.
+    '''
+	
+    def __init__(self):
+        '''
+        Initialize NodeItem class.
+        '''
+        TreeItem.__init__(self)
+        
+    def add_items(self, items):
+        for item in items:
+            item.column_index = self.column_index + 1
+            item.parent_item = self
+            
+        if self.child_items == None:
+            self.child_items = items
+        else:
+            self.child_items += items
+        
+    def double_click(self, column, offset_x, offset_y):
+        if self.is_expand:
+            self.unexpand()
+        else:
+            self.expand()
+            
+    def expand(self):
+        self.is_expand = True
+        
+        self.add_child_item()
+            
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
+
+    def unexpand(self):
+        self.is_expand = False
+        
+        self.delete_chlid_item()
+    
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
+    def add_child_item(self):
+        if self.child_items != None and len(self.child_items) > 0:
+            self.add_items_callback(self.child_items, self.row_index + 1)
+        
+    def delete_chlid_item(self):
+        for child_item in self.child_items:
+            if child_item.is_expand:
+                child_item.unexpand()
+
+        self.delete_items_callback(self.child_items)
+    
+    def unselect(self):
+        self.is_select = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
+    def select(self):
+        self.is_select = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
+    def unhighlight(self):
+        self.is_highlight = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
+    def highlight(self):
+        self.is_highlight = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+
+    def unhover(self, column, offset_x, offset_y):
+        self.is_hover = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
+    def hover(self, column, offset_x, offset_y):
+        self.is_hover = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
+gobject.type_register(NodeItem)
+
+class TextItem(NodeItem):
+    '''
+    TextItem class.
+    '''
+	
+    def __init__(self, text, column_index=0):
+        '''
+        Initialize TextItem class.
+        '''
+        NodeItem.__init__(self)
+        self.text = text
+        self.column_index = column_index
+        self.column_offset = 10
+        self.text_padding = 10
+        
+    def get_height(self):
+        return 24
+        
+    def get_column_widths(self):
+        return [-1]
+        
+    def get_column_renders(self):
+        return [self.render_text]
+        
+    def render_text(self, cr, rect):
+        # Draw select background.
+        if self.is_select or self.is_highlight:
+            draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
+                         ui_theme.get_shadow_color("listview_select").get_color_info(),
+                         )
+        
+        # Draw text.
+        draw_text(cr, 
+                  self.text,
+                  rect.x + self.text_padding + self.column_offset * self.column_index,
+                  rect.y,
+                  rect.width,
+                  rect.height,
+                  )
+        
+gobject.type_register(TextItem)
