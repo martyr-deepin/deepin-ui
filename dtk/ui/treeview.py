@@ -35,7 +35,7 @@ from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
 from cache_pixbuf import CachePixbuf
 from deepin_utils.core import get_disperse_index
-from utils import (cairo_state, get_window_shadow_size, get_event_coords,
+from utils import (cairo_state, get_window_shadow_size, get_event_coords, color_hex_to_cairo,
                    is_in_rect,is_left_button, is_double_click, is_single_click, 
                    remove_timeout_id, is_right_button)
 from skin_config import skin_config
@@ -2086,6 +2086,22 @@ class NodeItem(TreeItem):
     
 gobject.type_register(NodeItem)
 
+def get_background_color(is_highlight, is_select, is_hover):
+    if is_highlight:
+        return "globalItemHighlight"
+    elif is_select:
+        return "globalItemSelect"
+    elif is_hover:
+        return "globalItemHover"
+    else:
+        return None
+    
+def get_text_color(is_select):
+    if is_select:
+        return ui_theme.get_color("label_select_text").get_color()
+    else:
+        return ui_theme.get_color("label_text").get_color()
+
 class TextItem(NodeItem):
     '''
     TextItem class.
@@ -2112,18 +2128,21 @@ class TextItem(NodeItem):
         
     def render_text(self, cr, rect):
         # Draw select background.
-        if self.is_select or self.is_highlight:
-            draw_vlinear(cr, rect.x ,rect.y, rect.width, rect.height,
-                         ui_theme.get_shadow_color("listview_select").get_color_info(),
-                         )
+        background_color = get_background_color(self.is_highlight, self.is_select, self.is_hover)
+        if background_color:
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color(background_color).get_color()))    
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
         
         # Draw text.
+        text_color = get_text_color(self.is_select)
         draw_text(cr, 
                   self.text,
                   rect.x + self.text_padding + self.column_offset * self.column_index,
                   rect.y,
                   rect.width,
                   rect.height,
+                  text_color=text_color,
                   )
         
 gobject.type_register(TextItem)
