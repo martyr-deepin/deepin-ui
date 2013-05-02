@@ -2146,3 +2146,73 @@ class TextItem(NodeItem):
                   )
         
 gobject.type_register(TextItem)
+
+class IconTextItem(NodeItem):
+    '''
+    TextItem class.
+    '''
+	
+    def __init__(self, text, icon_pixbufs=None, column_index=0):
+        '''
+        Initialize TextItem class.
+        '''
+        NodeItem.__init__(self)
+        self.text = text
+        self.column_index = column_index
+        self.column_offset = 10
+        self.text_padding = 10
+        self.icon_pixbufs = icon_pixbufs
+        
+    def get_height(self):
+        return 24
+        
+    def get_column_widths(self):
+        return [24, -1]
+        
+    def get_column_renders(self):
+        return [self.render_icon, self.render_text]
+    
+    def render_icon(self, cr, rect):
+        # Draw select background.
+        background_color = get_background_color(self.is_highlight, self.is_select, self.is_hover)
+        if background_color:
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color(background_color).get_color()))    
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
+            
+        # Draw icon.
+        if self.icon_pixbufs:
+            (normal_dpixbuf, hover_dpixbuf) = self.icon_pixbufs
+            if self.is_select:
+                draw_pixbuf(cr, 
+                            hover_dpixbuf.get_pixbuf(),
+                            rect.x,
+                            rect.y,
+                            )
+            else:
+                draw_pixbuf(cr, 
+                            normal_dpixbuf.get_pixbuf(),
+                            rect.x,
+                            rect.y,
+                            )
+            
+    def render_text(self, cr, rect):
+        # Draw select background.
+        background_color = get_background_color(self.is_highlight, self.is_select, self.is_hover)
+        if background_color:
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color(background_color).get_color()))    
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
+        
+        # Draw text.
+        text_color = get_text_color(self.is_select)
+        draw_text(cr, 
+                  self.text,
+                  rect.x + self.text_padding + self.column_offset * self.column_index,
+                  rect.y,
+                  rect.width,
+                  rect.height,
+                  text_color=text_color,
+                  )
+        
+gobject.type_register(IconTextItem)
