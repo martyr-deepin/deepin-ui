@@ -31,8 +31,11 @@ from mask import draw_mask
 from skin_config import skin_config
 from theme import ui_theme
 from titlebar import Titlebar
-from utils import container_remove_all
+from utils import container_remove_all, alpha_color_hex_to_cairo
 from window import Window
+from treeview import TreeView, TextItem, IconTextItem, draw_background
+from box import BackgroundBox
+import pango
 import gobject
 import gtk
 
@@ -614,7 +617,173 @@ class SaveFileDialog(gtk.FileChooserDialog):
         
 gobject.type_register(SaveFileDialog)
 
+class PreferenceDialog(DialogBox):
+    '''
+    PreferenceDialog class.
+    '''
+	
+    def __init__(self,
+                 default_width=575,
+                 default_height=495,
+                 category_bar_width=132,
+                 ):
+        '''
+        Initialize PreferenceDialog class.
+        '''
+        DialogBox.__init__(
+            self,
+            _("Preferences"), 
+            default_width,
+            default_height,
+            mask_type=DIALOG_MASK_MULTIPLE_PAGE,
+            close_callback=self.hide_all,
+            )
+        self.set_position(gtk.WIN_POS_CENTER)
+        
+        self.main_box = gtk.VBox()
+        close_button = Button(_("Close"))
+        close_button.connect("clicked", lambda w: self.hide_all())
+        
+        # Category bar
+        self.category_bar = TreeView(
+            enable_drag_drop=False, 
+            enable_multiple_select=False,
+            )
+        self.category_bar.set_expand_column(1)
+        self.category_bar.draw_mask = self.draw_treeview_mask
+        self.category_bar.set_size_request(category_bar_width, 516)
+        self.category_bar.connect("button-press-item", self.button_press_preference_item)
+        
+        category_box = gtk.VBox()
+        background_box = BackgroundBox()
+        background_box.set_size_request(category_bar_width, 11)
+        background_box.draw_mask = self.draw_treeview_mask
+        category_box.pack_start(background_box, False, False)
+        
+        category_bar_align = gtk.Alignment()
+        category_bar_align.set(0, 0, 1, 1,)
+        category_bar_align.set_padding(0, 1, 0, 0)
+        category_bar_align.add(self.category_bar)
+        category_box.pack_start(category_bar_align, True, True)
+        
+        # Pack widget.
+        left_box = gtk.VBox()
+        self.right_box = gtk.VBox()
+        left_box.add(category_box)
+        right_align = gtk.Alignment()
+        right_align.set_padding(0, 0, 10, 0)
+        right_align.add(self.right_box)
 
+        body_box = gtk.HBox()
+        body_box.pack_start(left_box, False, False)
+        body_box.pack_start(right_align, False, False)
+        self.main_box.add(body_box)
+        
+        # DialogBox code.
+        self.body_box.pack_start(self.main_box, True, True)
+        self.right_button_box.set_buttons([close_button])        
+        
+    def button_press_preference_item(self, treeview, item, column_index, offset_x, offset_y):
+        if self.set_item_widget(item):
+            self.show_all()
+            
+    def set_item_widget(self, item):
+        if isinstance(item, PreferenceItem):
+            container_remove_all(self.right_box)
+            self.right_box.pack_start(item.item_widget)
+            self.category_bar.select_items([item])
+            
+            return True
+        else:
+            return False
+            
+    def draw_treeview_mask(self, cr, x, y, width, height):
+        cr.set_source_rgba(*alpha_color_hex_to_cairo(("#FFFFFF", 0.9)))
+        cr.rectangle(x, y, width, height)
+        cr.fill()
+        
+    def set_preference_items(self, preference_items):
+        items = []
+        for (item_name, item_content) in preference_items:
+            if isinstance(item_content, gtk.Widget):
+                items.append(PreferenceItem(item_name, item_content))
+            elif isinstance(item_content, list):
+                expand_item = ExpandPreferenceItem(item_name)
+                items.append(expand_item)
+                
+                child_items = []
+                for (child_item_name, child_item_content) in item_content:
+                    child_items.append(PreferenceItem(child_item_name, child_item_content))
+                    
+                expand_item.add_items(child_items)
+            
+        self.category_bar.add_items(items)
+        
+        for item in items:
+            if self.set_item_widget(item):
+                break
+            
+class PreferenceItem(TextItem):
+    '''
+    PreferenceItem class.
+    '''
+	
+    def __init__(self, preference_name, item_widget):
+        '''
+        Initialize PreferenceItem class.
+        '''
+        TextItem.__init__(self, preference_name)
+        self.text_size = 10
+        self.text_padding = 0
+        self.alignment = pango.ALIGN_LEFT
+        self.column_offset = 15
+        self.height = 37
+        self.item_widget = item_widget
+        
+    def get_column_widths(self):
+        return [36, -1]
+    
+    def get_column_renders(self):
+        return [lambda cr, rect: draw_background(self, cr, rect),
+                self.render_text]
+
+gobject.type_register(PreferenceItem)        
+
+class ExpandPreferenceItem(IconTextItem):
+    '''
+    ExpandPreferenceItem class.
+    '''
+	
+    def __init__(self, preference_name):
+        '''
+        Initialize ExpandPreferenceItem class.
+        '''
+        IconTextItem.__init__(
+            self, 
+            preference_name,
+            (ui_theme.get_pixbuf("treeview/arrow_right.png"),
+             ui_theme.get_pixbuf("treeview/arrow_right_hover.png")),
+            (ui_theme.get_pixbuf("treeview/arrow_down.png"),
+             ui_theme.get_pixbuf("treeview/arrow_down_hover.png")),
+            )
+        self.text_size = 10
+        self.text_padding = 0
+        self.alignment = pango.ALIGN_LEFT
+        self.icon_padding = 15
+        self.column_offset = 15
+        self.height = 37
+
+    def get_column_widths(self):
+        return [36, -1]
+    
+    def button_press(self, column, offset_x, offset_y):
+        if self.is_expand:
+            self.unexpand()
+        else:
+            self.expand()
+            
+gobject.type_register(ExpandPreferenceItem)
+    
 if __name__ == '__main__':
     dialog = ConfirmDialog("确认对话框", "你确定吗？", 200, 100)
     dialog.show_all()

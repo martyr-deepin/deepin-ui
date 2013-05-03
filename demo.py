@@ -40,6 +40,7 @@ app_theme = init_skin(
 
 # Load other modules.
 import dtk.ui.entry
+from dtk.ui.dialog import PreferenceDialog
 from dtk.ui.application import Application
 from dtk.ui.browser import WebView
 from dtk.ui.button import CheckButton, RadioButton, ComboButton
@@ -271,6 +272,17 @@ if __name__ == "__main__":
     droplist.set_size_request(-1, 100)
     
     images_path = os.path.join(get_parent_dir(__file__, 1), "images")
+    preference_dialog = PreferenceDialog()
+    preference_dialog.set_preference_items(
+        [("常规设置", gtk.Label("常规设置")),
+         ("热键设置", gtk.Label("热键设置")),
+         ("歌词设置", 
+          [("桌面歌词", gtk.Label("桌面歌词")),
+           ("窗口歌词", gtk.Label("窗口歌词")),
+           ]),
+         ("插件", gtk.Label("插件")),
+         ("关于", gtk.Label("关于")),
+         ])
     navigatebar = Navigatebar(
         [(app_theme.get_pixbuf("navigatebar/nav_recommend.png"), "导航1", 
           lambda : Wizard([os.path.join(images_path, "slide_1.jpg"),
@@ -292,7 +304,7 @@ if __name__ == "__main__":
          (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航4", lambda : OpenFileDialog("打开文件", application.window, open_file_dlg_click_ok)),
          (app_theme.get_pixbuf("navigatebar/nav_download.png"), "导航5", lambda : slider.to_page(gtk.VBox(), None)),
          (app_theme.get_pixbuf("navigatebar/nav_repo.png"), "导航6", lambda : slider.to_page(notebook_c, None)),
-         (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", None),
+         (app_theme.get_pixbuf("navigatebar/nav_update.png"), "导航7", lambda : preference_dialog.show_all()),
          (app_theme.get_pixbuf("navigatebar/nav_uninstall.png"), "导航8", None),
          ])
     application.main_box.pack_start(navigatebar, False)
