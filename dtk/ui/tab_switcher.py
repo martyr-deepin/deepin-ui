@@ -20,10 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from dtk.ui.timeline import Timeline, CURVE_SINE
-from dtk.ui.box import EventBox
-from dtk.ui.utils import get_content_size, color_hex_to_cairo, cairo_state
-from dtk.ui.draw import draw_text
+from timeline import Timeline, CURVE_SINE
+from box import EventBox
+from utils import get_content_size, color_hex_to_cairo, cairo_state
+from draw import draw_text
+from theme import ui_theme
+
 import pango
 import gobject
 import gtk
@@ -77,6 +79,7 @@ class TabSwitcher(EventBox):
         self.padding_x = padding_x
         self.padding_y = padding_y 
         self.in_animiation = False
+        self.line_dcolor = ui_theme.get_color("globalItemHighlight")
         
         self.set_size_request(-1, self.tab_height + self.tab_line_height)
 
@@ -99,7 +102,7 @@ class TabSwitcher(EventBox):
             cr.clip()
 
             # Draw tab line.
-            cr.set_source_rgb(*color_hex_to_cairo("#00AAFF"))
+            cr.set_source_rgb(*color_hex_to_cairo(self.line_dcolor.get_color()))
             cr.rectangle(rect.x + self.padding_x, 
                          rect.y + self.tab_height,
                          rect.width - self.padding_x * 2, 

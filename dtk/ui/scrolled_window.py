@@ -136,7 +136,7 @@ class ScrolledWindow(gtk.Bin):
         self.set_vadjustment(gtk.Adjustment())
         self.set_hadjustment(gtk.Adjustment())
         self.set_has_window(False)
-
+        
     def do_expose_event(self, e):
         if e.window == self.vwindow:
             self.draw_vbar()
@@ -313,6 +313,12 @@ class ScrolledWindow(gtk.Bin):
             return True
         else:
             return False
+        
+    def do_visibility_notify_event(self, e):
+        self.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
+        self.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
+
+        return False
 
     def do_motion_notify_event(self, e):
         if not (e.window == self.hwindow or e.window == self.vwindow): return False

@@ -35,7 +35,7 @@ from theme import ui_theme
 from keymap import has_ctrl_mask, has_shift_mask, get_keyevent_name
 from cache_pixbuf import CachePixbuf
 from deepin_utils.core import get_disperse_index
-from utils import (cairo_state, get_window_shadow_size, get_event_coords,
+from utils import (cairo_state, get_window_shadow_size, get_event_coords, color_hex_to_cairo,
                    is_in_rect,is_left_button, is_double_click, is_single_click, 
                    remove_timeout_id, is_right_button)
 from skin_config import skin_config
@@ -287,7 +287,7 @@ class TreeView(gtk.VBox):
                  top_bottom_space=3,
                  padding_x=0,
                  padding_y=0,
-                 expand_column=None,
+                 expand_column=0,
                  ):
         '''
         Initialize TreeView class.
@@ -305,7 +305,7 @@ class TreeView(gtk.VBox):
         @param top_bottom_space: Top bottom space, default is 3 pixels.
         @param padding_x: The padding x value.
         @param padding_y: The padding y value.
-        @param expand_column: The expand column, default is None.
+        @param expand_column: The expand column, default is 0.
         '''
         # Init.
         gtk.VBox.__init__(self)
@@ -1294,9 +1294,9 @@ class TreeView(gtk.VBox):
                     self.start_select_row = None
                     self.select_rows = []
                     self.queue_draw()
-                elif not right_press_row in self.select_rows:
+                elif right_press_row not in self.select_rows or self.start_select_row == None:
                     self.start_select_row = right_press_row
-                    self.select_rows = [right_press_row]
+                    self.set_select_rows([right_press_row])
                     self.queue_draw()
 
                 if self.start_select_row == None:
@@ -1894,6 +1894,10 @@ gobject.type_register(TreeView)
 class TreeItem(gobject.GObject):
     '''
     Tree item template use for L{ I{TreeView} <TreeView>}.
+    
+    This class just provide the interface that TreeView item need implement.
+    Normal, you shouldn't use this class directly, instead you should use item that base on NodeItem,
+    NodeItem provide more simple apis than TreeItem.
     '''
     
     def __init__(self):
@@ -1914,6 +1918,7 @@ class TreeItem(gobject.GObject):
         self.is_highlight = False
         self.drag_line = False
         self.drag_line_at_bottom = False
+        self.column_offset = 0
         
     def expand(self):
         pass
@@ -1987,3 +1992,227 @@ class TreeItem(gobject.GObject):
         return False
     
 gobject.type_register(TreeItem)
+
+class NodeItem(TreeItem):
+    '''
+    NodeItem class to provide basic attribute of treeview node.
+    '''
+	
+    def __init__(self):
+        '''
+        Initialize NodeItem class.
+        '''
+        TreeItem.__init__(self)
+        
+    def add_items(self, items):
+        for item in items:
+            item.column_index = self.column_index + 1
+            item.parent_item = self
+            
+        if self.child_items == None:
+            self.child_items = items
+        else:
+            self.child_items += items
+        
+    def double_click(self, column, offset_x, offset_y):
+        if self.is_expand:
+            self.unexpand()
+        else:
+            self.expand()
+            
+    def expand(self):
+        self.is_expand = True
+        
+        self.add_child_item()
+            
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
+
+    def unexpand(self):
+        self.is_expand = False
+        
+        self.delete_chlid_item()
+    
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
+    def add_child_item(self):
+        if self.child_items != None and len(self.child_items) > 0:
+            self.add_items_callback(self.child_items, self.row_index + 1)
+        
+    def delete_chlid_item(self):
+        for child_item in self.child_items:
+            if child_item.is_expand:
+                child_item.unexpand()
+
+        self.delete_items_callback(self.child_items)
+    
+    def unselect(self):
+        self.is_select = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+            
+    def select(self):
+        self.is_select = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
+    def unhighlight(self):
+        self.is_highlight = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
+    def highlight(self):
+        self.is_highlight = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+
+    def unhover(self, column, offset_x, offset_y):
+        self.is_hover = False
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
+    def hover(self, column, offset_x, offset_y):
+        self.is_hover = True
+        
+        if self.redraw_request_callback:
+            self.redraw_request_callback(self)
+    
+gobject.type_register(NodeItem)
+
+def get_background_color(is_highlight, is_select, is_hover):
+    if is_highlight:
+        return "globalItemHighlight"
+    elif is_select:
+        return "globalItemSelect"
+    elif is_hover:
+        return "globalItemHover"
+    else:
+        return None
+    
+def get_text_color(is_select):
+    if is_select:
+        return ui_theme.get_color("label_select_text").get_color()
+    else:
+        return ui_theme.get_color("label_text").get_color()
+
+class TextItem(NodeItem):
+    '''
+    TextItem class.
+    '''
+	
+    def __init__(self, text, column_index=0):
+        '''
+        Initialize TextItem class.
+        '''
+        NodeItem.__init__(self)
+        self.text = text
+        self.column_index = column_index
+        self.column_offset = 10
+        self.text_padding = 10
+        
+    def get_height(self):
+        return 24
+        
+    def get_column_widths(self):
+        return [-1]
+        
+    def get_column_renders(self):
+        return [self.render_text]
+        
+    def render_text(self, cr, rect):
+        # Draw select background.
+        background_color = get_background_color(self.is_highlight, self.is_select, self.is_hover)
+        if background_color:
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color(background_color).get_color()))    
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
+        
+        # Draw text.
+        text_color = get_text_color(self.is_select)
+        draw_text(cr, 
+                  self.text,
+                  rect.x + self.text_padding + self.column_offset * self.column_index,
+                  rect.y,
+                  rect.width,
+                  rect.height,
+                  text_color=text_color,
+                  )
+        
+gobject.type_register(TextItem)
+
+class IconTextItem(NodeItem):
+    '''
+    TextItem class.
+    '''
+	
+    def __init__(self, text, icon_pixbufs=None, column_index=0):
+        '''
+        Initialize TextItem class.
+        '''
+        NodeItem.__init__(self)
+        self.text = text
+        self.column_index = column_index
+        self.column_offset = 10
+        self.text_padding = 10
+        self.icon_pixbufs = icon_pixbufs
+        
+    def get_height(self):
+        return 24
+        
+    def get_column_widths(self):
+        return [24, -1]
+        
+    def get_column_renders(self):
+        return [self.render_icon, self.render_text]
+    
+    def render_icon(self, cr, rect):
+        # Draw select background.
+        background_color = get_background_color(self.is_highlight, self.is_select, self.is_hover)
+        if background_color:
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color(background_color).get_color()))    
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
+            
+        # Draw icon.
+        if self.icon_pixbufs:
+            (normal_dpixbuf, hover_dpixbuf) = self.icon_pixbufs
+            if self.is_select:
+                draw_pixbuf(cr, 
+                            hover_dpixbuf.get_pixbuf(),
+                            rect.x,
+                            rect.y,
+                            )
+            else:
+                draw_pixbuf(cr, 
+                            normal_dpixbuf.get_pixbuf(),
+                            rect.x,
+                            rect.y,
+                            )
+            
+    def render_text(self, cr, rect):
+        # Draw select background.
+        background_color = get_background_color(self.is_highlight, self.is_select, self.is_hover)
+        if background_color:
+            cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color(background_color).get_color()))    
+            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+            cr.fill()
+        
+        # Draw text.
+        text_color = get_text_color(self.is_select)
+        draw_text(cr, 
+                  self.text,
+                  rect.x + self.text_padding + self.column_offset * self.column_index,
+                  rect.y,
+                  rect.width,
+                  rect.height,
+                  text_color=text_color,
+                  )
+        
+gobject.type_register(IconTextItem)

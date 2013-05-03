@@ -20,12 +20,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from dtk.ui.box import EventBox
-from dtk.ui.draw import draw_pixbuf
-from dtk.ui.timeline import Timeline, CURVE_SINE
-from dtk.ui.utils import remove_timeout_id, is_in_rect
-from dtk.ui.utils import set_cursor
-from dtk.ui.constant import ALIGN_START, ALIGN_MIDDLE
+from box import EventBox
+from draw import draw_pixbuf
+from timeline import Timeline, CURVE_SINE
+from utils import remove_timeout_id, is_in_rect
+from utils import set_cursor
+from constant import ALIGN_START, ALIGN_MIDDLE
 from theme import ui_theme
 import gobject
 import gtk

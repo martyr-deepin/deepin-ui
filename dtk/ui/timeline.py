@@ -34,9 +34,10 @@ class Timeline(gobject.GObject):
 
     __gtype_name__ = 'Timeline'
     __gsignals__ = {
+        'start': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         'update': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_FLOAT,)),
         'stop': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        'completed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
+        'completed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         }
 
     def __init__(self, 
@@ -56,6 +57,7 @@ class Timeline(gobject.GObject):
 
         self._states = []
         self._stopped = False
+        self._started = False
 
     def run(self):
         '''
@@ -67,6 +69,7 @@ class Timeline(gobject.GObject):
             self._states.append(self.curve(len(self._states) * (1.0 / n_frames)))
         self._states.reverse()
 
+        self._started = True
         gobject.timeout_add(int(self.duration / n_frames), self.update)
 
     def stop(self):
@@ -74,11 +77,16 @@ class Timeline(gobject.GObject):
         Stop.
         '''
         self._stopped = True
+        self._started = False
 
     def update(self):
         '''
         Update.
         '''
+        if self._started:
+            self.emit("start")
+            self._started = False
+        
         if self._stopped:
             self.emit('stop')
             return False

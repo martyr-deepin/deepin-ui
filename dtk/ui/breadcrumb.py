@@ -34,6 +34,8 @@ import gobject
 import pango
 from poplist import Poplist
 
+ARROW_BUTTON_WIDTH = 20
+
 class Bread(gtk.HBox):
     '''
     Bread widget is a container which can hold crumbs widget.
@@ -79,7 +81,7 @@ class Bread(gtk.HBox):
         self.show_others = show_others
         self.show_entry = show_entry
         self.crumb = self.create_crumb(crumb)
-        self.button_width = 20 # for left & right buttons
+        self.button_width = ARROW_BUTTON_WIDTH # for left & right buttons
         self.in_event_box = False
 
         # Init left button and right button.
@@ -104,13 +106,6 @@ class Bread(gtk.HBox):
         left_box.pack_start(self.left_btn, False, False)
         right_box.pack_start(self.right_btn, False, False)
         
-        # Init scrolled window
-        self.scroll_win = ScrolledWindow()
-        self.scroll_win.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
-        self.pack_start(left_box, False, True)
-        self.pack_start(self.scroll_win, True, True)
-        self.pack_end(right_box, False, True)
-        
         # Init Hbox        
         self.hbox = gtk.HBox(False, 0)
         self.hbox.show()
@@ -123,8 +118,9 @@ class Bread(gtk.HBox):
             self.eventbox.connect("button-press-event", self.event_box_press)
 
         self.hbox.pack_end(self.eventbox, True, True)
-        self.hbox.connect("expose-event", self.redraw_bg)
-        self.scroll_win.add_with_viewport(self.hbox)
+        self.scroll_win = ScrolledWindow()
+        self.pack_start(left_box, False, True)
+        self.pack_start(self.hbox, True, True)
 
         # Add Bread Items
         self.adj = self.scroll_win.get_hadjustment()
@@ -391,12 +387,9 @@ class BreadMenu(Poplist):
         rect = widget.allocation
 
         with cairo_disable_antialias(cr):
+            outside_border = alpha_color_hex_to_cairo(("#666666", 0.5))
             cr.set_line_width(1)
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("window_frame_outside_3").get_color_info()))
-            cr.rectangle(rect.x, rect.y, rect.width, rect.height)
-            cr.fill()
-
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("window_frame_inside_2").get_color_info()))
+            cr.set_source_rgba(*outside_border)
             cr.rectangle(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2)
             cr.fill()
         
@@ -525,10 +518,14 @@ class Crumb(gtk.Button):
             self.menu_press = False
             self.menu_show = not self.menu_show
             if self.menu_show:
-                (win_x, win_y) = self.window.get_origin()
-                self.menu.show((win_x + widget.allocation.x + self.button_width,
-                                win_y + widget.allocation.height),
-                               (0,0))
+                (wx, wy) = self.get_toplevel().window.get_root_origin()
+                (offset_x, offset_y) = widget.translate_coordinates(self.get_toplevel(), 0, 0)
+                (menu_width, menu_height) = widget.allocation.width, widget.allocation.height
+                arrow_button_width = ARROW_BUTTON_WIDTH
+                self.menu.show((wx + offset_x + menu_width - arrow_button_width, 
+                                wy + offset_y + menu_height,
+                                ),
+                               (0, 0))
 
     def set_label(self, label, font_size = DEFAULT_FONT_SIZE):
         '''
