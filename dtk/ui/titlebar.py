@@ -26,6 +26,7 @@ from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
 from draw import draw_line
 from label import Label
 from locales import _
+from constant import DEFAULT_FONT_SIZE
 import tooltip as Tooltip
 from utils import window_is_max
 import gobject
@@ -47,6 +48,8 @@ class Titlebar(EventBox):
                  height=26,
                  show_title=True,
                  enable_gaussian=True,
+                 name_size=DEFAULT_FONT_SIZE,
+                 title_size=DEFAULT_FONT_SIZE,
                  ):
         '''
         Initialize the title bar.
@@ -59,6 +62,8 @@ class Titlebar(EventBox):
         @param height: The height of the title bar. By default, it's 26 pixels.
         @param show_title: If False, the title bar will not be displayed. By default, it's True.
         @param enable_gaussian: Whether enable gaussian on title, default is True.
+        @param name_size: The size of name, default is DEFAULT_FONT_SIZE.
+        @param title_size: The size of title, default is DEFAULT_FONT_SIZE.
         '''
         # Init.
         EventBox.__init__(self)
@@ -95,7 +100,7 @@ class Titlebar(EventBox):
                         
             # Add app name.
             if app_name != None:
-                self.app_name_box = Label(app_name, enable_gaussian=enable_gaussian)
+                self.app_name_box = Label(app_name, enable_gaussian=enable_gaussian, text_size=name_size)
                 self.app_name_align = gtk.Alignment()
                 self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
                 self.app_name_align.set_padding(2, 0, 5, 0)
@@ -104,7 +109,11 @@ class Titlebar(EventBox):
             
             # Add title.
             if title != None:
-                self.title_box = Label(title, enable_gaussian=enable_gaussian, text_x_align=pango.ALIGN_CENTER)
+                self.title_box = Label(
+                    title, enable_gaussian=enable_gaussian, 
+                    text_x_align=pango.ALIGN_CENTER,
+                    text_size=title_size,
+                    )
                 self.title_align = gtk.Alignment()
                 self.title_align.set(0.5, 0.5, 0.0, 0.0)
                 self.title_align.set_padding(2, 0, 30, 30)

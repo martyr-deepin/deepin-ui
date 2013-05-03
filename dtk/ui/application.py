@@ -27,6 +27,7 @@ from threads import post_gui
 from titlebar import Titlebar
 from utils import container_remove_all, place_center
 from window import Window
+from constant import DEFAULT_FONT_SIZE
 import gtk
 
 class Application(object):
@@ -91,6 +92,8 @@ class Application(object):
                      add_separator=False, 
                      show_title=True, 
                      enable_gaussian=True, 
+                     name_size=DEFAULT_FONT_SIZE,
+                     title_size=DEFAULT_FONT_SIZE,
                      ):
         '''
         Add titlebar to the application.
@@ -104,6 +107,8 @@ class Application(object):
         @param add_separator: If True, add a line between the titlebar and the body of the window. By default, it's False.
         @param show_title: If False, the titlebar will not be displayed. By default, it's True.
         @param enable_gaussian: Set it as False if don't want gaussian application title. By default, it's True.
+        @param name_size: The size of name, default is DEFAULT_FONT_SIZE.
+        @param title_size: The size of title, default is DEFAULT_FONT_SIZE.
         '''
         # Init titlebar.
         self.titlebar = Titlebar(button_mask, 
@@ -113,6 +118,8 @@ class Application(object):
                                  add_separator, 
                                  show_title=show_title, 
                                  enable_gaussian=enable_gaussian,
+                                 name_size=name_size,
+                                 title_size=title_size,
                                  )
         if "theme" in button_mask:
             self.titlebar.theme_button.connect("clicked", self.theme_callback)
