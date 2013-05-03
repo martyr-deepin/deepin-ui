@@ -25,6 +25,7 @@
 import sys
 import traceback
 from contextlib import contextmanager 
+from constant import DEFAULT_FONT_SIZE
 import gtk
 import gobject
 import cairo
@@ -1206,7 +1207,7 @@ class TreeView(gtk.VBox):
                         with cairo_state(cr):
                             cr.rectangle(render_x, render_y, render_width, render_height)
                             cr.clip()
-                            
+                        
                             item.get_column_renders()[index](cr, gtk.gdk.Rectangle(render_x, render_y, render_width, render_height))
                     
                     item_width_count += column_width
@@ -1919,6 +1920,7 @@ class TreeItem(gobject.GObject):
         self.drag_line = False
         self.drag_line_at_bottom = False
         self.column_offset = 0
+        self.height = None
         
     def expand(self):
         pass
@@ -2042,11 +2044,12 @@ class NodeItem(TreeItem):
             self.add_items_callback(self.child_items, self.row_index + 1)
         
     def delete_chlid_item(self):
-        for child_item in self.child_items:
-            if child_item.is_expand:
-                child_item.unexpand()
-
-        self.delete_items_callback(self.child_items)
+        if self.child_items != None:
+            for child_item in self.child_items:
+                if child_item.is_expand:
+                    child_item.unexpand()
+            
+            self.delete_items_callback(self.child_items)
     
     def unselect(self):
         self.is_select = False
@@ -2101,6 +2104,14 @@ def get_text_color(is_select):
         return ui_theme.get_color("label_select_text").get_color()
     else:
         return ui_theme.get_color("label_text").get_color()
+    
+def draw_background(item, cr, rect):
+    # Draw select background.
+    background_color = get_background_color(item.is_highlight, item.is_select, item.is_hover)
+    if background_color:
+        cr.set_source_rgb(*color_hex_to_cairo(ui_theme.get_color(background_color).get_color()))    
+        cr.rectangle(rect.x, rect.y, rect.width, rect.height)
+        cr.fill()
 
 class TextItem(NodeItem):
     '''
@@ -2115,10 +2126,13 @@ class TextItem(NodeItem):
         self.text = text
         self.column_index = column_index
         self.column_offset = 10
+        self.text_size = DEFAULT_FONT_SIZE
         self.text_padding = 10
+        self.alignment = pango.ALIGN_CENTER
+        self.height = 24
         
     def get_height(self):
-        return 24
+        return self.height
         
     def get_column_widths(self):
         return [-1]
@@ -2143,6 +2157,8 @@ class TextItem(NodeItem):
                   rect.width,
                   rect.height,
                   text_color=text_color,
+                  text_size=self.text_size,
+                  alignment=self.alignment,
                   )
         
 gobject.type_register(TextItem)
@@ -2152,7 +2168,12 @@ class IconTextItem(NodeItem):
     TextItem class.
     '''
 	
-    def __init__(self, text, icon_pixbufs=None, column_index=0):
+    def __init__(self, 
+                 text, 
+                 unexpand_icon_pixbufs=None, 
+                 expand_icon_pixbufs=None, 
+                 column_index=0,
+                 ):
         '''
         Initialize TextItem class.
         '''
@@ -2160,17 +2181,23 @@ class IconTextItem(NodeItem):
         self.text = text
         self.column_index = column_index
         self.column_offset = 10
+        self.text_size = DEFAULT_FONT_SIZE
         self.text_padding = 10
-        self.icon_pixbufs = icon_pixbufs
+        self.alignment = pango.ALIGN_CENTER
+        self.icon_padding = 10
+        self.unexpand_icon_pixbufs = unexpand_icon_pixbufs
+        self.expand_icon_pixbufs = expand_icon_pixbufs
+        self.height = 24
         
     def get_height(self):
-        return 24
+        return self.height
         
     def get_column_widths(self):
         return [24, -1]
         
     def get_column_renders(self):
-        return [self.render_icon, self.render_text]
+        return [self.render_icon, 
+                self.render_text]
     
     def render_icon(self, cr, rect):
         # Draw select background.
@@ -2181,20 +2208,21 @@ class IconTextItem(NodeItem):
             cr.fill()
             
         # Draw icon.
-        if self.icon_pixbufs:
-            (normal_dpixbuf, hover_dpixbuf) = self.icon_pixbufs
+        if self.is_expand:
+            pixbufs = self.expand_icon_pixbufs
+        else:
+            pixbufs = self.unexpand_icon_pixbufs
+        if self.unexpand_icon_pixbufs:
+            (normal_dpixbuf, hover_dpixbuf) = pixbufs
             if self.is_select:
-                draw_pixbuf(cr, 
-                            hover_dpixbuf.get_pixbuf(),
-                            rect.x,
-                            rect.y,
-                            )
+                pixbuf = hover_dpixbuf.get_pixbuf()
             else:
-                draw_pixbuf(cr, 
-                            normal_dpixbuf.get_pixbuf(),
-                            rect.x,
-                            rect.y,
-                            )
+                pixbuf = normal_dpixbuf.get_pixbuf()
+            draw_pixbuf(cr, 
+                        pixbuf,
+                        rect.x + self.icon_padding + self.column_offset * self.column_index,
+                        rect.y + (rect.height - pixbuf.get_height()) / 2,
+                        )
             
     def render_text(self, cr, rect):
         # Draw select background.
@@ -2213,6 +2241,8 @@ class IconTextItem(NodeItem):
                   rect.width,
                   rect.height,
                   text_color=text_color,
+                  text_size=self.text_size,
+                  alignment=self.alignment,
                   )
         
 gobject.type_register(IconTextItem)
