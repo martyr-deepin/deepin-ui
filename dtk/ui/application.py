@@ -51,6 +51,7 @@ class Application(object):
         self.app_support_colormap = app_support_colormap
         self.resizable = resizable
         self.close_callback = self.close_window
+        self.skin_preview_pixbuf = None
 
         # Start application.
         self.init()
@@ -241,15 +242,15 @@ class Application(object):
         # Run main loop.
         gtk.main()
 
-    def set_skin_preview(self, preview_pixbuf):
+    def set_skin_preview(self, preview_image_path):
         '''
         Set the skin preview of the application.
         
         @note: The size of preview_pixbuf must be proportional to the size of program, otherwise adjust skin will got wrong coordinate.
         
-        @param preview_pixbuf: A pixbuf of type dtk.ui.theme.DynamicPixbuf.
+        @param preview_image_path: A path of skin preview image.
         '''
-        self.skin_preview_pixbuf = preview_pixbuf
+        self.skin_preview_pixbuf = gtk.gdk.pixbuf_new_from_file(preview_image_path)
         
     def theme_callback(self, widget):
         '''
