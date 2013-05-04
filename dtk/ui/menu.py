@@ -211,34 +211,10 @@ class Menu(Window):
         self.item_align.add(self.item_box)
         self.window_frame.add(self.item_align)
         self.menu_items = []
-        # deepin media player.
         self.font_size = font_size
         
         if items:
-            (icon_width, icon_height, have_submenu, submenu_width, submenu_height) = self.get_menu_icon_info(items)
-            
-            for item in items:
-                menu_item = MenuItem(
-                    item, 
-                    font_size, 
-                    self.select_scale, 
-                    self.show_submenu, 
-                    self.hide_submenu, 
-                    self.get_root_menu, 
-                    self.get_menu_items,
-                    icon_width, 
-                    icon_height,
-                    have_submenu, 
-                    submenu_width, 
-                    submenu_height,
-                    padding_x, 
-                    padding_y,
-                    item_padding_x, 
-                    item_padding_y, 
-                    self.menu_min_width,
-                    self.menu_item_select_color)
-                self.menu_items.append(menu_item)
-                self.item_box.pack_start(menu_item.item_box, False, False)
+            self.add_menu_items(items)
                 
         self.connect("show", self.init_menu)
         self.connect("hide", self.hide_menu)
@@ -253,7 +229,6 @@ class Menu(Window):
         self.menu_items[index].set_item_icons(icons)
 
     def add_menu_items(self, items):
-        # deepin media player.
         (icon_width, icon_height, have_submenu, submenu_width, submenu_height) = self.get_menu_icon_info(items)
         
         for item in items:
