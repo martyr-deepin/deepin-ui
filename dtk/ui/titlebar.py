@@ -41,7 +41,7 @@ class Titlebar(EventBox):
     '''
     def __init__(self, 
                  button_mask=["theme", "menu", "max", "min", "close"],
-                 icon_dpixbuf=None,
+                 icon_path=None,
                  app_name=None,
                  title=None,
                  add_separator=False,
@@ -55,7 +55,7 @@ class Titlebar(EventBox):
         Initialize the title bar.
 
         @param button_mask: A string list. Each item of it indicates that there is a corresponding button on the title bar. By default, it's ["theme", "menu", "max", "min", "close"], which means theme button, menu button, max button, min button and close button, respectively.
-        @param icon_dpixbuf: A pixbuf of type dtk.ui.theme.DynamicPixbuf. It will be displayed at the top left of the window. By default, it's None.
+        @param icon_path: The path of icon image.
         @param app_name: Application name string. It will be displayed just next to the icon_dpixbuf. By default, it's None.
         @param title: Title string of the application. It will be displayed on the center of the title bar. By default, it's None.
         @param add_separator: If True, add a separation line between the title bar and the body of the window. By default, it's False.
@@ -90,8 +90,8 @@ class Titlebar(EventBox):
         
         if show_title:
             # Add icon.
-            if icon_dpixbuf != None:
-                self.icon_image_box = ImageBox(icon_dpixbuf)
+            if icon_path != None:
+                self.icon_image_box = gtk.image_new_from_pixbuf(gtk.gdk.pixbuf_new_from_file(icon_path))
                 self.icon_align = gtk.Alignment()
                 self.icon_align.set(0.5, 0.5, 0.0, 0.0)
                 self.icon_align.set_padding(5, 5, 5, 0)

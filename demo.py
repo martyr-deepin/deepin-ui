@@ -186,7 +186,7 @@ if __name__ == "__main__":
     # Add titlebar.
     application.add_titlebar(
         ["theme", "menu", "max", "min", "close"], 
-        app_theme.get_pixbuf("logo.png"), 
+        os.path.join(get_current_dir(__file__), "logo.png"), 
         "深度图形库",
         "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py",
         )

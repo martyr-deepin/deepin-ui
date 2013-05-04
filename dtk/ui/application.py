@@ -87,7 +87,7 @@ class Application(object):
 
     def add_titlebar(self,
                      button_mask=["theme", "menu", "max", "min", "close"],
-                     icon_dpixbuf=None, 
+                     icon_path=None, 
                      app_name=None, 
                      title=None, 
                      add_separator=False, 
@@ -102,7 +102,7 @@ class Application(object):
         Connect click signal of the standard button to default callback.
         
         @param button_mask: A list of string, each of which stands for a standard button on top right of the window. By default, it's ["theme", "menu", "max", "min", "close"].
-        @param icon_dpixbuf: The icon pixbuf of type dtk.ui.theme.DynamicPixbuf. By default, it is None.
+        @param icon_path: The path of icon image.
         @param app_name: The name string of the application, which will be displayed just next to the icon_dpixbuf. By default, it is None.
         @param title: The title string of the window, which will be displayed on the center of the titlebar. By default, it is None.
         @param add_separator: If True, add a line between the titlebar and the body of the window. By default, it's False.
@@ -113,7 +113,7 @@ class Application(object):
         '''
         # Init titlebar.
         self.titlebar = Titlebar(button_mask, 
-                                 icon_dpixbuf, 
+                                 icon_path, 
                                  app_name, 
                                  title, 
                                  add_separator, 

@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # Add titlebar.
     application.add_titlebar(
         ["theme", "max", "min", "close"], 
-        app_theme.get_pixbuf("logo.png"), 
+        os.path.join(get_current_dir(__file__), "logo.png"), 
         "TimeZone demo",
         "TimeZone demo",
         )
