@@ -46,7 +46,7 @@ if __name__ == "__main__":
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
 
     # Set application icon.
-    application.set_icon(app_theme.get_pixbuf("icon.ico"))
+    application.set_icon(os.path.join(get_current_dir(__file__), "icon.ico"))
     
     # Set application preview pixbuf.
     application.set_skin_preview(os.path.join(get_current_dir(__file__), "frame.png"))

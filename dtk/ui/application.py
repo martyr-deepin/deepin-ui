@@ -208,15 +208,15 @@ class Application(object):
         # Pass application size to skin config.
         skin_config.set_application_window_size(default_width, default_height)
 
-    def set_icon(self, icon_dpixbuf):
+    def set_icon(self, icon_path):
         '''
         Set the icon of the application. 
 
         This icon is used by the window manager or the dock.
         
-        @param icon_dpixbuf: The icon pixbuf of dtk.ui.theme.DynamicPixbuf.
+        @param icon_path: The path of application icon.
         '''
-        gtk.window_set_default_icon(icon_dpixbuf.get_pixbuf())
+        gtk.window_set_default_icon(gtk.gdk.pixbuf_new_from_file(icon_path))
 
     def destroy(self, widget, data=None):
         '''
