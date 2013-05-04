@@ -1898,7 +1898,7 @@ class ListView(gtk.DrawingArea):
         '''
         Delete given items.
         
-        @param items: Items need to remove.
+        @param remove_items: Items need to remove.
         '''
         # Init select row.
         self.start_select_row = None

@@ -349,10 +349,7 @@ def is_in_rect((tx, ty), rect):
     
     @param tx: Target x coordinate.
     @param ty: Target y coordinate.
-    @param x: X coordinate of rectangle area.
-    @param y: X coordinate of rectangle area.
-    @param w: Width of rectangle area.
-    @param h: Height of rectangle area.
+    @param rect: The rectangle to test.
     @return: Return True if target coordinate in given rectangle.
     '''
     if isinstance(rect, gtk.gdk.Rectangle):

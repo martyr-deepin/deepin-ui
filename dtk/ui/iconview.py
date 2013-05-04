@@ -924,8 +924,6 @@ class IconItem(gobject.GObject):
     def __init__(self):
         '''
         Initialize ItemIcon class.
-        
-        @param pixbuf: Icon pixbuf.
         '''
         gobject.GObject.__init__(self)
         self.hover_flag = False
