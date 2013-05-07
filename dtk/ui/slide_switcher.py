@@ -80,7 +80,7 @@ class SlideSwitcher(EventBox):
         @param pointer_padding: The padding between pointers, default is 20 pixels.
         @param hover_animation_time: The animation time of hover operation, default is 500 milliseconds. 
         @param auto_animation_time: The animation time of automatic play, default is 2000 milliseconds. 
-        @param auto_slide_time: The slide time of automatic play, default is 2000 milliseconds. 
+        @param auto_slide_timeout: The slide timeout of automatic play, default is 2000 milliseconds. 
         @param horizontal_align: The horizontal alignment, default is ALIGN_START.
         @param vertical_align: The vertical alignment, default is ALIGN_START.
         @param height_offset: The height offset, default is 0 pixels.

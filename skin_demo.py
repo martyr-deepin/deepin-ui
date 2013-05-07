@@ -25,37 +25,17 @@ from dtk.ui.init_skin import init_skin
 from deepin_utils.file import get_parent_dir, get_current_dir
 import os
 
-app_theme = init_skin(
+init_skin(
     "deepin-ui-demo", 
     "1.0",
     "01",
     os.path.join(get_parent_dir(__file__), "skin"),
-    os.path.join(get_parent_dir(__file__), "app_theme"),
     )
 
 from dtk.ui.application import Application
-from dtk.ui.treeview import TreeView
+from dtk.ui.treeview import TreeView, TextItem
 from dtk.ui.constant import DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
-from dtk.ui.file_treeview import (get_dir_items, sort_by_name, sort_by_size,
-                                  sort_by_type, sort_by_mtime)
 import gtk
-
-def m_single_click_item(widget, event, argv1, argv2, argv3):
-    pass
-    #print widget, event, argv1, argv2, argv3
-
-def m_delete_select_items(widget, items):
-    print widget, items
-
-def m_button_press_item(widget, event, argv1, argv2, argv3):
-    pass
-    #print widget, event, argv1, argv2, argv3
-
-def m_double_click_item(widget, event, argv1, argv2, argv3):
-    print widget, event, argv1, argv2, argv3
-
-def m_right_press_items(widget, event, argv1, argv2, argv3):
-    print widget, event, argv1, argv2, argv3
 
 if __name__ == "__main__":
     # Init application.
@@ -64,45 +44,26 @@ if __name__ == "__main__":
     # Set application default size.
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
 
-    # Set application icon.
-    application.set_icon(os.path.join(get_current_dir(__file__), "icon.ico"))
-    
     # Set application preview pixbuf.
     application.set_skin_preview(os.path.join(get_current_dir(__file__), "frame.png"))
     
     # Add titlebar.
     application.add_titlebar(
         ["theme", "max", "min", "close"], 
-        os.path.join(get_current_dir(__file__), "logo.png"), 
-        "TreeView demo",
-        "TreeView demo",
         )
     
     # Add TreeView.
-    print os.path.expanduser("~")
-    treeview = TreeView(get_dir_items(os.path.expanduser("~")))
+    treeview = TreeView()
+    treeview.add_items(map(TextItem, ["Node1", "Node2", "Node3"]))
+    treeview.visible_items[0].add_items(map(TextItem, ["Node1 - SubNode1", "Node1 - SubNode2", "Node1 - SubNode3"]))
+    treeview.visible_items[1].add_items(map(TextItem, ["Node2 - SubNode1", "Node2 - SubNode2", "Node2 - SubNode3"]))
+    treeview.visible_items[2].add_items(map(TextItem, ["Node3 - SubNode1", "Node3 - SubNode2", "Node3 - SubNode3"]))
     
-    # expand column.
-    treeview.set_expand_column(3)
-    
-    # hide column
-    treeview.set_hide_columns([1, 2])
-    
-    #treeview.set_highlight_item(treeview.get_items()[35])
-    treeview.connect("delete-select-items", m_delete_select_items)
-    treeview.connect("button-press-item", m_button_press_item)
-    treeview.connect("double-click-item", m_double_click_item)
-    treeview.connect("right-press-items", m_right_press_items)
-    treeview.connect("single-click-item", m_single_click_item)
-    # treeview = TreeView(get_dir_items("/"))
     treeview_align = gtk.Alignment()
     treeview_align.set(0.5, 0.5, 1, 1)
     treeview_align.set_padding(0, 2, 2, 2)
-    
-    treeview.set_column_titles(["文件名", "大小", "类型", "修改时间"],
-                               [sort_by_name, sort_by_size, sort_by_type, sort_by_mtime])
-    
     treeview_align.add(treeview)
+    
     application.main_box.pack_start(treeview_align)
     application.window.connect("show", lambda w: treeview.visible_highlight())
 

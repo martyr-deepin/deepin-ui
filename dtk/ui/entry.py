@@ -929,7 +929,7 @@ class Entry(gtk.EventBox):
         '''
         Show password.
         
-        @param show_password: Set as True to make password visible.
+        @param shown_password: Set as True to make password visible.
         '''
         self.shown_password = shown_password
         self.queue_draw()
@@ -2135,7 +2135,7 @@ class PasswordEntry(gtk.VBox):
         '''
         Show password.
         
-        @param show_password: Set as True to make password visible.
+        @param shown_password: Set as True to make password visible.
         '''
         self.shown_password = shown_password
         self.entry.show_password(self.shown_password)

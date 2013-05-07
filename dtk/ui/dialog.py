@@ -66,7 +66,7 @@ class DialogLeftButtonBox(gtk.HBox):
         '''
         Set buttons in box.
 
-        @note: This functin will use new buttons B{instead} old buttons in button box.
+        @note: This function will use new buttons B{instead} old buttons in button box.
         
         @param buttons: A list of Gtk.Widget instance.
         '''
@@ -98,7 +98,7 @@ class DialogRightButtonBox(gtk.HBox):
         '''
         Set buttons in box.
 
-        @note: This functin will use new buttons B{instead} old buttons in button box.
+        @note: This function will use new buttons B{instead} old buttons in button box.
         
         @param buttons: A list of Gtk.Widget instance.
         '''
@@ -269,8 +269,8 @@ class DialogBox(Window):
         Internal render function for DIALOG_MASK_SINGLE_PAGE type.
         
         @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
         @param w: Width of draw area.
         @param h: Height of draw area.
         '''
@@ -291,8 +291,8 @@ class DialogBox(Window):
         Internal render function for DIALOG_MASK_GLASS_PAGE type.
         
         @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
         @param w: Width of draw area.
         @param h: Height of draw area.
         '''
@@ -313,8 +313,8 @@ class DialogBox(Window):
         Internal render function for DIALOG_MASK_MULTIPLE_PAGE type.
         
         @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
         @param w: Width of draw area.
         @param h: Height of draw area.
         '''
@@ -342,8 +342,8 @@ class DialogBox(Window):
         Internal render function for DIALOG_MASK_TAB_PAGE type.
         
         @param cr: Cairo context.
-        @param x: X coordiante of draw area.
-        @param y: Y coordiante of draw area.
+        @param x: X coordinate of draw area.
+        @param y: Y coordinate of draw area.
         @param w: Width of draw area.
         @param h: Height of draw area.
         '''
@@ -517,7 +517,7 @@ class InputDialog(DialogBox):
         
     def click_confirm_button(self):
         '''
-        Inernal fucntion to handle click confirm button.
+        Internal function to handle click confirm button.
         '''
         if self.confirm_callback != None:
             self.confirm_callback(self.entry.get_text())        
@@ -526,7 +526,7 @@ class InputDialog(DialogBox):
         
     def click_cancel_button(self):
         '''
-        Inernal fucntion to handle click cancel button.
+        Infernal function to handle click cancel button.
         '''
         if self.cancel_callback != None:
             self.cancel_callback()
@@ -620,15 +620,21 @@ gobject.type_register(SaveFileDialog)
 class PreferenceDialog(DialogBox):
     '''
     PreferenceDialog class.
+    
+    @undocumented: button_press_preference_item
+    @undocumented: set_item_widget
+    @undocumented: draw_treeview_mask
     '''
 	
     def __init__(self,
                  default_width=575,
                  default_height=495,
-                 category_bar_width=132,
                  ):
         '''
         Initialize PreferenceDialog class.
+        
+        @param default_width: The default width, default is 575 pixels.
+        @param default_height: The default height, default is 495 pixels.
         '''
         DialogBox.__init__(
             self,
@@ -645,6 +651,7 @@ class PreferenceDialog(DialogBox):
         close_button.connect("clicked", lambda w: self.hide_all())
         
         # Category bar
+        category_bar_width = 132
         self.category_bar = TreeView(
             enable_drag_drop=False, 
             enable_multiple_select=False,
@@ -703,6 +710,13 @@ class PreferenceDialog(DialogBox):
         cr.fill()
         
     def set_preference_items(self, preference_items):
+        '''
+        Set preference items.
+        
+        @param preference_items: The list of preference item, item format is:
+         - (item_name, item_widget)
+         - Item list support recursively add.
+        '''
         items = []
         for (item_name, item_content) in preference_items:
             if isinstance(item_content, gtk.Widget):

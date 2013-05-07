@@ -169,7 +169,7 @@ class ResizableBox(gtk.EventBox):
                  min_height=160, 
                  padding_x=50, 
                  padding_y=18, 
-                 resizeable=True,
+                 resizable=True,
                  ):
         '''
         Initialize.
@@ -179,7 +179,7 @@ class ResizableBox(gtk.EventBox):
         @param min_height: The minimum height that widget's height can't less than this value, default is 160 pixels.
         @param padding_x: The horizontal padding value, default is 50 pixels.
         @param padding_y: The vertical padding value, default is 18 pixels.
-        @param resizeable: The option the control whether resize widget, default is True.
+        @param resizable: The option the control whether resize widget, default is True.
         '''
         gtk.EventBox.__init__(self)
         
@@ -193,7 +193,7 @@ class ResizableBox(gtk.EventBox):
         self.set_size_request(self.width, self.height)
 
         self.button_pressed = False
-        self.resizeable = resizeable
+        self.resizable = resizable
         
         self.connect("button-press-event", self.__button_press)
         self.connect("button-release-event", self.__button_release)
@@ -210,13 +210,13 @@ class ResizableBox(gtk.EventBox):
         '''
         return self.resizable
 
-    def set_resizeable(self, resizeable):
+    def set_resizable(self, resizable):
         '''
         Set the resizable option.
         
         @param resizable: Set as True if you want widget can resize, or set False if you want fixed it's size temporary.
         '''
-        self.resizeable = resizeable
+        self.resizable = resizable
         self.queue_draw()
 
     def __button_press(self, widget, event):
@@ -233,7 +233,7 @@ class ResizableBox(gtk.EventBox):
                 set_cursor(widget, gtk.gdk.SB_V_DOUBLE_ARROW)
             return
 
-        if self.resizeable:
+        if self.resizable:
             set_cursor(widget, gtk.gdk.SB_V_DOUBLE_ARROW)
             self.height = event.y
         else:

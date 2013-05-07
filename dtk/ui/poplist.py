@@ -201,8 +201,10 @@ class Poplist(Window):
         '''
         Show poplist.
 
-        @param (expect_x, expect_y): Expect coordinate.
-        @param (offset_x, offset_y): Offset of coordinate, default is (0, 0)
+        @param expect_x: Expect x coordinate.
+        @param expect_y: Expect y coordinate.
+        @param offset_x: The offset x.
+        @param offset_y: The offset y.
         '''
         (screen_width, screen_height) = get_screen_size(self)
         

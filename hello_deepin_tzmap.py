@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from dtk.ui.init_skin import init_skin
-from deepin_utils.file import get_parent_dir
+from deepin_utils.file import get_parent_dir, get_current_dir
 import os
 
 app_theme = init_skin(
@@ -54,15 +54,15 @@ if __name__ == "__main__":
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
 
     # Set application icon.
-    application.set_icon(app_theme.get_pixbuf("icon.ico"))
+    application.set_icon(os.path.join(get_current_dir(__file__), "icon.ico"))
     
     # Set application preview pixbuf.
-    application.set_skin_preview(app_theme.get_pixbuf("frame.png"))
+    application.set_skin_preview(os.path.join(get_current_dir(__file__), "frame.png"))
     
     # Add titlebar.
     application.add_titlebar(
         ["theme", "max", "min", "close"], 
-        app_theme.get_pixbuf("logo.png"), 
+        os.path.join(get_current_dir(__file__), "logo.png"), 
         "TreeView demo",
         "TreeView demo",
         )

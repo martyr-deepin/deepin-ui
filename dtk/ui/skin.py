@@ -1082,7 +1082,7 @@ class SkinEditArea(gtk.EventBox):
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         
-        self.preview_pixbuf = app_frame_pixbuf.get_pixbuf()
+        self.preview_pixbuf = app_frame_pixbuf
         self.preview_frame_width = 390
         self.preview_frame_height = 270
         self.app_window_width = skin_config.app_window_width

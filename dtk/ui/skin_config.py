@@ -480,17 +480,18 @@ class SkinConfig(gobject.GObject):
             # Copy theme files is theme is not standard theme.
             if not self.theme_name in COLOR_SEQUENCE:
                 tar.add(os.path.join(self.ui_theme_dir, self.theme_name), os.path.join("ui_theme", self.theme_name))
-                tar.add(os.path.join(self.app_theme_dir, self.theme_name), os.path.join("app_theme", self.theme_name))
+                if self.app_theme_dir != None:
+                    tar.add(os.path.join(self.app_theme_dir, self.theme_name), os.path.join("app_theme", self.theme_name))
         
         # Remove temp config file.
         remove_file(config_filepath)    
         
-    def load_themes(self, ui_theme, app_theme):
+    def load_themes(self, ui_theme, app_theme=None):
         '''
         Load theme from given directories.
         
         @param ui_theme: dtk.ui.theme.ui_theme.
-        @param app_theme: Theme instance, build it like below:
+        @param app_theme: Theme instance, build it like below, set as None if you don't want build your own theme.
         
         >>> app_theme = Theme(
         >>>     os.path.join(get_parent_dir(__file__), "app_theme"),
@@ -499,11 +500,15 @@ class SkinConfig(gobject.GObject):
         '''
         # Load theme.
         ui_theme.load_theme()
-        app_theme.load_theme()
+        if app_theme != None:
+            app_theme.load_theme()
         
         # Init theme directories.
         self.ui_theme_dir = ui_theme.user_theme_dir
-        self.app_theme_dir = app_theme.user_theme_dir
+        if app_theme != None:
+            self.app_theme_dir = app_theme.user_theme_dir
+        else:
+            self.app_theme_dir = None
             
     def load_skin_from_image(self, filepath):
         '''
@@ -580,11 +585,13 @@ class SkinConfig(gobject.GObject):
             if app_id == self.app_given_id and app_version == self.app_given_version:
                 # Remove same theme from given directories.
                 remove_directory(os.path.join(self.ui_theme_dir, skin_theme_name))
-                remove_directory(os.path.join(self.app_theme_dir, skin_theme_name))
+                if self.app_theme_dir != None:
+                    remove_directory(os.path.join(self.app_theme_dir, skin_theme_name))
                 
                 # Move new theme files to given directories.
                 shutil.move(os.path.join(skin_dir, "ui_theme", skin_theme_name), self.ui_theme_dir)
-                shutil.move(os.path.join(skin_dir, "app_theme", skin_theme_name), self.app_theme_dir)
+                if self.app_theme_dir != None:
+                    shutil.move(os.path.join(skin_dir, "app_theme", skin_theme_name), self.app_theme_dir)
                 
                 # Remove temp theme directories under skin directory.
                 remove_directory(os.path.join(skin_dir, "ui_theme"))        

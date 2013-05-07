@@ -27,7 +27,7 @@ import time
 start_time = time.time()
 
 from dtk.ui.init_skin import init_skin
-from deepin_utils.file import get_parent_dir
+from deepin_utils.file import get_parent_dir, get_current_dir
 import os
 app_theme = init_skin(
     "deepin-ui-demo", 
@@ -178,15 +178,15 @@ if __name__ == "__main__":
     application.set_default_size(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT)
     
     # Set application icon.
-    application.set_icon(app_theme.get_pixbuf("icon.ico"))
+    application.set_icon(os.path.join(get_current_dir(__file__), "icon.ico"))
     
     # Set application preview pixbuf.
-    application.set_skin_preview(app_theme.get_pixbuf("frame.png"))
+    application.set_skin_preview(os.path.join(get_current_dir(__file__), "frame.png"))
     
     # Add titlebar.
     application.add_titlebar(
         ["theme", "menu", "max", "min", "close"], 
-        app_theme.get_pixbuf("logo.png"), 
+        os.path.join(get_current_dir(__file__), "logo.png"), 
         "深度图形库",
         "/home/andy/deepin-ui/loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooony.py",
         )
@@ -403,8 +403,8 @@ if __name__ == "__main__":
     
     spin_box = SpinBox(3000, 0, 5000, 100)
     
-    mac_entry = MACEntry()
-    # mac_entry = IPV4Entry()
+    # mac_entry = MACEntry()
+    mac_entry = IPV4Entry()
     mac_entry.connect("changed", print_address)
     # mac_entry = IPV4Entry()
     # mac_entry.set_ip("255.255.255.andy")

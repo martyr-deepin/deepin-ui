@@ -27,8 +27,8 @@ import os
 def init_skin(project_name, 
               project_version,
               skin_name,
-              system_skin_dir,
-              system_theme_dir,
+              application_skin_dir,
+              application_theme_dir=None,
               ):
     '''
     Initialize skin easily.
@@ -36,9 +36,9 @@ def init_skin(project_name,
     @param project_name: Project name.
     @param project_version: Project version.
     @param skin_name: Default skin name.
-    @param system_skin_dir: Application's skin directory in system level, user space skin directory at ~/.config/project_name/skin .
-    @param system_skin_dir: Application's theme directory in system level, user space theme directory at ~/.config/project_name/theme .
-    @return: Return application theme.
+    @param application_skin_dir: Application's skin directory in system level, user space skin directory at ~/.config/project_name/skin .
+    @param application_skin_dir: Application's theme directory in system level, user space theme directory at ~/.config/project_name/theme, set as None if don't you just want use theme of deepin-ui.
+    @return: Return application theme, return None if application_theme_dir is None.
     
     >>> from dtk.ui.init_skin import init_skin
     >>> from deepin_utils.file import get_parent_dir
@@ -81,7 +81,7 @@ def init_skin(project_name,
     # Init skin config.
     skin_config.init_skin(
         skin_name,
-        system_skin_dir,
+        application_skin_dir,
         os.path.expanduser("~/.config/%s/skin" % (project_name)),
         os.path.expanduser("~/.config/%s/skin_config.ini" % (project_name)),
         project_name,
@@ -89,10 +89,13 @@ def init_skin(project_name,
         )
     
     # Create application theme.
-    app_theme = Theme(
-        system_theme_dir,
-        os.path.expanduser("~/.config/%s/theme" % (project_name))
-        )
+    if application_theme_dir != None:
+        app_theme = Theme(
+            application_theme_dir,
+            os.path.expanduser("~/.config/%s/theme" % (project_name))
+            )
+    else:
+        app_theme = None
     
     # Set theme.
     skin_config.load_themes(ui_theme, app_theme)

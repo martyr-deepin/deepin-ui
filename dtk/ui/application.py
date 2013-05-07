@@ -27,6 +27,7 @@ from threads import post_gui
 from titlebar import Titlebar
 from utils import container_remove_all, place_center
 from window import Window
+from constant import DEFAULT_FONT_SIZE
 import gtk
 
 class Application(object):
@@ -50,6 +51,7 @@ class Application(object):
         self.app_support_colormap = app_support_colormap
         self.resizable = resizable
         self.close_callback = self.close_window
+        self.skin_preview_pixbuf = None
 
         # Start application.
         self.init()
@@ -85,12 +87,14 @@ class Application(object):
 
     def add_titlebar(self,
                      button_mask=["theme", "menu", "max", "min", "close"],
-                     icon_dpixbuf=None, 
+                     icon_path=None, 
                      app_name=None, 
                      title=None, 
                      add_separator=False, 
                      show_title=True, 
                      enable_gaussian=True, 
+                     name_size=DEFAULT_FONT_SIZE,
+                     title_size=DEFAULT_FONT_SIZE,
                      ):
         '''
         Add titlebar to the application.
@@ -98,21 +102,25 @@ class Application(object):
         Connect click signal of the standard button to default callback.
         
         @param button_mask: A list of string, each of which stands for a standard button on top right of the window. By default, it's ["theme", "menu", "max", "min", "close"].
-        @param icon_dpixbuf: The icon pixbuf of type dtk.ui.theme.DynamicPixbuf. By default, it is None.
+        @param icon_path: The path of icon image.
         @param app_name: The name string of the application, which will be displayed just next to the icon_dpixbuf. By default, it is None.
         @param title: The title string of the window, which will be displayed on the center of the titlebar. By default, it is None.
         @param add_separator: If True, add a line between the titlebar and the body of the window. By default, it's False.
         @param show_title: If False, the titlebar will not be displayed. By default, it's True.
         @param enable_gaussian: Set it as False if don't want gaussian application title. By default, it's True.
+        @param name_size: The size of name, default is DEFAULT_FONT_SIZE.
+        @param title_size: The size of title, default is DEFAULT_FONT_SIZE.
         '''
         # Init titlebar.
         self.titlebar = Titlebar(button_mask, 
-                                 icon_dpixbuf, 
+                                 icon_path, 
                                  app_name, 
                                  title, 
                                  add_separator, 
                                  show_title=show_title, 
                                  enable_gaussian=enable_gaussian,
+                                 name_size=name_size,
+                                 title_size=title_size,
                                  )
         if "theme" in button_mask:
             self.titlebar.theme_button.connect("clicked", self.theme_callback)
@@ -200,15 +208,15 @@ class Application(object):
         # Pass application size to skin config.
         skin_config.set_application_window_size(default_width, default_height)
 
-    def set_icon(self, icon_dpixbuf):
+    def set_icon(self, icon_path):
         '''
         Set the icon of the application. 
 
         This icon is used by the window manager or the dock.
         
-        @param icon_dpixbuf: The icon pixbuf of dtk.ui.theme.DynamicPixbuf.
+        @param icon_path: The path of application icon.
         '''
-        gtk.window_set_default_icon(icon_dpixbuf.get_pixbuf())
+        gtk.window_set_default_icon(gtk.gdk.pixbuf_new_from_file(icon_path))
 
     def destroy(self, widget, data=None):
         '''
@@ -234,15 +242,15 @@ class Application(object):
         # Run main loop.
         gtk.main()
 
-    def set_skin_preview(self, preview_pixbuf):
+    def set_skin_preview(self, preview_image_path):
         '''
         Set the skin preview of the application.
         
         @note: The size of preview_pixbuf must be proportional to the size of program, otherwise adjust skin will got wrong coordinate.
         
-        @param preview_pixbuf: A pixbuf of type dtk.ui.theme.DynamicPixbuf.
+        @param preview_image_path: A path of skin preview image.
         '''
-        self.skin_preview_pixbuf = preview_pixbuf
+        self.skin_preview_pixbuf = gtk.gdk.pixbuf_new_from_file(preview_image_path)
         
     def theme_callback(self, widget):
         '''

@@ -26,6 +26,7 @@ from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
 from draw import draw_line
 from label import Label
 from locales import _
+from constant import DEFAULT_FONT_SIZE
 import tooltip as Tooltip
 from utils import window_is_max
 import gobject
@@ -40,25 +41,29 @@ class Titlebar(EventBox):
     '''
     def __init__(self, 
                  button_mask=["theme", "menu", "max", "min", "close"],
-                 icon_dpixbuf=None,
+                 icon_path=None,
                  app_name=None,
                  title=None,
                  add_separator=False,
                  height=26,
                  show_title=True,
                  enable_gaussian=True,
+                 name_size=DEFAULT_FONT_SIZE,
+                 title_size=DEFAULT_FONT_SIZE,
                  ):
         '''
         Initialize the title bar.
 
         @param button_mask: A string list. Each item of it indicates that there is a corresponding button on the title bar. By default, it's ["theme", "menu", "max", "min", "close"], which means theme button, menu button, max button, min button and close button, respectively.
-        @param icon_dpixbuf: A pixbuf of type dtk.ui.theme.DynamicPixbuf. It will be displayed at the top left of the window. By default, it's None.
+        @param icon_path: The path of icon image.
         @param app_name: Application name string. It will be displayed just next to the icon_dpixbuf. By default, it's None.
         @param title: Title string of the application. It will be displayed on the center of the title bar. By default, it's None.
         @param add_separator: If True, add a separation line between the title bar and the body of the window. By default, it's False.
         @param height: The height of the title bar. By default, it's 26 pixels.
         @param show_title: If False, the title bar will not be displayed. By default, it's True.
         @param enable_gaussian: Whether enable gaussian on title, default is True.
+        @param name_size: The size of name, default is DEFAULT_FONT_SIZE.
+        @param title_size: The size of title, default is DEFAULT_FONT_SIZE.
         '''
         # Init.
         EventBox.__init__(self)
@@ -85,8 +90,8 @@ class Titlebar(EventBox):
         
         if show_title:
             # Add icon.
-            if icon_dpixbuf != None:
-                self.icon_image_box = ImageBox(icon_dpixbuf)
+            if icon_path != None:
+                self.icon_image_box = gtk.image_new_from_pixbuf(gtk.gdk.pixbuf_new_from_file(icon_path))
                 self.icon_align = gtk.Alignment()
                 self.icon_align.set(0.5, 0.5, 0.0, 0.0)
                 self.icon_align.set_padding(5, 5, 5, 0)
@@ -95,7 +100,7 @@ class Titlebar(EventBox):
                         
             # Add app name.
             if app_name != None:
-                self.app_name_box = Label(app_name, enable_gaussian=enable_gaussian)
+                self.app_name_box = Label(app_name, enable_gaussian=enable_gaussian, text_size=name_size)
                 self.app_name_align = gtk.Alignment()
                 self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
                 self.app_name_align.set_padding(2, 0, 5, 0)
@@ -104,7 +109,11 @@ class Titlebar(EventBox):
             
             # Add title.
             if title != None:
-                self.title_box = Label(title, enable_gaussian=enable_gaussian, text_x_align=pango.ALIGN_CENTER)
+                self.title_box = Label(
+                    title, enable_gaussian=enable_gaussian, 
+                    text_x_align=pango.ALIGN_CENTER,
+                    text_size=title_size,
+                    )
                 self.title_align = gtk.Alignment()
                 self.title_align.set(0.5, 0.5, 0.0, 0.0)
                 self.title_align.set_padding(2, 0, 30, 30)
