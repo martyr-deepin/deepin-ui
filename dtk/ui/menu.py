@@ -594,7 +594,7 @@ class MenuItem(object):
 
     def set_item_icons(self, icons):
         # deepin media player modify icons.
-        if self.item:
+        if self.item and icons:
             (item_icons, item_content, item_node) = self.item[0:3]
             item_icons = icons
             self.item = (item_icons, item_content, item_node)
