@@ -901,7 +901,7 @@ class CheckAllButton(gtk.ToggleButton):
         '''
         Internal callback for `click` signal.
         
-        @param event: Button clicked event.
+        @param widget: The CheckAllButton widget.
         '''
         if self.in_half_status:
             self.set_active(False)
@@ -1087,10 +1087,10 @@ class CheckButtonBuffer(gobject.GObject):
         Helper function to detect button event is in button area.
         
         You can add this function in callback function of TreeItem, such as: 
-                hover/unhover
-                motion_notify
-                button_press/button_release
-                single_click/double_click
+         - hover/unhover
+         - motion_notify
+         - button_press/button_release
+         - single_click/double_click
                 
         @param x: X coordinate of button event.        
         @param y: Y coordiante of button event.
@@ -1102,10 +1102,10 @@ class CheckButtonBuffer(gobject.GObject):
         Helper function to handle button-press-event.
 
         You can add this function in callback function of TreeItem, such as: 
-                hover/unhover
-                motion_notify
-                button_press/button_release
-                single_click/double_click
+         - hover/unhover
+         - motion_notify
+         - button_press/button_release
+         - single_click/double_click
                 
         @param x: X coordinate of button event.        
         @param y: Y coordiante of button event.
@@ -1125,10 +1125,10 @@ class CheckButtonBuffer(gobject.GObject):
         Helper function to handle button-release-event.
 
         You can add this function in callback function of TreeItem, such as: 
-                hover/unhover
-                motion_notify
-                button_press/button_release
-                single_click/double_click
+         - hover/unhover
+         - motion_notify
+         - button_press/button_release
+         - single_click/double_click
                 
         @param x: X coordinate of button event.        
         @param y: Y coordiante of button event.
@@ -1146,10 +1146,10 @@ class CheckButtonBuffer(gobject.GObject):
         Helper function to handle motion-notify event.
 
         You can add this function in callback function of TreeItem, such as: 
-                hover/unhover
-                motion_notify
-                button_press/button_release
-                single_click/double_click
+         - hover/unhover
+         - motion_notify
+         - button_press/button_release
+         - single_click/double_click
                 
         @param x: X coordinate of button event.        
         @param y: Y coordiante of button event.

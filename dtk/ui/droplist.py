@@ -784,8 +784,6 @@ class Droplist(gtk.Window):
     def adjust_droplist_position(self):
         '''
         Internal function to adjust droplist position after `realize` signal.
-        
-        @param widget: Droplist widget.
         '''
         # Adjust coordinate.
         (screen_width, screen_height) = get_screen_size(self)

@@ -403,8 +403,8 @@ if __name__ == "__main__":
     
     spin_box = SpinBox(3000, 0, 5000, 100)
     
-    mac_entry = MACEntry()
-    # mac_entry = IPV4Entry()
+    # mac_entry = MACEntry()
+    mac_entry = IPV4Entry()
     mac_entry.connect("changed", print_address)
     # mac_entry = IPV4Entry()
     # mac_entry.set_ip("255.255.255.andy")

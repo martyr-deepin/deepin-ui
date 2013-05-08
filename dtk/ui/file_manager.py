@@ -55,11 +55,6 @@ class FileManager(HPaned):
         self.iconview = FileIconView()
         self.iconview.add_items(iconview_get_dir_items(dir, self.icon_size))
         self.treeview = TreeView(get_dir_items(dir))
-        '''
-        FIXME: add set_column_titles then blocked
-        self.treeview.set_column_titles([_("Name"), _("Size"), _("Type"), _("Edit Time")],
-                                        [sort_by_name, sort_by_size, sort_by_type, sort_by_mtime])
-        '''
         self.add1(self.categorybar)
         if view_mode == self.ICONVIEW:
             self.add2(self.iconview)

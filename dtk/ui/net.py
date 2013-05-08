@@ -488,8 +488,11 @@ class IPV4Entry(gtk.VBox):
     def insert_ip_dot(self):
         # Just move cursor to next segment when cursor haven't at last segment.
         if self.cursor_segment_index < self.last_segment_index:
-            self.set_highlight_segment(self.cursor_segment_index + 1, True)
-            self.queue_draw()
+            ip_segments = self.ip.split(self.segment_split_char)
+            current_segment = ip_segments[self.cursor_segment_index]
+            if len(current_segment) > 0:
+                self.set_highlight_segment(self.cursor_segment_index + 1, True)
+                self.queue_draw()
             
     def focus_in_ipv4_entry(self, widget, event):
         self.grab_focus_flag = True

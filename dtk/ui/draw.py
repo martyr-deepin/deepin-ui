@@ -590,7 +590,6 @@ def draw_shadow(cr, x, y, w, h, r, color_window_shadow):
     @param w: Width of draw area.
     @param h: Height of draw area.
     @param r: Radious of window shadow corner.
-    @param p: Padding between window shadow and window frame.
     @param color_window_shadow: theme.DyanmicShadowColor.
     '''
     color_infos = color_window_shadow.get_color_info()
