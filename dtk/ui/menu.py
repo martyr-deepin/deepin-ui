@@ -572,7 +572,10 @@ class MenuItem(object):
         if self.item:
             (item_icons, item_content, item_node) = self.item[0:3]
             item_icons = icons
-            self.item = (item_icons, item_content, item_node, self.item[-1])
+            if len(self.item) > 3:
+                self.item = (item_icons, item_content, item_node, self.item[-1])
+            else:
+                self.item = (item_icons, item_content, item_node)
         
     def create_separator_item(self):
         '''
