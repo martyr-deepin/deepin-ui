@@ -1253,6 +1253,182 @@ class RadioButton(ToggleButton):
         
 gobject.type_register(RadioButton)
 
+class RadioButtonBuffer(gobject.GObject):
+    '''
+    RaidoButtonBuffer class.
+    
+    Use to render RaidoButton in TreeView widget.
+    
+    @undocumented: render
+    '''
+
+    STATE_NORMAL = 1
+    STATE_PRELIGHT = 2
+    STATE_ACTIVE = 3
+	
+    def __init__(self,
+                 active=False,
+                 render_padding_x=0,
+                 render_padding_y=0,
+                 ):
+        '''
+        Initialize RadioButtonBuffer class.
+        
+        @param active: Set True to active buffer status, default is False.
+        @param render_padding_x: Horizontal padding value, default is 0.
+        @param render_padding_y: Vertical padding value, default is 0.
+        '''
+        gobject.GObject.__init__(self)
+        self.inactive_normal_dpixbuf = ui_theme.get_pixbuf("button/radio_button_inactive_normal.png")
+        self.active_normal_dpixbuf = ui_theme.get_pixbuf("button/radio_button_active_normal.png")
+        self.inactive_hover_dpixbuf = ui_theme.get_pixbuf("button/radio_button_inactive_hover.png")
+        self.active_hover_dpixbuf = ui_theme.get_pixbuf("button/radio_button_active_hover.png")
+        self.inactive_press_dpixbuf = ui_theme.get_pixbuf("button/radio_button_inactive_press.png")
+        self.active_press_dpixbuf = ui_theme.get_pixbuf("button/radio_button_active_press.png")
+        
+        self.render_padding_x = render_padding_x
+        self.render_padding_y = render_padding_y
+        pixbuf = self.inactive_normal_dpixbuf.get_pixbuf()
+        self.render_width = pixbuf.get_width()
+        self.render_height = pixbuf.get_height()
+        
+        self.active = active
+        self.button_state = self.STATE_NORMAL
+        
+    def get_active(self):
+        '''
+        Get active status of raido button buffer.
+        
+        @return: Return True if buffer is in active status.
+        '''
+        return self.active
+
+    def set_active(self):
+        self.button_state = self.STATE_ACTIVE
+        self.button_press_flag = False
+        self.active = True
+        #self.queue_draw()
+        
+    def is_in_button_area(self, x, y):
+        '''
+        Helper function to detect button event is in button area.
+        
+        You can add this function in callback function of TreeItem, such as: 
+         - hover/unhover
+         - motion_notify
+         - button_press/button_release
+         - single_click/double_click
+                
+        @param x: X coordinate of button event.        
+        @param y: Y coordiante of button event.
+        '''
+        return is_in_rect((x, y), (self.render_padding_x, self.render_padding_y, self.render_width, self.render_height))
+    
+    def press_button(self, x, y):
+        '''
+        Helper function to handle button-press-event.
+
+        You can add this function in callback function of TreeItem, such as: 
+         - hover/unhover
+         - motion_notify
+         - button_press/button_release
+         - single_click/double_click
+                
+        @param x: X coordinate of button event.        
+        @param y: Y coordiante of button event.
+        '''
+        if self.is_in_button_area(x, y) and self.active == False:
+            self.button_state = self.STATE_ACTIVE
+            self.button_press_flag = True
+                
+            self.active = True
+                
+            return True
+        else:
+            return False
+
+    def release_button(self, x, y):
+        '''
+        Helper function to handle button-release-event.
+
+        You can add this function in callback function of TreeItem, such as: 
+         - hover/unhover
+         - motion_notify
+         - button_press/button_release
+         - single_click/double_click
+                
+        @param x: X coordinate of button event.        
+        @param y: Y coordiante of button event.
+        '''
+        if self.is_in_button_area(x, y):
+            self.button_state = self.STATE_ACTIVE
+            self.button_press_flag = False
+            
+            return True
+        else:
+            return False
+
+    def motion_button(self, x, y):
+        '''
+        Helper function to handle motion-notify event.
+
+        You can add this function in callback function of TreeItem, such as: 
+         - hover/unhover
+         - motion_notify
+         - button_press/button_release
+         - single_click/double_click
+                
+        @param x: X coordinate of button event.        
+        @param y: Y coordiante of button event.
+        '''
+        if self.is_in_button_area(x, y):
+            if self.button_state != self.STATE_PRELIGHT:
+                self.button_state = self.STATE_PRELIGHT
+                
+                return True
+            else:
+                return False
+        else:
+            if self.button_state != self.STATE_NORMAL:
+                self.button_state = self.STATE_NORMAL
+                
+                return True
+            else:
+                return False
+            
+    def render(self, cr, rect):
+        # Get pixbuf along with button's sate.
+        if self.button_state == self.STATE_NORMAL:
+            if self.active:
+                image = self.active_normal_dpixbuf.get_pixbuf()
+            else:
+                image = self.inactive_normal_dpixbuf.get_pixbuf()
+        elif self.button_state == self.STATE_PRELIGHT:
+            if self.active:
+                image = self.active_hover_dpixbuf.get_pixbuf()
+            else:    
+                image = self.inactive_hover_dpixbuf.get_pixbuf()
+        elif self.button_state == self.STATE_ACTIVE:
+            if self.button_press_flag:
+                if self.active:
+                    image = self.inactive_press_dpixbuf.get_pixbuf()
+                else:    
+                    image = self.active_press_dpixbuf.get_pixbuf()
+            else:
+                if self.active:
+                    image = self.active_normal_dpixbuf.get_pixbuf()
+                else:
+                    image = self.inactive_normal_dpixbuf.get_pixbuf()
+        
+        # Draw button.
+        draw_pixbuf(
+            cr, 
+            image, 
+            rect.x + self.render_padding_x,
+            rect.y + self.render_padding_y)
+            
+gobject.type_register(RadioButtonBuffer)
+
 class DisableButton(gtk.Button):
     '''
     DisableButton class.
