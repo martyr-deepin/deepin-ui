@@ -678,7 +678,7 @@ class PreferenceDialog(DialogBox):
         self.right_box = gtk.VBox()
         left_box.add(category_box)
         right_align = gtk.Alignment()
-        right_align.set_padding(0, 0, 10, 0)
+        right_align.set_padding(0, 0, 0, 0)
         right_align.add(self.right_box)
 
         body_box = gtk.HBox()
