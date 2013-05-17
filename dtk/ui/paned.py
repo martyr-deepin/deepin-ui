@@ -106,8 +106,9 @@ class Paned(gtk.Paned):
         (width, height) = handle.get_size()
         if self.get_orientation() == gtk.ORIENTATION_HORIZONTAL:
             if self.shrink_first:
-                cr.rectangle(0, 0, line_width, height)
-                cr.fill()
+                if self.get_position() != 0:
+                    cr.rectangle(0, 0, line_width, height)
+                    cr.fill()
 
                 if self.always_show_button or self.show_button:
                     if self.get_position() == 0:
