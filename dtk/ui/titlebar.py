@@ -99,13 +99,14 @@ class Titlebar(EventBox):
                 self.left_box.pack_start(self.icon_align, False, False)
                         
             # Add app name.
-            if app_name != None:
-                self.app_name_box = Label(app_name, enable_gaussian=enable_gaussian, text_size=name_size)
-                self.app_name_align = gtk.Alignment()
-                self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
-                self.app_name_align.set_padding(2, 0, 5, 0)
-                self.app_name_align.add(self.app_name_box)
-                self.left_box.pack_start(self.app_name_align, False, False)
+            if app_name == None:
+                app_name_label = ""
+            self.app_name_box = Label(app_name_label, enable_gaussian=enable_gaussian, text_size=name_size)
+            self.app_name_align = gtk.Alignment()
+            self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
+            self.app_name_align.set_padding(2, 0, 5, 0)
+            self.app_name_align.add(self.app_name_box)
+            self.left_box.pack_start(self.app_name_align, False, False)
             
             # Add title.
             if title == None:
@@ -182,6 +183,14 @@ class Titlebar(EventBox):
     
         return True
     
+    def change_name(self, name):
+        '''
+        Change the name of the application, which is displayed on the center of the title bar.
+        
+        @param name: New name string that want to set.
+        '''
+        self.app_name_box.set_text(name)
+        
     def change_title(self, title):
         '''
         Change the title of the application, which is displayed on the center of the title bar.
