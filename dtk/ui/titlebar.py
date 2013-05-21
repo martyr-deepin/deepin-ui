@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from box import EventBox, ImageBox
+from box import EventBox
 from button import ThemeButton, MenuButton, MinButton, MaxButton, CloseButton
 from draw import draw_line
 from label import Label
@@ -108,17 +108,18 @@ class Titlebar(EventBox):
                 self.left_box.pack_start(self.app_name_align, False, False)
             
             # Add title.
-            if title != None:
-                self.title_box = Label(
-                    title, enable_gaussian=enable_gaussian, 
-                    text_x_align=pango.ALIGN_CENTER,
-                    text_size=title_size,
-                    )
-                self.title_align = gtk.Alignment()
-                self.title_align.set(0.5, 0.5, 0.0, 0.0)
-                self.title_align.set_padding(2, 0, 30, 30)
-                self.title_align.add(self.title_box)
-                self.left_box.pack_start(self.title_align, True, True)
+            if title == None:
+                title_label = ""
+            self.title_box = Label(
+                title_label, enable_gaussian=enable_gaussian, 
+                text_x_align=pango.ALIGN_CENTER,
+                text_size=title_size,
+                )
+            self.title_align = gtk.Alignment()
+            self.title_align.set(0.5, 0.5, 0.0, 0.0)
+            self.title_align.set_padding(2, 0, 30, 30)
+            self.title_align.add(self.title_box)
+            self.left_box.pack_start(self.title_align, True, True)
             
         # Add button box.
         self.button_box = gtk.HBox()
