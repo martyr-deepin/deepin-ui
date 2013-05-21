@@ -101,6 +101,8 @@ class Titlebar(EventBox):
             # Add app name.
             if app_name == None:
                 app_name_label = ""
+            else:
+                app_name_label = app_name
             self.app_name_box = Label(app_name_label, enable_gaussian=enable_gaussian, text_size=name_size)
             self.app_name_align = gtk.Alignment()
             self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
@@ -111,6 +113,8 @@ class Titlebar(EventBox):
             # Add title.
             if title == None:
                 title_label = ""
+            else:
+                title_label = title
             self.title_box = Label(
                 title_label, enable_gaussian=enable_gaussian, 
                 text_x_align=pango.ALIGN_CENTER,
