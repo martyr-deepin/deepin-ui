@@ -31,7 +31,7 @@ from mask import draw_mask
 from skin_config import skin_config
 from theme import ui_theme
 from titlebar import Titlebar
-from utils import container_remove_all, alpha_color_hex_to_cairo
+from utils import container_remove_all, alpha_color_hex_to_cairo, place_center
 from window import Window
 from treeview import TreeView, TextItem, IconTextItem, draw_background
 from box import BackgroundBox
@@ -359,6 +359,17 @@ class DialogBox(Window):
             cr, x, y + h - button_box_height, w, button_box_height,
             ui_theme.get_shadow_color("mask_multiple_page").get_color_info(),
             )
+        
+    def place_center(self, window=None):
+        '''
+        Place dialog at center place.
+        
+        @param window: Place dialog at screen center place if window is None, otherwise place center place of given window.
+        '''
+        if window == None:
+            self.set_position(gtk.WIN_POS_CENTER)
+        else:
+            place_center(self, window)
         
 gobject.type_register(DialogBox)
 
