@@ -24,7 +24,6 @@
 import gtk
 import gobject
 from gtk import gdk
-#from dtk.ui.draw import draw_pixbuf
 
 class Paned(gtk.Container):
     def __init__(self):
@@ -44,15 +43,6 @@ class Paned(gtk.Container):
         self.__move_check = False
         self.__save_move_x = 0
         self.__save_move_y = 0
-        #
-        '''
-        self.out_pixbuf = gtk.gdk.pixbuf_new_from_file("out.png")
-        self.in_pixbuf  = gtk.gdk.pixbuf_new_from_file("in.png")
-        if self.__type == gtk.ORIENTATION_HORIZONTAL:
-            pixbuf_size = self.out_pixbuf.get_width()
-        else:
-            pixbuf_size = self.out_pixbuf.get_height()
-        '''
         #
         class HandlePos(object):
             x = self.allocation.x
@@ -124,18 +114,24 @@ class Paned(gtk.Container):
         gtk.Container.do_expose_event(self, e)
         if e.window == self.window:
             cr = e.window.cairo_create()
+            # 绘制 child1, child2.
+            child = self.get_child1()
+            self.__paint_child_window(cr, child)
+            child = self.get_child2()
+            self.__paint_child_window(cr, child)
             # 使用者可以重载这个函数达到高度自由化.
             self.paint_handle_hd(cr, self.handle_pos)
                 
         return False
+    
+    def __paint_child_window(self, cr, child):
+        if child.window != self.window:
+            cr.set_source_pixmap(
+                child.window, 
+                *child.window.get_position())
+            cr.paint_with_alpha(1.0)
         
     def __paint_handle_function(self, cr, handle_pos):
-        child = self.get_child2()
-
-        cr.set_source_pixmap(
-            child.window, 
-            *child.window.get_position())
-        cr.paint_with_alpha(1.0)
         if self.handle_pos.can_visible:
             # 绘制例子.
             if handle_pos.can_in:
@@ -371,7 +367,12 @@ class Paned(gtk.Container):
     def __add2_pack(self, child):
         if (not self.__child2):
             self.__child2 = child
+            self.__child2.connect("realize", self.__child2_realize_event)
             self.__child2.set_parent(self)
+    
+    def __child2_realize_event(self, widget):
+        if widget.window and widget.window != self.window:
+            widget.window.set_composited(True)
     
     def can_move_child2(self, check):
         # True 是向chidl2移动, False向child1移动.
@@ -379,6 +380,9 @@ class Paned(gtk.Container):
 
     def set_type(self, _type):
         self.__type = _type
+
+    def get_type(self):
+        return self.__type
      
     def get_handle(self):
         return self.__handle
@@ -392,40 +396,60 @@ class Paned(gtk.Container):
 gobject.type_register(Paned)
 
 if __name__ == "__main__":
+    # !! 建议不要将ui_theme绑在控件上，避免无法单独调用.
+    from draw import draw_pixbuf
+    from theme import ui_theme
+
     def test1_clicked(widget):
         top_paned.set_type(gtk.ORIENTATION_HORIZONTAL)
+
     def test2_clicked(widget):
         top_paned.set_type(gtk.ORIENTATION_VERTICAL)
+
     def test2_realize_event(widget):
         widget.window.set_composited(True)
+
+    def top_paned_paint(cr, handle_pos):
+        in_pixbuf = ui_theme.get_pixbuf("paned/in.png").get_pixbuf()
+        out_pixbuf = ui_theme.get_pixbuf("paned/out.png").get_pixbuf()
+        #
+        if handle_pos.can_visible:
+            # 绘制例子.
+            if handle_pos.can_in:
+                # 判断要向那个方向的控件靠拢.
+                if handle_pos.can_move_child2:
+                    pixbuf = in_pixbuf
+                else:
+                    pixbuf = out_pixbuf
+            else:
+                # 判断要向那个方向的控件靠拢.
+                if handle_pos.can_move_child2:
+                    pixbuf = out_pixbuf
+                else:
+                    pixbuf = in_pixbuf
+            # 判断是否为纵向.
+            if top_paned.get_type() == gtk.ORIENTATION_VERTICAL:
+                pixbuf = pixbuf.rotate_simple(270)
+            #
+            draw_pixbuf(cr, pixbuf, handle_pos.x, handle_pos.y)
 
     win = gtk.Window(gtk.WINDOW_TOPLEVEL)
     win.set_size_request(500, 500)
     win.connect("destroy", lambda w : gtk.main_quit())
     #
     top_paned = Paned()
+    top_paned.paint_handle_hd = top_paned_paint
     top_paned.set_type(gtk.ORIENTATION_VERTICAL)
     top_paned.can_move_child2(False)
     test1 = gtk.Button("test1")
-    test1.connect("clicked", test1_clicked)
     top_paned.add1(test1)
     test2 = gtk.TextView()
-    test2.connect("realize", test2_realize_event)
-    #test2.connect("clicked", test2_clicked)
+    #test2 = gtk.Button()
     top_paned.add2(test2)
     #
     win.add(top_paned)
     win.show_all()
     gtk.main()
 
-'''
-BUG: 当出现无法显现出来的.
-在初始化 连接realize事件 后加入: widget.window.set_composited(True)
-在自绘里面直接加入: [主要时在里面绘制]
-cr.set_source_pixmap(
-    self.child.window, 
-    *self.child.window.get_position())
-cr.paint_with_alpha(1.0)
-'''
 
 
