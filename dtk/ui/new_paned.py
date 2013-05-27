@@ -344,9 +344,19 @@ class Paned(gtk.Container):
         # 设置 child1, child2 (x, y, w, h)
         # 显示 child1, child2.
         if self.__child1:
+            if not self.__child2:
+                child1_allocation.x = allocation.x 
+                child1_allocation.y = allocation.y
+                child1_allocation.width = allocation.width
+                child1_allocation.height = allocation.height
             self.__child1.size_allocate(child1_allocation)
             self.__child1.set_child_visible(True)
         if self.__child2:
+            if not self.__child1:
+                child2_allocation.x = allocation.x 
+                child2_allocation.y = allocation.y
+                child2_allocation.width = allocation.width
+                child2_allocation.height = allocation.height
             self.__child2.size_allocate(child2_allocation)
             self.__child2.set_child_visible(True)
         #
