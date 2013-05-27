@@ -65,8 +65,10 @@ class Paned(gtk.Container):
         # init handle.
         self.__init_handle()
         #
-        self.__child1.set_parent_window(self.window)
-        self.__child2.set_parent_window(self.window)
+        if self.__child1:
+            self.__child1.set_parent_window(self.window)
+        if self.__child2:
+            self.__child2.set_parent_window(self.window)
         #
         self.queue_resize()
 
@@ -125,7 +127,7 @@ class Paned(gtk.Container):
         return False
     
     def __paint_child_window(self, cr, child):
-        if child.window != self.window:
+        if child and child.window != self.window:
             cr.set_source_pixmap(
                 child.window, 
                 *child.window.get_position())
@@ -340,12 +342,12 @@ class Paned(gtk.Container):
                         self.handle_pos.size
                         )
         # 设置 child1, child2 (x, y, w, h)
-        self.__child1.size_allocate(child1_allocation)
-        self.__child2.size_allocate(child2_allocation)
         # 显示 child1, child2.
         if self.__child1:
+            self.__child1.size_allocate(child1_allocation)
             self.__child1.set_child_visible(True)
         if self.__child2:
+            self.__child2.size_allocate(child2_allocation)
             self.__child2.set_child_visible(True)
         #
         if self.get_mapped():
