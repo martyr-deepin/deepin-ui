@@ -27,11 +27,11 @@ msgstr "關閉"
 
 #: ../ui/skin.py:268
 msgid "Skin version mismatch"
-msgstr "皮膚版本不一致"
+msgstr "皮膚版本不符"
 
 #: ../ui/skin.py:269
 msgid "Import skin version is mismatch with current one!"
-msgstr "導入皮膚和當前皮膚版本不一致"
+msgstr "導入皮膚和當前皮膚版本不符"
 
 #: ../ui/skin.py:301
 msgid "Delete skin"
@@ -43,7 +43,7 @@ msgstr "你確定要刪除當前皮膚？"
 
 #: ../ui/skin.py:739
 msgid "Add skin from file"
-msgstr "添加皮膚文件"
+msgstr "添加皮膚檔案"
 
 #: ../ui/skin.py:852
 msgid "Zoom"
@@ -101,15 +101,15 @@ msgstr "取消"
 
 #: ../ui/entry.py:895 ../ui/net.py:129 ../ui/net.py:708
 msgid "Cut"
-msgstr "剪切"
+msgstr "剪下"
 
 #: ../ui/entry.py:896 ../ui/net.py:130 ../ui/net.py:709
 msgid "Copy"
-msgstr "拷貝"
+msgstr "複製"
 
 #: ../ui/entry.py:897 ../ui/net.py:131 ../ui/net.py:710
 msgid "Paste"
-msgstr "粘貼"
+msgstr "貼上"
 
 #: ../ui/entry.py:898
 msgid "Select all"
@@ -117,11 +117,11 @@ msgstr "選擇全部"
 
 #: ../ui/entry.py:1935
 msgid "Please input new shortcuts"
-msgstr "請輸入新的快捷鍵"
+msgstr "請鍵入新的快捷鍵"
 
 #: ../ui/entry.py:1975
 msgid "Disabled"
-msgstr "禁用"
+msgstr "停用"
 
 #: ../ui/titlebar.py:137
 msgid "Change skin"
@@ -129,7 +129,7 @@ msgstr "換膚"
 
 #: ../ui/titlebar.py:143
 msgid "Main menu"
-msgstr "主菜單"
+msgstr "主選單"
 
 #: ../ui/titlebar.py:149
 msgid "Minimum"
@@ -141,44 +141,44 @@ msgstr "最大化"
 
 #: ../ui/iconview.py:476
 msgid "Loading..."
-msgstr "加載中..."
+msgstr "載入中..."
 
 #: ../ui/file_manager.py:44
 msgid "Computer"
-msgstr ""
+msgstr "電腦"
 
 #: ../ui/file_manager.py:45
 msgid "Home"
-msgstr ""
+msgstr "家目錄"
 
 #: ../ui/file_manager.py:46
 msgid "Desktop"
-msgstr ""
+msgstr "桌面"
 
 #: ../ui/file_manager.py:47
 msgid "Documents"
-msgstr ""
+msgstr "文件"
 
 #: ../ui/file_manager.py:48
 msgid "Downloads"
-msgstr ""
+msgstr "下載"
 
 #: ../ui/file_manager.py:49
 msgid "Music"
-msgstr ""
+msgstr "音樂"
 
 #: ../ui/file_manager.py:50
 msgid "Pictures"
-msgstr ""
+msgstr "圖片"
 
 #: ../ui/file_manager.py:51
 msgid "Videos"
-msgstr ""
+msgstr "影片"
 
 #: ../ui/file_manager.py:52
 msgid "Trash"
-msgstr ""
+msgstr "回收筒"
 
 #: ../ui/dialog.py:641
 msgid "Preferences"
-msgstr "選項設置"
+msgstr "偏好設定"
