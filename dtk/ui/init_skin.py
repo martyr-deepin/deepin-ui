@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from deepin_utils.file import get_parent_dir
 from skin_config import skin_config
 from theme import Theme, ui_theme
 import os
@@ -85,7 +86,7 @@ def init_skin(project_name,
         os.path.expanduser("~/.config/%s/skin" % (project_name)),
         os.path.expanduser("~/.config/%s/skin_config.ini" % (project_name)),
         project_name,
-        project_version
+        project_version,
         )
     
     # Create application theme.
@@ -101,3 +102,14 @@ def init_skin(project_name,
     skin_config.load_themes(ui_theme, app_theme)
 
     return app_theme
+
+def init_theme():
+    '''
+    Use deepin-ui's default theme.
+    '''
+    init_skin(
+        "deepin-ui",
+        "1.0",
+        "default",
+        os.path.join(get_parent_dir(__file__, 2), "skin"),
+        )

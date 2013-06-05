@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from constant import DEFAULT_FONT_SIZE
 from mplayer_window import MplayerWindow
 from skin import SkinWindow
 from skin_config import skin_config
@@ -27,7 +28,6 @@ from threads import post_gui
 from titlebar import Titlebar
 from utils import container_remove_all, place_center
 from window import Window
-from constant import DEFAULT_FONT_SIZE
 import gtk
 
 class Application(object):
@@ -285,3 +285,4 @@ class Application(object):
         this callback just accept one argument, argument is gtk.widget.
         '''
         self.menu_button_callback = callback
+        

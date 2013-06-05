@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-21 15:10+0800\n"
+"POT-Creation-Date: 2013-05-31 17:33+0800\n"
 "PO-Revision-Date: 2012-07-13 07:14+0800\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -16,14 +16,128 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../ui/dialog.py:416 ../ui/dialog.py:490 ../ui/color_selection.py:206
+#: ../ui/tab_window.py:487
+msgid "OK"
+msgstr "確定"
+
+#: ../ui/dialog.py:417 ../ui/dialog.py:491 ../ui/color_selection.py:207
+#: ../ui/tab_window.py:488
+msgid "Cancel"
+msgstr "取消"
+
+#: ../ui/dialog.py:652
+msgid "Preferences"
+msgstr "選項設置"
+
+#: ../ui/dialog.py:661 ../ui/titlebar.py:167 ../ui/skin.py:130
+#: ../ui/skin.py:152
+msgid "Close"
+msgstr "關閉"
+
+#: ../ui/file_manager.py:44
+msgid "Computer"
+msgstr ""
+
+#: ../ui/file_manager.py:45
+msgid "Home"
+msgstr ""
+
+#: ../ui/file_manager.py:46
+msgid "Desktop"
+msgstr ""
+
+#: ../ui/file_manager.py:47
+msgid "Documents"
+msgstr ""
+
+#: ../ui/file_manager.py:48
+msgid "Downloads"
+msgstr ""
+
+#: ../ui/file_manager.py:49
+msgid "Music"
+msgstr ""
+
+#: ../ui/file_manager.py:50
+msgid "Pictures"
+msgstr ""
+
+#: ../ui/file_manager.py:51
+msgid "Videos"
+msgstr ""
+
+#: ../ui/file_manager.py:52
+msgid "Trash"
+msgstr ""
+
+#: ../ui/iconview.py:476
+msgid "Loading..."
+msgstr "加載中..."
+
+#: ../ui/entry.py:895 ../ui/net.py:129 ../ui/net.py:708
+msgid "Cut"
+msgstr "剪切"
+
+#: ../ui/entry.py:896 ../ui/net.py:130 ../ui/net.py:709
+msgid "Copy"
+msgstr "拷貝"
+
+#: ../ui/entry.py:897 ../ui/net.py:131 ../ui/net.py:710
+msgid "Paste"
+msgstr "粘貼"
+
+#: ../ui/entry.py:898
+msgid "Select all"
+msgstr "選擇全部"
+
+#: ../ui/entry.py:1935
+msgid "Please input new shortcuts"
+msgstr "請輸入新的快捷鍵"
+
+#: ../ui/entry.py:1975
+msgid "Disabled"
+msgstr "禁用"
+
+#: ../ui/titlebar.py:143
+msgid "Change skin"
+msgstr "換膚"
+
+#: ../ui/titlebar.py:149
+msgid "Main menu"
+msgstr "主菜單"
+
+#: ../ui/titlebar.py:155
+msgid "Minimum"
+msgstr "最小化"
+
+#: ../ui/titlebar.py:161
+msgid "Maximize"
+msgstr "最大化"
+
+#: ../ui/color_selection.py:111 ../ui/skin.py:861
+msgid "Select color"
+msgstr "選擇顏色"
+
+#: ../ui/color_selection.py:150
+msgid "Color value"
+msgstr "顏色值"
+
+#: ../ui/color_selection.py:163
+msgid "Red: "
+msgstr "紅色: "
+
+#: ../ui/color_selection.py:170
+msgid "Green: "
+msgstr "綠色: "
+
+#: ../ui/color_selection.py:177
+msgid "Blue: "
+msgstr "藍色: "
+
 #: ../ui/skin.py:125
 msgid "Select skin"
 msgstr "選擇皮膚"
-
-#: ../ui/skin.py:130 ../ui/skin.py:152 ../ui/titlebar.py:161
-#: ../ui/dialog.py:650
-msgid "Close"
-msgstr "關閉"
 
 #: ../ui/skin.py:268
 msgid "Skin version mismatch"
@@ -65,120 +179,14 @@ msgstr "鎖定縮放比例"
 msgid "Export skin"
 msgstr "導出皮膚"
 
-#: ../ui/skin.py:861 ../ui/color_selection.py:111
-msgid "Select color"
-msgstr "選擇顏色"
-
 #: ../ui/skin.py:877
 msgid "Return"
 msgstr "返回"
 
-#: ../ui/color_selection.py:150
-msgid "Color value"
-msgstr "顏色值"
+#: ../ui/resizable_label.py:87
+msgid "Expand"
+msgstr "展開"
 
-#: ../ui/color_selection.py:163
-msgid "Red: "
-msgstr "紅色: "
-
-#: ../ui/color_selection.py:170
-msgid "Green: "
-msgstr "綠色: "
-
-#: ../ui/color_selection.py:177
-msgid "Blue: "
-msgstr "藍色: "
-
-#: ../ui/color_selection.py:206 ../ui/tab_window.py:487 ../ui/dialog.py:405
-#: ../ui/dialog.py:479
-msgid "OK"
-msgstr "確定"
-
-#: ../ui/color_selection.py:207 ../ui/tab_window.py:488 ../ui/dialog.py:406
-#: ../ui/dialog.py:480
-msgid "Cancel"
-msgstr "取消"
-
-#: ../ui/entry.py:895 ../ui/net.py:129 ../ui/net.py:708
-msgid "Cut"
-msgstr "剪切"
-
-#: ../ui/entry.py:896 ../ui/net.py:130 ../ui/net.py:709
-msgid "Copy"
-msgstr "拷貝"
-
-#: ../ui/entry.py:897 ../ui/net.py:131 ../ui/net.py:710
-msgid "Paste"
-msgstr "粘貼"
-
-#: ../ui/entry.py:898
-msgid "Select all"
-msgstr "選擇全部"
-
-#: ../ui/entry.py:1935
-msgid "Please input new shortcuts"
-msgstr "請輸入新的快捷鍵"
-
-#: ../ui/entry.py:1975
-msgid "Disabled"
-msgstr "禁用"
-
-#: ../ui/titlebar.py:137
-msgid "Change skin"
-msgstr "換膚"
-
-#: ../ui/titlebar.py:143
-msgid "Main menu"
-msgstr "主菜單"
-
-#: ../ui/titlebar.py:149
-msgid "Minimum"
-msgstr "最小化"
-
-#: ../ui/titlebar.py:155
-msgid "Maximize"
-msgstr "最大化"
-
-#: ../ui/iconview.py:476
-msgid "Loading..."
-msgstr "加載中..."
-
-#: ../ui/file_manager.py:44
-msgid "Computer"
-msgstr ""
-
-#: ../ui/file_manager.py:45
-msgid "Home"
-msgstr ""
-
-#: ../ui/file_manager.py:46
-msgid "Desktop"
-msgstr ""
-
-#: ../ui/file_manager.py:47
-msgid "Documents"
-msgstr ""
-
-#: ../ui/file_manager.py:48
-msgid "Downloads"
-msgstr ""
-
-#: ../ui/file_manager.py:49
-msgid "Music"
-msgstr ""
-
-#: ../ui/file_manager.py:50
-msgid "Pictures"
-msgstr ""
-
-#: ../ui/file_manager.py:51
-msgid "Videos"
-msgstr ""
-
-#: ../ui/file_manager.py:52
-msgid "Trash"
-msgstr ""
-
-#: ../ui/dialog.py:641
-msgid "Preferences"
-msgstr "選項設置"
+#: ../ui/resizable_label.py:88
+msgid "Shrink"
+msgstr "收起"

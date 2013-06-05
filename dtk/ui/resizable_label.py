@@ -27,6 +27,7 @@ from dtk.ui.draw import draw_text
 import gobject
 import gtk
 from dtk.ui.timeline import Timeline, CURVE_SINE
+from dtk.ui.locales import _
 
 class ResizableLabelBuffer(gobject.GObject):
     '''
@@ -83,8 +84,8 @@ class ResizableLabelBuffer(gobject.GObject):
         (self.init_width, self.init_height) = self.get_init_size()
         self.has_expand = False
         (self.expand_width, self.expand_height) = self.get_expand_size()
-        self.expand_button_content = "展开"
-        self.shrink_button_content = "收起"
+        self.expand_button_content = _("Expand")
+        self.shrink_button_content = _("Shrink")
         (self.expand_button_width, self.expand_button_height) = get_content_size(self.expand_button_content, self.label_font_size)
         (self.shrink_button_width, self.shrink_button_height) = get_content_size(self.shrink_button_content, self.label_font_size)
         
