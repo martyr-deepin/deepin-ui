@@ -480,7 +480,7 @@ class IPV4Entry(gtk.VBox):
                     
     def in_valid_range(self, ip_segment):
         try:
-            print ip_segment, " ", int(ip_segment)
+            #print ip_segment, " ", int(ip_segment)
             return 0 <= int(ip_segment) <= 255
         except:
             return False
