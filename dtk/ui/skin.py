@@ -159,12 +159,13 @@ class SkinWindow(DialogBox):
         '''
         Internal function to switch edit page.
         '''
-        # Switch to edit page.
-        container_remove_all(self.body_box)
-        edit_page = SkinEditPage(self, self.app_frame_pixbuf, self.switch_preview_page)
-        self.body_box.add(edit_page)
-        
-        self.show_all()
+        if self.app_frame_pixbuf != None:
+            # Switch to edit page.
+            container_remove_all(self.body_box)
+            edit_page = SkinEditPage(self, self.app_frame_pixbuf, self.switch_preview_page)
+            self.body_box.add(edit_page)
+            
+            self.show_all()
         
 gobject.type_register(SkinWindow)
 
@@ -1082,11 +1083,11 @@ class SkinEditArea(gtk.EventBox):
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.set_can_focus(True) # can focus to response key-press signal
         
-        self.preview_pixbuf = app_frame_pixbuf
         self.preview_frame_width = 390
         self.preview_frame_height = 270
         self.app_window_width = skin_config.app_window_width
         self.app_window_height = skin_config.app_window_height
+        self.preview_pixbuf = app_frame_pixbuf
         self.preview_pixbuf_width = self.preview_pixbuf.get_width()
         self.preview_pixbuf_height = self.preview_pixbuf.get_height()
         self.padding_x = (self.preview_frame_width - self.preview_pixbuf_width) / 2
