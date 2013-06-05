@@ -25,6 +25,6 @@ setup(name='dtk',
       download_url="git://github.com/linuxdeepin/deepin-ui.git",
       platforms = ['Linux'],
       packages = ['dtk', 'dtk.ui'],
-      data_files = list_files("dtk/theme","dtk/theme") + list_files("dtk/locale", "dtk/locale"),
+      data_files = list_files("dtk/theme","dtk/theme") + list_files("dtk/locale", "dtk/locale") + list_files("dtk/skin", "dtk/skin"),
       )
 

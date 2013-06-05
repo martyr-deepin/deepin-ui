@@ -535,21 +535,21 @@ class TimeSpinBox(gtk.VBox):
             self.__pressed_button = True
             self.hour_value -= 1
             if self.__24hour:
-                if self.hour_value <= 0:
-                    self.hour_value = 24
+                if self.hour_value < 0:
+                    self.hour_value = 23
             else:
-                if self.hour_value <= 0:
-                    self.hour_value = 12
+                if self.hour_value < 0:
+                    self.hour_value = 11
         elif self.set_time == self.SET_MIN:
             self.__pressed_button = True
             self.min_value -= 1
-            if self.min_value <= 0:
-                self.min_value = 60
+            if self.min_value < 0:
+                self.min_value = 59
         elif self.set_time == self.SET_SEC:
             self.__pressed_button = True
             self.sec_value -= 1
-            if self.sec_value <= 0:
-                self.sec_value = 60
+            if self.sec_value < 0:
+                self.sec_value = 59
         else:
             pass
         
