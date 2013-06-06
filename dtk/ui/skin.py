@@ -122,7 +122,7 @@ class SkinWindow(DialogBox):
         @param preview_width: Preview width, default is 450 pixels.
         @param preview_height: Preview height, default is 500 pixels.
         '''
-        DialogBox.__init__(self, _("Select skin"), preview_width, preview_height, mask_type=DIALOG_MASK_SINGLE_PAGE)
+        DialogBox.__init__(self, _("Select Skin"), preview_width, preview_height, mask_type=DIALOG_MASK_SINGLE_PAGE)
         self.app_frame_pixbuf = app_frame_pixbuf
         
         self.preview_page = SkinPreviewPage(self, self.change_skin, self.switch_edit_page)
@@ -300,7 +300,7 @@ class SkinPreviewPage(gtk.VBox):
         '''
         dialog = ConfirmDialog(
             _("Delete skin"),
-            _("Are you sure delete this skin?"),
+            _("Are you sure you want to delete this skin?"),
             confirm_callback = lambda : self.remove_skin(item))
         dialog.show_all()
         place_center(self.get_toplevel(), dialog)
@@ -851,10 +851,10 @@ class SkinEditPage(gtk.VBox):
         self.h_split_button.connect("clicked", lambda w: self.click_horizontal_mirror_button())
         
         Tooltip.text(self.resize_button, _("Zoom"))
-        Tooltip.text(self.v_split_button, _("Vertical flip"))
-        Tooltip.text(self.h_split_button, _("Horizontal flip"))
+        Tooltip.text(self.v_split_button, _("Flip vertical"))
+        Tooltip.text(self.h_split_button, _("Flip horizontal"))
         Tooltip.text(self.lock_button, _("Lock scaling"))
-        Tooltip.text(self.export_button, _("Export skin"))
+        Tooltip.text(self.export_button, _("Export"))
         
         self.color_label_align = gtk.Alignment()
         self.color_label_align.set(0.0, 0.5, 0, 0)
@@ -875,7 +875,7 @@ class SkinEditPage(gtk.VBox):
         for color in COLOR_SEQUENCE:
             self.color_select_view.add_items([ColorIconItem(color)])
         
-        self.back_button = Button(_("Return"))
+        self.back_button = Button(_("Back"))
         self.back_button.connect("clicked", lambda w: self.switch_preview_page())
         self.dialog.right_button_box.set_buttons([self.back_button])
         
@@ -927,7 +927,7 @@ class SkinEditPage(gtk.VBox):
         '''
         Export skin.
         '''
-        SaveFileDialog(_("Export skin"), None, skin_config.export_skin)
+        SaveFileDialog(_("Export"), None, skin_config.export_skin)
         
 gobject.type_register(SkinEditPage)
 
