@@ -34,12 +34,22 @@ from deepin_utils.file import get_parent_dir
 import gettext
 import os
 
+domain_name = "deepin-ui"
+
 LOCALE_DIR = os.path.join(get_parent_dir(__file__, 2), "locale")
 if not os.path.exists(LOCALE_DIR):
     LOCALE_DIR="/usr/share/locale"
 
 _ = None    
 try:
-    _ = gettext.translation("deepin-ui", LOCALE_DIR).gettext
+    _ = gettext.translation(domain_name, LOCALE_DIR).gettext
 except Exception, e:
     _ = lambda i : i
+
+def get_locale_code(domain_name):
+    try:
+        return gettext.find(domain_name, LOCALE_DIR).split(LOCALE_DIR)[1].split('/')[1]
+    except:
+        return "en_US"
+
+LANGUAGE = get_locale_code(domain_name)

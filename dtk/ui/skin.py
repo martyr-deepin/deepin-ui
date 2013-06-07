@@ -29,7 +29,7 @@ from dialog import DialogBox, DIALOG_MASK_SINGLE_PAGE
 from draw import draw_pixbuf, draw_vlinear, draw_hlinear
 from iconview import IconView
 from label import Label
-from locales import _
+from locales import _, LANGUAGE
 from scrolled_window import ScrolledWindow
 from skin_config import skin_config
 from theme import ui_theme
@@ -298,10 +298,17 @@ class SkinPreviewPage(gtk.VBox):
         '''
         Pop delete skin dialog.
         '''
+        if LANGUAGE == 'en_US':
+            message_text_size=10
+        else:
+            message_text_size=11
+
         dialog = ConfirmDialog(
             _("Delete skin"),
             _("Are you sure you want to delete this skin?"),
-            confirm_callback = lambda : self.remove_skin(item))
+            confirm_callback = lambda : self.remove_skin(item),
+            message_text_size=message_text_size,
+            )
         dialog.show_all()
         place_center(self.get_toplevel(), dialog)
             
