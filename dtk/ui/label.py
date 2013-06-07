@@ -29,8 +29,6 @@ import gtk
 import pango 
 import pangocairo
 
-BG_INCREASE_WIDTH = 10
-
 class Label(gtk.EventBox):
     '''
     Label.
@@ -341,7 +339,7 @@ class Label(gtk.EventBox):
 
         if not self.get_sensitive():    
             draw_text(cr, self.text, 
-                      rect.x, rect.y, rect.width + BG_INCREASE_WIDTH, rect.height,
+                      rect.x, rect.y, rect.width + rect.height,
                       self.text_size,
                       ui_theme.get_color("disable_text").get_color(),
                       alignment=self.text_x_align, 
@@ -355,7 +353,7 @@ class Label(gtk.EventBox):
                       )
         elif self.select_start_index == self.select_end_index:    
             draw_text(cr, self.text, 
-                      rect.x, rect.y, rect.width + BG_INCREASE_WIDTH, rect.height,
+                      rect.x, rect.y, rect.width + rect.height,
                       self.text_size,
                       label_color,
                       alignment=self.text_x_align, 
@@ -374,7 +372,7 @@ class Label(gtk.EventBox):
             # Draw left text.
             if self.text[0:self.select_start_index] != "":
                 draw_text(cr, self.text[0:self.select_start_index], 
-                          rect.x, rect.y, rect.width + BG_INCREASE_WIDTH, rect.height,
+                          rect.x, rect.y, rect.width + rect.height,
                           self.text_size,
                           label_color,
                           alignment=self.text_x_align, 
