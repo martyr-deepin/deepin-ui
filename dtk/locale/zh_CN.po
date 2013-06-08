@@ -29,7 +29,7 @@ msgstr "取消"
 
 #: ../ui/dialog.py:652
 msgid "Preferences"
-msgstr "选项设置"
+msgstr "首选项"
 
 #: ../ui/dialog.py:661 ../ui/titlebar.py:167 ../ui/skin.py:130
 #: ../ui/skin.py:152
