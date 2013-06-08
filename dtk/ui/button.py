@@ -887,6 +887,7 @@ class CheckAllButton(gtk.ToggleButton):
             self.set_half_status(False)
             self.set_active(False)
         else:
+            self.set_active(True)
             self.set_half_status(True)
         
         self.queue_draw()
