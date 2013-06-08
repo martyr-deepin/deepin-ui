@@ -24,11 +24,11 @@ import os
 import gobject
 from locales import _
 from theme import ui_theme
-from dtk.ui.paned import HPaned
-from dtk.ui.categorybar import Categorybar
-from dtk.ui.file_iconview import (FileIconView, iconview_get_dir_items)
-from dtk.ui.treeview import TreeView
-from dtk.ui.file_treeview import get_dir_items
+from paned import HPaned
+from categorybar import Categorybar
+from file_iconview import (FileIconView, iconview_get_dir_items)
+from treeview import TreeView
+from file_treeview import get_dir_items
 
 class FileManager(HPaned):
     HOME_DIR = os.getenv("HOME", "") + "/"

@@ -20,14 +20,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from dtk.ui.box import EventBox
-from dtk.ui.utils import get_content_size, cairo_state, is_in_rect
-from dtk.ui.constant import DEFAULT_FONT_SIZE
-from dtk.ui.draw import draw_text
+from box import EventBox
+from utils import get_content_size, cairo_state, is_in_rect
+from constant import DEFAULT_FONT_SIZE
+from draw import draw_text
 import gobject
 import gtk
-from dtk.ui.timeline import Timeline, CURVE_SINE
-from dtk.ui.locales import _
+from timeline import Timeline, CURVE_SINE
+from locales import _
 
 class ResizableLabelBuffer(gobject.GObject):
     '''

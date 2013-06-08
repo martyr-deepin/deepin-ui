@@ -29,9 +29,9 @@ from theme import ui_theme
 import pango
 import gobject
 import gio
-from dtk.ui.scrolled_window import ScrolledWindow
-from dtk.ui.iconview import IconView
-from dtk.ui.constant import DEFAULT_FONT_SIZE
+from scrolled_window import ScrolledWindow
+from iconview import IconView
+from constant import DEFAULT_FONT_SIZE
 
 ITEM_PADDING_Y = 10
 ITEM_HEIGHT = 22

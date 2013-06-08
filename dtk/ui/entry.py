@@ -36,10 +36,11 @@ import pango
 import cairo
 import pangocairo
 from gsettings import DESKTOP_SETTINGS, DEFAULT_CURSOR_BLINK_TIME
-from dtk.ui.utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
-                          get_content_size, is_double_click, is_right_button, 
-                          is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias
-                          )
+from utils import (propagate_expose, cairo_state, color_hex_to_cairo, 
+                   get_content_size, is_double_click, is_right_button, 
+                   is_left_button, alpha_color_hex_to_cairo, cairo_disable_antialias,
+                   set_cursor,
+                   )
 class EntryBuffer(gobject.GObject):
     '''
     EntryBuffer class.
@@ -907,6 +908,8 @@ class Entry(gtk.EventBox):
         self.connect("motion-notify-event", self.motion_notify_entry)
         self.connect("focus-in-event", self.focus_in_entry)
         self.connect("focus-out-event", self.focus_out_entry)
+        self.connect("enter-notify-event", self.enter_notify_event)
+        self.connect("leave-notify-event", self.leave_notify_event)
         
         self.im.connect("commit", lambda im, input_text: self.commit_entry(input_text))
         self.connect("editing", self.__edit_going)
@@ -1321,6 +1324,12 @@ class Entry(gtk.EventBox):
         Internal callback for `focus-out-event` signal.
         '''
         self.handle_focus_out(widget, event)
+        
+    def enter_notify_event(self, widget, event):
+        set_cursor(widget, gtk.gdk.XTERM)
+        
+    def leave_notify_event(self, widget, event):
+        set_cursor(widget, None)
         
     def handle_focus_out(self, widget, event):
         '''
