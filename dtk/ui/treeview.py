@@ -1265,9 +1265,9 @@ class TreeView(gtk.VBox):
                 if click_row == None:
                     self.unselect_all()
                 else:
-                    if self.press_shift:
+                    if self.press_shift and self.enable_multiple_select:
                         self.shift_click(click_row)
-                    elif self.press_ctrl:
+                    elif self.press_ctrl and self.enable_multiple_select:
                         self.ctrl_click(click_row)
                     else:
                         if self.enable_drag_drop and click_row in self.select_rows:
