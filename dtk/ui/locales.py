@@ -48,7 +48,7 @@ except Exception, e:
 
 def get_locale_code(domain_name, locale_dir):
     try:
-        return gettext.find(domain_name, locale_dir).split(LOCALE_DIR)[1].split('/')[1]
+        return gettext.find(domain_name, locale_dir).split(locale_dir)[1].split('/')[1]
     except:
         return "en_US"
 
