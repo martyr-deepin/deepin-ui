@@ -46,10 +46,10 @@ try:
 except Exception, e:
     _ = lambda i : i
 
-def get_locale_code(domain_name):
+def get_locale_code(domain_name, locale_dir):
     try:
-        return gettext.find(domain_name, LOCALE_DIR).split(LOCALE_DIR)[1].split('/')[1]
+        return gettext.find(domain_name, locale_dir).split(LOCALE_DIR)[1].split('/')[1]
     except:
         return "en_US"
 
-LANGUAGE = get_locale_code(domain_name)
+LANGUAGE = get_locale_code(domain_name, LOCALE_DIR)
