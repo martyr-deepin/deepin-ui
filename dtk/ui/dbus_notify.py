@@ -96,11 +96,14 @@ class DbusNotify(object):
         Call notifications dbus service to display notify message.
         '''
         bus = dbus.SessionBus()
-        if not check_dbus(bus, NOTIFICATIONS_SERVICE_NAME):
-            return False
+        # if not check_dbus(bus, NOTIFICATIONS_SERVICE_NAME):
+        #     return False
+        try:
         
-        proxy = bus.get_object(NOTIFICATIONS_SERVICE_NAME,
-                               NOTIFICATIONS_PATH)
-        notify_interface = dbus.Interface(proxy, NOTIFICATIONS_SERVICE_NAME)
-        notify_interface.Notify(self.app_name, -1, self.icon, self.summary, self.body,
-                                self.actions, self.hints, self.timeout)
+            proxy = bus.get_object(NOTIFICATIONS_SERVICE_NAME,
+                                   NOTIFICATIONS_PATH)
+            notify_interface = dbus.Interface(proxy, NOTIFICATIONS_SERVICE_NAME)
+            notify_interface.Notify(self.app_name, 0, self.icon, self.summary, self.body,
+                                    self.actions, self.hints, self.timeout)
+        except:    
+            pass
