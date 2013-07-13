@@ -264,8 +264,14 @@ class IPV4Entry(gtk.VBox):
         elif event.x >= self.cursor_positions[-1]:
             self.set_cursor_index(len(self.ip))
         else:
+            ip_segment_distance = self.width / self.segment_number
+            segment_index = int(event.x / ip_segment_distance)
+            
             for (cursor_index, cursor_position) in enumerate(self.cursor_positions):
-                if cursor_position < event.x <= self.cursor_positions[cursor_index + 1]:
+                if len(self.ip.split(self.segment_split_char)[segment_index]) == 0:
+                    self.set_cursor_index(segment_index)
+                    break
+                elif cursor_position < event.x <= self.cursor_positions[cursor_index + 1]:
                     self.set_cursor_index(cursor_index)
                     break
                 
@@ -843,8 +849,14 @@ class MACEntry(gtk.VBox):
         elif event.x >= self.cursor_positions[-1]:
             self.set_cursor_index(len(self.mac))
         else:
+            ip_segment_distance = self.width / self.segment_number
+            segment_index = int(event.x / ip_segment_distance)
+            
             for (cursor_index, cursor_position) in enumerate(self.cursor_positions):
-                if cursor_position < event.x <= self.cursor_positions[cursor_index + 1]:
+                if len(self.mac.split(self.segment_split_char)[segment_index]) == 0:
+                    self.set_cursor_index(segment_index)
+                    break
+                elif cursor_position < event.x <= self.cursor_positions[cursor_index + 1]:
                     self.set_cursor_index(cursor_index)
                     break
                 
