@@ -261,7 +261,7 @@ class SkinPreviewPage(gtk.VBox):
         '''
         Create skin from package.
         '''
-        (load_skin_status, skin_dir, skin_image_file) = skin_config.load_skin_from_image(filepath)
+        (load_skin_status, skin_dir, skin_image_file) = skin_config.load_skin_from_package(filepath)
         
         if load_skin_status:
             self.add_skin_preview_icon(skin_dir, skin_image_file)
