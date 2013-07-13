@@ -122,6 +122,7 @@ class IPV4Entry(gtk.VBox):
             "Ctrl + x" : self.cut_to_clipboard,
             "Ctrl + v" : self.paste_from_clipboard,
             "BackSpace" : self.backspace,
+            "Space" : self.insert_ip_dot,
             "." : self.insert_ip_dot,
             }
         
@@ -701,6 +702,7 @@ class MACEntry(gtk.VBox):
             "Ctrl + x" : self.cut_to_clipboard,
             "Ctrl + v" : self.paste_from_clipboard,
             "BackSpace" : self.backspace,
+            "Space" : self.insert_mac_dot,
             ":" : self.insert_mac_dot,
             }
         
