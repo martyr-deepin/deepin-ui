@@ -1831,27 +1831,33 @@ class TreeView(gtk.VBox):
         @param item: The item need to visible.
         '''
         if item != None and item in self.visible_items:
-            # Get bound index.
-            (start_index, end_index, item_height_count) = self.get_expose_bound()
-            
-            # Get highlight item index.
-            item_index = item.row_index
-            
-            # Scroll viewport make sure preview row in visible area.
+            # Get coordinates.
+            item_height = item.get_height()
+            item_top = sum(map(lambda i: i.get_height(), self.visible_items[:item.row_index]))
+            item_bottom = item_top + item_height
             (offset_x, offset_y, viewport) = self.get_offset_coordinate(self.draw_area)
             vadjust = self.scrolled_window.get_vadjustment()
-            highlight_row_height_count = sum(map(lambda i: i.get_height(), self.visible_items[:item_index])) 
+            visible_area_top = vadjust.get_value()
+            visible_area_bottom = vadjust.get_value() + vadjust.get_page_size()
             
-            max_height = vadjust.get_upper() - vadjust.get_page_size()
-            page_height = vadjust.get_value() + vadjust.get_page_size()
-            
-            # Don't greater than vadjustment upper value.
-            if highlight_row_height_count > max_height:
-                highlight_row_height_count = max_height
+            # Get height of previous item.
+            if 0 < item.row_index <= len(self.visible_items) - 1:
+                prev_item_height = self.visible_items[item.row_index - 1].get_height()
+            else:
+                prev_item_height = 0
                 
-            if vadjust.get_value >= highlight_row_height_count  or page_height <= highlight_row_height_count:
-                vadjust.set_value(max(vadjust.get_lower(), highlight_row_height_count))
-                    
+            # Get height of next item.
+            if 0 <= item.row_index < len(self.visible_items) - 1:    
+                next_item_height = self.visible_items[item.row_index + 1].get_height()
+            else:
+                next_item_height = 0
+
+            # Make item in visible area.
+            if item_top <= visible_area_top:
+                vadjust.set_value(max(item_top - prev_item_height, vadjust.get_lower()))
+            elif item_bottom >= visible_area_bottom:
+                vadjust.set_value(item_bottom + next_item_height - vadjust.get_page_size())
+                
     def get_highlight_item(self):
         '''
         Get highlight item.
