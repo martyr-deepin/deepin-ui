@@ -220,7 +220,7 @@ class Window(WindowBase):
         '''
         if self.expose_frame_function:
             self.expose_frame_function(widget, event)
-        elif self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+        elif self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED and self.window.get_state() != gtk.gdk.WINDOW_STATE_FULLSCREEN:
             # Init.
             cr = widget.window.cairo_create()
             rect = widget.allocation
