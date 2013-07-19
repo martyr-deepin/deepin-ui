@@ -53,6 +53,7 @@ class Window(WindowBase):
                  shadow_visible=True,
                  shape_frame_function=None,
                  expose_frame_function=None,
+                 expose_background_function=None,
                  ):
         '''
         Initialise the Window class.
@@ -71,6 +72,7 @@ class Window(WindowBase):
         self.shadow_visible = shadow_visible
         self.shape_frame_function = shape_frame_function
         self.expose_frame_function = expose_frame_function
+        self.expose_background_function = expose_background_function
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.background_color = (0, 0, 0, 0)
         
@@ -121,78 +123,81 @@ class Window(WindowBase):
         @param event: The expose event of type gtk.gdk.Event.
         @return: Always return True.
         '''
-        # Init.
-        cr = widget.window.cairo_create()
-        rect = widget.allocation
-        
-        # Draw background.
-        self.draw_background(cr, rect.x, rect.y, rect.width, rect.height)
-        
-        # Save cairo context.
-        if self.shadow_is_visible:
-            x = rect.x + self.shadow_padding
-            y = rect.y + self.shadow_padding
-            w = rect.width - self.shadow_padding * 2
-            h = rect.height - self.shadow_padding * 2
+        if self.expose_background_function:
+            self.expose_background_function(widget, event)
         else:
-            x, y, w, h = rect.x, rect.y, rect.width, rect.height
-            
-        # Draw skin and mask.
-        with cairo_state(cr):
-            if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
-                cr.rectangle(x + 2, y, w - 4, 1)
-                cr.rectangle(x + 1, y + 1, w - 2, 1)
-                cr.rectangle(x, y + 2, w, h - 4)
-                cr.rectangle(x + 2, y + h - 1, w - 4, 1)
-                cr.rectangle(x + 1, y + h - 2, w - 2, 1)
-                
-                cr.clip()
+            # Init.
+            cr = widget.window.cairo_create()
+            rect = widget.allocation
             
             # Draw background.
-            self.draw_skin(cr, x, y, w, h)
-        
-            # Draw mask.
-            self.draw_mask(cr, x, y, w, h)
+            self.draw_background(cr, rect.x, rect.y, rect.width, rect.height)
             
-        # Draw corner shadow.
-        with cairo_state(cr):
-            cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("window_shadow_corner").get_color_info()))
+            # Save cairo context.
+            if self.shadow_is_visible:
+                x = rect.x + self.shadow_padding
+                y = rect.y + self.shadow_padding
+                w = rect.width - self.shadow_padding * 2
+                h = rect.height - self.shadow_padding * 2
+            else:
+                x, y, w, h = rect.x, rect.y, rect.width, rect.height
+                
+            # Draw skin and mask.
+            with cairo_state(cr):
+                if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+                    cr.rectangle(x + 2, y, w - 4, 1)
+                    cr.rectangle(x + 1, y + 1, w - 2, 1)
+                    cr.rectangle(x, y + 2, w, h - 4)
+                    cr.rectangle(x + 2, y + h - 1, w - 4, 1)
+                    cr.rectangle(x + 1, y + h - 2, w - 2, 1)
+                    
+                    cr.clip()
+                
+                # Draw background.
+                self.draw_skin(cr, x, y, w, h)
             
-            cr.rectangle(x, y + 1, 1, 1) # top-left
-            cr.rectangle(x + 1, y, 1, 1)
+                # Draw mask.
+                self.draw_mask(cr, x, y, w, h)
+                
+            # Draw corner shadow.
+            with cairo_state(cr):
+                cr.set_source_rgba(*alpha_color_hex_to_cairo(ui_theme.get_alpha_color("window_shadow_corner").get_color_info()))
+                
+                cr.rectangle(x, y + 1, 1, 1) # top-left
+                cr.rectangle(x + 1, y, 1, 1)
+                
+                cr.rectangle(x + w - 1, y + 1, 1, 1) # top-right
+                cr.rectangle(x + w - 2, y, 1, 1)
+                
+                cr.rectangle(x, y + h - 2, 1, 1) # bottom-left
+                cr.rectangle(x + 1, y + h - 1, 1, 1)
+                
+                cr.rectangle(x + w - 1, y + h - 2, 1, 1) # bottom-right
+                cr.rectangle(x + w - 2, y + h - 1, 1, 1)
+                
+                cr.fill()
+                
+            # Draw background corner.
+            with cairo_state(cr):
+                cr.rectangle(x, y + 1, 1, 1) # top-left
+                cr.rectangle(x + 1, y, 1, 1)
+                
+                cr.rectangle(x + w - 1, y + 1, 1, 1) # top-right
+                cr.rectangle(x + w - 2, y, 1, 1)
+                
+                cr.rectangle(x, y + h - 2, 1, 1) # bottom-left
+                cr.rectangle(x + 1, y + h - 1, 1, 1)
+                
+                cr.rectangle(x + w - 1, y + h - 2, 1, 1) # bottom-right
+                cr.rectangle(x + w - 2, y + h - 1, 1, 1)
+                
+                cr.clip()
+                
+                self.draw_skin(cr, x, y, w, h)
+                
+            # Propagate expose.
+            propagate_expose(widget, event)
             
-            cr.rectangle(x + w - 1, y + 1, 1, 1) # top-right
-            cr.rectangle(x + w - 2, y, 1, 1)
-            
-            cr.rectangle(x, y + h - 2, 1, 1) # bottom-left
-            cr.rectangle(x + 1, y + h - 1, 1, 1)
-            
-            cr.rectangle(x + w - 1, y + h - 2, 1, 1) # bottom-right
-            cr.rectangle(x + w - 2, y + h - 1, 1, 1)
-            
-            cr.fill()
-            
-        # Draw background corner.
-        with cairo_state(cr):
-            cr.rectangle(x, y + 1, 1, 1) # top-left
-            cr.rectangle(x + 1, y, 1, 1)
-            
-            cr.rectangle(x + w - 1, y + 1, 1, 1) # top-right
-            cr.rectangle(x + w - 2, y, 1, 1)
-            
-            cr.rectangle(x, y + h - 2, 1, 1) # bottom-left
-            cr.rectangle(x + 1, y + h - 1, 1, 1)
-            
-            cr.rectangle(x + w - 1, y + h - 2, 1, 1) # bottom-right
-            cr.rectangle(x + w - 2, y + h - 1, 1, 1)
-            
-            cr.clip()
-            
-            self.draw_skin(cr, x, y, w, h)
-            
-        # Propagate expose.
-        propagate_expose(widget, event)
-        
         return True
     
     def expose_window_shadow(self, widget, event):
@@ -259,9 +264,13 @@ class Window(WindowBase):
                 cr.set_source_rgb(1.0, 1.0, 1.0)
                 cr.set_operator(cairo.OPERATOR_OVER)
                 
-                cr.rectangle(x + 1, y, w - 2, 1)
-                cr.rectangle(x, y + 1, w, h - 2)
-                cr.rectangle(x + 1, y + h - 1, w - 2, 1)
+                if self.window.get_state() in [gtk.gdk.WINDOW_STATE_FULLSCREEN, gtk.gdk.WINDOW_STATE_MAXIMIZED]:
+                    # Don't clip corner when window is fullscreen state.
+                    cr.rectangle(x, y, w, h)
+                else:
+                    cr.rectangle(x + 1, y, w - 2, 1)
+                    cr.rectangle(x, y + 1, w, h - 2)
+                    cr.rectangle(x + 1, y + h - 1, w - 2, 1)
                 
                 cr.fill()
                 
