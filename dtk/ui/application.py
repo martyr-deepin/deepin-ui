@@ -38,7 +38,8 @@ class Application(object):
     
     def __init__(self, 
                  app_support_colormap=True, 
-                 resizable=True
+                 resizable=True,
+                 window_type=gtk.WINDOW_TOPLEVEL, 
                  ):
         '''
         Initialize the Application class.
@@ -50,6 +51,7 @@ class Application(object):
         # Init.
         self.app_support_colormap = app_support_colormap
         self.resizable = resizable
+        self.window_type = window_type
         self.close_callback = self.close_window
         self.skin_preview_pixbuf = None
 
@@ -70,9 +72,9 @@ class Application(object):
 
         # Init window.
         if self.app_support_colormap:
-            self.window = Window(True)
+            self.window = Window(True, window_type=self.window_type)
         else:
-            self.window = MplayerWindow(True)
+            self.window = MplayerWindow(True, window_type=self.window_type)
         self.window.set_resizable(self.resizable)
         self.window.set_position(gtk.WIN_POS_CENTER)
         self.window.connect("destroy", self.destroy)
