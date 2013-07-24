@@ -272,6 +272,7 @@ class TreeView(gtk.VBox):
         "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "right-press-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, 
                                (int, int, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)),
+        "item-redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
     }    
 	
     def __init__(self,
@@ -997,12 +998,20 @@ class TreeView(gtk.VBox):
                     item.redraw_request_callback = self.redraw_request
                     item.add_items_callback = self.add_items
                     item.delete_items_callback = self.delete_items
+                    item.connect("redraw-request", self.redraw_item)
                 
                 self.update_item_index()    
                 
                 self.update_item_widths()
                     
                 self.update_vadjustment()
+
+    def redraw_item(self, list_item):
+        '''
+        Internal function to redraw item.
+        '''
+        self.redraw_request_list.append(list_item)
+        self.update_redraw_request_list()
                 
     def delete_item_by_index(self, index):
         '''
@@ -1906,6 +1915,10 @@ class TreeItem(gobject.GObject):
     Normal, you shouldn't use this class directly, instead you should use item that base on NodeItem,
     NodeItem provide more simple apis than TreeItem.
     '''
+
+    __gsignals__ = {
+        "redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+    }
     
     def __init__(self):
         '''
@@ -1928,6 +1941,14 @@ class TreeItem(gobject.GObject):
         self.column_offset = 0
         self.height = None
         
+    def emit_redraw_request(self):
+        '''
+        Emit `redraw-request` signal.
+        
+        This is TreeView interface, you should implement it.
+        '''
+        self.emit("redraw-request")
+
     def expand(self):
         pass
     
