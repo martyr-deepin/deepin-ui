@@ -272,7 +272,6 @@ class TreeView(gtk.VBox):
         "motion-notify-item" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, int, int, int)),
         "right-press-items" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, 
                                (int, int, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)),
-        "item-redraw-request" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT, )),
     }    
 	
     def __init__(self,
