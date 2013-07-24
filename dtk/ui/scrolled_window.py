@@ -372,9 +372,6 @@ class ScrolledWindow(gtk.Bin):
             self._vertical.last_time = e.time
             self._vertical.in_motion = True
             
-            # Emit signal 'vscrollbar_state_changed'.
-            self.emit_vscrollbar_state_changed(e)
-
             return True
 
     def calc_vbar_length(self):
@@ -438,6 +435,9 @@ class ScrolledWindow(gtk.Bin):
             self._vertical.bar_pos = value2pos(adj.value, self._vertical.virtual_len, upper)
             self.calc_vbar_allocation()
             self.vwindow.move_resize(*self.vallocation)
+            
+            self.emit_vscrollbar_state_changed()
+            
             self.queue_draw()
 
     def hadjustment_changed(self, adj):
@@ -673,11 +673,14 @@ class ScrolledWindow(gtk.Bin):
         print "v_len:%f, height:%f, vir_bar_len:%d" % ( self._vertical.virtual_len,
                 self.allocation.height, self._vertical.bar_len)
         
-    def emit_vscrollbar_state_changed(self, e):    
+    def emit_vscrollbar_state_changed(self, e=None):    
         value = self.vadjustment.value
         page_size = self.vadjustment.page_size
         upper = self.vadjustment.upper
-        if e.type == gtk.gdk.MOTION_NOTIFY:
+        
+        if e == None:
+            bottom_value = upper - page_size
+        elif e.type == gtk.gdk.MOTION_NOTIFY:
             bottom_value = upper - page_size
         elif e.type == gtk.gdk.SCROLL:
             bottom_value = upper - page_size - 1
