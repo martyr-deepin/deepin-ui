@@ -656,9 +656,6 @@ class PreferenceDialog(DialogBox):
             close_callback=self.hide_all,
             )
         self.set_position(gtk.WIN_POS_CENTER)
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_NORMAL)
-        self.set_modal(False)
-        self.set_skip_taskbar_hint(False)
         
         self.main_box = gtk.VBox()
         close_button = Button(_("Close"))
