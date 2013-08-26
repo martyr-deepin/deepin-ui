@@ -107,6 +107,17 @@ def get_keyevent_name(key_event, to_upper=False):
         else:
             return " + ".join(key_modifiers) + " + " + key_name
         
+def is_no_key_press(key_event):        
+    '''
+    Return True if haven't any key press.
+    
+    @param keyevent_name: Key event name that return by function L{ I{get_keyevent_name} <get_keyevent_name>}.
+    This function used in signal key-release-event.
+    '''
+    return ((not key_event.is_modifier) and get_key_name(key_event.keyval) == get_keyevent_name(key_event) or 
+            key_event.is_modifier and len(get_key_event_modifiers(key_event)) == 1
+            )
+
 def parse_keyevent_name(keyevent_name):
     '''
     Parse keyevent name.
