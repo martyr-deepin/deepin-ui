@@ -160,7 +160,7 @@ class MplayerWindow(WindowBase):
         
         # Draw skin and mask.
         with cairo_state(cr):
-            if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+            if self.window.get_state() & gtk.gdk.WINDOW_STATE_MAXIMIZED != gtk.gdk.WINDOW_STATE_MAXIMIZED:
                 cr.rectangle(x + 2, y, w - 4, 1)
                 cr.rectangle(x + 1, y + 1, w - 2, 1)
                 cr.rectangle(x, y + 2, w, h - 4)
@@ -175,7 +175,7 @@ class MplayerWindow(WindowBase):
             self.draw_mask(cr, x, y, w, h)
             
         # Draw window frame.
-        if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+        if self.window.get_state() & gtk.gdk.WINDOW_STATE_MAXIMIZED != gtk.gdk.WINDOW_STATE_MAXIMIZED:
             draw_window_frame(cr, x, y, w, h,
                               ui_theme.get_alpha_color("window_frame_outside_1"),
                               ui_theme.get_alpha_color("window_frame_outside_2"),
@@ -223,7 +223,8 @@ class MplayerWindow(WindowBase):
             if not self.shape_flag:
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
-            elif self.window.get_state() in [gtk.gdk.WINDOW_STATE_FULLSCREEN, gtk.gdk.WINDOW_STATE_MAXIMIZED]:
+            elif (self.window.get_state() & gtk.gdk.WINDOW_STATE_FULLSCREEN == gtk.gdk.WINDOW_STATE_FULLSCREEN or
+                  self.window.get_state() & gtk.gdk.WINDOW_STATE_MAXIMIZED == gtk.gdk.WINDOW_STATE_MAXIMIZED):
                 # Don't clip corner when window is fullscreen state.
                 cr.rectangle(x, y, w, h)
             else:

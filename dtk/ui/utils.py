@@ -555,7 +555,7 @@ def window_is_max(widget):
     @return: Return True if widget's toplevel window is maximized.
     '''
     toplevel_window = widget.get_toplevel()
-    if toplevel_window.window.get_state() == gtk.gdk.WINDOW_STATE_MAXIMIZED:
+    if toplevel_window.window.get_state() & gtk.gdk.WINDOW_STATE_MAXIMIZED == gtk.gdk.WINDOW_STATE_MAXIMIZED:
         return True
     else:
         return False

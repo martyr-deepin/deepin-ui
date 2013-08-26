@@ -56,7 +56,7 @@ class WindowBase(gtk.Window):
         Toggle the window size between maximized size and normal size.
         '''
         window_state = self.window.get_state()
-        if window_state == gtk.gdk.WINDOW_STATE_MAXIMIZED:
+        if window_state & gtk.gdk.WINDOW_STATE_MAXIMIZED == gtk.gdk.WINDOW_STATE_MAXIMIZED:
             self.unmaximize()
         else:
             self.maximize()
@@ -66,7 +66,7 @@ class WindowBase(gtk.Window):
         Toggle the window between fullscreen mode and normal size.
         '''
         window_state = self.window.get_state()
-        if window_state == gtk.gdk.WINDOW_STATE_FULLSCREEN:
+        if window_state & gtk.gdk.WINDOW_STATE_FULLSCREEN == gtk.gdk.WINDOW_STATE_FULLSCREEN:
             self.unfullscreen()
         else:
             self.fullscreen()
@@ -121,7 +121,8 @@ class WindowBase(gtk.Window):
         @param event: The event of gtk.gdk.Event.
         '''
         window_state = self.window.get_state()
-        if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:
+        if (window_state & gtk.gdk.WINDOW_STATE_MAXIMIZED == gtk.gdk.WINDOW_STATE_MAXIMIZED or
+            window_state & gtk.gdk.WINDOW_STATE_FULLSCREEN == gtk.gdk.WINDOW_STATE_FULLSCREEN):
             self.hide_shadow()
             
             if self.is_disable_window_maximized():

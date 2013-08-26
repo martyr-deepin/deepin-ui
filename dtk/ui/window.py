@@ -144,7 +144,7 @@ class Window(WindowBase):
                 
             # Draw skin and mask.
             with cairo_state(cr):
-                if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+                if self.window.get_state() & gtk.gdk.WINDOW_STATE_MAXIMIZED != gtk.gdk.WINDOW_STATE_MAXIMIZED:
                     cr.rectangle(x + 2, y, w - 4, 1)
                     cr.rectangle(x + 1, y + 1, w - 2, 1)
                     cr.rectangle(x, y + 2, w, h - 4)
@@ -225,7 +225,8 @@ class Window(WindowBase):
         '''
         if self.expose_frame_function:
             self.expose_frame_function(widget, event)
-        elif self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED and self.window.get_state() != gtk.gdk.WINDOW_STATE_FULLSCREEN:
+        elif (self.window.get_state() & gtk.gdk.WINDOW_STATE_MAXIMIZED != gtk.gdk.WINDOW_STATE_MAXIMIZED and 
+              self.window.get_state() & gtk.gdk.WINDOW_STATE_FULLSCREEN != gtk.gdk.WINDOW_STATE_FULLSCREEN):
             # Init.
             cr = widget.window.cairo_create()
             rect = widget.allocation
@@ -249,7 +250,7 @@ class Window(WindowBase):
         if self.shape_frame_function:
             self.shape_frame_function(widget, rect)
         elif widget.window != None and widget.get_has_window() and rect.width > 0 and rect.height > 0:
-            if self.window.get_state() != gtk.gdk.WINDOW_STATE_MAXIMIZED:
+            if self.window.get_state() & gtk.gdk.WINDOW_STATE_MAXIMIZED != gtk.gdk.WINDOW_STATE_MAXIMIZED:
                 # Init.
                 x, y, w, h = rect.x, rect.y, rect.width, rect.height
                 bitmap = gtk.gdk.Pixmap(None, w, h, 1)
@@ -264,8 +265,8 @@ class Window(WindowBase):
                 cr.set_source_rgb(1.0, 1.0, 1.0)
                 cr.set_operator(cairo.OPERATOR_OVER)
                 
-                if self.window.get_state() in [gtk.gdk.WINDOW_STATE_FULLSCREEN, gtk.gdk.WINDOW_STATE_MAXIMIZED]:
-                    # Don't clip corner when window is fullscreen state.
+                if (self.window.get_state() & gtk.gdk.WINDOW_STATE_FULLSCREEN == gtk.gdk.WINDOW_STATE_FULLSCREEN or
+                    self.window.get_state() & gtk.gdk.WINDOW_STATE_MAXIMIZED == gtk.gdk.WINDOW_STATE_MAXIMIZED):
                     cr.rectangle(x, y, w, h)
                 else:
                     cr.rectangle(x + 1, y, w - 2, 1)
@@ -337,7 +338,8 @@ class Window(WindowBase):
         '''
         if enable_shadow(self) and self.shadow_visible:
             window_state = self.window.get_state()
-            if window_state in [gtk.gdk.WINDOW_STATE_MAXIMIZED, gtk.gdk.WINDOW_STATE_FULLSCREEN]:
+            if (window_state & gtk.gdk.WINDOW_STATE_FULLSCREEN == gtk.gdk.WINDOW_STATE_FULLSCREEN or
+                window_state & gtk.gdk.WINDOW_STATE_MAXIMIZED == gtk.gdk.WINDOW_STATE_MAXIMIZED):
                 return (0, 0)
             else:
                 return (self.shadow_padding, self.shadow_padding)
