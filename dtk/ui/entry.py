@@ -120,6 +120,8 @@ class EntryBuffer(gobject.GObject):
         self.__prop_dict['select-area-visible'] = True
         self.__prop_dict['visibility'] = True
         self.__prop_dict['invisible-char'] = '*'
+        
+        self.always_show_cursor = False
 
         surface = cairo.ImageSurface(cairo.FORMAT_RGB24, 0, 0) 
         cr = cairo.Context(surface)
@@ -501,8 +503,9 @@ class EntryBuffer(gobject.GObject):
                 cr.set_source_rgb(*color_hex_to_cairo(self.text_select_color))
                 context.update_layout(layout)
                 context.show_layout(layout)
+                
             # Draw cursor
-            if self.get_cursor_visible() and grab_focus_flag:
+            if self.always_show_cursor or (self.get_cursor_visible() and grab_focus_flag):
                 # Init.
                 cursor_index = self.get_insert_index()
                 cursor_pos = self.get_cursor_pos(cursor_index)[0]
@@ -527,10 +530,6 @@ class EntryBuffer(gobject.GObject):
                 self.cursor_pos1 = cursor_pos[1]
                 self.cursor_pos2 = cursor_pos[3]
                 self.m_draw_cursor(cursor_alpha)
-                '''
-                FIXME: HOW-TO flash cursor
-                CursorFlashThread(self).start()
-                '''
                 
     def m_draw_cursor(self, cursor_alpha):
         self.cursor_cr.set_source_rgba(0, 0, 0, cursor_alpha)
