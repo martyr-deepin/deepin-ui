@@ -43,6 +43,7 @@ import dtk.ui.entry
 from dtk.ui.dialog import PreferenceDialog
 from dtk.ui.application import Application
 from dtk.ui.browser import WebView
+from dtk.ui.box import Markbox
 from dtk.ui.button import CheckButton, RadioButton, ComboButton
 from dtk.ui.button import ImageButton, LinkButton, Button
 from dtk.ui.star_view import StarView
@@ -419,6 +420,11 @@ if __name__ == "__main__":
     # entry_box.pack_start(password_entry, False, False)
     # entry_box.pack_start(combo_box, False, False)
     # entry_box.pack_start(spin_box, False, False)
+    
+    mark_box = Markbox(0, "#000000")
+    entry_box.pack_start(mark_box, False, False)
+    
+    gtk.timeout_add(2000, lambda : mark_box.set_value(5.8))
     
     entry_frame = HorizontalFrame(10, 0, 0, 0, 0)
     entry_frame.add(entry_box)

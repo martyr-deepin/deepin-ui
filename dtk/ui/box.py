@@ -22,7 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from draw import (draw_pixbuf, propagate_expose, draw_vlinear, cairo_state, 
-                  cairo_disable_antialias)
+                  cairo_disable_antialias, draw_text)
 from theme import ui_theme
 from skin_config import skin_config
 from utils import get_window_shadow_size, color_hex_to_cairo, set_cursor
@@ -285,3 +285,106 @@ class ResizableBox(gtk.EventBox):
         return True
 
 gobject.type_register(ResizableBox)
+
+class Markbox(EventBox):
+    '''
+    class docs
+    '''
+	
+    def __init__(self, value, font_color="#FFFFFF"):
+        '''
+        init docs
+        '''
+        EventBox.__init__(self)
+        
+        self.value = value
+        self.font_color = font_color
+        
+        self.start_value = 0
+        self.range = 0
+        self.in_animation = False
+        
+        self.big_number_size = 18
+        self.small_number_size = 15
+        self.dot_number_offset_x = 13
+        self.dot_number_offset_y = 1
+        self.small_number_offset_y = 1
+        
+        self.connect("expose-event", self.expose_mark_bar)
+        
+        self.set_size_request(30, 30)
+        
+    def set_value(self, value):
+        if (not self.in_animation) and value != self.value:
+            self.start_value = self.value
+            self.range = value - self.value
+            times = int(abs(self.range)) * 10
+            from timeline import Timeline, CURVE_SINE
+            timeline = Timeline(times * 10, CURVE_SINE)
+            timeline.connect("start", self.start_animation)
+            timeline.connect("stop", self.stop_animation)
+            timeline.connect("update", self.update_animation)
+            timeline.run()
+            
+        return False    
+    
+    def start_animation(self, timeline):
+        self.in_animation = True
+        
+    def stop_animation(self, timeline):
+        self.in_animation = False
+    
+    def update_animation(self, timeline, percent):
+        self.value = round(self.start_value + self.range * percent, 1)
+        
+        self.queue_draw()
+        
+    def expose_mark_bar(self, widget, event):
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
+        
+        split_result = str(self.value).split(".")
+        if len(split_result) == 1:
+            big_number_str = split_result[0]
+            dot_str = None
+            small_number_str = None
+        else:
+            (big_number_str, small_number_str) = split_result
+            dot_str = "."
+            
+        draw_text(
+            cr,
+            "<b>%s</b>" % big_number_str,
+            rect.x, 
+            rect.y,
+            rect.width,
+            rect.height,
+            text_size=self.big_number_size,
+            text_color=self.font_color,
+            )
+        
+        if dot_str:
+            draw_text(
+                cr,
+                dot_str,
+                rect.x + self.dot_number_offset_x,
+                rect.y + self.dot_number_offset_y,
+                rect.width,
+                rect.height,
+                text_size=self.small_number_size,
+                text_color=self.font_color,
+                )
+
+        if small_number_str:
+            draw_text(
+                cr,
+                small_number_str,
+                rect.x + self.big_number_size, 
+                rect.y,
+                rect.width,
+                rect.height + self.small_number_offset_y,
+                text_size=self.small_number_size,
+                text_color=self.font_color,
+                )
+        
+gobject.type_register(Markbox)
