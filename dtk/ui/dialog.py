@@ -212,9 +212,11 @@ class DialogBox(Window):
         if close_callback:
             self.titlebar.close_button.connect("clicked", lambda w: close_callback())
             self.connect("destroy", lambda w: close_callback())
+            self.connect("delete-event", lambda w, e: close_callback())
         else:
             self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
             self.connect("destroy", lambda w: self.destroy())
+            self.connect("delete-event", lambda w, e: self.destroy())
         
         self.draw_mask = self.get_mask_func(self, 1, 1, 0, 1)
         
@@ -653,7 +655,7 @@ class PreferenceDialog(DialogBox):
             default_width,
             default_height,
             mask_type=DIALOG_MASK_MULTIPLE_PAGE,
-            close_callback=self.hide_all,
+            close_callback=self.hide_dialog,
             )
         self.set_position(gtk.WIN_POS_CENTER)
         
@@ -700,6 +702,11 @@ class PreferenceDialog(DialogBox):
         # DialogBox code.
         self.body_box.pack_start(self.main_box, True, True)
         self.right_button_box.set_buttons([close_button])        
+        
+    def hide_dialog(self):
+        self.hide_all()
+        
+        return True
         
     def button_press_preference_item(self, treeview, item, column_index, offset_x, offset_y):
         if self.set_item_widget(item):
