@@ -197,7 +197,7 @@ class ImageButton(gtk.Button):
                     press_dpixbuf, 
                     scale_x, 
                     content, 
-                    insensitive_dpixbuf)
+                    insensitive_dpixbuf=insensitive_dpixbuf)
 
     def set_active(self, is_active):
         '''
