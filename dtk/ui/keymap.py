@@ -49,13 +49,14 @@ def get_key_name(keyval, to_upper=False):
     if to_upper:
         key_unicode = gdk.keyval_to_unicode(gdk.keyval_to_upper(keyval))
     else:
-        key_unicode = gdk.keyval_to_unicode(keyval)
+        key_unicode = gdk.keyval_to_unicode(gdk.keyval_convert_case(keyval)[0])
+        
     if key_unicode == 0:
         return gdk.keyval_name(keyval)
     else:
         return str(unichr(key_unicode))
     
-def get_key_event_modifiers(key_event):
+def get_key_event_modifiers(key_event, to_upper=False):
     '''
     Get key modifiers with given key event.
     
@@ -80,9 +81,13 @@ def get_key_event_modifiers(key_event):
     if key_event.state & gdk.MOD1_MASK:
         modifiers.append("Alt")    
         
-    # # Don't need add Shift modifier if keyval is upper character.
-    if key_event.state & gdk.SHIFT_MASK and (len(get_key_name(key_event.keyval)) != 1 or not gdk.keyval_is_upper(key_event.keyval)):
-        modifiers.append("Shift")    
+    # Don't need add Shift modifier if keyval is upper character.
+    if to_upper:
+        if key_event.state & gdk.SHIFT_MASK and (len(get_key_name(key_event.keyval)) != 1 or not gdk.keyval_is_upper(key_event.keyval)):
+            modifiers.append("Shift")    
+    else:
+        if key_event.state & gdk.SHIFT_MASK:
+            modifiers.append("Shift")    
         
     return modifiers
 
@@ -97,7 +102,7 @@ def get_keyevent_name(key_event, to_upper=False):
     if key_event.is_modifier:
         return ""
     else:
-        key_modifiers = get_key_event_modifiers(key_event)
+        key_modifiers = get_key_event_modifiers(key_event, to_upper)
         key_name = get_key_name(key_event.keyval, to_upper)
         if key_name == " ":
             key_name = "Space"
