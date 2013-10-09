@@ -54,6 +54,7 @@ class Window(WindowBase):
                  shape_frame_function=None,
                  expose_frame_function=None,
                  expose_background_function=None,
+                 frame_radius=2,
                  ):
         '''
         Initialise the Window class.
@@ -75,6 +76,7 @@ class Window(WindowBase):
         self.expose_background_function = expose_background_function
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.background_color = (0, 0, 0, 0)
+        self.frame_radius = frame_radius
         
         self.init()
         
@@ -84,7 +86,6 @@ class Window(WindowBase):
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.window_shadow = gtk.Alignment()
         self.window_frame = gtk.VBox()
-        self.frame_radius = 2
         self.shadow_is_visible = True
         self.cursor_type = None
         
