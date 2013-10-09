@@ -32,7 +32,7 @@ from utils import (cairo_state, cairo_disable_antialias, color_hex_to_cairo,
                    add_color_stop_rgba, propagate_expose, 
                    alpha_color_hex_to_cairo)
 
-def draw_radial_ring(cr, x, y, outer_radius, inner_radius, color_infos):
+def draw_radial_ring(cr, x, y, outer_radius, inner_radius, color_infos, clip_corner=None):
     '''
     Draw radial ring.
     
@@ -44,6 +44,19 @@ def draw_radial_ring(cr, x, y, outer_radius, inner_radius, color_infos):
     @param color_infos: A list of ColorInfo, ColorInfo format as [(color_pos, (color_hex_value, color_alpha))].
     '''
     with cairo_state(cr):
+        # Clip corner.
+        if clip_corner:
+            if clip_corner == "top-left":
+                cr.rectangle(x - outer_radius, y - outer_radius, outer_radius, outer_radius)
+            elif clip_corner == "top-right":
+                cr.rectangle(x, y - outer_radius, outer_radius, outer_radius)
+            elif clip_corner == "bottom-left":
+                cr.rectangle(x - outer_radius, y, outer_radius, outer_radius)
+            elif clip_corner == "bottom-right":
+                cr.rectangle(x, y, outer_radius, outer_radius)
+                
+            cr.clip()
+        
         # Clip.
         cr.arc(x, y, outer_radius, 0, pi * 2)
         cr.arc(x, y, inner_radius, 0, pi * 2)
