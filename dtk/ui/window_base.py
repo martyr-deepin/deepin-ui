@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import cairo
+import gobject
 from constant import EDGE_DICT
 from skin_config import skin_config
 import gtk
@@ -35,6 +36,11 @@ class WindowBase(gtk.Window):
     @undocumented: get_cursor_type_with_coordinate
     '''
 	
+    __gsignals__ = {
+        "window-resize" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+
+    }    
+    
     def __init__(self,
                  window_type=gtk.WINDOW_TOPLEVEL, 
                  ):
@@ -102,6 +108,8 @@ class WindowBase(gtk.Window):
             edge = self.get_edge()            
             if edge != None:
                 resize_window(self, event, self, edge)
+                
+                self.emit("window-resize")
                 
     def is_disable_window_maximized(self):
         '''
