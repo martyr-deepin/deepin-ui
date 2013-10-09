@@ -54,6 +54,7 @@ class Window(WindowBase):
                  shape_frame_function=None,
                  expose_frame_function=None,
                  expose_background_function=None,
+                 expose_shadow_function=None,
                  frame_radius=2,
                  ):
         '''
@@ -74,6 +75,7 @@ class Window(WindowBase):
         self.shape_frame_function = shape_frame_function
         self.expose_frame_function = expose_frame_function
         self.expose_background_function = expose_background_function
+        self.expose_shadow_function = expose_shadow_function
         self.set_colormap(gtk.gdk.Screen().get_rgba_colormap())
         self.background_color = (0, 0, 0, 0)
         self.frame_radius = frame_radius
@@ -208,7 +210,9 @@ class Window(WindowBase):
         @param widget: the window of gtk.Widget.
         @param event: The expose event of type gtk.gdk.Event.
         '''
-        if self.shadow_is_visible:
+        if self.expose_shadow_function:
+            self.expose_shadow_function(widget, event)
+        elif self.shadow_is_visible:
             # Init.
             cr = widget.window.cairo_create()
             rect = widget.allocation
