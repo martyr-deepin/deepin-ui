@@ -81,6 +81,7 @@ class EntryBuffer(gobject.GObject):
                  enable_clear_button=False,
                  is_password_entry=False,
                  shown_password=False,
+                 cursor_color="#000000",
                 ):
         '''
         Initialize EntryBuffer class.
@@ -114,6 +115,7 @@ class EntryBuffer(gobject.GObject):
         self.is_password_entry = is_password_entry
         self.shown_password = shown_password
         self.sensitive = True
+        self.cursor_color = cursor_color
 
         self.__prop_dict = {}
         self.__prop_dict['cursor-visible'] = True
@@ -532,7 +534,8 @@ class EntryBuffer(gobject.GObject):
                 self.m_draw_cursor(cursor_alpha)
                 
     def m_draw_cursor(self, cursor_alpha):
-        self.cursor_cr.set_source_rgba(0, 0, 0, cursor_alpha)
+        (r, g, b) = color_hex_to_cairo(self.cursor_color)
+        self.cursor_cr.set_source_rgba(r, g, b, cursor_alpha)
         self.cursor_cr.rectangle(self.cursor_x, 
                                  self.cursor_pos1 + self.cursor_y, 
                                  1, 
@@ -816,6 +819,7 @@ class Entry(gtk.EventBox):
                  is_password_entry=False,
                  shown_password=False, 
                  place_holder="",
+                 cursor_color="#000000",
                  ):
         '''
         Initialize Entry class.
@@ -843,7 +847,9 @@ class Entry(gtk.EventBox):
             content, DEFAULT_FONT, font_size,
             'normal', text_color, text_select_color, 
             background_select_color, enable_clear_button, 
-            is_password_entry = is_password_entry)
+            is_password_entry = is_password_entry,
+            cursor_color=cursor_color,
+            )
         self.clear_button = ClearButton(False)
         self.enable_clear_button = enable_clear_button
         self.clear_button_x = -1
@@ -866,6 +872,7 @@ class Entry(gtk.EventBox):
         self.entry_buffer.set_property("select-area-visible", self.select_area_visible_flag)
         self.place_holder = place_holder
         self.cursor_blank_id = None
+        self.cursor_color = cursor_color
         
         self.offset_x = 0
         self.offset_y = 0
