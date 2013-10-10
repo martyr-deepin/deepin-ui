@@ -22,6 +22,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from deepin_utils import core, file, process, ipc, date_time, net
+from deepin_utils.core import merge_list
 from contextlib import contextmanager 
 import cairo
 import gobject
@@ -516,6 +517,27 @@ def get_match_parent(widget, match_types):
     else:
         return get_match_parent(parent, match_types)
         
+def get_match_children(widget, child_type):
+    '''
+    Get all child widgets that match given widget type.
+    
+    @param widget: The container to search.
+    @param child_type: The widget type of search.
+    
+    @return: Return all child widgets that match given widget type, or return empty list if nothing to find.
+    '''
+    child_list = widget.get_children()
+    if child_list:
+        match_widget_list = filter(lambda w: isinstance(w, child_type), child_list)
+        match_children = (merge_list(map(
+                    lambda w: get_match_children(w, child_type), 
+                    filter(
+                        lambda w: isinstance(w, gtk.Container), 
+                        child_list))))
+        return match_widget_list + match_children
+    else:
+        return []
+    
 def widget_fix_cycle_destroy_bug(widget):
     '''
     Fix bug that PyGtk destroys cycle too early.
