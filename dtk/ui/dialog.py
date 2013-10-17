@@ -130,7 +130,9 @@ class DialogBox(Window):
                  window_hint=gtk.gdk.WINDOW_TYPE_HINT_DIALOG,
                  window_pos=None,
                  skip_taskbar_hint=True,
-                 resizable=False):
+                 resizable=False,
+                 window_type=gtk.WINDOW_TOPLEVEL,
+                 ):
         '''
         Initialize DialogBox class.
         
@@ -168,7 +170,11 @@ class DialogBox(Window):
         @param skip_taskbar_hint: Set True to make desktop environment not to display the window in the task bar, default is True.
         @param resizable: Whether allowed user resizable dialog, default is False.
         '''
-        Window.__init__(self, resizable)
+        Window.__init__(
+            self, 
+            enable_resize=resizable,
+            window_type=window_type,
+            )
         self.default_width = default_width
         self.default_height = default_height
         self.mask_type = mask_type
@@ -392,6 +398,9 @@ class ConfirmDialog(DialogBox):
                  cancel_callback=None, 
                  cancel_first=True, 
                  message_text_size=11,
+                 window_type=gtk.WINDOW_TOPLEVEL,
+                 close_callback=None,
+                 text_wrap_width=330,
                  ):
         '''
         Initialize ConfirmDialog class.
@@ -406,14 +415,23 @@ class ConfirmDialog(DialogBox):
         @param message_text_size: Text size of message, default is 11.
         '''
         # Init.
-        DialogBox.__init__(self, title, default_width, default_height, DIALOG_MASK_SINGLE_PAGE)
+        DialogBox.__init__(
+            self, title, default_width, default_height, DIALOG_MASK_SINGLE_PAGE,
+            window_type=window_type,
+            close_callback=close_callback,
+            )
         self.confirm_callback = confirm_callback
         self.cancel_callback = cancel_callback
         
         self.label_align = gtk.Alignment()
         self.label_align.set(0.5, 0.5, 0, 0)
         self.label_align.set_padding(0, 0, 8, 8)
-        self.label = Label(message, text_x_align=ALIGN_MIDDLE, text_size=message_text_size)
+        self.label = Label(
+            message, 
+            text_x_align=ALIGN_MIDDLE, 
+            text_size=message_text_size,
+            wrap_width=text_wrap_width,
+            )
         
         self.confirm_button = Button(_("OK"))
         self.cancel_button = Button(_("Cancel"))

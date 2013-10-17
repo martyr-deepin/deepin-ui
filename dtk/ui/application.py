@@ -40,6 +40,7 @@ class Application(object):
                  app_support_colormap=True, 
                  resizable=True,
                  window_type=gtk.WINDOW_TOPLEVEL, 
+                 destroy_func=None
                  ):
         '''
         Initialize the Application class.
@@ -54,6 +55,7 @@ class Application(object):
         self.window_type = window_type
         self.close_callback = self.close_window
         self.skin_preview_pixbuf = None
+        self.destroy_func = destroy_func
 
         # Start application.
         self.init()
@@ -77,7 +79,10 @@ class Application(object):
             self.window = MplayerWindow(True, window_type=self.window_type)
         self.window.set_resizable(self.resizable)
         self.window.set_position(gtk.WIN_POS_CENTER)
-        self.window.connect("destroy", self.destroy)
+        if self.destroy_func:
+            self.window.connect("destroy", lambda w: self.destroy_func)
+        else:
+            self.window.connect("destroy", self.destroy)
         
         # Init main box.
         self.main_box = self.window.window_frame
@@ -150,7 +155,10 @@ class Application(object):
 
         @param widget: A widget of Gtk.Widget. Passed by gtk.
         '''
-        self.window.close_window()
+        if self.destroy_func:
+            self.destroy_func()
+        else:
+            self.window.close_window()
 
     def show_titlebar(self):
         '''
