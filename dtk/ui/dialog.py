@@ -178,6 +178,7 @@ class DialogBox(Window):
         self.default_width = default_width
         self.default_height = default_height
         self.mask_type = mask_type
+        self.close_callback = close_callback
         
         if window_pos:
             self.set_position(window_pos)
@@ -215,16 +216,37 @@ class DialogBox(Window):
         self.window_frame.pack_start(self.body_align, True, True)
         self.window_frame.pack_start(self.button_box, False, False)
 
-        if close_callback:
-            self.titlebar.close_button.connect("clicked", lambda w: close_callback())
-            self.connect("destroy", lambda w: close_callback())
-            self.connect("delete-event", lambda w, e: close_callback())
+        if self.close_callback:
+            self.titlebar.close_button.connect("clicked", lambda w: self.close_callback())
+            self.connect("destroy", lambda w: self.close_callback())
+            self.connect("delete-event", lambda w, e: self.close_callback())
         else:
             self.titlebar.close_button.connect("clicked", lambda w: self.destroy())
             self.connect("destroy", lambda w: self.destroy())
             self.connect("delete-event", lambda w, e: self.destroy())
         
         self.draw_mask = self.get_mask_func(self, 1, 1, 0, 1)
+        
+        self.keymap = {
+            "Escape" : self.close,
+            }
+        
+        self.connect("key-press-event", self.key_press_dialog_box)
+        
+    def key_press_dialog_box(self, widget, event):
+        key_name = get_keyevent_name(event)
+        if self.keymap.has_key(key_name):
+            self.keymap[key_name]()
+
+            return True
+        else:
+            return False
+        
+    def close(self):
+        if self.close_callback:
+            self.close_callback()
+        else:
+            self.destroy()
         
     def get_mask_func(self, widget, padding_left=0, padding_right=0, padding_top=0, padding_bottom=0):
         '''
