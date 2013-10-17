@@ -79,7 +79,7 @@ class Application(object):
             self.window = MplayerWindow(True, window_type=self.window_type)
         self.window.set_resizable(self.resizable)
         self.window.set_position(gtk.WIN_POS_CENTER)
-        if self.destroy_func:
+        if hasattr(self, "destroy_func") and self.destroy_func:
             self.window.connect("destroy", lambda w: self.destroy_func)
         else:
             self.window.connect("destroy", self.destroy)
@@ -155,7 +155,7 @@ class Application(object):
 
         @param widget: A widget of Gtk.Widget. Passed by gtk.
         '''
-        if self.destroy_func:
+        if hasattr(self, "destroy_func") and self.destroy_func:
             self.destroy_func()
         else:
             self.window.close_window()
