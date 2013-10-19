@@ -460,6 +460,7 @@ class ConfirmDialog(DialogBox):
         
         self.confirm_button.connect("clicked", lambda w: self.click_confirm_button())
         self.cancel_button.connect("clicked", lambda w: self.click_cancel_button())
+        self.cancel_button.connect("key-press-event", self.key_press_confirm_dialog)
         
         # Connect widgets.
         self.body_box.pack_start(self.label_align, True, True)
@@ -469,6 +470,19 @@ class ConfirmDialog(DialogBox):
             self.right_button_box.set_buttons([self.cancel_button, self.confirm_button])
         else:
             self.right_button_box.set_buttons([self.confirm_button, self.cancel_button])
+            
+        self.keymap = {
+            "Return" : self.click_confirm_button,
+            }    
+        
+    def key_press_confirm_dialog(self, widget, event):
+        key_name = get_keyevent_name(event)
+        if self.keymap.has_key(key_name):
+            self.keymap[key_name]()
+
+            return True
+        else:
+            return False
         
     def click_confirm_button(self):
         '''
