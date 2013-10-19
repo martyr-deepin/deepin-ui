@@ -473,6 +473,7 @@ class ConfirmDialog(DialogBox):
             
         self.keymap = {
             "Return" : self.click_confirm_button,
+            "Escape" : self.close,
             }    
         
     def key_press_confirm_dialog(self, widget, event):
