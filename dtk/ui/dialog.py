@@ -422,7 +422,7 @@ class ConfirmDialog(DialogBox):
                  message_text_size=11,
                  window_type=gtk.WINDOW_TOPLEVEL,
                  close_callback=None,
-                 text_wrap_width=330,
+                 text_wrap_width=None,
                  ):
         '''
         Initialize ConfirmDialog class.
