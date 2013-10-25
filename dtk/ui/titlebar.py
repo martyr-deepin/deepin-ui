@@ -29,6 +29,7 @@ from locales import _
 from constant import DEFAULT_FONT_SIZE
 import tooltip as Tooltip
 from utils import window_is_max
+from theme import ui_theme
 import gobject
 import gtk
 import pango
@@ -103,7 +104,11 @@ class Titlebar(EventBox):
                 app_name_label = ""
             else:
                 app_name_label = app_name
-            self.app_name_box = Label(app_name_label, enable_gaussian=enable_gaussian, text_size=name_size)
+            self.app_name_box = Label(
+                app_name_label,
+                text_color=ui_theme.get_color("title_text"),
+                enable_gaussian=enable_gaussian, text_size=name_size,
+                )
             self.app_name_align = gtk.Alignment()
             self.app_name_align.set(0.5, 0.5, 0.0, 0.0)
             self.app_name_align.set_padding(2, 0, 5, 0)
@@ -116,7 +121,9 @@ class Titlebar(EventBox):
             else:
                 title_label = title
             self.title_box = Label(
-                title_label, enable_gaussian=enable_gaussian, 
+                title_label,
+                text_color=ui_theme.get_color("title_text"),
+                enable_gaussian=enable_gaussian, 
                 text_x_align=pango.ALIGN_CENTER,
                 text_size=title_size,
                 )
