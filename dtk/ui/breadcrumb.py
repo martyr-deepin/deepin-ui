@@ -367,7 +367,7 @@ class BreadMenu(Poplist):
                          shadow_visible=False,
                          shape_frame_function=self.shape_bread_menu_frame,
                          expose_frame_function=self.expose_bread_menu_frame,
-                         align_size=2
+                         align_size=2,
                          )
         self.set_skip_pager_hint(True)
         self.set_skip_taskbar_hint(True)
@@ -578,13 +578,13 @@ class Crumb(gtk.Button):
             self.set_state(gtk.STATE_PRELIGHT)
 
         if widget.state == gtk.STATE_NORMAL:
-            text_color = ui_theme.get_color("button_font").get_color()
+            text_color = ui_theme.get_color("title_text").get_color()
             button_color = None
             menu_color = None
             arrow_pixbuf = arrow_right
             
         elif widget.state == gtk.STATE_PRELIGHT:
-            text_color = ui_theme.get_color("button_font").get_color()
+            text_color = ui_theme.get_color("title_text").get_color()
             if self.menu_show:
                 arrow_pixbuf = arrow_down
             else:
@@ -598,7 +598,7 @@ class Crumb(gtk.Button):
                 menu_color = None
 
         elif widget.state == gtk.STATE_ACTIVE:
-            text_color = ui_theme.get_color("button_font").get_color()
+            text_color = ui_theme.get_color("title_text").get_color()
             if self.in_button:
                 button_color = inner_border
                 menu_color = None
