@@ -319,12 +319,16 @@ class Markbox(EventBox):
             self.start_value = self.value
             self.range = value - self.value
             times = int(abs(self.range)) * 10
-            from timeline import Timeline, CURVE_SINE
-            timeline = Timeline(times * 10, CURVE_SINE)
-            timeline.connect("start", self.start_animation)
-            timeline.connect("stop", self.stop_animation)
-            timeline.connect("update", self.update_animation)
-            timeline.run()
+            if times != 0:
+                from timeline import Timeline, CURVE_SINE
+                timeline = Timeline(times * 10, CURVE_SINE)
+                timeline.connect("start", self.start_animation)
+                timeline.connect("stop", self.stop_animation)
+                timeline.connect("update", self.update_animation)
+                timeline.run()
+            else:
+                self.value = value
+                self.queue_draw()
             
         return False    
     
