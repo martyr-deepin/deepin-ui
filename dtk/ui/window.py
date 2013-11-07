@@ -27,6 +27,7 @@ from window_base import WindowBase
 import cairo
 import gobject
 import gtk
+from xutils import set_window_property_by_id
 from utils import (cairo_state, propagate_expose, set_cursor, 
                    get_event_root_coords, 
                    enable_shadow, alpha_color_hex_to_cairo)
@@ -290,12 +291,18 @@ class Window(WindowBase):
         self.shadow_is_visible = False
         self.window_shadow.set_padding(0, 0, 0, 0)
         
+        # This code use for tag deepin-ui window for delete window shadow in deepin-screenshot.
+        set_window_property_by_id(self.get_window().xid, "DEEPIN_WINDOW_SHADOW", "0")
+        
     def show_shadow(self):
         '''
         Show the window shadow.
         '''
         self.shadow_is_visible = True
         self.window_shadow.set_padding(self.shadow_padding, self.shadow_padding, self.shadow_padding, self.shadow_padding)
+        
+        # This code use for tag deepin-ui window for delete window shadow in deepin-screenshot.
+        set_window_property_by_id(self.get_window().xid, "DEEPIN_WINDOW_SHADOW", str(self.shadow_padding))
         
     def motion_notify(self, widget, event):
         '''
