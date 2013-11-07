@@ -78,7 +78,6 @@ class Application(object):
         else:
             self.window = MplayerWindow(True, window_type=self.window_type)
         self.window.set_resizable(self.resizable)
-        self.window.set_position(gtk.WIN_POS_CENTER)
         if hasattr(self, "destroy_func") and self.destroy_func:
             self.window.connect("destroy", lambda w: self.destroy_func)
         else:
