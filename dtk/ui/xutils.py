@@ -20,8 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import Xlib.rdb, Xlib.X, Xlib.XK
-from Xlib import Xatom
+from Xlib import Xatom, display
 
 xlib_display = None
 
@@ -29,8 +28,8 @@ def init_xlib():
     global xlib_display
     
     if xlib_display == None:
-        xlib_display, appname, resource_database, args = Xlib.rdb.get_display_opts(Xlib.rdb.stdopts)
-
+        xlib_display =  display.Display()
+        
 def get_window_by_id(win_id):
     global xlib_display
     init_xlib()
