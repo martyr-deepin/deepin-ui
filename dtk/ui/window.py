@@ -27,7 +27,7 @@ from window_base import WindowBase
 import cairo
 import gobject
 import gtk
-from xutils import set_window_property_by_id
+from deepin_utils.xutils import set_window_property_by_id
 from utils import (cairo_state, propagate_expose, set_cursor, 
                    get_event_root_coords, 
                    enable_shadow, alpha_color_hex_to_cairo)
