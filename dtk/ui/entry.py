@@ -1113,6 +1113,12 @@ class Entry(gtk.EventBox):
                     self.entry_buffer.delete_selection()
                 else:
                     self.entry_buffer.backspace()
+                    
+                    # Keep cursor at right.
+                    pos = self.entry_buffer.get_insert_pos()
+                    self.move_to_start()
+                    self.move_to_end()
+                    self.entry_buffer.place_cursor(pos)
 
                 # Compute coordinate offset.
                 self.__calculate_cursor_offset()
