@@ -737,12 +737,13 @@ def place_center(refer_window, place_window):
     @param refer_window: Reference window.
     @param place_window: Place window.
     '''
-    (center_x, center_y) = get_widget_root_coordinate(refer_window, WIDGET_POS_CENTER)
+    self_size = place_window.get_size()
+    refer_window_pos = refer_window.get_position()
+    refer_window_rect = refer_window.get_allocation()
     place_window.move(
-        center_x - place_window.allocation.width / 2,
-        center_y - place_window.allocation.height / 2
-        )
-
+        (refer_window_pos[0] + refer_window_rect.width / 2) - (self_size[0] / 2),
+        (refer_window_pos[1] + refer_window_rect.height / 2) - (self_size[1] / 2))
+    
 def get_system_icon_info(icon_theme="Deepin", icon_name="NULL", size=48):
     '''
     Get system level icon info
