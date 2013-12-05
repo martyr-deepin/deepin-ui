@@ -40,7 +40,8 @@ class Application(object):
                  app_support_colormap=True, 
                  resizable=True,
                  window_type=gtk.WINDOW_TOPLEVEL, 
-                 destroy_func=None
+                 destroy_func=None,
+                 always_at_center=True,
                  ):
         '''
         Initialize the Application class.
@@ -56,6 +57,7 @@ class Application(object):
         self.close_callback = self.close_window
         self.skin_preview_pixbuf = None
         self.destroy_func = destroy_func
+        self.always_at_center = always_at_center
 
         # Start application.
         self.init()
@@ -78,6 +80,10 @@ class Application(object):
         else:
             self.window = MplayerWindow(True, window_type=self.window_type)
         self.window.set_resizable(self.resizable)
+        
+        if self.always_at_center:
+            self.window.set_position(gtk.WIN_POS_CENTER)
+        
         if hasattr(self, "destroy_func") and self.destroy_func:
             self.window.connect("destroy", lambda w: self.destroy_func)
         else:
