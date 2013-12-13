@@ -50,6 +50,7 @@ class TabSwitcher(EventBox):
     
     def __init__(self, 
                  tab_names, 
+                 font_size=11,
                  padding_x=0, 
                  padding_y=0,
                  ):
@@ -63,7 +64,7 @@ class TabSwitcher(EventBox):
         EventBox.__init__(self)
         self.add_events(gtk.gdk.ALL_EVENTS_MASK)
         self.tab_names = tab_names
-        self.tab_name_size = 11
+        self.tab_name_size = font_size
         self.tab_number = len(self.tab_names)
         tab_sizes = map(lambda tab_name: get_content_size(tab_name, self.tab_name_size), self.tab_names)
         self.tab_name_padding_x = 10
