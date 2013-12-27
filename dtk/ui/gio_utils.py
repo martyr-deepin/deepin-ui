@@ -27,6 +27,7 @@ import collections
 import sys
 import traceback
 import time
+from nls import _
 
 file_icon_pixbuf_dict = {}
 
@@ -251,11 +252,11 @@ def start_desktop_file(desktop_path):
     @return: Return True if launch application successfully, otherwise return error string.
     '''
     if not os.path.exists(desktop_path):
-        return "Desktop file not exists: %s" % desktop_path
+        return _("Desktop file not exists: %s") % desktop_path
     else:
         app_info = gio.unix.desktop_app_info_new_from_filename(desktop_path)
         if app_info == None:
-            return "Desktop is not valid: %s" % desktop_path
+            return _("Desktop is not valid: %s") % desktop_path
         else:
             try:
                 app_info.launch()
