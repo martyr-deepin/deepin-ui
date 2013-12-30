@@ -27,7 +27,7 @@ import collections
 import sys
 import traceback
 import time
-from nls import _
+from locales import _
 
 file_icon_pixbuf_dict = {}
 
