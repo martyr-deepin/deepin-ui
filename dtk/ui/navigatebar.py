@@ -184,11 +184,20 @@ class NavItem(object):
         self.item_press_pixbuf = item_press_pixbuf
         self.notify_num = 0
         (self.icon_dpixbuf, self.content, self.clicked_callback) = element
+        self.nav_item_pixbuf = self.icon_dpixbuf.get_pixbuf()
         pixbuf = self.item_hover_pixbuf.get_pixbuf()
+        (self.text_width, self.text_height) = get_content_size(self.content, self.font_size)
         
         # Init item button.
+        self.pixbuf_width_scale = False
         self.item_button = gtk.Button()
-        self.item_button.set_size_request(pixbuf.get_width(), pixbuf.get_height())
+        if self.text_width + self.nav_item_pixbuf.get_width() > pixbuf.get_width():
+            self.item_button.set_size_request(
+                    self.text_width + self.nav_item_pixbuf.get_width()+ 10,
+                    pixbuf.get_height())
+            self.pixbuf_width_scale = True
+        else:
+            self.item_button.set_size_request(pixbuf.get_width(), pixbuf.get_height())
         
         widget_fix_cycle_destroy_bug(self.item_button)
         
@@ -200,8 +209,6 @@ class NavItem(object):
         self.item_box.set(0.5, 0.5, 1.0, 1.0)
         self.item_box.set_padding(padding_y, padding_y, padding_x, padding_x)
         self.item_box.add(self.item_button)
-        
-        (self.text_width, self.text_height) = get_content_size(self.content, self.font_size)
 
     def wrap_nav_item_clicked_action(self):
         '''
@@ -238,22 +245,23 @@ class NavItem(object):
             select_pixbuf = press_pixbuf
             
         if select_pixbuf:
+            select_pixbuf = select_pixbuf.scale_simple(
+                    rect.width, rect.height, gtk.gdk.INTERP_BILINEAR)
             draw_pixbuf(cr, select_pixbuf, rect.x, rect.y)
         
         # Draw navigate item.
-        nav_item_pixbuf = self.icon_dpixbuf.get_pixbuf()
         if self.vertical:
             draw_pixbuf(
-                cr, nav_item_pixbuf, 
-                rect.x + (rect.width - nav_item_pixbuf.get_width()) / 2,
+                cr, self.nav_item_pixbuf, 
+                rect.x + (rect.width - self.nav_item_pixbuf.get_width()) / 2,
                 rect.y)
             
             draw_text(cr, 
                       self.content, 
                       rect.x, 
-                      rect.y + nav_item_pixbuf.get_height() - 3, 
+                      rect.y + self.nav_item_pixbuf.get_height() - 3, 
                       rect.width, 
-                      rect.height - nav_item_pixbuf.get_height(),
+                      rect.height - self.nav_item_pixbuf.get_height(),
                       text_size=self.font_size,
                       text_color="#FFFFFF",
                       alignment=pango.ALIGN_CENTER,
@@ -261,17 +269,17 @@ class NavItem(object):
                       border_radious=1, border_color="#000000", 
                       )
         else:
-            padding_x = (rect.width - nav_item_pixbuf.get_width() - self.text_width) / 2
+            padding_x = (rect.width - self.nav_item_pixbuf.get_width() - self.text_width) / 2
             
             draw_pixbuf(
                 cr, 
-                nav_item_pixbuf, 
+                self.nav_item_pixbuf, 
                 rect.x + padding_x,
-                rect.y + (rect.height - nav_item_pixbuf.get_height()) / 2)
+                rect.y + (rect.height - self.nav_item_pixbuf.get_height()) / 2)
         
             draw_text(cr, 
                       self.content, 
-                      rect.x + nav_item_pixbuf.get_width() + padding_x,
+                      rect.x + self.nav_item_pixbuf.get_width() + padding_x,
                       rect.y,
                       rect.width,
                       rect.height,
@@ -289,7 +297,7 @@ class NavItem(object):
         radious = 3
         draw_offset_x = -5
         draw_offset_y = 8
-        draw_x = rect.x + nav_item_pixbuf.get_width() + padding_x + draw_offset_x
+        draw_x = rect.x + self.nav_item_pixbuf.get_width() + padding_x + draw_offset_x
         draw_y = rect.y + draw_offset_y
         if self.notify_num > 0:
             cr.set_source_rgb(*color_hex_to_cairo("#BF0000"))
