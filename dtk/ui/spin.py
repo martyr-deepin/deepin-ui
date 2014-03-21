@@ -211,21 +211,21 @@ class SpinBox(gtk.VBox):
         '''
         Internal callback when user press increase arrow.
         '''
-        self.stop_update_value()
+        # self.stop_update_value()
         
         self.increase_value()
         
-        self.increase_value_id = gtk.timeout_add(self.update_delay, self.increase_value)
+        # self.increase_value_id = gtk.timeout_add(self.update_delay, self.increase_value)
                 
     def press_decrease_button(self, widget, event):
         '''
         Internal callback when user press decrease arrow.
         '''
-        self.stop_update_value()
+        # self.stop_update_value()
         
         self.decrease_value()
         
-        self.decrease_value_id = gtk.timeout_add(self.update_delay, self.decrease_value)
+        # self.decrease_value_id = gtk.timeout_add(self.update_delay, self.decrease_value)
         
     def handle_key_release(self, widget, event):
         '''
