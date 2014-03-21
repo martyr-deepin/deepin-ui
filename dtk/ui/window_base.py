@@ -145,7 +145,7 @@ class WindowBase(gtk.Window):
         else:
             self.show_shadow()
         
-    def add_move_event(self, widget):
+    def add_motion_move_event(self, widget):
         '''
         Add move event callback.
 
@@ -164,6 +164,14 @@ class WindowBase(gtk.Window):
         
         widget.connect("button-press-event", handle_button_press)
         widget.connect("motion-notify-event", handle_motion_event)
+        
+    def add_move_event(self, widget):
+        '''
+        Add move event callback.
+
+        @param widget: A widget of type gtk.Widget.
+        '''
+        widget.connect("button-press-event", lambda w, e: move_window(w, e, self))        
         
     def add_toggle_event(self, widget):
         '''
