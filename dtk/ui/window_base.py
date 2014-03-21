@@ -51,6 +51,13 @@ class WindowBase(gtk.Window):
         '''
         gtk.Window.__init__(self, window_type)
         
+        self.move_window_x = 0
+        self.move_window_y = 0
+        self.move_start_x = 0
+        self.move_start_y = 0
+        self.move_end_x = 0
+        self.move_end_y = 0
+        
     def show_window(self):
         '''
         Show the window.
@@ -144,7 +151,19 @@ class WindowBase(gtk.Window):
 
         @param widget: A widget of type gtk.Widget.
         '''
-        widget.connect("button-press-event", lambda w, e: move_window(w, e, self))            
+        def handle_button_press(widget, event):
+            (self.move_window_x, self.move_window_y) = widget.get_toplevel().window.get_origin()
+            (self.move_start_x, self.move_start_y) = event.x_root, event.y_root
+
+        def handle_motion_event(widget, event):
+            (self.move_end_x, self.move_end_y) = event.x_root, event.y_root
+            widget.get_toplevel().move(
+                int(self.move_window_x + self.move_end_x - self.move_start_x),
+                int(self.move_window_y + self.move_end_y - self.move_start_y),
+            )
+        
+        widget.connect("button-press-event", handle_button_press)
+        widget.connect("motion-notify-event", handle_motion_event)
         
     def add_toggle_event(self, widget):
         '''
