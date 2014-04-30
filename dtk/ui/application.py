@@ -146,7 +146,8 @@ class Application(object):
             self.titlebar.close_button.connect("clicked", self.close_callback)
         if self.resizable:
             self.window.add_toggle_event(self.titlebar)
-        self.window.add_motion_move_event(self.titlebar)
+        # self.window.add_motion_move_event(self.titlebar)
+        self.window.add_move_event(self.titlebar)
 
         # Show titlebar.
         self.show_titlebar()
