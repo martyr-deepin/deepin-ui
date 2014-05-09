@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-25 14:42+0800\n"
-"PO-Revision-Date: 2014-02-21 12:03+0000\n"
+"POT-Creation-Date: 2014-05-09 18:29+0800\n"
+"PO-Revision-Date: 2014-04-04 09:39+0000\n"
 "Last-Translator: kloki <klokimass@gmail.com>\n"
 "Language-Team: Slovenian (http://www.transifex.com/projects/p/deepin-ui/"
 "language/sl/)\n"
@@ -20,187 +20,139 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n"
 "%100==4 ? 2 : 3);\n"
 
-#: ../ui/entry.py:902 ../ui/net.py:130 ../ui/net.py:716
-msgid "Cut"
-msgstr "Izreži"
+msgid "Add skin from file"
+msgstr "Dodaj preobleko iz datoteke"
 
-#: ../ui/entry.py:903 ../ui/net.py:131 ../ui/net.py:717
-msgid "Copy"
-msgstr "Kopiraj"
+msgid "Are you sure you want to delete this skin?"
+msgstr "Ali ste prepričani, da želite izbrisati to preobleko?"
 
-#: ../ui/entry.py:904 ../ui/net.py:132 ../ui/net.py:718
-msgid "Paste"
-msgstr "Prilepi"
+msgid "Back"
+msgstr "Nazaj"
 
-#: ../ui/entry.py:905
-msgid "Select all"
-msgstr "Izberi vse"
-
-#: ../ui/entry.py:1956
-msgid "Please input new shortcuts"
-msgstr "Prosim vnesite nove bljižnice"
-
-#: ../ui/entry.py:1996
-msgid "Disabled"
-msgstr "Neomogočeno"
-
-#: ../ui/color_selection.py:111 ../ui/skin.py:869
-msgid "Select color"
-msgstr "Izberi barvo"
-
-#: ../ui/color_selection.py:150
-msgid "Color value"
-msgstr "Barvna vrednost"
-
-#: ../ui/color_selection.py:163
-msgid "Red: "
-msgstr "Rdeča:"
-
-#: ../ui/color_selection.py:170
-msgid "Green: "
-msgstr "Zelena:"
-
-#: ../ui/color_selection.py:177
 msgid "Blue: "
 msgstr "Modra:"
 
-#: ../ui/color_selection.py:206 ../ui/dialog.py:458 ../ui/dialog.py:547
-#: ../ui/tab_window.py:487
-msgid "OK"
-msgstr "Vredu"
-
-#: ../ui/color_selection.py:207 ../ui/dialog.py:459 ../ui/dialog.py:548
-#: ../ui/tab_window.py:488
 msgid "Cancel"
 msgstr "Prekliči"
 
-#: ../ui/resizable_label.py:87
-msgid "Expand"
-msgstr "Razširi"
-
-#: ../ui/resizable_label.py:88
-msgid "Shrink"
-msgstr "Skrči"
-
-#: ../ui/file_manager.py:44
-msgid "Computer"
-msgstr "Računalnik"
-
-#: ../ui/file_manager.py:45
-msgid "Home"
-msgstr "Dom"
-
-#: ../ui/file_manager.py:46
-msgid "Desktop"
-msgstr "Namizje"
-
-#: ../ui/file_manager.py:47
-msgid "Documents"
-msgstr "Dokumenti"
-
-#: ../ui/file_manager.py:48
-msgid "Downloads"
-msgstr "Prenosi"
-
-#: ../ui/file_manager.py:49
-msgid "Music"
-msgstr "Glasba"
-
-#: ../ui/file_manager.py:50
-msgid "Pictures"
-msgstr "Slike"
-
-#: ../ui/file_manager.py:51
-msgid "Videos"
-msgstr "Videoposnetki"
-
-#: ../ui/file_manager.py:52
-msgid "Trash"
-msgstr "Smetnjak"
-
-#: ../ui/titlebar.py:150
 msgid "Change skin"
 msgstr "Zamenjaj preobleko"
 
-#: ../ui/titlebar.py:156
-msgid "Main menu"
-msgstr "Glavni meni"
-
-#: ../ui/titlebar.py:162
-msgid "Minimum"
-msgstr "Pomanjšaj"
-
-#: ../ui/titlebar.py:168
-msgid "Maximize"
-msgstr "Povečaj"
-
-#: ../ui/titlebar.py:174 ../ui/dialog.py:718 ../ui/skin.py:130
-#: ../ui/skin.py:152
 msgid "Close"
 msgstr "Zapri"
 
-#: ../ui/dialog.py:709
-msgid "Preferences"
-msgstr "Lastnosti"
+msgid "Color value"
+msgstr "Barvna vrednost"
 
-#: ../ui/iconview.py:476
-msgid "Loading..."
-msgstr "Nalagam..."
+msgid "Computer"
+msgstr "Računalnik"
 
-#: ../ui/gio_utils.py:255
+msgid "Copy"
+msgstr "Kopiraj"
+
+msgid "Cut"
+msgstr "Izreži"
+
+msgid "Delete skin"
+msgstr "Izbriši preobleko"
+
+msgid "Desktop"
+msgstr "Namizje"
+
 #, python-format
 msgid "Desktop file not exists: %s"
 msgstr "Datoteka namizja ne obstaja: %s"
 
-#: ../ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
 msgstr "Namizje ni veljavno: %s"
 
-#: ../ui/skin.py:125
-msgid "Select Skin"
-msgstr "Izberi preobleko"
+msgid "Disabled"
+msgstr "Onemogočeno"
 
-#: ../ui/skin.py:269
-msgid "Skin version mismatch"
-msgstr "Neusklajena različica preobleke"
+msgid "Documents"
+msgstr "Dokumenti"
 
-#: ../ui/skin.py:270
-msgid "Import skin version is mismatch with current one!"
-msgstr "Uvožena različica preobleke se ne ujema s trenutno!"
+msgid "Downloads"
+msgstr "Prenosi"
 
-#: ../ui/skin.py:307
-msgid "Delete skin"
-msgstr "Izbriši preobleko"
+msgid "Expand"
+msgstr "Razširi"
 
-#: ../ui/skin.py:308
-msgid "Are you sure you want to delete this skin?"
-msgstr "Ali ste prepričani, da želite izbrisati to preobleko?"
-
-#: ../ui/skin.py:747
-msgid "Add skin from file"
-msgstr "Dodaj preobleko iz datoteke"
-
-#: ../ui/skin.py:860
-msgid "Zoom"
-msgstr "Približaj"
-
-#: ../ui/skin.py:861
-msgid "Flip vertical"
-msgstr "Zasukaj navpično"
-
-#: ../ui/skin.py:862
-msgid "Flip horizontal"
-msgstr "Zasukaj vodoravno"
-
-#: ../ui/skin.py:863
-msgid "Lock scaling"
-msgstr "Zakleni spreminjanje velikosti"
-
-#: ../ui/skin.py:864 ../ui/skin.py:937
 msgid "Export"
 msgstr "Izvozi"
 
-#: ../ui/skin.py:885
-msgid "Back"
-msgstr "Nazaj"
+msgid "Flip horizontal"
+msgstr "Zasukaj vodoravno"
+
+msgid "Flip vertical"
+msgstr "Zasukaj navpično"
+
+msgid "Green: "
+msgstr "Zelena:"
+
+msgid "Home"
+msgstr "Dom"
+
+msgid "Import skin version is mismatch with current one!"
+msgstr "Uvožena različica preobleke se ne ujema s trenutno!"
+
+msgid "Loading..."
+msgstr "Nalagam..."
+
+msgid "Lock scaling"
+msgstr "Zakleni spreminjanje velikosti"
+
+msgid "Main menu"
+msgstr "Glavni meni"
+
+msgid "Maximize"
+msgstr "Povečaj"
+
+msgid "Minimum"
+msgstr "Pomanjšaj"
+
+msgid "Music"
+msgstr "Glasba"
+
+msgid "OK"
+msgstr "Vredu"
+
+msgid "Paste"
+msgstr "Prilepi"
+
+msgid "Pictures"
+msgstr "Slike"
+
+msgid "Please input new shortcuts"
+msgstr "Prosim vnesite nove bljižnice"
+
+msgid "Preferences"
+msgstr "Lastnosti"
+
+msgid "Red: "
+msgstr "Rdeča:"
+
+msgid "Select Skin"
+msgstr "Izberi preobleko"
+
+msgid "Select all"
+msgstr "Izberi vse"
+
+msgid "Select color"
+msgstr "Izberi barvo"
+
+msgid "Shrink"
+msgstr "Skrči"
+
+msgid "Skin version mismatch"
+msgstr "Neusklajena različica preobleke"
+
+msgid "Trash"
+msgstr "Smetnjak"
+
+msgid "Videos"
+msgstr "Videoposnetki"
+
+msgid "Zoom"
+msgstr "Povečava"

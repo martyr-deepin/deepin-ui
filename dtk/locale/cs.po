@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-25 14:42+0800\n"
+"POT-Creation-Date: 2014-05-09 18:29+0800\n"
 "PO-Revision-Date: 2014-01-25 19:13+0000\n"
 "Last-Translator: fri <pavelfric@seznam.cz>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/deepin-ui/language/"
@@ -22,187 +22,139 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: ../ui/entry.py:902 ../ui/net.py:130 ../ui/net.py:716
-msgid "Cut"
-msgstr "Vyjmout"
+msgid "Add skin from file"
+msgstr "Přidat vzhled ze souboru"
 
-#: ../ui/entry.py:903 ../ui/net.py:131 ../ui/net.py:717
-msgid "Copy"
-msgstr "Kopírovat"
+msgid "Are you sure you want to delete this skin?"
+msgstr "Opravdu chcete smazat tuto podobu?"
 
-#: ../ui/entry.py:904 ../ui/net.py:132 ../ui/net.py:718
-msgid "Paste"
-msgstr "Vložit"
+msgid "Back"
+msgstr "Zpět"
 
-#: ../ui/entry.py:905
-msgid "Select all"
-msgstr "Vybrat vše"
-
-#: ../ui/entry.py:1956
-msgid "Please input new shortcuts"
-msgstr "Zadejte, prosím, nové zkratky"
-
-#: ../ui/entry.py:1996
-msgid "Disabled"
-msgstr "Zakázáno"
-
-#: ../ui/color_selection.py:111 ../ui/skin.py:869
-msgid "Select color"
-msgstr "Vybrat barvu"
-
-#: ../ui/color_selection.py:150
-msgid "Color value"
-msgstr "Hodnota barvy"
-
-#: ../ui/color_selection.py:163
-msgid "Red: "
-msgstr "Červená: "
-
-#: ../ui/color_selection.py:170
-msgid "Green: "
-msgstr "Zelená: "
-
-#: ../ui/color_selection.py:177
 msgid "Blue: "
 msgstr "Modrá: "
 
-#: ../ui/color_selection.py:206 ../ui/dialog.py:458 ../ui/dialog.py:547
-#: ../ui/tab_window.py:487
-msgid "OK"
-msgstr "OK"
-
-#: ../ui/color_selection.py:207 ../ui/dialog.py:459 ../ui/dialog.py:548
-#: ../ui/tab_window.py:488
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: ../ui/resizable_label.py:87
-msgid "Expand"
-msgstr "Zvětšit"
-
-#: ../ui/resizable_label.py:88
-msgid "Shrink"
-msgstr "Zmenšit"
-
-#: ../ui/file_manager.py:44
-msgid "Computer"
-msgstr "Počítač"
-
-#: ../ui/file_manager.py:45
-msgid "Home"
-msgstr "Domovská složka"
-
-#: ../ui/file_manager.py:46
-msgid "Desktop"
-msgstr "Pracovní plocha"
-
-#: ../ui/file_manager.py:47
-msgid "Documents"
-msgstr "Dokumenty"
-
-#: ../ui/file_manager.py:48
-msgid "Downloads"
-msgstr "Stahování"
-
-#: ../ui/file_manager.py:49
-msgid "Music"
-msgstr "Hudba"
-
-#: ../ui/file_manager.py:50
-msgid "Pictures"
-msgstr "Obrázky"
-
-#: ../ui/file_manager.py:51
-msgid "Videos"
-msgstr "Obraz"
-
-#: ../ui/file_manager.py:52
-msgid "Trash"
-msgstr "Koš"
-
-#: ../ui/titlebar.py:150
 msgid "Change skin"
 msgstr "Změnit vzhled"
 
-#: ../ui/titlebar.py:156
-msgid "Main menu"
-msgstr "Hlavní nabídka"
-
-#: ../ui/titlebar.py:162
-msgid "Minimum"
-msgstr "Nejmenší"
-
-#: ../ui/titlebar.py:168
-msgid "Maximize"
-msgstr "Zvětšit"
-
-#: ../ui/titlebar.py:174 ../ui/dialog.py:718 ../ui/skin.py:130
-#: ../ui/skin.py:152
 msgid "Close"
 msgstr "Zavřít"
 
-#: ../ui/dialog.py:709
-msgid "Preferences"
-msgstr "Nastavení"
+msgid "Color value"
+msgstr "Hodnota barvy"
 
-#: ../ui/iconview.py:476
-msgid "Loading..."
-msgstr "Nahrává se..."
+msgid "Computer"
+msgstr "Počítač"
 
-#: ../ui/gio_utils.py:255
+msgid "Copy"
+msgstr "Kopírovat"
+
+msgid "Cut"
+msgstr "Vyjmout"
+
+msgid "Delete skin"
+msgstr "Smazat vzhled"
+
+msgid "Desktop"
+msgstr "Pracovní plocha"
+
 #, python-format
 msgid "Desktop file not exists: %s"
 msgstr "Soubor plochy neexistuje: %s"
 
-#: ../ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
 msgstr "Tato plocha je neplatná: %s"
 
-#: ../ui/skin.py:125
-msgid "Select Skin"
-msgstr "Vybrat vzhled"
+msgid "Disabled"
+msgstr "Zakázáno"
 
-#: ../ui/skin.py:269
-msgid "Skin version mismatch"
-msgstr "Nesoulad verzí vzhledu"
+msgid "Documents"
+msgstr "Dokumenty"
 
-#: ../ui/skin.py:270
-msgid "Import skin version is mismatch with current one!"
-msgstr "Verze zavedeného vzhledu je v nesouladu s nynější!"
+msgid "Downloads"
+msgstr "Stahování"
 
-#: ../ui/skin.py:307
-msgid "Delete skin"
-msgstr "Smazat vzhled"
+msgid "Expand"
+msgstr "Zvětšit"
 
-#: ../ui/skin.py:308
-msgid "Are you sure you want to delete this skin?"
-msgstr "Opravdu chcete smazat tuto podobu?"
-
-#: ../ui/skin.py:747
-msgid "Add skin from file"
-msgstr "Přidat vzhled ze souboru"
-
-#: ../ui/skin.py:860
-msgid "Zoom"
-msgstr "Zvětšení"
-
-#: ../ui/skin.py:861
-msgid "Flip vertical"
-msgstr "Převrátit svisle"
-
-#: ../ui/skin.py:862
-msgid "Flip horizontal"
-msgstr "Převrátit vodorovně"
-
-#: ../ui/skin.py:863
-msgid "Lock scaling"
-msgstr "Zamknout změnu velikosti"
-
-#: ../ui/skin.py:864 ../ui/skin.py:937
 msgid "Export"
 msgstr "Vyvést"
 
-#: ../ui/skin.py:885
-msgid "Back"
-msgstr "Zpět"
+msgid "Flip horizontal"
+msgstr "Převrátit vodorovně"
+
+msgid "Flip vertical"
+msgstr "Převrátit svisle"
+
+msgid "Green: "
+msgstr "Zelená: "
+
+msgid "Home"
+msgstr "Domovská složka"
+
+msgid "Import skin version is mismatch with current one!"
+msgstr "Verze zavedeného vzhledu je v nesouladu s nynější!"
+
+msgid "Loading..."
+msgstr "Nahrává se..."
+
+msgid "Lock scaling"
+msgstr "Zamknout změnu velikosti"
+
+msgid "Main menu"
+msgstr "Hlavní nabídka"
+
+msgid "Maximize"
+msgstr "Zvětšit"
+
+msgid "Minimum"
+msgstr "Nejmenší"
+
+msgid "Music"
+msgstr "Hudba"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Paste"
+msgstr "Vložit"
+
+msgid "Pictures"
+msgstr "Obrázky"
+
+msgid "Please input new shortcuts"
+msgstr "Zadejte, prosím, nové zkratky"
+
+msgid "Preferences"
+msgstr "Nastavení"
+
+msgid "Red: "
+msgstr "Červená: "
+
+msgid "Select Skin"
+msgstr "Vybrat vzhled"
+
+msgid "Select all"
+msgstr "Vybrat vše"
+
+msgid "Select color"
+msgstr "Vybrat barvu"
+
+msgid "Shrink"
+msgstr "Zmenšit"
+
+msgid "Skin version mismatch"
+msgstr "Nesoulad verzí vzhledu"
+
+msgid "Trash"
+msgstr "Koš"
+
+msgid "Videos"
+msgstr "Obraz"
+
+msgid "Zoom"
+msgstr "Zvětšení"

@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-25 14:42+0800\n"
-"PO-Revision-Date: 2014-01-02 02:15+0000\n"
+"POT-Creation-Date: 2014-05-09 18:29+0800\n"
+"PO-Revision-Date: 2014-05-08 13:42+0000\n"
 "Last-Translator: electricface <songwentai@linuxdeepin.com>\n"
 "Language-Team: Hungarian (http://www.transifex.com/projects/p/deepin-ui/"
 "language/hu/)\n"
@@ -20,187 +20,139 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../ui/entry.py:902 ../ui/net.py:130 ../ui/net.py:716
-msgid "Cut"
-msgstr "Kivágás"
+msgid "Add skin from file"
+msgstr "Téma hozzáadása fileból"
 
-#: ../ui/entry.py:903 ../ui/net.py:131 ../ui/net.py:717
-msgid "Copy"
-msgstr "Másolás"
+msgid "Are you sure you want to delete this skin?"
+msgstr "Biztosan törölni szeretné az adott témát?"
 
-#: ../ui/entry.py:904 ../ui/net.py:132 ../ui/net.py:718
-msgid "Paste"
-msgstr "Beillesztés"
+msgid "Back"
+msgstr "Vissza"
 
-#: ../ui/entry.py:905
-msgid "Select all"
-msgstr "Összes kijelölése"
-
-#: ../ui/entry.py:1956
-msgid "Please input new shortcuts"
-msgstr "Új hivatkozás megadása"
-
-#: ../ui/entry.py:1996
-msgid "Disabled"
-msgstr "letilt"
-
-#: ../ui/color_selection.py:111 ../ui/skin.py:869
-msgid "Select color"
-msgstr "Szín kiválasztása"
-
-#: ../ui/color_selection.py:150
-msgid "Color value"
-msgstr "Szín értéke"
-
-#: ../ui/color_selection.py:163
-msgid "Red: "
-msgstr "Piros"
-
-#: ../ui/color_selection.py:170
-msgid "Green: "
-msgstr "Zöld"
-
-#: ../ui/color_selection.py:177
 msgid "Blue: "
 msgstr "Kék"
 
-#: ../ui/color_selection.py:206 ../ui/dialog.py:458 ../ui/dialog.py:547
-#: ../ui/tab_window.py:487
-msgid "OK"
-msgstr "OK"
-
-#: ../ui/color_selection.py:207 ../ui/dialog.py:459 ../ui/dialog.py:548
-#: ../ui/tab_window.py:488
 msgid "Cancel"
 msgstr "Mégsem"
 
-#: ../ui/resizable_label.py:87
-msgid "Expand"
-msgstr "Kiterjeszt"
-
-#: ../ui/resizable_label.py:88
-msgid "Shrink"
-msgstr "Zsugorítás"
-
-#: ../ui/file_manager.py:44
-msgid "Computer"
-msgstr "Számítógép"
-
-#: ../ui/file_manager.py:45
-msgid "Home"
-msgstr "Home"
-
-#: ../ui/file_manager.py:46
-msgid "Desktop"
-msgstr "Asztal"
-
-#: ../ui/file_manager.py:47
-msgid "Documents"
-msgstr "Dokumentumok"
-
-#: ../ui/file_manager.py:48
-msgid "Downloads"
-msgstr "Letöltések"
-
-#: ../ui/file_manager.py:49
-msgid "Music"
-msgstr "Zene"
-
-#: ../ui/file_manager.py:50
-msgid "Pictures"
-msgstr "Képek"
-
-#: ../ui/file_manager.py:51
-msgid "Videos"
-msgstr "Videók"
-
-#: ../ui/file_manager.py:52
-msgid "Trash"
-msgstr "Szemetesláda"
-
-#: ../ui/titlebar.py:150
 msgid "Change skin"
 msgstr "Téma cseréje"
 
-#: ../ui/titlebar.py:156
-msgid "Main menu"
-msgstr "Fő menü"
-
-#: ../ui/titlebar.py:162
-msgid "Minimum"
-msgstr "Minimalizálás"
-
-#: ../ui/titlebar.py:168
-msgid "Maximize"
-msgstr "Maximalizálás"
-
-#: ../ui/titlebar.py:174 ../ui/dialog.py:718 ../ui/skin.py:130
-#: ../ui/skin.py:152
 msgid "Close"
 msgstr "Bezárás"
 
-#: ../ui/dialog.py:709
-msgid "Preferences"
-msgstr "Beállítások"
+msgid "Color value"
+msgstr "Szín értéke"
 
-#: ../ui/iconview.py:476
-msgid "Loading..."
-msgstr "Betöltés"
+msgid "Computer"
+msgstr "Számítógép"
 
-#: ../ui/gio_utils.py:255
+msgid "Copy"
+msgstr "Másolás"
+
+msgid "Cut"
+msgstr "Kivágás"
+
+msgid "Delete skin"
+msgstr "Téma törlése"
+
+msgid "Desktop"
+msgstr "Asztal"
+
 #, python-format
 msgid "Desktop file not exists: %s"
 msgstr ""
 
-#: ../ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
 msgstr ""
 
-#: ../ui/skin.py:125
-msgid "Select Skin"
-msgstr "Téma kiválasztása"
+msgid "Disabled"
+msgstr "letilt"
 
-#: ../ui/skin.py:269
-msgid "Skin version mismatch"
-msgstr "Téma verziószáma nem egyezik"
+msgid "Documents"
+msgstr "Dokumentumok"
 
-#: ../ui/skin.py:270
-msgid "Import skin version is mismatch with current one!"
-msgstr "Importált téma verziószáma nem egyezik a meglévővel"
+msgid "Downloads"
+msgstr "Letöltések"
 
-#: ../ui/skin.py:307
-msgid "Delete skin"
-msgstr "Téma törlése"
+msgid "Expand"
+msgstr "Kiterjeszt"
 
-#: ../ui/skin.py:308
-msgid "Are you sure you want to delete this skin?"
-msgstr "Biztosan törölni szeretné az adott témát?"
-
-#: ../ui/skin.py:747
-msgid "Add skin from file"
-msgstr "Téma hozzáadása fileból"
-
-#: ../ui/skin.py:860
-msgid "Zoom"
-msgstr "Nagyítás"
-
-#: ../ui/skin.py:861
-msgid "Flip vertical"
-msgstr "Függőleges tükrözés"
-
-#: ../ui/skin.py:862
-msgid "Flip horizontal"
-msgstr "Vízszintes tükrözés"
-
-#: ../ui/skin.py:863
-msgid "Lock scaling"
-msgstr "Skálázás zárolása"
-
-#: ../ui/skin.py:864 ../ui/skin.py:937
 msgid "Export"
 msgstr "Exportálás"
 
-#: ../ui/skin.py:885
-msgid "Back"
-msgstr "Vissza"
+msgid "Flip horizontal"
+msgstr "Vízszintes tükrözés"
+
+msgid "Flip vertical"
+msgstr "Függőleges tükrözés"
+
+msgid "Green: "
+msgstr "Zöld"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Import skin version is mismatch with current one!"
+msgstr "Importált téma verziószáma nem egyezik a meglévővel"
+
+msgid "Loading..."
+msgstr "Betöltés"
+
+msgid "Lock scaling"
+msgstr "Skálázás zárolása"
+
+msgid "Main menu"
+msgstr "Fő menü"
+
+msgid "Maximize"
+msgstr "Maximalizálás"
+
+msgid "Minimum"
+msgstr "Minimalizálás"
+
+msgid "Music"
+msgstr "Zene"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Paste"
+msgstr "Beillesztés"
+
+msgid "Pictures"
+msgstr "Képek"
+
+msgid "Please input new shortcuts"
+msgstr "Új hivatkozás megadása"
+
+msgid "Preferences"
+msgstr "Beállítások"
+
+msgid "Red: "
+msgstr "Piros"
+
+msgid "Select Skin"
+msgstr "Téma kiválasztása"
+
+msgid "Select all"
+msgstr "Összes kijelölése"
+
+msgid "Select color"
+msgstr "Szín kiválasztása"
+
+msgid "Shrink"
+msgstr "Zsugorítás"
+
+msgid "Skin version mismatch"
+msgstr "Téma verziószáma nem egyezik"
+
+msgid "Trash"
+msgstr "Szemetesláda"
+
+msgid "Videos"
+msgstr "Videók"
+
+msgid "Zoom"
+msgstr "Nagyítás"
