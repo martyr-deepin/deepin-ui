@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 from setuptools import setup
+from dtk.ui.constant import VERSION
 import os
 
 def list_files(target_dir, install_dir):
@@ -15,7 +16,7 @@ def list_files(target_dir, install_dir):
     return results                
 
 setup(name='dtk',
-      version='0.1',
+      version=VERSION,
       description='UI toolkit for Linux Deepin.',
       long_description ="""UI toolkit for Linux Deepin.""",
       author='Linux Deepin Team',
