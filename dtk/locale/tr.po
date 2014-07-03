@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# yakup <mutouk@yandex.ru>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-09 18:29+0800\n"
-"PO-Revision-Date: 2014-03-10 06:33+0000\n"
-"Last-Translator: lihongwu <lihongwu1987@gmail.com>\n"
+"POT-Creation-Date: 2014-07-03 11:26+0800\n"
+"PO-Revision-Date: 2014-06-30 04:33+0000\n"
+"Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
 "Language-Team: Turkish (http://www.transifex.com/projects/p/deepin-ui/"
 "language/tr/)\n"
 "Language: tr\n"
@@ -18,139 +19,187 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: dtk/ui/skin.py:747
 msgid "Add skin from file"
-msgstr ""
+msgstr "Dosyadan kaplama ekle"
 
+#: dtk/ui/skin.py:308
 msgid "Are you sure you want to delete this skin?"
-msgstr ""
+msgstr "Bu kaplamayı silmek istediğine emin misin?"
 
+#: dtk/ui/skin.py:885
 msgid "Back"
-msgstr ""
+msgstr "Geri"
 
+#: dtk/ui/color_selection.py:177
 msgid "Blue: "
-msgstr ""
+msgstr "Mavi:"
 
+#: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
+#: dtk/ui/tab_window.py:488
 msgid "Cancel"
-msgstr ""
+msgstr "İptal"
 
+#: dtk/ui/titlebar.py:150
 msgid "Change skin"
-msgstr ""
+msgstr "Görünümü değiştir"
 
+#: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
+#: dtk/ui/skin.py:152
 msgid "Close"
-msgstr ""
+msgstr "Kapat"
 
+#: dtk/ui/color_selection.py:150
 msgid "Color value"
-msgstr ""
+msgstr "Renk değeri"
 
+#: dtk/ui/file_manager.py:44
 msgid "Computer"
-msgstr ""
+msgstr "Bilgisayar"
 
+#: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
 msgid "Copy"
-msgstr ""
+msgstr "Kopyala"
 
+#: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
 msgid "Cut"
-msgstr ""
+msgstr "Kes"
 
+#: dtk/ui/skin.py:307
 msgid "Delete skin"
-msgstr ""
+msgstr "Kaplama sil"
 
+#: dtk/ui/file_manager.py:46
 msgid "Desktop"
-msgstr ""
+msgstr "Masaüstü"
 
+#: dtk/ui/gio_utils.py:255
 #, python-format
 msgid "Desktop file not exists: %s"
-msgstr ""
+msgstr "Masaüstünde dosya bulunamadı: %s"
 
+#: dtk/ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
-msgstr ""
+msgstr "Masaüstünde dosya geçersiz: %s"
 
+#: dtk/ui/entry.py:1996
 msgid "Disabled"
-msgstr ""
+msgstr "Devre dışı"
 
+#: dtk/ui/file_manager.py:47
 msgid "Documents"
-msgstr ""
+msgstr "Belgeler"
 
+#: dtk/ui/file_manager.py:48
 msgid "Downloads"
-msgstr ""
+msgstr "İndirilenler"
 
+#: dtk/ui/resizable_label.py:87
 msgid "Expand"
-msgstr ""
+msgstr "Genişlet"
 
+#: dtk/ui/skin.py:864 dtk/ui/skin.py:937
 msgid "Export"
-msgstr ""
+msgstr "Dışarı aktar"
 
+#: dtk/ui/skin.py:862
 msgid "Flip horizontal"
-msgstr ""
+msgstr "Yatay çevir"
 
+#: dtk/ui/skin.py:861
 msgid "Flip vertical"
-msgstr ""
+msgstr "Dikey çevir"
 
+#: dtk/ui/color_selection.py:170
 msgid "Green: "
-msgstr ""
+msgstr "Yeşil:"
 
+#: dtk/ui/file_manager.py:45
 msgid "Home"
-msgstr ""
+msgstr "Ev"
 
+#: dtk/ui/skin.py:270
 msgid "Import skin version is mismatch with current one!"
-msgstr ""
+msgstr "Alınan sürüm uyuşmasız kaplama geçerli bir sürüm!"
 
+#: dtk/ui/iconview.py:476
 msgid "Loading..."
-msgstr ""
+msgstr "Yükleniyor..."
 
+#: dtk/ui/skin.py:863
 msgid "Lock scaling"
-msgstr ""
+msgstr "Ölçeklendirmeyi kilitle"
 
+#: dtk/ui/titlebar.py:156
 msgid "Main menu"
-msgstr ""
+msgstr "Ana menü"
 
+#: dtk/ui/titlebar.py:168
 msgid "Maximize"
-msgstr ""
+msgstr "Büyüt"
 
+#: dtk/ui/titlebar.py:162
 msgid "Minimum"
-msgstr ""
+msgstr "En düşük"
 
+#: dtk/ui/file_manager.py:49
 msgid "Music"
-msgstr ""
+msgstr "Müzik"
 
+#: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
+#: dtk/ui/tab_window.py:487
 msgid "OK"
-msgstr ""
+msgstr "Tamam"
 
+#: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
 msgid "Paste"
-msgstr ""
+msgstr "Yapıştır"
 
+#: dtk/ui/file_manager.py:50
 msgid "Pictures"
-msgstr ""
+msgstr "Resimler"
 
+#: dtk/ui/entry.py:1956
 msgid "Please input new shortcuts"
-msgstr ""
+msgstr "Lütfen yeni kısayollar girin"
 
+#: dtk/ui/dialog.py:709
 msgid "Preferences"
-msgstr ""
+msgstr "Tercihler"
 
+#: dtk/ui/color_selection.py:163
 msgid "Red: "
-msgstr ""
+msgstr "Kırmızı:"
 
+#: dtk/ui/skin.py:125
 msgid "Select Skin"
-msgstr ""
+msgstr "Kaplama seç:"
 
+#: dtk/ui/entry.py:905
 msgid "Select all"
-msgstr ""
+msgstr "Hepsini seç"
 
+#: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
 msgid "Select color"
-msgstr ""
+msgstr "Renk seç"
 
+#: dtk/ui/resizable_label.py:88
 msgid "Shrink"
-msgstr ""
+msgstr "Daralt"
 
+#: dtk/ui/skin.py:269
 msgid "Skin version mismatch"
-msgstr ""
+msgstr "Kaplama sürüm uyuşmazlığı"
 
+#: dtk/ui/file_manager.py:52
 msgid "Trash"
-msgstr ""
+msgstr "Çöp"
 
+#: dtk/ui/file_manager.py:51
 msgid "Videos"
-msgstr ""
+msgstr "Videolar"
 
+#: dtk/ui/skin.py:860
 msgid "Zoom"
-msgstr ""
+msgstr "Yakınlaştır"

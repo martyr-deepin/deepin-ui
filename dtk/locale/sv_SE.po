@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# addegsson <addegsson@gmail.com>, 2013
+# Andreas Gustafsson <addegsson@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-09 18:29+0800\n"
-"PO-Revision-Date: 2014-05-08 13:42+0000\n"
-"Last-Translator: electricface <songwentai@linuxdeepin.com>\n"
+"POT-Creation-Date: 2014-07-03 11:26+0800\n"
+"PO-Revision-Date: 2014-06-30 04:41+0000\n"
+"Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/projects/p/deepin-"
 "ui/language/sv_SE/)\n"
 "Language: sv_SE\n"
@@ -19,139 +19,187 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: dtk/ui/skin.py:747
 msgid "Add skin from file"
 msgstr "Lägg till skal från fil"
 
+#: dtk/ui/skin.py:308
 msgid "Are you sure you want to delete this skin?"
 msgstr "Är du säker på att du vill ta bort skalet?"
 
+#: dtk/ui/skin.py:885
 msgid "Back"
 msgstr "Bakåt"
 
+#: dtk/ui/color_selection.py:177
 msgid "Blue: "
 msgstr "Blå:"
 
+#: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
+#: dtk/ui/tab_window.py:488
 msgid "Cancel"
 msgstr "Avbryt"
 
+#: dtk/ui/titlebar.py:150
 msgid "Change skin"
 msgstr "Byt skal"
 
+#: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
+#: dtk/ui/skin.py:152
 msgid "Close"
 msgstr "Stäng"
 
+#: dtk/ui/color_selection.py:150
 msgid "Color value"
 msgstr "Färgvärdet"
 
+#: dtk/ui/file_manager.py:44
 msgid "Computer"
 msgstr "Dator"
 
+#: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
 msgid "Copy"
 msgstr "Kopiera"
 
+#: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
 msgid "Cut"
 msgstr "Klipp ut"
 
+#: dtk/ui/skin.py:307
 msgid "Delete skin"
 msgstr "Ta bort skal"
 
+#: dtk/ui/file_manager.py:46
 msgid "Desktop"
 msgstr "Skrivbord"
 
+#: dtk/ui/gio_utils.py:255
 #, python-format
 msgid "Desktop file not exists: %s"
 msgstr ""
 
+#: dtk/ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
 msgstr ""
 
+#: dtk/ui/entry.py:1996
 msgid "Disabled"
 msgstr "Avstängd"
 
+#: dtk/ui/file_manager.py:47
 msgid "Documents"
 msgstr "Dokument"
 
+#: dtk/ui/file_manager.py:48
 msgid "Downloads"
 msgstr "Hämtningar"
 
+#: dtk/ui/resizable_label.py:87
 msgid "Expand"
 msgstr "Förstora"
 
+#: dtk/ui/skin.py:864 dtk/ui/skin.py:937
 msgid "Export"
 msgstr "Exportera"
 
+#: dtk/ui/skin.py:862
 msgid "Flip horizontal"
 msgstr "Vänd horisontalt"
 
+#: dtk/ui/skin.py:861
 msgid "Flip vertical"
 msgstr "Vänd vertikalt"
 
+#: dtk/ui/color_selection.py:170
 msgid "Green: "
 msgstr "Grön:"
 
+#: dtk/ui/file_manager.py:45
 msgid "Home"
 msgstr "Hem"
 
+#: dtk/ui/skin.py:270
 msgid "Import skin version is mismatch with current one!"
 msgstr "Importerade skal versionen matchar inte med den nuvarande!"
 
+#: dtk/ui/iconview.py:476
 msgid "Loading..."
 msgstr "Laddar..."
 
+#: dtk/ui/skin.py:863
 msgid "Lock scaling"
 msgstr "Lås skalning"
 
+#: dtk/ui/titlebar.py:156
 msgid "Main menu"
 msgstr "Huvudmeny"
 
+#: dtk/ui/titlebar.py:168
 msgid "Maximize"
 msgstr "Maximera"
 
+#: dtk/ui/titlebar.py:162
 msgid "Minimum"
 msgstr "Minimera"
 
+#: dtk/ui/file_manager.py:49
 msgid "Music"
 msgstr "Musik"
 
+#: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
+#: dtk/ui/tab_window.py:487
 msgid "OK"
 msgstr "Okej"
 
+#: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
 msgid "Paste"
 msgstr "Klistra in"
 
+#: dtk/ui/file_manager.py:50
 msgid "Pictures"
 msgstr "Bilder"
 
+#: dtk/ui/entry.py:1956
 msgid "Please input new shortcuts"
 msgstr "Ange nya genvägar"
 
+#: dtk/ui/dialog.py:709
 msgid "Preferences"
 msgstr "Inställningar"
 
+#: dtk/ui/color_selection.py:163
 msgid "Red: "
 msgstr "Röd:"
 
+#: dtk/ui/skin.py:125
 msgid "Select Skin"
 msgstr "Välj skal"
 
+#: dtk/ui/entry.py:905
 msgid "Select all"
 msgstr "Välj alla"
 
+#: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
 msgid "Select color"
 msgstr "Välj färg"
 
+#: dtk/ui/resizable_label.py:88
 msgid "Shrink"
 msgstr "Förminska"
 
+#: dtk/ui/skin.py:269
 msgid "Skin version mismatch"
 msgstr "Skal versionen matchar inte"
 
+#: dtk/ui/file_manager.py:52
 msgid "Trash"
 msgstr "Papperskorg"
 
+#: dtk/ui/file_manager.py:51
 msgid "Videos"
 msgstr "Videor"
 
+#: dtk/ui/skin.py:860
 msgid "Zoom"
 msgstr "Zooma"

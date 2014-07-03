@@ -3,16 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Malsasa <teknoloid@gmail.com>, 2014
+# Ade Malsasa Akbar <teknoloid@gmail.com>, 2014
 # ambiya <ambiya90@gmail.com>, 2014
-# sibhe7 <sibhe7@gmail.com>, 2014
+# Bambang Sumarsono <sibhe7@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-09 18:29+0800\n"
-"PO-Revision-Date: 2014-05-08 13:42+0000\n"
-"Last-Translator: Malsasa <teknoloid@gmail.com>\n"
+"POT-Creation-Date: 2014-07-03 11:26+0800\n"
+"PO-Revision-Date: 2014-07-01 13:31+0000\n"
+"Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
 "Language-Team: Indonesian (Indonesia) (http://www.transifex.com/projects/p/"
 "deepin-ui/language/id_ID/)\n"
 "Language: id_ID\n"
@@ -21,139 +21,187 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: dtk/ui/skin.py:747
 msgid "Add skin from file"
 msgstr "Tambahkan skin dari berkas"
 
+#: dtk/ui/skin.py:308
 msgid "Are you sure you want to delete this skin?"
 msgstr "Apakah Anda Ingin Menghapus Skin Ini?"
 
+#: dtk/ui/skin.py:885
 msgid "Back"
 msgstr "Kembali"
 
+#: dtk/ui/color_selection.py:177
 msgid "Blue: "
 msgstr "Biru"
 
+#: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
+#: dtk/ui/tab_window.py:488
 msgid "Cancel"
 msgstr "Batal"
 
+#: dtk/ui/titlebar.py:150
 msgid "Change skin"
 msgstr "Ganti skin"
 
+#: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
+#: dtk/ui/skin.py:152
 msgid "Close"
 msgstr "Tutup"
 
+#: dtk/ui/color_selection.py:150
 msgid "Color value"
 msgstr "Nilai warna"
 
+#: dtk/ui/file_manager.py:44
 msgid "Computer"
 msgstr "Komputer"
 
+#: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
 msgid "Copy"
 msgstr "Salin"
 
+#: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
 msgid "Cut"
 msgstr "Potong"
 
+#: dtk/ui/skin.py:307
 msgid "Delete skin"
 msgstr "Hapus skin"
 
+#: dtk/ui/file_manager.py:46
 msgid "Desktop"
 msgstr "Desktop"
 
+#: dtk/ui/gio_utils.py:255
 #, python-format
 msgid "Desktop file not exists: %s"
 msgstr "Berkas desktop tidak ada: %s"
 
+#: dtk/ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
 msgstr "Desktop tidak valid: %s"
 
+#: dtk/ui/entry.py:1996
 msgid "Disabled"
 msgstr "Nonaktif"
 
+#: dtk/ui/file_manager.py:47
 msgid "Documents"
 msgstr "Dokumen"
 
+#: dtk/ui/file_manager.py:48
 msgid "Downloads"
 msgstr "Unduh"
 
+#: dtk/ui/resizable_label.py:87
 msgid "Expand"
 msgstr "Expand"
 
+#: dtk/ui/skin.py:864 dtk/ui/skin.py:937
 msgid "Export"
 msgstr "Ekspor"
 
+#: dtk/ui/skin.py:862
 msgid "Flip horizontal"
 msgstr "Flip horizontal"
 
+#: dtk/ui/skin.py:861
 msgid "Flip vertical"
 msgstr "Flip vertikal"
 
+#: dtk/ui/color_selection.py:170
 msgid "Green: "
 msgstr "Hijau"
 
+#: dtk/ui/file_manager.py:45
 msgid "Home"
 msgstr "Beranda"
 
+#: dtk/ui/skin.py:270
 msgid "Import skin version is mismatch with current one!"
 msgstr "Versi skin tidak cocok dengan versi sekarang!"
 
+#: dtk/ui/iconview.py:476
 msgid "Loading..."
 msgstr "Memuat..."
 
+#: dtk/ui/skin.py:863
 msgid "Lock scaling"
 msgstr "Kunci penskalaan"
 
+#: dtk/ui/titlebar.py:156
 msgid "Main menu"
 msgstr "Menu utama"
 
+#: dtk/ui/titlebar.py:168
 msgid "Maximize"
 msgstr "Maksimal"
 
+#: dtk/ui/titlebar.py:162
 msgid "Minimum"
 msgstr "Minimal"
 
+#: dtk/ui/file_manager.py:49
 msgid "Music"
 msgstr "Musik"
 
+#: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
+#: dtk/ui/tab_window.py:487
 msgid "OK"
 msgstr "OK"
 
+#: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
 msgid "Paste"
 msgstr "Tempel"
 
+#: dtk/ui/file_manager.py:50
 msgid "Pictures"
 msgstr "Gambar"
 
+#: dtk/ui/entry.py:1956
 msgid "Please input new shortcuts"
 msgstr "Masukkan pintasan baru"
 
+#: dtk/ui/dialog.py:709
 msgid "Preferences"
 msgstr "Preferensi"
 
+#: dtk/ui/color_selection.py:163
 msgid "Red: "
 msgstr "Merah"
 
+#: dtk/ui/skin.py:125
 msgid "Select Skin"
 msgstr "Pilih Skin"
 
+#: dtk/ui/entry.py:905
 msgid "Select all"
 msgstr "Pilih semua"
 
+#: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
 msgid "Select color"
 msgstr "Pilih Warna"
 
+#: dtk/ui/resizable_label.py:88
 msgid "Shrink"
 msgstr "Shrink"
 
+#: dtk/ui/skin.py:269
 msgid "Skin version mismatch"
 msgstr "Versi Skin Tidak Sesuai"
 
+#: dtk/ui/file_manager.py:52
 msgid "Trash"
 msgstr "Trash"
 
+#: dtk/ui/file_manager.py:51
 msgid "Videos"
 msgstr "Video"
 
+#: dtk/ui/skin.py:860
 msgid "Zoom"
 msgstr "Zoom"

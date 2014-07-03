@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# gamjachib <drios9420@gmail.com>, 2013
+# David Ríos <drios9420@gmail.com>, 2013
 # halbares <pablo.alvarez.flores@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-09 18:29+0800\n"
-"PO-Revision-Date: 2014-03-21 19:28+0000\n"
-"Last-Translator: halbares <pablo.alvarez.flores@gmail.com>\n"
+"POT-Creation-Date: 2014-07-03 11:26+0800\n"
+"PO-Revision-Date: 2014-06-30 04:33+0000\n"
+"Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
 "Language-Team: Spanish (Chile) (http://www.transifex.com/projects/p/deepin-"
 "ui/language/es_CL/)\n"
 "Language: es_CL\n"
@@ -20,139 +20,187 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: dtk/ui/skin.py:747
 msgid "Add skin from file"
 msgstr "Añadir tema desde archivo"
 
+#: dtk/ui/skin.py:308
 msgid "Are you sure you want to delete this skin?"
 msgstr "¿Estás seguro que quieres eliminar este tema?"
 
+#: dtk/ui/skin.py:885
 msgid "Back"
 msgstr "Atrás"
 
+#: dtk/ui/color_selection.py:177
 msgid "Blue: "
 msgstr "Azul:"
 
+#: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
+#: dtk/ui/tab_window.py:488
 msgid "Cancel"
 msgstr "Cancelar"
 
+#: dtk/ui/titlebar.py:150
 msgid "Change skin"
 msgstr "Cambiar tema"
 
+#: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
+#: dtk/ui/skin.py:152
 msgid "Close"
 msgstr "Cerrar"
 
+#: dtk/ui/color_selection.py:150
 msgid "Color value"
 msgstr "Valor de color"
 
+#: dtk/ui/file_manager.py:44
 msgid "Computer"
 msgstr "Sistema"
 
+#: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
 msgid "Copy"
 msgstr "Copiar"
 
+#: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
 msgid "Cut"
 msgstr "Cortar"
 
+#: dtk/ui/skin.py:307
 msgid "Delete skin"
 msgstr "Eliminar tema"
 
+#: dtk/ui/file_manager.py:46
 msgid "Desktop"
 msgstr "Escritorio"
 
+#: dtk/ui/gio_utils.py:255
 #, python-format
 msgid "Desktop file not exists: %s"
 msgstr "Archivo de escritorio no existe: %s"
 
+#: dtk/ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
 msgstr "Escritorio no es válido: %s"
 
+#: dtk/ui/entry.py:1996
 msgid "Disabled"
 msgstr "Deshabilitado"
 
+#: dtk/ui/file_manager.py:47
 msgid "Documents"
 msgstr "Documentos"
 
+#: dtk/ui/file_manager.py:48
 msgid "Downloads"
 msgstr "Descargas"
 
+#: dtk/ui/resizable_label.py:87
 msgid "Expand"
 msgstr "Expandir"
 
+#: dtk/ui/skin.py:864 dtk/ui/skin.py:937
 msgid "Export"
 msgstr "Exportar"
 
+#: dtk/ui/skin.py:862
 msgid "Flip horizontal"
 msgstr "Invertir posición horizontal"
 
+#: dtk/ui/skin.py:861
 msgid "Flip vertical"
 msgstr "Invertir posición vertical"
 
+#: dtk/ui/color_selection.py:170
 msgid "Green: "
 msgstr "Verde:"
 
+#: dtk/ui/file_manager.py:45
 msgid "Home"
 msgstr "Principal"
 
+#: dtk/ui/skin.py:270
 msgid "Import skin version is mismatch with current one!"
 msgstr "¡La versión del tema importado no concuerda con la actual!"
 
+#: dtk/ui/iconview.py:476
 msgid "Loading..."
 msgstr "Cargando..."
 
+#: dtk/ui/skin.py:863
 msgid "Lock scaling"
 msgstr "Bloquear relación de aspecto"
 
+#: dtk/ui/titlebar.py:156
 msgid "Main menu"
 msgstr "Menú principal"
 
+#: dtk/ui/titlebar.py:168
 msgid "Maximize"
 msgstr "Maximizar"
 
+#: dtk/ui/titlebar.py:162
 msgid "Minimum"
 msgstr "Mínimo"
 
+#: dtk/ui/file_manager.py:49
 msgid "Music"
 msgstr "Música"
 
+#: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
+#: dtk/ui/tab_window.py:487
 msgid "OK"
 msgstr "Aceptar"
 
+#: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
 msgid "Paste"
 msgstr "Pegar"
 
+#: dtk/ui/file_manager.py:50
 msgid "Pictures"
 msgstr "Imágenes"
 
+#: dtk/ui/entry.py:1956
 msgid "Please input new shortcuts"
 msgstr "Por favor ingrese el nuevo acceso rápido"
 
+#: dtk/ui/dialog.py:709
 msgid "Preferences"
 msgstr "Preferencias"
 
+#: dtk/ui/color_selection.py:163
 msgid "Red: "
 msgstr "Rojo:"
 
+#: dtk/ui/skin.py:125
 msgid "Select Skin"
 msgstr "Elegir tema"
 
+#: dtk/ui/entry.py:905
 msgid "Select all"
 msgstr "Seleccionar todo"
 
+#: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
 msgid "Select color"
 msgstr "Elegir color"
 
+#: dtk/ui/resizable_label.py:88
 msgid "Shrink"
 msgstr "Encoger"
 
+#: dtk/ui/skin.py:269
 msgid "Skin version mismatch"
 msgstr "No concuerda la versión del tema"
 
+#: dtk/ui/file_manager.py:52
 msgid "Trash"
 msgstr "Papelera"
 
+#: dtk/ui/file_manager.py:51
 msgid "Videos"
 msgstr "Vídeos"
 
+#: dtk/ui/skin.py:860
 msgid "Zoom"
 msgstr "Acercar"
