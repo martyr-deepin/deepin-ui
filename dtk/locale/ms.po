@@ -3,204 +3,203 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# kloki <klokimass@gmail.com>, 2014
+# inashdeen <inashdeen@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-03 11:26+0800\n"
-"PO-Revision-Date: 2014-06-30 04:33+0000\n"
+"PO-Revision-Date: 2014-06-30 04:41+0000\n"
 "Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
-"Language-Team: Slovenian (http://www.transifex.com/projects/p/deepin-ui/"
-"language/sl/)\n"
-"Language: sl\n"
+"Language-Team: Malay (http://www.transifex.com/projects/p/deepin-ui/language/"
+"ms/)\n"
+"Language: ms\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n"
-"%100==4 ? 2 : 3);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: dtk/ui/skin.py:747
 msgid "Add skin from file"
-msgstr "Dodaj preobleko iz datoteke"
+msgstr "Tambah kekulit dari fail"
 
 #: dtk/ui/skin.py:308
 msgid "Are you sure you want to delete this skin?"
-msgstr "Ali ste prepričani, da želite izbrisati to preobleko?"
+msgstr "Adakah anda pasti untuk memadam kekulit ini?"
 
 #: dtk/ui/skin.py:885
 msgid "Back"
-msgstr "Nazaj"
+msgstr "Belakang"
 
 #: dtk/ui/color_selection.py:177
 msgid "Blue: "
-msgstr "Modra:"
+msgstr "Biru:"
 
 #: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
 #: dtk/ui/tab_window.py:488
 msgid "Cancel"
-msgstr "Prekliči"
+msgstr "Batal"
 
 #: dtk/ui/titlebar.py:150
 msgid "Change skin"
-msgstr "Zamenjaj preobleko"
+msgstr "Tukar kekulit"
 
 #: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
 #: dtk/ui/skin.py:152
 msgid "Close"
-msgstr "Zapri"
+msgstr "Tutup"
 
 #: dtk/ui/color_selection.py:150
 msgid "Color value"
-msgstr "Barvna vrednost"
+msgstr "Nilai warna"
 
 #: dtk/ui/file_manager.py:44
 msgid "Computer"
-msgstr "Računalnik"
+msgstr "Komputer"
 
 #: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
 msgid "Copy"
-msgstr "Kopiraj"
+msgstr "Salin"
 
 #: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
 msgid "Cut"
-msgstr "Izreži"
+msgstr "Potong"
 
 #: dtk/ui/skin.py:307
 msgid "Delete skin"
-msgstr "Izbriši preobleko"
+msgstr "Padam kekulit"
 
 #: dtk/ui/file_manager.py:46
 msgid "Desktop"
-msgstr "Namizje"
+msgstr "Desktop"
 
 #: dtk/ui/gio_utils.py:255
 #, python-format
 msgid "Desktop file not exists: %s"
-msgstr "Datoteka namizja ne obstaja: %s"
+msgstr "Fail desktop tidak wujud : %s"
 
 #: dtk/ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
-msgstr "Namizje ni veljavno: %s"
+msgstr "Desktop tidak sah : %s"
 
 #: dtk/ui/entry.py:1996
 msgid "Disabled"
-msgstr "Onemogočeno"
+msgstr "Nyahbenarkan"
 
 #: dtk/ui/file_manager.py:47
 msgid "Documents"
-msgstr "Dokumenti"
+msgstr "Dokumen"
 
 #: dtk/ui/file_manager.py:48
 msgid "Downloads"
-msgstr "Prenosi"
+msgstr "Muat turun"
 
 #: dtk/ui/resizable_label.py:87
 msgid "Expand"
-msgstr "Razširi"
+msgstr "Kembang"
 
 #: dtk/ui/skin.py:864 dtk/ui/skin.py:937
 msgid "Export"
-msgstr "Izvozi"
+msgstr "Eksport"
 
 #: dtk/ui/skin.py:862
 msgid "Flip horizontal"
-msgstr "Zasukaj vodoravno"
+msgstr "Balikkan mendatar"
 
 #: dtk/ui/skin.py:861
 msgid "Flip vertical"
-msgstr "Zasukaj navpično"
+msgstr "Balikkan menegak"
 
 #: dtk/ui/color_selection.py:170
 msgid "Green: "
-msgstr "Zelena:"
+msgstr "Hijau:"
 
 #: dtk/ui/file_manager.py:45
 msgid "Home"
-msgstr "Dom"
+msgstr "Utama"
 
 #: dtk/ui/skin.py:270
 msgid "Import skin version is mismatch with current one!"
-msgstr "Uvožena različica preobleke se ne ujema s trenutno!"
+msgstr "versi kekulit yang diimport tidak serasi dengan yang terkini!"
 
 #: dtk/ui/iconview.py:476
 msgid "Loading..."
-msgstr "Nalagam..."
+msgstr "Memuat...."
 
 #: dtk/ui/skin.py:863
 msgid "Lock scaling"
-msgstr "Zakleni spreminjanje velikosti"
+msgstr "Kunci penskalaan"
 
 #: dtk/ui/titlebar.py:156
 msgid "Main menu"
-msgstr "Glavni meni"
+msgstr "Menu utama"
 
 #: dtk/ui/titlebar.py:168
 msgid "Maximize"
-msgstr "Povečaj"
+msgstr "Maksimakan"
 
 #: dtk/ui/titlebar.py:162
 msgid "Minimum"
-msgstr "Pomanjšaj"
+msgstr "Minima"
 
 #: dtk/ui/file_manager.py:49
 msgid "Music"
-msgstr "Glasba"
+msgstr "Muzik"
 
 #: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
 #: dtk/ui/tab_window.py:487
 msgid "OK"
-msgstr "Vredu"
+msgstr "OK"
 
 #: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
 msgid "Paste"
-msgstr "Prilepi"
+msgstr "Tampal"
 
 #: dtk/ui/file_manager.py:50
 msgid "Pictures"
-msgstr "Slike"
+msgstr "Gambar"
 
 #: dtk/ui/entry.py:1956
 msgid "Please input new shortcuts"
-msgstr "Prosim vnesite nove bljižnice"
+msgstr "Sila letakkan kunci pintas baharu"
 
 #: dtk/ui/dialog.py:709
 msgid "Preferences"
-msgstr "Lastnosti"
+msgstr "Prefrensi"
 
 #: dtk/ui/color_selection.py:163
 msgid "Red: "
-msgstr "Rdeča:"
+msgstr "Merah:"
 
 #: dtk/ui/skin.py:125
 msgid "Select Skin"
-msgstr "Izberi preobleko"
+msgstr "Pilih Kekulit"
 
 #: dtk/ui/entry.py:905
 msgid "Select all"
-msgstr "Izberi vse"
+msgstr "Pilih semua"
 
 #: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
 msgid "Select color"
-msgstr "Izberi barvo"
+msgstr "Pilih warna"
 
 #: dtk/ui/resizable_label.py:88
 msgid "Shrink"
-msgstr "Skrči"
+msgstr "Kecut"
 
 #: dtk/ui/skin.py:269
 msgid "Skin version mismatch"
-msgstr "Neusklajena različica preobleke"
+msgstr "Versi kekulit tidak serasi"
 
 #: dtk/ui/file_manager.py:52
 msgid "Trash"
-msgstr "Smetnjak"
+msgstr "Tong Sampah"
 
 #: dtk/ui/file_manager.py:51
 msgid "Videos"
-msgstr "Videoposnetki"
+msgstr "Video"
 
 #: dtk/ui/skin.py:860
 msgid "Zoom"
-msgstr "Povečava"
+msgstr "Zum"

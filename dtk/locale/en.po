@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-02 15:33+0800\n"
+"POT-Creation-Date: 2014-07-03 11:26+0800\n"
 "PO-Revision-Date: 2013-12-05 08:29+0000\n"
 "Last-Translator: iceleaf916 <iceleaf916@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,187 +17,187 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../ui/entry.py:902 ../ui/net.py:130 ../ui/net.py:716
-msgid "Cut"
-msgstr "Cut"
+#: dtk/ui/skin.py:747
+msgid "Add skin from file"
+msgstr "Add skin from file"
 
-#: ../ui/entry.py:903 ../ui/net.py:131 ../ui/net.py:717
-msgid "Copy"
-msgstr "Copy"
+#: dtk/ui/skin.py:308
+msgid "Are you sure you want to delete this skin?"
+msgstr "Are you sure you want to delete this skin?"
 
-#: ../ui/entry.py:904 ../ui/net.py:132 ../ui/net.py:718
-msgid "Paste"
-msgstr "Paste"
+#: dtk/ui/skin.py:885
+msgid "Back"
+msgstr "Back"
 
-#: ../ui/entry.py:905
-msgid "Select all"
-msgstr "Select all"
-
-#: ../ui/entry.py:1956
-msgid "Please input new shortcuts"
-msgstr "Please input new shortcuts"
-
-#: ../ui/entry.py:1996
-msgid "Disabled"
-msgstr "Disabled"
-
-#: ../ui/color_selection.py:111 ../ui/skin.py:869
-msgid "Select color"
-msgstr "Select color"
-
-#: ../ui/color_selection.py:150
-msgid "Color value"
-msgstr "Color value"
-
-#: ../ui/color_selection.py:163
-msgid "Red: "
-msgstr "Red: "
-
-#: ../ui/color_selection.py:170
-msgid "Green: "
-msgstr "Green: "
-
-#: ../ui/color_selection.py:177
+#: dtk/ui/color_selection.py:177
 msgid "Blue: "
 msgstr "Blue: "
 
-#: ../ui/color_selection.py:206 ../ui/dialog.py:458 ../ui/dialog.py:547
-#: ../ui/tab_window.py:487
-msgid "OK"
-msgstr "OK"
-
-#: ../ui/color_selection.py:207 ../ui/dialog.py:459 ../ui/dialog.py:548
-#: ../ui/tab_window.py:488
+#: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
+#: dtk/ui/tab_window.py:488
 msgid "Cancel"
 msgstr "Cancel"
 
-#: ../ui/resizable_label.py:87
-msgid "Expand"
-msgstr "Expand"
-
-#: ../ui/resizable_label.py:88
-msgid "Shrink"
-msgstr "Shrink"
-
-#: ../ui/file_manager.py:44
-msgid "Computer"
-msgstr "Computer"
-
-#: ../ui/file_manager.py:45
-msgid "Home"
-msgstr "Home"
-
-#: ../ui/file_manager.py:46
-msgid "Desktop"
-msgstr "Desktop"
-
-#: ../ui/file_manager.py:47
-msgid "Documents"
-msgstr "Documents"
-
-#: ../ui/file_manager.py:48
-msgid "Downloads"
-msgstr "Downloads"
-
-#: ../ui/file_manager.py:49
-msgid "Music"
-msgstr "Music"
-
-#: ../ui/file_manager.py:50
-msgid "Pictures"
-msgstr "Pictures"
-
-#: ../ui/file_manager.py:51
-msgid "Videos"
-msgstr "Videos"
-
-#: ../ui/file_manager.py:52
-msgid "Trash"
-msgstr "Trash"
-
-#: ../ui/titlebar.py:150
+#: dtk/ui/titlebar.py:150
 msgid "Change skin"
 msgstr "Change skin"
 
-#: ../ui/titlebar.py:156
-msgid "Main menu"
-msgstr "Main menu"
-
-#: ../ui/titlebar.py:162
-msgid "Minimum"
-msgstr "Minimum"
-
-#: ../ui/titlebar.py:168
-msgid "Maximize"
-msgstr "Maximize"
-
-#: ../ui/titlebar.py:174 ../ui/dialog.py:718 ../ui/skin.py:130
-#: ../ui/skin.py:152
+#: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
+#: dtk/ui/skin.py:152
 msgid "Close"
 msgstr "Close"
 
-#: ../ui/dialog.py:709
-msgid "Preferences"
-msgstr "Preferences"
+#: dtk/ui/color_selection.py:150
+msgid "Color value"
+msgstr "Color value"
 
-#: ../ui/iconview.py:476
-msgid "Loading..."
-msgstr "Loading..."
+#: dtk/ui/file_manager.py:44
+msgid "Computer"
+msgstr "Computer"
 
-#: ../ui/gio_utils.py:255
+#: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
+msgid "Copy"
+msgstr "Copy"
+
+#: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
+msgid "Cut"
+msgstr "Cut"
+
+#: dtk/ui/skin.py:307
+msgid "Delete skin"
+msgstr "Delete skin"
+
+#: dtk/ui/file_manager.py:46
+msgid "Desktop"
+msgstr "Desktop"
+
+#: dtk/ui/gio_utils.py:255
 #, python-format
 msgid "Desktop file not exists: %s"
 msgstr ""
 
-#: ../ui/gio_utils.py:259
+#: dtk/ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
 msgstr ""
 
-#: ../ui/skin.py:125
-msgid "Select Skin"
-msgstr "Select Skin"
+#: dtk/ui/entry.py:1996
+msgid "Disabled"
+msgstr "Disabled"
 
-#: ../ui/skin.py:269
-msgid "Skin version mismatch"
-msgstr "Skin version mismatch"
+#: dtk/ui/file_manager.py:47
+msgid "Documents"
+msgstr "Documents"
 
-#: ../ui/skin.py:270
-msgid "Import skin version is mismatch with current one!"
-msgstr "Import skin version is mismatch with current one!"
+#: dtk/ui/file_manager.py:48
+msgid "Downloads"
+msgstr "Downloads"
 
-#: ../ui/skin.py:307
-msgid "Delete skin"
-msgstr "Delete skin"
+#: dtk/ui/resizable_label.py:87
+msgid "Expand"
+msgstr "Expand"
 
-#: ../ui/skin.py:308
-msgid "Are you sure you want to delete this skin?"
-msgstr "Are you sure you want to delete this skin?"
-
-#: ../ui/skin.py:747
-msgid "Add skin from file"
-msgstr "Add skin from file"
-
-#: ../ui/skin.py:860
-msgid "Zoom"
-msgstr "Zoom"
-
-#: ../ui/skin.py:861
-msgid "Flip vertical"
-msgstr "Flip vertical"
-
-#: ../ui/skin.py:862
-msgid "Flip horizontal"
-msgstr "Flip horizontal"
-
-#: ../ui/skin.py:863
-msgid "Lock scaling"
-msgstr "Lock scaling"
-
-#: ../ui/skin.py:864 ../ui/skin.py:937
+#: dtk/ui/skin.py:864 dtk/ui/skin.py:937
 msgid "Export"
 msgstr "Export"
 
-#: ../ui/skin.py:885
-msgid "Back"
-msgstr "Back"
+#: dtk/ui/skin.py:862
+msgid "Flip horizontal"
+msgstr "Flip horizontal"
+
+#: dtk/ui/skin.py:861
+msgid "Flip vertical"
+msgstr "Flip vertical"
+
+#: dtk/ui/color_selection.py:170
+msgid "Green: "
+msgstr "Green: "
+
+#: dtk/ui/file_manager.py:45
+msgid "Home"
+msgstr "Home"
+
+#: dtk/ui/skin.py:270
+msgid "Import skin version is mismatch with current one!"
+msgstr "Import skin version is mismatch with current one!"
+
+#: dtk/ui/iconview.py:476
+msgid "Loading..."
+msgstr "Loading..."
+
+#: dtk/ui/skin.py:863
+msgid "Lock scaling"
+msgstr "Lock scaling"
+
+#: dtk/ui/titlebar.py:156
+msgid "Main menu"
+msgstr "Main menu"
+
+#: dtk/ui/titlebar.py:168
+msgid "Maximize"
+msgstr "Maximize"
+
+#: dtk/ui/titlebar.py:162
+msgid "Minimum"
+msgstr "Minimum"
+
+#: dtk/ui/file_manager.py:49
+msgid "Music"
+msgstr "Music"
+
+#: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
+#: dtk/ui/tab_window.py:487
+msgid "OK"
+msgstr "OK"
+
+#: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
+msgid "Paste"
+msgstr "Paste"
+
+#: dtk/ui/file_manager.py:50
+msgid "Pictures"
+msgstr "Pictures"
+
+#: dtk/ui/entry.py:1956
+msgid "Please input new shortcuts"
+msgstr "Please input new shortcuts"
+
+#: dtk/ui/dialog.py:709
+msgid "Preferences"
+msgstr "Preferences"
+
+#: dtk/ui/color_selection.py:163
+msgid "Red: "
+msgstr "Red: "
+
+#: dtk/ui/skin.py:125
+msgid "Select Skin"
+msgstr "Select Skin"
+
+#: dtk/ui/entry.py:905
+msgid "Select all"
+msgstr "Select all"
+
+#: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
+msgid "Select color"
+msgstr "Select color"
+
+#: dtk/ui/resizable_label.py:88
+msgid "Shrink"
+msgstr "Shrink"
+
+#: dtk/ui/skin.py:269
+msgid "Skin version mismatch"
+msgstr "Skin version mismatch"
+
+#: dtk/ui/file_manager.py:52
+msgid "Trash"
+msgstr "Trash"
+
+#: dtk/ui/file_manager.py:51
+msgid "Videos"
+msgstr "Videos"
+
+#: dtk/ui/skin.py:860
+msgid "Zoom"
+msgstr "Zoom"
