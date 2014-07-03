@@ -107,7 +107,7 @@ SIMILAR_COLOR_SEQUENCE = ["red", "orange", "gold", "yellow", "green_yellow", "ch
                           "deep_pink", "purple", "dark_purple", "blue", "dodger_blue", "cyan"]
 
 # Version.
-VERSION = "1.0.1"
+VERSION = "1.0.3"
 
 # Size of paned handle in deepin-ui.
 PANED_HANDLE_SIZE = 11
