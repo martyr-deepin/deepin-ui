@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+# . /usr/share/debconf/confmodule
+# db_version 2.0
+# db_capb backup
+# db_get deepin-ui/release-note
+
+if which pycompile >/dev/null 2>&1;then
+	pycompile -p deepin-ui
+fi
+
+
+# db_input high deepin-ui/release-note || true
+# db_go

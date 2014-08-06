@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Deepin UI Demo
+Comment=UI toolkit for Linux Deepin.
+Icon=distributor-logo-deepin
+Exec=deepin-ui-demo
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;Settings;DesktopSettings;
+

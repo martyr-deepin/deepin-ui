@@ -1,0 +1,23 @@
+Source: deepin-ui
+Priority: extra
+Maintainer: Li Longyu <leaeasy@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), python ( >=2.7), python-dev( >=2.7), python-cairo-dev, libcairo2-dev, libgtk2.0-dev, python-setuptools, python-gtk2-dev, libwebkitgtk-dev
+Standards-Version: 3.9.2
+Section: libs
+Homepage: http://www.linuxdeepin.com/
+Vcs-Git: git://github.com/manateelazycat/deepin-ui.git
+Vcs-Browser: https://github.com/manateelazycat/deepin-ui.git
+
+Package: deepin-ui
+Section: libdevel
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python ( >=2.7), libgtk2.0-0, libcairo2, python-gtk2, python-imaging, gettext, python-deepin-utils,
+ python-xlib, python-webkit, python-scipy
+Description: LinuxDeepin UI libs
+ UI toolkit for Linux Deepin,Awesome and Beautiful UI libs with LinuxDeepin
+
+#Package: deepin-ui-demo
+#Architecture: all
+#Depends: deepin-ui, ${misc:Depends}
+#Description: LinuxDeepin UI libs demos
+# Include Deepin UI demo.
