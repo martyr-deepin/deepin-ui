@@ -1,0 +1,10 @@
+[main]
+host = https://www.transifex.com
+minimum_perc = 80
+mode = developer
+
+[deepin-ui.deepin-uipot-1]
+file_filter = dtk/locale/<lang>.po
+source_lang = en
+type = PO
+
