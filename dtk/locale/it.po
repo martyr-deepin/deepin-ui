@@ -1,33 +1,33 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # TaiZong <969582098@qq.com>, 2013
 # massimo.carofano <massimo.carofano@gmail.com>, 2014
+# Maxximo88 <real.massimo@hotmail.it>, 2014
 # 李洪武 <lihongwu1987@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-03 11:26+0800\n"
-"PO-Revision-Date: 2014-06-30 04:33+0000\n"
-"Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
-"Language-Team: Italian (http://www.transifex.com/projects/p/deepin-ui/"
-"language/it/)\n"
-"Language: it\n"
+"PO-Revision-Date: 2014-08-21 08:51+0000\n"
+"Last-Translator: Maxximo88 <real.massimo@hotmail.it>\n"
+"Language-Team: Italian (http://www.transifex.com/projects/p/deepin-ui/language/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: dtk/ui/skin.py:747
 msgid "Add skin from file"
-msgstr "Aggiungere la pelle da file"
+msgstr "Aggiungi skin da file"
 
 #: dtk/ui/skin.py:308
 msgid "Are you sure you want to delete this skin?"
-msgstr "Sei sicuro di voler cancellare questa pelle?"
+msgstr "Sei sicuro di voler eliminare questa skin?"
 
 #: dtk/ui/skin.py:885
 msgid "Back"
@@ -40,20 +40,20 @@ msgstr "Blu:"
 #: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
 #: dtk/ui/tab_window.py:488
 msgid "Cancel"
-msgstr "Cancellare"
+msgstr "Cancella"
 
 #: dtk/ui/titlebar.py:150
 msgid "Change skin"
-msgstr "cambiare la pelle"
+msgstr "Cambia skin"
 
 #: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
 #: dtk/ui/skin.py:152
 msgid "Close"
-msgstr "Chiudere"
+msgstr "Chiudi"
 
 #: dtk/ui/color_selection.py:150
 msgid "Color value"
-msgstr "Valore di colore"
+msgstr "Valore del colore"
 
 #: dtk/ui/file_manager.py:44
 msgid "Computer"
@@ -61,15 +61,15 @@ msgstr "Computer"
 
 #: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
 msgid "Copy"
-msgstr "Copiare"
+msgstr "Copia"
 
 #: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
 msgid "Cut"
-msgstr "Tagliare"
+msgstr "Taglia"
 
 #: dtk/ui/skin.py:307
 msgid "Delete skin"
-msgstr "Eliminare la pelle"
+msgstr "Elimina skin"
 
 #: dtk/ui/file_manager.py:46
 msgid "Desktop"
@@ -87,7 +87,7 @@ msgstr "Desktop non valido: %s"
 
 #: dtk/ui/entry.py:1996
 msgid "Disabled"
-msgstr "disabile"
+msgstr "Disabilitato"
 
 #: dtk/ui/file_manager.py:47
 msgid "Documents"
@@ -99,7 +99,7 @@ msgstr "Download"
 
 #: dtk/ui/resizable_label.py:87
 msgid "Expand"
-msgstr "Espandere"
+msgstr "Espandi"
 
 #: dtk/ui/skin.py:864 dtk/ui/skin.py:937
 msgid "Export"
@@ -107,11 +107,11 @@ msgstr "Esportare"
 
 #: dtk/ui/skin.py:862
 msgid "Flip horizontal"
-msgstr "Riflettere orizzontale"
+msgstr "Riflettere orizzontalmente"
 
 #: dtk/ui/skin.py:861
 msgid "Flip vertical"
-msgstr "Riflettere verticale"
+msgstr "Riflettere verticalmente"
 
 #: dtk/ui/color_selection.py:170
 msgid "Green: "
@@ -123,7 +123,7 @@ msgstr "Home"
 
 #: dtk/ui/skin.py:270
 msgid "Import skin version is mismatch with current one!"
-msgstr "Versione di Import pelle è mancata corrispondenza con quella attuale"
+msgstr "La versione della Skin da importare non ha corrispondenza con l'attuale!"
 
 #: dtk/ui/iconview.py:476
 msgid "Loading..."
@@ -139,7 +139,7 @@ msgstr "Menù principale"
 
 #: dtk/ui/titlebar.py:168
 msgid "Maximize"
-msgstr "Massimizzare"
+msgstr "Massimo"
 
 #: dtk/ui/titlebar.py:162
 msgid "Minimum"
@@ -152,23 +152,23 @@ msgstr "Musica"
 #: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
 #: dtk/ui/tab_window.py:487
 msgid "OK"
-msgstr "SI"
+msgstr "Ok"
 
 #: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
 msgid "Paste"
-msgstr "Incollare"
+msgstr "Incolla"
 
 #: dtk/ui/file_manager.py:50
 msgid "Pictures"
-msgstr "Immagine"
+msgstr "Immagini"
 
 #: dtk/ui/entry.py:1956
 msgid "Please input new shortcuts"
-msgstr "Si prega di inserire nuove scorciatoie"
+msgstr "Inserisci delle nuove scorciatoie"
 
 #: dtk/ui/dialog.py:709
 msgid "Preferences"
-msgstr "preferenze"
+msgstr "Preferenze"
 
 #: dtk/ui/color_selection.py:163
 msgid "Red: "
@@ -176,27 +176,27 @@ msgstr "Rosso:"
 
 #: dtk/ui/skin.py:125
 msgid "Select Skin"
-msgstr "Selezionare pelle"
+msgstr "Seleziona Skin"
 
 #: dtk/ui/entry.py:905
 msgid "Select all"
-msgstr "Selezionare tutto"
+msgstr "Seleziona tutto"
 
 #: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
 msgid "Select color"
-msgstr "Selezionare il colore"
+msgstr "Seleziona il colore"
 
 #: dtk/ui/resizable_label.py:88
 msgid "Shrink"
-msgstr "Restringere"
+msgstr "Restringi"
 
 #: dtk/ui/skin.py:269
 msgid "Skin version mismatch"
-msgstr "Versione della pelle non corrisponde"
+msgstr "Versione skin non corrispondente"
 
 #: dtk/ui/file_manager.py:52
 msgid "Trash"
-msgstr "Spazzatura"
+msgstr "Cestino"
 
 #: dtk/ui/file_manager.py:51
 msgid "Videos"

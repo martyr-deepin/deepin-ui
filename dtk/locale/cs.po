@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # fri, 2013
 # fri, 2013
@@ -12,14 +12,13 @@ msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-03 11:26+0800\n"
-"PO-Revision-Date: 2014-06-30 04:33+0000\n"
-"Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
-"Language-Team: Czech (http://www.transifex.com/projects/p/deepin-ui/language/"
-"cs/)\n"
-"Language: cs\n"
+"PO-Revision-Date: 2014-08-21 08:51+0000\n"
+"Last-Translator: fri\n"
+"Language-Team: Czech (http://www.transifex.com/projects/p/deepin-ui/language/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: dtk/ui/skin.py:747

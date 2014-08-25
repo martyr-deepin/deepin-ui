@@ -1,24 +1,24 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Ade Malsasa Akbar <teknoloid@gmail.com>, 2014
 # ambiya <ambiya90@gmail.com>, 2014
+# Aril Apria Susanto <awriel@gmail.com>, 2014
 # Bambang Sumarsono <sibhe7@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-03 11:26+0800\n"
-"PO-Revision-Date: 2014-07-01 13:31+0000\n"
-"Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
-"Language-Team: Indonesian (Indonesia) (http://www.transifex.com/projects/p/"
-"deepin-ui/language/id_ID/)\n"
-"Language: id_ID\n"
+"PO-Revision-Date: 2014-08-21 08:51+0000\n"
+"Last-Translator: Aril Apria Susanto <awriel@gmail.com>\n"
+"Language-Team: Indonesian (Indonesia) (http://www.transifex.com/projects/p/deepin-ui/language/id_ID/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: id_ID\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: dtk/ui/skin.py:747
@@ -35,7 +35,7 @@ msgstr "Kembali"
 
 #: dtk/ui/color_selection.py:177
 msgid "Blue: "
-msgstr "Biru"
+msgstr "Biru:"
 
 #: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
 #: dtk/ui/tab_window.py:488
@@ -73,21 +73,21 @@ msgstr "Hapus skin"
 
 #: dtk/ui/file_manager.py:46
 msgid "Desktop"
-msgstr "Desktop"
+msgstr "Destop"
 
 #: dtk/ui/gio_utils.py:255
 #, python-format
 msgid "Desktop file not exists: %s"
-msgstr "Berkas desktop tidak ada: %s"
+msgstr "Berkas destop tidak ada: %s"
 
 #: dtk/ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
-msgstr "Desktop tidak valid: %s"
+msgstr "Destop tidak valid: %s"
 
 #: dtk/ui/entry.py:1996
 msgid "Disabled"
-msgstr "Nonaktif"
+msgstr "Nonaktifkan"
 
 #: dtk/ui/file_manager.py:47
 msgid "Documents"
@@ -99,7 +99,7 @@ msgstr "Unduh"
 
 #: dtk/ui/resizable_label.py:87
 msgid "Expand"
-msgstr "Expand"
+msgstr "Perluas"
 
 #: dtk/ui/skin.py:864 dtk/ui/skin.py:937
 msgid "Export"
@@ -115,11 +115,11 @@ msgstr "Flip vertikal"
 
 #: dtk/ui/color_selection.py:170
 msgid "Green: "
-msgstr "Hijau"
+msgstr "Hijau:"
 
 #: dtk/ui/file_manager.py:45
 msgid "Home"
-msgstr "Beranda"
+msgstr "Rumah"
 
 #: dtk/ui/skin.py:270
 msgid "Import skin version is mismatch with current one!"
@@ -172,7 +172,7 @@ msgstr "Preferensi"
 
 #: dtk/ui/color_selection.py:163
 msgid "Red: "
-msgstr "Merah"
+msgstr "Merah:"
 
 #: dtk/ui/skin.py:125
 msgid "Select Skin"
@@ -188,7 +188,7 @@ msgstr "Pilih Warna"
 
 #: dtk/ui/resizable_label.py:88
 msgid "Shrink"
-msgstr "Shrink"
+msgstr "Susutkan"
 
 #: dtk/ui/skin.py:269
 msgid "Skin version mismatch"
@@ -196,7 +196,7 @@ msgstr "Versi Skin Tidak Sesuai"
 
 #: dtk/ui/file_manager.py:52
 msgid "Trash"
-msgstr "Trash"
+msgstr "Tempat sampah"
 
 #: dtk/ui/file_manager.py:51
 msgid "Videos"
@@ -204,4 +204,4 @@ msgstr "Video"
 
 #: dtk/ui/skin.py:860
 msgid "Zoom"
-msgstr "Zoom"
+msgstr "Zum"

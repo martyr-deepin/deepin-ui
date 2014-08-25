@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Automatically generated, 2012
 # electricface <songwentai@linuxdeepin.com>, 2014
@@ -12,14 +12,13 @@ msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-03 11:26+0800\n"
-"PO-Revision-Date: 2014-07-02 08:32+0000\n"
-"Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/deepin-"
-"ui/language/zh_TW/)\n"
-"Language: zh_TW\n"
+"PO-Revision-Date: 2014-08-25 13:57+0000\n"
+"Last-Translator: freddy4212 <freddy4212@gmail.com>\n"
+"Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/deepin-ui/language/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: dtk/ui/skin.py:747
@@ -36,7 +35,7 @@ msgstr "返回"
 
 #: dtk/ui/color_selection.py:177
 msgid "Blue: "
-msgstr "藍色: "
+msgstr "藍色："
 
 #: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
 #: dtk/ui/tab_window.py:488
@@ -79,7 +78,7 @@ msgstr "桌面"
 #: dtk/ui/gio_utils.py:255
 #, python-format
 msgid "Desktop file not exists: %s"
-msgstr "Desktop 檔案不存在: %s"
+msgstr "Desktop 檔案不存在：%s"
 
 #: dtk/ui/gio_utils.py:259
 #, python-format
@@ -116,7 +115,7 @@ msgstr "垂直翻轉"
 
 #: dtk/ui/color_selection.py:170
 msgid "Green: "
-msgstr "綠色: "
+msgstr "綠色："
 
 #: dtk/ui/file_manager.py:45
 msgid "Home"
@@ -124,7 +123,7 @@ msgstr "家目錄"
 
 #: dtk/ui/skin.py:270
 msgid "Import skin version is mismatch with current one!"
-msgstr "匯入的主題和目前主題版本不符"
+msgstr "匯入的主題和目前主題版本不相符"
 
 #: dtk/ui/iconview.py:476
 msgid "Loading..."
@@ -173,7 +172,7 @@ msgstr "偏好設定"
 
 #: dtk/ui/color_selection.py:163
 msgid "Red: "
-msgstr "紅色: "
+msgstr "紅色："
 
 #: dtk/ui/skin.py:125
 msgid "Select Skin"
@@ -193,7 +192,7 @@ msgstr "收起"
 
 #: dtk/ui/skin.py:269
 msgid "Skin version mismatch"
-msgstr "主題版本不符"
+msgstr "主題版本不相符"
 
 #: dtk/ui/file_manager.py:52
 msgid "Trash"

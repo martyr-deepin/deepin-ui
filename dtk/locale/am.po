@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-25 14:42+0800\n"
-"PO-Revision-Date: 2014-06-30 04:33+0000\n"
+"POT-Creation-Date: 2014-07-03 11:26+0800\n"
+"PO-Revision-Date: 2014-08-21 08:51+0000\n"
 "Last-Translator: samson <sambelet@yahoo.com>\n"
 "Language-Team: Amharic (http://www.transifex.com/projects/p/deepin-ui/language/am/)\n"
 "MIME-Version: 1.0\n"
@@ -18,187 +18,187 @@ msgstr ""
 "Language: am\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../ui/entry.py:902 ../ui/net.py:130 ../ui/net.py:716
-msgid "Cut"
-msgstr "መቁረጫ"
+#: dtk/ui/skin.py:747
+msgid "Add skin from file"
+msgstr "ከ ፋይል ቆዳ መጨመሪያ"
 
-#: ../ui/entry.py:903 ../ui/net.py:131 ../ui/net.py:717
-msgid "Copy"
-msgstr "ኮፒ ማድረጊያ"
+#: dtk/ui/skin.py:308
+msgid "Are you sure you want to delete this skin?"
+msgstr "በእርግጥ ይህን ቆዳ ማጥፋት ይፈልጋሉ?"
 
-#: ../ui/entry.py:904 ../ui/net.py:132 ../ui/net.py:718
-msgid "Paste"
-msgstr "መለጠፊያ"
+#: dtk/ui/skin.py:885
+msgid "Back"
+msgstr "ወደ ኋላ"
 
-#: ../ui/entry.py:905
-msgid "Select all"
-msgstr "ሁሉንም መምረጫ"
-
-#: ../ui/entry.py:1956
-msgid "Please input new shortcuts"
-msgstr "እባክዎን አዲስ አቋራጭ ያስገቡ"
-
-#: ../ui/entry.py:1996
-msgid "Disabled"
-msgstr "ተሰናክሏል"
-
-#: ../ui/color_selection.py:111 ../ui/skin.py:869
-msgid "Select color"
-msgstr "ቀለም ይምረጡ"
-
-#: ../ui/color_selection.py:150
-msgid "Color value"
-msgstr "የቀለም ዋጋ"
-
-#: ../ui/color_selection.py:163
-msgid "Red: "
-msgstr "ቀይ: "
-
-#: ../ui/color_selection.py:170
-msgid "Green: "
-msgstr "አረንጓዴ: "
-
-#: ../ui/color_selection.py:177
+#: dtk/ui/color_selection.py:177
 msgid "Blue: "
 msgstr "ሰማያዊ: "
 
-#: ../ui/color_selection.py:206 ../ui/dialog.py:458 ../ui/dialog.py:547
-#: ../ui/tab_window.py:487
-msgid "OK"
-msgstr "እሺ"
-
-#: ../ui/color_selection.py:207 ../ui/dialog.py:459 ../ui/dialog.py:548
-#: ../ui/tab_window.py:488
+#: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
+#: dtk/ui/tab_window.py:488
 msgid "Cancel"
 msgstr "መሰረዣ"
 
-#: ../ui/resizable_label.py:87
-msgid "Expand"
-msgstr "ማስፊያ"
-
-#: ../ui/resizable_label.py:88
-msgid "Shrink"
-msgstr "ማሳነሻ"
-
-#: ../ui/file_manager.py:44
-msgid "Computer"
-msgstr "ኮምፒዩተር"
-
-#: ../ui/file_manager.py:45
-msgid "Home"
-msgstr "ቤት"
-
-#: ../ui/file_manager.py:46
-msgid "Desktop"
-msgstr "ዴስክቶፕ"
-
-#: ../ui/file_manager.py:47
-msgid "Documents"
-msgstr "ሰነዶች"
-
-#: ../ui/file_manager.py:48
-msgid "Downloads"
-msgstr "የወረዱ"
-
-#: ../ui/file_manager.py:49
-msgid "Music"
-msgstr "ሙዚቃ"
-
-#: ../ui/file_manager.py:50
-msgid "Pictures"
-msgstr "ስእሎች"
-
-#: ../ui/file_manager.py:51
-msgid "Videos"
-msgstr "ቪዲዮ"
-
-#: ../ui/file_manager.py:52
-msgid "Trash"
-msgstr "ቆሻሻ"
-
-#: ../ui/titlebar.py:150
+#: dtk/ui/titlebar.py:150
 msgid "Change skin"
 msgstr "ቆዳውን መቀየሪያ"
 
-#: ../ui/titlebar.py:156
-msgid "Main menu"
-msgstr "ዋናው ዝርዝር"
-
-#: ../ui/titlebar.py:162
-msgid "Minimum"
-msgstr "ዝቅተኛ"
-
-#: ../ui/titlebar.py:168
-msgid "Maximize"
-msgstr "ማሳደጊያ"
-
-#: ../ui/titlebar.py:174 ../ui/dialog.py:718 ../ui/skin.py:130
-#: ../ui/skin.py:152
+#: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
+#: dtk/ui/skin.py:152
 msgid "Close"
 msgstr "መዝጊያ"
 
-#: ../ui/dialog.py:709
-msgid "Preferences"
-msgstr "ምርጫዎች"
+#: dtk/ui/color_selection.py:150
+msgid "Color value"
+msgstr "የቀለም ዋጋ"
 
-#: ../ui/iconview.py:476
-msgid "Loading..."
-msgstr "በመጫን ላይ..."
+#: dtk/ui/file_manager.py:44
+msgid "Computer"
+msgstr "ኮምፒዩተር"
 
-#: ../ui/gio_utils.py:255
+#: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
+msgid "Copy"
+msgstr "ኮፒ ማድረጊያ"
+
+#: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
+msgid "Cut"
+msgstr "መቁረጫ"
+
+#: dtk/ui/skin.py:307
+msgid "Delete skin"
+msgstr "ቆዳውን ማጥፊያ"
+
+#: dtk/ui/file_manager.py:46
+msgid "Desktop"
+msgstr "ዴስክቶፕ"
+
+#: dtk/ui/gio_utils.py:255
 #, python-format
 msgid "Desktop file not exists: %s"
 msgstr "የ ደስክቶፕ ፋይል አልተገኘም: %s"
 
-#: ../ui/gio_utils.py:259
+#: dtk/ui/gio_utils.py:259
 #, python-format
 msgid "Desktop is not valid: %s"
 msgstr "ዴስክቶፕ ዋጋ የለውም: %s"
 
-#: ../ui/skin.py:125
-msgid "Select Skin"
-msgstr "ቆዳ ይምረጡ"
+#: dtk/ui/entry.py:1996
+msgid "Disabled"
+msgstr "ተሰናክሏል"
 
-#: ../ui/skin.py:269
-msgid "Skin version mismatch"
-msgstr "የቆዳ እትም አለመስማማት"
+#: dtk/ui/file_manager.py:47
+msgid "Documents"
+msgstr "ሰነዶች"
 
-#: ../ui/skin.py:270
-msgid "Import skin version is mismatch with current one!"
-msgstr "ያመጡት የቆዳ እትም ከ አሁኑ ጋር አይስማም!"
+#: dtk/ui/file_manager.py:48
+msgid "Downloads"
+msgstr "የወረዱ"
 
-#: ../ui/skin.py:307
-msgid "Delete skin"
-msgstr "ቆዳውን ማጥፊያ"
+#: dtk/ui/resizable_label.py:87
+msgid "Expand"
+msgstr "ማስፊያ"
 
-#: ../ui/skin.py:308
-msgid "Are you sure you want to delete this skin?"
-msgstr "በእርግጥ ይህን ቆዳ ማጥፋት ይፈልጋሉ?"
-
-#: ../ui/skin.py:747
-msgid "Add skin from file"
-msgstr "ከ ፋይል ቆዳ መጨመሪያ"
-
-#: ../ui/skin.py:860
-msgid "Zoom"
-msgstr "ማሳያ"
-
-#: ../ui/skin.py:861
-msgid "Flip vertical"
-msgstr "በ ቁመት መገልበጫ"
-
-#: ../ui/skin.py:862
-msgid "Flip horizontal"
-msgstr "በ አግድም መገልበጫ"
-
-#: ../ui/skin.py:863
-msgid "Lock scaling"
-msgstr "መቆለፊያ መመጠኛ"
-
-#: ../ui/skin.py:864 ../ui/skin.py:937
+#: dtk/ui/skin.py:864 dtk/ui/skin.py:937
 msgid "Export"
 msgstr "መላኪያ"
 
-#: ../ui/skin.py:885
-msgid "Back"
-msgstr "ወደ ኋላ"
+#: dtk/ui/skin.py:862
+msgid "Flip horizontal"
+msgstr "በ አግድም መገልበጫ"
+
+#: dtk/ui/skin.py:861
+msgid "Flip vertical"
+msgstr "በ ቁመት መገልበጫ"
+
+#: dtk/ui/color_selection.py:170
+msgid "Green: "
+msgstr "አረንጓዴ: "
+
+#: dtk/ui/file_manager.py:45
+msgid "Home"
+msgstr "ቤት"
+
+#: dtk/ui/skin.py:270
+msgid "Import skin version is mismatch with current one!"
+msgstr "ያመጡት የቆዳ እትም ከ አሁኑ ጋር አይስማም!"
+
+#: dtk/ui/iconview.py:476
+msgid "Loading..."
+msgstr "በመጫን ላይ..."
+
+#: dtk/ui/skin.py:863
+msgid "Lock scaling"
+msgstr "መቆለፊያ መመጠኛ"
+
+#: dtk/ui/titlebar.py:156
+msgid "Main menu"
+msgstr "ዋናው ዝርዝር"
+
+#: dtk/ui/titlebar.py:168
+msgid "Maximize"
+msgstr "ማሳደጊያ"
+
+#: dtk/ui/titlebar.py:162
+msgid "Minimum"
+msgstr "ዝቅተኛ"
+
+#: dtk/ui/file_manager.py:49
+msgid "Music"
+msgstr "ሙዚቃ"
+
+#: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
+#: dtk/ui/tab_window.py:487
+msgid "OK"
+msgstr "እሺ"
+
+#: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
+msgid "Paste"
+msgstr "መለጠፊያ"
+
+#: dtk/ui/file_manager.py:50
+msgid "Pictures"
+msgstr "ስእሎች"
+
+#: dtk/ui/entry.py:1956
+msgid "Please input new shortcuts"
+msgstr "እባክዎን አዲስ አቋራጭ ያስገቡ"
+
+#: dtk/ui/dialog.py:709
+msgid "Preferences"
+msgstr "ምርጫዎች"
+
+#: dtk/ui/color_selection.py:163
+msgid "Red: "
+msgstr "ቀይ: "
+
+#: dtk/ui/skin.py:125
+msgid "Select Skin"
+msgstr "ቆዳ ይምረጡ"
+
+#: dtk/ui/entry.py:905
+msgid "Select all"
+msgstr "ሁሉንም መምረጫ"
+
+#: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
+msgid "Select color"
+msgstr "ቀለም ይምረጡ"
+
+#: dtk/ui/resizable_label.py:88
+msgid "Shrink"
+msgstr "ማሳነሻ"
+
+#: dtk/ui/skin.py:269
+msgid "Skin version mismatch"
+msgstr "የቆዳ እትም አለመስማማት"
+
+#: dtk/ui/file_manager.py:52
+msgid "Trash"
+msgstr "ቆሻሻ"
+
+#: dtk/ui/file_manager.py:51
+msgid "Videos"
+msgstr "ቪዲዮ"
+
+#: dtk/ui/skin.py:860
+msgid "Zoom"
+msgstr "ማሳያ"
