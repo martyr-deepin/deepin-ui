@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Wang Yong
-# 
+#
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -40,14 +40,14 @@ class Timeline(gobject.GObject):
         'completed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         }
 
-    def __init__(self, 
-                 duration, 
+    def __init__(self,
+                 duration,
                  curve,
                  ):
         '''
         Initialize Timeline class.
 
-        @param duration: Animation duration. 
+        @param duration: Animation duration.
         @param curve: Animation curve.
         '''
         gobject.GObject.__init__(self)
@@ -86,16 +86,16 @@ class Timeline(gobject.GObject):
         if self._started:
             self.emit("start")
             self._started = False
-        
+
         if self._stopped:
             self.emit('stop')
             return False
         else:
             self.emit('update', self._states.pop())
-            
+
             if len(self._states) == 0:
                 self.emit('completed')
                 return False
             return True
-    
+
 gobject.type_register(Timeline)

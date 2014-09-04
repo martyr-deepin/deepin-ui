@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Wang Yong
-# 
+#
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -33,16 +33,16 @@ def remove_directory(path):
                 remove_directory(full_path)
             else:
                 os.remove(full_path)
-        os.rmdir(path)        
-        
+        os.rmdir(path)
+
 def create_directory(directory, remove_first=False):
     '''Create directory.'''
     if remove_first and os.path.exists(directory):
         remove_directory(directory)
-    
+
     if not os.path.exists(directory):
         os.makedirs(directory)
-        
+
 if __name__ == "__main__":
     # Read config options.
     config_parser = ConfigParser()
@@ -52,35 +52,35 @@ if __name__ == "__main__":
     locale_dir = os.path.abspath(config_parser.get("locale", "locale_dir"))
     langs = eval(config_parser.get("locale", "langs"))
     create_directory(locale_dir)
-    
+
     # Get input arguments.
     source_files = []
     for root, dirs, files in os.walk(source_dir):
         for each_file in files:
             if each_file.endswith(".py") and not each_file.startswith("."):
                 source_files.append(os.path.join(root, each_file))
-                
+
     pot_filepath = os.path.join(locale_dir, project_name + ".pot")
-    
+
     # Generate pot file.
     subprocess.call(
         "xgettext -k_ -o %s %s" % (pot_filepath, ' '.join(source_files)),
         shell=True)
-    
+
     # Generate po files.
     for lang in langs:
         subprocess.call(
             "msginit --no-translator -l %s.UTF-8 -i %s -o %s" % (lang, pot_filepath, os.path.join(locale_dir, "%s.po" % (lang))),
             shell=True
             )
-        
+
     # Replace ASCII with UTF-8.
     for lang in langs:
         po_filepath = os.path.join(locale_dir, "%s.po" % (lang))
         read_file = open(po_filepath, "r")
         whole_thing = read_file.read()
         read_file.close()
-        
+
         write_file = open(po_filepath, "w")
         whole_thing = whole_thing.replace("charset=ASCII", "charset=UTF-8");
         write_file.write(whole_thing);

@@ -3,21 +3,21 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Wang Yong
-# 
+#
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
 #             Zhai Xiang <zhaixiang@linuxdeepin.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -37,10 +37,10 @@ import pango
 class Titlebar(EventBox):
     '''
     Titlebar defines every thing of a title bar of a application based on deepin ui.
-    
+
     @undocumented: expose_titlebar_separator
     '''
-    def __init__(self, 
+    def __init__(self,
                  button_mask=["theme", "menu", "max", "min", "close"],
                  icon_path=None,
                  app_name=None,
@@ -73,22 +73,22 @@ class Titlebar(EventBox):
         self.h_layout_box = gtk.HBox()
         self.add(self.v_layout_box)
         self.v_layout_box.pack_start(self.h_layout_box, True, True)
-        
+
         # Init separator.
         if add_separator:
             self.separator = gtk.HBox()
             self.separator.set_size_request(-1, 1)
             self.separator.connect("expose-event", self.expose_titlebar_separator)
             self.v_layout_box.pack_start(self.separator, True, True)
-        
+
         # Add drag event box.
         self.drag_box = EventBox()
         self.h_layout_box.pack_start(self.drag_box, True, True)
-        
+
         # Init left box to contain icon and title.
         self.left_box = gtk.HBox()
         self.drag_box.add(self.left_box)
-        
+
         if show_title:
             # Add icon.
             if icon_path != None:
@@ -98,7 +98,7 @@ class Titlebar(EventBox):
                 self.icon_align.set_padding(5, 5, 5, 0)
                 self.icon_align.add(self.icon_image_box)
                 self.left_box.pack_start(self.icon_align, False, False)
-                        
+
             # Add app name.
             if app_name == None:
                 app_name_label = ""
@@ -114,7 +114,7 @@ class Titlebar(EventBox):
             self.app_name_align.set_padding(2, 0, 5, 0)
             self.app_name_align.add(self.app_name_box)
             self.left_box.pack_start(self.app_name_align, False, False)
-            
+
             # Add title.
             if title == None:
                 title_label = ""
@@ -123,7 +123,7 @@ class Titlebar(EventBox):
             self.title_box = Label(
                 title_label,
                 text_color=ui_theme.get_color("title_text"),
-                enable_gaussian=enable_gaussian, 
+                enable_gaussian=enable_gaussian,
                 text_x_align=pango.ALIGN_CENTER,
                 text_size=title_size,
                 )
@@ -132,7 +132,7 @@ class Titlebar(EventBox):
             self.title_align.set_padding(2, 0, 30, 30)
             self.title_align.add(self.title_box)
             self.left_box.pack_start(self.title_align, True, True)
-            
+
         # Add button box.
         self.button_box = gtk.HBox()
         self.button_align = gtk.Alignment()
@@ -142,7 +142,7 @@ class Titlebar(EventBox):
         self.right_box = gtk.VBox()
         self.right_box.pack_start(self.button_align, False, False)
         self.h_layout_box.pack_start(self.right_box, False, False)
-        
+
         # Add theme button.
         if "theme" in button_mask:
             self.theme_button = ThemeButton()
@@ -154,25 +154,25 @@ class Titlebar(EventBox):
             self.menu_button = MenuButton()
             self.button_box.pack_start(self.menu_button, False, False, 1)
             Tooltip.text(self.menu_button, _("Main menu")).show_delay(self.menu_button, 2000)
-        
+
         # Add min button.
         if "min" in button_mask:
             self.min_button = MinButton()
             self.button_box.pack_start(self.min_button, False, False, 1)
-            Tooltip.text(self.min_button, _("Minimum")).show_delay(self.min_button, 2000)        
-            
+            Tooltip.text(self.min_button, _("Minimum")).show_delay(self.min_button, 2000)
+
         # Add max button.
         if "max" in button_mask:
             self.max_button = MaxButton()
             self.button_box.pack_start(self.max_button, False, False, 1)
-            Tooltip.text(self.max_button, _("Maximize")).show_delay(self.max_button, 2000)        
+            Tooltip.text(self.max_button, _("Maximize")).show_delay(self.max_button, 2000)
 
         # Add close button.
         if "close" in button_mask:
             self.close_button = CloseButton()
             self.button_box.pack_start(self.close_button, False, False)
-            Tooltip.text(self.close_button, _("Close")).show_delay(self.close_button, 2000)        
-        
+            Tooltip.text(self.close_button, _("Close")).show_delay(self.close_button, 2000)
+
         # Show.
         self.show_all()
 
@@ -187,34 +187,34 @@ class Titlebar(EventBox):
         # Init.
         cr = widget.window.cairo_create()
         rect = widget.allocation
-    
+
         # Draw separator.
         cr.set_source_rgba(1, 1, 1, 0.5)
         draw_line(cr, rect.x + 1, rect.y + 2, rect.x + rect.width - 1, rect.y + 1)
-    
+
         return True
-    
+
     def change_name(self, name):
         '''
         Change the name of the application, which is displayed on the center of the title bar.
-        
+
         @param name: New name string that want to set.
         '''
         self.app_name_box.set_text(name)
-        
+
     def change_title(self, title):
         '''
         Change the title of the application, which is displayed on the center of the title bar.
-        
+
         @param title: New title string that want to set.
         '''
         self.title_box.set_text(title)
-        
+
 gobject.type_register(Titlebar)
 
 if __name__ == "__main__":
-    
-    def max_signal(w):    
+
+    def max_signal(w):
         if window_is_max(w):
             win.unmaximize()
             print "min"
@@ -228,5 +228,5 @@ if __name__ == "__main__":
     tit.max_button.connect("clicked", max_signal)
     win.add(tit.box)
     win.show_all()
-    
+
     gtk.main()

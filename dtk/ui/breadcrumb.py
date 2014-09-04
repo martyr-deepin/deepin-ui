@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Zeng Zhi
-# 
+#
 # Author:     Zeng Zhi <zengzhilg@gmail.com>
 # Maintainer: Zeng Zhi <zengzhilg@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -29,7 +29,7 @@ from constant import  DEFAULT_FONT_SIZE
 from draw import (draw_line, draw_text, draw_pixbuf)
 from utils import (get_content_size, cairo_disable_antialias,
                    alpha_color_hex_to_cairo, cairo_state)
-import gtk 
+import gtk
 import gobject
 import pango
 from poplist import Poplist
@@ -39,7 +39,7 @@ ARROW_BUTTON_WIDTH = 20
 class Bread(gtk.HBox):
     '''
     Bread widget is a container which can hold crumbs widget.
-    
+
     @undocumented: create_crumb
     @undocumented: enter_notify
     @undocumented: leave_notify
@@ -55,12 +55,12 @@ class Bread(gtk.HBox):
         "entry-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_STRING,)),
         "item_clicked" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT,gobject.TYPE_STRING,))
         }
-    
+
     def __init__(self,
                  crumb,
                  arrow_right=ui_theme.get_pixbuf("treeview/arrow_right.png"),
                  arrow_down=ui_theme.get_pixbuf("treeview/arrow_down.png"),
-                 show_others=False, 
+                 show_others=False,
                  show_entry=False,
                  show_left_right_box=True
                  ):
@@ -88,9 +88,9 @@ class Bread(gtk.HBox):
         self.show_left_right_box = show_left_right_box
         left_box = gtk.HBox(spacing = 0)
         right_box = gtk.HBox(spacing = 0)
-        
+
         # FIXME: left && right box static setting size
-        #        it is better to consider whether or not shown left && right box 
+        #        it is better to consider whether or not shown left && right box
         #        at runtime
         if self.show_left_right_box:
             left_box.set_size_request(self.button_width, -1)
@@ -105,8 +105,8 @@ class Bread(gtk.HBox):
         self.right_btn.set_size_request(self.button_width, -1)
         left_box.pack_start(self.left_btn, False, False)
         right_box.pack_start(self.right_btn, False, False)
-        
-        # Init Hbox        
+
+        # Init Hbox
         self.hbox = gtk.HBox(False, 0)
         self.hbox.show()
         self.eventbox = gtk.EventBox()
@@ -124,17 +124,17 @@ class Bread(gtk.HBox):
 
         # Add Bread Items
         self.adj = self.scroll_win.get_hadjustment()
-        
+
         self.add(self.crumb)
 
     def create_crumb(self, crumb):
         '''
         Internal function to create a Crumb list for different types of inputs.
-        
+
         @param crumb: Support inputs are:
                       ["a label", Menu]
                       [("a label",[(None, "menu label", None)])]
-                      
+
                       Crumb instance
                       [Crumb, Crumb]
 
@@ -196,7 +196,7 @@ class Bread(gtk.HBox):
         widget.destroy()
         self.eventbox.show()
         self.emit("entry-changed", label)
-        
+
     def redraw_bg(self, widget, event):
         '''
         Internal callback function to "expose-event" signal.
@@ -219,10 +219,10 @@ class Bread(gtk.HBox):
         '''
         Add crumbs. Can accept Crumb instance or a list of Crumb instances
 
-        @param crumbs: Supported inputs are: 
+        @param crumbs: Supported inputs are:
                        ["a label", Menu]
                        [("a label",[(None, "menu label", None)])]
-                       
+
                        Crumb instance
                        [Crumb, Crumb]
         '''
@@ -236,7 +236,7 @@ class Bread(gtk.HBox):
             self.hbox.pack_start(crumb, False, False)
             self.item_list.append(crumb.get_size_request()[0])
         page_size = self.adj.page_size
-        
+
         # Show right button if crumbs exceed scrolled window size.
         if sum(self.item_list) > page_size and not page_size == 1.0:
             self.right_btn.show()
@@ -245,7 +245,7 @@ class Bread(gtk.HBox):
         '''
         Change any nodes start from specified index
 
-        @param index: Start index 
+        @param index: Start index
         @param crumbs: Crumb instance or Crumb list
 
         For instance, there exist a list contain [Crumb1, Crumb2],
@@ -257,21 +257,21 @@ class Bread(gtk.HBox):
             i.destroy()
         self.item_list[index:] = []
         self.add(crumbs)
-        
+
     def remove_node_after_index(self, index):
         '''
         Remove any nodes after given index.
-        
+
         @param index: To specified remove after given index.
         '''
         for i in self.hbox.get_children()[(index + 1): -1]:
             i.destroy()
         self.item_list[(index + 1):] = []
-        
+
     def click_cb(self, widget, index, label):
         '''
         Internal callback function to "clicked" signal.
-        
+
         @param widget: Crumb instance.
         @param index: The index value of clicked crumb.
         @param label: Label of the crumb.
@@ -280,8 +280,8 @@ class Bread(gtk.HBox):
             for i in self.hbox.get_children()[(index + 1): -1]:
                 i.destroy()
             self.item_list[(index + 1):] = []
-            
-        self.emit("item_clicked", index, label)    
+
+        self.emit("item_clicked", index, label)
 
     def move_right(self, widget):
         '''
@@ -342,12 +342,12 @@ gobject.type_register(Bread)
 class BreadMenu(Poplist):
     '''
     Popup menu for bread.
-    
+
     @undocumented: draw_treeview_mask
     @undocumented: shape_bread_menu_frame
     @undocumented: expose_bread_menu_frame
     '''
-	
+
     def __init__(self,
                  items,
                  max_height=None,
@@ -355,13 +355,13 @@ class BreadMenu(Poplist):
                  ):
         '''
         Initialize BreadMenu class.
-        
+
         @param items: Item for TreeView.
         @param max_height: Maximum height of bread menu, by default is None.
         @param max_width: Maximum width of bread menu, by default is None.
         '''
         Poplist.__init__(self,
-                         items=items, 
+                         items=items,
                          max_height=max_height,
                          max_width=max_width,
                          shadow_visible=False,
@@ -373,17 +373,17 @@ class BreadMenu(Poplist):
         self.set_skip_taskbar_hint(True)
         self.treeview.draw_mask = self.draw_treeview_mask
         self.expose_window_frame = self.expose_bread_menu_frame
-        
+
     def draw_treeview_mask(self, cr, x, y, w, h):
         cr.set_source_rgb(1, 1, 1)
         cr.rectangle(x, y, w, h)
         cr.fill()
-        
+
     def shape_bread_menu_frame(self, widget, event):
         pass
-        
+
     def expose_bread_menu_frame(self, widget, event):
-        cr = widget.window.cairo_create()        
+        cr = widget.window.cairo_create()
         rect = widget.allocation
 
         with cairo_disable_antialias(cr):
@@ -392,13 +392,13 @@ class BreadMenu(Poplist):
             cr.set_source_rgba(*outside_border)
             cr.rectangle(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2)
             cr.fill()
-        
+
 gobject.type_register(BreadMenu)
 
 class Crumb(gtk.Button):
     '''
     Crumb class .
-    
+
     @undocumented: enter_button
     @undocumented: motion_notify_cb
     @undocumented: create_menu
@@ -408,7 +408,7 @@ class Crumb(gtk.Button):
     @undocumented: expose_cb
     '''
     __gsignals__= {
-        "item_clicked" : (gobject.SIGNAL_RUN_LAST, 
+        "item_clicked" : (gobject.SIGNAL_RUN_LAST,
                           gobject.TYPE_NONE,
                           (gobject.TYPE_INT,gobject.TYPE_STRING,))}
 
@@ -427,7 +427,7 @@ class Crumb(gtk.Button):
         @param padding_x: Horizontal padding, default is 15 pixels.
         '''
         super(Crumb, self).__init__()
-        
+
         self.arrow_right = None
         self.arrow_down = None
         self.menu_min = 18 # menu bar width
@@ -458,7 +458,7 @@ class Crumb(gtk.Button):
     def motion_notify_cb(self, widget, event):
         '''
         Internal callback function to Crumb "motion-notify-event" signal.
-        
+
         @param widget: Crumb
         @param event: an event of gtk.gdk.event
         '''
@@ -470,7 +470,7 @@ class Crumb(gtk.Button):
     def create_menu(self, menu_items):
         '''
         Internal function to create menu.
-        
+
         @param menu_items: menu_items
         @return: Menu instance
         '''
@@ -482,7 +482,7 @@ class Crumb(gtk.Button):
     def hide_cb(self, widget):
         '''
         Internal callback function to Menu's ""hide" signal.
-        
+
         @param widget: Menu
         '''
         if self.menu_press:
@@ -522,7 +522,7 @@ class Crumb(gtk.Button):
                 (offset_x, offset_y) = widget.translate_coordinates(self.get_toplevel(), 0, 0)
                 (menu_width, menu_height) = widget.allocation.width, widget.allocation.height
                 arrow_button_width = ARROW_BUTTON_WIDTH
-                self.menu.show((wx + offset_x + menu_width - arrow_button_width, 
+                self.menu.show((wx + offset_x + menu_width - arrow_button_width,
                                 wy + offset_y + menu_height,
                                 ),
                                (0, 0))
@@ -548,7 +548,7 @@ class Crumb(gtk.Button):
                 self.height)
 
             self.button_width = self.get_size_request()[0] - self.menu_min
-            
+
         self.queue_draw()
 
     def expose_cb(self, widget, event):
@@ -563,7 +563,7 @@ class Crumb(gtk.Button):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        
+
         # Should move this part to Bread class since app_theme is golobalized.
         arrow_right = self.arrow_right
         arrow_down = self.arrow_down
@@ -574,7 +574,7 @@ class Crumb(gtk.Button):
         inner_border = alpha_color_hex_to_cairo(("#ffffff", 0.5))
         active_mask = alpha_color_hex_to_cairo(("#000000", 0.1))
 
-        if self.menu_show: 
+        if self.menu_show:
             self.set_state(gtk.STATE_PRELIGHT)
 
         if widget.state == gtk.STATE_NORMAL:
@@ -582,7 +582,7 @@ class Crumb(gtk.Button):
             button_color = None
             menu_color = None
             arrow_pixbuf = arrow_right
-            
+
         elif widget.state == gtk.STATE_PRELIGHT:
             text_color = ui_theme.get_color("title_text").get_color()
             if self.menu_show:
@@ -616,7 +616,7 @@ class Crumb(gtk.Button):
                             (1, (disable_bg, 1.0))]
             menu_color = [(0, (disable_bg, 1.0)),
                             (1, (disable_bg, 1.0))]
-        
+
         # Draw background.
         if not widget.state == gtk.STATE_NORMAL:
             # Draw button border.
@@ -628,10 +628,10 @@ class Crumb(gtk.Button):
 
             cr.set_source_rgba(*outside_border)
             if button_color:
-                draw_rectangle(cr, x + 1 , y + 1 , self.button_width -1 , h -1) 
+                draw_rectangle(cr, x + 1 , y + 1 , self.button_width -1 , h -1)
             elif menu_color:
                 draw_rectangle(cr, x + self.button_width, y + 1, self.menu_min, h - 1)
-            
+
             # Draw innner border.
             cr.set_source_rgba(*inner_border)
             if button_color:
@@ -655,14 +655,14 @@ class Crumb(gtk.Button):
         # Draw text.
         draw_text(cr, self.label, x, y , self.button_width, h, self.font_size, text_color,
                     alignment = pango.ALIGN_CENTER)
-        
+
         return True
 
 gobject.type_register(Crumb)
 
 if __name__ == "__main__":
     import gtk
-    
+
     def add_panel(widget):
         crumb = Crumb("Child",menu)
         bread.add(crumb)
@@ -673,7 +673,7 @@ if __name__ == "__main__":
         bread.change_node(0, [crumb1, crumb2])
 
     def change_entry(widget, path):
-        # Application can check if path is valid or not 
+        # Application can check if path is valid or not
         path_list = path.split("/")[1:]
         bread.change_node(0, [Crumb(i , menu) for i in path_list])
 
@@ -695,7 +695,7 @@ if __name__ == "__main__":
                   show_others = False,
                   show_entry = True)
     bread.add(["xxx",menu])
-    # Must set_size 
+    # Must set_size
     bread.set_size(200, -1)
     bread.connect("entry-changed", change_entry)
 #####################################

@@ -3,20 +3,20 @@
 
 # Copyright (C) 2012 ~ 2013 Deepin, Inc.
 #               2012 ~ 2013 Zhai Xiang
-# 
+#
 # Author:     Zhai Xiang <zhaixiang@linuxdeepin.com>
 # Maintainer: Zhai Xiang <zhaixiang@linuxdeepin.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -47,20 +47,20 @@ class SecondThread(td.Thread):
 class DateTimeHTCStyle(gtk.VBox):
     '''
     DateTime with HTC style.
-    
+
     @undocumented: invalidate
     '''
-    
-    def __init__(self, 
-                 width=500, 
-                 height=125, 
-                 is_24hour=True, 
+
+    def __init__(self,
+                 width=500,
+                 height=125,
+                 is_24hour=True,
                  pixbuf_spacing=10,
-                 comma_spacing=30, 
+                 comma_spacing=30,
                  sec_visible=False):
         '''
         Initialize DateTimeHTCStyle class.
-        
+
         @param width: Width of widget, default is 500 pixels.
         @param height: Height of widget, default is 125 pixels.
         @param is_24hour: Whether use 24 hours format, default is True.
@@ -87,24 +87,24 @@ class DateTimeHTCStyle(gtk.VBox):
             i += 1
 
         self.connect("expose-event", self.__expose)
-        
+
         SecondThread(self).start()
 
     def invalidate(self):
         self.queue_draw()
 
     def get_is_24hour(self):
-        '''        
+        '''
         Whether is use 24 hour format.
-        
+
         @return: Return True if is 24 hours format.
-        '''        
+        '''
         return self.is_24hour
 
     def set_is_24hour(self, is_24hour):
         '''
         Set 24 hour format.
-        
+
         @param is_24hour: Set this option as True to use 24 hours.
         '''
         self.is_24hour = is_24hour
@@ -113,7 +113,7 @@ class DateTimeHTCStyle(gtk.VBox):
     def get_sec_visible(self):
         '''
         Whether second is visible.
-        
+
         @return: Return True if seconds is visible.
         '''
         return self.sec_visible
@@ -121,23 +121,23 @@ class DateTimeHTCStyle(gtk.VBox):
     def set_sec_visible(self, sec_visible):
         '''
         Set second visible.
-        
+
         @param sec_visible: Set this option as True to make second visible.
         '''
         self.sec_visible = sec_visible
         self.queue_draw()
-    
+
     def __time_split(self, value):
         ten = int(value / 10);
         bit = value - ten * 10;
-        
+
         return (ten, bit)
 
     def __expose(self, widget, event):
-        cr = widget.window.cairo_create()                                       
-        rect = widget.allocation                                                
+        cr = widget.window.cairo_create()
+        rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        
+
         hour = time.localtime().tm_hour
         hour_ten, hour_bit = self.__time_split(hour)
         if not self.is_24hour and hour > 12:
@@ -149,37 +149,37 @@ class DateTimeHTCStyle(gtk.VBox):
 
         draw_pixbuf(cr, self.time_pixbuf[hour_ten].get_pixbuf(), x, y)
         time_pixbuf_width = self.time_pixbuf[hour_ten].get_pixbuf().get_width() + self.pixbuf_spacing
-        draw_pixbuf(cr, 
-                    self.time_pixbuf[hour_bit].get_pixbuf(), 
-                    x + time_pixbuf_width, 
+        draw_pixbuf(cr,
+                    self.time_pixbuf[hour_bit].get_pixbuf(),
+                    x + time_pixbuf_width,
                     y)
         time_pixbuf_width += self.time_pixbuf[hour_bit].get_pixbuf().get_width() + self.comma_spacing
-        draw_pixbuf(cr, 
-                    self.time_pixbuf[min_ten].get_pixbuf(), 
-                    x + time_pixbuf_width, 
+        draw_pixbuf(cr,
+                    self.time_pixbuf[min_ten].get_pixbuf(),
+                    x + time_pixbuf_width,
                     y)
         time_pixbuf_width += self.time_pixbuf[min_ten].get_pixbuf().get_width() + self.pixbuf_spacing
-        draw_pixbuf(cr, 
-                    self.time_pixbuf[min_bit].get_pixbuf(), 
-                    x + time_pixbuf_width, 
+        draw_pixbuf(cr,
+                    self.time_pixbuf[min_bit].get_pixbuf(),
+                    x + time_pixbuf_width,
                     y)
-            
+
         if not self.sec_visible:
              return False
-            
+
         time_pixbuf_width += self.time_pixbuf[min_bit].get_pixbuf().get_width() + self.comma_spacing
-        draw_pixbuf(cr, 
-                    self.time_pixbuf[sec_ten].get_pixbuf(), 
-                    x + time_pixbuf_width, 
+        draw_pixbuf(cr,
+                    self.time_pixbuf[sec_ten].get_pixbuf(),
+                    x + time_pixbuf_width,
                     y)
         time_pixbuf_width += self.time_pixbuf[sec_ten].get_pixbuf().get_width() + self.pixbuf_spacing
-        draw_pixbuf(cr, 
-                    self.time_pixbuf[sec_bit].get_pixbuf(), 
-                    x + time_pixbuf_width, 
+        draw_pixbuf(cr,
+                    self.time_pixbuf[sec_bit].get_pixbuf(),
+                    x + time_pixbuf_width,
                     y)
 
         propagate_expose(widget, event)
-        
+
         return True
 
 gobject.type_register(DateTimeHTCStyle)
@@ -187,23 +187,23 @@ gobject.type_register(DateTimeHTCStyle)
 class DateTime(gtk.VBox):
     '''
     DateTime class.
-    
+
     @undocumented: invalidate
     '''
-    
-    def __init__(self, 
-                 width=180, 
+
+    def __init__(self,
+                 width=180,
                  height=180):
         '''
         Initialize DateTime class.
-        
+
         @param width: Width of widget, default is 180 pixels.
         @param height: Height of widget, default is 180 pixels.
         '''
         gtk.VBox.__init__(self)
-        
-        self.hour_value = time.localtime().tm_hour                               
-        self.minute_value = time.localtime().tm_min                              
+
+        self.hour_value = time.localtime().tm_hour
+        self.minute_value = time.localtime().tm_min
         self.second_value = time.localtime().tm_sec
 
         self.width = width
@@ -234,7 +234,7 @@ class DateTime(gtk.VBox):
         cr = widget.window.cairo_create()
         rect = widget.allocation
         x, y, w, h = rect.x, rect.y, rect.width, rect.height
-        
+
         ox = x + self.clockface_width * 0.5
 
         self.hour_value = time.localtime().tm_hour
@@ -243,7 +243,7 @@ class DateTime(gtk.VBox):
 
         with cairo_state(cr):
             draw_pixbuf(cr, self.clockface.get_pixbuf(), x, y)
-        
+
         #hour
         with cairo_state(cr):
             oy = y + self.hourhand_height * 0.5
@@ -251,7 +251,7 @@ class DateTime(gtk.VBox):
             cr.rotate(radians(360 * self.hour_value / 12))
             cr.translate(-self.hourhand_width * 0.5, -self.hourhand_height * 0.5)
             draw_pixbuf(cr, self.hourhand.get_pixbuf(), 0, 0)
-        
+
         #minute
         with cairo_state(cr):
             oy = y + self.minhand_height * 0.5
@@ -259,11 +259,11 @@ class DateTime(gtk.VBox):
             cr.rotate(radians(360 * self.minute_value / 60))
             cr.translate(-self.minhand_width * 0.5, -self.minhand_height * 0.5)
             draw_pixbuf(cr, self.minhand.get_pixbuf(), 0, 0)
-        
+
         #second
         with cairo_state(cr):
             oy = y + self.sechand_height * 0.5
-            cr.translate(ox, oy) 
+            cr.translate(ox, oy)
             cr.rotate(radians(360 * self.second_value / 60))
             cr.translate(-self.sechand_width * 0.5, -self.sechand_height * 0.5)
             draw_pixbuf(cr, self.sechand.get_pixbuf(), 0, 0)

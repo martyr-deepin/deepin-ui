@@ -94,7 +94,7 @@ class Paned(gtk.Container):
                 )
         self.__handle.set_user_data(self)
         #
-        if ((self.__child1 and self.__child1.get_visible()) and 
+        if ((self.__child1 and self.__child1.get_visible()) and
             (self.__child2 and self.__child2.get_visible())):
             self.__handle.show()
 
@@ -123,16 +123,16 @@ class Paned(gtk.Container):
             self.__paint_child_window(cr, child)
             # 使用者可以重载这个函数达到高度自由化.
             self.paint_handle_hd(cr, self.handle_pos)
-                
+
         return False
-    
+
     def __paint_child_window(self, cr, child):
         if child and child.window != self.window:
             cr.set_source_pixmap(
-                child.window, 
+                child.window,
                 *child.window.get_position())
             cr.paint_with_alpha(1.0)
-        
+
     def __paint_handle_function(self, cr, handle_pos):
         if self.handle_pos.can_visible:
             # 绘制例子.
@@ -154,7 +154,7 @@ class Paned(gtk.Container):
                 else:
                     #pixbuf = self.in_pixbuf
                     pass
-            w, h = handle_pos.size, 100 
+            w, h = handle_pos.size, 100
             # 判断是否为纵向.
             if self.__type == gtk.ORIENTATION_VERTICAL:
                 #pixbuf = pixbuf.rotate_simple(270)
@@ -163,12 +163,12 @@ class Paned(gtk.Container):
             cr.rectangle(handle_pos.x, handle_pos.y, w, h)
             cr.fill()
         #
-        
+
     def do_enter_notify_event(self, e):
         self.handle_pos.can_visible = True
         self.queue_draw()
         self.__handle.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND2))
-        
+
     def do_leave_notify_event(self, e):
         self.handle_pos.can_visible = False
         self.queue_draw()
@@ -182,7 +182,7 @@ class Paned(gtk.Container):
             self.__move_check = True
             self.__save_move_x = e.x
             self.__save_mvoe_y = e.y
-        
+
     def do_button_release_event(self, e):
         if not self.handle_pos.can_move:
             self.handle_pos.can_in = not self.handle_pos.can_in
@@ -190,7 +190,7 @@ class Paned(gtk.Container):
             self.queue_draw()
         self.handle_pos.can_move = False
         self.__move_check = False
-        
+
     def do_motion_notify_event(self, e):
         if self.__move_check:
             #
@@ -221,7 +221,7 @@ class Paned(gtk.Container):
             child.set_size_request(max(1, int(w)), max(1, int(h)))
             self.do_size_allocate(self.allocation)
             self.handle_pos.can_move = True
-            
+
     def do_forall(self, include_internals, callback, data):
         if self.__child1:
             callback(self.__child1, data)
@@ -230,7 +230,7 @@ class Paned(gtk.Container):
 
     def do_add(self, widget):
         gtk.Container.do_add(self, widget)
-    
+
     def do_remove(self, widget):
         pass
 
@@ -244,7 +244,7 @@ class Paned(gtk.Container):
 
         if self.__child2 and self.__child2.get_visible():
             child_requisition = self.__child2.size_request()
-            # 
+            #
             if self.__type ==  gtk.ORIENTATION_HORIZONTAL:
                 requisition.width += child_requisition[0]
             else: # gtk.ORIENTATION_VERTICAL
@@ -254,7 +254,7 @@ class Paned(gtk.Container):
     def do_size_allocate(self, allocation):
         self.allocation = allocation
         child1_allocation = gdk.Rectangle()
-        child2_allocation = gdk.Rectangle()  
+        child2_allocation = gdk.Rectangle()
         #
         if ((self.__child1 and self.__child1.get_visible()) and
             (self.__child2 and self.__child2.get_visible())):
@@ -270,16 +270,16 @@ class Paned(gtk.Container):
                 # set child1/2 (x, y, w, h)
                 if self.handle_pos.can_move_child2:
                     child1_w = allocation.width - child2_requisition[0]
-                    child2_w = child2_requisition[0] 
+                    child2_w = child2_requisition[0]
                     if not self.handle_pos.can_in:
                         child1_w = allocation.width
-                        child2_w = 1 
+                        child2_w = 1
                 else:
                     child2_w = allocation.width - child1_requisition[0]
-                    child1_w = child1_requisition[0]  
+                    child1_w = child1_requisition[0]
                     if not self.handle_pos.can_in:
                         child2_w = allocation.width
-                        child1_w = 1 
+                        child1_w = 1
                 child1_allocation.x = allocation.x
                 child1_allocation.y = allocation.y
                 child1_allocation.width = max(1, child1_w)
@@ -345,7 +345,7 @@ class Paned(gtk.Container):
         # 显示 child1, child2.
         if self.__child1:
             if not self.__child2:
-                child1_allocation.x = allocation.x 
+                child1_allocation.x = allocation.x
                 child1_allocation.y = allocation.y
                 child1_allocation.width = allocation.width
                 child1_allocation.height = allocation.height
@@ -353,7 +353,7 @@ class Paned(gtk.Container):
             self.__child1.set_child_visible(True)
         if self.__child2:
             if not self.__child1:
-                child2_allocation.x = allocation.x 
+                child2_allocation.x = allocation.x
                 child2_allocation.y = allocation.y
                 child2_allocation.width = allocation.width
                 child2_allocation.height = allocation.height
@@ -381,11 +381,11 @@ class Paned(gtk.Container):
             self.__child2 = child
             self.__child2.connect("realize", self.__child2_realize_event)
             self.__child2.set_parent(self)
-    
+
     def __child2_realize_event(self, widget):
         if widget.window and widget.window != self.window:
             widget.window.set_composited(True)
-    
+
     def can_move_child2(self, check):
         # True 是向chidl2移动, False向child1移动.
         self.handle_pos.can_move_child2 = check
@@ -395,16 +395,16 @@ class Paned(gtk.Container):
 
     def get_type(self):
         return self.__type
-     
+
     def get_handle(self):
         return self.__handle
 
     def get_child1(self):
         return self.__child1
-    
+
     def get_child2(self):
         return self.__child2
-           
+
 gobject.type_register(Paned)
 
 if __name__ == "__main__":

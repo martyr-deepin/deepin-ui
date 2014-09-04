@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Wang Yong
-# 
+#
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -27,7 +27,7 @@ import os
 if __name__ == "__main__":
     # Get input arguments.
     input_dir, output_dir = sys.argv[1], sys.argv[2]
-    
+
     # Init theme color.
     theme_colors = {
         "dark_grey" : "#333333",
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # Create theme directories.
     for (key, value) in theme_colors.items():
         subprocess.Popen("cp -r %s %s/%s" % (input_dir, output_dir, key), shell=True).wait()
-        
+
         for root, dirs, files in os.walk("%s/%s" % (output_dir, key)):
             for filename in files:
                 for extension in [".png", ".jpeg", ".jpg", ".ico"]:
@@ -57,7 +57,7 @@ if __name__ == "__main__":
                                 value,
                                 os.path.join(root, filename)
                                 )
-                        
+
                         image_file = os.path.join(root, filename)
                         subprocess.call(["convert", image_file, "-fill", value, "-colorize", "50%", image_file])
                         break

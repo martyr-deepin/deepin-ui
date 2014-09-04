@@ -4,20 +4,20 @@
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2012 Wang Yong
 #               2009 Raymond Hettinger
-# 
+#
 # Author:     Raymond Hettinger
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -33,14 +33,14 @@ class OrderedSet(collections.MutableSet):
     '''
     Set that remembers original insertion order.
     '''
-    
-    def __init__(self, 
+
+    def __init__(self,
                  iterable=None,
                  ):
         '''
         Initialize OrderedSet class.
         '''
-        self.end = end = [] 
+        self.end = end = []
         end += [None, end, end]         # sentinel node for doubly linked list
         self.map = {}                   # key --> [key, prev, next]
         if iterable is not None:
@@ -93,10 +93,10 @@ class OrderedSet(collections.MutableSet):
     def discard(self, key):
         '''
         Remove element elem from the set if it is present.
-        
+
         @param key: The element need to remove.
         '''
-        if key in self.map:        
+        if key in self.map:
             key, prev, next = self.map.pop(key)
             prev[NEXT] = next
             next[PREV] = prev
@@ -106,9 +106,9 @@ class OrderedSet(collections.MutableSet):
         Remove and return an next element from the ordered set.
 
         Default remove and return last element from ordered set.
-        
+
         @param last: Whether remove and return last one, default is True.
-        @return: Return last element when option `last` is True, else return next element. 
+        @return: Return last element when option `last` is True, else return next element.
 
         Raises KeyError if the set is empty.
         '''
@@ -117,8 +117,8 @@ class OrderedSet(collections.MutableSet):
         key = next(reversed(self)) if last else next(iter(self))
         self.discard(key)
         return key
-            
+
 if __name__ == '__main__':
     print(OrderedSet('abracadaba'))
     print(OrderedSet('simsalabim'))
-    
+

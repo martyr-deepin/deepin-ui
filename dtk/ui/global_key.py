@@ -70,14 +70,14 @@ class GlobalKey(threading.Thread):
         self.stop = False
 
         self.known_modifiers_mask = 0
-        gdk_modifiers = (gtk.gdk.CONTROL_MASK, 
-                         gtk.gdk.SHIFT_MASK, 
+        gdk_modifiers = (gtk.gdk.CONTROL_MASK,
+                         gtk.gdk.SHIFT_MASK,
                          gtk.gdk.MOD1_MASK,
-                         gtk.gdk.MOD2_MASK, 
-                         gtk.gdk.MOD3_MASK, 
-                         gtk.gdk.MOD4_MASK, 
+                         gtk.gdk.MOD2_MASK,
+                         gtk.gdk.MOD3_MASK,
+                         gtk.gdk.MOD4_MASK,
                          gtk.gdk.MOD5_MASK,
-                         gtk.gdk.SUPER_MASK, 
+                         gtk.gdk.SUPER_MASK,
                          gtk.gdk.HYPER_MASK,
                          )
         for mod in gdk_modifiers:
@@ -86,7 +86,7 @@ class GlobalKey(threading.Thread):
     def bind(self, binding_string, action):
         '''
         Binding keymap with given action.
-        
+
         @param binding_string: Keymap string, return by function `get_keyevent_name` of module dtk.ui.keymap.
         @param action: Callback.
         '''

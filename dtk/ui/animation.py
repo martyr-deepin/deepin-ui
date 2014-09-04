@@ -50,16 +50,16 @@ def RandomInterpolator(base, offset, *args):
 class Animation:
     '''
     The animation class used to convenient production special effects.
-    
+
     @undocumented: init
     @undocumented: init_all
     @undocumented: compute
     '''
-    def __init__(self, 
-                 widgets, 
-                 property, 
-                 duration, 
-                 ranges, 
+    def __init__(self,
+                 widgets,
+                 property,
+                 duration,
+                 ranges,
                  interpolator=LinerInterpolator,
                  stop_callback=None):
         '''
@@ -134,7 +134,7 @@ class Animation:
         else:
             self.set_method(values)
         self.time = 0
-        
+
     def init_all(self, values):
         if isinstance(values, list):
             values.reverse()

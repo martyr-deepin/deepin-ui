@@ -136,7 +136,7 @@ class ScrolledWindow(gtk.Bin):
         self.set_vadjustment(gtk.Adjustment())
         self.set_hadjustment(gtk.Adjustment())
         self.set_has_window(False)
-        
+
     def do_expose_event(self, e):
         if e.window == self.vwindow:
             self.draw_vbar()
@@ -165,22 +165,22 @@ class ScrolledWindow(gtk.Bin):
             press_pos = e.y - self.vadjustment.value
             value = pos2value(press_pos - self.vallocation.height / 2, self._vertical.virtual_len, self.vadjustment.upper)
             value = max(0, min(value, self.vadjustment.upper - self.vadjustment.page_size))
-            
+
             if press_pos < self.vallocation.y:
                 if self.vadjustment.value - value > self.vadjustment.page_size:
-                    self.vadjustment.set_value(max(self.vadjustment.value - self.vadjustment.page_size, 
+                    self.vadjustment.set_value(max(self.vadjustment.value - self.vadjustment.page_size,
                                                    0))
                 else:
                     self.vadjustment.set_value(value)
-                
+
                 return True
             elif press_pos > self.vallocation.y + self.vallocation.height:
                 if value - self.vadjustment.value > self.vadjustment.page_size:
-                    self.vadjustment.set_value(min(self.vadjustment.value + self.vadjustment.page_size, 
+                    self.vadjustment.set_value(min(self.vadjustment.value + self.vadjustment.page_size,
                                                    self.vadjustment.upper - self.vadjustment.page_size))
                 else:
                     self.vadjustment.set_value(value)
-                
+
                 return True
             else:
                 return False
@@ -189,28 +189,28 @@ class ScrolledWindow(gtk.Bin):
             press_pos = e.x - self.hadjustment.value
             value = pos2value(press_pos - self.hallocation.width / 2, self._horizaontal.virtual_len, self.hadjustment.upper)
             value = max(0, min(value, self.hadjustment.upper - self.hadjustment.page_size))
-            
+
             if press_pos < self.hallocation.x:
                 if self.hadjustment.value - value > self.hadjustment.page_size:
-                    self.hadjustment.set_value(max(self.hadjustment.value - self.hadjustment.page_size, 
+                    self.hadjustment.set_value(max(self.hadjustment.value - self.hadjustment.page_size,
                                                    0))
                 else:
                     self.hadjustment.set_value(value)
-                
+
                 return True
             elif press_pos > self.hallocation.x + self.hallocation.width:
                 if value - self.hadjustment.value > self.hadjustment.page_size:
-                    self.hadjustment.set_value(min(self.hadjustment.value + self.hadjustment.page_size, 
+                    self.hadjustment.set_value(min(self.hadjustment.value + self.hadjustment.page_size,
                                                    self.hadjustment.upper - self.hadjustment.page_size))
                 else:
                     self.hadjustment.set_value(value)
-                
+
                 return True
             else:
                 return False
         else:
             return False
-        
+
     def do_button_release_event(self, e):
         if e.window == self.hwindow:
             self._horizaontal.in_motion = False
@@ -276,7 +276,7 @@ class ScrolledWindow(gtk.Bin):
         step = self.vadjustment.step_increment
         upper = self.vadjustment.upper
         page_size = self.vadjustment.page_size
-        
+
         # Emit signal 'vscrollbar_state_changed'.
         self.emit_vscrollbar_state_changed(e)
 
@@ -313,7 +313,7 @@ class ScrolledWindow(gtk.Bin):
             return True
         else:
             return False
-        
+
     def do_visibility_notify_event(self, e):
         self.make_bar_smaller(gtk.ORIENTATION_HORIZONTAL)
         self.make_bar_smaller(gtk.ORIENTATION_VERTICAL)
@@ -337,7 +337,7 @@ class ScrolledWindow(gtk.Bin):
             deltaX = e.x_root - self._horizaontal.last_pos
             upper = self.hadjustment.upper
 
-            # The pos maybe beyond the effective range, 
+            # The pos maybe beyond the effective range,
             # but we will immediately corrected it's value.
             # the "invariant" is  the "value" always in the effective range.
             value = pos2value(self._horizaontal.bar_pos+deltaX, self._horizaontal.virtual_len, upper)
@@ -371,7 +371,7 @@ class ScrolledWindow(gtk.Bin):
             self._vertical.last_pos = e.y_root
             self._vertical.last_time = e.time
             self._vertical.in_motion = True
-            
+
             return True
 
     def calc_vbar_length(self):
@@ -435,9 +435,9 @@ class ScrolledWindow(gtk.Bin):
             self._vertical.bar_pos = value2pos(adj.value, self._vertical.virtual_len, upper)
             self.calc_vbar_allocation()
             self.vwindow.move_resize(*self.vallocation)
-            
+
             self.emit_vscrollbar_state_changed()
-            
+
             self.queue_draw()
 
     def hadjustment_changed(self, adj):
@@ -447,7 +447,7 @@ class ScrolledWindow(gtk.Bin):
             self.calc_hbar_allocation()
             self.hwindow.move_resize(*self.hallocation)
             self.queue_draw()
-            
+
     def add_with_viewport(self, child):
         '''
         Used to add children without native scrolling capabilities.
@@ -672,19 +672,19 @@ class ScrolledWindow(gtk.Bin):
 
         print "v_len:%f, height:%f, vir_bar_len:%d" % ( self._vertical.virtual_len,
                 self.allocation.height, self._vertical.bar_len)
-        
-    def emit_vscrollbar_state_changed(self, e=None):    
+
+    def emit_vscrollbar_state_changed(self, e=None):
         value = self.vadjustment.value
         page_size = self.vadjustment.page_size
         upper = self.vadjustment.upper
-        
+
         if e == None:
             bottom_value = upper - page_size
         elif e.type == gtk.gdk.MOTION_NOTIFY:
             bottom_value = upper - page_size
         elif e.type == gtk.gdk.SCROLL:
             bottom_value = upper - page_size - 1
-        
+
         if upper != page_size:
             if value == 0 and self.vscrollbar_state != "top":
                 self.vscrollbar_state = "top"

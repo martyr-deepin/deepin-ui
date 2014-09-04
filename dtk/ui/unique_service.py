@@ -28,10 +28,10 @@ class UniqueService(dbus.service.Object):
     '''
     This class implement a dbus interface, which is used to ensure that the program or service is unique in the system.
     '''
-    def __init__(self, 
-                 bus_name, 
-                 app_dbus_name, 
-                 app_object_name, 
+    def __init__(self,
+                 bus_name,
+                 app_dbus_name,
+                 app_object_name,
                  unique_callback=None):
         '''
         Initialise the class.
@@ -63,13 +63,13 @@ def is_exists(app_dbus_name, app_object_name):
     '''
     try:
         DBusGMainLoop(set_as_default=True) # WARING: only use once in one process
-            
+
         # Init dbus.
         bus = dbus.SessionBus()
         if bus.request_name(app_dbus_name) != dbus.bus.REQUEST_NAME_REPLY_PRIMARY_OWNER:
             method = bus.get_object(app_dbus_name, app_object_name).get_dbus_method("unique")
             method()
-            
+
             return True
         else:
             return False

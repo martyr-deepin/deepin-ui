@@ -3,20 +3,20 @@
 
 # Copyright (C) 2012 Deepin, Inc.
 #               2012 Zhai Xiang
-# 
+#
 # Author:     Zhai Xiang <zhaixiang@linuxdeepin.com>
 # Maintainer: Zhai Xiang <zhaixiang@linuxdeepin.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -35,13 +35,13 @@ class FileManager(HPaned):
     ICONVIEW = 0
     TREEVIEW = 1
 
-    def __init__(self, 
-                 dir=HOME_DIR, 
+    def __init__(self,
+                 dir=HOME_DIR,
                  view_mode=ICONVIEW
                 ):
         HPaned.__init__(self)
         self.categorybar = Categorybar([
-            (ui_theme.get_pixbuf("filemanager/computer.png"), _("Computer"), None), 
+            (ui_theme.get_pixbuf("filemanager/computer.png"), _("Computer"), None),
             (ui_theme.get_pixbuf("filemanager/user-home.png"), _("Home"), lambda : self.open_dir(self.HOME_DIR)),
             (ui_theme.get_pixbuf("filemanager/user-desktop.png"), _("Desktop"), lambda : self.open_dir(self.HOME_DIR + "Desktop/")),
             (ui_theme.get_pixbuf("filemanager/folder-documents.png"), _("Documents"), lambda : self.open_dir(self.HOME_DIR + "Documents/")),

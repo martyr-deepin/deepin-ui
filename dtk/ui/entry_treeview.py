@@ -3,21 +3,21 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Long Changjin
-# 
+#
 # Author:     Long Changjin <admin@longchangjin.cn>
 # Maintainer: Long Changjin <admin@longchangjin.cn>
 #             Zhai Xiang <zhaixiang@linuxdeepin.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -31,7 +31,7 @@ import gtk
 class EntryTreeView(TreeView):
     '''
     EntryTreeView class.
-    
+
     @undocumented: button_press
     @undocumented: button_release
     @undocumented: motion_notify
@@ -40,13 +40,13 @@ class EntryTreeView(TreeView):
     @undocumented: entry_focus_changed
     @undocumented: release_item
     '''
-    
+
     __gsignals__ = {
         "select"  : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.GObject, int)),
         "unselect": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
         "double-click" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.GObject, int))}
-    
-    def __init__(self, 
+
+    def __init__(self,
                  items=[],
                  drag_data=None,
                  enable_hover=False,
@@ -61,10 +61,10 @@ class EntryTreeView(TreeView):
                  ):
         '''
         Initialize EntryTreeView class.
-        
+
         @param items: Items for EntryTreeView, default is empty list.
         @param drag_data: Data use for DND, format is (targets, actions, button)
-         - targets: the list of targets supported by the widget drag 
+         - targets: the list of targets supported by the widget drag
          - actions: the allowed drag operations for the drag
          - button: the button the user pressed to start the drag
         @param enable_hover: Whether support hover action, default is False.
@@ -197,7 +197,7 @@ class EntryTreeView(TreeView):
         item.redraw_request_callback(item)
         self.draw_area.grab_focus()
         self.set_data("entry_widget", None)
-   
+
     def entry_focus_changed(self, entry, event, item):
         if event.in_:
             item.entry_buffer.set_property('cursor-visible', True)
@@ -209,7 +209,7 @@ class EntryTreeView(TreeView):
             cell = self.get_cell_with_event(event)
             if cell is not None:
                 (release_row, release_column, offset_x, offset_y) = cell
-                
+
                 if release_row is not None:
                     if self.double_click_row == release_row:
                         self.visible_items[release_row].double_click(release_column, offset_x, offset_y)
@@ -217,26 +217,26 @@ class EntryTreeView(TreeView):
                     elif self.single_click_row == release_row:
                         self.visible_items[release_row].single_click(release_column, offset_x, offset_y)
                         self.emit("single-click-item", self.visible_items[release_row], release_column, offset_x, offset_y)
-                
+
                 if self.start_drag and self.is_in_visible_area(event):
                     self.drag_select_items_at_cursor()
-                    
-                self.double_click_row = None    
-                self.single_click_row = None    
+
+                self.double_click_row = None
+                self.single_click_row = None
                 self.start_drag = False
-                
+
                 # Disable select rows when press_in_select_rows valid after button release.
                 if self.press_in_select_rows:
                     self.set_select_rows([self.press_in_select_rows])
                     self.start_select_row = self.press_in_select_rows
                     self.press_in_select_rows = None
-                
+
                 self.set_drag_row(None)
-        
+
 class EntryTreeItem(TreeItem):
-    '''    
+    '''
     EntryTreeItem class.
-    
+
     @undocumented: entry_buffer_changed
     @undocumented: get_height
     @undocumented: get_column_widths
@@ -251,8 +251,8 @@ class EntryTreeItem(TreeItem):
     @undocumented: double_click
     @undocumented: expand
     @undocumented: unexpand
-    '''    
-    
+    '''
+
     def __init__(self, title, content):
         TreeItem.__init__(self)
         self.title = title
@@ -266,20 +266,20 @@ class EntryTreeItem(TreeItem):
         self.height = 24
         self.ENTRY_COLUMN = 1
         self.is_double_click = False
-    
+
     def entry_buffer_changed(self, bf):
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
-    
+
     def get_height(self):
         return self.height
-    
+
     def get_column_widths(self):
         return [-1, 200]
-    
+
     def get_column_renders(self):
         return [self.render_title, self.render_content]
-    
+
     def render_title(self, cr, rect):
         if self.is_select:
             text_color = "#FFFFFF"
@@ -290,7 +290,7 @@ class EntryTreeItem(TreeItem):
         else:
             text_color = "#000000"
         draw_text(cr, self.title, rect.x, rect.y, rect.width, rect.height, text_color=text_color)
-    
+
     def render_content(self, cr, rect):
         if self.is_select:
             text_color = "#FFFFFF"
@@ -316,28 +316,28 @@ class EntryTreeItem(TreeItem):
             self.entry_buffer.render(cr, rect, self.entry.im, self.entry.offset_x)
         else:
             self.entry_buffer.render(cr, rect)
-    
+
     def unselect(self):
         self.is_select = False
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
-    
+
     def select(self):
         self.is_select = True
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
-    
+
     def hover(self, column, offset_x, offset_y):
         pass
 
     def unhover(self, column, offset_x, offset_y):
         pass
-    
+
     def single_click(self, column, offset_x, offset_y):
         self.is_double_click = False
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
-    
+
     def double_click(self, column, offset_x, offset_y):
         self.is_double_click = True
 
@@ -348,7 +348,7 @@ class EntryTreeItem(TreeItem):
         self.add_items_callback(self.child_items, self.row_index+1)
         if self.redraw_request_callback:
             self.redraw_request_callback(self)
-    
+
     def unexpand(self):
         self.is_expand = False
         self.delete_items_callback(self.child_items)

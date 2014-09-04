@@ -26,9 +26,9 @@ class Config(DConfig):
     '''
     Config module to read *.ini file.
     '''
-    
-    def __init__(self, 
-                 config_file, 
+
+    def __init__(self,
+                 config_file,
                  default_config=None):
         '''
         Init config module.

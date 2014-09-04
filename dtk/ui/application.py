@@ -35,18 +35,18 @@ class Application(object):
     This is the base class of every program based on deepin-ui.
     Every program should realize it.
     '''
-    
-    def __init__(self, 
-                 app_support_colormap=True, 
+
+    def __init__(self,
+                 app_support_colormap=True,
                  resizable=True,
-                 window_type=gtk.WINDOW_TOPLEVEL, 
+                 window_type=gtk.WINDOW_TOPLEVEL,
                  destroy_func=None,
                  always_at_center=True,
                  ):
         '''
         Initialize the Application class.
-        
-        @param app_support_colormap: Set False if your program don't allow manipulate colormap, 
+
+        @param app_support_colormap: Set False if your program don't allow manipulate colormap,
         such as mplayer, otherwise you should keep this option as True.
         @param resizable: Set this option with False if you want window's size fixed, default is True.
         '''
@@ -65,7 +65,7 @@ class Application(object):
     def init(self):
         '''
         This do the remain initialize step.
-        
+
         It Initializes the window and some important signal such as "destroy".
         '''
         # Init gdk threads, the integrant method for multi-thread GUI application.
@@ -80,15 +80,15 @@ class Application(object):
         else:
             self.window = MplayerWindow(True, window_type=self.window_type)
         self.window.set_resizable(self.resizable)
-        
+
         if self.always_at_center:
             self.window.set_position(gtk.WIN_POS_CENTER)
-        
+
         if hasattr(self, "destroy_func") and self.destroy_func:
             self.window.connect("destroy", lambda w: self.destroy_func)
         else:
             self.window.connect("destroy", self.destroy)
-        
+
         # Init main box.
         self.main_box = self.window.window_frame
 
@@ -99,20 +99,20 @@ class Application(object):
 
     def add_titlebar(self,
                      button_mask=["theme", "menu", "max", "min", "close"],
-                     icon_path=None, 
-                     app_name=None, 
-                     title=None, 
-                     add_separator=False, 
-                     show_title=True, 
-                     enable_gaussian=True, 
+                     icon_path=None,
+                     app_name=None,
+                     title=None,
+                     add_separator=False,
+                     show_title=True,
+                     enable_gaussian=True,
                      name_size=DEFAULT_FONT_SIZE,
                      title_size=DEFAULT_FONT_SIZE,
                      ):
         '''
         Add titlebar to the application.
-        
+
         Connect click signal of the standard button to default callback.
-        
+
         @param button_mask: A list of string, each of which stands for a standard button on top right of the window. By default, it's ["theme", "menu", "max", "min", "close"].
         @param icon_path: The path of icon image.
         @param app_name: The name string of the application, which will be displayed just next to the icon_dpixbuf. By default, it is None.
@@ -124,12 +124,12 @@ class Application(object):
         @param title_size: The size of title, default is DEFAULT_FONT_SIZE.
         '''
         # Init titlebar.
-        self.titlebar = Titlebar(button_mask, 
-                                 icon_path, 
-                                 app_name, 
-                                 title, 
-                                 add_separator, 
-                                 show_title=show_title, 
+        self.titlebar = Titlebar(button_mask,
+                                 icon_path,
+                                 app_name,
+                                 title,
+                                 add_separator,
+                                 show_title=show_title,
                                  enable_gaussian=enable_gaussian,
                                  name_size=name_size,
                                  title_size=title_size,
@@ -151,10 +151,10 @@ class Application(object):
 
         # Show titlebar.
         self.show_titlebar()
-        
+
         if app_name != None:
             self.window.set_title(app_name)
-    
+
     def close_window(self, widget):
         '''
         Close the window when the close button is clicked.
@@ -168,7 +168,7 @@ class Application(object):
 
     def show_titlebar(self):
         '''
-        Show title bar of the window. 
+        Show title bar of the window.
 
         By default, it is invoked at the last step of add_titlebar.
         '''
@@ -191,7 +191,7 @@ class Application(object):
     def set_title(self, title):
         '''
         Set the application title.
-        
+
         @param title: The title string of the application.
         '''
         self.titlebar.change_title(title)
@@ -199,7 +199,7 @@ class Application(object):
     def set_default_size(self, default_width, default_height):
         '''
         Set the default size of the window.
-        
+
         @param default_width: Default width in pixels of the application, once set, application don't allow smaller than width.
         @param default_height: Default height in pixels of the application, once set, application don't allow smaller than height.
         '''
@@ -220,16 +220,16 @@ class Application(object):
                 default_height,
                 -1, -1, -1, -1, -1, -1
                 )
-        
+
         # Pass application size to skin config.
         skin_config.set_application_window_size(default_width, default_height)
 
     def set_icon(self, icon_path):
         '''
-        Set the icon of the application. 
+        Set the icon of the application.
 
         This icon is used by the window manager or the dock.
-        
+
         @param icon_path: The path of application icon.
         '''
         gtk.window_set_default_icon(gtk.gdk.pixbuf_new_from_file(icon_path))
@@ -237,9 +237,9 @@ class Application(object):
     def destroy(self, widget, data=None):
         '''
         Destroy the window and quit the program.
-        
+
         This function just call gtk.main_quit .
-        
+
         @param widget: Not used.
         @param data: Not used.
         '''
@@ -248,8 +248,8 @@ class Application(object):
     def run(self):
         '''
         Show the window and start the mainloop.
-        
-        You must use this function at last of program, 
+
+        You must use this function at last of program,
         otherwise program will run in loop too early that all code after application.run won't execute until program exit.
         '''
         # Show window.
@@ -261,17 +261,17 @@ class Application(object):
     def set_skin_preview(self, preview_image_path):
         '''
         Set the skin preview of the application.
-        
+
         @note: The size of preview_pixbuf must be proportional to the size of program, otherwise adjust skin will got wrong coordinate.
-        
+
         @param preview_image_path: A path of skin preview image.
         '''
         self.skin_preview_pixbuf = gtk.gdk.pixbuf_new_from_file(preview_image_path)
-        
+
     def theme_callback(self, widget):
         '''
         Invoked when the theme button is clicked.
-        
+
         @param widget: Not used.
         @return: Always return False
         '''
@@ -284,7 +284,7 @@ class Application(object):
     def menu_callback(self, widget):
         '''
         Invoked when the menu button is clicked.
-        
+
         @param widget: Not used.
         @return: Always return False
         '''
@@ -296,9 +296,9 @@ class Application(object):
     def set_menu_callback(self, callback):
         '''
         Set the menu_button_callback function.
-        
-        @param callback: A function which is invoked when the menu button is clicked, 
+
+        @param callback: A function which is invoked when the menu button is clicked,
         this callback just accept one argument, argument is gtk.widget.
         '''
         self.menu_button_callback = callback
-        
+

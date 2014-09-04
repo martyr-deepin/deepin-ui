@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Wang Yong
-# 
+#
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -30,34 +30,34 @@ from utils import (resize_window, is_double_click, move_window)
 class WindowBase(gtk.Window):
     '''
     WindowBase class.
-    
+
     @undocumented: draw_background
     @undocumented: draw_skin
     @undocumented: get_cursor_type_with_coordinate
     '''
-	
+
     __gsignals__ = {
         "window-resize" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
 
-    }    
-    
+    }
+
     def __init__(self,
-                 window_type=gtk.WINDOW_TOPLEVEL, 
+                 window_type=gtk.WINDOW_TOPLEVEL,
                  ):
         '''
         Initialize WindowBase class.
-        
+
         @param window_type: The window type, default is gtk.WINDOW_TOPLEVEL
         '''
         gtk.Window.__init__(self, window_type)
-        
+
         self.move_window_x = 0
         self.move_window_y = 0
         self.move_start_x = 0
         self.move_start_y = 0
         self.move_end_x = 0
         self.move_end_y = 0
-        
+
     def show_window(self):
         '''
         Show the window.
@@ -83,7 +83,7 @@ class WindowBase(gtk.Window):
             self.unfullscreen()
         else:
             self.fullscreen()
-            
+
     def close_window(self):
         '''
         Close the window. Send the destroy signal to the program.
@@ -95,15 +95,15 @@ class WindowBase(gtk.Window):
         self.hide_all()
 
         self.emit("destroy")
-    
+
         return False
-        
+
     def min_window(self):
         '''
         Minimize the window. Make it iconified.
         '''
         self.iconify()
-        
+
     def resize_window(self, widget, event):
         '''
         Resize the window.
@@ -112,23 +112,23 @@ class WindowBase(gtk.Window):
         @param event: A signal of type gtk.gdk.Event.
         '''
         if self.enable_resize:
-            edge = self.get_edge()            
+            edge = self.get_edge()
             if edge != None:
                 resize_window(self, event, self, edge)
-                
+
                 self.emit("window-resize")
-                
+
     def is_disable_window_maximized(self):
         '''
         An interface which indicates whether the window could be maximized, you should implement this function you own.
-        
+
         @return: Always return False.
         '''
-        return False                
-                
+        return False
+
     def monitor_window_state(self, widget, event):
         '''
-        Internal function to monitor window state, 
+        Internal function to monitor window state,
 
         add shadow when window at maximized or fullscreen status. Otherwise hide shadow.
 
@@ -139,12 +139,12 @@ class WindowBase(gtk.Window):
         if (window_state & gtk.gdk.WINDOW_STATE_MAXIMIZED == gtk.gdk.WINDOW_STATE_MAXIMIZED or
             window_state & gtk.gdk.WINDOW_STATE_FULLSCREEN == gtk.gdk.WINDOW_STATE_FULLSCREEN):
             self.hide_shadow()
-            
+
             if self.is_disable_window_maximized():
                 self.unmaximize()
         else:
             self.show_shadow()
-        
+
     def add_motion_move_event(self, widget):
         '''
         Add move event callback.
@@ -161,26 +161,26 @@ class WindowBase(gtk.Window):
                 int(self.move_window_x + self.move_end_x - self.move_start_x),
                 int(self.move_window_y + self.move_end_y - self.move_start_y),
             )
-        
+
         widget.connect("button-press-event", handle_button_press)
         widget.connect("motion-notify-event", handle_motion_event)
-        
+
     def add_move_event(self, widget):
         '''
         Add move event callback.
 
         @param widget: A widget of type gtk.Widget.
         '''
-        widget.connect("button-press-event", lambda w, e: move_window(w, e, self))        
-        
+        widget.connect("button-press-event", lambda w, e: move_window(w, e, self))
+
     def add_toggle_event(self, widget):
         '''
         Add toggle event callback.
 
         @param widget: A widget of type gtk.Widget.
         '''
-        widget.connect("button-press-event", self.double_click_window)        
-        
+        widget.connect("button-press-event", self.double_click_window)
+
     def double_click_window(self, widget, event):
         '''
         Double click event handler of the window. It will maximize the window.
@@ -191,9 +191,9 @@ class WindowBase(gtk.Window):
         '''
         if is_double_click(event):
             self.toggle_max_window()
-            
-        return False    
-            
+
+        return False
+
     def get_edge(self):
         '''
         Get the edge which the cursor is on, according to the cursor type.
@@ -209,14 +209,14 @@ class WindowBase(gtk.Window):
         cr.set_source_rgba(*self.background_color)
         cr.set_operator(cairo.OPERATOR_SOURCE)
         cr.paint()
-        
+
     def draw_skin(self, cr, x, y, w, h):
         skin_config.render_background(cr, self, x, y)
-        
+
     def draw_mask(self, cr, x, y, w, h):
         '''
         Draw mask interface, you should implement this function own.
-        
+
         @param cr: Cairo context.
         @param x: X coordinate of draw area.
         @param y: Y coordinate of draw area.
@@ -224,7 +224,7 @@ class WindowBase(gtk.Window):
         @param h: Height of draw area.
         '''
         pass
-    
+
     def get_cursor_type_with_coordinate(self, ex, ey, wx, wy, ww, wh):
         '''
         Get cursor type with given coordinate.
@@ -253,10 +253,10 @@ class WindowBase(gtk.Window):
                     return gtk.gdk.TOP_SIDE
                 elif wy + wh - self.shadow_padding <= ey <= wy + wh:
                     return gtk.gdk.BOTTOM_SIDE
-                else: 
+                else:
                     return None
             else:
                 return None
         else:
             return None
-    
+

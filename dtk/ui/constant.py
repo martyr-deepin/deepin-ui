@@ -3,20 +3,20 @@
 
 # Copyright (C) 2011 ~ 2012 Deepin, Inc.
 #               2011 ~ 2012 Wang Yong
-# 
+#
 # Author:     Wang Yong <lazycat.manatee@gmail.com>
 # Maintainer: Wang Yong <lazycat.manatee@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -33,7 +33,7 @@ EDGE_DICT = {
     gtk.gdk.TOP_SIDE : gtk.gdk.WINDOW_EDGE_NORTH,
     gtk.gdk.TOP_RIGHT_CORNER : gtk.gdk.WINDOW_EDGE_NORTH_EAST,
     gtk.gdk.LEFT_SIDE : gtk.gdk.WINDOW_EDGE_WEST,
-    gtk.gdk.RIGHT_SIDE : gtk.gdk.WINDOW_EDGE_EAST,      
+    gtk.gdk.RIGHT_SIDE : gtk.gdk.WINDOW_EDGE_EAST,
     gtk.gdk.BOTTOM_LEFT_CORNER : gtk.gdk.WINDOW_EDGE_SOUTH_WEST,
     gtk.gdk.BOTTOM_SIDE : gtk.gdk.WINDOW_EDGE_SOUTH,
     gtk.gdk.BOTTOM_RIGHT_CORNER : gtk.gdk.WINDOW_EDGE_SOUTH_EAST,
@@ -52,9 +52,9 @@ WIDGET_POS_CENTER = 8
 def get_system_font():
     '''
     Helper function to get system font when deepin-ui load.
-    
+
     This function will create invisible gtk window to get system font, window destroy after detect.
-    
+
     @return: Return font string in current system.
     '''
     font_test_window = gtk.Window(gtk.WINDOW_POPUP)
@@ -62,12 +62,12 @@ def get_system_font():
     font_test_window.move(-1000000, -1000000)
     font_name = ' '.join(str(font_test_window.get_pango_context().get_font_description()).split(" ")[0:-1])
     font_test_window.destroy()
-    
+
     return font_name
 
 DEFAULT_FONT = get_system_font() # get system font
 
-# Align alias. 
+# Align alias.
 ALIGN_START = pango.ALIGN_LEFT
 ALIGN_MIDDLE = pango.ALIGN_CENTER
 ALIGN_END = pango.ALIGN_RIGHT
@@ -83,7 +83,7 @@ DEFAULT_FONT_SIZE = 9
 # Shadow size.
 SHADOW_SIZE = 200
 
-# Color name dictionary. 
+# Color name dictionary.
 COLOR_NAME_DICT = {
         "dark_grey" : "#333333",
         "red" : "#FF0000",
