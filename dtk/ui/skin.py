@@ -266,8 +266,8 @@ class SkinPreviewPage(gtk.VBox):
         if load_skin_status:
             self.add_skin_preview_icon(skin_dir, skin_image_file)
         else:
-            ConfirmDialog(_("Skin version mismatch"),
-                          _("Import skin version is mismatch with current one!")).show_all()
+            ConfirmDialog(_("Skin Version Mismatch"),
+                          _("Imported skin version mismatches with current one!")).show_all()
 
     def add_skin_preview_icon(self, skin_dir, skin_image_file):
         self.preview_view.add_items([SkinPreviewIcon(
@@ -744,7 +744,7 @@ class SkinAddIcon(gobject.GObject):
         '''
         Handle button-press event.
         '''
-        OpenFileDialog(_("Add skin from file"), None, self.ok_callback, self.cancel_callback)
+        OpenFileDialog(_("Add Skin File"), None, self.ok_callback, self.cancel_callback)
 
     def icon_item_button_release(self, x, y):
         '''
@@ -857,9 +857,9 @@ class SkinEditPage(gtk.VBox):
         self.v_split_button.connect("clicked", lambda w: self.click_vertical_mirror_button())
         self.h_split_button.connect("clicked", lambda w: self.click_horizontal_mirror_button())
 
-        Tooltip.text(self.resize_button, _("Zoom"))
-        Tooltip.text(self.v_split_button, _("Flip vertical"))
-        Tooltip.text(self.h_split_button, _("Flip horizontal"))
+        Tooltip.text(self.resize_button, _("Zoom automatically"))
+        Tooltip.text(self.v_split_button, _("Flip vertically"))
+        Tooltip.text(self.h_split_button, _("Flip horizontally"))
         Tooltip.text(self.lock_button, _("Lock scaling"))
         Tooltip.text(self.export_button, _("Export"))
 

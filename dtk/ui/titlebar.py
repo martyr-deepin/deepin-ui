@@ -159,7 +159,7 @@ class Titlebar(EventBox):
         if "min" in button_mask:
             self.min_button = MinButton()
             self.button_box.pack_start(self.min_button, False, False, 1)
-            Tooltip.text(self.min_button, _("Minimum")).show_delay(self.min_button, 2000)
+            Tooltip.text(self.min_button, _("Minimize")).show_delay(self.min_button, 2000)
 
         # Add max button.
         if "max" in button_mask:
