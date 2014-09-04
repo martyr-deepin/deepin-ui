@@ -6,5 +6,5 @@ mode = developer
 [deepin-ui.deepin-uipot-1]
 file_filter = dtk/locale/<lang>.po
 source_lang = en
+source_file = dtk/locale/deepin-ui.pot
 type = PO
-
