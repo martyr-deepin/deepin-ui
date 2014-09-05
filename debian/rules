@@ -23,5 +23,5 @@ override_dh_auto_install:
 	find . -name '*.po' -exec rm \{} \;
 	find . -name '*.pot' -exec rm \{} \;
 	mkdir -p ./debian/tmp/usr/share/pyshared
-	mv ./debian/tmp/usr/dtk/locale ./debian/tmp/usr/share
+	mv ./debian/tmp/usr/dtk/locale/mo ./debian/tmp/usr/share/locale
 	mv ./debian/tmp/usr/dtk ./debian/tmp/usr/share/pyshared

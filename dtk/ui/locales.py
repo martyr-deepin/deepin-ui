@@ -36,7 +36,7 @@ import os
 
 domain_name = "deepin-ui"
 
-LOCALE_DIR = os.path.join(get_parent_dir(__file__, 2), "locale")
+LOCALE_DIR = os.path.join(get_parent_dir(__file__, 2), "locale", "mo")
 if not os.path.exists(LOCALE_DIR):
     LOCALE_DIR="/usr/share/locale"
 
