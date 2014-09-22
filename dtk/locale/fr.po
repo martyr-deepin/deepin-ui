@@ -10,9 +10,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-03 11:26+0800\n"
-"PO-Revision-Date: 2014-08-21 08:51+0000\n"
-"Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
+"POT-Creation-Date: 2014-09-04 13:39+0800\n"
+"PO-Revision-Date: 2014-09-28 01:21+0000\n"
+"Last-Translator: deepin_transifex <xiabin@linuxdeepin.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/deepin-ui/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,187 +20,187 @@ msgstr ""
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: dtk/ui/skin.py:747
-msgid "Add skin from file"
-msgstr "Ajouter le thème du fichier"
-
-#: dtk/ui/skin.py:308
-msgid "Are you sure you want to delete this skin?"
-msgstr "Voulez-vous vraiment supprimer ce thème ?"
-
-#: dtk/ui/skin.py:885
-msgid "Back"
-msgstr "Précédent"
-
-#: dtk/ui/color_selection.py:177
-msgid "Blue: "
-msgstr "Bleu:"
-
-#: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
-#: dtk/ui/tab_window.py:488
-msgid "Cancel"
-msgstr "Annuler "
-
-#: dtk/ui/titlebar.py:150
-msgid "Change skin"
-msgstr "Changer l'apparence"
-
-#: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
-#: dtk/ui/skin.py:152
-msgid "Close"
-msgstr "Fermer"
-
-#: dtk/ui/color_selection.py:150
-msgid "Color value"
-msgstr "Valeur de la couleur "
-
-#: dtk/ui/file_manager.py:44
-msgid "Computer"
-msgstr "Ordinateur "
-
-#: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
-msgid "Copy"
-msgstr "Copier "
-
-#: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
+#: ../ui/entry.py:902 ../ui/net.py:130 ../ui/net.py:716
 msgid "Cut"
 msgstr "Couper"
 
-#: dtk/ui/skin.py:307
-msgid "Delete skin"
-msgstr "Supprimer le thème "
+#: ../ui/entry.py:903 ../ui/net.py:131 ../ui/net.py:717
+msgid "Copy"
+msgstr "Copier "
 
-#: dtk/ui/file_manager.py:46
-msgid "Desktop"
-msgstr "Bureau"
-
-#: dtk/ui/gio_utils.py:255
-#, python-format
-msgid "Desktop file not exists: %s"
-msgstr "Le fichier du bureau n'existe pas: %s"
-
-#: dtk/ui/gio_utils.py:259
-#, python-format
-msgid "Desktop is not valid: %s"
-msgstr "Le fichier du bureau n'est pas valide: %s"
-
-#: dtk/ui/entry.py:1996
-msgid "Disabled"
-msgstr "Désactivé "
-
-#: dtk/ui/file_manager.py:47
-msgid "Documents"
-msgstr "Documents"
-
-#: dtk/ui/file_manager.py:48
-msgid "Downloads"
-msgstr "Téléchargements"
-
-#: dtk/ui/resizable_label.py:87
-msgid "Expand"
-msgstr "Augmenter"
-
-#: dtk/ui/skin.py:864 dtk/ui/skin.py:937
-msgid "Export"
-msgstr "Exporter"
-
-#: dtk/ui/skin.py:862
-msgid "Flip horizontal"
-msgstr "Basculer à l'horizontale"
-
-#: dtk/ui/skin.py:861
-msgid "Flip vertical"
-msgstr "Basculer à la verticale"
-
-#: dtk/ui/color_selection.py:170
-msgid "Green: "
-msgstr "Vert:"
-
-#: dtk/ui/file_manager.py:45
-msgid "Home"
-msgstr "Dossier personnel "
-
-#: dtk/ui/skin.py:270
-msgid "Import skin version is mismatch with current one!"
-msgstr "Le thème importé est incompatible avec celui-ci"
-
-#: dtk/ui/iconview.py:476
-msgid "Loading..."
-msgstr "Chargement..."
-
-#: dtk/ui/skin.py:863
-msgid "Lock scaling"
-msgstr "Verrouillage "
-
-#: dtk/ui/titlebar.py:156
-msgid "Main menu"
-msgstr "Menu principal"
-
-#: dtk/ui/titlebar.py:168
-msgid "Maximize"
-msgstr "Agrandir"
-
-#: dtk/ui/titlebar.py:162
-msgid "Minimum"
-msgstr "Réduire "
-
-#: dtk/ui/file_manager.py:49
-msgid "Music"
-msgstr "Musique"
-
-#: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
-#: dtk/ui/tab_window.py:487
-msgid "OK"
-msgstr "Valider"
-
-#: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
+#: ../ui/entry.py:904 ../ui/net.py:132 ../ui/net.py:718
 msgid "Paste"
 msgstr "Coller"
 
-#: dtk/ui/file_manager.py:50
-msgid "Pictures"
-msgstr "Images"
-
-#: dtk/ui/entry.py:1956
-msgid "Please input new shortcuts"
-msgstr "Créer nouveaux raccourcis"
-
-#: dtk/ui/dialog.py:709
-msgid "Preferences"
-msgstr "Préférences"
-
-#: dtk/ui/color_selection.py:163
-msgid "Red: "
-msgstr "Rouge:"
-
-#: dtk/ui/skin.py:125
-msgid "Select Skin"
-msgstr "Thème"
-
-#: dtk/ui/entry.py:905
+#: ../ui/entry.py:905
 msgid "Select all"
 msgstr "Tout sélectionner"
 
-#: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
-msgid "Select color"
-msgstr "Choisir la couleur"
+#: ../ui/entry.py:1956
+msgid "Please input new shortcuts"
+msgstr "Créer nouveaux raccourcis"
 
-#: dtk/ui/resizable_label.py:88
-msgid "Shrink"
-msgstr "Réduire"
+#: ../ui/entry.py:1996
+msgid "Disabled"
+msgstr "Désactivé "
 
-#: dtk/ui/skin.py:269
-msgid "Skin version mismatch"
-msgstr "Thème incompatible"
+#: ../ui/gio_utils.py:255
+#, python-format
+msgid "The desktop file doesn't exist: %s"
+msgstr ""
 
-#: dtk/ui/file_manager.py:52
-msgid "Trash"
-msgstr "Corbeille"
+#: ../ui/gio_utils.py:259
+#, python-format
+msgid "The desktop file is not valid: %s"
+msgstr ""
 
-#: dtk/ui/file_manager.py:51
+#: ../ui/file_manager.py:44
+msgid "Computer"
+msgstr "Ordinateur "
+
+#: ../ui/file_manager.py:45
+msgid "Home"
+msgstr "Dossier personnel "
+
+#: ../ui/file_manager.py:46
+msgid "Desktop"
+msgstr "Bureau"
+
+#: ../ui/file_manager.py:47
+msgid "Documents"
+msgstr "Documents"
+
+#: ../ui/file_manager.py:48
+msgid "Downloads"
+msgstr "Téléchargements"
+
+#: ../ui/file_manager.py:49
+msgid "Music"
+msgstr "Musique"
+
+#: ../ui/file_manager.py:50
+msgid "Pictures"
+msgstr "Images"
+
+#: ../ui/file_manager.py:51
 msgid "Videos"
 msgstr "Vidéos"
 
-#: dtk/ui/skin.py:860
-msgid "Zoom"
-msgstr "Zoom"
+#: ../ui/file_manager.py:52
+msgid "Trash"
+msgstr "Corbeille"
+
+#: ../ui/resizable_label.py:87
+msgid "Expand"
+msgstr "Augmenter"
+
+#: ../ui/resizable_label.py:88
+msgid "Shrink"
+msgstr "Réduire"
+
+#: ../ui/iconview.py:476
+msgid "Loading..."
+msgstr "Chargement..."
+
+#: ../ui/skin.py:125
+msgid "Select Skin"
+msgstr "Thème"
+
+#: ../ui/skin.py:130 ../ui/skin.py:152 ../ui/titlebar.py:174
+#: ../ui/dialog.py:718
+msgid "Close"
+msgstr "Fermer"
+
+#: ../ui/skin.py:269
+msgid "Skin Version Mismatch"
+msgstr ""
+
+#: ../ui/skin.py:270
+msgid "Imported skin version mismatches with current one!"
+msgstr ""
+
+#: ../ui/skin.py:307
+msgid "Delete skin"
+msgstr "Supprimer le thème "
+
+#: ../ui/skin.py:308
+msgid "Are you sure you want to delete this skin?"
+msgstr "Voulez-vous vraiment supprimer ce thème ?"
+
+#: ../ui/skin.py:747
+msgid "Add Skin File"
+msgstr ""
+
+#: ../ui/skin.py:860
+msgid "Zoom automatically"
+msgstr ""
+
+#: ../ui/skin.py:861
+msgid "Flip vertically"
+msgstr "Tourner verticalement"
+
+#: ../ui/skin.py:862
+msgid "Flip horizontally"
+msgstr "Tourner horizontalement"
+
+#: ../ui/skin.py:863
+msgid "Lock scaling"
+msgstr "Verrouillage "
+
+#: ../ui/skin.py:864 ../ui/skin.py:937
+msgid "Export"
+msgstr "Exporter"
+
+#: ../ui/skin.py:869 ../ui/color_selection.py:111
+msgid "Select color"
+msgstr "Choisir la couleur"
+
+#: ../ui/skin.py:885
+msgid "Back"
+msgstr "Précédent"
+
+#: ../ui/color_selection.py:150
+msgid "Color value"
+msgstr "Valeur de la couleur "
+
+#: ../ui/color_selection.py:163
+msgid "Red: "
+msgstr "Rouge:"
+
+#: ../ui/color_selection.py:170
+msgid "Green: "
+msgstr "Vert:"
+
+#: ../ui/color_selection.py:177
+msgid "Blue: "
+msgstr "Bleu:"
+
+#: ../ui/color_selection.py:206 ../ui/tab_window.py:487 ../ui/dialog.py:458
+#: ../ui/dialog.py:547
+msgid "OK"
+msgstr "Valider"
+
+#: ../ui/color_selection.py:207 ../ui/tab_window.py:488 ../ui/dialog.py:459
+#: ../ui/dialog.py:548
+msgid "Cancel"
+msgstr "Annuler "
+
+#: ../ui/titlebar.py:150
+msgid "Change skin"
+msgstr "Changer l'apparence"
+
+#: ../ui/titlebar.py:156
+msgid "Main menu"
+msgstr "Menu principal"
+
+#: ../ui/titlebar.py:162
+msgid "Minimize"
+msgstr "Réduire"
+
+#: ../ui/titlebar.py:168
+msgid "Maximize"
+msgstr "Agrandir"
+
+#: ../ui/dialog.py:709
+msgid "Preferences"
+msgstr "Préférences"

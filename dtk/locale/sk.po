@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-03 11:26+0800\n"
-"PO-Revision-Date: 2014-08-21 08:51+0000\n"
-"Last-Translator: cxbii <chenxiangbang@linuxdeepin.com>\n"
+"POT-Creation-Date: 2014-09-04 13:39+0800\n"
+"PO-Revision-Date: 2014-09-28 01:21+0000\n"
+"Last-Translator: deepin_transifex <xiabin@linuxdeepin.com>\n"
 "Language-Team: Slovak (http://www.transifex.com/projects/p/deepin-ui/language/sk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,187 +18,187 @@ msgstr ""
 "Language: sk\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: dtk/ui/skin.py:747
-msgid "Add skin from file"
-msgstr "Pridať vzhľad zo súboru"
-
-#: dtk/ui/skin.py:308
-msgid "Are you sure you want to delete this skin?"
-msgstr "Ste si istý, že chcete vymazať tento vzhľad?"
-
-#: dtk/ui/skin.py:885
-msgid "Back"
-msgstr "Späť"
-
-#: dtk/ui/color_selection.py:177
-msgid "Blue: "
-msgstr "Modrá:"
-
-#: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
-#: dtk/ui/tab_window.py:488
-msgid "Cancel"
-msgstr "Zrušiť"
-
-#: dtk/ui/titlebar.py:150
-msgid "Change skin"
-msgstr "Zmeniť podobu"
-
-#: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
-#: dtk/ui/skin.py:152
-msgid "Close"
-msgstr "Zavrieť"
-
-#: dtk/ui/color_selection.py:150
-msgid "Color value"
-msgstr "Hodnota farby"
-
-#: dtk/ui/file_manager.py:44
-msgid "Computer"
-msgstr "Počítač"
-
-#: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
-msgid "Copy"
-msgstr "Kopírovať"
-
-#: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
+#: ../ui/entry.py:902 ../ui/net.py:130 ../ui/net.py:716
 msgid "Cut"
 msgstr "Vystrihnúť"
 
-#: dtk/ui/skin.py:307
-msgid "Delete skin"
-msgstr "Vymazať vzhľad?"
+#: ../ui/entry.py:903 ../ui/net.py:131 ../ui/net.py:717
+msgid "Copy"
+msgstr "Kopírovať"
 
-#: dtk/ui/file_manager.py:46
-msgid "Desktop"
-msgstr "Pracovná plocha"
-
-#: dtk/ui/gio_utils.py:255
-#, python-format
-msgid "Desktop file not exists: %s"
-msgstr "Súbor Desktop neexistuje: %s"
-
-#: dtk/ui/gio_utils.py:259
-#, python-format
-msgid "Desktop is not valid: %s"
-msgstr "Desktop nie je platný: %s"
-
-#: dtk/ui/entry.py:1996
-msgid "Disabled"
-msgstr "Vypnuté"
-
-#: dtk/ui/file_manager.py:47
-msgid "Documents"
-msgstr "Dokumenty"
-
-#: dtk/ui/file_manager.py:48
-msgid "Downloads"
-msgstr "Stiahnuté"
-
-#: dtk/ui/resizable_label.py:87
-msgid "Expand"
-msgstr "Zväčšiť"
-
-#: dtk/ui/skin.py:864 dtk/ui/skin.py:937
-msgid "Export"
-msgstr "Exportovať"
-
-#: dtk/ui/skin.py:862
-msgid "Flip horizontal"
-msgstr "Prevrátiť vodorovne"
-
-#: dtk/ui/skin.py:861
-msgid "Flip vertical"
-msgstr "Prevrátiť zvislo"
-
-#: dtk/ui/color_selection.py:170
-msgid "Green: "
-msgstr "Zelená:"
-
-#: dtk/ui/file_manager.py:45
-msgid "Home"
-msgstr "Domovský priečinok"
-
-#: dtk/ui/skin.py:270
-msgid "Import skin version is mismatch with current one!"
-msgstr "Verzia zavedeného vzhľadu je v nesúlade s aktuálnym!"
-
-#: dtk/ui/iconview.py:476
-msgid "Loading..."
-msgstr "Načítavanie..."
-
-#: dtk/ui/skin.py:863
-msgid "Lock scaling"
-msgstr "Zamknúť zmenu veľkosti"
-
-#: dtk/ui/titlebar.py:156
-msgid "Main menu"
-msgstr "Hlavná ponuka"
-
-#: dtk/ui/titlebar.py:168
-msgid "Maximize"
-msgstr "Maximalizovať"
-
-#: dtk/ui/titlebar.py:162
-msgid "Minimum"
-msgstr "Najmenší"
-
-#: dtk/ui/file_manager.py:49
-msgid "Music"
-msgstr "Hudba"
-
-#: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
-#: dtk/ui/tab_window.py:487
-msgid "OK"
-msgstr "OK"
-
-#: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
+#: ../ui/entry.py:904 ../ui/net.py:132 ../ui/net.py:718
 msgid "Paste"
 msgstr "Prilepiť"
 
-#: dtk/ui/file_manager.py:50
-msgid "Pictures"
-msgstr "Obrázky"
-
-#: dtk/ui/entry.py:1956
-msgid "Please input new shortcuts"
-msgstr "Zadajte prosím nové skratky"
-
-#: dtk/ui/dialog.py:709
-msgid "Preferences"
-msgstr "Nastavenia"
-
-#: dtk/ui/color_selection.py:163
-msgid "Red: "
-msgstr "Červená:"
-
-#: dtk/ui/skin.py:125
-msgid "Select Skin"
-msgstr "Vybrať vzhľad"
-
-#: dtk/ui/entry.py:905
+#: ../ui/entry.py:905
 msgid "Select all"
 msgstr "Vybrať všetko"
 
-#: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
-msgid "Select color"
-msgstr "Vybrať farbu"
+#: ../ui/entry.py:1956
+msgid "Please input new shortcuts"
+msgstr "Zadajte prosím nové skratky"
 
-#: dtk/ui/resizable_label.py:88
-msgid "Shrink"
-msgstr "Zmenšiť"
+#: ../ui/entry.py:1996
+msgid "Disabled"
+msgstr "Vypnuté"
 
-#: dtk/ui/skin.py:269
-msgid "Skin version mismatch"
-msgstr "Nesúlad verzií vzhľadu"
+#: ../ui/gio_utils.py:255
+#, python-format
+msgid "The desktop file doesn't exist: %s"
+msgstr ""
 
-#: dtk/ui/file_manager.py:52
-msgid "Trash"
-msgstr "Kôš"
+#: ../ui/gio_utils.py:259
+#, python-format
+msgid "The desktop file is not valid: %s"
+msgstr ""
 
-#: dtk/ui/file_manager.py:51
+#: ../ui/file_manager.py:44
+msgid "Computer"
+msgstr "Počítač"
+
+#: ../ui/file_manager.py:45
+msgid "Home"
+msgstr "Domovský priečinok"
+
+#: ../ui/file_manager.py:46
+msgid "Desktop"
+msgstr "Pracovná plocha"
+
+#: ../ui/file_manager.py:47
+msgid "Documents"
+msgstr "Dokumenty"
+
+#: ../ui/file_manager.py:48
+msgid "Downloads"
+msgstr "Stiahnuté"
+
+#: ../ui/file_manager.py:49
+msgid "Music"
+msgstr "Hudba"
+
+#: ../ui/file_manager.py:50
+msgid "Pictures"
+msgstr "Obrázky"
+
+#: ../ui/file_manager.py:51
 msgid "Videos"
 msgstr "Videá"
 
-#: dtk/ui/skin.py:860
-msgid "Zoom"
-msgstr "Zväčšenie"
+#: ../ui/file_manager.py:52
+msgid "Trash"
+msgstr "Kôš"
+
+#: ../ui/resizable_label.py:87
+msgid "Expand"
+msgstr "Zväčšiť"
+
+#: ../ui/resizable_label.py:88
+msgid "Shrink"
+msgstr "Zmenšiť"
+
+#: ../ui/iconview.py:476
+msgid "Loading..."
+msgstr "Načítavanie..."
+
+#: ../ui/skin.py:125
+msgid "Select Skin"
+msgstr "Vybrať vzhľad"
+
+#: ../ui/skin.py:130 ../ui/skin.py:152 ../ui/titlebar.py:174
+#: ../ui/dialog.py:718
+msgid "Close"
+msgstr "Zavrieť"
+
+#: ../ui/skin.py:269
+msgid "Skin Version Mismatch"
+msgstr ""
+
+#: ../ui/skin.py:270
+msgid "Imported skin version mismatches with current one!"
+msgstr ""
+
+#: ../ui/skin.py:307
+msgid "Delete skin"
+msgstr "Vymazať vzhľad?"
+
+#: ../ui/skin.py:308
+msgid "Are you sure you want to delete this skin?"
+msgstr "Ste si istý, že chcete vymazať tento vzhľad?"
+
+#: ../ui/skin.py:747
+msgid "Add Skin File"
+msgstr ""
+
+#: ../ui/skin.py:860
+msgid "Zoom automatically"
+msgstr ""
+
+#: ../ui/skin.py:861
+msgid "Flip vertically"
+msgstr "Preklopiť vertikálne"
+
+#: ../ui/skin.py:862
+msgid "Flip horizontally"
+msgstr "Preklopiť horizontálne"
+
+#: ../ui/skin.py:863
+msgid "Lock scaling"
+msgstr "Zamknúť zmenu veľkosti"
+
+#: ../ui/skin.py:864 ../ui/skin.py:937
+msgid "Export"
+msgstr "Exportovať"
+
+#: ../ui/skin.py:869 ../ui/color_selection.py:111
+msgid "Select color"
+msgstr "Vybrať farbu"
+
+#: ../ui/skin.py:885
+msgid "Back"
+msgstr "Späť"
+
+#: ../ui/color_selection.py:150
+msgid "Color value"
+msgstr "Hodnota farby"
+
+#: ../ui/color_selection.py:163
+msgid "Red: "
+msgstr "Červená:"
+
+#: ../ui/color_selection.py:170
+msgid "Green: "
+msgstr "Zelená:"
+
+#: ../ui/color_selection.py:177
+msgid "Blue: "
+msgstr "Modrá:"
+
+#: ../ui/color_selection.py:206 ../ui/tab_window.py:487 ../ui/dialog.py:458
+#: ../ui/dialog.py:547
+msgid "OK"
+msgstr "OK"
+
+#: ../ui/color_selection.py:207 ../ui/tab_window.py:488 ../ui/dialog.py:459
+#: ../ui/dialog.py:548
+msgid "Cancel"
+msgstr "Zrušiť"
+
+#: ../ui/titlebar.py:150
+msgid "Change skin"
+msgstr "Zmeniť podobu"
+
+#: ../ui/titlebar.py:156
+msgid "Main menu"
+msgstr "Hlavná ponuka"
+
+#: ../ui/titlebar.py:162
+msgid "Minimize"
+msgstr "Minimalizovať"
+
+#: ../ui/titlebar.py:168
+msgid "Maximize"
+msgstr "Maximalizovať"
+
+#: ../ui/dialog.py:709
+msgid "Preferences"
+msgstr "Nastavenia"

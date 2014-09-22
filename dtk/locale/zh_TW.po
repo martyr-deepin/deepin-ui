@@ -11,9 +11,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-03 11:26+0800\n"
-"PO-Revision-Date: 2014-08-25 13:57+0000\n"
-"Last-Translator: freddy4212 <freddy4212@gmail.com>\n"
+"POT-Creation-Date: 2014-09-04 13:39+0800\n"
+"PO-Revision-Date: 2014-09-28 01:21+0000\n"
+"Last-Translator: deepin_transifex <xiabin@linuxdeepin.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/deepin-ui/language/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,187 +21,187 @@ msgstr ""
 "Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: dtk/ui/skin.py:747
-msgid "Add skin from file"
-msgstr "加入主題檔案"
-
-#: dtk/ui/skin.py:308
-msgid "Are you sure you want to delete this skin?"
-msgstr "你確定要刪除目前的主題？"
-
-#: dtk/ui/skin.py:885
-msgid "Back"
-msgstr "返回"
-
-#: dtk/ui/color_selection.py:177
-msgid "Blue: "
-msgstr "藍色："
-
-#: dtk/ui/color_selection.py:207 dtk/ui/dialog.py:459 dtk/ui/dialog.py:548
-#: dtk/ui/tab_window.py:488
-msgid "Cancel"
-msgstr "取消"
-
-#: dtk/ui/titlebar.py:150
-msgid "Change skin"
-msgstr "更換主題"
-
-#: dtk/ui/titlebar.py:174 dtk/ui/dialog.py:718 dtk/ui/skin.py:130
-#: dtk/ui/skin.py:152
-msgid "Close"
-msgstr "關閉"
-
-#: dtk/ui/color_selection.py:150
-msgid "Color value"
-msgstr "色彩值"
-
-#: dtk/ui/file_manager.py:44
-msgid "Computer"
-msgstr "電腦"
-
-#: dtk/ui/entry.py:903 dtk/ui/net.py:131 dtk/ui/net.py:717
-msgid "Copy"
-msgstr "複製"
-
-#: dtk/ui/entry.py:902 dtk/ui/net.py:130 dtk/ui/net.py:716
+#: ../ui/entry.py:902 ../ui/net.py:130 ../ui/net.py:716
 msgid "Cut"
 msgstr "剪下"
 
-#: dtk/ui/skin.py:307
-msgid "Delete skin"
-msgstr "刪除主題"
+#: ../ui/entry.py:903 ../ui/net.py:131 ../ui/net.py:717
+msgid "Copy"
+msgstr "複製"
 
-#: dtk/ui/file_manager.py:46
-msgid "Desktop"
-msgstr "桌面"
-
-#: dtk/ui/gio_utils.py:255
-#, python-format
-msgid "Desktop file not exists: %s"
-msgstr "Desktop 檔案不存在：%s"
-
-#: dtk/ui/gio_utils.py:259
-#, python-format
-msgid "Desktop is not valid: %s"
-msgstr "無效的 Desktop 檔案：%s"
-
-#: dtk/ui/entry.py:1996
-msgid "Disabled"
-msgstr "停用"
-
-#: dtk/ui/file_manager.py:47
-msgid "Documents"
-msgstr "文件"
-
-#: dtk/ui/file_manager.py:48
-msgid "Downloads"
-msgstr "下載"
-
-#: dtk/ui/resizable_label.py:87
-msgid "Expand"
-msgstr "展開"
-
-#: dtk/ui/skin.py:864 dtk/ui/skin.py:937
-msgid "Export"
-msgstr "匯出主題"
-
-#: dtk/ui/skin.py:862
-msgid "Flip horizontal"
-msgstr "水平翻轉"
-
-#: dtk/ui/skin.py:861
-msgid "Flip vertical"
-msgstr "垂直翻轉"
-
-#: dtk/ui/color_selection.py:170
-msgid "Green: "
-msgstr "綠色："
-
-#: dtk/ui/file_manager.py:45
-msgid "Home"
-msgstr "家目錄"
-
-#: dtk/ui/skin.py:270
-msgid "Import skin version is mismatch with current one!"
-msgstr "匯入的主題和目前主題版本不相符"
-
-#: dtk/ui/iconview.py:476
-msgid "Loading..."
-msgstr "載入中..."
-
-#: dtk/ui/skin.py:863
-msgid "Lock scaling"
-msgstr "鎖定縮放比例"
-
-#: dtk/ui/titlebar.py:156
-msgid "Main menu"
-msgstr "主選單"
-
-#: dtk/ui/titlebar.py:168
-msgid "Maximize"
-msgstr "最大化"
-
-#: dtk/ui/titlebar.py:162
-msgid "Minimum"
-msgstr "最小化"
-
-#: dtk/ui/file_manager.py:49
-msgid "Music"
-msgstr "音樂"
-
-#: dtk/ui/color_selection.py:206 dtk/ui/dialog.py:458 dtk/ui/dialog.py:547
-#: dtk/ui/tab_window.py:487
-msgid "OK"
-msgstr "確定"
-
-#: dtk/ui/entry.py:904 dtk/ui/net.py:132 dtk/ui/net.py:718
+#: ../ui/entry.py:904 ../ui/net.py:132 ../ui/net.py:718
 msgid "Paste"
 msgstr "貼上"
 
-#: dtk/ui/file_manager.py:50
-msgid "Pictures"
-msgstr "圖片"
-
-#: dtk/ui/entry.py:1956
-msgid "Please input new shortcuts"
-msgstr "請輸入新的捷徑鍵"
-
-#: dtk/ui/dialog.py:709
-msgid "Preferences"
-msgstr "偏好設定"
-
-#: dtk/ui/color_selection.py:163
-msgid "Red: "
-msgstr "紅色："
-
-#: dtk/ui/skin.py:125
-msgid "Select Skin"
-msgstr "選擇主題"
-
-#: dtk/ui/entry.py:905
+#: ../ui/entry.py:905
 msgid "Select all"
 msgstr "全部選取"
 
-#: dtk/ui/color_selection.py:111 dtk/ui/skin.py:869
-msgid "Select color"
-msgstr "選擇顏色"
+#: ../ui/entry.py:1956
+msgid "Please input new shortcuts"
+msgstr "請輸入新的捷徑鍵"
 
-#: dtk/ui/resizable_label.py:88
-msgid "Shrink"
-msgstr "收起"
+#: ../ui/entry.py:1996
+msgid "Disabled"
+msgstr "停用"
 
-#: dtk/ui/skin.py:269
-msgid "Skin version mismatch"
-msgstr "主題版本不相符"
+#: ../ui/gio_utils.py:255
+#, python-format
+msgid "The desktop file doesn't exist: %s"
+msgstr ""
 
-#: dtk/ui/file_manager.py:52
-msgid "Trash"
-msgstr "回收筒"
+#: ../ui/gio_utils.py:259
+#, python-format
+msgid "The desktop file is not valid: %s"
+msgstr ""
 
-#: dtk/ui/file_manager.py:51
+#: ../ui/file_manager.py:44
+msgid "Computer"
+msgstr "電腦"
+
+#: ../ui/file_manager.py:45
+msgid "Home"
+msgstr "家目錄"
+
+#: ../ui/file_manager.py:46
+msgid "Desktop"
+msgstr "桌面"
+
+#: ../ui/file_manager.py:47
+msgid "Documents"
+msgstr "文件"
+
+#: ../ui/file_manager.py:48
+msgid "Downloads"
+msgstr "下載"
+
+#: ../ui/file_manager.py:49
+msgid "Music"
+msgstr "音樂"
+
+#: ../ui/file_manager.py:50
+msgid "Pictures"
+msgstr "圖片"
+
+#: ../ui/file_manager.py:51
 msgid "Videos"
 msgstr "影片"
 
-#: dtk/ui/skin.py:860
-msgid "Zoom"
-msgstr "縮放"
+#: ../ui/file_manager.py:52
+msgid "Trash"
+msgstr "回收筒"
+
+#: ../ui/resizable_label.py:87
+msgid "Expand"
+msgstr "展開"
+
+#: ../ui/resizable_label.py:88
+msgid "Shrink"
+msgstr "收起"
+
+#: ../ui/iconview.py:476
+msgid "Loading..."
+msgstr "載入中..."
+
+#: ../ui/skin.py:125
+msgid "Select Skin"
+msgstr "選擇主題"
+
+#: ../ui/skin.py:130 ../ui/skin.py:152 ../ui/titlebar.py:174
+#: ../ui/dialog.py:718
+msgid "Close"
+msgstr "關閉"
+
+#: ../ui/skin.py:269
+msgid "Skin Version Mismatch"
+msgstr ""
+
+#: ../ui/skin.py:270
+msgid "Imported skin version mismatches with current one!"
+msgstr ""
+
+#: ../ui/skin.py:307
+msgid "Delete skin"
+msgstr "刪除主題"
+
+#: ../ui/skin.py:308
+msgid "Are you sure you want to delete this skin?"
+msgstr "你確定要刪除目前的主題？"
+
+#: ../ui/skin.py:747
+msgid "Add Skin File"
+msgstr ""
+
+#: ../ui/skin.py:860
+msgid "Zoom automatically"
+msgstr ""
+
+#: ../ui/skin.py:861
+msgid "Flip vertically"
+msgstr "垂直翻轉"
+
+#: ../ui/skin.py:862
+msgid "Flip horizontally"
+msgstr "水平翻轉"
+
+#: ../ui/skin.py:863
+msgid "Lock scaling"
+msgstr "鎖定縮放比例"
+
+#: ../ui/skin.py:864 ../ui/skin.py:937
+msgid "Export"
+msgstr "匯出主題"
+
+#: ../ui/skin.py:869 ../ui/color_selection.py:111
+msgid "Select color"
+msgstr "選擇顏色"
+
+#: ../ui/skin.py:885
+msgid "Back"
+msgstr "返回"
+
+#: ../ui/color_selection.py:150
+msgid "Color value"
+msgstr "色彩值"
+
+#: ../ui/color_selection.py:163
+msgid "Red: "
+msgstr "紅色："
+
+#: ../ui/color_selection.py:170
+msgid "Green: "
+msgstr "綠色："
+
+#: ../ui/color_selection.py:177
+msgid "Blue: "
+msgstr "藍色："
+
+#: ../ui/color_selection.py:206 ../ui/tab_window.py:487 ../ui/dialog.py:458
+#: ../ui/dialog.py:547
+msgid "OK"
+msgstr "確定"
+
+#: ../ui/color_selection.py:207 ../ui/tab_window.py:488 ../ui/dialog.py:459
+#: ../ui/dialog.py:548
+msgid "Cancel"
+msgstr "取消"
+
+#: ../ui/titlebar.py:150
+msgid "Change skin"
+msgstr "更換主題"
+
+#: ../ui/titlebar.py:156
+msgid "Main menu"
+msgstr "主選單"
+
+#: ../ui/titlebar.py:162
+msgid "Minimize"
+msgstr "最小化"
+
+#: ../ui/titlebar.py:168
+msgid "Maximize"
+msgstr "最大化"
+
+#: ../ui/dialog.py:709
+msgid "Preferences"
+msgstr "偏好設定"
