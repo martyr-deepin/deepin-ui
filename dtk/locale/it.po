@@ -4,16 +4,17 @@
 # 
 # Translators:
 # TaiZong <969582098@qq.com>, 2013
+# Massimo Antonio Carofano <real.massimo@hotmail.it>, 2014
 # massimo.carofano <massimo.carofano@gmail.com>, 2014
-# Maxximo88 <real.massimo@hotmail.it>, 2014
+# Massimo Antonio Carofano <real.massimo@hotmail.it>, 2014
 # 李洪武 <lihongwu1987@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-04 13:39+0800\n"
-"PO-Revision-Date: 2014-09-28 01:21+0000\n"
-"Last-Translator: deepin_transifex <xiabin@linuxdeepin.com>\n"
+"PO-Revision-Date: 2014-10-12 08:20+0000\n"
+"Last-Translator: Massimo Antonio Carofano <real.massimo@hotmail.it>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/deepin-ui/language/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -73,7 +74,7 @@ msgstr "Documenti"
 
 #: ../ui/file_manager.py:48
 msgid "Downloads"
-msgstr "Download"
+msgstr "Downloads"
 
 #: ../ui/file_manager.py:49
 msgid "Music"
@@ -114,7 +115,7 @@ msgstr "Chiudi"
 
 #: ../ui/skin.py:269
 msgid "Skin Version Mismatch"
-msgstr "Versione Skin non corrispondente"
+msgstr "Versione Skin incompatibile"
 
 #: ../ui/skin.py:270
 msgid "Imported skin version mismatches with current one!"
@@ -150,7 +151,7 @@ msgstr "Ridimensionamento di blocco"
 
 #: ../ui/skin.py:864 ../ui/skin.py:937
 msgid "Export"
-msgstr "Esportare"
+msgstr "Esporta"
 
 #: ../ui/skin.py:869 ../ui/color_selection.py:111
 msgid "Select color"

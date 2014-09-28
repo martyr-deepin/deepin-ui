@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Ivica  Kolić <ikoli@yahoo.com>, 2014
 # gogo <trebelnik2@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-04 13:39+0800\n"
-"PO-Revision-Date: 2014-09-28 01:21+0000\n"
-"Last-Translator: deepin_transifex <xiabin@linuxdeepin.com>\n"
+"PO-Revision-Date: 2014-10-23 13:41+0000\n"
+"Last-Translator: Ivica  Kolić <ikoli@yahoo.com>\n"
 "Language-Team: Croatian (http://www.transifex.com/projects/p/deepin-ui/language/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -45,12 +46,12 @@ msgstr "Onemogućeno"
 #: ../ui/gio_utils.py:255
 #, python-format
 msgid "The desktop file doesn't exist: %s"
-msgstr ""
+msgstr "Datoteka radne površine ne postoji: %s"
 
 #: ../ui/gio_utils.py:259
 #, python-format
 msgid "The desktop file is not valid: %s"
-msgstr ""
+msgstr "Datoteka radne površine nije valjana: %s"
 
 #: ../ui/file_manager.py:44
 msgid "Computer"
@@ -111,11 +112,11 @@ msgstr "Zatvori"
 
 #: ../ui/skin.py:269
 msgid "Skin Version Mismatch"
-msgstr ""
+msgstr "Verzije presvlake se ne podudaraju"
 
 #: ../ui/skin.py:270
 msgid "Imported skin version mismatches with current one!"
-msgstr ""
+msgstr "Uvezena verzija presvlake ne podudara se sa trenutnom!"
 
 #: ../ui/skin.py:307
 msgid "Delete skin"
@@ -127,19 +128,19 @@ msgstr "Sigurno želite obrisati ovu presvlaku?"
 
 #: ../ui/skin.py:747
 msgid "Add Skin File"
-msgstr ""
+msgstr "Dodaj datoteku presvlake"
 
 #: ../ui/skin.py:860
 msgid "Zoom automatically"
-msgstr ""
+msgstr "Zumiraj automatski"
 
 #: ../ui/skin.py:861
 msgid "Flip vertically"
-msgstr ""
+msgstr "Okreni okomito"
 
 #: ../ui/skin.py:862
 msgid "Flip horizontally"
-msgstr ""
+msgstr "Okreni vodoravno"
 
 #: ../ui/skin.py:863
 msgid "Lock scaling"

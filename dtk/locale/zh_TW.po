@@ -7,13 +7,14 @@
 # electricface <songwentai@linuxdeepin.com>, 2014
 # freddy4212 <freddy4212@gmail.com>, 2014
 # Peter Dave Hello <hsu@peterdavehello.org>, 2014
+# 游荡的坎德人 <nervcn09@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-04 13:39+0800\n"
-"PO-Revision-Date: 2014-09-28 01:21+0000\n"
-"Last-Translator: deepin_transifex <xiabin@linuxdeepin.com>\n"
+"PO-Revision-Date: 2014-10-20 08:04+0000\n"
+"Last-Translator: 游荡的坎德人 <nervcn09@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/deepin-ui/language/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -89,7 +90,7 @@ msgstr "影片"
 
 #: ../ui/file_manager.py:52
 msgid "Trash"
-msgstr "回收筒"
+msgstr "回收桶"
 
 #: ../ui/resizable_label.py:87
 msgid "Expand"
