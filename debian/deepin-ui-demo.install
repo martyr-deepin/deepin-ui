@@ -1,5 +1,0 @@
-debian/deepin-ui-demo.desktop /usr/share/applications
-app_theme /usr/share/deepin-ui-demo
-skin /usr/share/deepin-ui-demo
-demo.py /usr/share/deepin-ui-demo
-cover /usr/share/deepin-ui-demo
