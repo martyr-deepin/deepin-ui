@@ -4,7 +4,7 @@
 	dh $@ --with python2 --buildsystem=pybuild
 
 override_dh_auto_build:
-	deepin-generate-mo  --nocopy dtk/tools/locale_config.ini
+	deepin-generate-mo dtk/tools/locale_config.ini
 	dh_auto_build
 
 override_dh_auto_install:
