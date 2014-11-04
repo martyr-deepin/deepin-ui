@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-04 13:39+0800\n"
-"PO-Revision-Date: 2014-10-17 06:01+0000\n"
-"Last-Translator: deepin_transifex <xiabin@linuxdeepin.com>\n"
+"PO-Revision-Date: 2014-11-01 01:30+0000\n"
+"Last-Translator: yakup <mutouk@yandex.ru>\n"
 "Language-Team: Turkish (http://www.transifex.com/projects/p/deepin-ui/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -46,12 +46,12 @@ msgstr "Devre dışı"
 #: ../ui/gio_utils.py:255
 #, python-format
 msgid "The desktop file doesn't exist: %s"
-msgstr ""
+msgstr "Bu masaüstü dosyası bulunamadı: %s"
 
 #: ../ui/gio_utils.py:259
 #, python-format
 msgid "The desktop file is not valid: %s"
-msgstr ""
+msgstr "Bu masaüstü dosyası geçersiz: %s"
 
 #: ../ui/file_manager.py:44
 msgid "Computer"
@@ -112,11 +112,11 @@ msgstr "Kapat"
 
 #: ../ui/skin.py:269
 msgid "Skin Version Mismatch"
-msgstr ""
+msgstr "Kaplama Sürüm Uyuşmazlığı"
 
 #: ../ui/skin.py:270
 msgid "Imported skin version mismatches with current one!"
-msgstr ""
+msgstr "Alınan sürüm uyuşmasız kaplama geçerli bir sürüm!"
 
 #: ../ui/skin.py:307
 msgid "Delete skin"
@@ -128,11 +128,11 @@ msgstr "Bu kaplamayı silmek istediğine emin misin?"
 
 #: ../ui/skin.py:747
 msgid "Add Skin File"
-msgstr ""
+msgstr "Kaplama Dosyası Ekle"
 
 #: ../ui/skin.py:860
 msgid "Zoom automatically"
-msgstr ""
+msgstr "Otomatik olarak yakınlaştır"
 
 #: ../ui/skin.py:861
 msgid "Flip vertically"

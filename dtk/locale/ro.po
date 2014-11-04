@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# cricri8o <cricri8o@yahoo.com>, 2014
+# cricri8o <inactive+cricri8o@transifex.com>, 2014
 # Vasilii Rusu <basil_russu@hotmail.com>, 2014
 msgid ""
 msgstr ""
