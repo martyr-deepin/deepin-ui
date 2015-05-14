@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-04 13:39+0800\n"
-"PO-Revision-Date: 2014-11-01 21:01+0000\n"
+"PO-Revision-Date: 2014-12-04 13:35+0000\n"
 "Last-Translator: deepin_transifex <xiabin@linuxdeepin.com>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/deepin-ui/language/nl/)\n"
 "MIME-Version: 1.0\n"
@@ -46,12 +46,12 @@ msgstr "Uitgeschakeld"
 #: ../ui/gio_utils.py:255
 #, python-format
 msgid "The desktop file doesn't exist: %s"
-msgstr ""
+msgstr "Het desktop bestand bestaat niet: %s"
 
 #: ../ui/gio_utils.py:259
 #, python-format
 msgid "The desktop file is not valid: %s"
-msgstr ""
+msgstr "Het desktop bestand is niet geldig: %s"
 
 #: ../ui/file_manager.py:44
 msgid "Computer"
@@ -112,11 +112,11 @@ msgstr "Sluiten"
 
 #: ../ui/skin.py:269
 msgid "Skin Version Mismatch"
-msgstr ""
+msgstr "Skin Versie Komt Niet Overeen"
 
 #: ../ui/skin.py:270
 msgid "Imported skin version mismatches with current one!"
-msgstr ""
+msgstr "Geïmporteerde skin versie komt niet overeen met de huidige!"
 
 #: ../ui/skin.py:307
 msgid "Delete skin"
@@ -128,11 +128,11 @@ msgstr "Weet u zeker dat u dit thema wilt verwijderen?"
 
 #: ../ui/skin.py:747
 msgid "Add Skin File"
-msgstr ""
+msgstr "Skin-bestand Toevoegen"
 
 #: ../ui/skin.py:860
 msgid "Zoom automatically"
-msgstr ""
+msgstr "Automatisch zoomen"
 
 #: ../ui/skin.py:861
 msgid "Flip vertically"
