@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-04 13:39+0800\n"
-"PO-Revision-Date: 2014-11-02 00:50+0000\n"
+"PO-Revision-Date: 2014-12-04 04:51+0000\n"
 "Last-Translator: samson <sambelet@yahoo.com>\n"
 "Language-Team: Amharic (http://www.transifex.com/projects/p/deepin-ui/language/am/)\n"
 "MIME-Version: 1.0\n"
@@ -111,11 +111,11 @@ msgstr "መዝጊያ"
 
 #: ../ui/skin.py:269
 msgid "Skin Version Mismatch"
-msgstr ""
+msgstr "የ ቆዳው እትም አልተስማም"
 
 #: ../ui/skin.py:270
 msgid "Imported skin version mismatches with current one!"
-msgstr ""
+msgstr "የመጣው የ ቆዳ እትም ከ አሁኑ ጋር አልተስማም"
 
 #: ../ui/skin.py:307
 msgid "Delete skin"
@@ -127,7 +127,7 @@ msgstr "በእርግጥ ይህን ቆዳ ማጥፋት ይፈልጋሉ?"
 
 #: ../ui/skin.py:747
 msgid "Add Skin File"
-msgstr ""
+msgstr "የ ቆዳ ፋይል መጨመሪያ"
 
 #: ../ui/skin.py:860
 msgid "Zoom automatically"

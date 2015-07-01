@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: Deepin UI\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-04 13:39+0800\n"
-"PO-Revision-Date: 2014-10-28 09:52+0000\n"
+"PO-Revision-Date: 2014-12-23 08:40+0000\n"
 "Last-Translator: szd_liufei <liufei@linuxdeepin.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/deepin-ui/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -114,11 +114,11 @@ msgstr "Schließen"
 
 #: ../ui/skin.py:269
 msgid "Skin Version Mismatch"
-msgstr ""
+msgstr "Skin Version falsch angepasst"
 
 #: ../ui/skin.py:270
 msgid "Imported skin version mismatches with current one!"
-msgstr ""
+msgstr "Importierte Skin Version kann der aktuellen nicht zugeordnet werden."
 
 #: ../ui/skin.py:307
 msgid "Delete skin"
