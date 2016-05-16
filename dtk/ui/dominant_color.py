@@ -48,7 +48,7 @@ def get_dominant_color(image_path):
 
     # print 'finding clusters'
     NUM_CLUSTERS = 5
-    codes, dist = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
+    codes, dist = scipy.cluster.vq.kmeans(ar.astype(scipy.float32), NUM_CLUSTERS)
     # print 'cluster centres:\n', codes
 
     vecs, dist = scipy.cluster.vq.vq(ar, codes)         # assign codes
